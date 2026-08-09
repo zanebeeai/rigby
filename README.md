@@ -34,6 +34,12 @@ Prompt: `Throw up a "hang-ten" sign with your right hand, there should be a swif
 
 ![A multi-phase hang-ten gesture shown from egocentric and orbit cameras](rigby-poc/docs/media/hang-ten.gif)
 
+### Ordered fingertip counting
+
+Prompt: `use your right thumb to one by one count each of the fingers on your right hand (while looking at it)`
+
+![Ordered right-thumb fingertip counting shown from egocentric and orbit cameras](rigby-poc/docs/media/finger-count.gif)
+
 The exact result IDs, prompts, durations, and GIF settings are preserved in [the demo manifest](rigby-poc/docs/media/demo-manifest.json).
 
 ## The pipeline
@@ -267,6 +273,7 @@ uv run python -m evals.render_demo_gif 006012-throw-a-left-hook docs/media/left-
 uv run python -m evals.render_demo_gif 006260-throw-a-right-jab docs/media/right-jab.gif
 uv run python -m evals.render_demo_gif 006277-step-over-the-hurdle-with-your-right-foot docs/media/step-over-hurdle.gif
 uv run python -m evals.render_demo_gif 005970-throw-up-a-hang-ten-sign-with-your-right-hand-th docs/media/hang-ten.gif
+uv run python -m evals.render_demo_gif 006339-use-your-right-thumb-to-one-by-one-count-each-of docs/media/finger-count.gif
 ```
 
 The renderer samples the whole clip at 8 FPS, reuses the production capture page, verifies every raw canvas is 1600×900, combines 480-pixel-wide ego/orbit panels, and encodes a 96-color looping GIF with FFmpeg.
