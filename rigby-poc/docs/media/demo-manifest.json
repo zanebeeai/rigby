@@ -1,0 +1,59 @@
+{
+  "schema_version": "1.0",
+  "generated_on": "2026-08-09",
+  "capture": {
+    "source_width_px": 1600,
+    "source_height_px": 900,
+    "egocentric_vertical_fov_deg": 94.0,
+    "views": ["ego", "orbit"],
+    "sample_fps": 8,
+    "panel_width_px": 480,
+    "gif_colors": 96
+  },
+  "demos": [
+    {
+      "file": "left-hook.gif",
+      "result_id": "006012-throw-a-left-hook",
+      "prompt": "throw a left hook",
+      "intent": "strike",
+      "clip_fps": 30,
+      "duration_s": 4.052,
+      "planner_provider": "offline",
+      "planner_model": "rule-planner-v1",
+      "seed": 6
+    },
+    {
+      "file": "right-jab.gif",
+      "result_id": "006260-throw-a-right-jab",
+      "prompt": "throw a right jab",
+      "intent": "strike",
+      "clip_fps": 30,
+      "duration_s": 4.8184,
+      "planner_provider": "openai",
+      "planner_model": "gpt-5.6-luna",
+      "seed": 33538374
+    },
+    {
+      "file": "step-over-hurdle.gif",
+      "result_id": "006277-step-over-the-hurdle-with-your-right-foot",
+      "prompt": "step over the hurdle with your right foot",
+      "intent": "full_body",
+      "clip_fps": 30,
+      "duration_s": 2.55,
+      "planner_provider": "compile-only",
+      "planner_model": "none",
+      "seed": 0
+    },
+    {
+      "file": "hang-ten.gif",
+      "result_id": "005970-throw-up-a-hang-ten-sign-with-your-right-hand-th",
+      "prompt": "Throw up a \"hang-ten\" sign with your right hand, there should be a swift motion up to the main position wherein the middle three fingers are as contracted as possible, the wrist should then shake rapidly back and forth a few times, before returning to default",
+      "intent": "gesture",
+      "clip_fps": 30,
+      "duration_s": 2.2318180532406457,
+      "planner_provider": "openai",
+      "planner_model": "gpt-5.6-luna",
+      "seed": 2124482362
+    }
+  ]
+}

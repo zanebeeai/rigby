@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0",
+  "frozen_on": "2026-08-09",
+  "policy": "No additional human judgment is required by the authoring or acceptance pipeline.",
+  "source_manifest_sha256": "8511912d2cd9396692e668e82879801a9786505c195a2300e67e64a76c1fdf9f",
+  "human_calibration": {
+    "pair_count": 10,
+    "vlm_human_agreements": 9,
+    "vlm_human_agreement_rate": 0.9,
+    "human_base_preference_rate": 0.9,
+    "ab_order_consistency_rate": 1.0,
+    "minimum_vlm_human_agreement": 0.8,
+    "minimum_human_base_preference": 0.8,
+    "minimum_ab_order_consistency": 0.9,
+    "passed": true,
+    "records": [
+      {"clip_id": "j01", "human_outcome": "base", "vlm_consensus": "base", "order_consistent": true},
+      {"clip_id": "j02", "human_outcome": "base", "vlm_consensus": "base", "order_consistent": true},
+      {"clip_id": "j03", "human_outcome": "base", "vlm_consensus": "base", "order_consistent": true},
+      {"clip_id": "j04", "human_outcome": "corruption", "vlm_consensus": "base", "order_consistent": true},
+      {"clip_id": "j05", "human_outcome": "base", "vlm_consensus": "base", "order_consistent": true},
+      {"clip_id": "j06", "human_outcome": "base", "vlm_consensus": "base", "order_consistent": true},
+      {"clip_id": "j07", "human_outcome": "base", "vlm_consensus": "base", "order_consistent": true},
+      {"clip_id": "j08", "human_outcome": "base", "vlm_consensus": "base", "order_consistent": true},
+      {"clip_id": "j09", "human_outcome": "base", "vlm_consensus": "base", "order_consistent": true},
+      {"clip_id": "j10", "human_outcome": "base", "vlm_consensus": "base", "order_consistent": true}
+    ]
+  },
+  "corruption_suite": {
+    "unary_corruptions": 28,
+    "wrist_corruptions": 12,
+    "wrong_joint_shake_corruptions": 4,
+    "timing_corruptions": 4,
+    "false_accepts": 0,
+    "false_acceptance_rate": 0.0,
+    "pairwise_checks": 10,
+    "base_wins": 10,
+    "pairwise_agreement": 1.0,
+    "order_consistent_pairs": 10,
+    "ab_order_consistency": 1.0,
+    "maximum_false_acceptance_rate": 0.05,
+    "minimum_pairwise_agreement": 0.8,
+    "minimum_ab_order_consistency": 0.9,
+    "passed": true
+  }
+}
