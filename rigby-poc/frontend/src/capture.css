@@ -1,0 +1,21 @@
+:root {
+  color-scheme: dark;
+  background: #0b1016;
+}
+
+html,
+body,
+#capture-app {
+  box-sizing: border-box;
+  width: 1600px;
+  height: 900px;
+  margin: 0;
+  overflow: hidden;
+  background: #0b1016;
+}
+
+#capture-app canvas {
+  display: block;
+  width: 1600px !important;
+  height: 900px !important;
+}

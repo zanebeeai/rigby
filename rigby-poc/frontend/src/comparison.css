@@ -1,0 +1,73 @@
+:root {
+  color: #edf5fa;
+  background: #080c11;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-synthesis: none;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 1100px; min-height: 100vh; background: radial-gradient(circle at 50% -10%, #142634, #080c11 42%); }
+button, textarea { font: inherit; }
+button { color: inherit; }
+
+.comparison-shell { min-height: 100vh; display: grid; grid-template-rows: auto 1fr; }
+.comparison-header { height: 66px; padding: 0 24px; display: flex; align-items: center; gap: 24px; border-bottom: 1px solid #26333d; background: #0b1117e8; backdrop-filter: blur(16px); }
+.comparison-brand { display: flex; align-items: center; gap: 10px; min-width: 210px; }
+.comparison-brand i { width: 28px; height: 28px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; transform: skew(-10deg); }
+.comparison-brand i span { background: linear-gradient(180deg, #69ebcc, #2c9f8d); border-radius: 2px; }
+.comparison-brand strong { display: block; letter-spacing: .02em; }
+.comparison-brand small { color: #83939e; }
+.comparison-progress { flex: 1; max-width: 540px; }
+.comparison-progress p { margin: 0 0 6px; color: #a7b7c1; font-size: 12px; }
+.comparison-progress div { height: 5px; overflow: hidden; border-radius: 10px; background: #1d2932; }
+.comparison-progress i { display: block; height: 100%; width: 0; background: #5fe5c4; transition: width .2s ease; }
+.comparison-button { border: 1px solid #31414d; border-radius: 8px; padding: 10px 15px; background: #152029; cursor: pointer; }
+.comparison-button:hover:not(:disabled) { border-color: #5fe5c4; }
+.comparison-button.primary { color: #07120f; background: #5fe5c4; border-color: #5fe5c4; font-weight: 750; }
+.comparison-button:disabled { cursor: not-allowed; opacity: .45; }
+
+.comparison-main { display: grid; grid-template-columns: minmax(0, 1fr) 282px; min-height: 0; }
+.comparison-workspace { min-width: 0; padding: 18px; }
+.prompt-banner { min-height: 58px; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px; padding: 10px 15px; border: 1px solid #2b3943; border-radius: 10px 10px 0 0; background: #101820; }
+.prompt-banner span { color: #5fe5c4; font-size: 10px; font-weight: 800; letter-spacing: .15em; }
+.prompt-banner p { margin: 0; font-size: 15px; line-height: 1.35; }
+.prompt-banner strong { color: #748692; font-size: 12px; }
+.candidate-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: #293740; border: 1px solid #2b3943; border-top: 0; }
+.candidate { background: #0d141a; }
+.candidate > header { height: 40px; display: flex; align-items: center; justify-content: space-between; padding: 0 13px; border-bottom: 1px solid #27343d; }
+.candidate > header strong { font-size: 14px; }
+.candidate > header span { color: #8ea0ab; font-size: 11px; text-transform: uppercase; letter-spacing: .1em; }
+.candidate-views { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #26343d; }
+.comparison-view { position: relative; min-width: 0; background: #0b1016; }
+.comparison-view header { position: absolute; z-index: 2; top: 8px; left: 8px; padding: 5px 8px; border: 1px solid #ffffff18; border-radius: 5px; background: #071016c9; color: #b9c7cf; font-size: 10px; text-transform: uppercase; letter-spacing: .08em; }
+.comparison-canvas { aspect-ratio: 16 / 9; min-width: 0; overflow: hidden; }
+.comparison-canvas canvas { display: block; width: 100% !important; height: 100% !important; }
+.playback { height: 52px; display: flex; align-items: center; gap: 12px; padding: 0 14px; border: 1px solid #2b3943; border-top: 0; border-radius: 0 0 10px 10px; background: #101820; }
+.playback button { width: 34px; height: 34px; border: 1px solid #3a4b57; border-radius: 50%; background: #18242d; cursor: pointer; }
+.playback input { flex: 1; accent-color: #5fe5c4; }
+.playback time { width: 58px; color: #93a4ae; font-size: 11px; font-variant-numeric: tabular-nums; }
+
+.preference-panel { position: sticky; top: 0; height: calc(100vh - 66px); overflow-y: auto; padding: 24px 18px; border-left: 1px solid #26333d; background: #0c1218; }
+.preference-panel .eyebrow { margin: 0 0 8px; color: #5fe5c4; font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+.preference-panel h1 { margin: 0 0 8px; font-size: 22px; }
+.preference-panel .guidance { margin: 0 0 22px; color: #91a1ab; font-size: 13px; line-height: 1.5; }
+.choice-stack { display: grid; gap: 9px; }
+.choice-stack button { min-height: 48px; border: 1px solid #33434e; border-radius: 8px; background: #141f27; cursor: pointer; text-align: left; padding: 10px 12px; }
+.choice-stack button strong { display: block; }
+.choice-stack button small { color: #8596a1; }
+.choice-stack button.selected { border-color: #5fe5c4; box-shadow: 0 0 0 1px #5fe5c4 inset; background: #17312b; }
+.note-field { display: grid; gap: 6px; margin-top: 18px; color: #aab9c2; font-size: 12px; }
+.note-field textarea { resize: vertical; min-height: 76px; padding: 9px; color: #eaf3f7; border: 1px solid #33434e; border-radius: 7px; background: #0e171d; }
+.navigation { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 18px; }
+.warning { margin: 12px 0 0; color: #ffbc77; font-size: 12px; }
+.clip-dots { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 18px; }
+.clip-dots button { width: 25px; height: 25px; padding: 0; border: 1px solid #30414c; border-radius: 5px; background: #111b22; color: #8fa0aa; font-size: 10px; cursor: pointer; }
+.clip-dots button.complete { color: #082019; border-color: #5fe5c4; background: #5fe5c4; }
+.clip-dots button.active { outline: 2px solid #fff; outline-offset: 1px; }
+.loading-cover { position: fixed; inset: 66px 282px 0 0; z-index: 10; display: none; place-items: center; background: #080c11c9; color: #c6d3da; }
+.loading-cover.visible { display: grid; }
+.error-box { margin: 20px; padding: 16px; border: 1px solid #9f4f55; border-radius: 8px; background: #33191c; }
+
+@media (max-width: 1399px) {
+  .candidate-views { grid-template-columns: 1fr; }
+}

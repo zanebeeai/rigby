@@ -1,0 +1,169 @@
+{
+  "schema_version": "1.0",
+  "evaluation_policy": "autonomous_vlm_after_frozen_human_calibration",
+  "autonomous_pipeline": {
+    "human_reviews_required_after_calibration": 0,
+    "candidate_count": 5,
+    "max_rounds": 2,
+    "max_model_calls": 4,
+    "required_stages": ["planning", "candidates", "structural_checks", "visual_evidence", "vlm_judge", "finalize"],
+    "required_views": ["ego", "orbit"],
+    "egocentric_full_fov_deg": 94.0,
+    "minimum_selected_scores": {
+      "semantic_match": 4,
+      "gesture_recognizability": 4,
+      "anatomical_naturalness": 4,
+      "overall": 4
+    }
+  },
+  "runs_required": 2,
+  "planner": {
+    "required_provider": "openai",
+    "min_model_calls_per_case": 1,
+    "supported_total": 60,
+    "supported_min_fraction": 0.95,
+    "unsupported_total": 20,
+    "unsupported_min_fraction": 0.95
+  },
+  "gesture": {
+    "clip_total": 20,
+    "finger_assertions_required_fraction": 1.0,
+    "review_min_score": 4.0,
+    "review_min_fraction": 0.8,
+    "required_views": ["egocentric", "orbit"]
+  },
+  "gesture_diversity": {
+    "clip_total": 20,
+    "required_unique_profiles": 20,
+    "required_unique_motion_hashes": 20,
+    "required_unique_descriptors": 20,
+    "min_pairwise_normalized_distance": 0.5,
+    "min_changed_dimensions_per_pair": 3,
+    "changed_dimension_delta": 0.18,
+    "descriptor_ranges": {
+      "duration_s": [1.0, 3.5],
+      "easing": [0.0, 1.0],
+      "wrist_lateral_m": [-0.25, 0.25],
+      "wrist_height_m": [1.18, 1.52],
+      "wrist_depth_m": [0.24, 0.42],
+      "wrist_pitch_rad": [-0.40, 0.40],
+      "wrist_yaw_rad": [-0.40, 0.40],
+      "wrist_roll_rad": [-0.70, 0.70],
+      "elbow_swivel_rad": [-0.30, 0.50],
+      "torso_rotation_rad": [0.0, 0.12]
+    }
+  },
+  "grasp": {
+    "expected_trials": 150,
+    "min_success_fraction": 0.9,
+    "shapes": [
+      {"id": "cube-060", "dimensions_m": [0.06, 0.06, 0.06], "mass_kg": 0.20},
+      {"id": "wide-090", "dimensions_m": [0.09, 0.05, 0.06], "mass_kg": 0.25},
+      {"id": "tall-120", "dimensions_m": [0.05, 0.05, 0.12], "mass_kg": 0.30},
+      {"id": "thin-040", "dimensions_m": [0.04, 0.07, 0.08], "mass_kg": 0.15},
+      {"id": "deep-100", "dimensions_m": [0.07, 0.10, 0.05], "mass_kg": 0.40}
+    ],
+    "poses": [
+      {"id": "center-near", "position_m": [0.00, 1.05, 0.23], "rotation_deg": [0, 0, 0]},
+      {"id": "center-far", "position_m": [0.00, 1.10, 0.35], "rotation_deg": [0, 0, 0]},
+      {"id": "left", "position_m": [-0.04, 1.05, 0.28], "rotation_deg": [0, 10, 0]},
+      {"id": "right", "position_m": [0.04, 1.05, 0.28], "rotation_deg": [0, -10, 0]},
+      {"id": "high-yawed", "position_m": [0.04, 1.12, 0.30], "rotation_deg": [0, 35, 0]}
+    ],
+    "hands": ["left", "right"],
+    "paraphrases": [
+      "Grab the block in front of you with your {hand} hand.",
+      "Pick up the block using your {hand} hand.",
+      "Reach out with the {hand} hand, grasp the block, and lift it."
+    ]
+  },
+  "physical_proof": {
+    "min_lift_m": 0.10,
+    "min_hold_s": 1.0,
+    "max_vertical_drift_m": 0.015,
+    "max_palm_relative_slip_m": 0.020,
+    "requires_lost_table_contact": true,
+    "requires_opposing_contacts": true,
+    "allows_weld_or_attachment": false
+  },
+  "safety": {
+    "max_joint_limit_violations": 0,
+    "max_root_drift_m": 0.001,
+    "max_foot_drift_m": 0.001,
+    "max_unresolved_non_hand_collisions": 0,
+    "max_nan_count": 0,
+    "max_discontinuities": 0,
+    "max_penetration_m": 0.004
+  },
+  "structural_physics": {
+    "required_digits": ["thumb", "index", "middle", "ring", "little"],
+    "requires_independent_actuation": true,
+    "requires_contactable_digits": true,
+    "allows_parallel_gripper_proxy": false,
+    "app_up_axis": "Y",
+    "simulation_up_axis": "Z",
+    "requires_explicit_trajectory_conversion": true,
+    "max_coordinate_roundtrip_error_m": 0.000001
+  },
+  "semantic_forward_space": {
+    "rig_profile_axis_field": "forward_axis",
+    "min_forward_projection_m": 0.10,
+    "required_fraction": 1.0,
+    "max_arm_reach_from_rig_profile": true,
+    "reach_tolerance_m": 0.0,
+    "gesture_target_observables": ["wrist_lateral_m", "wrist_height_m", "wrist_depth_m"]
+  },
+  "egocentric_camera_orientation": {
+    "max_angle_from_rig_forward_deg": 60.0,
+    "minimum_camera_branches": 2,
+    "source": "frontend/src/scene.ts",
+    "requires_all_ego_branches": true
+  },
+  "parametric_control": {
+    "max_compile_ms": 3000,
+    "max_planner_calls": 0,
+    "mirror_tolerance_m": 0.02,
+    "controls": [
+      {"name":"duration_s","target":"program","levels":[0.50,0.80,1.10],"observable":"duration_s","behavior":"increasing"},
+      {"name":"arm_height","target":"program","levels":[-0.50,0.00,0.50],"observable":"wrist_height_m","behavior":"increasing"},
+      {"name":"arm_depth","target":"program","levels":[-0.50,0.00,0.50],"observable":"wrist_depth_m","behavior":"increasing"},
+      {"name":"lateral_offset","target":"program","levels":[-0.50,0.00,0.50],"observable":"wrist_lateral_m","behavior":"increasing"},
+      {"name":"wrist_pitch","target":"program","levels":[-0.50,0.00,0.50],"observable":"wrist_pitch_rad","behavior":"increasing"},
+      {"name":"wrist_yaw","target":"program","levels":[-0.50,0.00,0.50],"observable":"wrist_yaw_rad","behavior":"increasing"},
+      {"name":"wrist_roll","target":"program","levels":[-0.50,0.00,0.50],"observable":"wrist_roll_rad","behavior":"increasing"},
+      {"name":"elbow_swivel","target":"program","levels":[-0.50,0.00,0.50],"observable":"elbow_swivel_rad","behavior":"increasing"},
+      {"name":"torso_participation","target":"program","levels":[0.00,0.50,1.00],"observable":"torso_participation","behavior":"increasing"},
+      {"name":"thumb_curl","target":"program","levels":[-0.50,0.00,0.50],"observable":"thumb_curl","behavior":"increasing"},
+      {"name":"index_curl","target":"program","levels":[-0.50,0.00,0.50],"observable":"index_curl","behavior":"increasing"},
+      {"name":"middle_curl","target":"program","levels":[-0.50,0.00,0.50],"observable":"middle_curl","behavior":"increasing"},
+      {"name":"ring_curl","target":"program","levels":[-0.50,0.00,0.50],"observable":"ring_curl","behavior":"increasing"},
+      {"name":"little_curl","target":"program","levels":[-0.50,0.00,0.50],"observable":"little_curl","behavior":"increasing"},
+      {"name":"finger_splay","target":"program","levels":[-0.50,0.00,0.50],"observable":"finger_splay","behavior":"increasing"},
+      {"name":"thumb_opposition","target":"program","levels":[0.25,0.55,0.90],"observable":"thumb_opposition","behavior":"increasing"},
+      {"name":"grip_force","target":"program","levels":[0.25,0.60,0.95],"observable":"grip_force","behavior":"increasing"},
+      {"name":"lift_height_m","target":"program","levels":[0.06,0.12,0.18],"observable":"lift_height_m","behavior":"increasing"},
+      {"name":"hold_duration_s","target":"program","levels":[0.50,1.00,1.50],"observable":"hold_duration_s","behavior":"increasing"},
+      {"name":"block_width_m","target":"scene","levels":[0.04,0.07,0.10],"observable":"block_width_m","behavior":"increasing"},
+      {"name":"block_height_m","target":"scene","levels":[0.05,0.08,0.12],"observable":"block_height_m","behavior":"increasing"},
+      {"name":"block_depth_m","target":"scene","levels":[0.04,0.07,0.10],"observable":"block_depth_m","behavior":"increasing"},
+      {"name":"block_mass_kg","target":"scene","levels":[0.10,0.30,0.50],"observable":"block_mass_kg","behavior":"increasing"},
+      {"name":"block_friction","target":"scene","levels":[0.40,1.10,1.80],"observable":"block_friction","behavior":"increasing"},
+      {"name":"block_x_m","target":"scene","levels":[-0.12,0.00,0.12],"observable":"block_x","behavior":"increasing"},
+      {"name":"block_y_m","target":"scene","levels":[1.00,1.08,1.16],"observable":"block_y","behavior":"increasing"},
+      {"name":"block_z_m","target":"scene","levels":[0.15,0.22,0.29],"observable":"block_z","behavior":"increasing"},
+      {"name":"handedness","target":"program","levels":["left","right"],"observable":"wrist_lateral_m","behavior":"mirrored"}
+    ]
+  },
+  "latency": {
+    "percentile": 0.95,
+    "max_end_to_end_ms": 15000,
+    "min_samples": 60
+  },
+  "export": {
+    "required_format": "glb",
+    "max_translation_error_m": 0.0001,
+    "max_rotation_error": 0.0001,
+    "requires_provenance": true,
+    "sample_count": 11
+  }
+}
