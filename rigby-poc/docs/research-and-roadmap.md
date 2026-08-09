@@ -5,12 +5,13 @@
 Rigby should not be a direct text-to-joint-rotation model. The practical architecture is:
 
 1. An LLM selects a compact, typed intent: action, hand, hand shape, object, and rejection reason.
-2. A deterministic smart-primitive layer expands that intent into object-relative phases, sockets, end-effector targets, hand shapes, and hard or soft constraints.
-3. A calibrated rig compiler solves arm IK, finger articulation, timing, and retargeting.
-4. A fixed verifier proves anatomy, visibility, kinematics, contact, lift, hold, safety, and continuity from the generated trajectory.
-5. A full-FOV VLM loop ranks diverse structurally valid candidates, proposes only bounded parameter repairs, and preserves complete traces.
-6. A renderer and authoring UI expose the live planning/candidate/judge pipeline, final egocentric/orbit playback, and parameter-only recompilation without another planner call.
-7. A learned in-betweening model is added later, only where deterministic interpolation has a measured quality ceiling and sufficient data exists.
+2. A deterministic action-semantic layer turns motion-bearing verbs into observable phase requirements and task-specific assertions; it rejects interpretations that preserve only a pose while losing the action.
+3. A deterministic smart-primitive layer expands that intent into object-relative phases, sockets, end-effector targets, hand shapes, and hard or soft constraints.
+4. A calibrated rig compiler solves arm IK, finger articulation, timing, and retargeting.
+5. A fixed verifier proves anatomy, visibility, kinematics, semantic motion obligations, contact, lift, hold, safety, and continuity from the generated trajectory.
+6. A full-FOV VLM loop ranks diverse structurally valid candidates, proposes only bounded parameter repairs, and preserves complete traces.
+7. A renderer and authoring UI expose the live planning/candidate/judge pipeline, final egocentric/orbit playback, and parameter-only recompilation without another planner call.
+8. A learned in-betweening model is added later, only where deterministic interpolation has a measured quality ceiling and sufficient data exists.
 
 This is the smallest architecture that combines the useful ideas in the supplied research while avoiding their stated limitations. The POC began with one expressive hand gesture and one physical pickup; the current revision keeps that calibrated core and extends the same contracts to strikes, paired-arm trajectories, object lifecycles, full-body skills, obstacle-aware motion, and short action sequences.
 
@@ -81,6 +82,7 @@ The replacement POC is end to end and intentionally contract-driven:
 - Supported program families now include gestures, contact pickup, hooks/jabs/crosses/uppercuts, one- and two-arm trajectories, typed object interactions, full-body locomotion/poses/obstacles, and short action sequences.
 - Unsupported or contradictory requests are explicitly rejected rather than silently approximated.
 - The OpenAI planner returns compact semantics. Audited local code expands phase graphs, numeric defaults, contacts, support relationships, and recovery.
+- Motion-bearing social verbs are interpreted as typed observable actions rather than pose aliases. A greeting wave, for example, requires setup, an open hand, frontal side-to-side cycles, sufficient shoulder-relative excursion and direction reversals, then recovery; the contract composes with whole-body motion.
 - The preserved humanoid GLB is calibrated through a rig profile. Clip rotations are rest-relative and exported as GLB 2.0.
 - Arm and leg motion uses analytic IK. All five digits are independently posed.
 - Pickup uses object sockets and phases: reach, preshape, contact, close, lift, hold, recover.

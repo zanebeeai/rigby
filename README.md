@@ -68,6 +68,10 @@ The planner receives the prompt and a typed `SceneManifest`. Its output is a val
 
 The default lightweight OpenAI route uses `gpt-5.6-luna`; a repair or configured fallback can use `gpt-5.6-terra`. `provider: "offline"` invokes the deterministic parser and makes no model call. Local capability parsing remains authoritative when the model contradicts a clearly implemented action.
 
+Motion-bearing verbs pass through an action-semantic layer before primitive expansion. This layer translates the observable meaning of an action, rather than merely extracting a pose or hand shape. For example, `wave hello` becomes an open-hand setup, three frontal side-to-side cycles with explicit direction reversals, and recovery. The same typed wave contract handles left, right, or both hands; size, speed, and repetition language; and concurrent prompts such as `walk forward while waving`. Beckoning uses the same reusable cyclic-action representation with a sagittal trajectory. Model output that collapses either action into a static palm is rejected during semantic validation.
+
+Each interpreted action may also attach deterministic motion obligations to its program. The compiler measures these on the resulting trajectory - in the wave case, shoulder-relative excursion and reversal count - so candidate generation and repair cannot silently erase the defining motion. This is the extension point for future vocabulary: add a language recognizer, a typed phase template, and task-specific measurable obligations, while keeping joint rotations and physical truth out of the language model.
+
 ### 2. Expand smart primitives
 
 The planner selects meaning while the local primitive layer supplies executable structure. Current intent families are:
@@ -75,6 +79,7 @@ The planner selects meaning while the local primitive layer supplies executable 
 | Family | Implemented contract | Typical phases |
 | --- | --- | --- |
 | Gestures | One-handed hand shapes, presentation, holds, forearm-axis shake, and recovery | `present`, `hold`, `shake`, `recover` |
+| Social actions | Greeting waves and beckoning with typed setup, trajectory plane, repetitions, active hands, measurable reversals, and recovery | `move`, `cycle`, `recover` |
 | Grasp | Reach and contact with the default block, articulated closure, lift, hold, and return | `reach`, `preshape`, `contact`, `close`, `lift`, `hold`, `recover` |
 | Strikes | Hooks, jabs, crosses, and uppercuts with side, guard, load, impact path, follow-through, and recovery | `guard`, `load`, `strike`, `follow_through`, `recover` |
 | Composite arms | One- or two-hand task-space paths, circular or oscillating cycles, per-effector orientation, and shared relational constraints | `move`, `cycle`, `recover` |
