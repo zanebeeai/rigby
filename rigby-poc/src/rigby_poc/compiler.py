@@ -12,6 +12,7 @@ from scipy.signal import find_peaks
 from scipy.spatial.transform import Rotation
 
 from .models import (
+    AssertionSpec,
     BonePose,
     BodyAction,
     BodyClimbDirection,
@@ -57,6 +58,7 @@ from .primitives import (
     smoothstep,
     strike_path_target,
     strike_target,
+    thumb_to_fingertip_pose,
     wrist_flourish_amplitude_rad,
 )
 from .quality import (
@@ -69,7 +71,7 @@ from .quality import (
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 RIG_PROFILE = PROJECT_ROOT / "config" / "rig_profiles" / "mesh2motion-human-vrm1.json"
-COMPILER_VERSION = "rigby-compiler-0.3.0"
+COMPILER_VERSION = "rigby-compiler-0.4.0"
 FULL_BODY_STANDING_ROOT_HEIGHT_M = -0.075
 
 
@@ -4336,6 +4338,7 @@ def _compile_full_body(scene: SceneManifest, program: MotionProgram) -> ClipResu
         )
     else:
         metrics["final_root_vertical_speed_m_s"] = 0.0
+    metrics.update(_semantic_cycle_metrics(frames, phase_ranges, program))
     structural_failures: list[str] = []
     if metrics["nan_count"]:
         structural_failures.append("clip contains non-finite transforms")
@@ -4363,6 +4366,7 @@ def _compile_full_body(scene: SceneManifest, program: MotionProgram) -> ClipResu
         structural_failures.append(
             "support foot slides during a planted stance interval"
         )
+    _append_semantic_cycle_failures(program, metrics, structural_failures)
     allows_airborne = horizontal_pose_requested or any(
         primitive.body is not None
         and primitive.body.action in {
@@ -4921,10 +4925,390 @@ def _travel_wheel_elbow_hint(
     )
 
 
+_EGO_NEUTRAL_GAZE = np.asarray([0.0, -0.65, 1.0], dtype=float)
+_EGO_NEUTRAL_GAZE /= np.linalg.norm(_EGO_NEUTRAL_GAZE)
+
+
+def _head_gaze_rotation(target: Vec3) -> Quat:
+    """Aim the canonical egocentric gaze at a world-space target."""
+
+    kinematics = rig_kinematics()
+    neutral = {
+        name: BonePose(rotation=value)
+        for name, value in _identity_pose().items()
+    }
+    head = kinematics.canonical_positions(neutral)["head"]
+    direction = np.asarray(target.as_list(), dtype=float) - head
+    direction /= max(float(np.linalg.norm(direction)), 1e-12)
+    rotation, _ = Rotation.align_vectors(
+        np.asarray([direction]),
+        np.asarray([_EGO_NEUTRAL_GAZE]),
+    )
+    return kinematics.world_delta_quat("head", rotation.as_matrix())
+
+
+def _intra_hand_contact_metrics(
+    frames: list[ClipFrame],
+    phase_ranges: list[dict[str, float | str]],
+    program: MotionProgram,
+) -> dict[str, Any]:
+    contacts = [
+        primitive
+        for primitive in program.primitives
+        if primitive.intra_hand_contact is not None
+    ]
+    gaze_primitives = [
+        primitive
+        for primitive in program.primitives
+        if primitive.gaze_target is not None
+    ]
+    if not contacts and not gaze_primitives:
+        return {}
+    ranges = {
+        str(item.get("label")): (float(item["start_s"]), float(item["end_s"]))
+        for item in phase_ranges
+    }
+    kinematics = rig_kinematics()
+    contact_records: list[dict[str, Any]] = []
+    observed_order: list[str] = []
+    release_separations: list[float] = []
+
+    for primitive in contacts:
+        contact = primitive.intra_hand_contact
+        assert contact is not None
+        interval = ranges.get(primitive.label or "")
+        phase_frames = (
+            [
+                frame
+                for frame in frames
+                if interval is not None
+                and interval[0] - 1e-8 <= frame.time_s <= interval[1] + 1e-8
+            ]
+            if interval is not None
+            else []
+        )
+        closest: tuple[float, ClipFrame, dict[str, np.ndarray]] | None = None
+        for frame in phase_frames:
+            tips = kinematics.fingertip_positions(frame.bones, contact.hand.value)
+            distance = float(
+                np.linalg.norm(
+                    tips[contact.driver_digit.value]
+                    - tips[contact.target_digit.value]
+                )
+            )
+            if closest is None or distance < closest[0]:
+                closest = (distance, frame, tips)
+        minimum_distance = closest[0] if closest is not None else float("inf")
+        non_target_distance = (
+            min(
+                float(
+                    np.linalg.norm(
+                        closest[2][contact.driver_digit.value] - position
+                    )
+                )
+                for digit, position in closest[2].items()
+                if digit
+                not in {
+                    contact.driver_digit.value,
+                    contact.target_digit.value,
+                }
+            )
+            if closest is not None
+            else 0.0
+        )
+        passed = bool(
+            minimum_distance <= contact.maximum_distance_m
+            and minimum_distance < non_target_distance
+        )
+        if passed:
+            observed_order.append(contact.target_digit.value)
+        contact_records.append(
+            {
+                "driver_digit": contact.driver_digit.value,
+                "target_digit": contact.target_digit.value,
+                "phase": primitive.label,
+                "minimum_distance_m": minimum_distance,
+                "maximum_distance_m": contact.maximum_distance_m,
+                "nearest_other_fingertip_m": non_target_distance,
+                "contact_time_s": closest[1].time_s if closest is not None else None,
+                "passed": passed,
+            }
+        )
+
+        release_label = (primitive.label or "").replace("_touch_", "_release_", 1)
+        release_interval = ranges.get(release_label)
+        if release_interval is not None:
+            release_frame = min(
+                frames,
+                key=lambda frame: abs(frame.time_s - release_interval[1]),
+            )
+            release_tips = kinematics.fingertip_positions(
+                release_frame.bones,
+                contact.hand.value,
+            )
+            release_separations.append(
+                float(
+                    np.linalg.norm(
+                        release_tips[contact.driver_digit.value]
+                        - release_tips[contact.target_digit.value]
+                    )
+                )
+            )
+
+    rest_bones = {
+        name: BonePose(rotation=value)
+        for name, value in _identity_pose().items()
+    }
+    rest_head_rotation = kinematics.canonical_world_rotation(rest_bones, "head")
+    gaze_records: list[dict[str, Any]] = []
+    for primitive in gaze_primitives:
+        gaze = primitive.gaze_target
+        assert gaze is not None
+        interval = ranges.get(primitive.label or "")
+        if interval is None:
+            continue
+        frame = min(frames, key=lambda item: abs(item.time_s - interval[1]))
+        positions = kinematics.canonical_positions(frame.bones)
+        if gaze.hand is not None:
+            target = positions[f"{gaze.hand.value}Hand"]
+        else:
+            transform = frame.objects.get(gaze.object_id or "")
+            if transform is None:
+                continue
+            target = np.asarray(transform.translation.as_list(), dtype=float)
+        head_rotation = kinematics.canonical_world_rotation(frame.bones, "head")
+        head_delta = head_rotation @ rest_head_rotation.T
+        forward = head_delta @ _EGO_NEUTRAL_GAZE
+        direction = target - positions["head"]
+        direction /= max(float(np.linalg.norm(direction)), 1e-12)
+        angle = math.degrees(
+            math.acos(float(np.clip(np.dot(forward, direction), -1.0, 1.0)))
+        )
+        gaze_records.append(
+            {
+                "phase": primitive.label,
+                "target_hand": gaze.hand.value if gaze.hand is not None else None,
+                "target_object": gaze.object_id,
+                "angle_deg": angle,
+                "maximum_angle_deg": gaze.maximum_angle_deg,
+                "passed": angle <= gaze.maximum_angle_deg,
+            }
+        )
+
+    return {
+        "intra_hand_contact_expected_order": [
+            primitive.intra_hand_contact.target_digit.value
+            for primitive in contacts
+            if primitive.intra_hand_contact is not None
+        ],
+        "intra_hand_contact_observed_order": observed_order,
+        "intra_hand_contact_count": sum(
+            1 for record in contact_records if record["passed"]
+        ),
+        "intra_hand_contact_records": contact_records,
+        "intra_hand_minimum_release_separation_m": min(
+            release_separations,
+            default=0.0,
+        ),
+        "gaze_target_records": gaze_records,
+        "gaze_max_endpoint_angle_deg": max(
+            (float(record["angle_deg"]) for record in gaze_records),
+            default=0.0,
+        ),
+    }
+
+
+def _append_intra_hand_contact_failures(
+    program: MotionProgram,
+    metrics: dict[str, Any],
+    failures: list[str],
+) -> None:
+    contact_assertion = next(
+        (
+            assertion
+            for assertion in program.assertions
+            if assertion.name == "ordered_intra_hand_contacts"
+        ),
+        None,
+    )
+    if contact_assertion is not None:
+        expected_count = int(round(contact_assertion.threshold or 0.0))
+        observed_count = int(metrics.get("intra_hand_contact_count", 0))
+        expected_order = metrics.get("intra_hand_contact_expected_order", [])
+        observed_order = metrics.get("intra_hand_contact_observed_order", [])
+        if observed_count != expected_count or observed_order != expected_order:
+            failures.append(
+                "ordered fingertip contacts were not completed in the requested sequence"
+            )
+        if float(metrics.get("intra_hand_minimum_release_separation_m", 0.0)) < 0.025:
+            failures.append(
+                "thumb does not visibly separate between successive fingertip contacts"
+            )
+    gaze_assertion = next(
+        (
+            assertion
+            for assertion in program.assertions
+            if assertion.name == "gaze_tracks_active_hand"
+        ),
+        None,
+    )
+    if gaze_assertion is not None and float(
+        metrics.get("gaze_max_endpoint_angle_deg", float("inf"))
+    ) > float(gaze_assertion.threshold or 12.0):
+        failures.append("head/camera gaze does not track the requested hand")
+
+
+def _semantic_cycle_assertion(program: MotionProgram) -> AssertionSpec | None:
+    return next(
+        (
+            assertion
+            for assertion in program.assertions
+            if assertion.name.endswith("_trajectory_reversals")
+        ),
+        None,
+    )
+
+
+def _semantic_cycle_metrics(
+    frames: list[ClipFrame],
+    phase_ranges: list[dict[str, float | str]],
+    program: MotionProgram,
+) -> dict[str, Any]:
+    """Measure the observable path promised by a motion-bearing verb."""
+
+    assertion = _semantic_cycle_assertion(program)
+    if assertion is None:
+        return {}
+    cyclic_primitives = [
+        primitive
+        for primitive in program.primitives
+        if primitive.trajectory == TrajectoryKind.OSCILLATE
+        and primitive.effectors
+        and primitive.parameters.trajectory_cycles > 0.0
+    ]
+    if not cyclic_primitives:
+        return {
+            "semantic_cycle_action": assertion.name.removesuffix(
+                "_trajectory_reversals"
+            ),
+            "semantic_cycle_min_reversal_count": 0,
+            "semantic_cycle_min_excursion_m": 0.0,
+            "semantic_cycle_requested_amplitude_m": 0.0,
+        }
+    labels = {
+        primitive.label or primitive.kind.value for primitive in cyclic_primitives
+    }
+    intervals = [
+        (float(item["start_s"]), float(item["end_s"]))
+        for item in phase_ranges
+        if str(item.get("label")) in labels
+    ]
+    hand_axes: dict[Hand, int] = {}
+    requested_cycles = 0.0
+    requested_amplitude = 0.0
+    for primitive in cyclic_primitives:
+        axis = {
+            TrajectoryPlane.FRONTAL: 0,
+            TrajectoryPlane.SAGITTAL: 1,
+            TrajectoryPlane.HORIZONTAL: 2,
+        }[primitive.trajectory_plane or TrajectoryPlane.FRONTAL]
+        for target in primitive.effectors:
+            hand_axes[target.hand] = axis
+        requested_cycles = max(
+            requested_cycles, primitive.parameters.trajectory_cycles
+        )
+        requested_amplitude = max(
+            requested_amplitude,
+            primitive.parameters.trajectory_amplitude_m,
+        )
+    values = {hand: [] for hand in hand_axes}
+    kinematics = rig_kinematics()
+    for frame in frames:
+        if not any(start <= frame.time_s <= end for start, end in intervals):
+            continue
+        positions = kinematics.canonical_positions(frame.bones)
+        for hand, axis in hand_axes.items():
+            # Measure the path in the moving shoulder frame. World-space
+            # wrist positions are dominated by root travel when someone
+            # waves while walking, which can erase otherwise valid lateral
+            # reversals from the metric.
+            values[hand].append(
+                float(
+                    positions[f"{hand.value}Hand"][axis]
+                    - positions[f"{hand.value}UpperArm"][axis]
+                )
+            )
+
+    per_hand: dict[str, dict[str, float | int]] = {}
+    for hand, samples in values.items():
+        directions: list[int] = []
+        for delta in np.diff(np.asarray(samples, dtype=float)):
+            if abs(float(delta)) < 5e-4:
+                continue
+            direction = 1 if delta > 0.0 else -1
+            if not directions or direction != directions[-1]:
+                directions.append(direction)
+        per_hand[hand.value] = {
+            "reversal_count": max(0, len(directions) - 1),
+            "excursion_m": (
+                float(np.ptp(np.asarray(samples, dtype=float)))
+                if samples
+                else 0.0
+            ),
+        }
+    return {
+        "semantic_cycle_action": assertion.name.removesuffix(
+            "_trajectory_reversals"
+        ),
+        "semantic_cycle_requested_cycles": requested_cycles,
+        "semantic_cycle_requested_amplitude_m": requested_amplitude,
+        "semantic_cycle_min_reversal_count": min(
+            (int(item["reversal_count"]) for item in per_hand.values()),
+            default=0,
+        ),
+        "semantic_cycle_min_excursion_m": min(
+            (float(item["excursion_m"]) for item in per_hand.values()),
+            default=0.0,
+        ),
+        "semantic_cycle_hands": per_hand,
+    }
+
+
+def _append_semantic_cycle_failures(
+    program: MotionProgram,
+    metrics: dict[str, Any],
+    failures: list[str],
+) -> None:
+    assertion = _semantic_cycle_assertion(program)
+    if assertion is None:
+        return
+    required_reversals = int(round(assertion.threshold or 1.0))
+    observed_reversals = int(metrics.get("semantic_cycle_min_reversal_count", 0))
+    if observed_reversals < required_reversals:
+        failures.append(
+            f"{metrics.get('semantic_cycle_action', 'cyclic action')} has "
+            f"{observed_reversals} visible reversals; {required_reversals} required"
+        )
+    requested_amplitude = float(
+        metrics.get("semantic_cycle_requested_amplitude_m", 0.0)
+    )
+    minimum_excursion = max(0.045, requested_amplitude * 0.75)
+    observed_excursion = float(metrics.get("semantic_cycle_min_excursion_m", 0.0))
+    if observed_excursion < minimum_excursion:
+        failures.append(
+            f"{metrics.get('semantic_cycle_action', 'cyclic action')} lateral/path "
+            f"excursion is {observed_excursion:.3f} m; {minimum_excursion:.3f} m required"
+        )
+
+
 def _compile_composite(scene: SceneManifest, program: MotionProgram) -> ClipResult:
     """Compile concurrent, phase-based upper-body end-effector trajectories."""
 
     base = _gesture_idle_pose()
+    dexterous_program = any(
+        primitive.intra_hand_contact is not None
+        for primitive in program.primitives
+    )
     current = base.copy()
     idle_targets = {
         Hand.LEFT: Vec3(x=0.27, y=1.14, z=0.24),
@@ -5011,6 +5395,24 @@ def _compile_composite(scene: SceneManifest, program: MotionProgram) -> ClipResu
                         effector_parameters[effector.hand],
                     )
                 )
+            if primitive.intra_hand_contact is not None:
+                target_pose.update(
+                    thumb_to_fingertip_pose(
+                        primitive.intra_hand_contact.hand,
+                        primitive.intra_hand_contact.target_digit,
+                    )
+                )
+            if primitive.gaze_target is not None:
+                if primitive.gaze_target.hand is not None:
+                    gaze_position = centers[primitive.gaze_target.hand]
+                else:
+                    gaze_object = scene.object_by_id(
+                        primitive.gaze_target.object_id or ""
+                    )
+                    if gaze_object is None:
+                        raise ValueError("gaze target object is not in the scene")
+                    gaze_position = gaze_object.transform.translation
+                target_pose["head"] = _head_gaze_rotation(gaze_position)
         if not recover:
             target_pose["chest"] = Quat(
                 y=math.sin(primitive.parameters.torso_participation * 0.08),
@@ -5146,16 +5548,17 @@ def _compile_composite(scene: SceneManifest, program: MotionProgram) -> ClipResu
                     pose.update(
                         {name: BonePose(rotation=rotation) for name, rotation in arm.items()}
                     )
-                    pose.update(
-                        {
-                            name: BonePose(rotation=rotation)
-                            for name, rotation in hand_pose(
-                                effector.hand,
-                                effector.hand_shape,
-                                effector_parameters[effector.hand],
-                            ).items()
-                        }
-                    )
+                    if not dexterous_program:
+                        pose.update(
+                            {
+                                name: BonePose(rotation=rotation)
+                                for name, rotation in hand_pose(
+                                    effector.hand,
+                                    effector.hand_shape,
+                                    effector_parameters[effector.hand],
+                                ).items()
+                            }
+                        )
             now = elapsed + local_index / fps
             frames.append(
                 ClipFrame(
@@ -5187,6 +5590,8 @@ def _compile_composite(scene: SceneManifest, program: MotionProgram) -> ClipResu
         (primitive.parameters.axial_rotation_amplitude for primitive in program.primitives),
         default=0.0,
     )
+    metrics.update(_intra_hand_contact_metrics(frames, phase_ranges, program))
+    metrics.update(_semantic_cycle_metrics(frames, phase_ranges, program))
     metrics.update(_parallel_forearm_metrics(frames, phase_ranges))
     metrics.update(_safety_metrics(frames))
     travel_hand_shapes = {
@@ -5316,6 +5721,8 @@ def _compile_composite(scene: SceneManifest, program: MotionProgram) -> ClipResu
         structural_failures.append("clip contains non-finite transforms")
     if metrics["joint_limit_violations"]:
         structural_failures.append("clip exceeds a joint limit")
+    _append_intra_hand_contact_failures(program, metrics, structural_failures)
+    _append_semantic_cycle_failures(program, metrics, structural_failures)
     metrics["structural_failures"] = structural_failures
     metrics["structural_valid"] = not structural_failures
     metrics["finger_assertions"] = {

@@ -60,6 +60,16 @@ class HandShape(StrEnum):
     PEACE = "peace"
 
 
+class Digit(StrEnum):
+    """Canonical articulated digit names used by dexterous constraints."""
+
+    THUMB = "thumb"
+    INDEX = "index"
+    MIDDLE = "middle"
+    RING = "ring"
+    LITTLE = "little"
+
+
 class StrikeType(StrEnum):
     HOOK = "hook"
     JAB = "jab"
@@ -632,6 +642,37 @@ class ObjectMotionTarget(Contract):
         return self
 
 
+class IntraHandContactTarget(Contract):
+    """A typed self-contact between two fingertips on one articulated hand."""
+
+    hand: Hand
+    driver_digit: Digit = Digit.THUMB
+    target_digit: Digit
+    maximum_distance_m: Annotated[float, Field(gt=0.0, le=0.03)] = 0.012
+
+    @model_validator(mode="after")
+    def distinct_digits(self) -> "IntraHandContactTarget":
+        if self.driver_digit == self.target_digit:
+            raise ValueError("an intra-hand contact requires two distinct digits")
+        if self.driver_digit != Digit.THUMB:
+            raise ValueError("the current dexterity solver uses the thumb as driver")
+        return self
+
+
+class GazeTarget(Contract):
+    """A semantic look-at target resolved from the generated pose."""
+
+    hand: Hand | None = None
+    object_id: str | None = Field(default=None, max_length=64)
+    maximum_angle_deg: Annotated[float, Field(gt=0.0, le=45.0)] = 12.0
+
+    @model_validator(mode="after")
+    def exactly_one_target(self) -> "GazeTarget":
+        if (self.hand is None) == (self.object_id is None):
+            raise ValueError("gaze requires exactly one hand or object target")
+        return self
+
+
 class MotionPrimitive(Contract):
     kind: PrimitiveKind
     label: str | None = Field(default=None, min_length=1, max_length=64)
@@ -641,6 +682,8 @@ class MotionPrimitive(Contract):
     trajectory: TrajectoryKind | None = None
     trajectory_plane: TrajectoryPlane | None = None
     effectors: list[EffectorTarget] = Field(default_factory=list, max_length=2)
+    intra_hand_contact: IntraHandContactTarget | None = None
+    gaze_target: GazeTarget | None = None
     body: BodyTarget | None = None
     parameters: PrimitiveParameters = Field(default_factory=PrimitiveParameters)
 
@@ -659,6 +702,18 @@ class MotionPrimitive(Contract):
             raise ValueError("body primitives require a body target")
         if self.kind != PrimitiveKind.BODY and self.body is not None and self.kind != PrimitiveKind.RECOVER:
             raise ValueError("body targets are only valid on body or recovery primitives")
+        if self.intra_hand_contact is not None:
+            if self.kind != PrimitiveKind.MOVE:
+                raise ValueError("intra-hand contacts require a move primitive")
+            targeted_hands = {target.hand for target in self.effectors}
+            if self.intra_hand_contact.hand not in targeted_hands:
+                raise ValueError("intra-hand contact hand requires a matching effector")
+        if (
+            self.gaze_target is not None
+            and self.gaze_target.hand is not None
+            and self.gaze_target.hand not in {target.hand for target in self.effectors}
+        ):
+            raise ValueError("hand gaze target requires a matching effector")
         return self
 
 

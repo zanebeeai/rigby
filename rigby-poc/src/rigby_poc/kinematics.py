@@ -65,6 +65,7 @@ class RigKinematics:
             for index, node in enumerate(self.nodes)
             if node.get("name")
         }
+        self.node_by_name = node_by_name
         self.node_by_canonical = {
             canonical: node_by_name[source]
             for canonical, source in profile["bone_map"].items()
@@ -145,6 +146,29 @@ class RigKinematics:
         return {
             canonical: world[node_index][:3, 3].copy()
             for canonical, node_index in self.node_by_canonical.items()
+        }
+
+    def fingertip_positions(
+        self,
+        bones: Mapping[str, BonePose],
+        hand: str,
+    ) -> dict[str, np.ndarray]:
+        """Return exact source-rig leaf pivots for all five fingertips."""
+
+        if hand not in {"left", "right"}:
+            raise ValueError("hand must be left or right")
+        suffix = "l" if hand == "left" else "r"
+        source_stems = {
+            "thumb": "thumb_04_leaf",
+            "index": "index_04_leaf",
+            "middle": "middle_04_leaf",
+            "ring": "ring_04_leaf",
+            "little": "pinky_04_leaf",
+        }
+        world = self.world_matrices(bones)
+        return {
+            digit: world[self.node_by_name[f"{stem}_{suffix}"]][:3, 3].copy()
+            for digit, stem in source_stems.items()
         }
 
     def canonical_world_rotation(self, bones: Mapping[str, BonePose], canonical: str) -> np.ndarray:

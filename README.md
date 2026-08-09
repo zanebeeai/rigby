@@ -34,6 +34,12 @@ Prompt: `Throw up a "hang-ten" sign with your right hand, there should be a swif
 
 ![A multi-phase hang-ten gesture shown from egocentric and orbit cameras](rigby-poc/docs/media/hang-ten.gif)
 
+### Ordered fingertip counting
+
+Prompt: `use your right thumb to one by one count each of the fingers on your right hand (while looking at it)`
+
+![Ordered right-thumb fingertip counting shown from egocentric and orbit cameras](rigby-poc/docs/media/finger-count.gif)
+
 The exact result IDs, prompts, durations, and GIF settings are preserved in [the demo manifest](rigby-poc/docs/media/demo-manifest.json).
 
 ## The pipeline
@@ -68,6 +74,12 @@ The planner receives the prompt and a typed `SceneManifest`. Its output is a val
 
 The default lightweight OpenAI route uses `gpt-5.6-luna`; a repair or configured fallback can use `gpt-5.6-terra`. `provider: "offline"` invokes the deterministic parser and makes no model call. Local capability parsing remains authoritative when the model contradicts a clearly implemented action.
 
+Motion-bearing verbs pass through an action-semantic layer before primitive expansion. This layer translates the observable meaning of an action, rather than merely extracting a pose or hand shape. For example, `wave hello` becomes an open-hand setup, three frontal side-to-side cycles with explicit direction reversals, and recovery. The same typed wave contract handles left, right, or both hands; size, speed, and repetition language; and concurrent prompts such as `walk forward while waving`. Beckoning uses the same reusable cyclic-action representation with a sagittal trajectory. Model output that collapses either action into a static palm is rejected during semantic validation.
+
+Each interpreted action may also attach deterministic motion obligations to its program. The compiler measures these on the resulting trajectory - in the wave case, shoulder-relative excursion and reversal count - so candidate generation and repair cannot silently erase the defining motion. This is the extension point for future vocabulary: add a language recognizer, a typed phase template, and task-specific measurable obligations, while keeping joint rotations and physical truth out of the language model.
+
+Dexterous language uses the same contract at digit scale. An ordered request such as `count each finger with your right thumb while looking at it` becomes a presented hand, typed thumb-to-index/middle/ring/little contacts, an open separation between every contact, concurrent gaze at the active hand, and recovery. The rig compiler uses calibrated articulated-finger poses, measures exact fingertip leaf-pivot distances and contact order, and verifies the head-mounted gaze angle. Incidental words such as `looking` therefore cannot replace the requested hand action with a head-only pose, while candidate generation and repair must preserve the contacted digits and their order.
+
 ### 2. Expand smart primitives
 
 The planner selects meaning while the local primitive layer supplies executable structure. Current intent families are:
@@ -75,6 +87,8 @@ The planner selects meaning while the local primitive layer supplies executable 
 | Family | Implemented contract | Typical phases |
 | --- | --- | --- |
 | Gestures | One-handed hand shapes, presentation, holds, forearm-axis shake, and recovery | `present`, `hold`, `shake`, `recover` |
+| Social actions | Greeting waves and beckoning with typed setup, trajectory plane, repetitions, active hands, measurable reversals, and recovery | `move`, `cycle`, `recover` |
+| Dexterous actions | Ordered same-hand thumb/fingertip contacts, contact-release sequencing, concurrent hand gaze, and measured contact/gaze assertions | `move`, `recover` |
 | Grasp | Reach and contact with the default block, articulated closure, lift, hold, and return | `reach`, `preshape`, `contact`, `close`, `lift`, `hold`, `recover` |
 | Strikes | Hooks, jabs, crosses, and uppercuts with side, guard, load, impact path, follow-through, and recovery | `guard`, `load`, `strike`, `follow_through`, `recover` |
 | Composite arms | One- or two-hand task-space paths, circular or oscillating cycles, per-effector orientation, and shared relational constraints | `move`, `cycle`, `recover` |
@@ -259,6 +273,7 @@ uv run python -m evals.render_demo_gif 006012-throw-a-left-hook docs/media/left-
 uv run python -m evals.render_demo_gif 006260-throw-a-right-jab docs/media/right-jab.gif
 uv run python -m evals.render_demo_gif 006277-step-over-the-hurdle-with-your-right-foot docs/media/step-over-hurdle.gif
 uv run python -m evals.render_demo_gif 005970-throw-up-a-hang-ten-sign-with-your-right-hand-th docs/media/hang-ten.gif
+uv run python -m evals.render_demo_gif 006339-use-your-right-thumb-to-one-by-one-count-each-of docs/media/finger-count.gif
 ```
 
 The renderer samples the whole clip at 8 FPS, reuses the production capture page, verifies every raw canvas is 1600×900, combines 480-pixel-wide ego/orbit panels, and encodes a 96-color looping GIF with FFmpeg.

@@ -174,6 +174,11 @@ compare every measured normalized curl with the requested hand shape's reference
 and little-finger curl and high index, middle, and ring curl. Reject when these measurements contradict the gesture.
 A thumbs-up requires an extended thumb with the other four fingers curled; a peace/victory sign requires extended,
 separated index and middle fingers with the ring and little fingers curled.
+For ordered intra-hand dexterity, require the named driver digit to make visibly distinct fingertip contacts in the
+requested order, with a readable separation between contacts rather than one held pinch. Use the chronological
+thumb-to-digit tiles and the measured fingertip-distance records together. If the request says to look at the hand,
+require the head-mounted view to track that hand naturally while orbit evidence confirms the head turn; reject a
+head-only substitute, wrong order, simultaneous collapse, skipped fingertip, or static pinch.
 When the request asks for a shake or back-and-forth motion, require visible repeated direction reversals during
 that phase, roughly the requested number of beats, and a clean return to the relaxed default after it. For a
 hang-ten/shaka shake, the oscillation must be forearm pronation/supination about the forearm's long axis. Penalize
@@ -280,6 +285,9 @@ hang-ten/shaka shake should rotate through forearm pronation/supination about th
 stays stable; penalize wrist flexion/extension or side-to-side deviation masquerading as the shake. For a hook,
 prefer a closed fist moving through a lateral curved arc with a bent elbow, guarded opposite hand, torso drive,
 follow-through, and clean recovery; penalize a straight extension or merely crossed forearms.
+For ordered intra-hand dexterity, compare every named thumb-to-fingertip contact in chronological order and require
+visible release between contacts. Prefer concurrent natural gaze at the hand when requested; reject a held pinch,
+skipped or reordered digit, all-at-once closure, or head motion that substitutes for the finger action.
 For a basketball travel signal, require closed fists across the chest near the opposite elbows and near-parallel
 forearms rolling as one coupled pair around a shared cross-body axis. Prefer clear repeated exchanges of over/under
 and front/back order with persistent clearance, the requested repetitions, and a clean recovery. Reject two
@@ -360,6 +368,9 @@ axial_rotation_amplitude_delta changes visible pronation/supination about each f
 lateral, wrist, and elbow deltas apply symmetrically to every active effector. Use axial rotation—not wrist bending—
 when the request calls for rolling forearms. Preserve limb count, relative phase, path type, and cycle count. Prefer
 the smallest changes that directly address the cited visual failures.
+For ordered dexterous motion, preserve every typed thumb-to-fingertip contact, its order, the open releases between
+contacts, and any hand-gaze target. Repairs may restage the arm or timing but may not replace the sequence with one
+pinch or change the contacted digits.
 For full-body motion, present_duration_scale changes body-action timing and recover_duration_scale changes the final
 balanced settle; preserve action type, root direction/distance, turn direction, lead side, height, repetition count,
 continuous rotation axis/degrees/support mode, and every authored grounded-pose direction. A pose repair may adjust timing/easing but must not swap bend direction,
@@ -399,6 +410,10 @@ Unbounded values are descriptive context, and small in-bound differences are not
 preference. Cite candidate-prefixed snapshot ids for the decisive visual
 evidence. When the request includes a repeated shake, score its visible direction reversals, requested beat count,
 and return to default as explicit semantic requirements rather than treating all matching endpoint poses as equal.
+For an ordered thumb-to-fingertip action, require distinct contacts in the requested sequence with open separation
+between them; reject a single held pinch, wrong order, skipped digit, or all fingers closing together. When looking
+at the hand is requested, require the head/camera gaze to follow the active hand concurrently instead of replacing
+the dexterous action. Treat bounded fingertip-distance, release-separation, and gaze-angle diagnostics as decisive.
 For a hang-ten/shaka, require forearm pronation/supination about the forearm's long axis with a stable wrist joint;
 penalize flexion/extension or side-to-side wrist deviation used as the oscillation. For a punch, require a closed
 fist, readable guard/load, decisive strike, controlled follow-through, and recovery. A hook specifically requires
@@ -1064,6 +1079,12 @@ class VLMJudge:
                 "max_forearm_twist_rad",
                 "self_collision_frames",
                 "active_hand_visibility_fraction",
+                "intra_hand_contact_expected_order",
+                "intra_hand_contact_observed_order",
+                "intra_hand_contact_count",
+                "intra_hand_contact_records",
+                "intra_hand_minimum_release_separation_m",
+                "gaze_max_endpoint_angle_deg",
                 "max_angular_velocity_rad_s",
                 "max_angular_acceleration_rad_s2",
                 "max_angular_jerk_rad_s3",

@@ -26,7 +26,7 @@ from rigby_poc.planner import plan_motion
         ("turn left then throw a right jab", (Intent.FULL_BODY, Intent.STRIKE)),
         (
             "wave with your right hand then kick forward with your left leg",
-            (Intent.GESTURE, Intent.FULL_BODY),
+            (Intent.COMPOSITE, Intent.FULL_BODY),
         ),
         (
             "walk forward two steps then point forward with your left hand",

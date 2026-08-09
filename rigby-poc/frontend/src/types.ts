@@ -76,6 +76,17 @@ export interface MotionPrimitive {
     phase_offset_cycles?: number;
     hand_shape?: string;
   }>;
+  intra_hand_contact?: {
+    hand: Handedness;
+    driver_digit: "thumb" | "index" | "middle" | "ring" | "little";
+    target_digit: "thumb" | "index" | "middle" | "ring" | "little";
+    maximum_distance_m: number;
+  } | null;
+  gaze_target?: {
+    hand?: Handedness | null;
+    object_id?: string | null;
+    maximum_angle_deg: number;
+  } | null;
   body?: {
     action: "hold" | "step" | "walk" | "run" | "turn" | "crouch" | "jump" | "kick" | "dance" | "climb" | "rotate" | "pose";
     direction_x: number;
