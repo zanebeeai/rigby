@@ -323,6 +323,27 @@ def motion_diagnostics(payload: dict[str, Any]) -> dict[str, Any]:
         "active_hands": {
             "value": metrics.get("active_hands"),
         },
+        "ordered_intra_hand_contact_count": {
+            "value": metrics.get("intra_hand_contact_count"),
+            "minimum_reference": len(
+                metrics.get("intra_hand_contact_expected_order", []) or []
+            ),
+        },
+        "ordered_intra_hand_contact_sequence": {
+            "value": metrics.get("intra_hand_contact_observed_order"),
+            "required_sequence": metrics.get("intra_hand_contact_expected_order"),
+        },
+        "intra_hand_contact_records": {
+            "value": metrics.get("intra_hand_contact_records"),
+        },
+        "intra_hand_release_separation_m": {
+            "value": metrics.get("intra_hand_minimum_release_separation_m"),
+            "minimum_reference": 0.025,
+        },
+        "gaze_max_endpoint_angle_deg": {
+            "value": metrics.get("gaze_max_endpoint_angle_deg"),
+            "maximum_reference": 12.0,
+        },
         "trajectory_cycles": {
             "value": metrics.get("trajectory_cycles"),
         },
@@ -843,6 +864,16 @@ def phase_sampling_points(payload: dict[str, Any]) -> list[dict[str, float | str
         for primitive in primitives
         if isinstance(primitive, dict) and primitive.get("kind") == "body"
     ]
+    primitive_by_label = {
+        str(primitive.get("label")): primitive
+        for primitive in primitives
+        if isinstance(primitive, dict) and primitive.get("label")
+    }
+    dexterous_program = any(
+        isinstance(primitive, dict)
+        and isinstance(primitive.get("intra_hand_contact"), dict)
+        for primitive in primitives
+    )
     body_primitive_index = 0
     metrics = clip.get("metrics") if isinstance(clip.get("metrics"), dict) else {}
     obstacle_records = (
@@ -1015,7 +1046,28 @@ def phase_sampling_points(payload: dict[str, Any]) -> list[dict[str, float | str
         occurrence[kind] = occurrence.get(kind, 0) + 1
         suffix = "" if occurrence[kind] == 1 else f"_{occurrence[kind]}"
         phase_fractions = fractions[kind]
-        if kind == "body" and body_primitive_index < len(body_primitives):
+        phase_label = str(item.get("label", ""))
+        phase_primitive = primitive_by_label.get(phase_label, {})
+        if kind == "move" and dexterous_program:
+            contact = phase_primitive.get("intra_hand_contact")
+            if isinstance(contact, dict):
+                suffix = ""
+                phase_fractions = (
+                    (
+                        0.98,
+                        "thumb_to_"
+                        + str(contact.get("target_digit", "fingertip")),
+                    ),
+                )
+            elif occurrence[kind] == 1:
+                phase_fractions = ((0.90, "dexterous_hand_presented"),)
+            else:
+                # Open release phases are represented by the spacing between
+                # consecutive contact tiles. Capturing three generic samples
+                # from every release would spend most of the VLM payload on
+                # near-duplicate poses and obscure the ordered contacts.
+                phase_fractions = ()
+        elif kind == "body" and body_primitive_index < len(body_primitives):
             primitive = body_primitives[body_primitive_index]
             body_primitive_index += 1
             body = primitive.get("body") if isinstance(primitive.get("body"), dict) else {}
@@ -1186,6 +1238,8 @@ def phase_sampling_points(payload: dict[str, Any]) -> list[dict[str, float | str
                     (0.50, "body_midpoint"),
                     (0.90, "body_end"),
                 )
+        elif kind == "recover" and dexterous_program:
+            phase_fractions = ((0.90, "dexterous_recovered"),)
         elif kind == "recover" and full_body_program:
             phase_fractions = (
                 (0.10, "recover_start"),

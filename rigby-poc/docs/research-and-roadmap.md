@@ -83,6 +83,7 @@ The replacement POC is end to end and intentionally contract-driven:
 - Unsupported or contradictory requests are explicitly rejected rather than silently approximated.
 - The OpenAI planner returns compact semantics. Audited local code expands phase graphs, numeric defaults, contacts, support relationships, and recovery.
 - Motion-bearing social verbs are interpreted as typed observable actions rather than pose aliases. A greeting wave, for example, requires setup, an open hand, frontal side-to-side cycles, sufficient shoulder-relative excursion and direction reversals, then recovery; the contract composes with whole-body motion.
+- Ordered same-hand dexterity is represented as typed driver-digit/target-digit contacts with releases between them and optional concurrent gaze. The compiler verifies source-rig fingertip distances, requested contact order, inter-contact separation, and head-mounted gaze rather than asking the VLM to infer physical contact from pixels alone.
 - The preserved humanoid GLB is calibrated through a rig profile. Clip rotations are rest-relative and exported as GLB 2.0.
 - Arm and leg motion uses analytic IK. All five digits are independently posed.
 - Pickup uses object sockets and phases: reach, preshape, contact, close, lift, hold, recover.

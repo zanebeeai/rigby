@@ -23,6 +23,7 @@ from .models import (
     BodyRotationMode,
     BodySupportMode,
     BodyTarget,
+    Digit,
     EffectorTarget,
     GestureDepth,
     GestureHeight,
@@ -30,8 +31,10 @@ from .models import (
     GestureMotionProfile,
     GestureStyle,
     GestureTiming,
+    GazeTarget,
     Hand,
     HandShape,
+    IntraHandContactTarget,
     Intent,
     MotionPrimitive,
     MotionProgram,
@@ -90,6 +93,20 @@ class CyclicUpperBodyActionSemantics:
     torso_participation: float = 0.12
 
 
+@dataclass(frozen=True)
+class SequentialDigitActionSemantics:
+    """Observable contract for ordered fingertip-to-fingertip actions."""
+
+    name: str
+    hand: Hand
+    driver_digit: Digit
+    target_digits: tuple[Digit, ...]
+    gaze_at_hand: bool
+    setup_duration_s: float
+    touch_duration_s: float
+    release_duration_s: float
+
+
 class GenericEffectorSelection(BaseModel):
     """One normalized hand target authored by the semantic planner."""
 
@@ -123,6 +140,8 @@ class GenericSegmentSelection(BaseModel):
     axial_rotation_amplitude: float = Field(default=0.0, ge=0.0, le=1.0)
     torso_participation: float = Field(default=0.2, ge=0.0, le=1.0)
     effectors: list[GenericEffectorSelection] = Field(min_length=1, max_length=2)
+    intra_hand_contact: IntraHandContactTarget | None = None
+    gaze_target: GazeTarget | None = None
 
     @model_validator(mode="after")
     def segment_consistent(self) -> "GenericSegmentSelection":
@@ -132,6 +151,17 @@ class GenericSegmentSelection(BaseModel):
         cyclic = self.trajectory in {TrajectoryKind.CIRCLE, TrajectoryKind.OSCILLATE}
         if cyclic and (self.trajectory_cycles <= 0.0 or self.trajectory_amplitude_m <= 0.0):
             raise ValueError("cyclic trajectories require positive cycles and amplitude")
+        if self.intra_hand_contact is not None:
+            if self.trajectory != TrajectoryKind.LINEAR:
+                raise ValueError("intra-hand contacts require a linear transition")
+            if self.intra_hand_contact.hand not in set(hands):
+                raise ValueError("intra-hand contact hand requires a matching effector")
+        if (
+            self.gaze_target is not None
+            and self.gaze_target.hand is not None
+            and self.gaze_target.hand not in set(hands)
+        ):
+            raise ValueError("hand gaze target requires a matching effector")
         return self
 
 
@@ -354,6 +384,8 @@ def _composite_program(
                 trajectory=segment.trajectory,
                 trajectory_plane=segment.trajectory_plane,
                 effectors=effectors,
+                intra_hand_contact=segment.intra_hand_contact,
+                gaze_target=segment.gaze_target,
                 parameters=PrimitiveParameters(
                     duration_s=segment.duration_s,
                     easing=segment.easing,
@@ -397,6 +429,30 @@ def _composite_program(
             AssertionSpec(
                 name=f"{cyclic_semantics.name}_trajectory_reversals",
                 threshold=max(1.0, cyclic_semantics.cycles * 2.0 - 2.0),
+            )
+        )
+    digit_contacts = [
+        primitive.intra_hand_contact
+        for primitive in primitives
+        if primitive.intra_hand_contact is not None
+    ]
+    if digit_contacts:
+        assertions.append(
+            AssertionSpec(
+                name="ordered_intra_hand_contacts",
+                threshold=float(len(digit_contacts)),
+            )
+        )
+    if any(primitive.gaze_target is not None for primitive in primitives):
+        maximum_gaze_error = max(
+            primitive.gaze_target.maximum_angle_deg
+            for primitive in primitives
+            if primitive.gaze_target is not None
+        )
+        assertions.append(
+            AssertionSpec(
+                name="gaze_tracks_active_hand",
+                threshold=maximum_gaze_error,
             )
         )
     return MotionProgram(
@@ -980,6 +1036,137 @@ def _cyclic_action_segments(
             torso_participation=semantics.torso_participation,
         ),
     ]
+
+
+def _interpret_sequential_digit_action(
+    text: str,
+) -> SequentialDigitActionSemantics | None:
+    """Interpret ordered same-hand fingertip actions before incidental gaze."""
+
+    lower = text.lower()
+    if not re.search(r"\bthumb\b", lower) or not re.search(
+        r"\b(?:finger|fingertip)s?\b", lower
+    ):
+        return None
+    ordered = bool(
+        re.search(
+            r"\b(?:count|one[- ]by[- ]one|one at a time|in (?:sequence|order)|"
+            r"successively|each|every|all)\b",
+            lower,
+        )
+    )
+    contact_verb = bool(re.search(r"\b(?:count|touch|tap|press)\w*\b", lower))
+    if not ordered or not contact_verb:
+        return None
+
+    driver_match = re.search(r"\b(left|right)\s+thumb\b", lower)
+    hand = Hand(driver_match.group(1)) if driver_match else _requested_upper_body_hands(text)[0]
+    counted_hand = re.search(
+        r"\b(?:finger|fingertip)s?\s+(?:on|of)\s+(?:your\s+)?(left|right)\s+hand\b",
+        lower,
+    )
+    if counted_hand is not None and Hand(counted_hand.group(1)) != hand:
+        return None
+
+    digit_patterns = (
+        (Digit.INDEX, r"\bindex(?:\s+finger|\s+fingertip)?\b"),
+        (Digit.MIDDLE, r"\bmiddle(?:\s+finger|\s+fingertip)?\b"),
+        (Digit.RING, r"\bring(?:\s+finger|\s+fingertip)?\b"),
+        (Digit.LITTLE, r"\b(?:little|pinky|pinkie)(?:\s+finger|\s+fingertip)?\b"),
+    )
+    mentioned = sorted(
+        (
+            (match.start(), digit)
+            for digit, pattern in digit_patterns
+            if (match := re.search(pattern, lower)) is not None
+        ),
+        key=lambda item: item[0],
+    )
+    targets = tuple(digit for _, digit in mentioned) or (
+        Digit.INDEX,
+        Digit.MIDDLE,
+        Digit.RING,
+        Digit.LITTLE,
+    )
+    quick = bool(re.search(r"\b(?:quick|quickly|fast|rapid|rapidly|briskly)\b", lower))
+    slow = bool(re.search(r"\b(?:slow|slowly|deliberate|deliberately|carefully)\b", lower))
+    return SequentialDigitActionSemantics(
+        name="finger_count" if re.search(r"\bcount\w*\b", lower) else "finger_taps",
+        hand=hand,
+        driver_digit=Digit.THUMB,
+        target_digits=targets,
+        gaze_at_hand=bool(
+            re.search(
+                r"\b(?:look|looking|watch|watching|stare|staring)\b|"
+                r"\beyes?\s+(?:on|at|toward|towards)\b",
+                lower,
+            )
+        ),
+        setup_duration_s=0.48 if quick else 0.82 if slow else 0.64,
+        touch_duration_s=0.34 if quick else 0.62 if slow else 0.46,
+        release_duration_s=0.20 if quick else 0.38 if slow else 0.28,
+    )
+
+
+def _sequential_digit_action_segments(
+    semantics: SequentialDigitActionSemantics,
+) -> list[GenericSegmentSelection]:
+    side = 1.0 if semantics.hand == Hand.LEFT else -1.0
+    gaze_target = (
+        GazeTarget(hand=semantics.hand, maximum_angle_deg=12.0)
+        if semantics.gaze_at_hand
+        else None
+    )
+
+    def effector(shape: HandShape) -> GenericEffectorSelection:
+        return GenericEffectorSelection(
+            hand=semantics.hand,
+            target_x=side * 0.38,
+            target_y=0.55,
+            target_z=0.86,
+            elbow_swivel=side * 0.42,
+            wrist_pitch=-0.10,
+            wrist_yaw=side * 0.08,
+            hand_shape=shape,
+        )
+
+    segments = [
+        GenericSegmentSelection(
+            label=f"{semantics.name}_prepare",
+            duration_s=semantics.setup_duration_s,
+            easing=0.80,
+            torso_participation=0.08,
+            effectors=[effector(HandShape.OPEN)],
+            gaze_target=gaze_target,
+        )
+    ]
+    for target_digit in semantics.target_digits:
+        segments.extend(
+            (
+                GenericSegmentSelection(
+                    label=f"{semantics.name}_touch_{target_digit.value}",
+                    duration_s=semantics.touch_duration_s,
+                    easing=0.78,
+                    torso_participation=0.08,
+                    effectors=[effector(HandShape.PINCH)],
+                    intra_hand_contact=IntraHandContactTarget(
+                        hand=semantics.hand,
+                        driver_digit=semantics.driver_digit,
+                        target_digit=target_digit,
+                    ),
+                    gaze_target=gaze_target,
+                ),
+                GenericSegmentSelection(
+                    label=f"{semantics.name}_release_{target_digit.value}",
+                    duration_s=semantics.release_duration_s,
+                    easing=0.82,
+                    torso_participation=0.08,
+                    effectors=[effector(HandShape.OPEN)],
+                    gaze_target=gaze_target,
+                ),
+            )
+        )
+    return segments
 
 
 def _gesture_phase_parameters(
@@ -3682,6 +3869,17 @@ class OfflinePlanner:
                 model="rule-planner-v6",
                 model_calls=0,
             )
+        digit_action = _interpret_sequential_digit_action(text)
+        if digit_action is not None:
+            return PlannerOutcome(
+                program=_composite_program(
+                    text,
+                    _sequential_digit_action_segments(digit_action),
+                ),
+                provider="offline",
+                model="rule-planner-v8",
+                model_calls=0,
+            )
         body_segments = self._body_segments(text, request.scene)
         if body_segments:
             return PlannerOutcome(
@@ -3878,6 +4076,14 @@ class OpenAIPlanner:
             return preflight
         if preflight.program.intent == Intent.SEQUENCE:
             return preflight
+        if any(
+            primitive.intra_hand_contact is not None
+            for primitive in preflight.program.primitives
+        ):
+            # Ordered digit contacts and gaze are a calibrated executable
+            # graph. Keep the model from flattening them into a static pinch
+            # or interpreting incidental "looking" as the primary action.
+            return preflight
         if preflight.program.intent == Intent.FULL_BODY and any(
             str(primitive.label or "").startswith(
                 (
@@ -3984,6 +4190,10 @@ class OpenAIPlanner:
             "Never reduce a motion-bearing verb to a static hand shape: a hello/goodbye wave "
             "must raise an open hand, perform repeated frontal side-to-side oscillations with visible direction reversals, "
             "and recover; beckoning similarly requires repeated sagittal motion. Encode requested repetitions explicitly. "
+            "Dexterous same-hand requests must preserve ordered digit contacts rather than becoming one static pinch: "
+            "use intra_hand_contact on a linear composite segment for every requested thumb-to-fingertip touch, in the "
+            "stated order, with an open release segment between touches. When the request says to look at or watch the "
+            "hand, attach gaze_target to the same hand concurrently instead of replacing the hand action with a head pose. "
             "Composite segments run "
             "sequentially, while all effectors inside one segment move concurrently. Use normalized body coordinates: "
             "target_x -1 is the avatar's right and +1 is the avatar's left; target_y -1 is low and +1 high; "
@@ -4235,10 +4445,47 @@ class OpenAIPlanner:
                     f"{cyclic_semantics.trajectory_plane.value} oscillation cycles "
                     "with the requested active hand shape"
                 )
+        digit_semantics = _interpret_sequential_digit_action(program.source_text)
+        if digit_semantics is not None:
+            contacts = [
+                primitive.intra_hand_contact
+                for primitive in program.primitives
+                if primitive.intra_hand_contact is not None
+            ]
+            actual_targets = tuple(contact.target_digit for contact in contacts)
+            if actual_targets != digit_semantics.target_digits or any(
+                contact.hand != digit_semantics.hand
+                or contact.driver_digit != digit_semantics.driver_digit
+                for contact in contacts
+            ):
+                expected = ", ".join(
+                    digit.value for digit in digit_semantics.target_digits
+                )
+                raise ValueError(
+                    "ordered dexterous action requires thumb contacts with "
+                    f"{expected} on the {digit_semantics.hand.value} hand"
+                )
+            if digit_semantics.gaze_at_hand and not all(
+                primitive.gaze_target is not None
+                and primitive.gaze_target.hand == digit_semantics.hand
+                for primitive in program.primitives
+                if primitive.kind != PrimitiveKind.RECOVER
+            ):
+                raise ValueError(
+                    "dexterous action requires concurrent gaze at the active hand"
+                )
         ids = {item.id for item in scene.objects}
         for primitive in program.primitives:
             if primitive.object_id is not None and primitive.object_id not in ids:
                 raise ValueError(f"unknown object id: {primitive.object_id}")
+            if (
+                primitive.gaze_target is not None
+                and primitive.gaze_target.object_id is not None
+                and primitive.gaze_target.object_id not in ids
+            ):
+                raise ValueError(
+                    f"unknown gaze object id: {primitive.gaze_target.object_id}"
+                )
         if program.intent == Intent.COMPOSITE:
             if len(program.primitives) > 13:
                 raise ValueError("composite program exceeds the bounded segment count")

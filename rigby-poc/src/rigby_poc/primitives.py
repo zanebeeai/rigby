@@ -6,7 +6,7 @@ from dataclasses import dataclass
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from .models import Hand, HandShape, PrimitiveKind, PrimitiveParameters, Quat, StrikeType, Vec3
+from .models import Digit, Hand, HandShape, PrimitiveKind, PrimitiveParameters, Quat, StrikeType, Vec3
 
 
 FINGERS = ("Thumb", "Index", "Middle", "Ring", "Little")
@@ -61,6 +61,58 @@ HAND_SHAPES: dict[HandShape, HandShapeDefinition] = {
         curls={"Thumb": 0.58, "Index": 0.03, "Middle": 0.03, "Ring": 1.0, "Little": 0.98},
         splay={"Thumb": 0.0, "Index": 0.28, "Middle": -0.20, "Ring": 0.0, "Little": 0.0},
         thumb_opposition=0.78,
+    ),
+}
+
+
+# Rig-calibrated fingertip contact solutions. Each tuple contains thumb curl
+# for its three joints, thumb opposition/splay, target-digit curl for its
+# three joints, and target-digit splay. The values were solved against the
+# exact source-rig leaf pivots and mirror cleanly across hands.
+_THUMB_TO_FINGERTIP_POSES: dict[Digit, tuple[float, ...]] = {
+    Digit.INDEX: (
+        0.27008303,
+        0.44327816,
+        0.44546741,
+        0.82239992,
+        0.58439503,
+        0.64051348,
+        0.85738130,
+        0.63456749,
+        -0.13855365,
+    ),
+    Digit.MIDDLE: (
+        0.34082218,
+        0.48070119,
+        0.45648593,
+        0.53572823,
+        0.58814504,
+        0.67614544,
+        0.94740559,
+        0.70577023,
+        0.03812296,
+    ),
+    Digit.RING: (
+        0.49078182,
+        0.54663667,
+        0.46862664,
+        0.26541756,
+        0.49665632,
+        0.72569372,
+        0.97094083,
+        0.71688335,
+        0.05406851,
+    ),
+    Digit.LITTLE: (
+        0.65433759,
+        0.62303992,
+        0.48485766,
+        0.08804874,
+        0.38019840,
+        0.84048706,
+        1.02559420,
+        0.71276550,
+        -0.18855832,
     ),
 }
 
@@ -184,6 +236,34 @@ def hand_pose(
             if finger == "Thumb" and index == 0:
                 opposition = (definition.thumb_opposition * 0.7 + parameters.thumb_opposition * 0.3) * 0.75 * side
             result[_bone_key(hand, finger, segment)] = quat_euler(curl_angle, opposition, splay_angle)
+    return result
+
+
+def thumb_to_fingertip_pose(
+    hand: Hand,
+    target_digit: Digit,
+) -> dict[str, Quat]:
+    """Return a smoothable articulated pose with thumb-tip contact."""
+
+    if target_digit not in _THUMB_TO_FINGERTIP_POSES:
+        raise ValueError(f"thumb contact is not calibrated for {target_digit.value}")
+    values = _THUMB_TO_FINGERTIP_POSES[target_digit]
+    side = 1.0 if hand == Hand.LEFT else -1.0
+    result = hand_pose(hand, HandShape.OPEN, PrimitiveParameters())
+    result[f"{hand.value}ThumbMetacarpal"] = quat_euler(
+        values[0],
+        side * values[3],
+        side * values[4],
+    )
+    result[f"{hand.value}ThumbProximal"] = quat_euler(values[1])
+    result[f"{hand.value}ThumbDistal"] = quat_euler(values[2])
+    title = target_digit.value.title()
+    for index, segment in enumerate(("Proximal", "Intermediate", "Distal")):
+        result[f"{hand.value}{title}{segment}"] = quat_euler(
+            values[5 + index],
+            0.0,
+            side * values[8] if index == 0 else 0.0,
+        )
     return result
 
 
