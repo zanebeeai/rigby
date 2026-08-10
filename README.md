@@ -6,6 +6,23 @@ This revision is an end-to-end authoring system rather than a direct text-to-joi
 
 > **Status:** research POC. Rigby has a useful procedural vocabulary and a fully inspectable generation loop, but it is not yet a general text-to-motion model and should return a typed failure for motions outside its implemented contracts.
 
+## Launch after cloning
+
+Install Python 3.12, [`uv`](https://docs.astral.sh/uv/), Node.js 20.19+, npm, and Google Chrome. From the repository root, run:
+
+```powershell
+Set-Location rigby-poc
+Copy-Item .env.example .env  # Add OPENAI_API_KEY to this file
+uv sync --extra dev --link-mode copy
+Set-Location frontend
+npm ci
+npm run build
+Set-Location ..
+uv run rigby-poc
+```
+
+Open [http://127.0.0.1:8000](http://127.0.0.1:8000).
+
 ## Example results
 
 Each recording below replays the same saved clip in the 94-degree egocentric camera used by the judge and in a diagnostic orbit camera. The GIFs are documentation artifacts; the original clips run at 30 FPS and remain editable in Motion Studio.
@@ -150,41 +167,6 @@ Human ratings are not part of current generation. The final frozen 10-pair calib
 ### 8. Edit, inspect, replay, and export
 
 The selected clip opens directly in Motion Studio. The UI provides synchronized egocentric/orbit playback, timeline scrubbing, prompt and phase inspection, metrics, parameter controls, provenance, result history, and GLB export. Parameter changes recompile through local code without another planning call.
-
-## Quick start
-
-### Requirements
-
-- Python 3.12
-- [`uv`](https://docs.astral.sh/uv/)
-- Node.js 20.19+ and npm
-- Google Chrome for evidence capture
-- FFmpeg only if regenerating documentation GIFs
-- An OpenAI API key for model-backed planning and judging; offline planning and most tests do not require one
-
-### Install and run
-
-From the repository root:
-
-```powershell
-Push-Location rigby-poc
-uv sync --extra dev
-Push-Location frontend
-npm ci
-npm run build
-Pop-Location
-uv run rigby-poc
-```
-
-Open [http://127.0.0.1:8000](http://127.0.0.1:8000). Interactive API documentation is available at `/docs`.
-
-Rigby looks for `OPENAI_API_KEY` in `rigby-poc/.env` and then the repository-root `.env`. Never commit either file. Start from `.env.example` only when you do not already have a workspace `.env`:
-
-```powershell
-Copy-Item .env.example .env
-```
-
-To avoid model spend while developing planner/compiler behavior, submit `provider: "offline"` through the API or set `RIGBY_PLANNER_MODE=offline`. The autonomous visual judge still requires an API key when a full flywheel run reaches the judging stage.
 
 ## Configuration
 
