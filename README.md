@@ -1,6 +1,6 @@
 # Rigby
 
-Rigby is an agentic, constraint-aware proof of concept for turning natural-language instructions into editable humanoid animation. It plans a typed motion program, expands it through deterministic smart primitives, compiles a full-body clip, rejects structurally or physically invalid candidates, and uses a calibrated visual-language-model (VLM) loop to choose the best remaining motion from egocentric and orbit evidence.
+Rigby is the agentic, constraint-aware proof of concept for turning natural-language instructions into editable humanoid animation. It plans a typed motion program, expands it through deterministic smart primitives, compiles a full-body clip, rejects structurally or physically invalid candidates, and uses a calibrated visual-language-model (VLM) loop to choose the best remaining motion from egocentric and orbit evidence.
 
 This revision is an end-to-end authoring system rather than a direct text-to-joint-rotation model. The language model selects semantics; audited local code owns trajectories, anatomy, contacts, limits, verification, playback, and GLB export.
 
