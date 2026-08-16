@@ -1,0 +1,252 @@
+{
+  "cases": [
+    {
+      "body_actions": [],
+      "expected_structural_valid": true,
+      "family": "composite",
+      "id": "composite-travel-forearms",
+      "intent": "composite",
+      "notes": "Richest metric block in the corpus: parallel-forearm, travel-wheel and semantic-cycle checks.",
+      "source_prompt": "roll your forearms around eachother repeatedly, as if you are indicating the \"travel\" foul in basketball",
+      "source_seed": null,
+      "storage": "programs_only",
+      "tags": [
+        "both-hands",
+        "cycle",
+        "parallel-forearm",
+        "trajectory-circle"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": true,
+      "family": "composite",
+      "id": "composite-wave-left",
+      "intent": "composite",
+      "notes": "Single-hand composite path, distinct from the two-hand cycle case.",
+      "source_prompt": "wave hello with your left hand",
+      "source_seed": null,
+      "storage": "programs_only",
+      "tags": [
+        "left",
+        "single-hand-composite"
+      ]
+    },
+    {
+      "body_actions": [
+        "crouch",
+        "hold",
+        "jump",
+        "pose"
+      ],
+      "expected_structural_valid": true,
+      "family": "full_body",
+      "id": "fullbody-burpee-cycle",
+      "intent": "full_body",
+      "notes": "Four BodyActions and the plank support mode in one case; the slowest case to compile.",
+      "source_prompt": "do three burpees",
+      "source_seed": null,
+      "storage": "programs_only",
+      "tags": [
+        "crouch",
+        "jump",
+        "multi-action",
+        "plank",
+        "pose"
+      ]
+    },
+    {
+      "body_actions": [
+        "hold",
+        "rotate"
+      ],
+      "expected_structural_valid": true,
+      "family": "full_body",
+      "id": "fullbody-cartwheel",
+      "intent": "full_body",
+      "notes": "Cartwheel rotation mode; floor and airborne modes are deferred to 03b.",
+      "source_prompt": "do a cartwheel",
+      "source_seed": null,
+      "storage": "programs_only",
+      "tags": [
+        "rotate",
+        "rotation-cartwheel"
+      ]
+    },
+    {
+      "body_actions": [
+        "dance",
+        "hold"
+      ],
+      "expected_structural_valid": true,
+      "family": "full_body",
+      "id": "fullbody-dance",
+      "intent": "full_body",
+      "notes": null,
+      "source_prompt": "do a little dance",
+      "source_seed": null,
+      "storage": "programs_only",
+      "tags": [
+        "cycles",
+        "dance"
+      ]
+    },
+    {
+      "body_actions": [
+        "climb"
+      ],
+      "expected_structural_valid": true,
+      "family": "full_body",
+      "id": "fullbody-ladder-climb",
+      "intent": "full_body",
+      "notes": "Only case that consumes a climb-contact affordance socket.",
+      "source_prompt": "climb up the ladder",
+      "source_seed": null,
+      "storage": "programs_only",
+      "tags": [
+        "affordance",
+        "climb",
+        "support-object"
+      ]
+    },
+    {
+      "body_actions": [
+        "hold",
+        "step"
+      ],
+      "expected_structural_valid": true,
+      "family": "full_body",
+      "id": "fullbody-step-over-hurdle",
+      "intent": "full_body",
+      "notes": "Only case exercising obstacle traversal.",
+      "source_prompt": "step over the hurdle with your right foot",
+      "source_seed": null,
+      "storage": "programs_only",
+      "tags": [
+        "clearance",
+        "obstacle-over",
+        "step"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": true,
+      "family": "gesture",
+      "id": "gesture-hangten-shake-right",
+      "intent": "gesture",
+      "notes": "The flagship demo prompt; only case with a SHAKE primitive and a forearm-twist reserve.",
+      "source_prompt": "Throw up a \"hang-ten\" sign with your right hand, there should be a swift motion up to the main position wherein the middle three fingers are as contracted as possible, the wrist should then shake rapidly back and forth a few times, before returning to default",
+      "source_seed": null,
+      "storage": "programs_only",
+      "tags": [
+        "dexterity",
+        "hang-ten",
+        "right",
+        "shake"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": true,
+      "family": "gesture",
+      "id": "gesture-shaka-playful-left",
+      "intent": "gesture",
+      "notes": "planner_supported.json s12; mean human score 4.0 in config/motion_quality_reference.json.",
+      "source_prompt": "With your left hand, make a balanced relaxed shaka high and extended, drawn inward. Pitch the wrist down, yaw it outward, and roll it counterclockwise.",
+      "source_seed": null,
+      "storage": "programs_only",
+      "tags": [
+        "hang-ten",
+        "human-rated",
+        "left",
+        "review-fixture-s12"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": true,
+      "family": "gesture",
+      "id": "gesture-shaka-playful-right",
+      "intent": "gesture",
+      "notes": "planner_supported.json s09; mean human score 4.5 in config/motion_quality_reference.json.",
+      "source_prompt": "With your right hand, make a balanced playful shaka at chest height and a natural reach, drawn inward. Pitch the wrist up, yaw it outward, and roll it clockwise.",
+      "source_seed": null,
+      "storage": "programs_only",
+      "tags": [
+        "hang-ten",
+        "human-rated",
+        "review-fixture-s09",
+        "right"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": true,
+      "family": "strike",
+      "id": "strike-jab-left",
+      "intent": "strike",
+      "notes": null,
+      "source_prompt": "throw a left jab",
+      "source_seed": null,
+      "storage": "programs_only",
+      "tags": [
+        "jab",
+        "left",
+        "linear-path"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": true,
+      "family": "strike",
+      "id": "strike-uppercut-right",
+      "intent": "strike",
+      "notes": null,
+      "source_prompt": "throw a right uppercut",
+      "source_seed": null,
+      "storage": "programs_only",
+      "tags": [
+        "right",
+        "uppercut",
+        "vertical-path"
+      ]
+    }
+  ],
+  "compiler_version": "rigby-compiler-0.4.0",
+  "coverage": {
+    "body_action": {
+      "covered": [
+        "climb",
+        "crouch",
+        "dance",
+        "hold",
+        "jump",
+        "pose",
+        "rotate",
+        "step"
+      ],
+      "deferred": {
+        "kick": "03b - full-body expansion; plan 03 section 3.4 budgets 12 full-body cases, 03a spends 5 on distinct support topologies",
+        "run": "03b - shares the gait path with walk and step; step is covered here",
+        "turn": "03b - full-body expansion; no distinct metric block beyond the gait path",
+        "walk": "03b - shares the gait path with run and step; step is covered here"
+      }
+    },
+    "intent": {
+      "covered": [
+        "composite",
+        "full_body",
+        "gesture",
+        "strike"
+      ],
+      "deferred": {
+        "grab": "03b - runs MuJoCo inside compilation, so it needs per-platform hashes verified on macOS and Windows (plan 03 section 6.1)",
+        "object_interaction": "03b - object interaction family, 6 cases in plan 03 section 3.4",
+        "sequence": "03b - sequence continuity, 3 cases in plan 03 section 3.4",
+        "unsupported": "03b - an unsupported program has no motion to hash; it belongs with the known-bad cases"
+      }
+    }
+  },
+  "schema_version": "1.0",
+  "storage_policy": "programs_only"
+}

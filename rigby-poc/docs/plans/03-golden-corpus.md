@@ -1,10 +1,10 @@
 # PR 03 — Golden corpus and reproducibility
 
-Status: proposed, not started.
+Status: 03a landed, 03b not started.
 Scope: a committed, versioned set of reference clips that every check runs against, plus
 the seed pinning that makes them reproducible.
 
-Depends on: [02a — analysis layer skeleton](02-analysis-layer.md).
+Depends on: [02a — analysis layer skeleton](02-analysis-layer.md) — landed.
 Blocks: [06 — mutation library](06-mutation-library.md),
 [09 — CI and tiering](09-ci-and-tiering.md), [10 — eval redesign](10-eval-redesign.md).
 
@@ -41,6 +41,20 @@ branching, and no threading anywhere in `src/rigby_poc/`. The two sets that exis
 
 **So no determinism work is needed in the compiler.** This PR is much smaller than it
 would otherwise be.
+
+Re-verified during 03a across all seven executable intents, in separate processes with
+`PYTHONHASHSEED` set to `0`, `1` and `524287`. All thirteen probe programs — gesture,
+composite, strike, full body, grab (MuJoCo), object interaction and sequence — produced
+identical canonical motion hashes in every process. Motion is also **seed-invariant**:
+recompiling with `seed=123456789` yields the same hash, confirming `program.seed` is
+provenance rather than a control, which is what makes pinning it lossless. Both claims
+are now pinned by `tests/test_corpus_determinism.py` rather than living in this document.
+
+The corpus then earned its keep immediately: all twelve cases reproduce byte-identically
+across [02a](02-analysis-layer.md)'s extraction of the analysis layer out of
+`compiler.py`, including `metrics_sha256`. That is an independent confirmation of plan 02
+§5's byte-identical claim, made by a different mechanism than 02a's own equivalence
+harness.
 
 ### 1.2 The one nondeterminism, and it is upstream
 
@@ -104,15 +118,42 @@ Both are comfortably committable.
 evals/corpus/
   manifest.json
   cases/
-    gesture-hangten-right/
+    gesture-hangten-shake-right/
       scene.json
       program.json          # seed pinned to a literal
+      overrides.json        # ParameterOverrides, written only when non-empty
       expected.json         # motion_sha256, frame_count, duration_s, key metric digest
       clip.slim.json.gz     # optional, for slow paths — see §3.3
 ```
 
 `manifest.json` carries `schema_version`, a `compiler_version` the corpus was blessed
-against, and per-case `{id, intent, family, tags, expected_structural_valid}`.
+against, and per-case
+`{id, intent, family, body_actions, tags, source_prompt, source_seed, expected_structural_valid, storage, notes}`.
+It also carries a `coverage` table — see §3.7.
+
+`overrides.json` exists because `store.py:49` persists the *pre-override* program.
+Freezing a live result without its overrides would produce a case that compiles to
+different motion than the run it came from.
+
+`expected.json` records `motion_sha256` as a **map keyed by platform**, not a string,
+so the per-platform hashes §6.1 needs in 03b are a data change rather than a format
+change:
+
+```json
+{
+  "determinism_class": "portable",
+  "motion_sha256": {"any": "56732597…"},
+  "metrics_sha256": "…", "observables_sha256": "…",
+  "fps": 30, "frame_count": 93, "duration_s": 3.17, "contact_count": 0,
+  "success": true, "structural_valid": true,
+  "environment": {"platform_key": "darwin-arm64|mujoco-3.11.0", "…": "…"}
+}
+```
+
+`"any"` is a reserved key meaning *bit-identical everywhere*; a
+`determinism_class: "platform_dependent"` case may not use it and instead keys on
+`"<sys.platform>-<machine>|mujoco-<version>"`. `environment` is informational and is
+never asserted against.
 
 ### 3.2 Recompile-and-verify, not store-and-trust
 
@@ -138,6 +179,18 @@ Two cases warrant `clip.slim.json.gz`:
 - **Speed.** Any case slower than ~200 ms to compile gets a stored clip so the fast tier
   stays fast.
 
+Measured in 03a, the ~200 ms rule is too aggressive to be worth applying on its own.
+Seven of the twelve committed cases compile in more than 200 ms, but the whole
+twelve-case recompile is **5.5 s**, and the corpus test files add **~15 s standalone /
+~23 s in-suite** to an 83 s suite on an M-series Mac. Storing clips to recover a few
+seconds would buy two sources of truth for very little. A stored clip also does not
+speed up the determinism test, which must recompile by definition — it only helps a
+*consumer* that wants metrics without compiling. So in 03a the trigger for a stored
+clip is **MuJoCo, not speed**; revisit if a consumer in [06](06-mutation-library.md)
+actually needs one. The one genuinely slow case is `fullbody-burpee-cycle` at 2.9 s,
+kept because it is the only case covering four `BodyAction` members and the `plank`
+support mode at once.
+
 ### 3.4 Corpus coverage
 
 Target ~40 cases, chosen for check coverage rather than prompt variety:
@@ -155,6 +208,41 @@ Target ~40 cases, chosen for check coverage rather than prompt variety:
 
 The known-bad cases are the important ones. A corpus of only-valid clips cannot detect a
 check that has stopped firing.
+
+**The twelve 03a cases**, chosen by measured check coverage rather than prompt variety.
+A greedy set-cover over 81 offline-plannable candidates, scored on distinct
+`clip.metrics` keys plus `Intent` / `BodyAction` / `PrimitiveKind` / `HandShape` /
+`StrikeType` / support-mode / rotation-mode / obstacle-mode members, reaches **305 of
+334** available features with these twelve under a 3/2/2/5 family budget:
+
+| Case | Family | Why it is in |
+| --- | --- | --- |
+| `gesture-hangten-shake-right` | gesture | only `SHAKE` primitive and forearm-twist reserve; the flagship demo prompt |
+| `gesture-shaka-playful-right` | gesture | `planner_supported.json` s09, human-rated 4.5 in `config/motion_quality_reference.json` |
+| `gesture-shaka-playful-left`  | gesture | s12, human-rated 4.0; the left-hand mirror |
+| `strike-jab-left`             | strike  | linear strike path |
+| `strike-uppercut-right`       | strike  | vertical strike path, opposite hand |
+| `composite-travel-forearms`   | composite | richest metric block in the corpus: parallel-forearm, travel-wheel and semantic-cycle |
+| `composite-wave-left`         | composite | single-hand composite, distinct from the two-hand cycle |
+| `fullbody-burpee-cycle`       | full body | `crouch` + `hold` + `jump` + `pose` and the `plank` support mode in one case |
+| `fullbody-cartwheel`          | full body | `rotate` with the `cartwheel` rotation mode |
+| `fullbody-ladder-climb`       | full body | `climb`; only case consuming a climb-contact affordance socket |
+| `fullbody-dance`              | full body | `dance` |
+| `fullbody-step-over-hurdle`   | full body | `step`; only case exercising obstacle traversal |
+
+`evals/corpus/seed_cases.py` records the prompt behind each, and
+`python -m evals.corpus freeze --from-seed <id>` rebuilds any of them byte-identically.
+
+**Coverage is declared, not assumed.** `manifest.json` names every `Intent` and every `BodyAction` as either **covered** by a
+case or **deferred** with a reason. A member in neither list fails
+`tests/test_corpus_coverage.py`, so a newly added enum member is a build failure rather
+than an oversight — which is the behaviour §5 asks for, stated in a way that a partial
+corpus can honestly satisfy.
+
+03a covers 4 of 7 executable intents and 8 of 12 body actions. Deferred to 03b:
+`grab` (needs per-platform hashes), `object_interaction`, `sequence`, `unsupported`
+(no motion to hash; belongs with the known-bad cases), and the `walk` / `run` / `turn` /
+`kick` body actions, which share the gait path already covered by `step` and `dance`.
 
 ### 3.5 Seed pinning
 
@@ -176,10 +264,15 @@ impossible.
 
 ## 4. Sequencing — two PRs
 
-| PR | Contents | Effort |
-| --- | --- | --- |
-| **03a** | Case format, loader, `bless` CLI, `freeze.py`, 12 cases covering gesture/strike/composite/full-body | ~2 days |
-| **03b** | Remaining ~28 cases incl. known-bad and MuJoCo; repoint `goal_audit`; per-platform hash handling | ~2 days |
+| PR | Contents | Effort | Status |
+| --- | --- | --- | --- |
+| **03a** | Case format, loader, `bless` CLI, `freeze.py`, 12 cases covering gesture/strike/composite/full-body | ~2 days | landed |
+| **03b** | Remaining ~28 cases incl. known-bad and MuJoCo; repoint `goal_audit`; per-platform hash handling | ~2 days | not started |
+
+03b inherits from 03a: the platform-keyed `expected.json`, `DeterminismClass`,
+`rebless`'s merge (so whoever blesses second does not delete the first developer's
+hashes), the `SLIM_CLIP_FILE` name the loader already reserves, and the
+`StoragePolicy.PROGRAM_AND_CLIP` enum member. None of those require a format change.
 
 ---
 
@@ -194,6 +287,16 @@ impossible.
   firing.
 - `test_corpus_loads_offline.py` — loading and analysing the whole corpus performs no
   network I/O and starts no browser.
+
+03a additionally ships `test_corpus_format.py` (case format, loader rejections, the
+platform-hash merge, freeze round trips) and `test_corpus_cli.py` (the `bless` diff and
+exit codes, and that `freeze --from-seed` rebuilds a committed case byte-identically).
+
+One finding from writing the offline test: importing `mujoco` runs
+`sysctl -n sysctl.proc_translated` on macOS to detect Rosetta. Blanket-blocking
+`subprocess` therefore fails on a legitimate local CPU probe, so the guard records every
+launch and blocks by name — the test asserts on the recorded list rather than on the
+absence of any subprocess at all.
 
 ---
 
@@ -217,15 +320,47 @@ Options, in preference order:
 **Recommendation: option 1, and verify on both machines before 03b lands.** Whoever runs
 it second contributes their platform's hashes in the same PR.
 
+Built in 03a, unused until 03b: `expected.motion_sha256` is already a platform-keyed
+map, `determinism_class` already distinguishes the two cases, an unblessed platform is
+already a **skip with a message** rather than a failure, and `bless --write` already
+*merges* into the existing map instead of replacing it — so whoever blesses second does
+not silently delete the first developer's hashes. Every 03a case is `portable` and none
+touch the physics solver, so none of this fires yet.
+
 ### 6.2 Risk — corpus rot
 
 A corpus that is expensive to re-bless gets stale, and a stale corpus gets ignored.
 Mitigation: `bless` must be a single command with a readable diff, and the PR description
 template should require stating why any hash moved.
 
-### 6.3 Open — commit slim clips for everything?
+### 6.3 Resolved — commit slim clips for everything? No: programs only
+
+*Resolved 2026-08-16 in 03a. Answer: programs only.*
 
 Storing every case's clip (~700 KB total) would make the corpus usable even if the
 compiler is mid-refactor and cannot compile. It costs repo size and creates two sources of
-truth. **Recommendation: programs only, plus clips for MuJoCo and slow cases.** Revisit if
-[02](02-analysis-layer.md) turns out to break compilation for long stretches.
+truth. The original recommendation was programs only, plus clips for MuJoCo and slow
+cases; 03a confirms it, and narrows the "slow cases" half.
+
+What the measurement showed:
+
+- **Determinism is not in doubt.** Verified across seven intents in separate processes
+  under three `PYTHONHASHSEED` values, and motion is seed-invariant (§1.1). A stored
+  clip would guard against a risk that does not exist.
+- **A stored clip cannot make the determinism test faster.** That test recompiles by
+  definition; a clip only helps a consumer that wants metrics without compiling. Nobody
+  is that consumer yet.
+- **The speed argument is small.** The full twelve-case recompile is 5.5 s; the corpus
+  tests add ~15 s standalone / ~23 s in-suite to an 83 s suite. See §3.3.
+- **Size favours programs.** The 12 committed cases are 288 KB, or ~1 MB extrapolated to
+  40 — with 94 KB of that being `scene.json` duplicated per case, which is kept so each
+  case directory is a complete, self-contained compile input.
+
+So: programs only. Stored clips are reserved for MuJoCo cases in 03b, where per-platform
+bit-equality genuinely is not guaranteed. The loader already reserves the
+`clip.slim.json.gz` filename and the `StoragePolicy.PROGRAM_AND_CLIP` enum member, and
+deliberately ignores a stored clip when one is present, so a clip can never quietly
+become a second source of truth.
+
+Revisit if [02](02-analysis-layer.md) turns out to break compilation for long stretches —
+that is the one argument the measurement does not answer.
