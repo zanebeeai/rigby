@@ -30,7 +30,7 @@ Status values: `not started` · `in progress` · `blocked` · `in review` · `do
 
 | Plan | PRs | Status | Branch / owner | Blocking |
 | --- | --- | --- | --- | --- |
-| [01 Observability](01-observability-and-transcript.md) | 0/4 | not started | — | trajectory evals |
+| [01 Observability](01-observability-and-transcript.md) | 1/4 | in progress | `eval/01a-observability` | trajectory evals |
 | [02 Analysis layer](02-analysis-layer.md) | 0/5 | not started | — | 03, 04, 06, 10 |
 | [03 Golden corpus](03-golden-corpus.md) | 0/2 | not started | — | 06, 09, 10 |
 | [04 Anatomical frame](04-anatomical-frame.md) | 0/3 | not started | — | 06, 10 |
@@ -50,16 +50,27 @@ Session prompts and the file-ownership map: [SLICE-1-SESSIONS.md](SLICE-1-SESSIO
 
 | PR | Scope | Status | Note |
 | --- | --- | --- | --- |
-| 01a | `observability.py`, `transcript.py`, tests; wired nowhere | not started | slice 1 |
+| 01a | `observability.py`, `transcript.py`, tests; wired nowhere | done | 66 tests; 0 existing files touched |
 | 01b | Instrument judge + planner call sites; `config.json` | not started | |
 | 01c | Instrument flywheel stages and capture; unify CLI/API run roots | not started | |
 | 01d | Compaction tool and retention policy | not started | |
 
 **Open decisions**
-- §8.1 Build a minimal tracer or adopt OpenTelemetry — *decide before 01a*. Unresolved.
+- §8.1 Build a minimal tracer or adopt OpenTelemetry — **resolved 2026-08-16: build.**
+  OTel attributes cannot hold nested `attrs`/`refs`, which is the whole §1.3 fix; its
+  collector-oriented export fights per-run file artifacts; and being `contextvars`-based it
+  does not solve §8.3 either. Reasoning in plan §8.1.
 
 **Findings**
-- _(none yet)_
+- §1.2 and §8.3 verified against the code, both accurate. Two riders added to the plan:
+  `judge.py:833` re-raises on the no-fallback path so 01b must wrap the dispatch rather
+  than the `except` branch, and the §8.3 orphan is silent by construction, so
+  `Transcript.orphans()` is the guard.
+- The JSONL writer cannot reuse `atomic_write_json` — append versus whole-file replace —
+  so its Windows lock ladder is duplicated in `observability.py`. Hoist both onto one
+  helper when a PR may edit `io_utils.py`. Plan §4.1.
+- `$image` refs needed payload bytes stored at `payloads/images/<sha256>`; `source_path`
+  cannot serve, since the hash is of the resized bytes. Plan §3.3.
 
 ---
 
@@ -151,7 +162,7 @@ Session prompts and the file-ownership map: [SLICE-1-SESSIONS.md](SLICE-1-SESSIO
 
 | PR | Scope | Status | Note |
 | --- | --- | --- | --- |
-| 07a | Enforce `semantic_match`; content-derived blinding seed; route `recommend_repair` | done | `eval/07a-acceptance`; 364 pass |
+| 07a | Enforce `semantic_match`; content-derived blinding seed; route `recommend_repair` | done | `eval/07a-acceptance`; 368 pass |
 | 07b | Grader split behind a flag; per-family prompt fragments | not started | |
 | 07c | Claim-based output + aggregation; `cannot_tell` | not started | |
 | 07d | Remove diagnostics from prompts; explicit decision layer | not started | must precede 10f |
