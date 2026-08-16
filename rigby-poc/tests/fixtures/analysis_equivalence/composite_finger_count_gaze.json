@@ -1,0 +1,1169 @@
+{
+  "expected_metrics": {
+    "discontinuities": 0,
+    "fixed_root_foot_max_rotation_delta_rad": 0.0,
+    "foot_drift_m": 0.0,
+    "gaze_max_endpoint_angle_deg": 0.2648152431255933,
+    "gaze_target_records": [
+      {
+        "angle_deg": 0.07554573121084385,
+        "maximum_angle_deg": 12.0,
+        "passed": true,
+        "phase": "finger_count_prepare",
+        "target_hand": "left",
+        "target_object": null
+      },
+      {
+        "angle_deg": 0.07136260507511748,
+        "maximum_angle_deg": 12.0,
+        "passed": true,
+        "phase": "finger_count_touch_index",
+        "target_hand": "left",
+        "target_object": null
+      },
+      {
+        "angle_deg": 0.07136260507511748,
+        "maximum_angle_deg": 12.0,
+        "passed": true,
+        "phase": "finger_count_release_index",
+        "target_hand": "left",
+        "target_object": null
+      },
+      {
+        "angle_deg": 0.07136260507511748,
+        "maximum_angle_deg": 12.0,
+        "passed": true,
+        "phase": "finger_count_touch_middle",
+        "target_hand": "left",
+        "target_object": null
+      },
+      {
+        "angle_deg": 0.07136260507511748,
+        "maximum_angle_deg": 12.0,
+        "passed": true,
+        "phase": "finger_count_release_middle",
+        "target_hand": "left",
+        "target_object": null
+      },
+      {
+        "angle_deg": 0.07136260507511748,
+        "maximum_angle_deg": 12.0,
+        "passed": true,
+        "phase": "finger_count_touch_ring",
+        "target_hand": "left",
+        "target_object": null
+      },
+      {
+        "angle_deg": 0.07136260507511748,
+        "maximum_angle_deg": 12.0,
+        "passed": true,
+        "phase": "finger_count_release_ring",
+        "target_hand": "left",
+        "target_object": null
+      },
+      {
+        "angle_deg": 0.07136260507511748,
+        "maximum_angle_deg": 12.0,
+        "passed": true,
+        "phase": "finger_count_touch_little",
+        "target_hand": "left",
+        "target_object": null
+      },
+      {
+        "angle_deg": 0.2648152431255933,
+        "maximum_angle_deg": 12.0,
+        "passed": true,
+        "phase": "finger_count_release_little",
+        "target_hand": "left",
+        "target_object": null
+      }
+    ],
+    "intra_hand_contact_count": 4,
+    "intra_hand_contact_expected_order": [
+      "index",
+      "middle",
+      "ring",
+      "little"
+    ],
+    "intra_hand_contact_observed_order": [
+      "index",
+      "middle",
+      "ring",
+      "little"
+    ],
+    "intra_hand_contact_records": [
+      {
+        "contact_time_s": 1.0733333333333333,
+        "driver_digit": "thumb",
+        "maximum_distance_m": 0.012,
+        "minimum_distance_m": 4.351822299171123e-06,
+        "nearest_other_fingertip_m": 0.11391968485392298,
+        "passed": true,
+        "phase": "finger_count_touch_index",
+        "target_digit": "index"
+      },
+      {
+        "contact_time_s": 1.8133333333333335,
+        "driver_digit": "thumb",
+        "maximum_distance_m": 0.012,
+        "minimum_distance_m": 4.716091350722408e-06,
+        "nearest_other_fingertip_m": 0.11313725798407646,
+        "passed": true,
+        "phase": "finger_count_touch_middle",
+        "target_digit": "middle"
+      },
+      {
+        "contact_time_s": 2.5533333333333337,
+        "driver_digit": "thumb",
+        "maximum_distance_m": 0.012,
+        "minimum_distance_m": 6.794236835079492e-06,
+        "nearest_other_fingertip_m": 0.11022900735099492,
+        "passed": true,
+        "phase": "finger_count_touch_ring",
+        "target_digit": "ring"
+      },
+      {
+        "contact_time_s": 3.293333333333334,
+        "driver_digit": "thumb",
+        "maximum_distance_m": 0.012,
+        "minimum_distance_m": 8.339296647764542e-06,
+        "nearest_other_fingertip_m": 0.12722301538686798,
+        "passed": true,
+        "phase": "finger_count_touch_little",
+        "target_digit": "little"
+      }
+    ],
+    "intra_hand_minimum_release_separation_m": 0.12159454054940887,
+    "joint_limit_violations": 0,
+    "max_frame_rotation_delta_rad": 0.25185430364542044,
+    "nan_count": 0,
+    "quaternion_norm_max_error": 1.1102230246251565e-16,
+    "root_drift_m": 0.0,
+    "safety_derivation": "computed over every frame/local delta quaternion and authored hips translation; root motion must remain fixed"
+  },
+  "frame_count": 120,
+  "id": "composite_finger_count_gaze",
+  "intent": "composite",
+  "program": {
+    "assertions": [
+      {
+        "name": "fixed_root",
+        "threshold": null
+      },
+      {
+        "name": "full_fov_visibility",
+        "threshold": null
+      },
+      {
+        "name": "coordinated_effectors",
+        "threshold": null
+      },
+      {
+        "name": "ordered_intra_hand_contacts",
+        "threshold": 4.0
+      },
+      {
+        "name": "gaze_tracks_active_hand",
+        "threshold": 12.0
+      }
+    ],
+    "hand": "left",
+    "hands": [
+      "left"
+    ],
+    "intent": "composite",
+    "motion_profile": null,
+    "object_action": null,
+    "object_motion": null,
+    "primitives": [
+      {
+        "body": null,
+        "effectors": [
+          {
+            "elbow_swivel": 0.42,
+            "hand": "left",
+            "hand_shape": "open",
+            "phase_offset_cycles": 0.0,
+            "reach_overhead": false,
+            "target_x": 0.38,
+            "target_y": 0.55,
+            "target_z": 0.86,
+            "wrist_pitch": -0.1,
+            "wrist_roll": 0.0,
+            "wrist_yaw": 0.08
+          }
+        ],
+        "gaze_target": {
+          "hand": "left",
+          "maximum_angle_deg": 12.0,
+          "object_id": null
+        },
+        "hand_shape": null,
+        "intra_hand_contact": null,
+        "kind": "move",
+        "label": "finger_count_prepare",
+        "object_id": null,
+        "parameters": {
+          "arm_depth": 0.0,
+          "arm_height": 0.0,
+          "axial_rotation_amplitude": 0.0,
+          "duration_s": 0.64,
+          "easing": 0.8,
+          "elbow_swivel": 0.0,
+          "finger_curl": 0.0,
+          "finger_splay": 0.0,
+          "grip_force": 0.75,
+          "hold_duration_s": 1.0,
+          "index_curl": 0.0,
+          "lateral_offset": 0.0,
+          "lift_height_m": 0.1,
+          "little_curl": 0.0,
+          "middle_curl": 0.0,
+          "path_arc": 0.0,
+          "ring_curl": 0.0,
+          "thumb_curl": 0.0,
+          "thumb_opposition": 0.75,
+          "torso_participation": 0.08,
+          "trajectory_amplitude_m": 0.0,
+          "trajectory_cycles": 0.0,
+          "wrist_flourish": 0.0,
+          "wrist_pitch": 0.0,
+          "wrist_roll": 0.0,
+          "wrist_shake_amplitude": 0.0,
+          "wrist_shake_cycles": 0.0,
+          "wrist_yaw": 0.0
+        },
+        "socket_id": null,
+        "trajectory": "linear",
+        "trajectory_plane": "frontal"
+      },
+      {
+        "body": null,
+        "effectors": [
+          {
+            "elbow_swivel": 0.42,
+            "hand": "left",
+            "hand_shape": "pinch",
+            "phase_offset_cycles": 0.0,
+            "reach_overhead": false,
+            "target_x": 0.38,
+            "target_y": 0.55,
+            "target_z": 0.86,
+            "wrist_pitch": -0.1,
+            "wrist_roll": 0.0,
+            "wrist_yaw": 0.08
+          }
+        ],
+        "gaze_target": {
+          "hand": "left",
+          "maximum_angle_deg": 12.0,
+          "object_id": null
+        },
+        "hand_shape": null,
+        "intra_hand_contact": {
+          "driver_digit": "thumb",
+          "hand": "left",
+          "maximum_distance_m": 0.012,
+          "target_digit": "index"
+        },
+        "kind": "move",
+        "label": "finger_count_touch_index",
+        "object_id": null,
+        "parameters": {
+          "arm_depth": 0.0,
+          "arm_height": 0.0,
+          "axial_rotation_amplitude": 0.0,
+          "duration_s": 0.46,
+          "easing": 0.78,
+          "elbow_swivel": 0.0,
+          "finger_curl": 0.0,
+          "finger_splay": 0.0,
+          "grip_force": 0.75,
+          "hold_duration_s": 1.0,
+          "index_curl": 0.0,
+          "lateral_offset": 0.0,
+          "lift_height_m": 0.1,
+          "little_curl": 0.0,
+          "middle_curl": 0.0,
+          "path_arc": 0.0,
+          "ring_curl": 0.0,
+          "thumb_curl": 0.0,
+          "thumb_opposition": 0.75,
+          "torso_participation": 0.08,
+          "trajectory_amplitude_m": 0.0,
+          "trajectory_cycles": 0.0,
+          "wrist_flourish": 0.0,
+          "wrist_pitch": 0.0,
+          "wrist_roll": 0.0,
+          "wrist_shake_amplitude": 0.0,
+          "wrist_shake_cycles": 0.0,
+          "wrist_yaw": 0.0
+        },
+        "socket_id": null,
+        "trajectory": "linear",
+        "trajectory_plane": "frontal"
+      },
+      {
+        "body": null,
+        "effectors": [
+          {
+            "elbow_swivel": 0.42,
+            "hand": "left",
+            "hand_shape": "open",
+            "phase_offset_cycles": 0.0,
+            "reach_overhead": false,
+            "target_x": 0.38,
+            "target_y": 0.55,
+            "target_z": 0.86,
+            "wrist_pitch": -0.1,
+            "wrist_roll": 0.0,
+            "wrist_yaw": 0.08
+          }
+        ],
+        "gaze_target": {
+          "hand": "left",
+          "maximum_angle_deg": 12.0,
+          "object_id": null
+        },
+        "hand_shape": null,
+        "intra_hand_contact": null,
+        "kind": "move",
+        "label": "finger_count_release_index",
+        "object_id": null,
+        "parameters": {
+          "arm_depth": 0.0,
+          "arm_height": 0.0,
+          "axial_rotation_amplitude": 0.0,
+          "duration_s": 0.28,
+          "easing": 0.82,
+          "elbow_swivel": 0.0,
+          "finger_curl": 0.0,
+          "finger_splay": 0.0,
+          "grip_force": 0.75,
+          "hold_duration_s": 1.0,
+          "index_curl": 0.0,
+          "lateral_offset": 0.0,
+          "lift_height_m": 0.1,
+          "little_curl": 0.0,
+          "middle_curl": 0.0,
+          "path_arc": 0.0,
+          "ring_curl": 0.0,
+          "thumb_curl": 0.0,
+          "thumb_opposition": 0.75,
+          "torso_participation": 0.08,
+          "trajectory_amplitude_m": 0.0,
+          "trajectory_cycles": 0.0,
+          "wrist_flourish": 0.0,
+          "wrist_pitch": 0.0,
+          "wrist_roll": 0.0,
+          "wrist_shake_amplitude": 0.0,
+          "wrist_shake_cycles": 0.0,
+          "wrist_yaw": 0.0
+        },
+        "socket_id": null,
+        "trajectory": "linear",
+        "trajectory_plane": "frontal"
+      },
+      {
+        "body": null,
+        "effectors": [
+          {
+            "elbow_swivel": 0.42,
+            "hand": "left",
+            "hand_shape": "pinch",
+            "phase_offset_cycles": 0.0,
+            "reach_overhead": false,
+            "target_x": 0.38,
+            "target_y": 0.55,
+            "target_z": 0.86,
+            "wrist_pitch": -0.1,
+            "wrist_roll": 0.0,
+            "wrist_yaw": 0.08
+          }
+        ],
+        "gaze_target": {
+          "hand": "left",
+          "maximum_angle_deg": 12.0,
+          "object_id": null
+        },
+        "hand_shape": null,
+        "intra_hand_contact": {
+          "driver_digit": "thumb",
+          "hand": "left",
+          "maximum_distance_m": 0.012,
+          "target_digit": "middle"
+        },
+        "kind": "move",
+        "label": "finger_count_touch_middle",
+        "object_id": null,
+        "parameters": {
+          "arm_depth": 0.0,
+          "arm_height": 0.0,
+          "axial_rotation_amplitude": 0.0,
+          "duration_s": 0.46,
+          "easing": 0.78,
+          "elbow_swivel": 0.0,
+          "finger_curl": 0.0,
+          "finger_splay": 0.0,
+          "grip_force": 0.75,
+          "hold_duration_s": 1.0,
+          "index_curl": 0.0,
+          "lateral_offset": 0.0,
+          "lift_height_m": 0.1,
+          "little_curl": 0.0,
+          "middle_curl": 0.0,
+          "path_arc": 0.0,
+          "ring_curl": 0.0,
+          "thumb_curl": 0.0,
+          "thumb_opposition": 0.75,
+          "torso_participation": 0.08,
+          "trajectory_amplitude_m": 0.0,
+          "trajectory_cycles": 0.0,
+          "wrist_flourish": 0.0,
+          "wrist_pitch": 0.0,
+          "wrist_roll": 0.0,
+          "wrist_shake_amplitude": 0.0,
+          "wrist_shake_cycles": 0.0,
+          "wrist_yaw": 0.0
+        },
+        "socket_id": null,
+        "trajectory": "linear",
+        "trajectory_plane": "frontal"
+      },
+      {
+        "body": null,
+        "effectors": [
+          {
+            "elbow_swivel": 0.42,
+            "hand": "left",
+            "hand_shape": "open",
+            "phase_offset_cycles": 0.0,
+            "reach_overhead": false,
+            "target_x": 0.38,
+            "target_y": 0.55,
+            "target_z": 0.86,
+            "wrist_pitch": -0.1,
+            "wrist_roll": 0.0,
+            "wrist_yaw": 0.08
+          }
+        ],
+        "gaze_target": {
+          "hand": "left",
+          "maximum_angle_deg": 12.0,
+          "object_id": null
+        },
+        "hand_shape": null,
+        "intra_hand_contact": null,
+        "kind": "move",
+        "label": "finger_count_release_middle",
+        "object_id": null,
+        "parameters": {
+          "arm_depth": 0.0,
+          "arm_height": 0.0,
+          "axial_rotation_amplitude": 0.0,
+          "duration_s": 0.28,
+          "easing": 0.82,
+          "elbow_swivel": 0.0,
+          "finger_curl": 0.0,
+          "finger_splay": 0.0,
+          "grip_force": 0.75,
+          "hold_duration_s": 1.0,
+          "index_curl": 0.0,
+          "lateral_offset": 0.0,
+          "lift_height_m": 0.1,
+          "little_curl": 0.0,
+          "middle_curl": 0.0,
+          "path_arc": 0.0,
+          "ring_curl": 0.0,
+          "thumb_curl": 0.0,
+          "thumb_opposition": 0.75,
+          "torso_participation": 0.08,
+          "trajectory_amplitude_m": 0.0,
+          "trajectory_cycles": 0.0,
+          "wrist_flourish": 0.0,
+          "wrist_pitch": 0.0,
+          "wrist_roll": 0.0,
+          "wrist_shake_amplitude": 0.0,
+          "wrist_shake_cycles": 0.0,
+          "wrist_yaw": 0.0
+        },
+        "socket_id": null,
+        "trajectory": "linear",
+        "trajectory_plane": "frontal"
+      },
+      {
+        "body": null,
+        "effectors": [
+          {
+            "elbow_swivel": 0.42,
+            "hand": "left",
+            "hand_shape": "pinch",
+            "phase_offset_cycles": 0.0,
+            "reach_overhead": false,
+            "target_x": 0.38,
+            "target_y": 0.55,
+            "target_z": 0.86,
+            "wrist_pitch": -0.1,
+            "wrist_roll": 0.0,
+            "wrist_yaw": 0.08
+          }
+        ],
+        "gaze_target": {
+          "hand": "left",
+          "maximum_angle_deg": 12.0,
+          "object_id": null
+        },
+        "hand_shape": null,
+        "intra_hand_contact": {
+          "driver_digit": "thumb",
+          "hand": "left",
+          "maximum_distance_m": 0.012,
+          "target_digit": "ring"
+        },
+        "kind": "move",
+        "label": "finger_count_touch_ring",
+        "object_id": null,
+        "parameters": {
+          "arm_depth": 0.0,
+          "arm_height": 0.0,
+          "axial_rotation_amplitude": 0.0,
+          "duration_s": 0.46,
+          "easing": 0.78,
+          "elbow_swivel": 0.0,
+          "finger_curl": 0.0,
+          "finger_splay": 0.0,
+          "grip_force": 0.75,
+          "hold_duration_s": 1.0,
+          "index_curl": 0.0,
+          "lateral_offset": 0.0,
+          "lift_height_m": 0.1,
+          "little_curl": 0.0,
+          "middle_curl": 0.0,
+          "path_arc": 0.0,
+          "ring_curl": 0.0,
+          "thumb_curl": 0.0,
+          "thumb_opposition": 0.75,
+          "torso_participation": 0.08,
+          "trajectory_amplitude_m": 0.0,
+          "trajectory_cycles": 0.0,
+          "wrist_flourish": 0.0,
+          "wrist_pitch": 0.0,
+          "wrist_roll": 0.0,
+          "wrist_shake_amplitude": 0.0,
+          "wrist_shake_cycles": 0.0,
+          "wrist_yaw": 0.0
+        },
+        "socket_id": null,
+        "trajectory": "linear",
+        "trajectory_plane": "frontal"
+      },
+      {
+        "body": null,
+        "effectors": [
+          {
+            "elbow_swivel": 0.42,
+            "hand": "left",
+            "hand_shape": "open",
+            "phase_offset_cycles": 0.0,
+            "reach_overhead": false,
+            "target_x": 0.38,
+            "target_y": 0.55,
+            "target_z": 0.86,
+            "wrist_pitch": -0.1,
+            "wrist_roll": 0.0,
+            "wrist_yaw": 0.08
+          }
+        ],
+        "gaze_target": {
+          "hand": "left",
+          "maximum_angle_deg": 12.0,
+          "object_id": null
+        },
+        "hand_shape": null,
+        "intra_hand_contact": null,
+        "kind": "move",
+        "label": "finger_count_release_ring",
+        "object_id": null,
+        "parameters": {
+          "arm_depth": 0.0,
+          "arm_height": 0.0,
+          "axial_rotation_amplitude": 0.0,
+          "duration_s": 0.28,
+          "easing": 0.82,
+          "elbow_swivel": 0.0,
+          "finger_curl": 0.0,
+          "finger_splay": 0.0,
+          "grip_force": 0.75,
+          "hold_duration_s": 1.0,
+          "index_curl": 0.0,
+          "lateral_offset": 0.0,
+          "lift_height_m": 0.1,
+          "little_curl": 0.0,
+          "middle_curl": 0.0,
+          "path_arc": 0.0,
+          "ring_curl": 0.0,
+          "thumb_curl": 0.0,
+          "thumb_opposition": 0.75,
+          "torso_participation": 0.08,
+          "trajectory_amplitude_m": 0.0,
+          "trajectory_cycles": 0.0,
+          "wrist_flourish": 0.0,
+          "wrist_pitch": 0.0,
+          "wrist_roll": 0.0,
+          "wrist_shake_amplitude": 0.0,
+          "wrist_shake_cycles": 0.0,
+          "wrist_yaw": 0.0
+        },
+        "socket_id": null,
+        "trajectory": "linear",
+        "trajectory_plane": "frontal"
+      },
+      {
+        "body": null,
+        "effectors": [
+          {
+            "elbow_swivel": 0.42,
+            "hand": "left",
+            "hand_shape": "pinch",
+            "phase_offset_cycles": 0.0,
+            "reach_overhead": false,
+            "target_x": 0.38,
+            "target_y": 0.55,
+            "target_z": 0.86,
+            "wrist_pitch": -0.1,
+            "wrist_roll": 0.0,
+            "wrist_yaw": 0.08
+          }
+        ],
+        "gaze_target": {
+          "hand": "left",
+          "maximum_angle_deg": 12.0,
+          "object_id": null
+        },
+        "hand_shape": null,
+        "intra_hand_contact": {
+          "driver_digit": "thumb",
+          "hand": "left",
+          "maximum_distance_m": 0.012,
+          "target_digit": "little"
+        },
+        "kind": "move",
+        "label": "finger_count_touch_little",
+        "object_id": null,
+        "parameters": {
+          "arm_depth": 0.0,
+          "arm_height": 0.0,
+          "axial_rotation_amplitude": 0.0,
+          "duration_s": 0.46,
+          "easing": 0.78,
+          "elbow_swivel": 0.0,
+          "finger_curl": 0.0,
+          "finger_splay": 0.0,
+          "grip_force": 0.75,
+          "hold_duration_s": 1.0,
+          "index_curl": 0.0,
+          "lateral_offset": 0.0,
+          "lift_height_m": 0.1,
+          "little_curl": 0.0,
+          "middle_curl": 0.0,
+          "path_arc": 0.0,
+          "ring_curl": 0.0,
+          "thumb_curl": 0.0,
+          "thumb_opposition": 0.75,
+          "torso_participation": 0.08,
+          "trajectory_amplitude_m": 0.0,
+          "trajectory_cycles": 0.0,
+          "wrist_flourish": 0.0,
+          "wrist_pitch": 0.0,
+          "wrist_roll": 0.0,
+          "wrist_shake_amplitude": 0.0,
+          "wrist_shake_cycles": 0.0,
+          "wrist_yaw": 0.0
+        },
+        "socket_id": null,
+        "trajectory": "linear",
+        "trajectory_plane": "frontal"
+      },
+      {
+        "body": null,
+        "effectors": [
+          {
+            "elbow_swivel": 0.42,
+            "hand": "left",
+            "hand_shape": "open",
+            "phase_offset_cycles": 0.0,
+            "reach_overhead": false,
+            "target_x": 0.38,
+            "target_y": 0.55,
+            "target_z": 0.86,
+            "wrist_pitch": -0.1,
+            "wrist_roll": 0.0,
+            "wrist_yaw": 0.08
+          }
+        ],
+        "gaze_target": {
+          "hand": "left",
+          "maximum_angle_deg": 12.0,
+          "object_id": null
+        },
+        "hand_shape": null,
+        "intra_hand_contact": null,
+        "kind": "move",
+        "label": "finger_count_release_little",
+        "object_id": null,
+        "parameters": {
+          "arm_depth": 0.0,
+          "arm_height": 0.0,
+          "axial_rotation_amplitude": 0.0,
+          "duration_s": 0.28,
+          "easing": 0.82,
+          "elbow_swivel": 0.0,
+          "finger_curl": 0.0,
+          "finger_splay": 0.0,
+          "grip_force": 0.75,
+          "hold_duration_s": 1.0,
+          "index_curl": 0.0,
+          "lateral_offset": 0.0,
+          "lift_height_m": 0.1,
+          "little_curl": 0.0,
+          "middle_curl": 0.0,
+          "path_arc": 0.0,
+          "ring_curl": 0.0,
+          "thumb_curl": 0.0,
+          "thumb_opposition": 0.75,
+          "torso_participation": 0.08,
+          "trajectory_amplitude_m": 0.0,
+          "trajectory_cycles": 0.0,
+          "wrist_flourish": 0.0,
+          "wrist_pitch": 0.0,
+          "wrist_roll": 0.0,
+          "wrist_shake_amplitude": 0.0,
+          "wrist_shake_cycles": 0.0,
+          "wrist_yaw": 0.0
+        },
+        "socket_id": null,
+        "trajectory": "linear",
+        "trajectory_plane": "frontal"
+      },
+      {
+        "body": null,
+        "effectors": [
+          {
+            "elbow_swivel": 0.1,
+            "hand": "left",
+            "hand_shape": "open",
+            "phase_offset_cycles": 0.0,
+            "reach_overhead": false,
+            "target_x": 0.78,
+            "target_y": -0.72,
+            "target_z": -0.25,
+            "wrist_pitch": 0.0,
+            "wrist_roll": 0.0,
+            "wrist_yaw": 0.0
+          }
+        ],
+        "gaze_target": null,
+        "hand_shape": null,
+        "intra_hand_contact": null,
+        "kind": "recover",
+        "label": "return_to_relaxed",
+        "object_id": null,
+        "parameters": {
+          "arm_depth": 0.0,
+          "arm_height": 0.0,
+          "axial_rotation_amplitude": 0.0,
+          "duration_s": 0.75,
+          "easing": 0.82,
+          "elbow_swivel": 0.0,
+          "finger_curl": 0.0,
+          "finger_splay": 0.0,
+          "grip_force": 0.75,
+          "hold_duration_s": 1.0,
+          "index_curl": 0.0,
+          "lateral_offset": 0.0,
+          "lift_height_m": 0.1,
+          "little_curl": 0.0,
+          "middle_curl": 0.0,
+          "path_arc": 0.0,
+          "ring_curl": 0.0,
+          "thumb_curl": 0.0,
+          "thumb_opposition": 0.75,
+          "torso_participation": 0.2,
+          "trajectory_amplitude_m": 0.0,
+          "trajectory_cycles": 0.0,
+          "wrist_flourish": 0.0,
+          "wrist_pitch": 0.0,
+          "wrist_roll": 0.0,
+          "wrist_shake_amplitude": 0.0,
+          "wrist_shake_cycles": 0.0,
+          "wrist_yaw": 0.0
+        },
+        "socket_id": null,
+        "trajectory": "linear",
+        "trajectory_plane": null
+      }
+    ],
+    "schema_version": "1.0",
+    "seed": 0,
+    "source_text": "count every finger on your left hand with your left thumb while watching your hand",
+    "steps": [],
+    "strike_type": null,
+    "unsupported_reason": null
+  },
+  "prompt": "count every finger on your left hand with your left thumb while watching your hand",
+  "scene": {
+    "fps": 30,
+    "objects": [
+      {
+        "dimensions_m": {
+          "x": 0.06,
+          "y": 0.08,
+          "z": 0.06
+        },
+        "friction": 1.2,
+        "id": "block",
+        "kind": "block",
+        "mass_kg": 0.25,
+        "sockets": [
+          {
+            "approach_normal": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": -1.0
+            },
+            "grasp_span_m": 0.06,
+            "id": "front_center",
+            "role": "grasp",
+            "supports_body_weight": false,
+            "transform": {
+              "rotation": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "translation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": -0.03
+              }
+            }
+          }
+        ],
+        "transform": {
+          "rotation": {
+            "w": 1.0,
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "translation": {
+            "x": 0.0,
+            "y": 1.05,
+            "z": 0.29
+          }
+        }
+      },
+      {
+        "dimensions_m": {
+          "x": 0.46,
+          "y": 2.1,
+          "z": 0.08
+        },
+        "friction": 0.9,
+        "id": "ladder",
+        "kind": "ladder",
+        "mass_kg": 18.0,
+        "sockets": [
+          {
+            "approach_normal": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": -1.0
+            },
+            "grasp_span_m": 0.04,
+            "id": "rung_1",
+            "role": "climb_contact",
+            "supports_body_weight": true,
+            "transform": {
+              "rotation": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "translation": {
+                "x": 0.0,
+                "y": -0.82,
+                "z": -0.05
+              }
+            }
+          },
+          {
+            "approach_normal": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": -1.0
+            },
+            "grasp_span_m": 0.04,
+            "id": "rung_2",
+            "role": "climb_contact",
+            "supports_body_weight": true,
+            "transform": {
+              "rotation": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "translation": {
+                "x": 0.0,
+                "y": -0.615,
+                "z": -0.05
+              }
+            }
+          },
+          {
+            "approach_normal": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": -1.0
+            },
+            "grasp_span_m": 0.04,
+            "id": "rung_3",
+            "role": "climb_contact",
+            "supports_body_weight": true,
+            "transform": {
+              "rotation": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "translation": {
+                "x": 0.0,
+                "y": -0.41,
+                "z": -0.05
+              }
+            }
+          },
+          {
+            "approach_normal": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": -1.0
+            },
+            "grasp_span_m": 0.04,
+            "id": "rung_4",
+            "role": "climb_contact",
+            "supports_body_weight": true,
+            "transform": {
+              "rotation": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "translation": {
+                "x": 0.0,
+                "y": -0.20499999999999996,
+                "z": -0.05
+              }
+            }
+          },
+          {
+            "approach_normal": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": -1.0
+            },
+            "grasp_span_m": 0.04,
+            "id": "rung_5",
+            "role": "climb_contact",
+            "supports_body_weight": true,
+            "transform": {
+              "rotation": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "translation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": -0.05
+              }
+            }
+          },
+          {
+            "approach_normal": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": -1.0
+            },
+            "grasp_span_m": 0.04,
+            "id": "rung_6",
+            "role": "climb_contact",
+            "supports_body_weight": true,
+            "transform": {
+              "rotation": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "translation": {
+                "x": 0.0,
+                "y": 0.20499999999999996,
+                "z": -0.05
+              }
+            }
+          },
+          {
+            "approach_normal": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": -1.0
+            },
+            "grasp_span_m": 0.04,
+            "id": "rung_7",
+            "role": "climb_contact",
+            "supports_body_weight": true,
+            "transform": {
+              "rotation": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "translation": {
+                "x": 0.0,
+                "y": 0.41000000000000003,
+                "z": -0.05
+              }
+            }
+          },
+          {
+            "approach_normal": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": -1.0
+            },
+            "grasp_span_m": 0.04,
+            "id": "rung_8",
+            "role": "climb_contact",
+            "supports_body_weight": true,
+            "transform": {
+              "rotation": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "translation": {
+                "x": 0.0,
+                "y": 0.6149999999999999,
+                "z": -0.05
+              }
+            }
+          },
+          {
+            "approach_normal": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": -1.0
+            },
+            "grasp_span_m": 0.04,
+            "id": "rung_9",
+            "role": "climb_contact",
+            "supports_body_weight": true,
+            "transform": {
+              "rotation": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "translation": {
+                "x": 0.0,
+                "y": 0.82,
+                "z": -0.05
+              }
+            }
+          }
+        ],
+        "transform": {
+          "rotation": {
+            "w": 1.0,
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "translation": {
+            "x": 0.0,
+            "y": 1.05,
+            "z": 0.58
+          }
+        }
+      },
+      {
+        "dimensions_m": {
+          "x": 0.22,
+          "y": 0.1,
+          "z": 0.1
+        },
+        "friction": 1.2,
+        "id": "hurdle",
+        "kind": "hurdle",
+        "mass_kg": 4.0,
+        "sockets": [
+          {
+            "approach_normal": {
+              "x": 0.0,
+              "y": 1.0,
+              "z": 0.0
+            },
+            "grasp_span_m": 0.1,
+            "id": "top_center",
+            "role": "support",
+            "supports_body_weight": false,
+            "transform": {
+              "rotation": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "translation": {
+                "x": 0.0,
+                "y": 0.05,
+                "z": 0.0
+              }
+            }
+          }
+        ],
+        "transform": {
+          "rotation": {
+            "w": 1.0,
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "translation": {
+            "x": 0.0,
+            "y": 0.07,
+            "z": 0.55
+          }
+        }
+      }
+    ],
+    "reachable_radius_m": 0.72,
+    "rig": {
+      "asset_uri": "assets/models/human-male.glb",
+      "fixed_root": true,
+      "id": "mesh2motion-human-vrm1",
+      "profile_uri": "config/rig_profiles/mesh2motion-human-vrm1.json"
+    },
+    "schema_version": "1.0"
+  }
+}

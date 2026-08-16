@@ -31,7 +31,7 @@ Status values: `not started` · `in progress` · `blocked` · `in review` · `do
 | Plan | PRs | Status | Branch / owner | Blocking |
 | --- | --- | --- | --- | --- |
 | [01 Observability](01-observability-and-transcript.md) | 1/4 | in progress | `eval/01a-observability` | trajectory evals |
-| [02 Analysis layer](02-analysis-layer.md) | 0/5 | not started | — | 03, 04, 06, 10 |
+| [02 Analysis layer](02-analysis-layer.md) | 1/5 | in progress | `eval/02a-analysis` | 03, 04, 06, 10 |
 | [03 Golden corpus](03-golden-corpus.md) | 0/2 | not started | — | 06, 09, 10 |
 | [04 Anatomical frame](04-anatomical-frame.md) | 0/3 | not started | — | 06, 10 |
 | [05 Capture integrity](05-capture-integrity.md) | 0/1 | not started | — | 07, 10 |
@@ -78,18 +78,26 @@ Session prompts and the file-ownership map: [SLICE-1-SESSIONS.md](SLICE-1-SESSIO
 
 | PR | Scope | Status | Note |
 | --- | --- | --- | --- |
-| 02a | Skeleton, `CheckResult`, `AnalysisContext`, registry, equivalence harness; move pure helpers + `quality.py` | not started | slice 1, critical path |
-| 02b | Persist IK support targets; port full-body's 13 action blocks | not started | bulk of metric mass |
+| 02a | Skeleton, `CheckResult`, `AnalysisContext`, registry, equivalence harness; move pure helpers + `quality.py` | done | `eval/02a-analysis`; 14-case fixture, byte-identical |
+| 02b | Persist IK support targets; port full-body's 12 action blocks | not started | bulk of metric mass |
 | 02c | Composite + gesture/strike/grab; converge `arm_landmarks` on `RigKinematics` | not started | |
 | 02d | Object interaction + handoff | not started | numeric drift risk |
 | 02e | Sequence | not started | hardest path |
 
 **Open decisions**
-- §6.3 Does the compiler keep populating `ClipResult.metrics`? — *decide before 02a*.
-  Plan recommends yes. Unresolved.
+- §6.3 Does the compiler keep populating `ClipResult.metrics`? — **resolved 2026-08-16:
+  yes.** 352 references across 25 files incl. the frontend; `Failure.details` is the
+  metrics dict; `analysis` imports nothing from `compiler`, so the cost is zero.
 
 **Findings**
-- _(none yet)_
+- §1.5 gained two traps: composite `presentation_ranges` is not in `phase_ranges_s` (it
+  starts part-way into each phase), and the angular-kinematics bone set is per compile
+  path, not per action. Both block 02c if missed.
+- §3.4 counts corrected: `BodyAction` has 12 members, `ObjectAction` 9 — not 13 and ~8.
+- §5 performance measured: 17–85 ms per 125-frame clip, heaviest is composite travel.
+  Target met with 15 ms headroom; committed gate is a 300 ms regression ceiling.
+- §1.2 `_line_segment_distance` over-estimates for exactly-parallel segments. Unreachable
+  for its only caller; pinned by test, not fixed.
 
 ---
 

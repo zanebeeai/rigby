@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 import math
 from importlib.metadata import version
 from pathlib import Path
@@ -12,7 +11,6 @@ from scipy.signal import find_peaks
 from scipy.spatial.transform import Rotation
 
 from .models import (
-    AssertionSpec,
     BonePose,
     BodyAction,
     BodyClimbDirection,
@@ -61,26 +59,38 @@ from .primitives import (
     thumb_to_fingertip_pose,
     wrist_flourish_amplitude_rad,
 )
-from .quality import (
+from .analysis import (
     _angular_kinematics,
     arm_landmarks,
     evaluate_gesture_structure,
     shake_joint_oscillation_metrics,
 )
+from .analysis.contact import (
+    intra_hand_contact_failures as _intra_hand_contact_failures,
+    intra_hand_contact_metrics as _intra_hand_contact_metrics,
+)
+from .analysis.forearm import (
+    parallel_forearm_failures as _parallel_forearm_failures,
+    parallel_forearm_metrics as _parallel_forearm_metrics,
+)
+from .analysis.geometry import line_segment_distance as _line_segment_distance
+from .analysis.rig import (
+    EGO_NEUTRAL_GAZE as _EGO_NEUTRAL_GAZE,
+    RIG_PROFILE,
+    identity_pose as _identity_pose,
+    rig_profile as _rig_profile,
+)
+from .analysis.safety import safety_metrics as _safety_metrics
+from .analysis.semantic import (
+    semantic_cycle_assertion as _semantic_cycle_assertion,
+    semantic_cycle_failures as _semantic_cycle_failures,
+    semantic_cycle_metrics as _semantic_cycle_metrics,
+)
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-RIG_PROFILE = PROJECT_ROOT / "config" / "rig_profiles" / "mesh2motion-human-vrm1.json"
 COMPILER_VERSION = "rigby-compiler-0.4.0"
 FULL_BODY_STANDING_ROOT_HEIGHT_M = -0.075
-
-
-def _rig_profile() -> dict[str, Any]:
-    return json.loads(RIG_PROFILE.read_text(encoding="utf-8"))
-
-
-def _identity_pose() -> dict[str, Quat]:
-    return {key: Quat() for key in _rig_profile()["bone_map"]}
 
 
 def _gesture_idle_pose() -> dict[str, Quat]:
@@ -532,94 +542,6 @@ def _curl_values_from_frame(frame: ClipFrame, hand_value: str) -> dict[str, floa
         curl_angle = abs(float(Rotation.from_quat(quat.as_list()).as_euler("xyz")[0]))
         result[digit] = float(np.clip(curl_angle / (0.95 if digit == "thumb" else 1.15), 0.0, 1.0))
     return result
-
-
-def _safety_metrics(
-    frames: list[ClipFrame],
-    *,
-    allow_root_motion: bool = False,
-) -> dict[str, Any]:
-    if not frames:
-        return {
-            "joint_limit_violations": 0,
-            "root_drift_m": 0.0,
-            "foot_drift_m": 0.0,
-            "nan_count": 0,
-            "discontinuities": 0,
-            "max_frame_rotation_delta_rad": 0.0,
-            "quaternion_norm_max_error": 0.0,
-            "safety_derivation": "no frames",
-        }
-    profile = _rig_profile()
-    all_quats = np.asarray(
-        [pose.rotation.as_list() for frame in frames for pose in frame.bones.values()], dtype=float
-    )
-    all_positions = np.asarray(
-        [
-            pose.position.as_list()
-            for frame in frames
-            for pose in frame.bones.values()
-            if pose.position is not None
-        ],
-        dtype=float,
-    )
-    nan_count = int(np.count_nonzero(~np.isfinite(all_quats)))
-    if all_positions.size:
-        nan_count += int(np.count_nonzero(~np.isfinite(all_positions)))
-    norm_error = float(np.max(np.abs(np.linalg.norm(all_quats, axis=1) - 1.0)))
-    max_delta = 0.0
-    discontinuities = 0
-    for previous, current in zip(frames, frames[1:]):
-        frame_max = 0.0
-        for key in previous.bones:
-            a = np.asarray(previous.bones[key].rotation.as_list())
-            b = np.asarray(current.bones[key].rotation.as_list())
-            delta = 2.0 * math.acos(float(np.clip(abs(np.dot(a, b)), 0.0, 1.0)))
-            frame_max = max(frame_max, delta)
-        max_delta = max(max_delta, frame_max)
-        discontinuities += int(frame_max > 0.35)
-    joint_violations = 0
-    for canonical, bounds in profile.get("joint_limits_rad", {}).items():
-        for frame in frames:
-            quat = frame.bones[canonical].rotation
-            angle = 2.0 * math.acos(float(np.clip(abs(quat.w), 0.0, 1.0)))
-            if angle > max(abs(bounds[0]), abs(bounds[1])) + 1e-6:
-                joint_violations += 1
-    fixed_keys = ("hips", "leftFoot", "rightFoot", "leftToes", "rightToes")
-    fixed_delta = max(
-        2.0 * math.acos(float(np.clip(abs(frame.bones[key].rotation.w), 0.0, 1.0)))
-        for frame in frames
-        for key in fixed_keys
-    )
-    hips_positions = np.asarray(
-        [
-            frame.bones["hips"].position.as_list()
-            if frame.bones["hips"].position is not None
-            else [0.0, 0.0, 0.0]
-            for frame in frames
-        ],
-        dtype=float,
-    )
-    root_drift = max(
-        (float(np.linalg.norm(position - hips_positions[0])) for position in hips_positions),
-        default=0.0,
-    )
-    if not allow_root_motion and root_drift > 1e-6:
-        joint_violations += 1
-    return {
-        "joint_limit_violations": joint_violations,
-        "root_drift_m": root_drift,
-        "foot_drift_m": 0.0,
-        "fixed_root_foot_max_rotation_delta_rad": fixed_delta,
-        "nan_count": nan_count,
-        "discontinuities": discontinuities,
-        "max_frame_rotation_delta_rad": max_delta,
-        "quaternion_norm_max_error": norm_error,
-        "safety_derivation": (
-            "computed over every frame/local delta quaternion and authored hips translation; "
-            + ("root motion is explicitly enabled" if allow_root_motion else "root motion must remain fixed")
-        ),
-    }
 
 
 def _composite_workspace_target(target: EffectorTarget) -> Vec3:
@@ -4366,7 +4288,7 @@ def _compile_full_body(scene: SceneManifest, program: MotionProgram) -> ClipResu
         structural_failures.append(
             "support foot slides during a planted stance interval"
         )
-    _append_semantic_cycle_failures(program, metrics, structural_failures)
+    structural_failures.extend(_semantic_cycle_failures(program, metrics))
     allows_airborne = horizontal_pose_requested or any(
         primitive.body is not None
         and primitive.body.action in {
@@ -4724,164 +4646,6 @@ def _compile_full_body(scene: SceneManifest, program: MotionProgram) -> ClipResu
     )
 
 
-def _line_segment_distance(
-    first_start: np.ndarray,
-    first_end: np.ndarray,
-    second_start: np.ndarray,
-    second_end: np.ndarray,
-) -> float:
-    """Return the closest centerline distance between two finite 3D segments."""
-
-    first = first_end - first_start
-    second = second_end - second_start
-    offset = first_start - second_start
-    aa = float(np.dot(first, first))
-    ab = float(np.dot(first, second))
-    bb = float(np.dot(second, second))
-    ao = float(np.dot(first, offset))
-    bo = float(np.dot(second, offset))
-    denominator = aa * bb - ab * ab
-    epsilon = 1e-10
-    if denominator < epsilon:
-        first_alpha = 0.0
-        second_alpha = float(np.clip(bo / max(bb, epsilon), 0.0, 1.0))
-    else:
-        first_alpha = float(
-            np.clip((ab * bo - bb * ao) / denominator, 0.0, 1.0)
-        )
-        second_alpha = float(
-            np.clip((aa * bo - ab * ao) / denominator, 0.0, 1.0)
-        )
-        # Clamping one parameter changes the optimum of the other. One
-        # coordinate-descent refinement is exact for the remaining segment.
-        first_alpha = float(
-            np.clip(
-                (ab * second_alpha - ao) / max(aa, epsilon),
-                0.0,
-                1.0,
-            )
-        )
-        second_alpha = float(
-            np.clip(
-                (ab * first_alpha + bo) / max(bb, epsilon),
-                0.0,
-                1.0,
-            )
-        )
-    delta = (
-        offset + first_alpha * first - second_alpha * second
-    )
-    return float(np.linalg.norm(delta))
-
-
-def _parallel_forearm_metrics(
-    frames: list[ClipFrame],
-    phase_ranges: list[dict[str, float | str]],
-) -> dict[str, float]:
-    intervals = [
-        (float(item["start_s"]), float(item["end_s"]))
-        for item in phase_ranges
-        if item.get("label") == "parallel_forearm_travel_cycle"
-    ]
-    if not intervals:
-        return {}
-    kinematics = rig_kinematics()
-    axis_errors: list[float] = []
-    frontal_axis_errors: list[float] = []
-    separations: list[float] = []
-    hand_separations: list[float] = []
-    opposite_elbow_distances: list[float] = []
-    cross_body_samples: list[bool] = []
-    wrist_vertical_orders: list[float] = []
-    wrist_depth_orders: list[float] = []
-    for frame in frames:
-        if not any(start <= frame.time_s <= end for start, end in intervals):
-            continue
-        positions = kinematics.canonical_positions(frame.bones)
-        left_elbow = positions["leftLowerArm"]
-        left_wrist = positions["leftHand"]
-        right_elbow = positions["rightLowerArm"]
-        right_wrist = positions["rightHand"]
-        left_axis = left_wrist - left_elbow
-        right_axis = right_wrist - right_elbow
-        alignment = abs(
-            float(np.dot(left_axis, right_axis))
-            / max(
-                float(np.linalg.norm(left_axis) * np.linalg.norm(right_axis)),
-                1e-10,
-            )
-        )
-        axis_errors.append(
-            math.degrees(math.acos(float(np.clip(alignment, -1.0, 1.0))))
-        )
-        left_frontal = left_axis[:2]
-        right_frontal = right_axis[:2]
-        frontal_alignment = abs(
-            float(np.dot(left_frontal, right_frontal))
-            / max(
-                float(
-                    np.linalg.norm(left_frontal)
-                    * np.linalg.norm(right_frontal)
-                ),
-                1e-10,
-            )
-        )
-        frontal_axis_errors.append(
-            math.degrees(
-                math.acos(float(np.clip(frontal_alignment, -1.0, 1.0)))
-            )
-        )
-        separations.append(
-            _line_segment_distance(
-                left_elbow,
-                left_wrist,
-                right_elbow,
-                right_wrist,
-            )
-        )
-        hand_separations.append(float(np.linalg.norm(left_wrist - right_wrist)))
-        opposite_elbow_distances.extend(
-            (
-                float(np.linalg.norm(left_wrist - right_elbow)),
-                float(np.linalg.norm(right_wrist - left_elbow)),
-            )
-        )
-        cross_body_samples.append(
-            float(left_wrist[0]) < -0.08 and float(right_wrist[0]) > 0.08
-        )
-        wrist_vertical_orders.append(float(left_wrist[1] - right_wrist[1]))
-        wrist_depth_orders.append(float(left_wrist[2] - right_wrist[2]))
-    if not axis_errors:
-        return {}
-    return {
-        "parallel_forearm_max_axis_error_deg": max(axis_errors),
-        "parallel_forearm_p95_axis_error_deg": float(
-            np.percentile(axis_errors, 95.0)
-        ),
-        "parallel_forearm_max_frontal_axis_error_deg": max(
-            frontal_axis_errors
-        ),
-        "parallel_forearm_p95_frontal_axis_error_deg": float(
-            np.percentile(frontal_axis_errors, 95.0)
-        ),
-        "parallel_forearm_minimum_separation_m": min(separations),
-        "parallel_forearm_minimum_hand_separation_m": min(hand_separations),
-        "travel_wheel_maximum_opposite_elbow_distance_m": max(
-            opposite_elbow_distances
-        ),
-        "travel_wheel_cross_body_fraction": sum(cross_body_samples)
-        / len(cross_body_samples),
-        "travel_wheel_minimum_vertical_order_m": min(wrist_vertical_orders),
-        "travel_wheel_maximum_vertical_order_m": max(wrist_vertical_orders),
-        "travel_wheel_vertical_order_range_m": max(wrist_vertical_orders)
-        - min(wrist_vertical_orders),
-        "travel_wheel_minimum_depth_order_m": min(wrist_depth_orders),
-        "travel_wheel_maximum_depth_order_m": max(wrist_depth_orders),
-        "travel_wheel_depth_order_range_m": max(wrist_depth_orders)
-        - min(wrist_depth_orders),
-    }
-
-
 def _travel_wheel_target(
     center: Vec3,
     hand: Hand,
@@ -4925,10 +4689,6 @@ def _travel_wheel_elbow_hint(
     )
 
 
-_EGO_NEUTRAL_GAZE = np.asarray([0.0, -0.65, 1.0], dtype=float)
-_EGO_NEUTRAL_GAZE /= np.linalg.norm(_EGO_NEUTRAL_GAZE)
-
-
 def _head_gaze_rotation(target: Vec3) -> Quat:
     """Aim the canonical egocentric gaze at a world-space target."""
 
@@ -4945,360 +4705,6 @@ def _head_gaze_rotation(target: Vec3) -> Quat:
         np.asarray([_EGO_NEUTRAL_GAZE]),
     )
     return kinematics.world_delta_quat("head", rotation.as_matrix())
-
-
-def _intra_hand_contact_metrics(
-    frames: list[ClipFrame],
-    phase_ranges: list[dict[str, float | str]],
-    program: MotionProgram,
-) -> dict[str, Any]:
-    contacts = [
-        primitive
-        for primitive in program.primitives
-        if primitive.intra_hand_contact is not None
-    ]
-    gaze_primitives = [
-        primitive
-        for primitive in program.primitives
-        if primitive.gaze_target is not None
-    ]
-    if not contacts and not gaze_primitives:
-        return {}
-    ranges = {
-        str(item.get("label")): (float(item["start_s"]), float(item["end_s"]))
-        for item in phase_ranges
-    }
-    kinematics = rig_kinematics()
-    contact_records: list[dict[str, Any]] = []
-    observed_order: list[str] = []
-    release_separations: list[float] = []
-
-    for primitive in contacts:
-        contact = primitive.intra_hand_contact
-        assert contact is not None
-        interval = ranges.get(primitive.label or "")
-        phase_frames = (
-            [
-                frame
-                for frame in frames
-                if interval is not None
-                and interval[0] - 1e-8 <= frame.time_s <= interval[1] + 1e-8
-            ]
-            if interval is not None
-            else []
-        )
-        closest: tuple[float, ClipFrame, dict[str, np.ndarray]] | None = None
-        for frame in phase_frames:
-            tips = kinematics.fingertip_positions(frame.bones, contact.hand.value)
-            distance = float(
-                np.linalg.norm(
-                    tips[contact.driver_digit.value]
-                    - tips[contact.target_digit.value]
-                )
-            )
-            if closest is None or distance < closest[0]:
-                closest = (distance, frame, tips)
-        minimum_distance = closest[0] if closest is not None else float("inf")
-        non_target_distance = (
-            min(
-                float(
-                    np.linalg.norm(
-                        closest[2][contact.driver_digit.value] - position
-                    )
-                )
-                for digit, position in closest[2].items()
-                if digit
-                not in {
-                    contact.driver_digit.value,
-                    contact.target_digit.value,
-                }
-            )
-            if closest is not None
-            else 0.0
-        )
-        passed = bool(
-            minimum_distance <= contact.maximum_distance_m
-            and minimum_distance < non_target_distance
-        )
-        if passed:
-            observed_order.append(contact.target_digit.value)
-        contact_records.append(
-            {
-                "driver_digit": contact.driver_digit.value,
-                "target_digit": contact.target_digit.value,
-                "phase": primitive.label,
-                "minimum_distance_m": minimum_distance,
-                "maximum_distance_m": contact.maximum_distance_m,
-                "nearest_other_fingertip_m": non_target_distance,
-                "contact_time_s": closest[1].time_s if closest is not None else None,
-                "passed": passed,
-            }
-        )
-
-        release_label = (primitive.label or "").replace("_touch_", "_release_", 1)
-        release_interval = ranges.get(release_label)
-        if release_interval is not None:
-            release_frame = min(
-                frames,
-                key=lambda frame: abs(frame.time_s - release_interval[1]),
-            )
-            release_tips = kinematics.fingertip_positions(
-                release_frame.bones,
-                contact.hand.value,
-            )
-            release_separations.append(
-                float(
-                    np.linalg.norm(
-                        release_tips[contact.driver_digit.value]
-                        - release_tips[contact.target_digit.value]
-                    )
-                )
-            )
-
-    rest_bones = {
-        name: BonePose(rotation=value)
-        for name, value in _identity_pose().items()
-    }
-    rest_head_rotation = kinematics.canonical_world_rotation(rest_bones, "head")
-    gaze_records: list[dict[str, Any]] = []
-    for primitive in gaze_primitives:
-        gaze = primitive.gaze_target
-        assert gaze is not None
-        interval = ranges.get(primitive.label or "")
-        if interval is None:
-            continue
-        frame = min(frames, key=lambda item: abs(item.time_s - interval[1]))
-        positions = kinematics.canonical_positions(frame.bones)
-        if gaze.hand is not None:
-            target = positions[f"{gaze.hand.value}Hand"]
-        else:
-            transform = frame.objects.get(gaze.object_id or "")
-            if transform is None:
-                continue
-            target = np.asarray(transform.translation.as_list(), dtype=float)
-        head_rotation = kinematics.canonical_world_rotation(frame.bones, "head")
-        head_delta = head_rotation @ rest_head_rotation.T
-        forward = head_delta @ _EGO_NEUTRAL_GAZE
-        direction = target - positions["head"]
-        direction /= max(float(np.linalg.norm(direction)), 1e-12)
-        angle = math.degrees(
-            math.acos(float(np.clip(np.dot(forward, direction), -1.0, 1.0)))
-        )
-        gaze_records.append(
-            {
-                "phase": primitive.label,
-                "target_hand": gaze.hand.value if gaze.hand is not None else None,
-                "target_object": gaze.object_id,
-                "angle_deg": angle,
-                "maximum_angle_deg": gaze.maximum_angle_deg,
-                "passed": angle <= gaze.maximum_angle_deg,
-            }
-        )
-
-    return {
-        "intra_hand_contact_expected_order": [
-            primitive.intra_hand_contact.target_digit.value
-            for primitive in contacts
-            if primitive.intra_hand_contact is not None
-        ],
-        "intra_hand_contact_observed_order": observed_order,
-        "intra_hand_contact_count": sum(
-            1 for record in contact_records if record["passed"]
-        ),
-        "intra_hand_contact_records": contact_records,
-        "intra_hand_minimum_release_separation_m": min(
-            release_separations,
-            default=0.0,
-        ),
-        "gaze_target_records": gaze_records,
-        "gaze_max_endpoint_angle_deg": max(
-            (float(record["angle_deg"]) for record in gaze_records),
-            default=0.0,
-        ),
-    }
-
-
-def _append_intra_hand_contact_failures(
-    program: MotionProgram,
-    metrics: dict[str, Any],
-    failures: list[str],
-) -> None:
-    contact_assertion = next(
-        (
-            assertion
-            for assertion in program.assertions
-            if assertion.name == "ordered_intra_hand_contacts"
-        ),
-        None,
-    )
-    if contact_assertion is not None:
-        expected_count = int(round(contact_assertion.threshold or 0.0))
-        observed_count = int(metrics.get("intra_hand_contact_count", 0))
-        expected_order = metrics.get("intra_hand_contact_expected_order", [])
-        observed_order = metrics.get("intra_hand_contact_observed_order", [])
-        if observed_count != expected_count or observed_order != expected_order:
-            failures.append(
-                "ordered fingertip contacts were not completed in the requested sequence"
-            )
-        if float(metrics.get("intra_hand_minimum_release_separation_m", 0.0)) < 0.025:
-            failures.append(
-                "thumb does not visibly separate between successive fingertip contacts"
-            )
-    gaze_assertion = next(
-        (
-            assertion
-            for assertion in program.assertions
-            if assertion.name == "gaze_tracks_active_hand"
-        ),
-        None,
-    )
-    if gaze_assertion is not None and float(
-        metrics.get("gaze_max_endpoint_angle_deg", float("inf"))
-    ) > float(gaze_assertion.threshold or 12.0):
-        failures.append("head/camera gaze does not track the requested hand")
-
-
-def _semantic_cycle_assertion(program: MotionProgram) -> AssertionSpec | None:
-    return next(
-        (
-            assertion
-            for assertion in program.assertions
-            if assertion.name.endswith("_trajectory_reversals")
-        ),
-        None,
-    )
-
-
-def _semantic_cycle_metrics(
-    frames: list[ClipFrame],
-    phase_ranges: list[dict[str, float | str]],
-    program: MotionProgram,
-) -> dict[str, Any]:
-    """Measure the observable path promised by a motion-bearing verb."""
-
-    assertion = _semantic_cycle_assertion(program)
-    if assertion is None:
-        return {}
-    cyclic_primitives = [
-        primitive
-        for primitive in program.primitives
-        if primitive.trajectory == TrajectoryKind.OSCILLATE
-        and primitive.effectors
-        and primitive.parameters.trajectory_cycles > 0.0
-    ]
-    if not cyclic_primitives:
-        return {
-            "semantic_cycle_action": assertion.name.removesuffix(
-                "_trajectory_reversals"
-            ),
-            "semantic_cycle_min_reversal_count": 0,
-            "semantic_cycle_min_excursion_m": 0.0,
-            "semantic_cycle_requested_amplitude_m": 0.0,
-        }
-    labels = {
-        primitive.label or primitive.kind.value for primitive in cyclic_primitives
-    }
-    intervals = [
-        (float(item["start_s"]), float(item["end_s"]))
-        for item in phase_ranges
-        if str(item.get("label")) in labels
-    ]
-    hand_axes: dict[Hand, int] = {}
-    requested_cycles = 0.0
-    requested_amplitude = 0.0
-    for primitive in cyclic_primitives:
-        axis = {
-            TrajectoryPlane.FRONTAL: 0,
-            TrajectoryPlane.SAGITTAL: 1,
-            TrajectoryPlane.HORIZONTAL: 2,
-        }[primitive.trajectory_plane or TrajectoryPlane.FRONTAL]
-        for target in primitive.effectors:
-            hand_axes[target.hand] = axis
-        requested_cycles = max(
-            requested_cycles, primitive.parameters.trajectory_cycles
-        )
-        requested_amplitude = max(
-            requested_amplitude,
-            primitive.parameters.trajectory_amplitude_m,
-        )
-    values = {hand: [] for hand in hand_axes}
-    kinematics = rig_kinematics()
-    for frame in frames:
-        if not any(start <= frame.time_s <= end for start, end in intervals):
-            continue
-        positions = kinematics.canonical_positions(frame.bones)
-        for hand, axis in hand_axes.items():
-            # Measure the path in the moving shoulder frame. World-space
-            # wrist positions are dominated by root travel when someone
-            # waves while walking, which can erase otherwise valid lateral
-            # reversals from the metric.
-            values[hand].append(
-                float(
-                    positions[f"{hand.value}Hand"][axis]
-                    - positions[f"{hand.value}UpperArm"][axis]
-                )
-            )
-
-    per_hand: dict[str, dict[str, float | int]] = {}
-    for hand, samples in values.items():
-        directions: list[int] = []
-        for delta in np.diff(np.asarray(samples, dtype=float)):
-            if abs(float(delta)) < 5e-4:
-                continue
-            direction = 1 if delta > 0.0 else -1
-            if not directions or direction != directions[-1]:
-                directions.append(direction)
-        per_hand[hand.value] = {
-            "reversal_count": max(0, len(directions) - 1),
-            "excursion_m": (
-                float(np.ptp(np.asarray(samples, dtype=float)))
-                if samples
-                else 0.0
-            ),
-        }
-    return {
-        "semantic_cycle_action": assertion.name.removesuffix(
-            "_trajectory_reversals"
-        ),
-        "semantic_cycle_requested_cycles": requested_cycles,
-        "semantic_cycle_requested_amplitude_m": requested_amplitude,
-        "semantic_cycle_min_reversal_count": min(
-            (int(item["reversal_count"]) for item in per_hand.values()),
-            default=0,
-        ),
-        "semantic_cycle_min_excursion_m": min(
-            (float(item["excursion_m"]) for item in per_hand.values()),
-            default=0.0,
-        ),
-        "semantic_cycle_hands": per_hand,
-    }
-
-
-def _append_semantic_cycle_failures(
-    program: MotionProgram,
-    metrics: dict[str, Any],
-    failures: list[str],
-) -> None:
-    assertion = _semantic_cycle_assertion(program)
-    if assertion is None:
-        return
-    required_reversals = int(round(assertion.threshold or 1.0))
-    observed_reversals = int(metrics.get("semantic_cycle_min_reversal_count", 0))
-    if observed_reversals < required_reversals:
-        failures.append(
-            f"{metrics.get('semantic_cycle_action', 'cyclic action')} has "
-            f"{observed_reversals} visible reversals; {required_reversals} required"
-        )
-    requested_amplitude = float(
-        metrics.get("semantic_cycle_requested_amplitude_m", 0.0)
-    )
-    minimum_excursion = max(0.045, requested_amplitude * 0.75)
-    observed_excursion = float(metrics.get("semantic_cycle_min_excursion_m", 0.0))
-    if observed_excursion < minimum_excursion:
-        failures.append(
-            f"{metrics.get('semantic_cycle_action', 'cyclic action')} lateral/path "
-            f"excursion is {observed_excursion:.3f} m; {minimum_excursion:.3f} m required"
-        )
 
 
 def _compile_composite(scene: SceneManifest, program: MotionProgram) -> ClipResult:
@@ -5679,50 +5085,13 @@ def _compile_composite(scene: SceneManifest, program: MotionProgram) -> ClipResu
         metrics["wrist_deviation_cycles"] = max(
             values["wrist_deviation_cycles"] for values in joint_motion.values()
         )
-    if "parallel_forearm_max_axis_error_deg" in metrics:
-        if float(metrics["parallel_forearm_max_axis_error_deg"]) > 20.0:
-            structural_failures.append(
-                "travel-signal forearms form an excessive depth V"
-            )
-        if float(
-            metrics["parallel_forearm_max_frontal_axis_error_deg"]
-        ) > 8.0:
-            structural_failures.append(
-                "travel-signal forearms do not remain parallel in presentation"
-            )
-        if float(metrics["parallel_forearm_minimum_separation_m"]) < 0.025:
-            structural_failures.append(
-                "travel-signal forearms intersect or lose clearance"
-            )
-        if float(metrics["parallel_forearm_minimum_hand_separation_m"]) < 0.28:
-            structural_failures.append(
-                "travel-signal hands collapse into the same base position"
-            )
-        if float(metrics["travel_wheel_cross_body_fraction"]) < 0.95:
-            structural_failures.append(
-                "travel-signal fists do not remain across by the opposite elbows"
-            )
-        if float(
-            metrics["travel_wheel_maximum_opposite_elbow_distance_m"]
-        ) > 0.20:
-            structural_failures.append(
-                "travel-signal fists stray too far from the opposite elbows"
-            )
-        if not (
-            float(metrics["travel_wheel_minimum_vertical_order_m"]) <= -0.15
-            and float(metrics["travel_wheel_maximum_vertical_order_m"]) >= 0.15
-            and float(metrics["travel_wheel_minimum_depth_order_m"]) <= -0.08
-            and float(metrics["travel_wheel_maximum_depth_order_m"]) >= 0.08
-        ):
-            structural_failures.append(
-                "travel-signal forearms do not exchange over/under and front/back order"
-            )
+    structural_failures.extend(_parallel_forearm_failures(metrics))
     if metrics["nan_count"]:
         structural_failures.append("clip contains non-finite transforms")
     if metrics["joint_limit_violations"]:
         structural_failures.append("clip exceeds a joint limit")
-    _append_intra_hand_contact_failures(program, metrics, structural_failures)
-    _append_semantic_cycle_failures(program, metrics, structural_failures)
+    structural_failures.extend(_intra_hand_contact_failures(program, metrics))
+    structural_failures.extend(_semantic_cycle_failures(program, metrics))
     metrics["structural_failures"] = structural_failures
     metrics["structural_valid"] = not structural_failures
     metrics["finger_assertions"] = {

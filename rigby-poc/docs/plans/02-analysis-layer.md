@@ -1,6 +1,6 @@
 # PR 02 — Extract the analysis layer
 
-Status: proposed, not started.
+Status: 02a landed; 02b–02e not started.
 Scope: move metric computation and structural validation out of `compiler.py` into a pure
 module that operates on a finished clip, so checks can run on any clip without recompiling
 and can be added without touching an 8446-line file.
@@ -39,6 +39,10 @@ compile path appends its last frame and then runs one contiguous measurement blo
 The compiler was written generate-then-measure. The metrics simply never got a file of
 their own.
 
+*Verified in 02a.* Every write to `metrics` in `compiler.py` occurs at or after line 2853,
+except one inside `_failure_result`. Each path's last `frames.append` precedes its first
+metric write. No metric is accumulated in a per-frame loop anywhere.
+
 Structural validation is likewise a separate linear pass at six sites
 (`compiler.py:4342-4688, 5615-5725, 6281-6303, 6925-6984, 7908-7918, 8369-8377`, plus
 `quality.py:291-306`), each a flat sequence of `if metric > threshold: failures.append(...)`
@@ -56,6 +60,22 @@ These have exactly the signature the analysis layer wants and can move mechanica
 - `compiler.py:5172` `_semantic_cycle_metrics(frames, phase_ranges, program)`
 - all 324 lines of `quality.py`
 
+*Corrected in 02a.* Those four do not stand alone. Moving them pulled five more
+compiler-private definitions across, each equally pure: `_line_segment_distance`,
+`_EGO_NEUTRAL_GAZE`, `_semantic_cycle_assertion`, `_rig_profile` and `_identity_pose`.
+The two failure appenders `_append_intra_hand_contact_failures` and
+`_append_semantic_cycle_failures`, plus the inline travel-signal threshold block at
+`_compile_composite`, came too — they are pure `(program, metrics) -> list[str]` and
+splitting them from their metrics would have been the harder move. All are re-exported
+from `compiler.py` under their original private names, so no call site changed.
+
+`_line_segment_distance` carries a latent defect, pinned by
+`tests/test_analysis_checks.py` rather than fixed here: when the two segments are exactly
+parallel the determinant collapses, the solver stops searching along the first segment and
+reports the distance from its start point instead of the closest approach. Unreachable for
+its one caller — `parallel_forearm_metrics` tolerates 20 degrees of axis error, and at
+0.25 m segment lengths the 1e-10 epsilon needs parallelism to about 1e-4.
+
 ### 1.3 The general FK primitive already exists
 
 `kinematics.py:51` `RigKinematics` parses the GLB and evaluates the true hierarchy for
@@ -66,6 +86,11 @@ These have exactly the signature the analysis layer wants and can move mechanica
 
 The full-body path already uses it post-hoc (`compiler.py:2875`). This is the single
 biggest enabler and it is already written.
+
+*Verified in 02a.* The GLB carries 68 nodes; the rig profile's `bone_map` has 52 entries
+and every one resolves to a node, 30 of them finger bones. `RigKinematics.__init__` reads
+only the GLB and the profile JSON, and every evaluation method takes a
+`Mapping[str, BonePose]`. Confirmed generation-free.
 
 ### 1.4 What genuinely cannot be recovered from a clip
 
@@ -95,14 +120,34 @@ Four things, and three have a cheap fix:
    (7376) inserts bridge frames belonging to no step. Expect drift in root-relative
    metrics. This is the hardest of the six paths.
 
-### 1.5 Two traps
+### 1.5 Traps
 
-- `store.py:49` persists `request.program`, which is the **pre-override** program. An
-  analyzer reading stored artifacts must call `compiler.apply_overrides(request)`
-  (`compiler.py:193`, already public) to get the effective `(scene, program)`.
+Both confirmed in 02a, with two more found while extracting.
+
+- `store.py:49` persists `request.program`, which is the **pre-override** program — and
+  `store.py:48` does the same for the scene. An analyzer reading stored artifacts must
+  read `request.json` and call `compiler.apply_overrides(request)` (`compiler.py:193`,
+  already public) to get the effective `(scene, program)`.
+  `analysis.artifacts.load_analysis_inputs` does exactly that;
+  `tests/test_analysis_equivalence.py` demonstrates the divergence with a `hand` override.
 - `phase_ranges` timing is **not** `primitive.parameters.duration_s` — it is inflated by
-  ~70 lines of per-action frame-count rules (`compiler.py:1419-1492`). Do not re-derive
-  it; read `metrics["phase_ranges_s"]`, already persisted at `compiler.py:2854`.
+  ~70 lines of per-action frame-count rules (`compiler.py:1419-1492`), then taken as
+  `max(duration_s, (frame_count - 1) / fps)`. Do not re-derive it; read
+  `metrics["phase_ranges_s"]`, already persisted at `compiler.py:2854`.
+  `AnalysisContext.phase_ranges` is the only supported access.
+- **`presentation_ranges` is not in `phase_ranges_s`.** It is built while frames are
+  emitted and never persisted. For gesture and strike it coincides with the phases of a
+  fixed set of kinds, so reading it back is exact. For **composite** it does not: the
+  window starts part-way into each phase — `start + duration * 0.50` for the
+  `parallel_forearm_travel_setup` label, `start + min(0.15, duration * 0.25)` otherwise,
+  and `recover` phases are excluded entirely. Reconstructible from `kind` and `label`,
+  which `phase_ranges_s` carries, but not by reading the interval directly. Needed by 02c;
+  implemented in `AnalysisContext.presentation_ranges`.
+- **The angular-kinematics bone set is per compile path, not per action.** Full body uses
+  ten bones including feet, sequence uses ten including both forearms, object interaction
+  uses the three bones of the active arm, and gesture/strike get theirs from
+  `evaluate_gesture_structure`. All four are derivable from `intent` plus `program.hand`,
+  but an analyzer that assumes one list will silently disagree on three paths.
 
 ### 1.6 One real inconsistency, surfaced by this work
 
@@ -143,18 +188,27 @@ computed the two ways are not interchangeable. Converge on `RigKinematics`.
 
 ### 3.1 Module layout
 
+As built by 02a; the unwritten modules are the 02b–02e targets.
+
 ```
 src/rigby_poc/analysis/
-  __init__.py          analyze(), validate()
+  __init__.py          analyze(), validate(), structural_failures()
+  contract.py          CheckResult, layers, severity helpers
   context.py           AnalysisContext: FK cache, world positions, phase ranges
-  registry.py          check registration + applicability
+  registry.py          action registration + port status
+  equivalence.py       which metric keys the layer owns, and what is still deferred
+  artifacts.py         load a stored result through apply_overrides
+  rig.py               rig profile, identity pose, neutral gaze
+  geometry.py          line_segment_distance
   safety.py            from compiler._safety_metrics
-  kinematics_metrics.py angular velocity/accel/jerk, discontinuity
-  gesture.py           from quality.py
-  full_body/           one module per BodyAction — 13 of them
-  composite.py
-  objects.py
-  sequence.py
+  gesture.py           from quality.py, incl. angular velocity/accel/jerk
+  forearm.py           from compiler._parallel_forearm_metrics
+  contact.py           from compiler._intra_hand_contact_metrics
+  semantic.py          from compiler._semantic_cycle_metrics
+  full_body/           one module per BodyAction — 12 of them          (02b)
+  composite.py                                                          (02c)
+  objects.py                                                            (02d)
+  sequence.py                                                           (02e)
 ```
 
 ### 3.2 The check contract
@@ -192,9 +246,13 @@ The 35 metric-producing branches are already flat, sequential, and self-containe
 (`if <action> in program: compute 4-6 keys`). They translate one-to-one into:
 
 ```python
-BODY_ANALYZERS: dict[BodyAction, Analyzer] = {...}   # 13
-OBJECT_ANALYZERS: dict[ObjectAction, Analyzer] = {...}  # ~8
+BODY_ANALYZERS: dict[BodyAction, AnalyzerEntry] = {...}    # 12, not 13
+OBJECT_ANALYZERS: dict[ObjectAction, AnalyzerEntry] = {...}  # 9, not ~8
 ```
+
+`AnalyzerEntry` carries `analyzer | None` plus the owning module and the PR that ports it,
+so an unported action is *declared* rather than absent. `tests/test_registry_coverage.py`
+fails the suite when an enum member has no entry at all.
 
 Honest accounting: this is 35 units of work, each with its own thresholds. It is not one
 refactor.
@@ -214,6 +272,23 @@ def test_analysis_matches_persisted_metrics(result_dir):
 
 Run per extracted path; a path is not done until its equivalence test is green.
 
+*As built in 02a.* The golden corpus (plan 03) was not available, so the harness runs
+against a frozen fixture of 14 programs in `tests/fixtures/analysis_equivalence/`,
+covering all seven supported intents and every owned metric family. It makes three
+assertions per case:
+
+1. every key `analyze` returns is byte-identical to `clip.metrics` **from the same
+   compile run** — this proves the extraction is behaviour-preserving and can never go
+   stale;
+2. the whole output is byte-identical to the frozen snapshot — this catches a compiler
+   change that moves both sides together;
+3. the key set sits between the declared `required_metric_keys` and `owned_metric_keys`
+   in `analysis/equivalence.py` — this catches a check that silently stops producing.
+
+Comparison is on canonical JSON strings, so `-0.0` and `0.0` are distinguished. The
+fixture is regenerated with `uv run python tests/fixtures/analysis_equivalence/freeze.py`
+and is superseded by the corpus when 03a lands.
+
 ---
 
 ## 4. Sequencing — five PRs
@@ -222,8 +297,8 @@ Phases match the natural seams, each independently mergeable.
 
 | PR | Contents | Effort | Risk |
 | --- | --- | --- | --- |
-| **02a** | Module skeleton, `CheckResult`, `AnalysisContext`, registry, equivalence harness. Move the 7 already-pure helpers + all of `quality.py`; re-export from `compiler.py` | ~1 day | none — mechanical, zero behavior change |
-| **02b** | Persist `support_constraints`, `climb_support_constraints`, `current_yaw` into metrics. Port full-body's 13 action blocks | ~4–6 days | medium — bulk of the metric mass |
+| **02a** | ✅ Module skeleton, `CheckResult`, `AnalysisContext`, registry, equivalence harness. Moved the 4 pure compiler helpers + 5 supporting definitions + 3 failure blocks + all of `quality.py`; re-exported from `compiler.py` | done | none — mechanical, zero behaviour change |
+| **02b** | Persist `support_constraints`, `climb_support_constraints`, `current_yaw` into metrics. Port full-body's 12 action blocks | ~4–6 days | medium — bulk of the metric mass |
 | **02c** | Composite + gesture/strike/grab. Converge `arm_landmarks` onto `RigKinematics`; fix the `forearm_rotation_cycles` echo | ~2 days | low — composite is nearly free |
 | **02d** | Object interaction + handoff; re-derive lifecycle from `frame.objects` | ~4–5 days | high — numeric drift risk in `rolling_angle_rad`, `attachment_slip` |
 | **02e** | Sequence; re-split by `sequence_step_ranges_s` | ~3–4 days | highest — bridge frames, local→world transform |
@@ -233,6 +308,28 @@ Total ≈ **2.5–3.5 weeks** for full extraction with verified byte-identical o
 **02a alone unblocks a great deal** — it delivers the contract, the context, and all of
 `quality.py` as a testable module, which is enough for [04](04-anatomical-frame.md) to
 start. Do not block the anatomy work on 02d/02e landing.
+
+### 4.1 What `analyze` owns after 02a
+
+Per intent, verified byte-identical to `compiler.py`. Everything else in `clip.metrics` is
+still computed inside the compiler and is listed in `analysis/equivalence.py` under
+`DEFERRED_TO_COMPILER` with its PR.
+
+| Intent | Owned families |
+| --- | --- |
+| gesture | safety, gesture structure, shake oscillation, angular |
+| strike | safety, gesture structure, angular |
+| grab | safety |
+| composite | safety, intra-hand contact, gaze, semantic cycle, parallel forearm |
+| full body | safety, semantic cycle, angular |
+| object interaction | safety, angular |
+| object handoff | safety |
+| sequence | safety, angular |
+
+Two path-specific quirks are reproduced deliberately rather than cleaned up, because 02a
+is a move: the gesture/strike paths fold `wrist_swing_twist_limit_violations` into
+`joint_limit_violations` after the fact and republish `self_collision_frames` as
+`unresolved_non_hand_collisions`; and the handoff path alone skips angular kinematics.
 
 ---
 
@@ -245,6 +342,15 @@ start. Do not block the anatomy work on 02d/02e landing.
   registered analyzer; a new enum member with no analyzer **fails the suite**. This is
   what stops the deterministic layer silently falling behind the primitive vocabulary.
 - Performance: analysis of a 125-frame clip under 100 ms, so the fast tier stays fast.
+
+*Measured in 02a*, best of five, 125 frames, warm rig cache: gesture 17 ms, full body
+36 ms, strike 42 ms, sequence 48 ms, composite finger-count 66 ms, composite travel signal
+85 ms. The target holds, but the heaviest path has only 15 ms of headroom and the cost is
+one full 68-node FK evaluation per frame. The committed assertion is a 300 ms regression
+ceiling rather than the target, because a tight gate on unknown CI hardware would flake
+instead of informing. If 02b–02e make analysis meaningfully heavier, the fix is to
+vectorise `RigKinematics.world_matrices` — it builds 52 rotation matrices one
+`scipy` call at a time, which is over half the total.
 
 ---
 
@@ -264,14 +370,25 @@ equality everywhere.
 it post-hoc changes what the check compares against. Treat as a Kind-B carry-over and
 persist it, rather than re-deriving.
 
-### 6.3 Open — should the compiler keep populating `ClipResult.metrics`?
+### 6.3 Resolved — the compiler keeps populating `ClipResult.metrics`
 
-Keeping it preserves every downstream consumer (capture diagnostics, flywheel candidate
-records, the UI) at the cost of the compiler importing the analyzer. Removing it would be
-cleaner but breaks all of them at once.
-**Recommendation: keep it.** The compiler calls `analysis.analyze` and stores the result.
-The win here is that checks become *runnable elsewhere*, not that the compiler stops
-running them. **Decide before 02a.**
+**Decided 2026-08-16, during 02a. Recommendation confirmed.** The compiler continues to
+populate `ClipResult.metrics`; `analysis.analyze` is a second, independently verified path
+to the same numbers, not a replacement.
+
+Three findings from the extraction reinforce the plan's reasoning:
+
+- The blast radius is 352 references across 25 files, including `frontend/src/main.ts:865`,
+  which renders `clip.metrics` straight off the compile response with no second round
+  trip. Removing population means adding an analysis endpoint and a client change for no
+  user-visible gain.
+- `ClipResult.metrics` and `ResultSummary.metrics` are both required pydantic fields, and
+  `Failure.details` is set to the metrics dict — a compile failure carries its own
+  evidence. Dropping population is a schema change plus a migration for every persisted
+  result, and it makes failures undiagnosable where they occur.
+- The dependency direction costs nothing. `compiler` imports `analysis`; `analysis` imports
+  only `models`, `kinematics` and `primitives` — not even `physics`, so checks run where
+  MuJoCo is absent. `tests/test_analysis_imports.py` pins that invariant.
 
 ### 6.4 Note — 02d and 02e may not be worth finishing immediately
 
