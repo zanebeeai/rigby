@@ -9,7 +9,7 @@ import os
 import random
 import time
 from pathlib import Path
-from typing import Any, Callable, Literal
+from typing import Any, Callable, Literal, Mapping
 
 from openai import OpenAI
 from PIL import Image, ImageDraw
@@ -24,6 +24,16 @@ DEFAULT_JUDGE_REASONING_EFFORT = "low"
 DEFAULT_JUDGE_IMAGE_DETAIL = "high"
 DEFAULT_JUDGE_MAX_IMAGE_DIMENSION_PX = 960
 DEFAULT_JUDGE_ESCALATION_CONFIDENCE = 0.70
+
+# Mirrors acceptance_criteria.yaml -> autonomous_pipeline.minimum_selected_scores.
+# Every dimension listed there is part of the published release threshold, so the
+# rule below must gate on all four, not a subset.
+ACCEPTANCE_MINIMUM_SCORES: dict[str, int] = {
+    "semantic_match": 4,
+    "gesture_recognizability": 4,
+    "anatomical_naturalness": 4,
+    "overall": 4,
+}
 
 
 FailureTag = Literal[
@@ -151,6 +161,24 @@ class FiveWayJudgeDecision(BaseModel):
     confidence: float = Field(ge=0.0, le=1.0)
     evidence: list[EvidenceCitation] = Field(min_length=3, max_length=10)
     rationale: str = Field(min_length=5, max_length=400)
+
+
+def meets_acceptance_thresholds(score: BaseModel | Mapping[str, Any]) -> bool:
+    """Apply the published minimum-selected-score rule to one judged candidate.
+
+    Pure and total: a dimension that is missing or non-numeric fails the rule
+    rather than being skipped, so a truncated payload cannot pass by omission.
+    """
+    values: Mapping[str, Any] = (
+        score.model_dump(mode="json") if isinstance(score, BaseModel) else score
+    )
+    for dimension, minimum in ACCEPTANCE_MINIMUM_SCORES.items():
+        value = values.get(dimension)
+        if isinstance(value, bool) or not isinstance(value, (int, float)):
+            return False
+        if value < minimum:
+            return False
+    return True
 
 
 UNARY_SYSTEM_PROMPT = """You are a strict animation-quality judge for first-person humanoid arm motion.
@@ -664,6 +692,11 @@ def _call_record(response: object, parsed: BaseModel, model: str) -> dict[str, A
     }
 
 
+def _never_escalate(_value: BaseModel) -> str | None:
+    """Escalation hook for calls that have no quality signal to route on."""
+    return None
+
+
 class ModelCallBudgetExhausted(RuntimeError):
     """Raised before an API request would exceed the configured hard ceiling."""
 
@@ -889,11 +922,7 @@ class VLMJudge:
         score = MotionJudgeScore.model_validate(value)
         if score.confidence < self.escalation_confidence:
             return "low_confidence"
-        accepted_by_scores = (
-            score.overall >= 4
-            and score.anatomical_naturalness >= 4
-            and score.gesture_recognizability >= 4
-        )
+        accepted_by_scores = meets_acceptance_thresholds(score)
         if score.accept != accepted_by_scores:
             return "acceptance_score_inconsistency"
         if score.accept:
@@ -1122,8 +1151,7 @@ class VLMJudge:
                 "minimum_obstacle_avoidance_root_clearance_m",
             )
         }
-        response = self._parse_response(
-            model=repair_model,
+        response, parsed, attempts, routing = self._routed_parse(
             input=[
                 {"role": "system", "content": [{"type": "input_text", "text": REPAIR_SYSTEM_PROMPT}]},
                 {
@@ -1146,14 +1174,18 @@ class VLMJudge:
                 },
             ],
             text_format=RepairPatch,
+            # The repair patch is bounded by its own schema, so there is no
+            # quality signal worth proactively escalating on. Routing it here
+            # is for retry, fallback, and observability parity only.
+            escalation_reason=_never_escalate,
+            primary_model=repair_model,
         )
-        parsed = response.output_parsed
-        if parsed is None:
-            raise ValueError("repair model returned no parsed patch")
         return {
             "schema_version": "1.0",
             "kind": "bounded_motion_repair",
             "call": _call_record(response, parsed, repair_model),
+            "attempts": attempts,
+            "routing": routing,
         }
 
     def rank_five(self, evidence_manifests: list[Path], *, random_seed: int) -> dict[str, Any]:

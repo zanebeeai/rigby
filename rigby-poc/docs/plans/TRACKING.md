@@ -36,7 +36,7 @@ Status values: `not started` · `in progress` · `blocked` · `in review` · `do
 | [04 Anatomical frame](04-anatomical-frame.md) | 0/3 | not started | — | 06, 10 |
 | [05 Capture integrity](05-capture-integrity.md) | 0/1 | not started | — | 07, 10 |
 | [06 Mutation library](06-mutation-library.md) | 0/3 | not started | — | 10 |
-| [07 Judge harness](07-judge-harness.md) | 0/4 | not started | — | 10 |
+| [07 Judge harness](07-judge-harness.md) | 1/4 | in progress | `eval/07a-acceptance` | 10 |
 | [08 Thresholds](08-threshold-consolidation.md) | 0/3 | not started | — | 10 |
 | [09 CI and tiering](09-ci-and-tiering.md) | 0/3 | not started | — | — |
 | [10 Eval redesign](10-eval-redesign.md) | 0/7 | not started | — | — |
@@ -162,7 +162,7 @@ Session prompts and the file-ownership map: [SLICE-1-SESSIONS.md](SLICE-1-SESSIO
 
 | PR | Scope | Status | Note |
 | --- | --- | --- | --- |
-| 07a | Enforce `semantic_match`; content-derived blinding seed; route `recommend_repair` | not started | slice 1, fixes a live bug |
+| 07a | Enforce `semantic_match`; content-derived blinding seed; route `recommend_repair` | done | `eval/07a-acceptance`; 368 pass |
 | 07b | Grader split behind a flag; per-family prompt fragments | not started | |
 | 07c | Claim-based output + aggregation; `cannot_tell` | not started | |
 | 07d | Remove diagnostics from prompts; explicit decision layer | not started | must precede 10f |
@@ -173,7 +173,11 @@ Session prompts and the file-ownership map: [SLICE-1-SESSIONS.md](SLICE-1-SESSIO
 - §6.3 Does the timing dimension survive calibration, or get deleted? — answered by 10f.
 
 **Findings**
-- _(none yet)_
+- §1.1 corrected: `judge.py:893-895` is an escalation predicate, not the acceptance
+  decision — `accept` is model-self-reported and still unenforced until 07d's §3.3
+  decision layer.
+- §1.4 corrected: two more positional seeds exist outside `flywheel.py`
+  (`rerank_existing.py:53`, `select_structural_sweep.py:244`); §3.4's code sketch did not run.
 
 ---
 

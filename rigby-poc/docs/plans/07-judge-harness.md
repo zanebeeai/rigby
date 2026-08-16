@@ -1,6 +1,6 @@
 # PR 07 — Judge harness: split, unblind, debias
 
-Status: proposed, not started.
+Status: 07a landed; 07b–07d proposed.
 Scope: restructure the VLM judge so its dimensions can be independently calibrated, remove
 the deterministic-diagnostic leakage that makes it un-measurable, and fix the blinding seed
 and one live acceptance bug.
@@ -16,8 +16,7 @@ Blocks: [10 — eval redesign](10-eval-redesign.md).
 ### 1.1 A live bug: `semantic_match` is never gated
 
 `acceptance_criteria.yaml:12-17` states the release threshold requires
-`semantic_match ≥ 4`. But `src/rigby_poc/judge.py:893-895` computes acceptance from only
-three dimensions:
+`semantic_match ≥ 4`. But `src/rigby_poc/judge.py:893-895` checked only three dimensions:
 
 ```python
 score.overall >= 4
@@ -25,12 +24,35 @@ and score.anatomical_naturalness >= 4
 and score.gesture_recognizability >= 4
 ```
 
-**A clip scoring `semantic_match = 1` is auto-accepted** as long as the other three pass.
-The documented criterion has never been enforced. Worse, the `acceptance_score_inconsistency`
-escalation at `judge.py:898` would fire against a model that *did* honour the published
-rule.
+The documented criterion had never been enforced, and the
+`acceptance_score_inconsistency` escalation at `judge.py:898` fired against a model that
+*did* honour the published rule.
 
-This is the most consequential single finding in the audit and should be fixed first,
+**Correction (07a).** An earlier draft of this section said that block "computes
+acceptance" and that a clip scoring `semantic_match = 1` is "auto-accepted" by it. That
+overstates what the code does, and the distinction matters for sequencing:
+
+- `judge.py:893-895` lives inside `_unary_escalation`. It is a *consistency predicate*
+  that compares the rule against the model's self-reported `accept`; it decides whether to
+  escalate, not whether to accept.
+- The effective acceptance flag is `MotionJudgeScore.accept` / `FiveWayCandidateScore.accept`
+  — the model's own boolean. `judge.py` never overrides it, and every consumer copies it
+  verbatim: `flywheel.py:2268`, `flywheel.py:2428`, `rerank_existing.py:58`,
+  `select_structural_sweep.py:286`, `calibrate_judge.py:222,381`.
+
+So the clip was auto-accepted because *the model said so*, not because of the three-way
+rule. 07a fixes the rule itself (all four published dimensions, extracted as the pure
+`judge.meets_acceptance_thresholds`), which changes real behaviour in two ways: a model
+self-accepting a `semantic_match = 1` clip is now escalated as
+`acceptance_score_inconsistency` instead of passing silently, and a model that honours the
+published rule no longer burns a fallback call being contradicted.
+
+Making the rule *authoritative* — so a failing score cannot be accepted regardless of what
+the model claims — requires the explicit decision layer in §3.3 and belongs to 07d. Until
+then the published criterion is enforced only at audit time, by
+`evals/autonomous_goal_audit.py:52-56`, which does check all four dimensions.
+
+This remains the most consequential single finding in the audit and was fixed first,
 independently of the restructure.
 
 ### 1.2 One 115-line mega-prompt
@@ -61,7 +83,12 @@ therefore lands in the same A–E slot in round 0 of **every run of every prompt
 positional bias in the model becomes a systematic, reproducible preference for one recipe.
 `judge.py:988, 1167` shuffle from that seed.
 
-The tournament path has the same shape at `90_000 + match_index`.
+The tournament path has the same shape at `90_000 + match_index` (`flywheel.py:1814`).
+Measured: with seed `70_000`, recipe 0 lands in slot **C** in round 0 of every prompt.
+
+Two further positional seeds the audit missed, both outside 07a's scope:
+`evals/rerank_existing.py:53` (`random_seed=70_000`, fixed for every rerank) and
+`evals/select_structural_sweep.py:244` (`90_000 + case_index`).
 
 ### 1.5 Scores are flat and correlated
 
@@ -146,9 +173,19 @@ agreement).
 
 ### 3.4 Content-derived blinding
 
+Shipped in 07a as `evals.flywheel.blinding_seed`:
+
 ```python
-seed = int.from_bytes(sha256(b"|".join(sorted(result_ids)) + prompt_hash)[:8], "big")
+def blinding_seed(prompt: str, result_ids: Iterable[str]) -> int:
+    joined = "\0".join(sorted(result_ids))
+    digest = hashlib.sha256(f"{BLINDING_SEED_SALT}\0{prompt}\0{joined}".encode("utf-8")).digest()
+    return int.from_bytes(digest[:8], "big")
 ```
+
+(The sketch in an earlier draft, `sha256(...)[:8]`, does not run — a hash object is not
+subscriptable; it needs `.digest()` first. Salting and sorting the ids are the two
+substantive details: sorting makes the seed independent of the order the caller happens to
+hold candidates in, so it is reproducible from content alone.)
 
 Reproducible from content, uncorrelated with recipe order or round index. Both orders are
 run and the flip rate recorded per grader as a standing quality metric.
@@ -170,7 +207,7 @@ correlation refs. Pure consistency fix, no behavioural intent.
 
 | PR | Contents | Risk |
 | --- | --- | --- |
-| **07a** | Fix `semantic_match` gating; content-derived seeds; route `recommend_repair` | low, high value — ship independently and immediately |
+| **07a** | Fix `semantic_match` gating; content-derived seeds; route `recommend_repair` | **done** — low, high value |
 | **07b** | Grader split behind a flag; per-family prompt fragments; old path still default | medium |
 | **07c** | Claim-based output + aggregation rule; `cannot_tell` | medium |
 | **07d** | Remove diagnostics from prompts; explicit decision layer; make split graders default | high — changes acceptance behaviour |
@@ -186,10 +223,14 @@ have changed the judge without being able to tell whether it improved.
 
 - `test_acceptance_rule.py` — a score with `semantic_match = 1` and everything else at 5
   is **rejected**. This is the direct regression guard for §1.1 and should exist before
-  anything else in this PR.
+  anything else in this PR. *(landed in 07a)*
 - `test_blinding_seed.py` — seed is stable for identical content, differs across prompts,
   and recipe→slot assignment is uniform over many synthetic runs. Explicitly assert that
-  recipe *k* is **not** always in slot A in round 0.
+  recipe *k* is **not** always in slot A in round 0. *(landed in 07a)*
+- `test_repair_routing.py` — the repair record carries `attempts` and `routing`, and falls
+  back when the primary model fails. Not in the original test plan; §3.6 was otherwise
+  shipping unverified, since nothing in the suite called the real `recommend_repair`.
+  *(landed in 07a)*
 - `test_grader_isolation.py` — the anatomy grader's assembled payload contains no prompt
   text and no diagnostics. String-level assertion on the payload, so leakage cannot creep
   back in.

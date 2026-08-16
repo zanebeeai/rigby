@@ -133,6 +133,7 @@ def test_right_jab_reaches_generalized_five_way_judging_and_winner(
     persisted: list[str] = []
     captured: list[str] = []
     ranked_batches: list[list[Path]] = []
+    ranking_seeds: list[int] = []
 
     class FakeStore:
         def persist(self, request, clip) -> str:  # noqa: ANN001
@@ -146,7 +147,7 @@ def test_right_jab_reaches_generalized_five_way_judging_and_winner(
 
         def rank_five(self, manifests: list[Path], *, random_seed: int) -> dict:
             assert len(manifests) == 5
-            assert random_seed == 70_000
+            ranking_seeds.append(random_seed)
             ranked_batches.append(manifests)
             labels = ("A", "B", "C", "D", "E")
             scores = {
@@ -203,6 +204,11 @@ def test_right_jab_reaches_generalized_five_way_judging_and_winner(
     assert len(judged) == 5
     assert len(captured) == 5
     assert len(ranked_batches) == 1
+    assert ranking_seeds == [
+        flywheel.blinding_seed(
+            "throw a right jab", [candidate["result_id"] for candidate in judged]
+        )
+    ]
     assert round_one["batch_selection"]["all_pairs_above_threshold"] is True
     assert all(candidate.get("judgment", {}).get("accept") for candidate in judged)
     assert len(persisted) > 5  # The pool replenished globally after structural rejects.
