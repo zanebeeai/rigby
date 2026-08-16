@@ -32,7 +32,7 @@ Status values: `not started` · `in progress` · `blocked` · `in review` · `do
 | --- | --- | --- | --- | --- |
 | [01 Observability](01-observability-and-transcript.md) | 1/4 | in progress | `eval/01a-observability` | trajectory evals |
 | [02 Analysis layer](02-analysis-layer.md) | 1/5 | in progress | `eval/02a-analysis` | 03, 04, 06, 10 |
-| [03 Golden corpus](03-golden-corpus.md) | 0/2 | not started | — | 06, 09, 10 |
+| [03 Golden corpus](03-golden-corpus.md) | 1/2 | in progress | `eval/03a-corpus` | 06, 09, 10 |
 | [04 Anatomical frame](04-anatomical-frame.md) | 0/3 | not started | — | 06, 10 |
 | [05 Capture integrity](05-capture-integrity.md) | 0/1 | not started | — | 07, 10 |
 | [06 Mutation library](06-mutation-library.md) | 0/3 | not started | — | 10 |
@@ -105,15 +105,24 @@ Session prompts and the file-ownership map: [SLICE-1-SESSIONS.md](SLICE-1-SESSIO
 
 | PR | Scope | Status | Note |
 | --- | --- | --- | --- |
-| 03a | Case format, loader, `bless` CLI, `freeze.py`, 12 cases | not started | slice 1 |
-| 03b | Remaining ~28 cases incl. known-bad and MuJoCo; repoint `goal_audit` | not started | |
+| 03a | Case format, loader, `bless` CLI, `freeze.py`, 12 cases | done | `evals/corpus/`; 4 of 7 intents, 8 of 12 body actions, rest declared deferred |
+| 03b | Remaining ~28 cases incl. known-bad and MuJoCo; repoint `goal_audit` | not started | per-platform hash format already shipped in 03a |
 
 **Open decisions**
-- §6.3 Commit slim clips for every case, or programs only? — plan recommends programs
-  only plus clips for MuJoCo and slow cases. Unresolved.
+- §6.3 Commit slim clips for every case, or programs only? — **resolved 2026-08-16:
+  programs only.** Determinism is verified, a stored clip cannot speed up a test that
+  recompiles by definition, and the whole 12-case recompile is 5.5 s. Clips stay
+  reserved for 03b's MuJoCo cases. Reasoning in plan §6.3.
 
 **Findings**
-- _(none yet)_
+- Compilation determinism re-verified across all seven executable intents in separate
+  processes under three `PYTHONHASHSEED` values, and motion is seed-invariant — plan §1.1.
+- All 12 cases reproduce byte-identically across 02a's analysis-layer extraction, which
+  independently confirms plan 02 §5's byte-identical claim.
+- Importing `mujoco` shells out to `sysctl` on macOS, so an offline guard must block
+  subprocesses by name rather than wholesale — plan §5.
+- The plan's "stored clip above ~200 ms" rule is too aggressive on its own; the trigger
+  in 03a is MuJoCo, not speed — plan §3.3.
 
 ---
 
@@ -252,6 +261,8 @@ Session prompts and the file-ownership map: [SLICE-1-SESSIONS.md](SLICE-1-SESSIO
 
 **Platform.** Development is split macOS / Windows. Anything touching MuJoCo hashes,
 filesystem paths, or `io_utils.py` atomic writes needs verification on both before merge.
+The corpus already carries per-platform hashes and skips an unblessed platform rather
+than failing it; every 03a case is platform-portable, so nothing needs a Windows run yet.
 
 **Repo hygiene.** Additive changes only where possible; the working tree is shared. No
 Claude attribution in commits or PRs.
