@@ -30,13 +30,13 @@ Status values: `not started` · `in progress` · `blocked` · `in review` · `do
 
 | Plan | PRs | Status | Branch / owner | Blocking |
 | --- | --- | --- | --- | --- |
-| [01 Observability](01-observability-and-transcript.md) | 0/4 | not started | — | trajectory evals |
+| [01 Observability](01-observability-and-transcript.md) | 1/4 | in progress | `eval/01a-observability` | trajectory evals |
 | [02 Analysis layer](02-analysis-layer.md) | 1/5 | in progress | `eval/02a-analysis` | 03, 04, 06, 10 |
 | [03 Golden corpus](03-golden-corpus.md) | 0/2 | not started | — | 06, 09, 10 |
 | [04 Anatomical frame](04-anatomical-frame.md) | 0/3 | not started | — | 06, 10 |
 | [05 Capture integrity](05-capture-integrity.md) | 0/1 | not started | — | 07, 10 |
 | [06 Mutation library](06-mutation-library.md) | 0/3 | not started | — | 10 |
-| [07 Judge harness](07-judge-harness.md) | 0/4 | not started | — | 10 |
+| [07 Judge harness](07-judge-harness.md) | 1/4 | in progress | `eval/07a-acceptance` | 10 |
 | [08 Thresholds](08-threshold-consolidation.md) | 0/3 | not started | — | 10 |
 | [09 CI and tiering](09-ci-and-tiering.md) | 0/3 | not started | — | — |
 | [10 Eval redesign](10-eval-redesign.md) | 0/7 | not started | — | — |
@@ -50,16 +50,27 @@ Session prompts and the file-ownership map: [SLICE-1-SESSIONS.md](SLICE-1-SESSIO
 
 | PR | Scope | Status | Note |
 | --- | --- | --- | --- |
-| 01a | `observability.py`, `transcript.py`, tests; wired nowhere | not started | slice 1 |
+| 01a | `observability.py`, `transcript.py`, tests; wired nowhere | done | 66 tests; 0 existing files touched |
 | 01b | Instrument judge + planner call sites; `config.json` | not started | |
 | 01c | Instrument flywheel stages and capture; unify CLI/API run roots | not started | |
 | 01d | Compaction tool and retention policy | not started | |
 
 **Open decisions**
-- §8.1 Build a minimal tracer or adopt OpenTelemetry — *decide before 01a*. Unresolved.
+- §8.1 Build a minimal tracer or adopt OpenTelemetry — **resolved 2026-08-16: build.**
+  OTel attributes cannot hold nested `attrs`/`refs`, which is the whole §1.3 fix; its
+  collector-oriented export fights per-run file artifacts; and being `contextvars`-based it
+  does not solve §8.3 either. Reasoning in plan §8.1.
 
 **Findings**
-- _(none yet)_
+- §1.2 and §8.3 verified against the code, both accurate. Two riders added to the plan:
+  `judge.py:833` re-raises on the no-fallback path so 01b must wrap the dispatch rather
+  than the `except` branch, and the §8.3 orphan is silent by construction, so
+  `Transcript.orphans()` is the guard.
+- The JSONL writer cannot reuse `atomic_write_json` — append versus whole-file replace —
+  so its Windows lock ladder is duplicated in `observability.py`. Hoist both onto one
+  helper when a PR may edit `io_utils.py`. Plan §4.1.
+- `$image` refs needed payload bytes stored at `payloads/images/<sha256>`; `source_path`
+  cannot serve, since the hash is of the resized bytes. Plan §3.3.
 
 ---
 
@@ -159,7 +170,7 @@ Session prompts and the file-ownership map: [SLICE-1-SESSIONS.md](SLICE-1-SESSIO
 
 | PR | Scope | Status | Note |
 | --- | --- | --- | --- |
-| 07a | Enforce `semantic_match`; content-derived blinding seed; route `recommend_repair` | not started | slice 1, fixes a live bug |
+| 07a | Enforce `semantic_match`; content-derived blinding seed; route `recommend_repair` | done | `eval/07a-acceptance`; 368 pass |
 | 07b | Grader split behind a flag; per-family prompt fragments | not started | |
 | 07c | Claim-based output + aggregation; `cannot_tell` | not started | |
 | 07d | Remove diagnostics from prompts; explicit decision layer | not started | must precede 10f |
@@ -170,7 +181,11 @@ Session prompts and the file-ownership map: [SLICE-1-SESSIONS.md](SLICE-1-SESSIO
 - §6.3 Does the timing dimension survive calibration, or get deleted? — answered by 10f.
 
 **Findings**
-- _(none yet)_
+- §1.1 corrected: `judge.py:893-895` is an escalation predicate, not the acceptance
+  decision — `accept` is model-self-reported and still unenforced until 07d's §3.3
+  decision layer.
+- §1.4 corrected: two more positional seeds exist outside `flywheel.py`
+  (`rerank_existing.py:53`, `select_structural_sweep.py:244`); §3.4's code sketch did not run.
 
 ---
 

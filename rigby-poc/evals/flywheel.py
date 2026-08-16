@@ -6,7 +6,7 @@ import json
 from dataclasses import asdict, dataclass, field
 from itertools import combinations
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any, Callable, Iterable
 
 import numpy as np
 from scipy.spatial.transform import Rotation
@@ -52,6 +52,7 @@ class CandidateRecipe:
 
 
 BASELINE_SAMPLING_SALT = "rigby-best-of-five-baseline-v2"
+BLINDING_SEED_SALT = "rigby-judge-blinding-v1"
 
 # A model cannot select a visibly better candidate when the generator supplies
 # five numerical variants of the same motion.  At least one of these measured
@@ -151,6 +152,22 @@ def single_sample_baseline_index(prompt: str, *, candidate_count: int = 5) -> in
         raise ValueError("candidate_count must be positive")
     digest = hashlib.sha256(f"{BASELINE_SAMPLING_SALT}\0{prompt}".encode("utf-8")).digest()
     return 1 + int.from_bytes(digest[:8], "big") % candidate_count
+
+
+def blinding_seed(prompt: str, result_ids: Iterable[str]) -> int:
+    """Derive the judge's presentation-order seed from the content being judged.
+
+    A round- or match-indexed seed puts recipe *k* in the same slot in round 0 of
+    every run of every prompt, so any positional bias in the judge becomes a
+    reproducible preference for one recipe.  Sorting the identifiers keeps the
+    seed reproducible from content alone, independent of the order the caller
+    happens to hold the candidates in.
+    """
+    joined = "\0".join(sorted(result_ids))
+    digest = hashlib.sha256(
+        f"{BLINDING_SEED_SALT}\0{prompt}\0{joined}".encode("utf-8")
+    ).digest()
+    return int.from_bytes(digest[:8], "big")
 
 
 def _clamp(value: float, minimum: float, maximum: float) -> float:
@@ -1804,6 +1821,8 @@ def _tournament(
     judge: VLMJudge,
     output_dir: Path,
     trace: dict[str, Any],
+    *,
+    prompt: str,
 ) -> dict[str, Any]:
     ordered = sorted(accepted, key=_candidate_score, reverse=True)
     champion = ordered[0]
@@ -1811,7 +1830,10 @@ def _tournament(
         comparison = judge.compare(
             Path(champion["evidence_manifest"]),
             Path(challenger["evidence_manifest"]),
-            random_seed=90_000 + match_index,
+            random_seed=blinding_seed(
+                prompt,
+                [str(champion["result_id"]), str(challenger["result_id"])],
+            ),
             reverse_check=True,
         )
         comparison_path = output_dir / "tournament" / f"match-{match_index:02d}.json"
@@ -2414,7 +2436,10 @@ def run_best_of_five(
                 else:
                     ranking = judge.rank_five(
                         [Path(candidate["evidence_manifest"]) for candidate in ranked_candidates],
-                        random_seed=70_000 + round_index,
+                        random_seed=blinding_seed(
+                            prompt,
+                            [str(candidate["result_id"]) for candidate in ranked_candidates],
+                        ),
                     )
                     write_judge_record(ranking, ranking_path)
                 for index, candidate in enumerate(ranked_candidates):
@@ -2571,7 +2596,7 @@ def run_best_of_five(
         champion = (
             direct_winner
             if selection_mode == "five_way" and direct_winner is not None
-            else _tournament(accepted, judge, output_dir, trace)
+            else _tournament(accepted, judge, output_dir, trace, prompt=prompt)
         )
         assert champion is not None
         trace["winner_result_id"] = champion["result_id"]
