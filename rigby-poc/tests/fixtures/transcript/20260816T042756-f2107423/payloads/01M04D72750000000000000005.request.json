@@ -1,0 +1,55 @@
+{
+  "$envelope": "value",
+  "value": [
+    {
+      "role": "system",
+      "content": [
+        {
+          "type": "input_text",
+          "text": "Rank five candidates."
+        }
+      ]
+    },
+    {
+      "role": "user",
+      "content": [
+        {
+          "type": "input_text",
+          "text": "candidate 4 of 5"
+        },
+        {
+          "type": "input_image",
+          "$image": {
+            "sha256": "3b1eb92bb89416b054be048b1eccc08c47b244689092f889100e82e41f36ac05",
+            "bytes": 80,
+            "media_type": "image/png",
+            "detail": "high",
+            "source_snapshot_id": "08-impact_pose-ego",
+            "source_path": "artifacts/round-1/candidate-4/08-impact_pose-ego.png",
+            "payload_dimensions_px": [
+              16,
+              9
+            ],
+            "path": "payloads/images/3b1eb92bb89416b054be048b1eccc08c47b244689092f889100e82e41f36ac05.png"
+          }
+        },
+        {
+          "type": "input_image",
+          "$image": {
+            "sha256": "4f4fd82add85d1c7ff1e66645e95c1cf2782662dd50697ad56400e417cd95c66",
+            "bytes": 80,
+            "media_type": "image/png",
+            "detail": "high",
+            "source_snapshot_id": "08-impact_pose-orbit",
+            "source_path": "artifacts/round-1/candidate-4/08-impact_pose-orbit.png",
+            "payload_dimensions_px": [
+              16,
+              9
+            ],
+            "path": "payloads/images/4f4fd82add85d1c7ff1e66645e95c1cf2782662dd50697ad56400e417cd95c66.png"
+          }
+        }
+      ]
+    }
+  ]
+}
