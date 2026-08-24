@@ -29,4 +29,8 @@ npm run build
 Pop-Location
 ```
 
+The suite needs no server, no browser, no API key and no network. Every documented
+invocation, the tiering markers, and why coverage stays off the default run are in
+[docs/testing.md](docs/testing.md).
+
 See [docs/evaluation.md](docs/evaluation.md) for the model-backed autonomous release audit and [docs/vlm-flywheel.md](docs/vlm-flywheel.md) for the judge/repair contract.
