@@ -8,6 +8,7 @@ the suite rather than be caught in review.
 from __future__ import annotations
 
 import json
+import struct
 
 import pytest
 
@@ -243,28 +244,66 @@ def test_ported_values_match_their_cited_config_source() -> None:
     assert value_of("anatomy.lower_arm_length_m") == calibration["arm_lengths_m"]["lower"]
 
 
-def test_generator_margin_factors_reproduce_the_constants_they_shadow() -> None:
-    """§1.1 item 7 and item 6: margins are derivations, not magic numbers.
+def test_generator_ceilings_are_bit_identical_to_the_constants_they_replace() -> None:
+    """§1.1 items 6 and 7. Approximate equality is not good enough here.
 
-    Each factor times its validator limit must reproduce the literal that is in
-    the generator today, exactly. If 08b's repoint changes a generated value,
-    this fails first.
+    These three values replace literals that feed a frame-count division and a
+    clamp, so a sub-ulp difference is a different clip, not a rounding detail.
+    The subdivision target is the one that proves the point: 0.35 * 0.4 is
+    0.13999999999999999 in IEEE754, so storing the factor and multiplying at
+    read time would have silently changed `ceil(target_delta / 0.14)` at exact
+    boundaries. They are stored as values for that reason; `derived_as` records
+    the derivation the plan asked for without letting float arithmetic into the
+    hot path.
     """
 
-    forearm = value_of("anatomy.forearm_twist_max_rad") * value_of(
-        "anatomy.forearm_twist_generator_margin_factor"
-    )
-    assert forearm == pytest.approx(1.30, abs=1e-12)
+    expected = {
+        "anatomy.forearm_twist_generator_max_rad": 1.30,
+        "anatomy.wrist_twist_generator_max_rad": 0.12,
+        "signal.discontinuity_generator_target_rad": 0.14,
+    }
+    for key, literal in expected.items():
+        actual = value_of(key)
+        assert struct.pack("<d", actual) == struct.pack("<d", literal), (
+            f"{key} is {actual!r}, not bit-identical to the literal {literal!r} it replaces"
+        )
 
-    wrist = value_of("anatomy.wrist_twist_max_rad") * value_of(
-        "anatomy.wrist_twist_generator_margin_factor"
-    )
-    assert wrist == pytest.approx(0.12, abs=1e-12)
 
-    subdivision = value_of("signal.discontinuity_rad") * value_of(
-        "signal.discontinuity_generator_margin_factor"
-    )
-    assert subdivision == pytest.approx(0.14, abs=1e-12)
+def test_every_derived_value_records_what_it_derives_from() -> None:
+    for key, entry in _raw()["thresholds"].items():
+        if "derived_as" not in entry:
+            continue
+        derivation = entry["derived_as"]
+        assert derivation["of"] in _raw()["thresholds"], (
+            f"{key}.derived_as.of names {derivation['of']!r}, which is not a threshold"
+        )
+        assert isinstance(derivation.get("factor"), (int, float))
+        assert "exact" in derivation, (
+            f"{key}.derived_as must say whether the product reproduces the value exactly"
+        )
+
+
+def test_a_derivation_marked_inexact_really_is_inexact() -> None:
+    """Guards the reason these are values rather than products.
+
+    If a future edit makes the product exact, `exact` must be updated -- and if
+    it makes it *further* from the value, that is a real drift and must fail.
+    """
+
+    for key, entry in _raw()["thresholds"].items():
+        derivation = entry.get("derived_as")
+        if not derivation:
+            continue
+        product = value_of(derivation["of"]) * derivation["factor"]
+        assert product == pytest.approx(entry["value"], rel=1e-9), (
+            f"{key} claims to derive from {derivation['of']} x {derivation['factor']} "
+            f"but that is {product!r}, not {entry['value']!r}"
+        )
+        exact = struct.pack("<d", product) == struct.pack("<d", entry["value"])
+        assert exact == derivation["exact"], (
+            f"{key}.derived_as.exact says {derivation['exact']} but the product is "
+            f"{'' if exact else 'not '}bit-identical. Update the flag deliberately."
+        )
 
 
 def test_contradictions_record_what_they_supersede() -> None:

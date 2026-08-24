@@ -65,22 +65,6 @@
         "resolves": "08 SS1.1 item 6"
       }
     },
-    "signal.discontinuity_generator_margin_factor": {
-      "value": 0.4,
-      "unit": "ratio",
-      "applies_to": [
-        "generator"
-      ],
-      "source": {
-        "kind": "invariant",
-        "cites": [
-          "src/rigby_poc/compiler.py:7497",
-          "src/rigby_poc/compiler.py:7492-7496"
-        ],
-        "rationale": "The nlerp subdivision target 0.14 rad expressed as a fraction of the validator discontinuity limit 0.35 rad (0.14/0.35). The comment at compiler.py:7492-7496 states the target is deliberately stricter than the discontinuity rule so that acceleration stays inside the human-reference envelope on very short phases. Value is unchanged: 0.35 * 0.4 == 0.14."
-      },
-      "resolves": "08 SS1.1 item 6 (recorded here; compiler.py repointed in 08b)"
-    },
     "signal.discontinuity_count_max": {
       "value": 0,
       "unit": "count",
@@ -322,38 +306,6 @@
         "rationale": "Validator limit. Shadowed by a generator margin -- see anatomy.forearm_twist_generator_margin_factor."
       }
     },
-    "anatomy.forearm_twist_generator_margin_factor": {
-      "value": 0.9629629629629629,
-      "unit": "ratio",
-      "applies_to": [
-        "generator"
-      ],
-      "source": {
-        "kind": "invariant",
-        "cites": [
-          "src/rigby_poc/primitives.py:143",
-          "src/rigby_poc/primitives.py:139-142"
-        ],
-        "rationale": "MAX_FOREARM_TWIST_RAD 1.30 expressed as a fraction of the validator limit 1.35 (1.30/1.35). The comment at primitives.py:139-142 states the margin is deliberate; this records it as a derivation of the limit it shadows rather than an independent magic number. Value is unchanged: 1.35 * this factor == 1.30."
-      },
-      "resolves": "08 SS1.1 item 7 (recorded here; primitives.py repointed in 08b)"
-    },
-    "anatomy.wrist_twist_generator_margin_factor": {
-      "value": 0.6666666666666666,
-      "unit": "ratio",
-      "applies_to": [
-        "generator"
-      ],
-      "source": {
-        "kind": "invariant",
-        "cites": [
-          "src/rigby_poc/primitives.py:146",
-          "src/rigby_poc/compiler.py:7794"
-        ],
-        "rationale": "MAX_WRIST_TWIST_RAD 0.12 expressed as a fraction of the validator limit 0.18 (0.12/0.18). Note compiler.py:7794 hardcodes the literal 0.12 again rather than importing the constant -- a third copy the plan did not list. Value is unchanged: 0.18 * this factor == 0.12."
-      },
-      "resolves": "08 SS1.1 item 7 (recorded here; primitives.py and compiler.py repointed in 08b)"
-    },
     "anatomy.shoulder_origin_m": {
       "value": [
         0.1737,
@@ -546,6 +498,69 @@
         ],
         "rationale": "The acting hand must be inside the egocentric frame for every frame; an egocentric clip that does not show the hand cannot be judged."
       }
+    },
+    "anatomy.forearm_twist_generator_max_rad": {
+      "value": 1.3,
+      "unit": "ratio",
+      "applies_to": [
+        "generator"
+      ],
+      "derived_as": {
+        "of": "anatomy.forearm_twist_max_rad",
+        "factor": 0.9629629629629629,
+        "exact": true
+      },
+      "source": {
+        "kind": "invariant",
+        "cites": [
+          "src/rigby_poc/primitives.py:143",
+          "src/rigby_poc/primitives.py:139-142"
+        ],
+        "rationale": "The generator's forearm twist ceiling, 0.9629629629629629 of the validator limit 1.35. The comment at primitives.py:139-142 states the margin is deliberate. Stated as a VALUE, not as a product. IEEE754 does not reproduce these literals exactly from limit x factor in every case -- 0.35 * 0.4 is 0.13999999999999999, not 0.14 -- and the subdivision target divides a frame count, so a sub-ulp difference can move ceil() by one frame and change the clip. Plan 08 SS3.4 item 7 asks for the margin to be a cited derivation rather than a magic number; `derived_as` records the derivation while `value` stays bit-identical to the constant it replaces."
+      },
+      "resolves": "08 SS1.1 item 7 (recorded here; primitives.py repointed in 08b)"
+    },
+    "anatomy.wrist_twist_generator_max_rad": {
+      "value": 0.12,
+      "unit": "ratio",
+      "applies_to": [
+        "generator"
+      ],
+      "derived_as": {
+        "of": "anatomy.wrist_twist_max_rad",
+        "factor": 0.6666666666666666,
+        "exact": true
+      },
+      "source": {
+        "kind": "invariant",
+        "cites": [
+          "src/rigby_poc/primitives.py:146",
+          "src/rigby_poc/compiler.py -- a third hardcoded copy of 0.12"
+        ],
+        "rationale": "The generator's wrist twist ceiling, two thirds of the validator limit 0.18. compiler.py hardcodes the literal 0.12 again rather than importing the constant. Stated as a VALUE, not as a product. IEEE754 does not reproduce these literals exactly from limit x factor in every case -- 0.35 * 0.4 is 0.13999999999999999, not 0.14 -- and the subdivision target divides a frame count, so a sub-ulp difference can move ceil() by one frame and change the clip. Plan 08 SS3.4 item 7 asks for the margin to be a cited derivation rather than a magic number; `derived_as` records the derivation while `value` stays bit-identical to the constant it replaces."
+      },
+      "resolves": "08 SS1.1 item 7 (recorded here; primitives.py and compiler.py repointed in 08b)"
+    },
+    "signal.discontinuity_generator_target_rad": {
+      "value": 0.14,
+      "unit": "ratio",
+      "applies_to": [
+        "generator"
+      ],
+      "derived_as": {
+        "of": "signal.discontinuity_rad",
+        "factor": 0.4,
+        "exact": false
+      },
+      "source": {
+        "kind": "invariant",
+        "cites": [
+          "src/rigby_poc/compiler.py -- the nlerp subdivision target",
+          "plan 08 SS1.1 item 6"
+        ],
+        "rationale": "The nlerp subdivision target: frame_count is raised so no inter-frame delta exceeds this. 0.4 of the 0.35 rad validator discontinuity limit, deliberately stricter so acceleration stays inside the human-reference envelope on very short phases. Stated as a VALUE, not as a product. IEEE754 does not reproduce these literals exactly from limit x factor in every case -- 0.35 * 0.4 is 0.13999999999999999, not 0.14 -- and the subdivision target divides a frame count, so a sub-ulp difference can move ceil() by one frame and change the clip. Plan 08 SS3.4 item 7 asks for the margin to be a cited derivation rather than a magic number; `derived_as` records the derivation while `value` stays bit-identical to the constant it replaces."
+      },
+      "resolves": "08 SS1.1 item 6 (recorded here; compiler.py repointed in 08b)"
     }
   }
 }
