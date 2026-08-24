@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import re
-from pathlib import Path
+from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import Any
 
 from scipy.spatial.transform import Rotation
@@ -494,12 +494,22 @@ def test_every_snapshot_carries_a_pose_hash_and_the_pixel_hash_under_both_names(
 
 
 def test_snapshot_paths_are_bare_filenames_on_every_platform(tmp_path: Path) -> None:
-    """The manifest is read on macOS and Windows; a separator here would not port."""
+    """The manifest is read on macOS and Windows; anything but a bare name would not port.
+
+    `judge.py:526` resolves this field against the manifest's own directory, so it is a
+    cross-platform contract and not merely a tidiness rule. Checking only for a forward
+    slash would let a Windows absolute path through.
+    """
     manifest = _manifest_from_fake_capture(tmp_path)
     for snapshot in manifest["snapshots"]:
-        assert "/" not in snapshot["path"]
-        assert "\\" not in snapshot["path"]
-        assert (tmp_path / snapshot["path"]).is_file()
+        value = snapshot["path"]
+        assert "/" not in value
+        assert "\\" not in value
+        assert not re.match(r"^[A-Za-z]:", value), "a drive letter is not a bare filename"
+        assert not value.startswith(("~", ".")), value
+        assert PurePosixPath(value).name == value
+        assert PureWindowsPath(value).name == value
+        assert (tmp_path / value).is_file()
 
 
 def test_pose_hashes_track_the_pose_and_ignore_everything_else() -> None:
