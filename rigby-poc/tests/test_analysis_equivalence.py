@@ -39,6 +39,10 @@ from rigby_poc.models import (
     SceneManifest,
 )
 
+# Every analysis test compiles a clip or reads one (plan 09 §3.3 tiering).
+pytestmark = pytest.mark.medium
+
+
 
 FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "analysis_equivalence"
 sys.path.insert(0, str(FIXTURE_DIR))

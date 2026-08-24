@@ -42,6 +42,10 @@ from rigby_poc.models import (
     Vec3,
 )
 
+# Every analysis test compiles a clip or reads one (plan 09 §3.3 tiering).
+pytestmark = pytest.mark.medium
+
+
 
 FPS = 30.0
 
