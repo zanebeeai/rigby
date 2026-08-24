@@ -15,6 +15,13 @@ from openai import OpenAI
 from PIL import Image, ImageDraw
 from pydantic import BaseModel, ConfigDict, Field
 
+from .judge_claims import (
+    INSUFFICIENT_EVIDENCE_FRACTION,
+    DimensionVerdict,
+    aggregate_claims,
+    claim_ids,
+    claim_specs,
+)
 from .judge_prompts import (
     GRADER_NAMES,
     GRADER_SPECS,
@@ -192,46 +199,40 @@ DEFAULT_JUDGE_GRADER_MODE = "combined"
 JUDGE_GRADER_MODES: tuple[str, ...] = ("combined", "split")
 
 
-class _GraderScore(BaseModel):
-    """Fields every split grader returns regardless of which dimension it owns."""
+class Claim(BaseModel):
+    """One verifiable observation with a required snapshot citation (§3.2)."""
 
     model_config = ConfigDict(extra="forbid")
 
+    id: str = Field(min_length=1, max_length=64)
+    verdict: Literal["yes", "no", "cannot_tell"]
     confidence: float = Field(ge=0.0, le=1.0)
-    failure_tags: list[FailureTag] = Field(min_length=1, max_length=6)
-    evidence: list[EvidenceCitation] = Field(min_length=1, max_length=6)
+    snapshot_id: str = Field(min_length=1, max_length=48)
+
+
+class GraderClaims(BaseModel):
+    """Every split grader returns claims. The dimension score is derived, never asked for."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    claims: list[Claim] = Field(min_length=1, max_length=24)
     summary: str = Field(min_length=5, max_length=240)
 
 
-class SemanticGraderScore(_GraderScore):
-    semantic_match: int = Field(ge=1, le=5)
-    gesture_recognizability: int = Field(ge=1, le=5)
+class SemanticGraderClaims(GraderClaims):
+    """The semantic grader additionally proposes the repair hint the loop consumes."""
+
     suggested_adjustment: str = Field(min_length=3, max_length=240)
 
 
-class AnatomyGraderScore(_GraderScore):
-    anatomical_naturalness: int = Field(ge=1, le=5)
-
-
-class ArtifactGraderScore(_GraderScore):
-    egocentric_visibility: int = Field(ge=1, le=5)
-
-
-class TimingGraderScore(_GraderScore):
-    temporal_readability: int = Field(ge=1, le=5)
-
-
-class CrossViewGraderScore(_GraderScore):
-    cross_view_consistency: int = Field(ge=1, le=5)
-
-
 GRADER_OUTPUT_MODELS: dict[GraderName, type[BaseModel]] = {
-    "semantic": SemanticGraderScore,
-    "anatomy": AnatomyGraderScore,
-    "artifact": ArtifactGraderScore,
-    "timing": TimingGraderScore,
-    "crossview": CrossViewGraderScore,
+    "semantic": SemanticGraderClaims,
+    "anatomy": GraderClaims,
+    "artifact": GraderClaims,
+    "timing": GraderClaims,
+    "crossview": GraderClaims,
 }
+
 
 # `overall` is a summary of the dimensions that are measured directly, not a
 # seventh measurement.  Deriving it from the three published dimensions that a
@@ -245,75 +246,162 @@ OVERALL_SOURCE_DIMENSIONS: tuple[str, ...] = (
     "anatomical_naturalness",
 )
 
+# What a dimension scores when its claims could not be settled.  Any number here
+# is a lie of some kind: the honest answer is `None`, which is what
+# `DimensionVerdict.score` carries and what the record reports.  3 is chosen for
+# the legacy `MotionJudgeScore` field because it is below the acceptance minimum
+# — so an unjudged clip is never accepted — without asserting the failure that a
+# 1 would claim was observed.
+UNJUDGED_DIMENSION_SCORE = 3
 
-def aggregate_grader_dimensions(parts: Mapping[str, Mapping[str, Any]]) -> dict[str, int]:
-    """Merge per-grader dimension scores into the six-dimension score plus `overall`.
 
-    Pure and total: a missing or non-integer dimension raises rather than being
-    defaulted, so a truncated grader response cannot produce a score that looks
-    complete.  Provisional until 07c replaces it with the claim aggregation.
+def _claim_verdicts(payload: Mapping[str, Any]) -> dict[str, str]:
+    verdicts: dict[str, str] = {}
+    for claim in payload.get("claims", []):
+        verdicts[str(claim.get("id"))] = str(claim.get("verdict"))
+    return verdicts
+
+
+def grader_dimension_verdicts(
+    grader: GraderName,
+    payload: Mapping[str, Any],
+    *,
+    intent: str | None = None,
+) -> dict[str, DimensionVerdict]:
+    """Aggregate one grader's claims into every dimension it owns.
+
+    A grader that owns two dimensions answers one claim set; both dimensions are
+    derived from it.  `semantic_match` and `gesture_recognizability` genuinely do
+    move together — pretending otherwise by asking twice would manufacture the
+    fake independence §1.5 complains about.
     """
-    merged: dict[str, int] = {}
+    specs = claim_specs(grader, intent=intent)
+    verdicts = _claim_verdicts(payload)
+    return {
+        dimension: aggregate_claims(dimension, specs, verdicts)
+        for dimension in GRADER_SPECS[grader].dimensions
+    }
+
+
+def aggregate_grader_dimensions(
+    parts: Mapping[str, Mapping[str, Any]],
+    *,
+    intent: str | None = None,
+) -> dict[str, DimensionVerdict]:
+    """Derive every dimension from the five graders' claims. Pure and total."""
+    merged: dict[str, DimensionVerdict] = {}
     for name in GRADER_NAMES:
         payload = parts.get(name)
         if payload is None:
             raise ValueError(f"missing grader result: {name}")
-        for dimension in GRADER_SPECS[name].dimensions:
-            value = payload.get(dimension)
-            if isinstance(value, bool) or not isinstance(value, int):
-                raise ValueError(f"grader {name} did not report {dimension}")
-            merged[dimension] = value
-    merged["overall"] = min(merged[dimension] for dimension in OVERALL_SOURCE_DIMENSIONS)
+        merged.update(grader_dimension_verdicts(name, payload, intent=intent))
+    settled = [
+        merged[dimension].score
+        for dimension in OVERALL_SOURCE_DIMENSIONS
+        if merged[dimension].score is not None
+    ]
+    merged["overall"] = DimensionVerdict(
+        dimension="overall",
+        score=min(settled) if len(settled) == len(OVERALL_SOURCE_DIMENSIONS) else None,
+        yes=0,
+        no=0,
+        cannot_tell=0,
+        failed_claim_ids=(),
+        critical_failure_ids=(),
+    )
     return merged
 
 
-def _merge_failure_tags(parts: Mapping[str, Mapping[str, Any]]) -> list[str]:
+def unexpected_claim_ids(
+    grader: GraderName,
+    payload: Mapping[str, Any],
+    *,
+    intent: str | None = None,
+) -> list[str]:
+    """Claim ids a grader invented. Recorded rather than raised, so one hallucinated
+    id does not discard four correct graders — but never silently ignored."""
+    known = set(claim_ids(grader, intent=intent))
+    return sorted({claim_id for claim_id in _claim_verdicts(payload) if claim_id not in known})
+
+
+def _merge_failure_tags(
+    verdicts: Mapping[str, DimensionVerdict],
+    parts: Mapping[str, Mapping[str, Any]],
+    *,
+    intent: str | None = None,
+) -> list[str]:
+    """Failure tags are derived from which claims failed, not asked for separately."""
     tags: list[str] = []
     for name in GRADER_NAMES:
-        for tag in parts[name].get("failure_tags", []):
-            if tag != "none" and tag not in tags:
-                tags.append(str(tag))
+        by_id = {spec.id: spec for spec in claim_specs(name, intent=intent)}
+        for dimension in GRADER_SPECS[name].dimensions:
+            for claim_id in verdicts[dimension].failed_claim_ids:
+                tag = by_id[claim_id].tag
+                if tag != "none" and tag not in tags:
+                    tags.append(tag)
     return tags[:8] or ["none"]
 
 
 def _merge_evidence(parts: Mapping[str, Mapping[str, Any]]) -> list[dict[str, Any]]:
-    """Pool the graders' citations, attributed so a claim can be traced back.
+    """Cite the claims that decided the outcome, worst news first.
 
-    Two graders citing the same snapshot is normal and must not collapse into one
-    citation: which grader saw what is the whole point of splitting them.
+    A `no` is what a reader needs to see; a `cannot_tell` is the second most
+    informative thing, because it says the evidence could not settle the
+    question.  Filling the citation list with passing claims would bury both.
     """
-    citations: list[dict[str, Any]] = []
-    seen: set[tuple[str, str]] = set()
+    ranked: dict[str, list[dict[str, Any]]] = {"no": [], "cannot_tell": [], "yes": []}
     for name in GRADER_NAMES:
-        for citation in parts[name].get("evidence", []):
-            snapshot_id = str(citation.get("snapshot_id"))
-            observation = f"{name}: {str(citation.get('observation'))}"[:240]
-            key = (snapshot_id, observation)
-            if key in seen:
+        for claim in parts[name].get("claims", []):
+            verdict = str(claim.get("verdict"))
+            if verdict not in ranked:
                 continue
-            seen.add(key)
-            citations.append({"snapshot_id": snapshot_id, "observation": observation})
-    return citations[:8]
+            ranked[verdict].append(
+                {
+                    "snapshot_id": str(claim.get("snapshot_id")),
+                    "observation": f"{name}/{claim.get('id')}: {verdict}"[:240],
+                }
+            )
+    ordered = ranked["no"] + ranked["cannot_tell"] + ranked["yes"]
+    return ordered[:8]
 
 
-def assemble_split_score(parts: Mapping[str, Mapping[str, Any]]) -> MotionJudgeScore:
-    """Build one `MotionJudgeScore` from the five split graders.
+def _mean_claim_confidence(payload: Mapping[str, Any]) -> float:
+    claims = payload.get("claims", [])
+    values = [float(claim.get("confidence", 0.0)) for claim in claims]
+    return sum(values) / len(values) if values else 0.0
+
+
+def assemble_split_score(
+    parts: Mapping[str, Mapping[str, Any]],
+    *,
+    intent: str | None = None,
+) -> tuple[MotionJudgeScore, dict[str, DimensionVerdict]]:
+    """Build one `MotionJudgeScore` from the five graders' claims.
 
     `accept` is *derived* here by applying the published rule, rather than being
-    the model's own boolean as it is on the combined path.  That is the §3.3
-    decision layer in miniature; it only becomes authoritative for production
-    when 07d makes the split path the default.
+    the model's own boolean as it is on the combined path.  A dimension the
+    evidence could not settle is never accepted: you cannot accept what you could
+    not judge.
     """
-    merged = aggregate_grader_dimensions(parts)
+    verdicts = aggregate_grader_dimensions(parts, intent=intent)
+    scores = {
+        dimension: (
+            UNJUDGED_DIMENSION_SCORE if verdict.score is None else verdict.score
+        )
+        for dimension, verdict in verdicts.items()
+    }
+    fully_judged = all(
+        verdicts[dimension].score is not None for dimension in ACCEPTANCE_MINIMUM_SCORES
+    )
     summary = " ".join(
         str(parts[name].get("summary", "")).strip() for name in GRADER_NAMES
     ).strip()[:400]
-    return MotionJudgeScore.model_validate(
+    score = MotionJudgeScore.model_validate(
         {
-            **merged,
-            "accept": meets_acceptance_thresholds(merged),
-            "confidence": min(float(parts[name]["confidence"]) for name in GRADER_NAMES),
-            "failure_tags": _merge_failure_tags(parts),
+            **scores,
+            "accept": fully_judged and meets_acceptance_thresholds(scores),
+            "confidence": min(_mean_claim_confidence(parts[name]) for name in GRADER_NAMES),
+            "failure_tags": _merge_failure_tags(verdicts, parts, intent=intent),
             "evidence": _merge_evidence(parts),
             "summary": summary,
             "suggested_adjustment": str(
@@ -321,6 +409,8 @@ def assemble_split_score(parts: Mapping[str, Mapping[str, Any]]) -> MotionJudgeS
             ),
         }
     )
+    return score, verdicts
+
 
 UNARY_SYSTEM_PROMPT = """You are a strict animation-quality judge for first-person humanoid arm motion.
 Judge only the visible rendered evidence and the user's motion request. Evidence includes detailed pose frames
@@ -842,7 +932,44 @@ class ModelCallBudgetExhausted(RuntimeError):
     """Raised before an API request would exceed the configured hard ceiling."""
 
 
-class VLMJudge:
+class RoutedModelClient:
+    """Retry, fallback, budget and observability for one structured model call.
+
+    Extracted from `VLMJudge` so the text-only graders in
+    `rigby_poc.llm_graders` route identically (plan 10 §4). Every model call in
+    the judging layer goes through `_routed_parse`, which is deliberately the
+    single wrap point PR 01b instruments.
+    """
+
+    def __init__(
+        self,
+        *,
+        client: OpenAI | None,
+        model: str,
+        fallback_model: str | None,
+        reasoning_effort: str | None = None,
+        max_model_calls: int | None = None,
+    ) -> None:
+        load_environment()
+        self.client = client or OpenAI()
+        self.model = model
+        self.fallback_model = fallback_model
+        self.reasoning_effort = reasoning_effort or os.getenv(
+            "OPENAI_JUDGE_REASONING_EFFORT", DEFAULT_JUDGE_REASONING_EFFORT
+        )
+        if max_model_calls is not None and max_model_calls < 0:
+            raise ValueError("max_model_calls cannot be negative")
+        self.max_model_calls = max_model_calls
+        self.model_calls_made = 0
+
+    @property
+    def remaining_model_calls(self) -> int | None:
+        if self.max_model_calls is None:
+            return None
+        return max(0, self.max_model_calls - self.model_calls_made)
+
+
+class VLMJudge(RoutedModelClient):
     def __init__(
         self,
         client: OpenAI | None = None,
@@ -856,16 +983,16 @@ class VLMJudge:
         max_model_calls: int | None = None,
         grader_mode: str | None = None,
     ) -> None:
-        load_environment()
-        self.client = client or OpenAI()
-        self.model = model or os.getenv("OPENAI_JUDGE_MODEL", DEFAULT_JUDGE_MODEL)
-        self.fallback_model = (
-            fallback_model
-            or (model if model is not None else None)
-            or os.getenv("OPENAI_JUDGE_FALLBACK_MODEL", DEFAULT_JUDGE_FALLBACK_MODEL)
-        )
-        self.reasoning_effort = reasoning_effort or os.getenv(
-            "OPENAI_JUDGE_REASONING_EFFORT", DEFAULT_JUDGE_REASONING_EFFORT
+        super().__init__(
+            client=client,
+            model=model or os.getenv("OPENAI_JUDGE_MODEL", DEFAULT_JUDGE_MODEL),
+            fallback_model=(
+                fallback_model
+                or (model if model is not None else None)
+                or os.getenv("OPENAI_JUDGE_FALLBACK_MODEL", DEFAULT_JUDGE_FALLBACK_MODEL)
+            ),
+            reasoning_effort=reasoning_effort,
+            max_model_calls=max_model_calls,
         )
         self.image_detail = image_detail or os.getenv(
             "OPENAI_JUDGE_IMAGE_DETAIL", DEFAULT_JUDGE_IMAGE_DETAIL
@@ -882,10 +1009,6 @@ class VLMJudge:
             raise ValueError("judge image detail must be low, high, or original")
         self.max_image_dimension_px = configured_dimension
         self.escalation_confidence = escalation_confidence
-        if max_model_calls is not None and max_model_calls < 0:
-            raise ValueError("max_model_calls cannot be negative")
-        self.max_model_calls = max_model_calls
-        self.model_calls_made = 0
         # The split graders stay opt-in until 07d.  Production runs on a
         # four-call budget (`pipeline.py:167`) that five graders per candidate
         # cannot fit inside, so the flag defaults to the combined path.
@@ -895,12 +1018,6 @@ class VLMJudge:
         if resolved_mode not in JUDGE_GRADER_MODES:
             raise ValueError(f"judge grader mode must be one of {JUDGE_GRADER_MODES}")
         self.grader_mode = resolved_mode
-
-    @property
-    def remaining_model_calls(self) -> int | None:
-        if self.max_model_calls is None:
-            return None
-        return max(0, self.max_model_calls - self.model_calls_made)
 
     def _parse_response(
         self,
@@ -1142,9 +1259,22 @@ class VLMJudge:
         }
 
     def _grader_escalation(self, value: BaseModel) -> str | None:
-        """Split graders route on confidence alone; they report no `accept`."""
-        confidence = float(getattr(value, "confidence", 1.0))
-        return "low_confidence" if confidence < self.escalation_confidence else None
+        """Route on the claim set: unconfident, or unable to settle its questions.
+
+        `cannot_tell` is an honest answer, not a failure — but a grader that
+        cannot settle most of its claims is exactly the case where a second,
+        stronger model is worth the call.
+        """
+        claims = getattr(value, "claims", None) or []
+        if not claims:
+            return "no_claims_returned"
+        confidences = [float(claim.confidence) for claim in claims]
+        if sum(confidences) / len(confidences) < self.escalation_confidence:
+            return "low_confidence"
+        unresolved = sum(claim.verdict == "cannot_tell" for claim in claims)
+        if unresolved > INSUFFICIENT_EVIDENCE_FRACTION * len(claims):
+            return "insufficient_evidence"
+        return None
 
     def _grader_content(
         self,
@@ -1238,13 +1368,27 @@ class VLMJudge:
             name: self.grade(name, manifest=manifest, snapshots=snapshots)
             for name in GRADER_NAMES
         }
+        intent = manifest.get("intent")
         parts = {name: graders[name]["call"]["parsed"] for name in GRADER_NAMES}
-        aggregated = assemble_split_score(parts)
+        aggregated, verdicts = assemble_split_score(parts, intent=intent)
+        invented = {
+            name: unexpected_claim_ids(name, parts[name], intent=intent)
+            for name in GRADER_NAMES
+        }
         return {
-            "schema_version": "1.1",
+            "schema_version": "1.2",
             "kind": "split_motion_judgment",
             "grader_mode": "split",
-            "family": family_for_intent(manifest.get("intent")),
+            "family": family_for_intent(intent),
+            "dimension_verdicts": {
+                dimension: verdict.record() for dimension, verdict in verdicts.items()
+            },
+            "insufficient_evidence_dimensions": sorted(
+                dimension for dimension, verdict in verdicts.items() if verdict.score is None
+            ),
+            "unexpected_claim_ids": {
+                name: ids for name, ids in invented.items() if ids
+            },
             "result_id": manifest.get("result_id"),
             "evidence_manifest": str(evidence_manifest),
             "evidence_manifest_sha256": hashlib.sha256(evidence_manifest.read_bytes()).hexdigest(),

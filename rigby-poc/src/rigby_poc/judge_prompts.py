@@ -134,7 +134,10 @@ finger configuration, and a limb intersecting the performer's own body. Judge wh
 evidence; the egocentric camera is mounted at the performer's head, so the torso, legs, and complete performer
 being absent there is correct framing and not an anatomical fault. Score anatomical_naturalness 1 when a joint
 is clearly outside human range, 3 when a configuration is strained or awkward but possible, and 5 when every
-joint reads as a relaxed, physically plausible human pose."""
+joint reads as a relaxed, physically plausible human pose.
+The rig's rest pose is a T-pose with the arms held out horizontally, so reason about each joint from what
+the render shows rather than from an arms-at-side mental model: an arm held horizontal is the rest state,
+not an overhead raise."""
 
 ARTIFACT_PROMPT = f"""You are a strict rendering-artifact judge for rendered humanoid motion. You are NOT told
 what motion was requested. Judge only defects of the rendered image: geometry that clips, a body or object that
@@ -342,19 +345,30 @@ class GraderPrompt:
 
 
 def grader_prompt(name: GraderName, *, intent: str | None = None) -> GraderPrompt:
-    """Assemble the prompt for one grader, composing the family fragment if it takes one."""
+    """Assemble the prompt for one grader, composing the family fragment if it takes one.
+
+    The claim block is appended last so the grader's final instruction is the
+    list of questions it must answer verbatim (plan 07 §3.2).
+    """
     if name not in GRADER_SPECS:
         raise ValueError(f"unknown grader: {name}")
+    # Imported here rather than at module scope: `judge_claims` imports this
+    # module for `family_for_intent`, and the claim sets are prompt content.
+    from .judge_claims import claim_instructions
+
     spec = GRADER_SPECS[name]
     core = GRADER_CORES[name]
     version = GRADER_PROMPT_VERSIONS[name]
+    claims = claim_instructions(name, intent=intent)
     if not spec.family_specific:
-        return GraderPrompt(name=name, version=version, text=core, family=None)
+        return GraderPrompt(
+            name=name, version=version, text=f"{core}\n\n{claims}", family=None
+        )
     family = family_for_intent(intent)
     fragment = FAMILY_FRAGMENTS[family]
     return GraderPrompt(
         name=name,
         version=f"{version}+{family}@{FAMILY_FRAGMENT_VERSIONS[family]}",
-        text=f"{core}\n\n{fragment}",
+        text=f"{core}\n\n{fragment}\n\n{claims}",
         family=family,
     )
