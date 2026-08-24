@@ -1870,6 +1870,7 @@ def run_best_of_five(
     progress_callback: ProgressCallback | None = None,
     max_model_calls: int | None = 4,
     capture_fn: Callable[..., Path] = capture_result_frames,
+    capture_batch_fn: Callable[..., list[Path]] | None = None,
 ) -> Path:
     if selection_mode not in {"unary_tournament", "five_way", "human_pilot"}:
         raise ValueError(
@@ -2357,6 +2358,7 @@ def run_best_of_five(
                     )
 
             if complete_batch:
+                pending: list[tuple[dict[str, Any], str, Path]] = []
                 for candidate in selected_batch:
                     candidate_index = int(candidate["candidate_index"])
                     recipe_name = str(candidate["recipe"]["name"])
@@ -2381,15 +2383,30 @@ def run_best_of_five(
                             candidate_index=candidate_index,
                             result_id=result_id,
                         )
-                        manifest = capture_fn(result_id, candidate_dir, base_url=base_url)
+                        pending.append((candidate, result_id, candidate_dir))
+                # The whole round goes through one browser launch when the caller
+                # supplies a batch capture; the per-candidate seam stays the default so
+                # every existing injected `capture_fn` keeps working unchanged.
+                if pending:
+                    if capture_batch_fn is not None:
+                        manifests = capture_batch_fn(
+                            [(result_id, directory) for _, result_id, directory in pending],
+                            base_url=base_url,
+                        )
+                    else:
+                        manifests = [
+                            capture_fn(result_id, directory, base_url=base_url)
+                            for _, result_id, directory in pending
+                        ]
+                    for (candidate, result_id, _), manifest in zip(pending, manifests):
                         candidate["evidence_manifest"] = str(manifest)
                         _progress(
                             progress_callback,
                             "capture_ready",
                             "visual_evidence",
-                            f"Visual evidence for candidate {candidate_index} is ready.",
+                            f"Visual evidence for candidate {int(candidate['candidate_index'])} is ready.",
                             round=round_index + 1,
-                            candidate_index=candidate_index,
+                            candidate_index=int(candidate["candidate_index"]),
                             result_id=result_id,
                             evidence_manifest=str(manifest),
                         )

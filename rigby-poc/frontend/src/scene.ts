@@ -1,6 +1,12 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import {
+  AvatarAssetError,
+  fetchAssetBytes,
+  loadAvatarAsset,
+  sha256Hex,
+} from "./avatar";
 import { applyEgoCameraPose, computeEgoCameraPose, trackOrbitRoot } from "./camera";
 import type {
   BlockParameters,
@@ -10,6 +16,7 @@ import type {
 } from "./types";
 
 const DEG = Math.PI / 180;
+const AVATAR_ASSET_URL = "/assets/models/human-male.glb";
 const BONE_MAP: Record<string, string> = {
   hips: "pelvis", spine: "spine_01", chest: "spine_02", upperChest: "spine_03", neck: "neck_01", head: "head",
   leftShoulder: "clavicle_l", leftUpperArm: "upperarm_l", leftLowerArm: "lowerarm_l", leftHand: "hand_l",
@@ -77,6 +84,38 @@ function poseFromFrame(frame: MotionFrame | null, objectId: string): NonNullable
   return frame.objects?.[objectId] ?? frame.objects?.block ?? frame.block ?? null;
 }
 
+export interface RigbySceneOptions {
+  /**
+   * Forbid the procedural stand-in body. Capture pages set this: an evidence frame that
+   * silently depicts a different body is worse than no evidence frame at all. The
+   * interactive studio leaves it off and keeps its graceful degradation.
+   */
+  strictAssets?: boolean;
+  /**
+   * Trade evidence quality for cross-machine comparability: no MSAA, hard shadows. Used
+   * by mutation-diff work that compares renders numerically rather than judging them.
+   */
+  deterministicRender?: boolean;
+}
+
+export interface RenderProvenance {
+  three_revision: string;
+  webgl_vendor: string;
+  webgl_renderer: string;
+  webgl_version: string;
+  shading_language_version: string;
+  max_texture_size: number;
+  device_pixel_ratio: number;
+  antialias: boolean;
+  shadow_map: string;
+  render_mode: "judged" | "deterministic";
+  asset_url: string | null;
+  asset_sha256: string | null;
+  asset_bytes: number | null;
+  asset_status: "loaded" | "substituted" | "failed";
+  asset_error: string | null;
+}
+
 export class RigbyScene {
   private readonly scene = new THREE.Scene();
   private readonly renderer: THREE.WebGLRenderer;
@@ -97,6 +136,13 @@ export class RigbyScene {
   private restRotations = new Map<string, THREE.Quaternion>();
   private restPositions = new Map<string, THREE.Vector3>();
   private headBone: THREE.Object3D | null = null;
+  private readonly strictAssets: boolean;
+  private readonly deterministicRender: boolean;
+  private assetUrl: string | null = null;
+  private assetSha256: string | null = null;
+  private assetBytes: number | null = null;
+  private assetStatus: "loaded" | "substituted" | "failed" = "failed";
+  private assetError: string | null = null;
   private headRestWorldRotation: THREE.Quaternion | null = null;
   private readonly trackedRootOffset = new THREE.Vector3();
   private mode: CameraMode = "orbit";
@@ -107,16 +153,25 @@ export class RigbyScene {
   constructor(
     private readonly host: HTMLElement,
     blockParams: BlockParameters,
+    options: RigbySceneOptions = {},
   ) {
+    this.strictAssets = options.strictAssets ?? false;
+    this.deterministicRender = options.deterministicRender ?? false;
     this.blockParams = structuredClone(blockParams);
     this.scene.background = new THREE.Color(0x0b1016);
     this.scene.fog = new THREE.FogExp2(0x0b1016, 0.075);
 
-    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, preserveDrawingBuffer: true });
+    this.renderer = new THREE.WebGLRenderer({
+      antialias: !this.deterministicRender,
+      alpha: false,
+      preserveDrawingBuffer: true,
+    });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.renderer.shadowMap.type = this.deterministicRender
+      ? THREE.BasicShadowMap
+      : THREE.PCFSoftShadowMap;
     this.host.append(this.renderer.domElement);
 
     this.orbitCamera.position.set(2.15, 1.45, 2.65);
@@ -209,6 +264,10 @@ export class RigbyScene {
 
     this.updateBlock(blockParams);
     this.readyPromise = this.loadAvatar();
+    // `prepareCapture` is the intended consumer of this rejection. Marking it handled
+    // here keeps a strict-asset failure out of the browser's unhandled-rejection log
+    // without swallowing it: the stored promise still rejects when awaited.
+    this.readyPromise.catch(() => undefined);
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(host);
     this.resize();
@@ -250,6 +309,52 @@ export class RigbyScene {
       vertical_fov_deg: this.mode === "ego" ? this.egoCamera.fov : this.orbitCamera.fov,
       device_pixel_ratio: 1,
     };
+  }
+
+  /**
+   * What produced the pixels. Recorded at the manifest top level rather than inside a
+   * snapshot's camera block, which `judge.py` validates against a fixed shape.
+   *
+   * `WEBGL_debug_renderer_info` is gated in current Chrome and may be absent or masked,
+   * so the unmasked strings are read when available and the always-present
+   * `gl.VENDOR`/`gl.RENDERER` are the fallback.
+   */
+  renderProvenance(): RenderProvenance {
+    const gl = this.renderer.getContext();
+    const debugInfo = gl.getExtension("WEBGL_debug_renderer_info");
+    const parameter = (token: number | undefined, fallback: number): string => {
+      if (token === undefined) return String(gl.getParameter(fallback) ?? "");
+      const value = gl.getParameter(token);
+      return String(value ?? gl.getParameter(fallback) ?? "");
+    };
+    const shadowSize = this.shadowMapSize();
+    return {
+      three_revision: String(THREE.REVISION),
+      webgl_vendor: parameter(debugInfo?.UNMASKED_VENDOR_WEBGL, gl.VENDOR),
+      webgl_renderer: parameter(debugInfo?.UNMASKED_RENDERER_WEBGL, gl.RENDERER),
+      webgl_version: String(gl.getParameter(gl.VERSION) ?? ""),
+      shading_language_version: String(gl.getParameter(gl.SHADING_LANGUAGE_VERSION) ?? ""),
+      max_texture_size: Number(gl.getParameter(gl.MAX_TEXTURE_SIZE) ?? 0),
+      device_pixel_ratio: this.renderer.getPixelRatio(),
+      antialias: this.renderer.getContextAttributes()?.antialias ?? false,
+      shadow_map: `${this.deterministicRender ? "Basic" : "PCFSoft"}/${shadowSize}`,
+      render_mode: this.deterministicRender ? "deterministic" : "judged",
+      asset_url: this.assetUrl,
+      asset_sha256: this.assetSha256,
+      asset_bytes: this.assetBytes,
+      asset_status: this.assetStatus,
+      asset_error: this.assetError,
+    };
+  }
+
+  private shadowMapSize(): number {
+    let size = 0;
+    this.scene.traverse((node) => {
+      if (node instanceof THREE.DirectionalLight && node.castShadow) {
+        size = Math.max(size, node.shadow.mapSize.width);
+      }
+    });
+    return size;
   }
 
   setEgoFieldOfView(degrees: number): void {
@@ -421,33 +526,46 @@ export class RigbyScene {
 
   private async loadAvatar(): Promise<void> {
     const loader = new GLTFLoader();
+    this.assetUrl = AVATAR_ASSET_URL;
     try {
-      const gltf = await loader.loadAsync("/assets/models/human-male.glb");
-      const avatar = gltf.scene;
-      avatar.name = "RigbyHumanoid";
-      avatar.traverse((node) => {
-        if (node.name) this.boneLookup.set(node.name.toLowerCase(), node);
-        if (node instanceof THREE.Mesh) {
-          node.castShadow = true;
-          node.receiveShadow = true;
-        }
-      });
-      for (const [canonical, source] of Object.entries(BONE_MAP)) {
-        const bone = this.boneLookup.get(source.toLowerCase());
-        if (!bone) continue;
-        this.boneLookup.set(canonical.toLowerCase(), bone);
-        this.restRotations.set(canonical, bone.quaternion.clone());
-        this.restRotations.set(canonical.toLowerCase(), bone.quaternion.clone());
-        this.restPositions.set(canonical, bone.position.clone());
-        this.restPositions.set(canonical.toLowerCase(), bone.position.clone());
+      const asset = await loadAvatarAsset(
+        AVATAR_ASSET_URL,
+        {
+          fetchBytes: fetchAssetBytes,
+          digest: sha256Hex,
+          parse: async (bytes, url) => (await loader.parseAsync(bytes, url)).scene,
+        },
+        // The studio may be served from an origin without SubtleCrypto; capture never is,
+        // and an evidence frame of an asset we cannot name is not evidence.
+        { requireDigest: this.strictAssets },
+      );
+      this.adoptHumanoid(asset.root);
+      this.assetSha256 = asset.sha256;
+      this.assetBytes = asset.bytes;
+      this.assetStatus = "loaded";
+      this.assetError = null;
+    } catch (error) {
+      const message =
+        error instanceof AvatarAssetError
+          ? error.message
+          : `humanoid asset ${AVATAR_ASSET_URL} could not be loaded: ${
+              error instanceof Error ? error.message : String(error)
+            }`;
+      this.assetSha256 = null;
+      this.assetBytes = null;
+      this.assetError = message;
+      if (this.strictAssets) {
+        // Evidence capture must never depict a body other than the one that was
+        // compiled. Failing here is what turns an invisible substitution into a
+        // visible error status the Python capture path refuses to write a manifest for.
+        this.assetStatus = "failed";
+        throw error instanceof AvatarAssetError
+          ? error
+          : new AvatarAssetError(message, "fetch_failed");
       }
-      this.headBone = this.boneLookup.get("head") ?? null;
-      this.avatarRoot.remove(this.fallbackAvatar);
-      this.avatarRoot.add(avatar);
-      avatar.updateWorldMatrix(true, true);
-      this.headRestWorldRotation = this.headBone?.getWorldQuaternion(new THREE.Quaternion()) ?? null;
-    } catch {
-      // The procedural avatar keeps the UI useful when the asset server is offline.
+      // The procedural avatar keeps the interactive studio useful when the asset
+      // server is offline, and `assetStatus` records that it is a stand-in.
+      this.assetStatus = "substituted";
       this.fallbackAvatar.traverse((node) => {
         if (node.name) this.boneLookup.set(node.name.toLowerCase(), node);
       });
@@ -455,6 +573,31 @@ export class RigbyScene {
       this.fallbackAvatar.updateWorldMatrix(true, true);
       this.headRestWorldRotation = this.headBone?.getWorldQuaternion(new THREE.Quaternion()) ?? null;
     }
+  }
+
+  private adoptHumanoid(avatar: THREE.Object3D): void {
+    avatar.name = "RigbyHumanoid";
+    avatar.traverse((node) => {
+      if (node.name) this.boneLookup.set(node.name.toLowerCase(), node);
+      if (node instanceof THREE.Mesh) {
+        node.castShadow = true;
+        node.receiveShadow = true;
+      }
+    });
+    for (const [canonical, source] of Object.entries(BONE_MAP)) {
+      const bone = this.boneLookup.get(source.toLowerCase());
+      if (!bone) continue;
+      this.boneLookup.set(canonical.toLowerCase(), bone);
+      this.restRotations.set(canonical, bone.quaternion.clone());
+      this.restRotations.set(canonical.toLowerCase(), bone.quaternion.clone());
+      this.restPositions.set(canonical, bone.position.clone());
+      this.restPositions.set(canonical.toLowerCase(), bone.position.clone());
+    }
+    this.headBone = this.boneLookup.get("head") ?? null;
+    this.avatarRoot.remove(this.fallbackAvatar);
+    this.avatarRoot.add(avatar);
+    avatar.updateWorldMatrix(true, true);
+    this.headRestWorldRotation = this.headBone?.getWorldQuaternion(new THREE.Quaternion()) ?? null;
   }
 
   private resize(): void {

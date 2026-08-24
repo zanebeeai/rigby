@@ -1,12 +1,16 @@
 from __future__ import annotations
 
 import json
+import os
 import re
+import signal
 import subprocess
 import sys
 import threading
+from contextlib import suppress
 from datetime import UTC, datetime
 from pathlib import Path
+from collections.abc import Sequence
 from typing import Any
 from uuid import uuid4
 
@@ -16,6 +20,84 @@ from .io_utils import atomic_write_json
 
 
 SAFE_RUN_ID = re.compile(r"^[0-9]{8}T[0-9]{6}-[a-f0-9]{8}$")
+
+
+def _capture_budget_s(result_count: int) -> float:
+    """Capture's own deadline plus process grace, never a number of its own.
+
+    Importing this from `evals.capture` is deliberate: plan 05 section 1.4 traced the
+    orphaned-Chrome failure to a hardcoded 300 s here that was *below* capture's worst
+    case, so the timeout fired during normal work and escaped uncaught.
+    """
+    from evals.capture import subprocess_timeout_s
+
+    return subprocess_timeout_s(result_count=result_count)
+
+
+def _spawn_capture(command: list[str], stdout: Any, stderr: Any) -> subprocess.Popen[bytes]:
+    """Start the capture helper in its own process group so its browser can be reaped."""
+    if os.name == "posix":
+        return subprocess.Popen(
+            command, cwd=PROJECT_ROOT, stdout=stdout, stderr=stderr, start_new_session=True
+        )
+    return subprocess.Popen(
+        command,
+        cwd=PROJECT_ROOT,
+        stdout=stdout,
+        stderr=stderr,
+        creationflags=subprocess.CREATE_NEW_PROCESS_GROUP,  # type: ignore[attr-defined]
+    )
+
+
+def terminate_capture_tree(process: subprocess.Popen[bytes]) -> None:
+    """Kill the capture helper *and its browser descendants*, on either platform.
+
+    `subprocess.run(timeout=...)` kills only the direct child, which is why a timed-out
+    capture used to leave Chrome running. POSIX gets a process-group signal; Windows has
+    no process groups for orphan reaping, so `taskkill /T` walks the tree instead.
+    """
+    if os.name == "posix":
+        with suppress(ProcessLookupError, PermissionError, OSError):
+            os.killpg(os.getpgid(process.pid), signal.SIGKILL)
+    else:
+        subprocess.run(
+            ["taskkill", "/F", "/T", "/PID", str(process.pid)],
+            capture_output=True,
+            check=False,
+        )
+    with suppress(OSError):
+        process.kill()
+    with suppress(subprocess.TimeoutExpired):
+        process.wait(timeout=30)
+
+
+def _run_capture(command: list[str], log_dir: Path, *, budget_s: float, description: str) -> str:
+    """Run the capture helper, persisting its output and never leaking its browser.
+
+    Output goes to a file rather than a pipe. The original code sent it to the null
+    device because browser grandchildren can hold an inherited pipe open past the
+    helper's exit, which makes `communicate()` block; a file has no such coupling, so
+    the output survives without reintroducing that hang.
+    """
+    log_dir.mkdir(parents=True, exist_ok=True)
+    log_path = log_dir / "capture.log"
+    with log_path.open("wb") as sink:
+        process = _spawn_capture(command, sink, subprocess.STDOUT)
+        try:
+            returncode = process.wait(timeout=budget_s)
+        except subprocess.TimeoutExpired:
+            terminate_capture_tree(process)
+            raise RuntimeError(
+                f"evidence capture for {description} exceeded {budget_s:.0f}s and was killed; "
+                f"see {log_path}"
+            ) from None
+    output = log_path.read_text(encoding="utf-8", errors="replace")
+    if returncode != 0:
+        tail = "\n".join(output.strip().splitlines()[-20:])
+        raise RuntimeError(
+            f"evidence capture for {description} failed with exit code {returncode}:\n{tail}"
+        )
+    return output
 
 
 def capture_in_subprocess(
@@ -34,24 +116,53 @@ def capture_in_subprocess(
         "--base-url",
         base_url,
     ]
-    completed = subprocess.run(
-        command,
-        cwd=PROJECT_ROOT,
-        # Browser grandchildren can briefly retain inherited pipe handles even
-        # after the capture process has written its final manifest. Sending
-        # output to the null device lets `run` observe the helper's exit
-        # directly instead of waiting for every descendant to close a pipe.
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        timeout=300,
-        check=False,
-    )
-    if completed.returncode != 0:
-        raise RuntimeError(f"evidence capture failed with exit code {completed.returncode}")
+    _run_capture(command, output_dir, budget_s=_capture_budget_s(1), description=result_id)
     manifest = output_dir / "evidence-manifest.json"
     if not manifest.is_file():
         raise RuntimeError("evidence capture completed without a manifest")
     return manifest
+
+
+def capture_batch_in_subprocess(
+    requests: Sequence[tuple[str, Path]],
+    *,
+    base_url: str,
+) -> list[Path]:
+    """Capture a whole round through one browser launch.
+
+    The subprocess is not for isolation -- the flywheel runs on a daemon thread inside
+    the FastAPI process and Playwright's sync API refuses a thread with a live asyncio
+    loop -- so one subprocess per round amortises a launch that is pure overhead.
+    """
+    if not requests:
+        return []
+    batch_root = Path(requests[0][1]).parent
+    batch_root.mkdir(parents=True, exist_ok=True)
+    batch_path = batch_root / "capture-batch.json"
+    atomic_write_json(
+        batch_path,
+        {
+            "base_url": base_url,
+            "requests": [
+                {"result_id": result_id, "output_dir": str(output_dir)}
+                for result_id, output_dir in requests
+            ],
+        },
+    )
+    command = [sys.executable, "-m", "evals.capture", "--batch", str(batch_path)]
+    _run_capture(
+        command,
+        batch_root,
+        budget_s=_capture_budget_s(len(requests)),
+        description=f"{len(requests)} candidates",
+    )
+    manifests: list[Path] = []
+    for result_id, output_dir in requests:
+        manifest = Path(output_dir) / "evidence-manifest.json"
+        if not manifest.is_file():
+            raise RuntimeError(f"evidence capture completed without a manifest for {result_id}")
+        manifests.append(manifest)
+    return manifests
 
 
 class PipelineRunStore:
@@ -166,6 +277,7 @@ class PipelineRunStore:
                 progress_callback=lambda event: self._event(run_id, event),
                 max_model_calls=4,
                 capture_fn=capture_in_subprocess,
+                capture_batch_fn=capture_batch_in_subprocess,
             )
             trace = json.loads(trace_path.read_text(encoding="utf-8"))
             winner = trace.get("winner_result_id")

@@ -1,14 +1,22 @@
 from __future__ import annotations
 
+import json
+import re
+from pathlib import Path
+from typing import Any
+
 from scipy.spatial.transform import Rotation
 
 from evals.capture import (
     CAPTURE_HEIGHT,
     CAPTURE_WIDTH,
+    CaptureSession,
     _png_size,
     finger_shape_diagnostics,
+    frame_at,
     motion_diagnostics,
     phase_sampling_points,
+    pose_sha256,
 )
 
 
@@ -402,3 +410,132 @@ def test_finger_shape_diagnostics_are_recomputed_from_hold_frame() -> None:
     assert value["requested_hand_shape"] == "hang_ten"
     assert value["normalized_curls"]["index"] == 0.0
     assert value["human_calibrated_reference"]["index"]["minimum_normalized_curl"] == 0.65
+
+
+# --- plan 05: render provenance must not disturb what judge.py parses -----------------
+
+
+def _manifest_from_fake_capture(tmp_path: Path) -> dict[str, Any]:
+    """Produce a manifest through the real `CaptureSession`, with no browser."""
+    from tests.test_capture_asset_integrity import ASSET_SHA, FakePage, PAYLOAD
+
+    import evals.capture as capture_module
+
+    original = capture_module._result_payload
+    capture_module._result_payload = lambda base_url, result_id: PAYLOAD
+    try:
+        session = CaptureSession(
+            FakePage(),
+            base_url="http://127.0.0.1:8000",
+            expected_asset_sha256=ASSET_SHA,
+            browser_version="151.0.7922.138",
+            browser_channel="chrome",
+        )
+        path = session.capture("000001-test", tmp_path, views=("ego", "orbit"))
+    finally:
+        capture_module._result_payload = original
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def test_manifest_carries_render_provenance_with_every_required_key(tmp_path: Path) -> None:
+    manifest = _manifest_from_fake_capture(tmp_path)
+    provenance = manifest["render_provenance"]
+    for key in (
+        "three_revision",
+        "webgl_vendor",
+        "webgl_renderer",
+        "webgl_version",
+        "device_pixel_ratio",
+        "antialias",
+        "shadow_map",
+        "render_mode",
+        "asset_sha256",
+        "asset_status",
+        "expected_asset_sha256",
+        "browser_version",
+        "browser_channel",
+        "capture_strategy",
+        "screenshot_source",
+        "platform",
+        "user_agent",
+    ):
+        assert key in provenance, key
+
+
+def test_render_provenance_sits_at_the_manifest_top_level_not_in_the_camera_block(
+    tmp_path: Path,
+) -> None:
+    """`judge.py` validates the per-snapshot camera dict; provenance must stay out of it."""
+    manifest = _manifest_from_fake_capture(tmp_path)
+    assert "render_provenance" in manifest
+    for snapshot in manifest["snapshots"]:
+        assert "render_provenance" not in snapshot["camera"]
+
+
+def test_the_capture_contract_still_parses_under_the_judges_allowlist(tmp_path: Path) -> None:
+    """The six keys `judge.py` checks are unchanged, so existing evidence still loads."""
+    from rigby_poc.judge import _manifest as judge_manifest
+
+    manifest = _manifest_from_fake_capture(tmp_path)
+    manifest_path = tmp_path / "evidence-manifest.json"
+    parsed, snapshots = judge_manifest(manifest_path)
+    assert parsed["render_provenance"]["asset_status"] == "loaded"
+    assert len(snapshots) == len(manifest["snapshots"])
+
+
+def test_every_snapshot_carries_a_pose_hash_and_the_pixel_hash_under_both_names(
+    tmp_path: Path,
+) -> None:
+    """`sha256` is retained because `judge.py` verifies against it; `pixel_sha256` names it."""
+    manifest = _manifest_from_fake_capture(tmp_path)
+    for snapshot in manifest["snapshots"]:
+        assert snapshot["sha256"] == snapshot["pixel_sha256"]
+        assert re.fullmatch(r"[0-9a-f]{64}", snapshot["pose_sha256"])
+
+
+def test_snapshot_paths_are_bare_filenames_on_every_platform(tmp_path: Path) -> None:
+    """The manifest is read on macOS and Windows; a separator here would not port."""
+    manifest = _manifest_from_fake_capture(tmp_path)
+    for snapshot in manifest["snapshots"]:
+        assert "/" not in snapshot["path"]
+        assert "\\" not in snapshot["path"]
+        assert (tmp_path / snapshot["path"]).is_file()
+
+
+def test_pose_hashes_track_the_pose_and_ignore_everything_else() -> None:
+    """A pose hash that did not change with the pose would assert nothing."""
+    base = {"time_s": 0.5, "bones": {"hips": {"rotation": [0.0, 0.0, 0.0, 1.0]}}}
+    moved = {"time_s": 0.5, "bones": {"hips": {"rotation": [0.0, 0.1, 0.0, 0.99]}}}
+    later = {"time_s": 0.6, "bones": {"hips": {"rotation": [0.0, 0.0, 0.0, 1.0]}}}
+    assert pose_sha256(base) != pose_sha256(moved)
+    assert pose_sha256(base) != pose_sha256(later)
+    # Bone ordering is not part of the pose; a dict built the other way round must match.
+    reordered = {
+        "time_s": 0.5,
+        "bones": {
+            "spine": {"rotation": [0.0, 0.0, 0.0, 1.0]},
+            "hips": {"rotation": [0.0, 0.0, 0.0, 1.0]},
+        },
+    }
+    forward = {
+        "time_s": 0.5,
+        "bones": {
+            "hips": {"rotation": [0.0, 0.0, 0.0, 1.0]},
+            "spine": {"rotation": [0.0, 0.0, 0.0, 1.0]},
+        },
+    }
+    assert pose_sha256(reordered) == pose_sha256(forward)
+
+
+def test_frame_selection_matches_the_renderers_snap_to_last_frame_rule() -> None:
+    """`frame_at` must mirror `frontend/src/motion.ts` frameAt, including the clamp."""
+    clip = {
+        "duration_s": 1.0,
+        "frames": [{"time_s": 0.0}, {"time_s": 0.5}, {"time_s": 1.0}],
+    }
+    assert frame_at(clip, 0.0)["time_s"] == 0.0
+    assert frame_at(clip, 0.49)["time_s"] == 0.0
+    assert frame_at(clip, 0.5)["time_s"] == 0.5
+    assert frame_at(clip, 0.99)["time_s"] == 0.5
+    assert frame_at(clip, 5.0)["time_s"] == 1.0  # clamped to the duration
+    assert frame_at({"frames": []}, 0.0) is None

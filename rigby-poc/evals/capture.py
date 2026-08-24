@@ -1,13 +1,18 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import hashlib
 import json
 import math
 import re
 import struct
+import sys
+import time
+from contextlib import contextmanager, suppress
 from pathlib import Path
-from typing import Any, Iterable
+from collections.abc import Callable, Iterable, Iterator, Sequence
+from typing import Any, Protocol
 from urllib.parse import quote, urlencode
 from urllib.request import Request, urlopen
 
@@ -1271,139 +1276,679 @@ def _png_size(value: bytes) -> tuple[int, int]:
     return struct.unpack(">II", value[16:24])
 
 
-def capture_result_frames(
-    result_id: str,
-    output_dir: Path,
+ASSET_MANIFEST = Path(__file__).resolve().parents[1] / "assets" / "manifest.json"
+HUMANOID_ASSET_ID = "mesh2motion-human-male"
+
+# A seek is sub-second once the page is live, so the generous per-attempt budgets a full
+# page reload needed are now the reason a wedged capture can outlive its own subprocess.
+NAVIGATION_TIMEOUT_MS = 15_000
+READY_TIMEOUT_MS = 15_000
+SEEK_TIMEOUT_MS = 15_000
+SCREENSHOT_TIMEOUT_MS = 15_000
+CAPTURE_ATTEMPTS = 3
+
+# Phase sampling is per intent and grows with the phase count; the largest observed is
+# 24 (a two-step sequence). The bound exists so a timeout budget can be computed before
+# the sampling table has been consulted, and it is checked rather than assumed, so an
+# intent that outgrows it fails loudly here instead of timing out two layers up. Raising
+# it means raising the budget with it -- which is the point of deriving one from the other.
+MAX_SNAPSHOTS_PER_VIEW = 32
+
+# Capture enforces its own wall-clock deadline and `pipeline.py` derives the subprocess
+# budget from it, so `TimeoutExpired` at the subprocess layer means "capture is wedged",
+# never "capture was still working". Per-snapshot cost was measured at ~0.17 s in the
+# reload path and is lower through the seek hook, so 3 s is roughly 17x headroom.
+PER_SNAPSHOT_BUDGET_S = 3.0
+PER_RESULT_OVERHEAD_S = 30.0
+SESSION_OVERHEAD_S = 30.0
+SUBPROCESS_GRACE_S = 60.0
+
+
+class CaptureAssetError(RuntimeError):
+    """The page did not render the humanoid the clip was compiled against.
+
+    Separate from a generic capture failure because it is never transient: retrying a
+    missing or mismatched asset just produces the same wrong body again.
+    """
+
+
+def humanoid_asset_sha256(manifest_path: Path | None = None) -> str:
+    """The sha256 the humanoid GLB is expected to have, from `assets/manifest.json`."""
+    path = manifest_path or ASSET_MANIFEST
+    document = json.loads(path.read_text(encoding="utf-8"))
+    for asset in document.get("assets", []):
+        if isinstance(asset, dict) and asset.get("id") == HUMANOID_ASSET_ID:
+            digest = str(asset.get("sha256", ""))
+            if not re.fullmatch(r"[0-9a-f]{64}", digest):
+                raise ValueError(f"{HUMANOID_ASSET_ID} has no usable sha256 in {path}")
+            return digest
+    raise ValueError(f"{path} does not describe asset {HUMANOID_ASSET_ID}")
+
+
+class CaptureDeadlineExceeded(RuntimeError):
+    """Capture ran past its own wall-clock budget.
+
+    Raised by capture itself so the failure names the result and the snapshot it was on.
+    The subprocess budget in `pipeline.py` sits strictly above this, so an operator
+    seeing `TimeoutExpired` instead knows the capture process stopped responding rather
+    than merely taking too long.
+    """
+
+
+def capture_deadline_s(
+    *,
+    result_count: int = 1,
+    snapshots_per_result: int = MAX_SNAPSHOTS_PER_VIEW * 2,
+) -> float:
+    """The wall clock capture allows itself for `result_count` results."""
+    per_result = PER_RESULT_OVERHEAD_S + snapshots_per_result * PER_SNAPSHOT_BUDGET_S
+    return round(SESSION_OVERHEAD_S + result_count * per_result, 3)
+
+
+def subprocess_timeout_s(
+    *,
+    result_count: int = 1,
+    snapshots_per_result: int = MAX_SNAPSHOTS_PER_VIEW * 2,
+) -> float:
+    """The subprocess budget, derived from capture's own deadline plus process grace.
+
+    Plan 05 section 1.4: the hardcoded 300 s in `pipeline.py` was *below* capture's own
+    worst case, so the normal failure mode was `TimeoutExpired` escaping a layer that
+    did not catch it, leaving Chrome orphaned. Deriving one number from the other makes
+    that ordering true by construction rather than by coincidence.
+    """
+    return round(
+        capture_deadline_s(
+            result_count=result_count, snapshots_per_result=snapshots_per_result
+        )
+        + SUBPROCESS_GRACE_S,
+        3,
+    )
+
+
+def _clip_document(payload: dict[str, Any]) -> dict[str, Any]:
+    clip = payload.get("clip")
+    return clip if isinstance(clip, dict) else payload
+
+
+def _clip_duration_s(clip: dict[str, Any]) -> float:
+    duration = clip.get("duration_s", clip.get("duration"))
+    if isinstance(duration, (int, float)):
+        return float(duration)
+    frames = clip.get("frames") if isinstance(clip.get("frames"), list) else []
+    return float(frames[-1].get("time_s", 0.0)) if frames else 0.0
+
+
+def frame_at(clip: dict[str, Any], time_s: float) -> dict[str, Any] | None:
+    """The frame the page will render for `time_s`.
+
+    This mirrors `frontend/src/motion.ts` `frameAt` exactly -- the last frame at or
+    before the requested time, with no interpolation, clamped to the clip duration.
+    Pose hashing is only meaningful if Python selects the same frame the renderer did,
+    and `_verify_rendered_frame` asserts that agreement on every snapshot rather than
+    trusting this comment.
+    """
+    frames = clip.get("frames") if isinstance(clip.get("frames"), list) else []
+    if not frames:
+        return None
+    requested = min(float(time_s), _clip_duration_s(clip))
+    best = frames[0]
+    for frame in frames:
+        if float(frame.get("time_s", frame.get("time", 0.0))) > requested:
+            break
+        best = frame
+    return best if isinstance(best, dict) else None
+
+
+def seek_time_s(value: float) -> float:
+    """The requested time both the reload and the seek path use.
+
+    The reload path passes the time through a `%.9f` query parameter, so the page sees a
+    rounded value; the seek path passes a double straight through. Left alone the two
+    strategies can land on different frames either side of a boundary, and Python's own
+    pose hashing would disagree with whichever one ran. Normalising here makes all three
+    agree by construction rather than by luck.
+    """
+    return float(f"{float(value):.9f}")
+
+
+def _canonical_vector(value: Any, length: int) -> list[float] | None:
+    if isinstance(value, (list, tuple)) and len(value) >= length:
+        return [float(component) for component in value[:length]]
+    if isinstance(value, dict):
+        keys = ("x", "y", "z", "w")[:length]
+        if all(isinstance(value.get(key), (int, float)) for key in keys):
+            return [float(value[key]) for key in keys]
+    return None
+
+
+def pose_sha256(frame: dict[str, Any] | None) -> str:
+    """Hash the pose applied at a frame: bone rotations, offsets, and object placement.
+
+    Machine independent by construction -- it reads the compiled clip, never the render
+    -- so it is the hash a determinism test should assert across machines. The pixel
+    hash cannot be: MSAA resolve and shadow filtering are GPU and driver dependent.
+    """
+    if frame is None:
+        return hashlib.sha256(b"no-frame").hexdigest()
+    bones: dict[str, dict[str, list[float]]] = {}
+    for name, pose in sorted((frame.get("bones") or {}).items()):
+        entry: dict[str, list[float]] = {}
+        source = pose if isinstance(pose, dict) else {"rotation": pose}
+        rotation = _canonical_vector(source.get("rotation"), 4)
+        position = _canonical_vector(source.get("position", source.get("translation")), 3)
+        if rotation is not None:
+            entry["rotation"] = rotation
+        if position is not None:
+            entry["position"] = position
+        if entry:
+            bones[str(name)] = entry
+    objects: dict[str, dict[str, list[float]]] = {}
+    for name, pose in sorted((frame.get("objects") or {}).items()):
+        if not isinstance(pose, dict):
+            continue
+        entry = {}
+        for key, length in (("position", 3), ("translation", 3), ("rotation", 4), ("scale", 3)):
+            vector = _canonical_vector(pose.get(key), length)
+            if vector is not None:
+                entry["position" if key == "translation" else key] = vector
+        if entry:
+            objects[str(name)] = entry
+    document = {
+        "schema": "rigby.pose.v1",
+        "time_s": float(frame.get("time_s", frame.get("time", 0.0))),
+        "bones": bones,
+        "objects": objects,
+    }
+    encoded = json.dumps(document, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+class CapturePage(Protocol):
+    """The browser operations capture needs, so the manifest path is testable without one."""
+
+    def open(self, url: str) -> dict[str, Any]:
+        """Navigate and return the page's capture state once it settles."""
+
+    def seek(self, time_s: float, view: str) -> dict[str, Any]:
+        """Re-pose and re-aim the live page; return its new capture state."""
+
+    def screenshot(self) -> bytes:
+        """PNG bytes of the capture canvas alone."""
+
+    def recycle(self) -> None:
+        """Discard and rebuild the underlying page after a transient failure."""
+
+    def supports_seek(self) -> bool:
+        """Whether the loaded page exposes the seek hook."""
+
+
+_CANVAS_PNG_SCRIPT = """
+() => {
+  const canvas = document.querySelector("#capture-app canvas");
+  if (!canvas) throw new Error("capture canvas is not present");
+  return canvas.toDataURL("image/png");
+}
+"""
+
+_SEEK_SCRIPT = """
+([timeS, view, timeoutMs]) => {
+  if (typeof window.__RIGBY_SEEK__ !== "function") {
+    throw new Error("capture page does not expose __RIGBY_SEEK__");
+  }
+  return Promise.race([
+    window.__RIGBY_SEEK__(timeS, view),
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("seek timed out")), timeoutMs)
+    ),
+  ]);
+}
+"""
+
+
+class _PlaywrightPage:
+    """`CapturePage` over a real browser tab."""
+
+    def __init__(self, context: Any, *, screenshot_source: str = "canvas") -> None:
+        if screenshot_source not in {"canvas", "compositor"}:
+            raise ValueError("screenshot source must be canvas or compositor")
+        self._context = context
+        self._screenshot_source = screenshot_source
+        self._page: Any = None
+
+    def _live(self) -> Any:
+        if self._page is None:
+            self._page = self._context.new_page()
+            self._page.set_default_timeout(NAVIGATION_TIMEOUT_MS)
+        return self._page
+
+    def open(self, url: str) -> dict[str, Any]:
+        page = self._live()
+        # The explicit status marker is the authoritative render barrier; network-idle
+        # is both slower and vulnerable to unrelated browser background work. Waiting
+        # for "error" as well as "ready" is what turns a failed asset load into an
+        # immediate, described failure instead of three silent selector timeouts.
+        page.goto(url, wait_until="domcontentloaded", timeout=NAVIGATION_TIMEOUT_MS)
+        page.wait_for_selector(
+            'body[data-capture-status="ready"], body[data-capture-status="error"]',
+            timeout=READY_TIMEOUT_MS,
+        )
+        state = page.evaluate("window.__RIGBY_CAPTURE__")
+        return state if isinstance(state, dict) else {"status": "error", "error": repr(state)}
+
+    def seek(self, time_s: float, view: str) -> dict[str, Any]:
+        state = self._live().evaluate(_SEEK_SCRIPT, [float(time_s), view, SEEK_TIMEOUT_MS])
+        return state if isinstance(state, dict) else {"status": "error", "error": repr(state)}
+
+    def screenshot(self) -> bytes:
+        """Read the rendered canvas.
+
+        Reading `canvas.toDataURL` is 5.3x faster than a Playwright element screenshot
+        (20.0 ms against 105.7 ms, measured over 12 snapshots) and the two are
+        pixel-identical -- 0 differing pixels of 1,440,000, pinned by
+        `test_capture_screenshot_sources_agree`. It is also the more literal reading of
+        the `raw_canvas_only` capture contract: the bytes come from the WebGL drawing
+        buffer rather than through the browser compositor.
+        """
+        if self._screenshot_source == "compositor":
+            return self._live().locator("#capture-app canvas").screenshot(
+                type="png",
+                animations="disabled",
+                scale="css",
+                timeout=SCREENSHOT_TIMEOUT_MS,
+            )
+        data_url = self._live().evaluate(_CANVAS_PNG_SCRIPT)
+        if not isinstance(data_url, str) or not data_url.startswith("data:image/png;base64,"):
+            raise RuntimeError("capture canvas did not yield a PNG data URL")
+        return base64.b64decode(data_url.split(",", 1)[1])
+
+    def recycle(self) -> None:
+        page, self._page = self._page, None
+        if page is not None:
+            # A page that will not close is already gone; the browser teardown reaps it.
+            with suppress(Exception):
+                page.close()
+
+    def supports_seek(self) -> bool:
+        return bool(self._live().evaluate("typeof window.__RIGBY_SEEK__ === 'function'"))
+
+
+class CaptureSession:
+    """Capture evidence for one or more results through a single browser.
+
+    A session opens the capture page once per result and seeks within it. The previous
+    implementation issued a fresh `page.goto` for every sample point and view, which
+    re-fetched the result JSON and re-parsed the humanoid GLB 30 times per candidate.
+    """
+
+    def __init__(
+        self,
+        page: CapturePage,
+        *,
+        base_url: str,
+        browser_version: str = "",
+        browser_channel: str = "",
+        deterministic_render: bool = False,
+        strategy: str = "seek",
+        screenshot_source: str = "canvas",
+        expected_asset_sha256: str | None = None,
+        clock: Callable[[], float] = time.monotonic,
+    ) -> None:
+        if strategy not in {"seek", "reload"}:
+            raise ValueError("capture strategy must be seek or reload")
+        self._screenshot_source = screenshot_source
+        self._page = page
+        self._clock = clock
+        self._base_url = base_url.rstrip("/")
+        self._browser_version = browser_version
+        self._browser_channel = browser_channel
+        self._deterministic_render = deterministic_render
+        self._strategy = strategy
+        self._expected_asset_sha256 = (
+            humanoid_asset_sha256() if expected_asset_sha256 is None else expected_asset_sha256
+        )
+
+    def _url(self, result_id: str, time_s: float, view: str) -> str:
+        query = {"result": result_id, "time": f"{seek_time_s(time_s):.9f}", "view": view}
+        if self._deterministic_render:
+            query["render"] = "deterministic"
+        return f"{self._base_url}/capture.html?{urlencode(query)}"
+
+    def _check_state(self, state: dict[str, Any], *, result_id: str) -> dict[str, Any]:
+        """Reject any state that is not a verified render of the compiled humanoid."""
+        if state.get("status") != "ready":
+            raise CaptureAssetError(
+                f"capture page for {result_id} reported "
+                f"{state.get('status')!r}: {state.get('error')!r}"
+            )
+        provenance = state.get("render_provenance")
+        if not isinstance(provenance, dict):
+            raise CaptureAssetError(
+                f"capture page for {result_id} reported no render provenance; "
+                "the frontend bundle predates plan 05 and cannot attest what it rendered"
+            )
+        if provenance.get("asset_status") != "loaded":
+            raise CaptureAssetError(
+                f"capture page for {result_id} rendered asset_status="
+                f"{provenance.get('asset_status')!r}: {provenance.get('asset_error')!r}"
+            )
+        rendered = provenance.get("asset_sha256")
+        if rendered != self._expected_asset_sha256:
+            raise CaptureAssetError(
+                f"capture page for {result_id} rendered humanoid sha256 {rendered!r}, "
+                f"but assets/manifest.json declares {self._expected_asset_sha256!r}; "
+                "the evidence would depict a different body than the clip was compiled against"
+            )
+        return provenance
+
+    def capture(
+        self,
+        result_id: str,
+        output_dir: Path,
+        *,
+        views: Iterable[str] = ("ego", "orbit"),
+    ) -> Path:
+        if not SAFE_RESULT_ID.fullmatch(result_id):
+            raise ValueError("result id contains unsupported characters")
+        selected_views = tuple(views)
+        if not selected_views or any(view not in {"ego", "orbit"} for view in selected_views):
+            raise ValueError("views must contain ego and/or orbit")
+
+        payload = _result_payload(self._base_url, result_id)
+        program = payload.get("program") if isinstance(payload.get("program"), dict) else {}
+        prompt = str(program.get("source_text", ""))
+        clip = _clip_document(payload)
+        points = phase_sampling_points(payload)
+        if len(points) > MAX_SNAPSHOTS_PER_VIEW:
+            raise RuntimeError(
+                f"{result_id} samples {len(points)} phase points per view, above the "
+                f"{MAX_SNAPSHOTS_PER_VIEW} the capture timeout budget is derived from"
+            )
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        snapshots: list[dict[str, Any]] = []
+        provenance: dict[str, Any] = {}
+        opened = False
+        deadline = self._clock() + capture_deadline_s(
+            snapshots_per_result=len(points) * len(selected_views)
+        )
+        for point_index, point in enumerate(points, start=1):
+            for view in selected_views:
+                if self._clock() > deadline:
+                    raise CaptureDeadlineExceeded(
+                        f"{result_id}: capture exceeded its budget at snapshot "
+                        f"{point_index}-{view} of {len(points)}x{len(selected_views)}"
+                    )
+                time_s = seek_time_s(point["time_s"])
+                state, snapshot_provenance, image = self._snapshot(
+                    result_id, time_s, view, opened=opened and self._strategy == "seek"
+                )
+                opened = True
+                provenance = provenance or snapshot_provenance
+                width, height = _png_size(image)
+                if (width, height) != (CAPTURE_WIDTH, CAPTURE_HEIGHT):
+                    raise RuntimeError(
+                        f"raw capture was {width}x{height}; expected {CAPTURE_WIDTH}x{CAPTURE_HEIGHT}"
+                    )
+                rendered_time_s = float(state.get("rendered_time_s", time_s))
+                frame = self._verified_frame(clip, time_s, rendered_time_s, result_id)
+                # A bare filename, never a path: the manifest is read on both macOS and
+                # Windows and `judge.py` resolves it against the manifest's directory.
+                filename = f"{point_index:02d}-{point['label']}-{view}.png"
+                (output_dir / filename).write_bytes(image)
+                pixel_digest = hashlib.sha256(image).hexdigest()
+                camera = state.get("camera") if isinstance(state.get("camera"), dict) else {}
+                snapshots.append(
+                    {
+                        "id": f"{point_index:02d}-{view}",
+                        "phase": point["phase"],
+                        "label": point["label"],
+                        "view": view,
+                        "requested_time_s": time_s,
+                        "rendered_time_s": rendered_time_s,
+                        "path": filename,
+                        # `sha256` is retained under its original name because
+                        # `judge.py` verifies snapshots against it. `pixel_sha256` is
+                        # the same value under the name that says what it actually is,
+                        # and what it is not: reproducible across machines.
+                        "sha256": pixel_digest,
+                        "pixel_sha256": pixel_digest,
+                        "pose_sha256": pose_sha256(frame),
+                        "width_px": width,
+                        "height_px": height,
+                        "camera": camera,
+                    }
+                )
+
+        manifest = {
+            "schema_version": "1.1",
+            "result_id": result_id,
+            "prompt": prompt,
+            "intent": program.get("intent"),
+            "source_url": f"{self._base_url}/api/v1/results/{quote(result_id)}",
+            "capture_contract": {
+                "raw_canvas_only": True,
+                "width_px": CAPTURE_WIDTH,
+                "height_px": CAPTURE_HEIGHT,
+                "aspect_ratio": CAPTURE_WIDTH / CAPTURE_HEIGHT,
+                "egocentric_vertical_fov_deg": CAPTURE_FOV_DEG,
+                "device_pixel_ratio": 1,
+                "phase_aligned": True,
+                "ui_overlay_included": False,
+            },
+            "render_provenance": self._manifest_provenance(provenance),
+            "motion_diagnostics": motion_diagnostics(payload),
+            "snapshots": snapshots,
+        }
+        manifest_path = output_dir / "evidence-manifest.json"
+        manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
+        return manifest_path
+
+    def _snapshot(
+        self, result_id: str, time_s: float, view: str, *, opened: bool
+    ) -> tuple[dict[str, Any], dict[str, Any], bytes]:
+        live = opened
+        for attempt in range(1, CAPTURE_ATTEMPTS + 1):
+            try:
+                if live:
+                    state = self._page.seek(seek_time_s(time_s), view)
+                else:
+                    state = self._page.open(self._url(result_id, time_s, view))
+                    if self._strategy == "seek" and not self._page.supports_seek():
+                        raise RuntimeError(
+                            "capture page does not expose __RIGBY_SEEK__; rebuild frontend/dist"
+                        )
+                provenance = self._check_state(state, result_id=result_id)
+                return state, provenance, self._page.screenshot()
+            except CaptureAssetError:
+                # Never retried. A missing or mismatched humanoid is not transient, and
+                # retrying it only burns the timeout budget producing the same wrong body.
+                raise
+            except (PlaywrightTimeoutError, RuntimeError):
+                if attempt == CAPTURE_ATTEMPTS:
+                    raise
+                self._page.recycle()
+                live = False
+        raise RuntimeError("capture retry loop produced no image")
+
+    def _verified_frame(
+        self, clip: dict[str, Any], time_s: float, rendered_time_s: float, result_id: str
+    ) -> dict[str, Any] | None:
+        frame = frame_at(clip, time_s)
+        selected = float(frame.get("time_s", frame.get("time", 0.0))) if frame else None
+        if selected is None or not math.isclose(selected, rendered_time_s, abs_tol=1e-9):
+            raise RuntimeError(
+                f"{result_id}: the page rendered t={rendered_time_s} but pose hashing "
+                f"selected t={selected} for requested t={time_s}; the pose hash would "
+                "describe a different frame than the pixels"
+            )
+        return frame
+
+    def _manifest_provenance(self, provenance: dict[str, Any]) -> dict[str, Any]:
+        return {
+            **provenance,
+            "browser_version": self._browser_version,
+            "browser_channel": self._browser_channel,
+            "expected_asset_sha256": self._expected_asset_sha256,
+            "capture_strategy": self._strategy,
+            "screenshot_source": self._screenshot_source,
+            "platform": sys.platform,
+        }
+
+
+@contextmanager
+def capture_session(
     *,
     base_url: str = "http://127.0.0.1:8000",
-    views: Iterable[str] = ("ego", "orbit"),
-) -> Path:
-    if not SAFE_RESULT_ID.fullmatch(result_id):
-        raise ValueError("result id contains unsupported characters")
-    selected_views = tuple(views)
-    if not selected_views or any(view not in {"ego", "orbit"} for view in selected_views):
-        raise ValueError("views must contain ego and/or orbit")
+    deterministic_render: bool = False,
+    strategy: str = "seek",
+    screenshot_source: str = "canvas",
+) -> Iterator[CaptureSession]:
+    """One browser for many results.
 
-    payload = _result_payload(base_url, result_id)
-    program = payload.get("program") if isinstance(payload.get("program"), dict) else {}
-    prompt = str(program.get("source_text", ""))
-    points = phase_sampling_points(payload)
-    output_dir.mkdir(parents=True, exist_ok=True)
-    snapshots: list[dict[str, Any]] = []
-
+    The subprocess this runs in is not for isolation: the flywheel runs on a daemon
+    thread inside the FastAPI process, and Playwright's sync API refuses to run on a
+    thread with a live asyncio event loop. Batching results into one session amortises
+    the browser launch that workaround costs.
+    """
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(channel="chrome", headless=True)
         context = browser.new_context(
             viewport={"width": CAPTURE_WIDTH, "height": CAPTURE_HEIGHT},
             device_scale_factor=1,
         )
-        page = context.new_page()
-        page.set_default_timeout(30_000)
+        page = _PlaywrightPage(context, screenshot_source=screenshot_source)
         try:
-            for point_index, point in enumerate(points, start=1):
-                for view in selected_views:
-                    query = urlencode(
-                        {
-                            "result": result_id,
-                            "time": f"{float(point['time_s']):.9f}",
-                            "view": view,
-                        }
-                    )
-                    target_url = f"{base_url.rstrip('/')}/capture.html?{query}"
-                    state: Any = None
-                    image: bytes | None = None
-                    for attempt in range(1, 4):
-                        try:
-                            # The explicit ready marker is the authoritative
-                            # render barrier; network-idle is both slower and
-                            # vulnerable to unrelated browser background work.
-                            page.goto(target_url, wait_until="domcontentloaded", timeout=45_000)
-                            page.wait_for_selector(
-                                'body[data-capture-status="ready"]',
-                                timeout=45_000,
-                            )
-                            state = page.evaluate("window.__RIGBY_CAPTURE__")
-                            if not isinstance(state, dict) or state.get("status") != "ready":
-                                raise RuntimeError(f"capture page failed: {state}")
-                            image = page.locator("#capture-app canvas").screenshot(
-                                type="png",
-                                animations="disabled",
-                                scale="css",
-                                timeout=45_000,
-                            )
-                            break
-                        except (PlaywrightTimeoutError, RuntimeError):
-                            if attempt == 3:
-                                raise
-                            page.close()
-                            page = context.new_page()
-                            page.set_default_timeout(30_000)
-                    if image is None or not isinstance(state, dict):
-                        raise RuntimeError("capture retry loop produced no image")
-                    width, height = _png_size(image)
-                    if (width, height) != (CAPTURE_WIDTH, CAPTURE_HEIGHT):
-                        raise RuntimeError(
-                            f"raw capture was {width}x{height}; expected {CAPTURE_WIDTH}x{CAPTURE_HEIGHT}"
-                        )
-                    filename = f"{point_index:02d}-{point['label']}-{view}.png"
-                    path = output_dir / filename
-                    path.write_bytes(image)
-                    camera = state.get("camera") if isinstance(state.get("camera"), dict) else {}
-                    snapshots.append(
-                        {
-                            "id": f"{point_index:02d}-{view}",
-                            "phase": point["phase"],
-                            "label": point["label"],
-                            "view": view,
-                            "requested_time_s": float(point["time_s"]),
-                            "rendered_time_s": float(state.get("rendered_time_s", point["time_s"])),
-                            "path": filename,
-                            "sha256": hashlib.sha256(image).hexdigest(),
-                            "width_px": width,
-                            "height_px": height,
-                            "camera": camera,
-                        }
-                    )
+            yield CaptureSession(
+                page,
+                base_url=base_url,
+                browser_version=str(getattr(browser, "version", "")),
+                browser_channel="chrome",
+                deterministic_render=deterministic_render,
+                strategy=strategy,
+                screenshot_source=screenshot_source,
+            )
         finally:
+            page.recycle()
             context.close()
             browser.close()
 
-    manifest = {
-        "schema_version": "1.0",
-        "result_id": result_id,
-        "prompt": prompt,
-        "intent": program.get("intent"),
-        "source_url": f"{base_url.rstrip('/')}/api/v1/results/{quote(result_id)}",
-        "capture_contract": {
-            "raw_canvas_only": True,
-            "width_px": CAPTURE_WIDTH,
-            "height_px": CAPTURE_HEIGHT,
-            "aspect_ratio": CAPTURE_WIDTH / CAPTURE_HEIGHT,
-            "egocentric_vertical_fov_deg": CAPTURE_FOV_DEG,
-            "device_pixel_ratio": 1,
-            "phase_aligned": True,
-            "ui_overlay_included": False,
-        },
-        "motion_diagnostics": motion_diagnostics(payload),
-        "snapshots": snapshots,
-    }
-    manifest_path = output_dir / "evidence-manifest.json"
-    manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
-    return manifest_path
+
+def capture_result_frames(
+    result_id: str,
+    output_dir: Path,
+    *,
+    base_url: str = "http://127.0.0.1:8000",
+    views: Iterable[str] = ("ego", "orbit"),
+    deterministic_render: bool = False,
+    strategy: str = "seek",
+    screenshot_source: str = "canvas",
+) -> Path:
+    """Capture one result. Retained for every existing call site."""
+    with capture_session(
+        base_url=base_url,
+        deterministic_render=deterministic_render,
+        strategy=strategy,
+        screenshot_source=screenshot_source,
+    ) as session:
+        return session.capture(result_id, output_dir, views=views)
+
+
+def capture_results(
+    requests: Sequence[tuple[str, Path]],
+    *,
+    base_url: str = "http://127.0.0.1:8000",
+    views: Iterable[str] = ("ego", "orbit"),
+    deterministic_render: bool = False,
+    strategy: str = "seek",
+    screenshot_source: str = "canvas",
+) -> list[Path]:
+    """Capture many results through one browser launch."""
+    selected = tuple(views)
+    with capture_session(
+        base_url=base_url,
+        deterministic_render=deterministic_render,
+        strategy=strategy,
+        screenshot_source=screenshot_source,
+    ) as session:
+        return [
+            session.capture(result_id, output_dir, views=selected)
+            for result_id, output_dir in requests
+        ]
+
+
+def _batch_from_file(path: Path) -> tuple[str, list[tuple[str, Path]], tuple[str, ...]]:
+    """Read a batch descriptor.
+
+    A file rather than repeated argv pairs: result ids and output directories are
+    user-derived and Windows command lines have both length and quoting limits that a
+    JSON file sidesteps entirely.
+    """
+    document = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(document, dict):
+        raise ValueError("capture batch descriptor must be an object")
+    requests = document.get("requests")
+    if not isinstance(requests, list) or not requests:
+        raise ValueError("capture batch descriptor lists no requests")
+    views = document.get("views")
+    selected = tuple(views) if isinstance(views, list) and views else ("ego", "orbit")
+    return (
+        str(document.get("base_url", "http://127.0.0.1:8000")),
+        [(str(item["result_id"]), Path(item["output_dir"])) for item in requests],
+        selected,
+    )
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Capture raw full-FOV Rigby evidence frames")
-    parser.add_argument("result_id")
-    parser.add_argument("output_dir", type=Path)
+    parser.add_argument("result_id", nargs="?")
+    parser.add_argument("output_dir", nargs="?", type=Path)
+    parser.add_argument("--batch", type=Path, help="JSON descriptor for a multi-result capture")
     parser.add_argument("--base-url", default="http://127.0.0.1:8000")
     parser.add_argument("--view", action="append", choices=("ego", "orbit"), dest="views")
+    parser.add_argument(
+        "--deterministic-render",
+        action="store_true",
+        help="antialiasing off and hard shadows, for renders compared numerically",
+    )
+    parser.add_argument(
+        "--strategy",
+        choices=("seek", "reload"),
+        default="seek",
+        help="seek within one loaded page, or reload the page per snapshot",
+    )
+    parser.add_argument(
+        "--screenshot-source",
+        choices=("canvas", "compositor"),
+        default="canvas",
+        help="read the WebGL drawing buffer, or go through the browser compositor",
+    )
     arguments = parser.parse_args()
+
+    if arguments.batch is not None:
+        base_url, requests, batch_views = _batch_from_file(arguments.batch)
+        paths = capture_results(
+            requests,
+            base_url=base_url,
+            views=arguments.views or batch_views,
+            deterministic_render=arguments.deterministic_render,
+            strategy=arguments.strategy,
+            screenshot_source=arguments.screenshot_source,
+        )
+        for path in paths:
+            print(path)
+        return
+
+    if not arguments.result_id or arguments.output_dir is None:
+        parser.error("result_id and output_dir are required without --batch")
     path = capture_result_frames(
         arguments.result_id,
         arguments.output_dir,
         base_url=arguments.base_url,
         views=arguments.views or ("ego", "orbit"),
+        deterministic_render=arguments.deterministic_render,
+        strategy=arguments.strategy,
+        screenshot_source=arguments.screenshot_source,
     )
     print(path)
 
