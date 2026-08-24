@@ -1,4 +1,165 @@
 {
+  "compiler_metrics": {
+    "attachment_started_s": 1.005,
+    "catch_intercept_error_m": 0.0,
+    "catch_time_s": null,
+    "discontinuities": 0,
+    "finger_assertions": {},
+    "fixed_root_foot_max_rotation_delta_rad": 0.0,
+    "foot_drift_m": 0.0,
+    "grasp_attempts": 1,
+    "hold_duration_s": 1.0,
+    "joint_limit_violations": 0,
+    "landing_height_error_m": 0.0,
+    "lift_height_m": 0.1424461696612409,
+    "lost_table_contact": true,
+    "max_angular_acceleration_rad_s2": 50.437728325781954,
+    "max_angular_jerk_rad_s3": 888.3912437743412,
+    "max_angular_velocity_rad_s": 8.923990819740995,
+    "max_frame_rotation_delta_rad": 0.2974663606580341,
+    "max_penetration_m": 0.00010517625312427337,
+    "nan_count": 0,
+    "object_action": "throw",
+    "object_apex_height_m": 0.38,
+    "object_expected_roll_turns": 0.0,
+    "object_flight_distance_m": 0.85,
+    "object_flight_duration_s": 0.9032611363257418,
+    "object_guided_distance_m": 0.0,
+    "object_guided_lateral_error_m": 0.0,
+    "object_guided_projected_distance_m": 0.0,
+    "object_guided_support_height_error_m": 0.0,
+    "object_lifecycle": [
+      {
+        "state": "free",
+        "time_s": 0.0
+      },
+      {
+        "state": "attached",
+        "time_s": 1.005
+      },
+      {
+        "state": "released",
+        "time_s": 3.05
+      },
+      {
+        "state": "ballistic",
+        "time_s": 3.05
+      }
+    ],
+    "object_max_step_m": 0.2020682146175749,
+    "object_max_step_reference_m": 0.22219338129175567,
+    "object_measured_roll_turns": 0.0,
+    "object_measured_support_spin_turns": 0.0,
+    "object_placement_horizontal_distance_m": 0.0,
+    "object_spin_turns": 0.3,
+    "opposing_contact_ratio": 1.0,
+    "opposing_contacts": true,
+    "palm_relative_object_slip_m": 1.3183898417423734e-16,
+    "palm_relative_slip_m": 0.0005939707056739171,
+    "phase_ranges_s": [
+      {
+        "end_s": 0.55,
+        "kind": "reach",
+        "start_s": 0.0
+      },
+      {
+        "end_s": 0.79,
+        "kind": "preshape",
+        "start_s": 0.55
+      },
+      {
+        "end_s": 0.97,
+        "kind": "contact",
+        "start_s": 0.79
+      },
+      {
+        "end_s": 1.25,
+        "kind": "close",
+        "start_s": 0.97
+      },
+      {
+        "end_s": 1.6833333333333333,
+        "kind": "lift",
+        "start_s": 1.25
+      },
+      {
+        "end_s": 1.9166666666666667,
+        "kind": "hold",
+        "start_s": 1.6833333333333333
+      },
+      {
+        "end_s": 2.65,
+        "kind": "windup",
+        "start_s": 1.9166666666666667
+      },
+      {
+        "end_s": 3.05,
+        "kind": "release",
+        "start_s": 2.65
+      },
+      {
+        "end_s": 3.9532611363257417,
+        "kind": "flight",
+        "start_s": 3.05
+      },
+      {
+        "end_s": 4.586594469659075,
+        "kind": "recover",
+        "start_s": 3.9532611363257417
+      }
+    ],
+    "physics_engine": "MuJoCo",
+    "physics_model": {
+      "digit_actuators": [
+        "thumb_act",
+        "index_act",
+        "middle_act",
+        "ring_act",
+        "little_act"
+      ],
+      "digits": {
+        "index": {
+          "contactable": true,
+          "independently_actuated": true
+        },
+        "little": {
+          "contactable": true,
+          "independently_actuated": true
+        },
+        "middle": {
+          "contactable": true,
+          "independently_actuated": true
+        },
+        "ring": {
+          "contactable": true,
+          "independently_actuated": true
+        },
+        "thumb": {
+          "contactable": true,
+          "independently_actuated": true
+        }
+      },
+      "free_block_joint": true,
+      "independent_contact_digits": [
+        "thumb",
+        "index",
+        "middle",
+        "ring",
+        "little"
+      ],
+      "parallel_gripper_proxy": false
+    },
+    "physics_version": "3.11.0",
+    "quaternion_norm_max_error": 2.220446049250313e-16,
+    "release_time_s": 3.05,
+    "root_drift_m": 0.0,
+    "safety_derivation": "computed over every frame/local delta quaternion and authored hips translation; root motion must remain fixed",
+    "structural_failures": [],
+    "structural_valid": true,
+    "unresolved_non_hand_collisions": 0,
+    "vertical_drift_m": 0.004750012622239952,
+    "weld_used": false
+  },
   "expected_metrics": {
     "discontinuities": 0,
     "fixed_root_foot_max_rotation_delta_rad": 0.0,

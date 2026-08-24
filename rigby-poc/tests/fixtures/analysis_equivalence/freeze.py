@@ -1,24 +1,36 @@
-"""Freeze the current analysis output for a representative program set.
+"""Freeze the compiler's metric output, and the analysis layer's, for a case set.
 
 Run from the repository root::
 
     uv run python tests/fixtures/analysis_equivalence/freeze.py
 
-Each case stores the *effective* scene and program plus the metrics
-``rigby_poc.analysis.analyze`` produces for them today. The equivalence harness
-(``tests/test_analysis_equivalence.py``) recompiles each program, re-runs the
-analyzer, and asserts the output is byte-identical both to this snapshot and to
-what ``compiler.py`` computes in the same run.
+Each case stores the *effective* scene and program plus two snapshots:
 
-This fixture is a stand-in for the golden corpus being built in PR 03a. When
-that lands it supersedes this directory; the harness keeps its shape.
+``compiler_metrics``
+    The whole of ``ClipResult.metrics``. This is the **move baseline**: it was
+    captured before PR 02b started moving metric blocks out of ``compiler.py``
+    and it must never change while the extraction is a move rather than a
+    redesign. ``freeze.py`` refuses to overwrite it without
+    ``--rebless-compiler``, because silently re-blessing this snapshot to make a
+    test pass would destroy the only evidence that the extraction preserved
+    behaviour.
 
-Regenerating is only correct when a metric *definition* deliberately changed. A
-diff here otherwise means the move was not behaviour-preserving.
+``expected_metrics``
+    What ``rigby_poc.analysis.analyze`` owns today. This one legitimately grows
+    as each PR ports another path, so a routine ``freeze.py`` run rewrites it.
+    It is not the safety net; ``compiler_metrics`` is.
+
+The harness (``tests/test_analysis_equivalence.py``) recompiles every program
+and checks both snapshots plus the agreement between the analyzer and the
+compiler in the same run.
+
+This fixture is a stand-in for the golden corpus being built in PR 03. When that
+lands it supersedes this directory; the harness keeps its shape.
 """
 
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -35,11 +47,19 @@ from rigby_poc.models import CompileRequest, PlanRequest, default_scene  # noqa:
 from rigby_poc.planner import OfflinePlanner  # noqa: E402
 
 
-# One case per distinct shape of analysis output, not one per prompt. Between
-# them these exercise every metric family the analysis layer owns today:
-# safety on all seven intents, gesture structure, shake oscillation, intra-hand
-# contact, gaze, semantic cycle on both composite and full body, parallel
-# forearm, and angular kinematics on all three of its bone sets.
+# One case per distinct shape of metric output, not one per prompt.
+#
+# The first fourteen are 02a's set: they exercise every metric family the
+# analysis layer owned before the full-body port — safety on all seven intents,
+# gesture structure, shake oscillation, intra-hand contact, gaze, semantic
+# cycle, parallel forearm, and angular kinematics on all three of its bone sets.
+#
+# The rest were added by 02b. Between them they fire every gated metric block in
+# ``_compile_full_body``: the eight label-keyed exercise families, both rotation
+# variants, both obstacle traversal modes, both horizontal support poses, and
+# the plain locomotion actions that contribute only to the shared blocks. The
+# rule is that no branch inside the moved code is left unexecuted by the
+# fixture.
 CASES: list[tuple[str, str]] = [
     (
         "gesture_shaka_right",
@@ -71,6 +91,26 @@ CASES: list[tuple[str, str]] = [
     ("object_throw_forward", "throw the block forward"),
     ("object_handoff", "pass the block from your right hand to your left hand"),
     ("sequence_catch_then_turn", "catch the block then turn around"),
+    # --- 02b: one case per gated block in the full-body metric pass ---
+    ("full_body_jumping_jack", "do three jumping jacks"),
+    ("full_body_burpee", "do two burpees"),
+    ("full_body_squat", "do three squats"),
+    ("full_body_lunge", "do two lunges"),
+    ("full_body_single_leg_balance", "balance on your left leg"),
+    ("full_body_sit_up", "do three sit-ups"),
+    ("full_body_crawl", "crawl forward on all fours"),
+    ("full_body_push_up", "do three push-ups"),
+    ("full_body_dance", "dance to four beats"),
+    ("full_body_cartwheel", "do a cartwheel"),
+    ("full_body_floor_roll", "do a forward roll"),
+    ("full_body_obstacle_over", "step over the hurdle"),
+    ("full_body_obstacle_around", "walk around the hurdle"),
+    ("full_body_plank", "hold a plank"),
+    ("full_body_lie_supine", "lie down on your back"),
+    ("full_body_kick", "kick with your right foot"),
+    ("full_body_turn", "turn around"),
+    ("full_body_run", "run forward four steps"),
+    ("full_body_crouch", "crouch down"),
 ]
 
 
@@ -78,7 +118,13 @@ def canonical(value: object) -> str:
     return json.dumps(value, sort_keys=True, ensure_ascii=False, indent=2)
 
 
-def build_case(case_id: str, prompt: str) -> dict:
+def _compact(value: object) -> str:
+    return json.dumps(value, sort_keys=True, ensure_ascii=False)
+
+
+def build_case(case_id: str, prompt: str) -> tuple[dict, dict]:
+    """Return ``(case, compiler_metrics)`` for one prompt."""
+
     scene = default_scene()
     outcome = OfflinePlanner().plan(
         PlanRequest(text=prompt, scene=scene, provider="offline")
@@ -89,36 +135,73 @@ def build_case(case_id: str, prompt: str) -> dict:
     )
     if not clip.frames:
         raise SystemExit(f"{case_id}: compiled to zero frames, cannot freeze")
-    metrics = analysis.analyze(clip, program, scene)
-    return {
+    case = {
         "id": case_id,
         "prompt": prompt,
         "intent": program.intent.value,
         "frame_count": len(clip.frames),
         "scene": scene.model_dump(mode="json"),
         "program": program.model_dump(mode="json"),
-        "expected_metrics": metrics,
+        "expected_metrics": analysis.analyze(clip, program, scene),
     }
+    return case, json.loads(json.dumps(clip.metrics))
 
 
 def main() -> None:
-    written = []
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--rebless-compiler",
+        action="store_true",
+        help=(
+            "overwrite the frozen compiler_metrics baseline. Only correct when a "
+            "metric definition deliberately changed; never to make a test pass."
+        ),
+    )
+    args = parser.parse_args()
+
+    written: list[tuple[str, str, int, str]] = []
+    drifted: list[str] = []
     for case_id, prompt in CASES:
-        case = build_case(case_id, prompt)
         path = FIXTURE_DIR / f"{case_id}.json"
+        previous = (
+            json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+        )
+        case, compiler_metrics = build_case(case_id, prompt)
+        baseline = previous.get("compiler_metrics")
+        if baseline is None or args.rebless_compiler:
+            case["compiler_metrics"] = compiler_metrics
+            state = "blessed" if baseline is None else "REBLESSED"
+        else:
+            case["compiler_metrics"] = baseline
+            if _compact(baseline) != _compact(compiler_metrics):
+                drifted.append(case_id)
+                state = "DRIFTED"
+            else:
+                state = "held"
         path.write_text(canonical(case) + "\n", encoding="utf-8")
-        written.append((case_id, case["intent"], len(case["expected_metrics"])))
+        written.append(
+            (case_id, case["intent"], len(case["expected_metrics"]), state)
+        )
     index = {
-        "schema_version": "1.0",
+        "schema_version": "2.0",
         "note": (
-            "Frozen analysis output for PR 02a. Superseded by the golden corpus "
-            "(plan 03) once it lands."
+            "Frozen compiler and analysis output for the PR 02 extraction. "
+            "compiler_metrics is the move baseline and predates 02b; "
+            "expected_metrics grows as each path is ported. Superseded by the "
+            "golden corpus (plan 03) once it covers these paths."
         ),
         "cases": [case_id for case_id, _ in CASES],
     }
     (FIXTURE_DIR / "index.json").write_text(canonical(index) + "\n", encoding="utf-8")
-    for case_id, intent, count in written:
-        print(f"{case_id:34s} {intent:20s} {count:3d} owned metric keys")
+    for case_id, intent, count, state in written:
+        print(f"{case_id:32s} {intent:20s} {count:3d} owned keys  {state}")
+    if drifted:
+        raise SystemExit(
+            "compiler metrics drifted from the frozen baseline for: "
+            + ", ".join(drifted)
+            + "\nThe extraction is supposed to be behaviour-preserving. Find the "
+            "cause; do not pass --rebless-compiler to silence this."
+        )
 
 
 if __name__ == "__main__":

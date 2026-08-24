@@ -1,4 +1,120 @@
 {
+  "compiler_metrics": {
+    "active_hands": [
+      "right",
+      "left"
+    ],
+    "discontinuities": 0,
+    "finger_assertions": {},
+    "fixed_root_foot_max_rotation_delta_rad": 0.0,
+    "foot_drift_m": 0.0,
+    "handoff_attachment_slip_by_hand_m": {
+      "left": 1.4359487270475865e-16,
+      "right": 1.1714201148076235e-16
+    },
+    "handoff_attachment_slip_m": 1.4359487270475865e-16,
+    "handoff_dual_contact_duration_s": 0.30000000000000004,
+    "handoff_receiver_contact_time_s": 1.9733333333333334,
+    "handoff_receiver_hand": "left",
+    "handoff_receiver_retained": true,
+    "handoff_source_attachment_time_s": 0.9283333333333333,
+    "handoff_source_hand": "right",
+    "handoff_transfer_time_s": 2.2733333333333334,
+    "hold_duration_s": 0.0,
+    "joint_limit_violations": 0,
+    "lift_height_m": 0.0,
+    "lost_table_contact": true,
+    "max_frame_rotation_delta_rad": 0.23701737563133765,
+    "max_penetration_m": 0.0,
+    "nan_count": 0,
+    "object_action": "handoff",
+    "object_lifecycle": [
+      {
+        "state": "free",
+        "time_s": 0.0
+      },
+      {
+        "state": "source_attached",
+        "time_s": 0.9283333333333333
+      },
+      {
+        "state": "dual_contact",
+        "time_s": 1.9733333333333334
+      },
+      {
+        "state": "receiver_attached",
+        "time_s": 2.2733333333333334
+      }
+    ],
+    "object_max_step_m": 0.031062272249996893,
+    "object_max_step_reference_m": 0.08,
+    "opposing_contacts": false,
+    "palm_relative_slip_m": 0.0,
+    "phase_ranges_s": [
+      {
+        "end_s": 0.48,
+        "kind": "reach",
+        "label": "source_reach",
+        "start_s": 0.0
+      },
+      {
+        "end_s": 0.7133333333333334,
+        "kind": "preshape",
+        "label": "source_preshape",
+        "start_s": 0.48
+      },
+      {
+        "end_s": 0.8933333333333333,
+        "kind": "contact",
+        "label": "source_contact",
+        "start_s": 0.7133333333333334
+      },
+      {
+        "end_s": 1.1733333333333333,
+        "kind": "close",
+        "label": "source_secure",
+        "start_s": 0.8933333333333333
+      },
+      {
+        "end_s": 1.6066666666666667,
+        "kind": "lift",
+        "label": "present_for_handoff",
+        "start_s": 1.1733333333333333
+      },
+      {
+        "end_s": 2.0733333333333333,
+        "kind": "receive",
+        "label": "receiver_contact",
+        "start_s": 1.6066666666666667
+      },
+      {
+        "end_s": 2.4066666666666667,
+        "kind": "release",
+        "label": "ownership_transfer",
+        "start_s": 2.0733333333333333
+      },
+      {
+        "end_s": 2.8733333333333335,
+        "kind": "hold",
+        "label": "receiver_retains",
+        "start_s": 2.4066666666666667
+      },
+      {
+        "end_s": 3.423333333333334,
+        "kind": "recover",
+        "label": "source_recovers",
+        "start_s": 2.8733333333333335
+      }
+    ],
+    "quaternion_norm_max_error": 2.220446049250313e-16,
+    "root_drift_m": 0.0,
+    "safety_derivation": "computed over every frame/local delta quaternion and authored hips translation; root motion must remain fixed",
+    "structural_failures": [],
+    "structural_valid": true,
+    "unresolved_non_hand_collisions": 0,
+    "vertical_drift_m": 0.0,
+    "weld_used": false
+  },
   "expected_metrics": {
     "discontinuities": 0,
     "fixed_root_foot_max_rotation_delta_rad": 0.0,

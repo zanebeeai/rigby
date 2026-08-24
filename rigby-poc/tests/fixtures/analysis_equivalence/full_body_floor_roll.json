@@ -1,18 +1,41 @@
 {
   "compiler_metrics": {
-    "airborne_frame_count": 0,
+    "airborne_frame_count": 26,
+    "airborne_rotation_airborne_fraction": 0.0,
+    "airborne_rotation_airborne_frame_count": 0,
+    "airborne_rotation_peak_root_height_m": 0.015200535123664238,
     "body_actions": [
-      "walk",
+      "rotate",
       "hold"
     ],
+    "body_rotation_phase_metrics": [
+      {
+        "axis": "pitch",
+        "label": "floor_roll_forward",
+        "measured_degrees": 360.0000000008075,
+        "mode": "floor",
+        "nonfoot_contact_frame_count": 25,
+        "projected_travel_m": 0.78,
+        "requested_degrees": 360.0,
+        "requested_travel_m": 0.78,
+        "sample_frame_count": 73
+      }
+    ],
+    "cartwheel_hand_contact_fraction": 0.0,
+    "cartwheel_hand_contact_frame_count": 0,
+    "cartwheel_inverted_frame_count": 0,
+    "cartwheel_max_foot_clearance_m": 0.0,
+    "cartwheel_minimum_head_clearance_m": 0.0,
     "discontinuities": 0,
-    "final_balanced_leg_error_rad": 0.541008228979369,
-    "final_foot_ground_error_m": 2.27758877909337e-06,
-    "final_root_vertical_speed_m_s": 2.058423637665848e-05,
+    "final_balanced_leg_error_rad": 0.697055431262431,
+    "final_foot_ground_error_m": 0.0040008724478117295,
+    "final_root_vertical_speed_m_s": 9.805385856973028e-05,
     "final_root_yaw_deg": 0.0,
-    "final_support_center_offset_m": 0.03958328258098675,
+    "final_support_center_offset_m": 0.0482244997414747,
     "finger_assertions": {},
-    "fixed_root_foot_max_rotation_delta_rad": 0.5845144573391577,
+    "fixed_root_foot_max_rotation_delta_rad": 3.141592653589793,
+    "floor_roll_nonfoot_contact_fraction": 0.3424657534246575,
+    "floor_roll_nonfoot_contact_frame_count": 25,
     "foot_drift_m": 0.0,
     "ground_height_m": 0.015200535123664238,
     "ground_penetration_m": 0.0,
@@ -21,24 +44,27 @@
     "joint_limit_violations": 0,
     "lift_height_m": 0.0,
     "lost_table_contact": true,
-    "max_angular_acceleration_rad_s2": 67.66028851076433,
-    "max_angular_jerk_rad_s3": 1851.1471707054145,
-    "max_angular_velocity_rad_s": 6.128826885385698,
-    "max_frame_rotation_delta_rad": 0.20429422951285767,
+    "max_angular_acceleration_rad_s2": 156.06439066502716,
+    "max_angular_jerk_rad_s3": 4680.46870139665,
+    "max_angular_velocity_rad_s": 5.202856365360913,
+    "max_frame_rotation_delta_rad": 0.17342854551202877,
     "max_penetration_m": 0.0,
-    "max_support_foot_slide_per_frame_m": 1.8141498835027202e-07,
-    "max_support_foot_target_error_m": 1.97663451367909e-06,
-    "maximum_foot_clearance_m": 0.0487520370407569,
-    "minimum_nonfoot_body_clearance_m": 0.44019787771081553,
+    "max_support_foot_slide_per_frame_m": 0.0,
+    "max_support_foot_target_error_m": 1.8898201743207803e-06,
+    "maximum_foot_clearance_m": 1.1465479766446598,
+    "measured_body_rotation_degrees": 360.0000000008075,
+    "minimum_body_rotation_completion_fraction": 1.000000000002243,
+    "minimum_nonfoot_body_clearance_m": -0.21755534392934525,
+    "minimum_rotation_travel_completion_fraction": 1.0,
     "nan_count": 0,
     "opposing_contacts": false,
     "palm_relative_slip_m": 0.0,
     "phase_ranges_s": [
       {
-        "action": "walk",
+        "action": "rotate",
         "end_s": 2.4,
         "kind": "body",
-        "label": "walk_1",
+        "label": "floor_roll_forward",
         "start_s": 0.0
       },
       {
@@ -50,25 +76,15 @@
       }
     ],
     "quaternion_norm_max_error": 2.220446049250313e-16,
-    "requested_body_cycles": 3.0,
-    "root_displacement_m": 1.44,
-    "root_drift_m": 1.4400006281785152,
+    "requested_body_cycles": 1.0,
+    "requested_body_rotation_degrees": 360.0,
+    "root_displacement_m": 0.78,
+    "root_drift_m": 0.9619376620709871,
     "root_motion_enabled": true,
-    "root_path_length_m": 1.44,
-    "root_vertical_max_m": -0.07500000000737232,
-    "root_vertical_min_m": -0.10396439919733226,
+    "root_path_length_m": 0.78,
+    "root_vertical_max_m": -0.07100063116564215,
+    "root_vertical_min_m": -0.7930970969709459,
     "safety_derivation": "computed over every frame/local delta quaternion and authored hips translation; root motion is explicitly enabled",
-    "semantic_cycle_action": "hello_wave",
-    "semantic_cycle_hands": {
-      "right": {
-        "excursion_m": 0.18659611215230293,
-        "reversal_count": 6
-      }
-    },
-    "semantic_cycle_min_excursion_m": 0.18659611215230293,
-    "semantic_cycle_min_reversal_count": 6,
-    "semantic_cycle_requested_amplitude_m": 0.1,
-    "semantic_cycle_requested_cycles": 3.0,
     "structural_failures": [],
     "structural_valid": true,
     "support_contact_fraction": 1.0,
@@ -78,31 +94,20 @@
   },
   "expected_metrics": {
     "discontinuities": 0,
-    "fixed_root_foot_max_rotation_delta_rad": 0.5845144573391577,
+    "fixed_root_foot_max_rotation_delta_rad": 3.141592653589793,
     "foot_drift_m": 0.0,
     "joint_limit_violations": 0,
-    "max_angular_acceleration_rad_s2": 67.66028851076433,
-    "max_angular_jerk_rad_s3": 1851.1471707054145,
-    "max_angular_velocity_rad_s": 6.128826885385698,
-    "max_frame_rotation_delta_rad": 0.20429422951285767,
+    "max_angular_acceleration_rad_s2": 156.06439066502716,
+    "max_angular_jerk_rad_s3": 4680.46870139665,
+    "max_angular_velocity_rad_s": 5.202856365360913,
+    "max_frame_rotation_delta_rad": 0.17342854551202877,
     "nan_count": 0,
     "quaternion_norm_max_error": 2.220446049250313e-16,
-    "root_drift_m": 1.4400006281785152,
-    "safety_derivation": "computed over every frame/local delta quaternion and authored hips translation; root motion is explicitly enabled",
-    "semantic_cycle_action": "hello_wave",
-    "semantic_cycle_hands": {
-      "right": {
-        "excursion_m": 0.18659611215230293,
-        "reversal_count": 6
-      }
-    },
-    "semantic_cycle_min_excursion_m": 0.18659611215230293,
-    "semantic_cycle_min_reversal_count": 6,
-    "semantic_cycle_requested_amplitude_m": 0.1,
-    "semantic_cycle_requested_cycles": 3.0
+    "root_drift_m": 0.9619376620709871,
+    "safety_derivation": "computed over every frame/local delta quaternion and authored hips translation; root motion is explicitly enabled"
   },
   "frame_count": 103,
-  "id": "full_body_wave_while_walking",
+  "id": "full_body_floor_roll",
   "intent": "full_body",
   "program": {
     "assertions": [
@@ -117,16 +122,10 @@
       {
         "name": "ground_clearance",
         "threshold": null
-      },
-      {
-        "name": "hello_wave_trajectory_reversals",
-        "threshold": 4.0
       }
     ],
     "hand": "right",
-    "hands": [
-      "right"
-    ],
+    "hands": [],
     "intent": "full_body",
     "motion_profile": null,
     "object_action": null,
@@ -134,14 +133,14 @@
     "primitives": [
       {
         "body": {
-          "action": "walk",
+          "action": "rotate",
           "climb_direction": "up",
-          "cycles": 3.0,
-          "direction_x": -1.0,
+          "cycles": 1.0,
+          "direction_x": 0.0,
           "direction_z": 1.0,
-          "distance_m": 1.44,
-          "height_m": 0.0,
-          "intensity": 0.65,
+          "distance_m": 0.78,
+          "height_m": 0.18,
+          "intensity": 0.82,
           "lead_side": "right",
           "obstacle_clearance_m": 0.0,
           "obstacle_mode": "none",
@@ -181,37 +180,23 @@
           },
           "raise_arms_overhead": false,
           "rotation_axis": "pitch",
-          "rotation_degrees": 0.0,
+          "rotation_degrees": 360.0,
           "rotation_mode": "floor",
           "support_object_id": null,
           "turn_degrees": 0.0
         },
-        "effectors": [
-          {
-            "elbow_swivel": -0.18,
-            "hand": "right",
-            "hand_shape": "open",
-            "phase_offset_cycles": 0.0,
-            "reach_overhead": false,
-            "target_x": -0.72,
-            "target_y": 0.68,
-            "target_z": 0.52,
-            "wrist_pitch": -0.06,
-            "wrist_roll": 0.0,
-            "wrist_yaw": 0.0
-          }
-        ],
+        "effectors": [],
         "gaze_target": null,
         "hand_shape": null,
         "intra_hand_contact": null,
         "kind": "body",
-        "label": "walk_1",
+        "label": "floor_roll_forward",
         "object_id": null,
         "parameters": {
           "arm_depth": 0.0,
           "arm_height": 0.0,
           "axial_rotation_amplitude": 0.0,
-          "duration_s": 2.16,
+          "duration_s": 2.1,
           "easing": 0.72,
           "elbow_swivel": 0.0,
           "finger_curl": 0.0,
@@ -228,8 +213,8 @@
           "thumb_curl": 0.0,
           "thumb_opposition": 0.75,
           "torso_participation": 0.2,
-          "trajectory_amplitude_m": 0.1,
-          "trajectory_cycles": 3.0,
+          "trajectory_amplitude_m": 0.0,
+          "trajectory_cycles": 0.0,
           "wrist_flourish": 0.0,
           "wrist_pitch": 0.0,
           "wrist_roll": 0.0,
@@ -238,8 +223,8 @@
           "wrist_yaw": 0.0
         },
         "socket_id": null,
-        "trajectory": "oscillate",
-        "trajectory_plane": "frontal"
+        "trajectory": null,
+        "trajectory_plane": null
       },
       {
         "body": {
@@ -339,12 +324,12 @@
     ],
     "schema_version": "1.0",
     "seed": 0,
-    "source_text": "wave hello with your right hand while walking forward three steps",
+    "source_text": "do a forward roll",
     "steps": [],
     "strike_type": null,
     "unsupported_reason": null
   },
-  "prompt": "wave hello with your right hand while walking forward three steps",
+  "prompt": "do a forward roll",
   "scene": {
     "fps": 30,
     "objects": [

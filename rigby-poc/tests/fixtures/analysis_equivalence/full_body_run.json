@@ -1,18 +1,18 @@
 {
   "compiler_metrics": {
-    "airborne_frame_count": 0,
+    "airborne_frame_count": 16,
     "body_actions": [
-      "walk",
+      "run",
       "hold"
     ],
     "discontinuities": 0,
-    "final_balanced_leg_error_rad": 0.541008228979369,
-    "final_foot_ground_error_m": 2.27758877909337e-06,
-    "final_root_vertical_speed_m_s": 2.058423637665848e-05,
+    "final_balanced_leg_error_rad": 0.6417601180492639,
+    "final_foot_ground_error_m": 2.7609260349770876e-06,
+    "final_root_vertical_speed_m_s": 5.651201216358446e-05,
     "final_root_yaw_deg": 0.0,
-    "final_support_center_offset_m": 0.03958328258098675,
+    "final_support_center_offset_m": 0.013139589892675925,
     "finger_assertions": {},
-    "fixed_root_foot_max_rotation_delta_rad": 0.5845144573391577,
+    "fixed_root_foot_max_rotation_delta_rad": 0.6845112071281143,
     "foot_drift_m": 0.0,
     "ground_height_m": 0.015200535123664238,
     "ground_penetration_m": 0.0,
@@ -21,24 +21,24 @@
     "joint_limit_violations": 0,
     "lift_height_m": 0.0,
     "lost_table_contact": true,
-    "max_angular_acceleration_rad_s2": 67.66028851076433,
-    "max_angular_jerk_rad_s3": 1851.1471707054145,
-    "max_angular_velocity_rad_s": 6.128826885385698,
-    "max_frame_rotation_delta_rad": 0.20429422951285767,
+    "max_angular_acceleration_rad_s2": 184.64807427637294,
+    "max_angular_jerk_rad_s3": 4543.163238574307,
+    "max_angular_velocity_rad_s": 9.571939319879528,
+    "max_frame_rotation_delta_rad": 0.3190646439959855,
     "max_penetration_m": 0.0,
-    "max_support_foot_slide_per_frame_m": 1.8141498835027202e-07,
-    "max_support_foot_target_error_m": 1.97663451367909e-06,
-    "maximum_foot_clearance_m": 0.0487520370407569,
-    "minimum_nonfoot_body_clearance_m": 0.44019787771081553,
+    "max_support_foot_slide_per_frame_m": 3.397979961220334e-07,
+    "max_support_foot_target_error_m": 2.1256622743621663e-06,
+    "maximum_foot_clearance_m": 0.07475225213339798,
+    "minimum_nonfoot_body_clearance_m": 0.42124658029303674,
     "nan_count": 0,
     "opposing_contacts": false,
     "palm_relative_slip_m": 0.0,
     "phase_ranges_s": [
       {
-        "action": "walk",
+        "action": "run",
         "end_s": 2.4,
         "kind": "body",
-        "label": "walk_1",
+        "label": "run_1",
         "start_s": 0.0
       },
       {
@@ -49,26 +49,15 @@
         "start_s": 2.4
       }
     ],
-    "quaternion_norm_max_error": 2.220446049250313e-16,
-    "requested_body_cycles": 3.0,
-    "root_displacement_m": 1.44,
-    "root_drift_m": 1.4400006281785152,
+    "quaternion_norm_max_error": 1.1102230246251565e-16,
+    "requested_body_cycles": 4.0,
+    "root_displacement_m": 2.2,
+    "root_drift_m": 2.2000541020150335,
     "root_motion_enabled": true,
-    "root_path_length_m": 1.44,
-    "root_vertical_max_m": -0.07500000000737232,
-    "root_vertical_min_m": -0.10396439919733226,
+    "root_path_length_m": 2.2,
+    "root_vertical_max_m": -0.03946143365488738,
+    "root_vertical_min_m": -0.12697212015786202,
     "safety_derivation": "computed over every frame/local delta quaternion and authored hips translation; root motion is explicitly enabled",
-    "semantic_cycle_action": "hello_wave",
-    "semantic_cycle_hands": {
-      "right": {
-        "excursion_m": 0.18659611215230293,
-        "reversal_count": 6
-      }
-    },
-    "semantic_cycle_min_excursion_m": 0.18659611215230293,
-    "semantic_cycle_min_reversal_count": 6,
-    "semantic_cycle_requested_amplitude_m": 0.1,
-    "semantic_cycle_requested_cycles": 3.0,
     "structural_failures": [],
     "structural_valid": true,
     "support_contact_fraction": 1.0,
@@ -78,31 +67,20 @@
   },
   "expected_metrics": {
     "discontinuities": 0,
-    "fixed_root_foot_max_rotation_delta_rad": 0.5845144573391577,
+    "fixed_root_foot_max_rotation_delta_rad": 0.6845112071281143,
     "foot_drift_m": 0.0,
     "joint_limit_violations": 0,
-    "max_angular_acceleration_rad_s2": 67.66028851076433,
-    "max_angular_jerk_rad_s3": 1851.1471707054145,
-    "max_angular_velocity_rad_s": 6.128826885385698,
-    "max_frame_rotation_delta_rad": 0.20429422951285767,
+    "max_angular_acceleration_rad_s2": 184.64807427637294,
+    "max_angular_jerk_rad_s3": 4543.163238574307,
+    "max_angular_velocity_rad_s": 9.571939319879528,
+    "max_frame_rotation_delta_rad": 0.3190646439959855,
     "nan_count": 0,
-    "quaternion_norm_max_error": 2.220446049250313e-16,
-    "root_drift_m": 1.4400006281785152,
-    "safety_derivation": "computed over every frame/local delta quaternion and authored hips translation; root motion is explicitly enabled",
-    "semantic_cycle_action": "hello_wave",
-    "semantic_cycle_hands": {
-      "right": {
-        "excursion_m": 0.18659611215230293,
-        "reversal_count": 6
-      }
-    },
-    "semantic_cycle_min_excursion_m": 0.18659611215230293,
-    "semantic_cycle_min_reversal_count": 6,
-    "semantic_cycle_requested_amplitude_m": 0.1,
-    "semantic_cycle_requested_cycles": 3.0
+    "quaternion_norm_max_error": 1.1102230246251565e-16,
+    "root_drift_m": 2.2000541020150335,
+    "safety_derivation": "computed over every frame/local delta quaternion and authored hips translation; root motion is explicitly enabled"
   },
   "frame_count": 103,
-  "id": "full_body_wave_while_walking",
+  "id": "full_body_run",
   "intent": "full_body",
   "program": {
     "assertions": [
@@ -117,16 +95,10 @@
       {
         "name": "ground_clearance",
         "threshold": null
-      },
-      {
-        "name": "hello_wave_trajectory_reversals",
-        "threshold": 4.0
       }
     ],
     "hand": "right",
-    "hands": [
-      "right"
-    ],
+    "hands": [],
     "intent": "full_body",
     "motion_profile": null,
     "object_action": null,
@@ -134,12 +106,12 @@
     "primitives": [
       {
         "body": {
-          "action": "walk",
+          "action": "run",
           "climb_direction": "up",
-          "cycles": 3.0,
-          "direction_x": -1.0,
+          "cycles": 4.0,
+          "direction_x": 0.0,
           "direction_z": 1.0,
-          "distance_m": 1.44,
+          "distance_m": 2.2,
           "height_m": 0.0,
           "intensity": 0.65,
           "lead_side": "right",
@@ -186,32 +158,18 @@
           "support_object_id": null,
           "turn_degrees": 0.0
         },
-        "effectors": [
-          {
-            "elbow_swivel": -0.18,
-            "hand": "right",
-            "hand_shape": "open",
-            "phase_offset_cycles": 0.0,
-            "reach_overhead": false,
-            "target_x": -0.72,
-            "target_y": 0.68,
-            "target_z": 0.52,
-            "wrist_pitch": -0.06,
-            "wrist_roll": 0.0,
-            "wrist_yaw": 0.0
-          }
-        ],
+        "effectors": [],
         "gaze_target": null,
         "hand_shape": null,
         "intra_hand_contact": null,
         "kind": "body",
-        "label": "walk_1",
+        "label": "run_1",
         "object_id": null,
         "parameters": {
           "arm_depth": 0.0,
           "arm_height": 0.0,
           "axial_rotation_amplitude": 0.0,
-          "duration_s": 2.16,
+          "duration_s": 1.92,
           "easing": 0.72,
           "elbow_swivel": 0.0,
           "finger_curl": 0.0,
@@ -228,8 +186,8 @@
           "thumb_curl": 0.0,
           "thumb_opposition": 0.75,
           "torso_participation": 0.2,
-          "trajectory_amplitude_m": 0.1,
-          "trajectory_cycles": 3.0,
+          "trajectory_amplitude_m": 0.0,
+          "trajectory_cycles": 0.0,
           "wrist_flourish": 0.0,
           "wrist_pitch": 0.0,
           "wrist_roll": 0.0,
@@ -238,8 +196,8 @@
           "wrist_yaw": 0.0
         },
         "socket_id": null,
-        "trajectory": "oscillate",
-        "trajectory_plane": "frontal"
+        "trajectory": null,
+        "trajectory_plane": null
       },
       {
         "body": {
@@ -339,12 +297,12 @@
     ],
     "schema_version": "1.0",
     "seed": 0,
-    "source_text": "wave hello with your right hand while walking forward three steps",
+    "source_text": "run forward four steps",
     "steps": [],
     "strike_type": null,
     "unsupported_reason": null
   },
-  "prompt": "wave hello with your right hand while walking forward three steps",
+  "prompt": "run forward four steps",
   "scene": {
     "fps": 30,
     "objects": [

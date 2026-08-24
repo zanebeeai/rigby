@@ -1,4 +1,93 @@
 {
+  "compiler_metrics": {
+    "active_hand_visibility_fraction": 1.0,
+    "active_hand_visibility_samples": 29,
+    "discontinuities": 0,
+    "finger_assertions": {
+      "all_finger_bones_present": true,
+      "index_curled": true,
+      "little_extended": true,
+      "middle_curled": true,
+      "ring_curled": true,
+      "thumb_extended": true
+    },
+    "finger_assertions_computed_from_clip": true,
+    "fixed_root_foot_max_rotation_delta_rad": 0.0,
+    "foot_drift_m": 0.0,
+    "forearm_rotation_amplitude_rad": 0.0,
+    "forearm_rotation_cycles": 0.0,
+    "full_fov_camera_contract": {
+      "aspect_ratio": 1.7777777777777777,
+      "hand_visibility_radius_m": 0.095,
+      "height_px": 900,
+      "vertical_fov_deg": 94.0,
+      "width_px": 1600
+    },
+    "hold_duration_s": 0.0,
+    "joint_limit_violations": 0,
+    "lift_height_m": 0.0,
+    "lost_table_contact": true,
+    "max_angular_acceleration_rad_s2": 43.88437763763078,
+    "max_angular_jerk_rad_s3": 705.8566226509565,
+    "max_angular_velocity_rad_s": 4.697276334761356,
+    "max_forearm_twist_rad": 0.5898073331994225,
+    "max_frame_rotation_delta_rad": 0.2050940762792768,
+    "max_penetration_m": 0.0,
+    "max_wrist_swing_rad": 0.24488567531699218,
+    "max_wrist_twist_rad": 0.052484762033558015,
+    "nan_count": 0,
+    "normalized_finger_curls": {
+      "index": 0.8200000000000001,
+      "little": 0.030000000000000006,
+      "middle": 0.8500000000000001,
+      "ring": 0.8400000000000002,
+      "thumb": 0.018399999999999982
+    },
+    "opposing_contacts": false,
+    "palm_relative_slip_m": 0.0,
+    "phase_ranges_s": [
+      {
+        "end_s": 0.32,
+        "kind": "present",
+        "start_s": 0.0
+      },
+      {
+        "end_s": 0.97,
+        "kind": "hold",
+        "start_s": 0.32
+      },
+      {
+        "end_s": 1.35,
+        "kind": "recover",
+        "start_s": 0.97
+      }
+    ],
+    "quality_limits": {
+      "angular_acceleration_rad_s2": 82.0,
+      "angular_jerk_rad_s3": 2100.0,
+      "angular_velocity_rad_s": 9.5,
+      "forearm_twist_rad": 1.35,
+      "minimum_active_hand_visibility_fraction": 1.0,
+      "wrist_swing_rad": 0.48,
+      "wrist_twist_rad": 0.18
+    },
+    "quality_reference_schema": "1.0",
+    "quality_reference_source": "highest human-rated clips from blinded runs 000018 and 000019; bounds include a small engineering margin",
+    "quaternion_norm_max_error": 2.220446049250313e-16,
+    "root_drift_m": 0.0,
+    "safety_derivation": "computed over every frame/local delta quaternion and authored hips translation; root motion must remain fixed",
+    "self_collision_frames": 0,
+    "structural_failures": [],
+    "structural_valid": true,
+    "unresolved_non_hand_collisions": 0,
+    "vertical_drift_m": 0.0,
+    "weld_used": false,
+    "wrist_deviation_amplitude_rad": 0.0,
+    "wrist_deviation_cycles": 0.0,
+    "wrist_flexion_amplitude_rad": 0.0,
+    "wrist_flexion_cycles": 0.0,
+    "wrist_swing_twist_limit_violations": 0
+  },
   "expected_metrics": {
     "active_hand_visibility_fraction": 1.0,
     "active_hand_visibility_samples": 29,

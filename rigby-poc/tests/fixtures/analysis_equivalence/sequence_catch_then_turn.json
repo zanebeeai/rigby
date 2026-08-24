@@ -1,4 +1,145 @@
 {
+  "compiler_metrics": {
+    "carried_object_ids": [
+      "block"
+    ],
+    "carried_object_max_step_m": 0.10763872202541461,
+    "carried_object_max_step_reference_m": 0.08,
+    "carried_object_release_times_s": {},
+    "discontinuities": 0,
+    "final_root_yaw_deg": 180.0,
+    "finger_assertions": {},
+    "fixed_root_foot_max_rotation_delta_rad": 3.141592653589793,
+    "foot_drift_m": 0.0,
+    "hold_duration_s": 0.0,
+    "horizontal_pose_requested": false,
+    "joint_limit_violations": 0,
+    "lift_height_m": 0.0,
+    "lost_table_contact": true,
+    "max_angular_acceleration_rad_s2": 25.760670045037827,
+    "max_angular_jerk_rad_s3": 463.4576057217398,
+    "max_angular_velocity_rad_s": 4.518556936071187,
+    "max_frame_rotation_delta_rad": 0.21582010673993376,
+    "max_penetration_m": 0.0,
+    "nan_count": 0,
+    "opposing_contacts": false,
+    "palm_relative_slip_m": 0.0,
+    "phase_ranges_s": [
+      {
+        "end_s": 0.55,
+        "kind": "receive",
+        "start_s": 0.0,
+        "step_index": 1,
+        "step_intent": "object_interaction"
+      },
+      {
+        "end_s": 1.1833333333333333,
+        "kind": "flight",
+        "start_s": 0.55,
+        "step_index": 1,
+        "step_intent": "object_interaction"
+      },
+      {
+        "end_s": 1.3833333333333333,
+        "kind": "contact",
+        "start_s": 1.1833333333333333,
+        "step_index": 1,
+        "step_intent": "object_interaction"
+      },
+      {
+        "end_s": 1.65,
+        "kind": "close",
+        "start_s": 1.3833333333333333,
+        "step_index": 1,
+        "step_intent": "object_interaction"
+      },
+      {
+        "end_s": 2.0166666666666666,
+        "kind": "absorb",
+        "start_s": 1.65,
+        "step_index": 1,
+        "step_intent": "object_interaction"
+      },
+      {
+        "end_s": 2.4833333333333334,
+        "kind": "hold",
+        "start_s": 2.0166666666666666,
+        "step_index": 1,
+        "step_intent": "object_interaction"
+      },
+      {
+        "end_s": 3.1166666666666667,
+        "kind": "recover",
+        "start_s": 2.4833333333333334,
+        "step_index": 1,
+        "step_intent": "object_interaction"
+      },
+      {
+        "action": "turn",
+        "end_s": 4.866666666666667,
+        "kind": "body",
+        "label": "turn_1",
+        "start_s": 3.6166666666666667,
+        "step_index": 2,
+        "step_intent": "full_body"
+      },
+      {
+        "action": "hold",
+        "end_s": 5.866666666666667,
+        "kind": "recover",
+        "label": "settle_to_balanced_stance",
+        "start_s": 4.866666666666667,
+        "step_index": 2,
+        "step_intent": "full_body"
+      }
+    ],
+    "quaternion_norm_max_error": 1.1102230246251565e-16,
+    "root_displacement_m": 0.0,
+    "root_drift_m": 1.022706919151517e-11,
+    "root_motion_enabled": true,
+    "root_path_length_m": 0.0,
+    "safety_derivation": "computed over every frame/local delta quaternion and authored hips translation; root motion is explicitly enabled",
+    "sequence_intents": [
+      "object_interaction",
+      "full_body"
+    ],
+    "sequence_step_count": 2,
+    "sequence_step_ranges_s": [
+      {
+        "child_structural_valid": true,
+        "end_s": 3.1166666666666667,
+        "horizontal_pose_contact_point_count": null,
+        "horizontal_pose_requested": false,
+        "horizontal_pose_variant": null,
+        "intent": "object_interaction",
+        "source_text": "catch the block",
+        "start_s": 0.0,
+        "step_index": 1
+      },
+      {
+        "child_structural_valid": true,
+        "end_s": 5.866666666666667,
+        "horizontal_pose_contact_point_count": null,
+        "horizontal_pose_requested": false,
+        "horizontal_pose_variant": null,
+        "intent": "full_body",
+        "source_text": "turn around",
+        "start_s": 3.6166666666666667,
+        "step_index": 2
+      }
+    ],
+    "stateful_object_landing_height_error_m": 0.0,
+    "stateful_object_release_displacement_m": 0.0,
+    "stateful_object_transition_count": 0,
+    "stateful_object_transitions": [],
+    "structural_failures": [
+      "carried object contains a teleport-sized step"
+    ],
+    "structural_valid": false,
+    "unresolved_non_hand_collisions": 0,
+    "vertical_drift_m": 0.0,
+    "weld_used": false
+  },
   "expected_metrics": {
     "discontinuities": 0,
     "fixed_root_foot_max_rotation_delta_rad": 3.141592653589793,

@@ -13,8 +13,27 @@
     "full_body_climb",
     "object_throw_forward",
     "object_handoff",
-    "sequence_catch_then_turn"
+    "sequence_catch_then_turn",
+    "full_body_jumping_jack",
+    "full_body_burpee",
+    "full_body_squat",
+    "full_body_lunge",
+    "full_body_single_leg_balance",
+    "full_body_sit_up",
+    "full_body_crawl",
+    "full_body_push_up",
+    "full_body_dance",
+    "full_body_cartwheel",
+    "full_body_floor_roll",
+    "full_body_obstacle_over",
+    "full_body_obstacle_around",
+    "full_body_plank",
+    "full_body_lie_supine",
+    "full_body_kick",
+    "full_body_turn",
+    "full_body_run",
+    "full_body_crouch"
   ],
-  "note": "Frozen analysis output for PR 02a. Superseded by the golden corpus (plan 03) once it lands.",
-  "schema_version": "1.0"
+  "note": "Frozen compiler and analysis output for the PR 02 extraction. compiler_metrics is the move baseline and predates 02b; expected_metrics grows as each path is ported. Superseded by the golden corpus (plan 03) once it covers these paths.",
+  "schema_version": "2.0"
 }

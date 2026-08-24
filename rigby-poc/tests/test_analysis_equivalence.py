@@ -1,11 +1,18 @@
 """The equivalence harness: analysis output must match the compiler exactly.
 
-Two independent assertions per case, and they fail for different reasons:
+Three independent assertions per case, and they fail for different reasons:
 
-* against ``clip.metrics`` from the same run — proves the extraction is
-  behaviour-preserving *today*, and can never go stale;
-* against the frozen fixture — proves the numbers have not moved since 02a
-  landed, and catches a compiler change that silently alters both sides.
+* ``compiler_metrics`` — the whole of ``ClipResult.metrics`` against a baseline
+  frozen *before* PR 02b began moving metric blocks out of ``compiler.py``.
+  This is the gate on the extraction itself. Moving a block into
+  ``rigby_poc.analysis`` must not change a single digit of what the compiler
+  emits, and this assertion is the only one that can prove it, because the
+  other two compare the analyzer against a compiler that has already been
+  changed;
+* against ``clip.metrics`` from the same run — proves the analyzer agrees with
+  the compiler *today*, and can never go stale;
+* against the frozen ``expected_metrics`` — pins the analysis layer's own
+  output, which grows as each path is ported.
 
 The fixture is a stand-in for the golden corpus (plan 03). When that lands it
 supersedes ``tests/fixtures/analysis_equivalence/``.
@@ -38,6 +45,23 @@ CASE_IDS: list[str] = json.loads(
 )["cases"]
 
 
+# Metric keys the compiler gained after the baseline was frozen, with why.
+# Each one is authoring intent that no post-hoc pass can invert out of a clip,
+# so persisting it is what lets the analysis layer reproduce the metrics that
+# compare achieved motion against what was commanded (plan 02 §1.4).
+ADDED_COMPILER_KEYS: dict[str, str] = {
+    "support_constraints": (
+        "commanded ankle position per constrained frame; feeds "
+        "max_support_foot_target_error_m, max_support_foot_slide_per_frame_m "
+        "and support_contact_fraction"
+    ),
+    "climb_support_constraints": (
+        "commanded per-limb climb support targets; feeds "
+        "climb_support_target_max_error_m and climb_three_point_support_fraction"
+    ),
+}
+
+
 def _canonical(value: object) -> str:
     return json.dumps(value, sort_keys=True, ensure_ascii=False)
 
@@ -53,6 +77,41 @@ def _compile_case(case: dict):
         CompileRequest(scene=scene, program=program, persist=False)
     )
     return scene, program, clip
+
+
+@pytest.mark.parametrize("case_id", CASE_IDS)
+def test_compiler_metrics_match_the_pre_extraction_baseline(case_id: str) -> None:
+    """``compiler.py`` must emit the same numbers it did before the move.
+
+    PR 02 is an extraction, not a redesign: every metric block that moves into
+    ``rigby_poc.analysis`` has to leave ``ClipResult.metrics`` byte-identical.
+    The baseline in each fixture file was frozen from the compiler before 02b
+    touched it, and ``freeze.py`` refuses to overwrite it without an explicit
+    ``--rebless-compiler``.
+
+    A key may be *added* — 02b persists the commanded IK support targets, which
+    are authoring intent no post-hoc pass can recover — but every addition has
+    to be declared in ``ADDED_COMPILER_KEYS`` below, and nothing already frozen
+    may move.
+    """
+
+    case = _load_case(case_id)
+    baseline = case["compiler_metrics"]
+    _, _, clip = _compile_case(case)
+
+    for key in sorted(baseline):
+        assert key in clip.metrics, f"{case_id}: the compiler stopped emitting {key!r}"
+        assert _canonical(clip.metrics[key]) == _canonical(baseline[key]), (
+            f"{case_id}: {key!r} moved during the extraction. This is a move, not "
+            "a redesign — find the cause rather than re-blessing the baseline."
+        )
+
+    added = sorted(set(clip.metrics) - set(baseline))
+    undeclared = [key for key in added if key not in ADDED_COMPILER_KEYS]
+    assert not undeclared, (
+        f"{case_id}: the compiler grew undeclared metric keys {undeclared}; add "
+        "them to ADDED_COMPILER_KEYS with the reason they cannot be derived"
+    )
 
 
 @pytest.mark.parametrize("case_id", CASE_IDS)
