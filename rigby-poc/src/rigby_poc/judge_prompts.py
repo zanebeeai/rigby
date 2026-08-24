@@ -135,9 +135,12 @@ evidence; the egocentric camera is mounted at the performer's head, so the torso
 being absent there is correct framing and not an anatomical fault. Score anatomical_naturalness 1 when a joint
 is clearly outside human range, 3 when a configuration is strained or awkward but possible, and 5 when every
 joint reads as a relaxed, physically plausible human pose.
-The rig's rest pose is a T-pose with the arms held out horizontally, so reason about each joint from what
-the render shows rather than from an arms-at-side mental model: an arm held horizontal is the rest state,
-not an overhead raise."""
+The rig's rest pose is a T-pose, so reason about each joint from what the render shows rather than from an
+arms-at-side mental model. Three rest offsets are large enough to mislead you and are measured, not estimated:
+the shoulder rests at roughly 90 degrees of abduction, so an arm held horizontal is the rest state and not an
+overhead raise; the neck rests tilted about 40 degrees forward; and the wrist rests deviated about 25 degrees.
+None of the three is a defect. The thumb has no well-defined anatomical neutral at all, so judge a thumb only
+against what a human thumb could physically do, never against a resting reference."""
 
 ARTIFACT_PROMPT = f"""You are a strict rendering-artifact judge for rendered humanoid motion. You are NOT told
 what motion was requested. Judge only defects of the rendered image: geometry that clips, a body or object that
