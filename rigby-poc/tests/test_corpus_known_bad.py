@@ -14,11 +14,13 @@ numeric metrics.  That module is not a second definition of validity, and
 from __future__ import annotations
 
 import pytest
+from pydantic import ValidationError
+
 from evals.corpus import load_corpus
 from evals.corpus.gates import (
-    GATE_SPECS,
     BREACHING_OUTCOMES,
     ENFORCED_OUTCOMES,
+    GATE_SPECS,
     GateOutcome,
     StructuralGate,
     breached_gates,
@@ -28,7 +30,6 @@ from evals.corpus.gates import (
 )
 from evals.corpus.loader import compile_case
 from evals.corpus.models import Family
-from pydantic import ValidationError
 from rigby_poc.models import Intent
 
 CASES = {case.id: case for case in load_corpus()}

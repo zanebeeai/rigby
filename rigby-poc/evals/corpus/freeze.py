@@ -53,6 +53,7 @@ from .models import (
 )
 from .seed_cases import SeedCase
 
+
 def compile_counting_solver_calls(
     scene: SceneManifest,
     program: MotionProgram,

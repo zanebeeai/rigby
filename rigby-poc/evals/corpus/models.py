@@ -10,6 +10,7 @@ from enum import StrEnum
 from typing import Annotated, ClassVar
 
 from pydantic import Field, model_validator
+
 from rigby_poc.models import (
     BodyAction,
     Contract,
@@ -122,7 +123,7 @@ class ExpectedResult(Contract):
     )
 
     @model_validator(mode="after")
-    def hashes_match_determinism_class(self) -> "ExpectedResult":
+    def hashes_match_determinism_class(self) -> ExpectedResult:
         for name in self.DIGESTS:
             keys = set(getattr(self, name))
             if self.determinism_class == DeterminismClass.PORTABLE:
@@ -191,7 +192,7 @@ class CaseEntry(Contract):
     notes: str | None = Field(default=None, max_length=300)
 
     @model_validator(mode="after")
-    def known_bad_cases_name_the_gate_they_fail(self) -> "CaseEntry":
+    def known_bad_cases_name_the_gate_they_fail(self) -> CaseEntry:
         """A known-bad case that names no gate cannot be asserted on.
 
         The point of the known-bad family is to catch a check that has stopped
@@ -227,7 +228,7 @@ class CoverageAxis(Contract):
     deferred: dict[str, str] = Field(default_factory=dict)
 
     @model_validator(mode="after")
-    def members_are_declared_once(self) -> "CoverageAxis":
+    def members_are_declared_once(self) -> CoverageAxis:
         overlap = set(self.covered) & set(self.deferred)
         if overlap:
             raise ValueError(f"declared both covered and deferred: {sorted(overlap)}")
@@ -272,7 +273,7 @@ class CorpusManifest(Contract):
     ))
 
     @model_validator(mode="after")
-    def case_ids_are_unique(self) -> "CorpusManifest":
+    def case_ids_are_unique(self) -> CorpusManifest:
         ids = [case.id for case in self.cases]
         if len(ids) != len(set(ids)):
             raise ValueError("case ids must be unique")

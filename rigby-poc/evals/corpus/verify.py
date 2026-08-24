@@ -71,7 +71,7 @@ class CaseComparison:
     recorded: ExpectedResult | None = None
     observed: ExpectedResult | None = None
     platform: str = ""
-    tolerance: "ToleranceReport | None" = None
+    tolerance: ToleranceReport | None = None
 
     @property
     def ok(self) -> bool:

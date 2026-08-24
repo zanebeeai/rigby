@@ -16,6 +16,7 @@ import json
 from pathlib import Path
 
 import pytest
+
 from evals.autonomous_goal_audit import COMMITTED_EVIDENCE, build_audit
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
