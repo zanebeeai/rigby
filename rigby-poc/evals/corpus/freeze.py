@@ -7,23 +7,30 @@ response id, and it emits a case directory with its expectations recorded.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from pathlib import Path
 
 from rigby_poc.compiler import COMPILER_VERSION
 from rigby_poc.models import (
     BodyAction,
+    ClipResult,
     CompileRequest,
+    HandShape,
     Intent,
     MotionProgram,
+    ObjectAction,
     ParameterOverrides,
     SceneManifest,
+    StrikeType,
 )
 
+from .gates import StructuralGate
 from .loader import (
     EXPECTED_FILE,
     OVERRIDES_FILE,
     PROGRAM_FILE,
     SCENE_FILE,
+    SLIM_CLIP_FILE,
     CorpusCase,
     CorpusError,
     cases_root,
@@ -32,8 +39,10 @@ from .loader import (
     manifest_path,
     observe,
     write_json,
+    write_slim_clip,
 )
 from .models import (
+    MANIFEST_SCHEMA_VERSION,
     CaseEntry,
     CorpusManifest,
     Coverage,
@@ -42,6 +51,38 @@ from .models import (
     Family,
     StoragePolicy,
 )
+from .seed_cases import SeedCase
+
+def compile_counting_solver_calls(
+    scene: SceneManifest,
+    program: MotionProgram,
+    overrides: ParameterOverrides,
+) -> tuple[ClipResult, bool]:
+    """Compile, and observe whether the MuJoCo solver was entered.
+
+    Observed rather than inferred from the intent.  Four cases reach
+    ``simulate_grasp`` without being named ``grab`` -- two object-interaction cases
+    and two sequences -- and 03b found all four this way after a list of
+    grasp-looking ids missed every one.  Whether the solver ran decides whether the
+    MuJoCo version belongs in the platform key.
+    """
+    from rigby_poc import compiler
+
+    calls = 0
+    real = compiler.simulate_grasp
+
+    def counting(*args: object, **kwargs: object) -> object:
+        nonlocal calls
+        calls += 1
+        return real(*args, **kwargs)
+
+    compiler.simulate_grasp = counting  # type: ignore[assignment]
+    try:
+        clip = compile_inputs(scene, program, overrides)
+    finally:
+        compiler.simulate_grasp = real  # type: ignore[assignment]
+    return clip, calls > 0
+
 
 #: Corpus programs carry this seed rather than one derived from a response id.
 #: The compiler never consumes ``program.seed`` -- motion is bit-identical across
@@ -69,6 +110,38 @@ def body_actions_of(program: MotionProgram) -> list[BodyAction]:
     for step in program.steps:
         actions.update(body_actions_of(step))
     return sorted(actions, key=lambda action: action.value)
+
+
+def object_actions_of(program: MotionProgram) -> list[ObjectAction]:
+    """Every ``ObjectAction`` this program performs, including inside a sequence."""
+    actions: set[ObjectAction] = set()
+    if program.object_action is not None:
+        actions.add(program.object_action)
+    for step in program.steps:
+        actions.update(object_actions_of(step))
+    return sorted(actions, key=lambda action: action.value)
+
+
+def strike_types_of(program: MotionProgram) -> list[StrikeType]:
+    types: set[StrikeType] = set()
+    if program.strike_type is not None:
+        types.add(program.strike_type)
+    for step in program.steps:
+        types.update(strike_types_of(step))
+    return sorted(types, key=lambda item: item.value)
+
+
+def hand_shapes_of(program: MotionProgram) -> list[HandShape]:
+    """Hand shapes the program's primitives ask for, sequence steps included."""
+    shapes: set[HandShape] = {
+        primitive.hand_shape
+        for primitive in program.primitives
+        if primitive.hand_shape is not None
+    }
+    for step in program.steps:
+        shapes.update(hand_shapes_of(step))
+    return sorted(shapes, key=lambda shape: shape.value)
+
 
 
 def plan_offline(prompt: str, scene: SceneManifest) -> MotionProgram:
@@ -109,6 +182,17 @@ def load_live_result(
     )
 
 
+def _axis(covered: set[str], previous: CoverageAxis) -> CoverageAxis:
+    return CoverageAxis(
+        covered=sorted(covered),
+        deferred={
+            name: reason
+            for name, reason in previous.deferred.items()
+            if name not in covered
+        },
+    )
+
+
 def rebuild_coverage(manifest: CorpusManifest) -> Coverage:
     """Derive the covered lists from the cases; leave the deferred reasons alone.
 
@@ -116,28 +200,33 @@ def rebuild_coverage(manifest: CorpusManifest) -> Coverage:
     lists cannot contradict each other.  Nothing is ever *added* to ``deferred``:
     that is a human declaration, and an undeclared member is the failure signal the
     coverage test looks for.
+
+    Every axis reads off the manifest rows rather than off the programs on disk, so
+    this stays a pure function of the manifest.  That is why 03b denormalises
+    ``object_actions``, ``strike_types`` and ``hand_shapes`` onto ``CaseEntry``
+    alongside the ``body_actions`` 03a already stored there.
     """
-    intents = sorted({case.intent.value for case in manifest.cases})
-    actions = sorted(
-        {action.value for case in manifest.cases for action in case.body_actions}
-    )
+    previous = manifest.coverage
+    covered: dict[str, set[str]] = {
+        "intent": {case.intent.value for case in manifest.cases},
+        "body_action": {
+            member.value for case in manifest.cases for member in case.body_actions
+        },
+        "object_action": {
+            member.value for case in manifest.cases for member in case.object_actions
+        },
+        "strike_type": {
+            member.value for case in manifest.cases for member in case.strike_types
+        },
+        "hand_shape": {
+            member.value for case in manifest.cases for member in case.hand_shapes
+        },
+    }
     return Coverage(
-        intent=CoverageAxis(
-            covered=intents,
-            deferred={
-                name: reason
-                for name, reason in manifest.coverage.intent.deferred.items()
-                if name not in intents
-            },
-        ),
-        body_action=CoverageAxis(
-            covered=actions,
-            deferred={
-                name: reason
-                for name, reason in manifest.coverage.body_action.deferred.items()
-                if name not in actions
-            },
-        ),
+        **{
+            name: _axis(members, getattr(previous, name))
+            for name, members in covered.items()
+        }
     )
 
 
@@ -147,6 +236,7 @@ def upsert_entry(manifest: CorpusManifest, entry: CaseEntry) -> CorpusManifest:
         update={
             "cases": sorted(cases, key=lambda case: case.id),
             "compiler_version": COMPILER_VERSION,
+            "schema_version": MANIFEST_SCHEMA_VERSION,
         }
     )
     return updated.model_copy(update={"coverage": rebuild_coverage(updated)})
@@ -168,7 +258,9 @@ def freeze_case(
     source_prompt: str | None = None,
     tags: list[str] | None = None,
     notes: str | None = None,
-    determinism_class: DeterminismClass = DeterminismClass.PORTABLE,
+    determinism_class: DeterminismClass = DeterminismClass.PLATFORM_DEPENDENT,
+    must_fail: Sequence[StructuralGate] = (),
+    storage: StoragePolicy = StoragePolicy.PROGRAM_AND_CLIP,
     root: Path | None = None,
     seed: int = PINNED_SEED,
 ) -> CorpusCase:
@@ -177,18 +269,22 @@ def freeze_case(
     source_seed = program.seed if program.seed != seed else None
     pinned = pin_seed(program, seed)
 
-    clip = compile_inputs(scene, pinned, overrides)
-    expected = observe(case_id, clip, determinism_class)
+    clip, solver_used = compile_counting_solver_calls(scene, pinned, overrides)
+    expected = observe(case_id, clip, determinism_class, solver_used=solver_used)
     entry = CaseEntry(
         id=case_id,
         family=family,
         intent=pinned.intent,
         body_actions=body_actions_of(pinned),
+        object_actions=object_actions_of(pinned),
+        strike_types=strike_types_of(pinned),
+        hand_shapes=hand_shapes_of(pinned),
         tags=sorted(tags or []),
         source_prompt=source_prompt or pinned.source_text,
         source_seed=source_seed,
         expected_structural_valid=expected.structural_valid,
-        storage=StoragePolicy.PROGRAMS_ONLY,
+        must_fail=list(must_fail),
+        storage=storage,
         notes=notes,
     )
 
@@ -201,6 +297,7 @@ def freeze_case(
     elif overrides_path.is_file():
         overrides_path.unlink()
     write_json(directory / EXPECTED_FILE, expected.model_dump(mode="json"))
+    write_slim_clip(directory / SLIM_CLIP_FILE, clip)
 
     manifest = upsert_entry(load_or_seed_manifest(root), entry)
     write_json(manifest_path(root), manifest.model_dump(mode="json"))
@@ -221,9 +318,12 @@ def freeze_from_prompt(
     case_id: str,
     family: Family,
     scene: SceneManifest | None = None,
+    overrides: ParameterOverrides | None = None,
     tags: list[str] | None = None,
     notes: str | None = None,
-    determinism_class: DeterminismClass = DeterminismClass.PORTABLE,
+    determinism_class: DeterminismClass = DeterminismClass.PLATFORM_DEPENDENT,
+    must_fail: Sequence[StructuralGate] = (),
+    storage: StoragePolicy = StoragePolicy.PROGRAM_AND_CLIP,
     root: Path | None = None,
     seed: int = PINNED_SEED,
 ) -> CorpusCase:
@@ -231,7 +331,7 @@ def freeze_from_prompt(
 
     resolved_scene = scene or default_scene()
     program = plan_offline(prompt, resolved_scene)
-    if program.intent == Intent.UNSUPPORTED:
+    if program.intent == Intent.UNSUPPORTED and family != Family.KNOWN_BAD:
         raise CorpusError(
             f"the offline planner rejected {prompt!r}: {program.unsupported_reason}"
         )
@@ -240,12 +340,37 @@ def freeze_from_prompt(
         family=family,
         scene=resolved_scene,
         program=program,
+        overrides=overrides,
         source_prompt=prompt,
         tags=tags,
         notes=notes,
         determinism_class=determinism_class,
+        must_fail=must_fail,
+        storage=storage,
         root=root,
         seed=seed,
+    )
+
+
+def freeze_from_seed(seed_case: SeedCase, root: Path | None = None) -> CorpusCase:
+    """Rebuild a committed case from its row in :mod:`evals.corpus.seed_cases`.
+
+    The seed row -- not a CLI flag -- is the source of truth for a committed case's
+    overrides, determinism class and storage policy.  Freezing a grasp case from a
+    flag that defaults to ``portable`` would record a MuJoCo hash under the reserved
+    ``"any"`` key and hand the next platform a spurious failure.
+    """
+    return freeze_from_prompt(
+        seed_case.prompt,
+        case_id=seed_case.id,
+        family=seed_case.family,
+        overrides=ParameterOverrides(**seed_case.overrides),
+        tags=seed_case.tags,
+        notes=seed_case.notes,
+        determinism_class=seed_case.determinism_class,
+        must_fail=seed_case.must_fail,
+        storage=seed_case.storage,
+        root=root,
     )
 
 
@@ -257,7 +382,7 @@ def freeze_from_result(
     source_prompt: str | None = None,
     tags: list[str] | None = None,
     notes: str | None = None,
-    determinism_class: DeterminismClass = DeterminismClass.PORTABLE,
+    determinism_class: DeterminismClass = DeterminismClass.PLATFORM_DEPENDENT,
     root: Path | None = None,
     seed: int = PINNED_SEED,
 ) -> CorpusCase:

@@ -13,7 +13,7 @@ import sys
 from pathlib import Path
 
 from .bless import bless
-from .freeze import freeze_from_prompt, freeze_from_result
+from .freeze import freeze_from_prompt, freeze_from_result, freeze_from_seed
 from .loader import load_corpus, load_manifest
 from .models import DeterminismClass, Family
 from .seed_cases import SEED_CASES_BY_ID
@@ -43,12 +43,14 @@ def _command_list(args: argparse.Namespace) -> int:
     print()
     for entry in manifest.cases:
         actions = ",".join(action.value for action in entry.body_actions) or "-"
-        print(f"  {entry.id:32s} {entry.family.value:14s} {entry.intent.value:18s} {actions}")
+        gates = ",".join(gate.value for gate in entry.must_fail)
+        suffix = f"  must fail: {gates}" if gates else ""
+        print(
+            f"  {entry.id:38s} {entry.family.value:19s} {entry.intent.value:19s} "
+            f"{actions}{suffix}"
+        )
     print()
-    for axis_name, axis in (
-        ("intent", manifest.coverage.intent),
-        ("body_action", manifest.coverage.body_action),
-    ):
+    for axis_name, axis in manifest.coverage.axes().items():
         print(f"{axis_name}: {len(axis.covered)} covered, {len(axis.deferred)} deferred")
         for name, reason in sorted(axis.deferred.items()):
             print(f"    {name:20s} deferred: {reason}")
@@ -88,15 +90,10 @@ def _command_freeze(args: argparse.Namespace) -> int:
             raise SystemExit(
                 f"unknown seed case {args.from_seed!r}; known: {sorted(SEED_CASES_BY_ID)}"
             )
-        case = freeze_from_prompt(
-            seed.prompt,
-            case_id=seed.id,
-            family=seed.family,
-            tags=seed.tags,
-            notes=seed.notes,
-            determinism_class=determinism,
-            root=root,
-        )
+        # The seed row carries the case's overrides, determinism class and storage
+        # policy; --determinism is ignored here on purpose, since a flag defaulting
+        # to `portable` would mis-bless a MuJoCo case.
+        case = freeze_from_seed(seed, root=root)
     elif args.prompt:
         case = freeze_from_prompt(
             args.prompt,

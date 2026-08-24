@@ -1,22 +1,27 @@
 {
   "case_id": "composite-wave-left",
   "contact_count": 0,
-  "determinism_class": "portable",
+  "determinism_class": "platform_dependent",
   "duration_s": 3.7,
   "environment": {
-    "blessed_at": "2026-08-16T16:49:51+00:00",
+    "blessed_at": "2026-08-24T23:04:03+00:00",
     "compiler_version": "rigby-compiler-0.4.0",
-    "platform_key": "darwin-arm64|mujoco-3.11.0",
+    "platform_key": "darwin-arm64",
     "python_version": "3.12.13"
   },
   "fps": 30,
   "frame_count": 109,
-  "metrics_sha256": "07000c546a8d0f3f20944b104f43d3c300597896480fdca3e866ed93239b3a51",
-  "motion_sha256": {
-    "any": "cb8fd413c93288db667620c9f79d78c38826b4688ccf1db81d381e598a4da537"
+  "metrics_sha256": {
+    "darwin-arm64": "07000c546a8d0f3f20944b104f43d3c300597896480fdca3e866ed93239b3a51"
   },
-  "observables_sha256": "d8c78bd6dc3aa4d7ed09f3a1adad00d3ef0737294a9ae232461c3ecb01f7f44e",
-  "schema_version": "1.0",
+  "motion_sha256": {
+    "darwin-arm64": "cb8fd413c93288db667620c9f79d78c38826b4688ccf1db81d381e598a4da537"
+  },
+  "observables_sha256": {
+    "darwin-arm64": "d8c78bd6dc3aa4d7ed09f3a1adad00d3ef0737294a9ae232461c3ecb01f7f44e"
+  },
+  "schema_version": "1.1",
+  "solver_used": false,
   "structural_valid": true,
   "success": true
 }
