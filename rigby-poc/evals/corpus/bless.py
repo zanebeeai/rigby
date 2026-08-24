@@ -34,15 +34,32 @@ class BlessReport:
 
     @property
     def skipped(self) -> list[CaseComparison]:
+        """Cases with no hash for this platform and no clip to fall back to."""
         return [
             item for item in self.comparisons if item.verdict is Verdict.UNBLESSED_PLATFORM
+        ]
+
+    @property
+    def unblessed_here(self) -> list[CaseComparison]:
+        """Cases this platform has never blessed, whether or not a clip covered them.
+
+        On a fresh platform this is *every* case, and ``--write`` contributes a whole
+        new column.  It is the number the developer running second cares about, and
+        it is distinct from :attr:`moved`: nothing moved, this platform simply has
+        no entry yet.
+        """
+        return [
+            item
+            for item in self.comparisons
+            if item.verdict
+            in {Verdict.UNBLESSED_PLATFORM, Verdict.TOLERANCE_MATCH}
         ]
 
     def render(self) -> str:
         lines = [f"corpus: {len(self.comparisons)} case(s) recompiled"]
         lines.extend(comparison.render() for comparison in self.comparisons)
         lines.append("")
-        if not self.moved and not self.skipped:
+        if not self.moved and not self.unblessed_here:
             lines.append("No expectation moved. Nothing to bless.")
             return "\n".join(lines)
         if self.moved:
@@ -53,11 +70,22 @@ class BlessReport:
                 "State in the PR description why each hash moved. A hash that moved "
                 "without an intended compiler change is a regression, not a re-bless."
             )
-        if self.skipped:
+        if self.unblessed_here:
+            covered = [
+                item for item in self.unblessed_here if item.tolerance is not None
+            ]
             lines.append(
-                f"{len(self.skipped)} case(s) have no hash for this platform; "
+                f"{len(self.unblessed_here)} case(s) have no hash for this platform; "
                 "--write contributes one without touching other platforms."
             )
+            if covered:
+                worst = max(item.tolerance.max_deviation for item in covered)
+                lines.append(
+                    f"  {len(covered)} of them matched their committed clip within "
+                    f"tolerance; worst deviation {worst:.3e}. That number is the "
+                    f"first measurement of cross-platform drift and should replace "
+                    f"the PROVISIONAL tolerance in verify.py."
+                )
         lines.append("")
         lines.append(
             "Dry run: nothing written. Re-run with --write to apply."
