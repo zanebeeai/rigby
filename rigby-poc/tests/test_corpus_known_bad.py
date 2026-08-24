@@ -135,10 +135,11 @@ def test_the_full_body_path_enforces_no_calibrated_ceiling() -> None:
 
     ``_compile_full_body`` computes ``max_angular_velocity_rad_s``,
     ``max_angular_acceleration_rad_s2`` and ``max_angular_jerk_rad_s3`` and never
-    compares them to ``hard_limits``.  **Five of the nine committed full-body cases
-    are over the acceleration and jerk ceilings -- by up to 2.9x and 3.4x -- while
-    reporting** ``structural_valid: true``.  Two of the five are plain ``walk`` and
-    ``run``.
+    compares them to ``hard_limits``.  **5 of 10 committed full-body cases (n = 10,
+    the whole full-body family in this corpus) are over the acceleration and jerk
+    ceilings -- by up to 2.9x and 3.4x -- while reporting** ``structural_valid:
+    true``.  Two of the five are plain ``walk`` and ``run``.  The rate is 0.50 with
+    n = 10 and is a property of this corpus, not an estimate of Rigby's output.
 
     The finding is not that the compiler is lax.  It is that the ceilings were
     derived from six hand-picked hang-ten *gesture* clips and are the wrong scale
@@ -173,6 +174,10 @@ def test_the_full_body_path_enforces_no_calibrated_ceiling() -> None:
         ]
         if over:
             breaching[case_id] = over
+    full_body_n = sum(
+        1 for case in CASES.values() if case.program.intent is Intent.FULL_BODY
+    )
+    assert full_body_n == 10, full_body_n
     assert breaching == {
         "fullbody-burpee-cycle": ["angular_acceleration", "angular_jerk"],
         "fullbody-cartwheel": ["angular_acceleration", "angular_jerk"],
