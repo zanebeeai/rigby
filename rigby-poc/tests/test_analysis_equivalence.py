@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import json
 import socket
+import sys
 import time
 from pathlib import Path
 
@@ -40,9 +41,38 @@ from rigby_poc.models import (
 
 
 FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "analysis_equivalence"
-CASE_IDS: list[str] = json.loads(
-    (FIXTURE_DIR / "index.json").read_text(encoding="utf-8")
-)["cases"]
+sys.path.insert(0, str(FIXTURE_DIR))
+from freeze import architecture_key  # noqa: E402
+
+_INDEX = json.loads((FIXTURE_DIR / "index.json").read_text(encoding="utf-8"))
+CASE_IDS: list[str] = _INDEX["cases"]
+BLESSED_ARCHITECTURE: str = _INDEX["blessed_architecture"]
+
+# Both frozen snapshots are exact floats, so they are statements about the
+# machine that produced them and nothing more. Measured on this fixture,
+# darwin-arm64 and a Windows x86-64 runner disagree by up to 56 ulps on
+# max_angular_jerk_rad_s3 — different libm transcendentals, different FMA
+# contraction, different numpy and scipy SIMD kernels. Nothing in the code under
+# test is wrong when that happens.
+#
+# The alternative to skipping is a relative tolerance near 1e-13, and that costs
+# more than it buys: this harness caught a deliberate 1e-15 perturbation of the
+# compiler during 02b, which is exactly the size of error a bad extraction
+# produces. A gate loose enough to be portable would not have caught it. So the
+# comparisons stay exact and run only where they mean something; bless another
+# architecture by running freeze.py on it.
+#
+# What still runs everywhere is the assertion that matters most on a foreign
+# machine: analysis output against the compiler *in the same process*. Both
+# sides then see the same libm, so an extraction that broke on Windows alone
+# would still be caught on Windows.
+exact_snapshot = pytest.mark.skipif(
+    architecture_key() != BLESSED_ARCHITECTURE,
+    reason=(
+        f"snapshot blessed on {BLESSED_ARCHITECTURE}, running on "
+        f"{architecture_key()}; exact float comparison is architecture-local"
+    ),
+)
 
 
 # Metric keys the compiler gained after the baseline was frozen, with why.
@@ -79,6 +109,7 @@ def _compile_case(case: dict):
     return scene, program, clip
 
 
+@exact_snapshot
 @pytest.mark.parametrize("case_id", CASE_IDS)
 def test_compiler_metrics_match_the_pre_extraction_baseline(case_id: str) -> None:
     """``compiler.py`` must emit the same numbers it did before the move.
@@ -131,6 +162,7 @@ def test_analysis_matches_the_compiler_for_every_frozen_case(case_id: str) -> No
         )
 
 
+@exact_snapshot
 @pytest.mark.parametrize("case_id", CASE_IDS)
 def test_analysis_output_is_byte_identical_to_the_frozen_fixture(
     case_id: str,

@@ -32,8 +32,33 @@ from __future__ import annotations
 
 import argparse
 import json
+import platform
 import sys
 from pathlib import Path
+
+
+def architecture_key() -> str:
+    """The architecture a snapshot of exact floats is a statement about.
+
+    Neither snapshot in this fixture is portable, and that is not a defect in
+    the code being tested. arm64 and x86-64 differ in their libm transcendentals
+    and in FMA contraction, and numpy and scipy dispatch different SIMD kernels
+    on each, so the same pure-Python pipeline lands a few ulps apart. Measured
+    across this fixture the worst case is ``max_angular_jerk_rad_s3`` at 56 ulps
+    — a third derivative divides by ``dt`` three times, so it magnifies whatever
+    the first derivative did.
+
+    Absorbing that would need a relative tolerance near 1e-13, which is looser
+    than the drift a genuinely broken extraction would produce. The instrument
+    is worth more than the portability: it caught a deliberate 1e-15
+    perturbation during 02b. So the snapshots stay exact and say which machine
+    they describe, and an unblessed architecture skips rather than fails —
+    the same choice ``evals/corpus`` makes for MuJoCo. The corpus key also
+    carries a MuJoCo version because its hashes pass through the solver; nothing
+    here does, so this key does not.
+    """
+
+    return f"{sys.platform}-{platform.machine().lower() or 'unknown'}"
 
 
 FIXTURE_DIR = Path(__file__).resolve().parent
@@ -205,8 +230,11 @@ def main() -> None:
             "Frozen compiler and analysis output for the PR 02 extraction. "
             "compiler_metrics is the move baseline and predates 02b; "
             "expected_metrics grows as each path is ported. Superseded by the "
-            "golden corpus (plan 03) once it covers these paths."
+            "golden corpus (plan 03) once it covers these paths. Both snapshots "
+            "are exact floats and are a statement about blessed_architecture "
+            "only; see architecture_key() in freeze.py."
         ),
+        "blessed_architecture": architecture_key(),
         "cases": [case_id for case_id, _ in CASES],
     }
     (FIXTURE_DIR / "index.json").write_text(canonical(index) + "\n", encoding="utf-8")
