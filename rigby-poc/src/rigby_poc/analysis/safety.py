@@ -12,6 +12,7 @@ from typing import Any
 import numpy as np
 
 from ..models import ClipFrame
+from ..thresholds import value_of
 from .contract import CONTRACT, CheckResult, count_check
 from .rig import rig_profile
 
@@ -33,6 +34,9 @@ def safety_metrics(
             "safety_derivation": "no frames",
         }
     profile = rig_profile()
+    discontinuity_rad = value_of("signal.discontinuity_rad")
+    joint_limit_epsilon = value_of("safety.joint_limit_epsilon_rad")
+    root_drift_max = value_of("physics.root_drift_max_m")
     all_quats = np.asarray(
         [pose.rotation.as_list() for frame in frames for pose in frame.bones.values()], dtype=float
     )
@@ -59,13 +63,13 @@ def safety_metrics(
             delta = 2.0 * math.acos(float(np.clip(abs(np.dot(a, b)), 0.0, 1.0)))
             frame_max = max(frame_max, delta)
         max_delta = max(max_delta, frame_max)
-        discontinuities += int(frame_max > 0.35)
+        discontinuities += int(frame_max > discontinuity_rad)
     joint_violations = 0
     for canonical, bounds in profile.get("joint_limits_rad", {}).items():
         for frame in frames:
             quat = frame.bones[canonical].rotation
             angle = 2.0 * math.acos(float(np.clip(abs(quat.w), 0.0, 1.0)))
-            if angle > max(abs(bounds[0]), abs(bounds[1])) + 1e-6:
+            if angle > max(abs(bounds[0]), abs(bounds[1])) + joint_limit_epsilon:
                 joint_violations += 1
     fixed_keys = ("hips", "leftFoot", "rightFoot", "leftToes", "rightToes")
     fixed_delta = max(
@@ -86,7 +90,7 @@ def safety_metrics(
         (float(np.linalg.norm(position - hips_positions[0])) for position in hips_positions),
         default=0.0,
     )
-    if not allow_root_motion and root_drift > 1e-6:
+    if not allow_root_motion and root_drift > root_drift_max:
         joint_violations += 1
     return {
         "joint_limit_violations": joint_violations,

@@ -44,6 +44,7 @@ from .models import (
 from .kinematics import rig_kinematics
 from .physics import PhysicsOutcome, simulate_grasp
 from .primitives import (
+    MAX_WRIST_TWIST_RAD,
     ARM_REACH_M,
     arm_pose_from_target,
     forearm_shake_amplitude_rad,
@@ -86,6 +87,16 @@ from .analysis.semantic import (
     semantic_cycle_failures as _semantic_cycle_failures,
     semantic_cycle_metrics as _semantic_cycle_metrics,
 )
+
+
+from .thresholds import value_of
+
+#: Nlerp is not constant-angular-speed near 180 degrees, so every compile path
+#: raises its frame count until no inter-frame delta exceeds this.  Deliberately
+#: stricter than the validator's discontinuity limit -- see
+#: config/thresholds.v1.json.  Bound once here because the same rule appears on
+#: four compile paths and they must not drift apart.
+NLERP_SUBDIVISION_RAD = value_of("signal.discontinuity_generator_target_rad")
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -3024,7 +3035,7 @@ def _compile_composite(scene: SceneManifest, program: MotionProgram) -> ClipResu
             )
             for key in base
         )
-        frame_count = max(requested_frames, int(math.ceil(target_delta / 0.14)) + 1)
+        frame_count = max(requested_frames, int(math.ceil(target_delta / NLERP_SUBDIVISION_RAD)) + 1)
         phase_duration_s = max(primitive.parameters.duration_s, (frame_count - 1) / fps)
         phase_ranges.append(
             {
@@ -3702,7 +3713,7 @@ def _compile_object_handoff(
             )
             for name in base
         )
-        frame_count = max(frame_count, int(math.ceil(target_delta / 0.14)) + 1)
+        frame_count = max(frame_count, int(math.ceil(target_delta / NLERP_SUBDIVISION_RAD)) + 1)
         phase_duration_s = max(requested_duration, (frame_count - 1) / scene.fps)
         phase_ranges.append(
             {
@@ -4127,7 +4138,7 @@ def _compile_object_interaction(scene: SceneManifest, program: MotionProgram) ->
             )
             for key in base
         )
-        frame_count = max(frame_count, int(math.ceil(target_delta / 0.14)) + 1)
+        frame_count = max(frame_count, int(math.ceil(target_delta / NLERP_SUBDIVISION_RAD)) + 1)
         phase_duration_s = max(requested_duration, (frame_count - 1) / scene.fps)
         phase_object_start = current_object_position.copy()
         phase_ranges.append(
@@ -5674,7 +5685,7 @@ def compile_motion(request: CompileRequest) -> ClipResult:
         # old discontinuity-only rule because it also keeps acceleration under
         # the human-reference envelope when a model requests a very short
         # phase.
-        frame_count = max(frame_count, int(math.ceil(target_delta / 0.14)) + 1)
+        frame_count = max(frame_count, int(math.ceil(target_delta / NLERP_SUBDIVISION_RAD)) + 1)
         phase_duration_s = max(primitive.parameters.duration_s, (frame_count - 1) / fps)
         phase_ranges.append(
             {
@@ -5971,7 +5982,7 @@ def compile_motion(request: CompileRequest) -> ClipResult:
             # twist separately for structural inspection.
             "wrist_roll_rad": observable_params.wrist_roll * 0.40,
             "forearm_roll_offset_rad": observable_params.wrist_roll * 0.40,
-            "wrist_joint_twist_rad": observable_params.wrist_roll * 0.12,
+            "wrist_joint_twist_rad": observable_params.wrist_roll * MAX_WRIST_TWIST_RAD,
             "elbow_swivel_rad": observable_params.elbow_swivel * 0.6,
             "torso_rotation_rad": observable_params.torso_participation * 0.16,
             **{f"{digit}_curl_normalized": value for digit, value in actual_curls.items()},

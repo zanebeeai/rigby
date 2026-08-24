@@ -7,6 +7,7 @@ import numpy as np
 from scipy.spatial.transform import Rotation
 
 from .models import Digit, Hand, HandShape, PrimitiveKind, PrimitiveParameters, Quat, StrikeType, Vec3
+from .thresholds import value_of
 
 
 FINGERS = ("Thumb", "Index", "Middle", "Ring", "Little")
@@ -139,11 +140,13 @@ ARM_REACH_M = UPPER_ARM_LENGTH_M + LOWER_ARM_LENGTH_M
 # A shaka is made readable by pronating/supinating the forearm, not by asking
 # the wrist joint to absorb the entire camera-facing hand orientation.  These
 # limits are deliberately below the corresponding rig-profile hard limits so
-# generated candidates retain some safety margin.
-MAX_FOREARM_TWIST_RAD = 1.30
+# generated candidates retain some safety margin.  The two that shadow a
+# validator limit now read that margin from ``config/thresholds.v1.json``, which
+# records the ratio they were derived at; the values are unchanged.
+MAX_FOREARM_TWIST_RAD = value_of("anatomy.forearm_twist_generator_max_rad")
 MAX_WRIST_PITCH_RAD = 0.35
 MAX_WRIST_YAW_RAD = 0.28
-MAX_WRIST_TWIST_RAD = 0.12
+MAX_WRIST_TWIST_RAD = value_of("anatomy.wrist_twist_generator_max_rad")
 MAX_FOREARM_SHAKE_RAD = 0.28
 
 
