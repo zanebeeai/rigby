@@ -237,6 +237,13 @@ def upsert_entry(manifest: CorpusManifest, entry: CaseEntry) -> CorpusManifest:
             "cases": sorted(cases, key=lambda case: case.id),
             "compiler_version": COMPILER_VERSION,
             "schema_version": MANIFEST_SCHEMA_VERSION,
+            # Derived, never carried forward: a manifest-level policy that
+            # disagreed with its own rows would be a lie in the header.
+            "storage_policy": (
+                StoragePolicy.PROGRAM_AND_CLIP
+                if all(case.storage is StoragePolicy.PROGRAM_AND_CLIP for case in cases)
+                else StoragePolicy.PROGRAMS_ONLY
+            ),
         }
     )
     return updated.model_copy(update={"coverage": rebuild_coverage(updated)})
