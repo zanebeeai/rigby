@@ -103,6 +103,26 @@ jobs:
       - run: npm test
       - run: npm run build
 
+  # config/camera.v1.json is the source for every value shared across the
+  # Python/TypeScript boundary. A stale generated file means evidence captured at
+  # one FOV judged against the contract for another, so it fails the build rather
+  # than diverging quietly. Plan 08 SS3.3.
+  generated-sources:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: rigby-poc
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: rigby-poc/uv.lock
+      - run: uv sync --extra dev
+      - name: frontend/src/generated/camera.ts is not stale
+        run: uv run python -m evals.generate_camera_ts --check
+
   # Cross-ISA hashes can only be contributed by a machine of that ISA, and every
   # developer here is on darwin-arm64. This job runs the corpus bless on Windows
   # and uploads the result as an artifact so lane `groundtruth` can merge the
