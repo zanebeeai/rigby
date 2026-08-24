@@ -15,6 +15,13 @@ from openai import OpenAI
 from PIL import Image, ImageDraw
 from pydantic import BaseModel, ConfigDict, Field
 
+from .judge_prompts import (
+    GRADER_NAMES,
+    GRADER_SPECS,
+    GraderName,
+    family_for_intent,
+    grader_prompt,
+)
 from .planner import load_environment
 
 
@@ -180,6 +187,140 @@ def meets_acceptance_thresholds(score: BaseModel | Mapping[str, Any]) -> bool:
             return False
     return True
 
+
+DEFAULT_JUDGE_GRADER_MODE = "combined"
+JUDGE_GRADER_MODES: tuple[str, ...] = ("combined", "split")
+
+
+class _GraderScore(BaseModel):
+    """Fields every split grader returns regardless of which dimension it owns."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    confidence: float = Field(ge=0.0, le=1.0)
+    failure_tags: list[FailureTag] = Field(min_length=1, max_length=6)
+    evidence: list[EvidenceCitation] = Field(min_length=1, max_length=6)
+    summary: str = Field(min_length=5, max_length=240)
+
+
+class SemanticGraderScore(_GraderScore):
+    semantic_match: int = Field(ge=1, le=5)
+    gesture_recognizability: int = Field(ge=1, le=5)
+    suggested_adjustment: str = Field(min_length=3, max_length=240)
+
+
+class AnatomyGraderScore(_GraderScore):
+    anatomical_naturalness: int = Field(ge=1, le=5)
+
+
+class ArtifactGraderScore(_GraderScore):
+    egocentric_visibility: int = Field(ge=1, le=5)
+
+
+class TimingGraderScore(_GraderScore):
+    temporal_readability: int = Field(ge=1, le=5)
+
+
+class CrossViewGraderScore(_GraderScore):
+    cross_view_consistency: int = Field(ge=1, le=5)
+
+
+GRADER_OUTPUT_MODELS: dict[GraderName, type[BaseModel]] = {
+    "semantic": SemanticGraderScore,
+    "anatomy": AnatomyGraderScore,
+    "artifact": ArtifactGraderScore,
+    "timing": TimingGraderScore,
+    "crossview": CrossViewGraderScore,
+}
+
+# `overall` is a summary of the dimensions that are measured directly, not a
+# seventh measurement.  Deriving it from the three published dimensions that a
+# grader actually reports keeps the acceptance rule non-circular; deriving it
+# from all six would silently promote `temporal_readability`,
+# `egocentric_visibility` and `cross_view_consistency` into gating dimensions,
+# which `acceptance_criteria.yaml` deliberately does not do.
+OVERALL_SOURCE_DIMENSIONS: tuple[str, ...] = (
+    "semantic_match",
+    "gesture_recognizability",
+    "anatomical_naturalness",
+)
+
+
+def aggregate_grader_dimensions(parts: Mapping[str, Mapping[str, Any]]) -> dict[str, int]:
+    """Merge per-grader dimension scores into the six-dimension score plus `overall`.
+
+    Pure and total: a missing or non-integer dimension raises rather than being
+    defaulted, so a truncated grader response cannot produce a score that looks
+    complete.  Provisional until 07c replaces it with the claim aggregation.
+    """
+    merged: dict[str, int] = {}
+    for name in GRADER_NAMES:
+        payload = parts.get(name)
+        if payload is None:
+            raise ValueError(f"missing grader result: {name}")
+        for dimension in GRADER_SPECS[name].dimensions:
+            value = payload.get(dimension)
+            if isinstance(value, bool) or not isinstance(value, int):
+                raise ValueError(f"grader {name} did not report {dimension}")
+            merged[dimension] = value
+    merged["overall"] = min(merged[dimension] for dimension in OVERALL_SOURCE_DIMENSIONS)
+    return merged
+
+
+def _merge_failure_tags(parts: Mapping[str, Mapping[str, Any]]) -> list[str]:
+    tags: list[str] = []
+    for name in GRADER_NAMES:
+        for tag in parts[name].get("failure_tags", []):
+            if tag != "none" and tag not in tags:
+                tags.append(str(tag))
+    return tags[:8] or ["none"]
+
+
+def _merge_evidence(parts: Mapping[str, Mapping[str, Any]]) -> list[dict[str, Any]]:
+    """Pool the graders' citations, attributed so a claim can be traced back.
+
+    Two graders citing the same snapshot is normal and must not collapse into one
+    citation: which grader saw what is the whole point of splitting them.
+    """
+    citations: list[dict[str, Any]] = []
+    seen: set[tuple[str, str]] = set()
+    for name in GRADER_NAMES:
+        for citation in parts[name].get("evidence", []):
+            snapshot_id = str(citation.get("snapshot_id"))
+            observation = f"{name}: {str(citation.get('observation'))}"[:240]
+            key = (snapshot_id, observation)
+            if key in seen:
+                continue
+            seen.add(key)
+            citations.append({"snapshot_id": snapshot_id, "observation": observation})
+    return citations[:8]
+
+
+def assemble_split_score(parts: Mapping[str, Mapping[str, Any]]) -> MotionJudgeScore:
+    """Build one `MotionJudgeScore` from the five split graders.
+
+    `accept` is *derived* here by applying the published rule, rather than being
+    the model's own boolean as it is on the combined path.  That is the §3.3
+    decision layer in miniature; it only becomes authoritative for production
+    when 07d makes the split path the default.
+    """
+    merged = aggregate_grader_dimensions(parts)
+    summary = " ".join(
+        str(parts[name].get("summary", "")).strip() for name in GRADER_NAMES
+    ).strip()[:400]
+    return MotionJudgeScore.model_validate(
+        {
+            **merged,
+            "accept": meets_acceptance_thresholds(merged),
+            "confidence": min(float(parts[name]["confidence"]) for name in GRADER_NAMES),
+            "failure_tags": _merge_failure_tags(parts),
+            "evidence": _merge_evidence(parts),
+            "summary": summary,
+            "suggested_adjustment": str(
+                parts["semantic"].get("suggested_adjustment", "No adjustment proposed.")
+            ),
+        }
+    )
 
 UNARY_SYSTEM_PROMPT = """You are a strict animation-quality judge for first-person humanoid arm motion.
 Judge only the visible rendered evidence and the user's motion request. Evidence includes detailed pose frames
@@ -713,6 +854,7 @@ class VLMJudge:
         max_image_dimension_px: int | None = None,
         escalation_confidence: float = DEFAULT_JUDGE_ESCALATION_CONFIDENCE,
         max_model_calls: int | None = None,
+        grader_mode: str | None = None,
     ) -> None:
         load_environment()
         self.client = client or OpenAI()
@@ -744,6 +886,15 @@ class VLMJudge:
             raise ValueError("max_model_calls cannot be negative")
         self.max_model_calls = max_model_calls
         self.model_calls_made = 0
+        # The split graders stay opt-in until 07d.  Production runs on a
+        # four-call budget (`pipeline.py:167`) that five graders per candidate
+        # cannot fit inside, so the flag defaults to the combined path.
+        resolved_mode = grader_mode or os.getenv(
+            "RIGBY_JUDGE_GRADER_MODE", DEFAULT_JUDGE_GRADER_MODE
+        )
+        if resolved_mode not in JUDGE_GRADER_MODES:
+            raise ValueError(f"judge grader mode must be one of {JUDGE_GRADER_MODES}")
+        self.grader_mode = resolved_mode
 
     @property
     def remaining_model_calls(self) -> int | None:
@@ -948,7 +1099,8 @@ class VLMJudge:
             return "winner_not_accepted"
         return None
 
-    def score(self, evidence_manifest: Path) -> dict[str, Any]:
+    def score_combined(self, evidence_manifest: Path) -> dict[str, Any]:
+        """One mega-prompt call producing a self-reported score. Pre-07b behaviour."""
         manifest, snapshots = _manifest(evidence_manifest)
         prompt = str(manifest.get("prompt", ""))
         payload_audit: list[dict[str, Any]] = []
@@ -988,6 +1140,144 @@ class VLMJudge:
             "routing": routing,
             "judge_evidence_contract": self._evidence_contract(payload_audit),
         }
+
+    def _grader_escalation(self, value: BaseModel) -> str | None:
+        """Split graders route on confidence alone; they report no `accept`."""
+        confidence = float(getattr(value, "confidence", 1.0))
+        return "low_confidence" if confidence < self.escalation_confidence else None
+
+    def _grader_content(
+        self,
+        name: GraderName,
+        *,
+        manifest: dict[str, Any],
+        snapshots: list[dict[str, Any]],
+        payload_audit: list[dict[str, Any]],
+    ) -> list[dict[str, Any]]:
+        """Assemble one grader's user payload.
+
+        Deterministic diagnostics are never assembled here for any grader, and a
+        grader whose spec says `sees_prompt=False` never receives the request
+        text.  `tests/test_grader_split.py` asserts both at string level so
+        leakage cannot creep back in.
+        """
+        spec = GRADER_SPECS[name]
+        content: list[dict[str, Any]] = []
+        if spec.sees_prompt:
+            content.append(
+                {
+                    "type": "input_text",
+                    "text": f"USER MOTION REQUEST: {str(manifest.get('prompt', ''))}",
+                }
+            )
+        else:
+            content.append(
+                {
+                    "type": "input_text",
+                    "text": (
+                        "The motion request is deliberately withheld. Judge the rendered "
+                        "evidence on its own terms."
+                    ),
+                }
+            )
+        if spec.evidence in {"key_poses", "both"}:
+            content.extend(
+                self._images(
+                    snapshots,
+                    labels=_key_pose_labels(manifest),
+                    payload_audit=payload_audit,
+                )
+            )
+        if spec.evidence in {"timelines", "both"}:
+            content.extend(self._timeline(snapshots, payload_audit=payload_audit))
+        return content
+
+    def grade(
+        self,
+        name: GraderName,
+        *,
+        manifest: dict[str, Any],
+        snapshots: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+        """Run one split grader and return its full call record."""
+        prompt = grader_prompt(name, intent=manifest.get("intent"))
+        payload_audit: list[dict[str, Any]] = []
+        content = self._grader_content(
+            name, manifest=manifest, snapshots=snapshots, payload_audit=payload_audit
+        )
+        response, parsed, attempts, routing = self._routed_parse(
+            input=[
+                {"role": "system", "content": [{"type": "input_text", "text": prompt.text}]},
+                {"role": "user", "content": content},
+            ],
+            text_format=GRADER_OUTPUT_MODELS[name],
+            escalation_reason=self._grader_escalation,
+        )
+        return {
+            "grader": name,
+            "prompt": prompt.record(),
+            "blinding": {
+                "sees_prompt": GRADER_SPECS[name].sees_prompt,
+                "sees_diagnostics": GRADER_SPECS[name].sees_diagnostics,
+                "evidence": GRADER_SPECS[name].evidence,
+            },
+            "call": _call_record(response, parsed, self.model),
+            "attempts": attempts,
+            "routing": routing,
+            "judge_evidence_contract": self._evidence_contract(payload_audit),
+        }
+
+    def score_split(self, evidence_manifest: Path) -> dict[str, Any]:
+        """Run the five single-purpose graders and derive one score from them.
+
+        Costs five model calls where `score_combined` costs one, which is why it
+        is calibration-only until 07d (plan 07 §6.1).
+        """
+        manifest, snapshots = _manifest(evidence_manifest)
+        graders = {
+            name: self.grade(name, manifest=manifest, snapshots=snapshots)
+            for name in GRADER_NAMES
+        }
+        parts = {name: graders[name]["call"]["parsed"] for name in GRADER_NAMES}
+        aggregated = assemble_split_score(parts)
+        return {
+            "schema_version": "1.1",
+            "kind": "split_motion_judgment",
+            "grader_mode": "split",
+            "family": family_for_intent(manifest.get("intent")),
+            "result_id": manifest.get("result_id"),
+            "evidence_manifest": str(evidence_manifest),
+            "evidence_manifest_sha256": hashlib.sha256(evidence_manifest.read_bytes()).hexdigest(),
+            "graders": graders,
+            "prompt_versions": {
+                name: graders[name]["prompt"] for name in GRADER_NAMES
+            },
+            # Materialized in the combined path's shape so every existing consumer
+            # of `record["call"]["parsed"]["accept"]` keeps working unchanged.
+            "call": {
+                "response_id": None,
+                "model": self.model,
+                "usage": {},
+                "parsed": aggregated.model_dump(mode="json"),
+            },
+            "attempts": [
+                attempt
+                for name in GRADER_NAMES
+                for attempt in graders[name]["attempts"]
+            ],
+            "routing": {
+                "grader_mode": "split",
+                "graders": {name: graders[name]["routing"] for name in GRADER_NAMES},
+                "model_calls_made": self.model_calls_made,
+                "remaining_model_calls": self.remaining_model_calls,
+            },
+        }
+
+    def score(self, evidence_manifest: Path) -> dict[str, Any]:
+        """Dispatch on `grader_mode`. Combined is the default until 07d."""
+        if self.grader_mode == "split":
+            return self.score_split(evidence_manifest)
+        return self.score_combined(evidence_manifest)
 
     def compare(
         self,
