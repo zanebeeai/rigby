@@ -135,6 +135,29 @@ def test_nightly_is_scheduled_and_ci_is_not() -> None:
     assert "workflow_dispatch" in _triggers(CI), "CI must be manually runnable"
 
 
+def test_main_pushes_are_never_cancelled_by_a_later_merge() -> None:
+    """Found by the first run: 6c154e3 was cancelled by 5e8353a four minutes later.
+
+    Six lanes merge every few minutes and the Windows job takes over ten, so a
+    concurrency group keyed by ref with unconditional cancel-in-progress means
+    `main` almost never completes a verification -- the exact opposite of what CI
+    is for. A push must get its own group; only a PR may cancel its predecessor.
+    """
+
+    concurrency = _load(CI)["concurrency"]
+    group = concurrency["group"]
+    assert "github.sha" in group, (
+        "a push to main must group by sha so a later merge cannot cancel it"
+    )
+    cancel = str(concurrency["cancel-in-progress"])
+    assert cancel != "True", (
+        "cancel-in-progress must be conditional on the event, not unconditional"
+    )
+    assert "pull_request" in cancel, (
+        "only pull_request runs may cancel an in-progress run"
+    )
+
+
 def test_ci_runs_the_frontend_checks() -> None:
     commands = [step.get("run", "") for step in _steps(CI, "frontend")]
     assert any("npm ci" in command for command in commands)

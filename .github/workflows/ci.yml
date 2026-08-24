@@ -15,9 +15,15 @@ on:
   pull_request:
   workflow_dispatch:
 
+# A PR run supersedes its own earlier runs, so a force-push cancels the stale one.
+# A push to main must NEVER be cancelled: with six lanes merging every few minutes
+# and a Windows job that takes over ten, a ref-keyed group with
+# cancel-in-progress would mean main almost never completes a verification. That
+# is what happened on the very first run -- 6c154e3 was cancelled by 5e8353a four
+# minutes later. Keying main runs by sha gives each merge its own group.
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
