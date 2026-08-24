@@ -6,15 +6,18 @@ import hashlib
 import io
 import json
 import threading
+import time
 from pathlib import Path
 
 import pytest
 from PIL import Image
 
 from rigby_poc import observability
+from rigby_poc.transcript import load
 from rigby_poc.observability import (
     JsonlWriter,
     NullTracer,
+    StageTimeline,
     Tracer,
     UlidFactory,
     current_span,
@@ -544,3 +547,90 @@ def test_tracer_open_mints_a_run_directory_named_for_the_run(tmp_path: Path) -> 
 
     assert tracer.run_dir == tmp_path / tracer.run_id
     assert (tracer.run_dir / "transcript.jsonl").is_file()
+
+
+# --- plan 01 section 7, item 5: stage durations must tile, never nest ---------------
+
+
+def test_stage_timeline_closes_the_previous_stage_before_opening_the_next(
+    tmp_path: Path,
+) -> None:
+    """The guard against double counting. Nested stages report >100% of wall clock."""
+    tracer = Tracer(tmp_path / "run", run_id="20260824T120000-deadbeef")
+    with tracer.span("run", "pipeline"):
+        timeline = StageTimeline(tracer)
+        timeline.enter("planning")
+        time.sleep(0.02)
+        timeline.enter("candidates")
+        time.sleep(0.02)
+        timeline.close()
+    document = load(tmp_path / "run")
+    stages = document.by_kind("stage")
+    assert [span.name for span in stages] == ["planning", "candidates"]
+    # Tiling, not nesting: neither stage is an ancestor of the other.
+    assert {span.parent_id for span in stages} == {document.root().span_id}
+    total = sum(document.duration_by_stage().values())
+    assert total <= document.root().duration_ms, (
+        f"stages summed to {total:.1f} ms of a {document.root().duration_ms:.1f} ms run; "
+        "they overlap, so duration_by_stage over-reports"
+    )
+
+
+def test_re_entering_a_stage_with_new_refs_starts_a_separately_attributable_span(
+    tmp_path: Path,
+) -> None:
+    """Per-candidate attribution, while `duration_by_stage` still sums under one name."""
+    tracer = Tracer(tmp_path / "run", run_id="20260824T120000-deadbeef")
+    with tracer.span("run", "pipeline"):
+        timeline = StageTimeline(tracer)
+        for index in (1, 2, 3):
+            timeline.enter("candidates", candidate_index=index, round=1)
+        timeline.close()
+    document = load(tmp_path / "run")
+    stages = document.by_kind("stage")
+    assert len(stages) == 3
+    assert [span.refs["candidate_index"] for span in stages] == [1, 2, 3]
+    assert set(document.duration_by_stage()) == {"candidates"}
+
+
+def test_re_entering_the_same_stage_with_the_same_refs_does_not_churn_spans(
+    tmp_path: Path,
+) -> None:
+    """`_progress` fires several times per stage; each must not become its own span."""
+    tracer = Tracer(tmp_path / "run", run_id="20260824T120000-deadbeef")
+    with tracer.span("run", "pipeline"):
+        timeline = StageTimeline(tracer)
+        timeline.enter("vlm_judge", round=1)
+        timeline.enter("vlm_judge", round=1)
+        timeline.enter("vlm_judge", round=1)
+        timeline.close()
+    assert len(load(tmp_path / "run").by_kind("stage")) == 1
+
+
+def test_a_span_opened_during_a_stage_parents_to_that_stage(tmp_path: Path) -> None:
+    """A `tool` or `model_call` span must land under the stage that was running."""
+    tracer = Tracer(tmp_path / "run", run_id="20260824T120000-deadbeef")
+    with tracer.span("run", "pipeline"):
+        timeline = StageTimeline(tracer)
+        timeline.enter("visual_evidence", candidate_index=4)
+        with tracer.span("tool", "capture"):
+            pass
+        timeline.close()
+    document = load(tmp_path / "run")
+    stage = document.by_kind("stage")[0]
+    tool = document.by_kind("tool")[0]
+    assert tool.parent_id == stage.span_id
+    # And the tool span is not itself a stage, so it cannot inflate duration_by_stage.
+    assert set(document.duration_by_stage()) == {"visual_evidence"}
+
+
+def test_the_timeline_leaves_no_orphans_and_exactly_one_root(tmp_path: Path) -> None:
+    """Plan 01 section 8.3's guard: a detached span is a valid second root, not an error."""
+    tracer = Tracer(tmp_path / "run", run_id="20260824T120000-deadbeef")
+    with tracer.span("run", "pipeline"):
+        with StageTimeline(tracer) as timeline:
+            timeline.enter("planning")
+            timeline.enter("finalize")
+    document = load(tmp_path / "run")
+    assert document.orphans() == []
+    assert len([span for span in document.spans if span.parent_id is None]) == 1

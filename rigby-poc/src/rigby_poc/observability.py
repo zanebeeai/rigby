@@ -29,7 +29,7 @@ import time
 import traceback
 import uuid
 from collections.abc import Callable, Iterator, Mapping
-from contextlib import contextmanager
+from contextlib import ExitStack, contextmanager
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Protocol
@@ -407,6 +407,12 @@ class Span:
 
     # -- mutation -----------------------------------------------------------------
 
+    @property
+    def tracer(self) -> Tracer:
+        """The tracer this span was opened on; how library code finds the live one."""
+
+        return self._tracer
+
     def set(self, **attrs: Any) -> None:
         """Merge span-kind-specific attributes (plan section 3.2 `attrs`)."""
 
@@ -711,13 +717,94 @@ class Tracer:
         return relative
 
 
+class StageTimeline:
+    """Flat, non-overlapping `stage` spans over a run.
+
+    `Transcript.duration_by_stage()` sums *every* span whose kind is `stage`, whatever its
+    depth, so a stage opened inside another stage is counted twice — measured at 151% of
+    wall clock for a single nested pair. Plan 01 section 7 asks stage durations to account
+    for at least 95% of wall clock, which means the target can be overshot into
+    meaninglessness rather than merely missed: nesting sails past 95% by double counting
+    and reports it as success.
+
+    This makes that impossible by construction rather than by discipline. Entering a stage
+    closes the previous one, so the spans tile the run instead of nesting, and a caller
+    cannot get it wrong by bracketing something in the wrong order.
+
+    Re-entering the same stage with different `refs` — the next candidate, the next round —
+    starts a fresh span, so each occurrence is separately attributable while
+    `duration_by_stage` still sums them under one name.
+    """
+
+    def __init__(self, tracer: Tracer | NullTracer, *, parent: str | None = None) -> None:
+        self._tracer = tracer
+        self._parent = parent
+        self._open: ExitStack | None = None
+        self._key: tuple[Any, ...] | None = None
+
+    def enter(self, name: str, **refs: Any) -> None:
+        key = (name, tuple(sorted((str(k), str(v)) for k, v in refs.items())))
+        if key == self._key:
+            return
+        self.close()
+        stack = ExitStack()
+        stack.enter_context(self._tracer.span("stage", name, parent=self._parent, **refs))
+        self._open, self._key = stack, key
+
+    def close(self) -> None:
+        stack, self._open, self._key = self._open, None, None
+        if stack is not None:
+            stack.close()
+
+    def __enter__(self) -> StageTimeline:
+        return self
+
+    def __exit__(self, *_: Any) -> None:
+        self.close()
+
+
+_current_stage_timeline: contextvars.ContextVar[StageTimeline | None] = contextvars.ContextVar(
+    "rigby_stage_timeline", default=None
+)
+
+
+def current_stage_timeline() -> StageTimeline | None:
+    """The timeline the running pipeline is reporting stages to, if any."""
+
+    return _current_stage_timeline.get()
+
+
+@contextmanager
+def stage_timeline(tracer: Tracer | NullTracer, *, parent: str | None = None) -> Iterator[StageTimeline]:
+    """Install a `StageTimeline` for the duration of a run.
+
+    Contextvar based for the same reason span parenting is (plan section 3.5): the
+    alternative is threading a timeline argument through every progress call site in
+    `flywheel.py`, which is what would make this unlandable.
+    """
+
+    timeline = StageTimeline(tracer, parent=parent)
+    token = _current_stage_timeline.set(timeline)
+    try:
+        yield timeline
+    finally:
+        _current_stage_timeline.reset(token)
+        timeline.close()
+
+
 _null_tracer = NullTracer()
 
 
-def get_tracer() -> NullTracer:
-    """The default tracer: a `NullTracer`, until a run installs a real one.
+def get_tracer() -> Tracer | NullTracer:
+    """The tracer of whichever span is currently open, or a `NullTracer`.
 
-    PR 01a wires this into nothing. Call sites arrive in 01b and 01c.
+    Derived from the open span rather than held in a second contextvar, so there is no
+    way for "the active tracer" and "the span being parented to" to disagree. Library
+    code -- `pipeline.capture_in_subprocess`, for one -- calls this to open a span
+    without being handed a tracer, and gets a no-op outside a run.
     """
 
+    span = current_span()
+    if span is not None:
+        return span.tracer
     return _null_tracer

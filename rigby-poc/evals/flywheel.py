@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 from dataclasses import asdict, dataclass, field
+from datetime import UTC, datetime
 from itertools import combinations
 from pathlib import Path
 from typing import Any, Callable, Iterable
@@ -12,9 +13,15 @@ import numpy as np
 from scipy.spatial.transform import Rotation
 
 from evals.capture import capture_result_frames
-from rigby_poc.compiler import compile_motion
+from rigby_poc.compiler import PROJECT_ROOT, compile_motion
 from rigby_poc.judge import RepairPatch, VLMJudge, write_judge_record
 from rigby_poc.kinematics import rig_kinematics
+from rigby_poc.observability import (
+    NullTracer,
+    Tracer,
+    current_stage_timeline,
+    stage_timeline,
+)
 from rigby_poc.io_utils import atomic_write_json
 from rigby_poc.models import (
     BodyAction,
@@ -1765,6 +1772,12 @@ def _write_trace(path: Path, trace: dict[str, Any]) -> None:
 ProgressCallback = Callable[[dict[str, Any]], None]
 
 
+# The correlation keys a stage span carries. Deliberately not all of `data`: a stage
+# span must not churn because a human-readable message changed, only because the thing
+# being worked on did.
+_STAGE_REFS = ("round", "candidate_index", "result_id")
+
+
 def _progress(
     callback: ProgressCallback | None,
     event: str,
@@ -1772,8 +1785,28 @@ def _progress(
     message: str,
     **data: Any,
 ) -> None:
+    """Report progress, and advance the run's stage timeline.
+
+    Every call already declares which stage it belongs to, so driving the timeline from
+    here gives stage spans that tile the run without bracketing anything by hand -- and
+    makes it impossible to nest two stages, which would double count in
+    `Transcript.duration_by_stage()`.
+    """
+    timeline = current_stage_timeline()
+    if timeline is not None:
+        timeline.enter(stage, **{key: data[key] for key in _STAGE_REFS if key in data})
     if callback is not None:
-        callback({"event": event, "stage": stage, "message": message, "data": data})
+        callback(
+            {
+                "event": event,
+                "stage": stage,
+                "message": message,
+                # Plan 01 section 1.4: the CLI path passes no callback, so before this the
+                # only wall clock in the system was stamped by the API store on receipt.
+                "at": datetime.now(UTC).isoformat(),
+                "data": data,
+            }
+        )
 
 
 def _candidate_score(candidate: dict[str, Any]) -> tuple[int, int, int, float]:
@@ -1859,6 +1892,43 @@ def _tournament(
 
 
 def run_best_of_five(
+    prompt: str,
+    output_dir: Path,
+    *,
+    provider: str = "openai",
+    base_url: str = "http://127.0.0.1:8000",
+    max_rounds: int = 2,
+    selection_mode: str = "unary_tournament",
+    scene_manifest: Any | None = None,
+    progress_callback: ProgressCallback | None = None,
+    max_model_calls: int | None = 4,
+    capture_fn: Callable[..., Path] = capture_result_frames,
+    capture_batch_fn: Callable[..., list[Path]] | None = None,
+    tracer: Tracer | NullTracer | None = None,
+) -> Path:
+    """Run the flywheel, recording a stage timeline when a tracer is supplied.
+
+    A thin wrapper rather than a `with` around the body: installing the timeline is two
+    lines, and indenting seven hundred lines of control flow to hold them would bury the
+    change this PR is actually making.
+    """
+    with stage_timeline(tracer if tracer is not None else NullTracer()):
+        return _run_best_of_five(
+            prompt,
+            output_dir,
+            provider=provider,
+            base_url=base_url,
+            max_rounds=max_rounds,
+            selection_mode=selection_mode,
+            scene_manifest=scene_manifest,
+            progress_callback=progress_callback,
+            max_model_calls=max_model_calls,
+            capture_fn=capture_fn,
+            capture_batch_fn=capture_batch_fn,
+        )
+
+
+def _run_best_of_five(
     prompt: str,
     output_dir: Path,
     *,
@@ -2650,17 +2720,40 @@ def main() -> None:
         choices=("unary_tournament", "five_way", "human_pilot"),
         default="unary_tournament",
     )
+    parser.add_argument(
+        "--run-root",
+        type=Path,
+        default=None,
+        help="where the transcript is written; defaults to results/pipeline-runs/",
+    )
+    parser.add_argument("--run-id", default=None)
     arguments = parser.parse_args()
-    print(
-        run_best_of_five(
+
+    # Plan 01 section 1.5: with no progress callback the CLI path produced no run id, no
+    # run record and no event history at all, and every batch eval driver uses it. It now
+    # opens the same root span, in the same place, as an API-launched run -- which is what
+    # makes section 7's "structurally identical transcripts" checkable rather than a hope.
+    run_root = arguments.run_root or (PROJECT_ROOT / "results" / "pipeline-runs")
+    tracer = Tracer.open(run_root, run_id=arguments.run_id)
+    with tracer.span(
+        "run",
+        "pipeline.run",
+        prompt=arguments.prompt,
+        provider=arguments.provider,
+        selection_mode=arguments.selection_mode,
+        launched_by="cli",
+    ):
+        trace_path = run_best_of_five(
             arguments.prompt,
             arguments.output_dir,
             provider=arguments.provider,
             base_url=arguments.base_url,
             max_rounds=arguments.max_rounds,
             selection_mode=arguments.selection_mode,
+            tracer=tracer,
         )
-    )
+    print(trace_path)
+    print(f"transcript: {tracer.run_dir}", flush=True)
 
 
 if __name__ == "__main__":

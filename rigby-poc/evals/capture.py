@@ -1658,6 +1658,7 @@ class CaptureSession:
         program = payload.get("program") if isinstance(payload.get("program"), dict) else {}
         prompt = str(program.get("source_text", ""))
         clip = _clip_document(payload)
+        duration_s = _clip_duration_s(clip)
         points = phase_sampling_points(payload)
         if len(points) > MAX_SNAPSHOTS_PER_VIEW:
             raise RuntimeError(
@@ -1692,6 +1693,13 @@ class CaptureSession:
                     )
                 rendered_time_s = float(state.get("rendered_time_s", time_s))
                 frame = self._verified_frame(clip, time_s, rendered_time_s, result_id)
+                # `requested > rendered` is true for almost every ordinary sample, because
+                # frame selection snaps backward to the last frame at or before the
+                # request. So a consumer cannot infer a clamp from the two times alone --
+                # the obvious heuristic is wrong in the common case and right in the rare
+                # one. Recording it as a fact is the only way to tell a genuine last frame
+                # from a clamped one.
+                clamped = time_s > duration_s + 1e-9
                 # A bare filename, never a path: the manifest is read on both macOS and
                 # Windows and `judge.py` resolves it against the manifest's directory.
                 filename = f"{point_index:02d}-{point['label']}-{view}.png"
@@ -1706,6 +1714,7 @@ class CaptureSession:
                         "view": view,
                         "requested_time_s": time_s,
                         "rendered_time_s": rendered_time_s,
+                        "clamped": clamped,
                         "path": filename,
                         # `sha256` is retained under its original name because
                         # `judge.py` verifies snapshots against it. `pixel_sha256` is
@@ -1725,6 +1734,15 @@ class CaptureSession:
             "result_id": result_id,
             "prompt": prompt,
             "intent": program.get("intent"),
+            # The clip's own span, so a consumer can interpret `clamped` and the sample
+            # times without refetching the source payload. Deliberately NOT `fps`: frame
+            # spacing is piecewise-uniform, not uniform -- constant within a phase, at a
+            # per-phase rate at or above 1/fps, with a 2.0x-2.5x gap at every handover
+            # (measured by lane `analysis` across 33 cases, reproduced here on 7 of 8).
+            # A single clip-level rate would be right often enough to look trustworthy and
+            # wrong by up to 8% within a phase and 150% across a handover, with nothing
+            # able to detect the error.
+            "clip_duration_s": duration_s,
             "source_url": f"{self._base_url}/api/v1/results/{quote(result_id)}",
             "capture_contract": {
                 "raw_canvas_only": True,

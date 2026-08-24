@@ -15,6 +15,7 @@ from typing import Any
 from uuid import uuid4
 
 from .compiler import PROJECT_ROOT
+from .observability import Tracer, get_tracer
 from .models import PipelineRunRequest
 from .io_utils import atomic_write_json
 
@@ -81,22 +82,33 @@ def _run_capture(command: list[str], log_dir: Path, *, budget_s: float, descript
     """
     log_dir.mkdir(parents=True, exist_ok=True)
     log_path = log_dir / "capture.log"
-    with log_path.open("wb") as sink:
-        process = _spawn_capture(command, sink, subprocess.STDOUT)
-        try:
-            returncode = process.wait(timeout=budget_s)
-        except subprocess.TimeoutExpired:
-            terminate_capture_tree(process)
+    # Plan 01 section 1.6: a non-model stage produced artifacts and no record at all, and
+    # capture's output went to the null device, so a failure surfaced only as an exit
+    # code. The span parents to whichever stage is running, so capture time is attributed
+    # rather than merely elapsed.
+    with get_tracer().span("tool", "capture.subprocess", description=description) as span:
+        span.set(command=command, budget_s=budget_s, log_path=str(log_path))
+        with log_path.open("wb") as sink:
+            process = _spawn_capture(command, sink, subprocess.STDOUT)
+            try:
+                returncode = process.wait(timeout=budget_s)
+            except subprocess.TimeoutExpired:
+                terminate_capture_tree(process)
+                span.set(timed_out=True)
+                raise RuntimeError(
+                    f"evidence capture for {description} exceeded {budget_s:.0f}s and was killed; "
+                    f"see {log_path}"
+                ) from None
+        output = log_path.read_text(encoding="utf-8", errors="replace")
+        span.set(returncode=returncode, output_bytes=len(output))
+        # Raised inside the span, not after it. Outside, the span closes `ok` and the
+        # transcript records a successful capture for a run that failed -- the failure
+        # class this whole PR exists to stop producing.
+        if returncode != 0:
+            tail = "\n".join(output.strip().splitlines()[-20:])
             raise RuntimeError(
-                f"evidence capture for {description} exceeded {budget_s:.0f}s and was killed; "
-                f"see {log_path}"
-            ) from None
-    output = log_path.read_text(encoding="utf-8", errors="replace")
-    if returncode != 0:
-        tail = "\n".join(output.strip().splitlines()[-20:])
-        raise RuntimeError(
-            f"evidence capture for {description} failed with exit code {returncode}:\n{tail}"
-        )
+                f"evidence capture for {description} failed with exit code {returncode}:\n{tail}"
+            )
     return output
 
 
@@ -265,20 +277,36 @@ class PipelineRunStore:
             from evals.flywheel import run_best_of_five
 
             self._update(run_id, status="running", stage="planning")
-            output_dir = self._path(run_id).parent / "artifacts"
-            trace_path = run_best_of_five(
-                request.text,
-                output_dir,
+            run_dir = self._path(run_id).parent
+            output_dir = run_dir / "artifacts"
+            # The tracer and its root span are built *here*, inside the worker, not in
+            # `start`. Plan 01 section 8.3, verified: a `ContextVar` set before
+            # `thread.start()` reads back as None in the worker, so a root span opened on
+            # the caller's side would leave every child span orphaned -- and a detached
+            # span is a valid second root rather than an error, so nothing would report it.
+            tracer = Tracer(run_dir, run_id=run_id)
+            with tracer.span(
+                "run",
+                "pipeline.run",
+                prompt=request.text,
                 provider=request.provider,
-                base_url=base_url,
-                max_rounds=request.max_rounds,
                 selection_mode="five_way",
-                scene_manifest=request.scene,
-                progress_callback=lambda event: self._event(run_id, event),
-                max_model_calls=4,
-                capture_fn=capture_in_subprocess,
-                capture_batch_fn=capture_batch_in_subprocess,
-            )
+                launched_by="api",
+            ):
+                trace_path = run_best_of_five(
+                    request.text,
+                    output_dir,
+                    provider=request.provider,
+                    base_url=base_url,
+                    max_rounds=request.max_rounds,
+                    selection_mode="five_way",
+                    scene_manifest=request.scene,
+                    progress_callback=lambda event: self._event(run_id, event),
+                    max_model_calls=4,
+                    capture_fn=capture_in_subprocess,
+                    capture_batch_fn=capture_batch_in_subprocess,
+                    tracer=tracer,
+                )
             trace = json.loads(trace_path.read_text(encoding="utf-8"))
             winner = trace.get("winner_result_id")
             completed = bool(winner)
