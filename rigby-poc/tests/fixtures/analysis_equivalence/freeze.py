@@ -161,6 +161,7 @@ def main() -> None:
 
     written: list[tuple[str, str, int, str]] = []
     drifted: list[str] = []
+    added: set[str] = set()
     for case_id, prompt in CASES:
         path = FIXTURE_DIR / f"{case_id}.json"
         previous = (
@@ -172,10 +173,26 @@ def main() -> None:
             case["compiler_metrics"] = compiler_metrics
             state = "blessed" if baseline is None else "REBLESSED"
         else:
+            # A key may be *added* — 02b persists the commanded IK support
+            # targets, which no post-hoc pass can invert out of a clip. What may
+            # never happen is a frozen key changing value, so the comparison is
+            # over the baseline's own key set. tests/test_analysis_equivalence.py
+            # makes the same distinction and additionally requires every
+            # addition to be declared.
             case["compiler_metrics"] = baseline
-            if _compact(baseline) != _compact(compiler_metrics):
-                drifted.append(case_id)
+            changed = [
+                key
+                for key in baseline
+                if key not in compiler_metrics
+                or _compact(compiler_metrics[key]) != _compact(baseline[key])
+            ]
+            new_keys = set(compiler_metrics) - set(baseline)
+            added |= new_keys
+            if changed:
+                drifted.append(f"{case_id} ({', '.join(sorted(changed)[:4])})")
                 state = "DRIFTED"
+            elif new_keys:
+                state = f"held +{len(new_keys)}"
             else:
                 state = "held"
         path.write_text(canonical(case) + "\n", encoding="utf-8")
@@ -195,6 +212,8 @@ def main() -> None:
     (FIXTURE_DIR / "index.json").write_text(canonical(index) + "\n", encoding="utf-8")
     for case_id, intent, count, state in written:
         print(f"{case_id:32s} {intent:20s} {count:3d} owned keys  {state}")
+    if added:
+        print("\nkeys added since the baseline: " + ", ".join(sorted(added)))
     if drifted:
         raise SystemExit(
             "compiler metrics drifted from the frozen baseline for: "

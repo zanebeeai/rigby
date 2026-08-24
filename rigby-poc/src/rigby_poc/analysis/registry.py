@@ -11,57 +11,18 @@ falling behind the primitive vocabulary.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Any, Protocol
-
 from ..models import BodyAction, ObjectAction
-from .context import AnalysisContext
+from .contract import Analyzer, AnalyzerEntry
+from .full_body import BODY_ENTRIES
 
 
-class Analyzer(Protocol):
-    """Compute the metric keys one action contributes to a clip."""
+# Populated by :mod:`rigby_poc.analysis.full_body` at import time. Keeping the
+# dict here and the entries there avoids an import cycle — the analyzers need
+# ``AnalyzerEntry``, and this module must not need them back.
+# Ported by 02b. Every ``BodyAction`` runs the whole-body pass; the note says
+# which block, if any, that action gates on its own.
+BODY_ANALYZERS: dict[BodyAction, AnalyzerEntry] = dict(BODY_ENTRIES)
 
-    def __call__(self, ctx: AnalysisContext) -> dict[str, Any]: ...
-
-
-@dataclass(frozen=True)
-class AnalyzerEntry:
-    """One action's registration.
-
-    ``analyzer`` is ``None`` while the action's metric block still lives in the
-    compiler. ``owner`` says which module currently computes it, and ``plan``
-    names the PR that moves it here.
-    """
-
-    analyzer: Analyzer | None
-    owner: str
-    plan: str
-    note: str = ""
-
-    @property
-    def ported(self) -> bool:
-        return self.analyzer is not None
-
-
-BODY_ANALYZERS: dict[BodyAction, AnalyzerEntry] = {
-    BodyAction.HOLD: AnalyzerEntry(None, "compiler._compile_full_body", "02b"),
-    BodyAction.STEP: AnalyzerEntry(None, "compiler._compile_full_body", "02b"),
-    BodyAction.WALK: AnalyzerEntry(None, "compiler._compile_full_body", "02b"),
-    BodyAction.RUN: AnalyzerEntry(None, "compiler._compile_full_body", "02b"),
-    BodyAction.TURN: AnalyzerEntry(None, "compiler._compile_full_body", "02b"),
-    BodyAction.CROUCH: AnalyzerEntry(None, "compiler._compile_full_body", "02b"),
-    BodyAction.JUMP: AnalyzerEntry(None, "compiler._compile_full_body", "02b"),
-    BodyAction.KICK: AnalyzerEntry(None, "compiler._compile_full_body", "02b"),
-    BodyAction.DANCE: AnalyzerEntry(None, "compiler._compile_full_body", "02b"),
-    BodyAction.CLIMB: AnalyzerEntry(
-        None,
-        "compiler._compile_full_body",
-        "02b",
-        note="needs the commanded climb support targets persisted first",
-    ),
-    BodyAction.ROTATE: AnalyzerEntry(None, "compiler._compile_full_body", "02b"),
-    BodyAction.POSE: AnalyzerEntry(None, "compiler._compile_full_body", "02b"),
-}
 
 OBJECT_ANALYZERS: dict[ObjectAction, AnalyzerEntry] = {
     ObjectAction.THROW: AnalyzerEntry(None, "compiler._compile_object_interaction", "02d"),

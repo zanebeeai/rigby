@@ -9,7 +9,10 @@ as the measurement gets further past its threshold.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Literal
+from typing import TYPE_CHECKING, Any, Literal, Protocol
+
+if TYPE_CHECKING:  # pragma: no cover - the analyzers import this, not the reverse
+    from .context import AnalysisContext
 
 
 CheckStatus = Literal["pass", "fail", "skip"]
@@ -20,6 +23,35 @@ PHYSICS = "physics"
 SIGNAL = "signal"
 
 LAYERS = (CONTRACT, ANATOMY, PHYSICS, SIGNAL)
+
+
+class Analyzer(Protocol):
+    """Compute the metric keys one action contributes to a clip."""
+
+    def __call__(self, ctx: "AnalysisContext") -> dict[str, Any]: ...
+
+
+@dataclass(frozen=True)
+class AnalyzerEntry:
+    """One action's registration in the analyzer registry.
+
+    ``analyzer`` is ``None`` while the action's metric block still lives in the
+    compiler. ``owner`` says which module currently computes it, and ``plan``
+    names the PR that moves it here.
+
+    It lives beside :class:`CheckResult` rather than in ``registry`` so the
+    analyzer modules can declare their own entries without importing the
+    registry that collects them.
+    """
+
+    analyzer: Analyzer | None
+    owner: str
+    plan: str
+    note: str = ""
+
+    @property
+    def ported(self) -> bool:
+        return self.analyzer is not None
 
 
 @dataclass(frozen=True)
