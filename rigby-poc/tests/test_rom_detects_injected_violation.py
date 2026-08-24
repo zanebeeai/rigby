@@ -19,7 +19,6 @@ from __future__ import annotations
 import math
 
 import pytest
-from scipy.spatial.transform import Rotation
 
 from evals.corpus import load_corpus
 from evals.corpus.loader import compile_case
@@ -34,7 +33,15 @@ from rigby_poc.models import BonePose, Quat
 
 pytestmark = pytest.mark.medium
 
-CASE = "fullbody-step-over-hurdle"
+#: The clip the corpus-based assertions use. It is chosen for one property and
+#: `test_the_chosen_case_has_a_moving_elbow` pins it: **the elbow must actually
+#: move**. Lane `groundtruth` found that several full-body cases hold the elbow
+#: at a single value to the last decimal for their whole duration --
+#: `fullbody-step-over-hurdle`, which this test originally used, sits at
+#: -41.849 degrees for all 76 frames, std 0.000. Injecting into a constant is a
+#: clean, perfectly detected result that measures the injector rather than the
+#: check.
+CASE = "fullbody-dance"
 DEG = math.pi / 180.0
 
 
@@ -71,26 +78,37 @@ def rest_clip(clip):
 
 
 def _inject(frames, bone: str, *, dof: str, degrees: float):
-    """Add a stated anatomical excursion to one bone, on every frame.
+    """Add a stated anatomical excursion to one DOF, on every frame.
 
-    Composed on top of whatever the bone is already doing, so the clip stays a
-    real clip rather than becoming a static pose.
+    Decompose, add, recompose -- **not** a post-multiplied delta rotation.
+    Post-multiplying looks equivalent and is not: quaternion composition is not
+    addition in the decomposed coordinates, so when the bone already carries
+    flexion the abduction actually delivered differs from the abduction asked
+    for. Measured on `fullbody-dance` frame 0, a 30-degree post-multiplied
+    injection produced a 43.2-degree change. It went unnoticed for as long as
+    the test used a clip whose elbow was static in a near-pure abduction pose.
+
+    Decompose-add-recompose is exact because `decompose` and `compose` round
+    trip to 1e-9, and it is also the right *meaning* for a range-of-motion
+    mutation: "this DOF, plus X degrees", not "times this rotation".
     """
 
     frame_obj = bone_anatomical_frame(bone)
-    delta = Rotation.from_quat(
-        compose(DofAngles(**{f"{name}_rad": (degrees * DEG if name == dof else 0.0)
-                             for name in ("flexion", "abduction", "twist")}), frame_obj)
-    )
     mutated = []
     for frame in frames:
         bones = dict(frame.bones)
-        existing = Rotation.from_quat(bones[bone].rotation.as_list())
-        combined = (existing * delta).as_quat()
+        angles = decompose(bones[bone].rotation.as_list(), frame_obj)
+        shifted = DofAngles(
+            **{
+                f"{name}_rad": getattr(angles, f"{name}_rad")
+                + (degrees * DEG if name == dof else 0.0)
+                for name in ("flexion", "abduction", "twist")
+            }
+        )
+        value = compose(shifted, frame_obj)
         bones[bone] = BonePose(
             rotation=Quat(
-                x=float(combined[0]), y=float(combined[1]),
-                z=float(combined[2]), w=float(combined[3]),
+                x=float(value[0]), y=float(value[1]), z=float(value[2]), w=float(value[3])
             ),
             position=bones[bone].position,
         )
@@ -110,6 +128,23 @@ def test_the_rest_pose_clip_violates_nothing_at_all(rest_clip, clip) -> None:
     """
 
     assert rom_violations(rest_clip, fps=clip.fps) == []
+
+
+def test_the_chosen_case_has_a_moving_elbow(clip) -> None:
+    """Guards this file's own instrument against a silent regression.
+
+    A corpus clip whose elbow never moves would make every assertion below pass
+    for the wrong reason. 42 of the corpus's cases would fail this.
+    """
+
+    frame_obj = bone_anatomical_frame("leftLowerArm")
+    values = [
+        math.degrees(decompose(frame.bones["leftLowerArm"].rotation.as_list(), frame_obj).abduction_rad)
+        for frame in clip.frames
+    ]
+
+    assert len({round(value, 6) for value in values}) > 20
+    assert max(values) - min(values) > 20.0
 
 
 def test_no_corpus_case_is_clean_on_elbow_abduction(clip) -> None:
@@ -227,4 +262,4 @@ def test_the_injection_helper_actually_injects_what_it_says(clip) -> None:
     mutated = _inject(clip.frames, "leftLowerArm", dof="abduction", degrees=30.0)
     after = decompose(mutated[0].bones["leftLowerArm"].rotation.as_list(), frame_obj)
 
-    assert math.degrees(after.abduction_rad - before.abduction_rad) == pytest.approx(30.0, abs=2.0)
+    assert math.degrees(after.abduction_rad - before.abduction_rad) == pytest.approx(30.0, abs=1e-6)
