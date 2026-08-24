@@ -22,9 +22,15 @@ from rigby_poc.llm_graders import (
     FailureHonestyReport,
     LLMGraders,
     RejectionAuditReport,
+    FAILURE_RELEVANT_DELTAS,
     RejectionOutcome,
+    RepairSoundnessOutcome,
     RepairSoundnessReport,
     capability_grammar,
+    inert_patch,
+    irrelevant_patch,
+    relevant_patch,
+    score_repair_soundness,
     expected_rejection_verdict,
     score_rejection_audit,
 )
@@ -300,4 +306,93 @@ def test_every_reported_rate_carries_its_n() -> None:
     scores = score_rejection_audit(_outcomes(refused_supported=1))
     for key in ("false_rejection", "auditor_agreement"):
         assert scores[key].n > 0
+        assert scores[key].lower_bound_95 <= scores[key].estimate
+
+
+# ------------------------------------------ the repair-soundness ground truth
+
+
+def test_every_synthesized_patch_validates_against_the_real_schema() -> None:
+    """A control that fails validation is a control that never runs.
+
+    The neutral patch is derived from `RepairPatch.model_fields` rather than
+    hand-listed, so a new delta cannot silently invalidate every control.
+    """
+    from rigby_poc.judge import RepairPatch
+
+    RepairPatch.model_validate(inert_patch())
+    for tag in FAILURE_RELEVANT_DELTAS:
+        RepairPatch.model_validate(relevant_patch(tag))
+        RepairPatch.model_validate(irrelevant_patch(tag))
+
+
+@pytest.mark.parametrize("tag", sorted(FAILURE_RELEVANT_DELTAS))
+def test_an_irrelevant_patch_touches_nothing_that_could_help(tag: str) -> None:
+    patch = irrelevant_patch(tag)
+    for field in FAILURE_RELEVANT_DELTAS[tag]:
+        assert patch[field] == (1.0 if field.endswith("_scale") else 0.0)
+
+
+@pytest.mark.parametrize("tag", sorted(FAILURE_RELEVANT_DELTAS))
+def test_a_relevant_patch_moves_something_that_could_help(tag: str) -> None:
+    patch = relevant_patch(tag)
+    assert any(
+        patch[field] != (1.0 if field.endswith("_scale") else 0.0)
+        for field in FAILURE_RELEVANT_DELTAS[tag]
+    )
+
+
+def test_the_inert_patch_changes_nothing_at_all() -> None:
+    # Distinct from an irrelevant patch: a grader may spot an all-zero patch
+    # while still being fooled by one that changes the wrong thing confidently.
+    patch = inert_patch()
+    for field, value in patch.items():
+        if field == "rationale":
+            continue
+        assert value == (1.0 if field.endswith("_scale") else 0.0)
+
+
+def _repair_outcomes(
+    *, sensitivity: float, specificity: float, n_each: int = 20
+) -> list[RepairSoundnessOutcome]:
+    outcomes = [
+        RepairSoundnessOutcome(
+            case_id=f"r{index}",
+            is_relevant=True,
+            judged_responsive=index < round(sensitivity * n_each),
+        )
+        for index in range(n_each)
+    ]
+    outcomes += [
+        RepairSoundnessOutcome(
+            case_id=f"i{index}",
+            is_relevant=False,
+            judged_responsive=index >= round(specificity * n_each),
+        )
+        for index in range(n_each)
+    ]
+    return outcomes
+
+
+def test_repair_soundness_reports_sensitivity_and_specificity_apart() -> None:
+    scores = score_repair_soundness(_repair_outcomes(sensitivity=1.0, specificity=0.5))
+    assert scores["sensitivity"].estimate == 1.0
+    assert scores["specificity"].estimate == 0.5
+    assert scores["n_relevant"] == 20
+    assert scores["n_irrelevant"] == 20
+
+
+def test_a_grader_that_always_says_responsive_is_visible_as_such() -> None:
+    # Perfect sensitivity, zero specificity. A single pooled accuracy figure
+    # would report 0.5 and hide which half it got wrong.
+    scores = score_repair_soundness(_repair_outcomes(sensitivity=1.0, specificity=0.0))
+    assert scores["sensitivity"].estimate == 1.0
+    assert scores["specificity"].estimate == 0.0
+
+
+def test_both_repair_rates_carry_their_n_and_a_baseline() -> None:
+    scores = score_repair_soundness(_repair_outcomes(sensitivity=0.9, specificity=0.8))
+    assert scores["baseline"] == pytest.approx(0.5)
+    for key in ("sensitivity", "specificity"):
+        assert scores[key].n == 20
         assert scores[key].lower_bound_95 <= scores[key].estimate

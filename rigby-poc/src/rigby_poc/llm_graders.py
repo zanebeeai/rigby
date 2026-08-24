@@ -25,10 +25,11 @@ from typing import Any, Literal, Mapping, Sequence
 
 from openai import OpenAI
 from pydantic import BaseModel, ConfigDict, Field
+from pydantic_core import PydanticUndefined
 
 from evals.calibration_stats import majority_class_baseline, proportion
 
-from .judge import RoutedModelClient, _never_escalate
+from .judge import RepairPatch, RoutedModelClient, _never_escalate
 from .models import (
     BodyAction,
     Digit,
@@ -323,4 +324,125 @@ def score_rejection_audit(outcomes: Sequence[RejectionOutcome]) -> dict[str, Any
         "n_unsupported": len(outcomes) - len(supported),
         "n_refusals": len(refusals),
         "false_rejection_case_ids": sorted(outcome.case_id for outcome in false_rejections),
+    }
+
+
+# ------------------------------------------- ground truth for repair soundness
+
+#: Which `RepairPatch` fields could plausibly address which cited failure. This
+#: is the ground truth plan 10 §4 calls for — "patches synthesized to be
+#: deliberately irrelevant" needs a definition of relevant, and it has to be
+#: written down rather than left to the grader being audited.
+FAILURE_RELEVANT_DELTAS: Mapping[str, tuple[str, ...]] = {
+    "wrist_contortion": ("wrist_pitch_delta", "wrist_yaw_delta", "wrist_roll_delta"),
+    "arm_contortion": ("arm_height_delta", "arm_depth_delta", "elbow_swivel_delta"),
+    "finger_shape_error": ("finger_splay_delta", "thumb_curl_delta", "little_curl_delta"),
+    "hand_cropped": ("arm_height_delta", "arm_depth_delta", "lateral_offset_delta"),
+    "timing_error": (
+        "present_duration_scale",
+        "hold_duration_scale",
+        "shake_duration_scale",
+        "recover_duration_scale",
+        "easing_delta",
+    ),
+    "wrong_strike_path": ("path_arc_delta", "torso_participation_delta"),
+    "weak_lift": ("object_apex_scale", "object_contact_height_delta"),
+    "object_slip": ("object_contact_height_delta", "object_contact_depth_delta"),
+}
+
+def _neutral_patch() -> dict[str, Any]:
+    """A schema-valid `RepairPatch` that changes nothing.
+
+    Derived from the model's own fields rather than hand-listed, so a new delta
+    cannot leave the control patches silently invalid — a control that fails
+    validation is a control that never runs.
+    """
+    patch: dict[str, Any] = {}
+    for name, field in RepairPatch.model_fields.items():
+        if field.default is not PydanticUndefined:
+            patch[name] = field.default
+        elif field.annotation is str:
+            patch[name] = "Synthesized control patch."
+        else:
+            patch[name] = 1.0 if name.endswith("_scale") else 0.0
+    return patch
+
+
+def _neutral_value(field: str) -> float:
+    return 1.0 if field.endswith("_scale") else 0.0
+
+
+def relevant_patch(failure_tag: str, *, magnitude: float = 0.08) -> dict[str, Any]:
+    """A patch that moves parameters which could address `failure_tag`."""
+    patch = _neutral_patch()
+    for field in FAILURE_RELEVANT_DELTAS.get(failure_tag, ()):
+        patch[field] = _neutral_value(field) + magnitude
+    return patch
+
+
+def irrelevant_patch(failure_tag: str, *, magnitude: float = 0.08) -> dict[str, Any]:
+    """A patch that moves only parameters which cannot address `failure_tag`.
+
+    The negative control for repair soundness.  Without it, a grader that answers
+    `responsive: true` unconditionally scores perfectly on any set of real repair
+    attempts, because real attempts are mostly responsive.
+    """
+    relevant = set(FAILURE_RELEVANT_DELTAS.get(failure_tag, ()))
+    candidates = [
+        field
+        for fields in FAILURE_RELEVANT_DELTAS.values()
+        for field in fields
+        if field not in relevant
+    ]
+    if not candidates:
+        raise ValueError(f"no irrelevant deltas available for {failure_tag}")
+    patch = _neutral_patch()
+    for field in sorted(set(candidates))[:3]:
+        patch[field] = _neutral_value(field) + magnitude
+    return patch
+
+
+def inert_patch() -> dict[str, Any]:
+    """A schema-valid patch of all-neutral values. Addresses nothing, by construction.
+
+    A distinct control from `irrelevant_patch`: a grader may well recognise that
+    an all-zero patch does nothing while still being fooled by one that changes
+    the wrong parameters confidently.
+    """
+    return _neutral_patch()
+
+
+@dataclass(frozen=True)
+class RepairSoundnessOutcome:
+    """One synthesized patch, its label, and what the grader said about it."""
+
+    case_id: str
+    #: Ground truth: the patch was built to address the cited failure.
+    is_relevant: bool
+    #: What the grader answered for `responsive`.
+    judged_responsive: bool
+
+
+def score_repair_soundness(outcomes: Sequence[RepairSoundnessOutcome]) -> dict[str, Any]:
+    """How well the grader separates relevant patches from synthesized irrelevant ones.
+
+    Reported as sensitivity and specificity rather than one accuracy figure: a
+    grader that answers `responsive: true` unconditionally has perfect
+    sensitivity and zero specificity, and a single pooled number hides that
+    completely.  The baseline is the majority class, which is what such a grader
+    actually scores.
+    """
+    relevant = [outcome for outcome in outcomes if outcome.is_relevant]
+    irrelevant = [outcome for outcome in outcomes if not outcome.is_relevant]
+    labels = [outcome.is_relevant for outcome in outcomes]
+    return {
+        "sensitivity": proportion(
+            sum(outcome.judged_responsive for outcome in relevant), len(relevant)
+        ),
+        "specificity": proportion(
+            sum(not outcome.judged_responsive for outcome in irrelevant), len(irrelevant)
+        ),
+        "baseline": majority_class_baseline(labels) if labels else None,
+        "n_relevant": len(relevant),
+        "n_irrelevant": len(irrelevant),
     }
