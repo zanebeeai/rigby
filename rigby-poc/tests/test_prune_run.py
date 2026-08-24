@@ -138,3 +138,50 @@ def test_candidate_ids_are_collected_in_trace_order_without_duplicates() -> None
         ]
     }
     assert candidate_result_ids(trace) == ["a", "b", "c"]
+
+
+def test_a_result_id_that_is_not_a_bare_name_is_never_followed(tmp_path: Path) -> None:
+    """A trace supplies result ids, so they are validated as names, not trusted as paths.
+
+    Covers the shapes that differ between platforms: a nested path, a Windows separator,
+    an absolute path, and a parent traversal. None of them may reach the filesystem.
+    """
+    store = tmp_path / "results"
+    _store(store, ALL)
+    nested = store / "000004-d" / "deeper"
+    nested.mkdir(parents=True)
+    (nested / "clip.json").write_text("nested", encoding="utf-8")
+    outside = tmp_path / "elsewhere"
+    outside.mkdir()
+    (outside / "clip.json").write_text("precious", encoding="utf-8")
+
+    hostile = [
+        "000004-d/deeper",
+        "000004-d\\deeper",
+        "../elsewhere",
+        "..",
+        str(outside),
+        "",
+    ]
+    run_dir = _run(
+        tmp_path, status="completed", winner="000002-b", candidates=[*ALL, *hostile]
+    )
+    plan = plan_prune(run_dir, store_root=store)
+    assert {result_id for result_id, _ in plan.prunable} == {"000001-a", "000003-c"}
+    apply_prune(plan)
+    assert (nested / "clip.json").is_file()
+    assert (outside / "clip.json").is_file()
+
+
+def test_containment_is_by_ancestry_so_a_nested_store_layout_is_not_silently_skipped(
+    tmp_path: Path,
+) -> None:
+    """Parent equality would reject anything more than one level deep, which is a
+    correctness gap independent of platform: the check is `root in folder.parents`."""
+    store = tmp_path / "results"
+    _store(store, ALL)
+    run_dir = _run(tmp_path, status="completed", winner="000002-b", candidates=ALL)
+    plan = plan_prune(run_dir, store_root=store)
+    folder = (store / "000001-a").resolve()
+    assert store.resolve() in folder.parents
+    assert any(result_id == "000001-a" for result_id, _ in plan.prunable)

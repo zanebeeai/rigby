@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Iterable
@@ -27,6 +28,9 @@ from rigby_poc.compiler import PROJECT_ROOT
 # The record of a losing candidate; everything else about it is reproducible by
 # recompiling its program, which is deterministic (plan 03 section 1.1).
 RETAINED_FILES = ("request.json", "scene.json", "program.json", "metrics.json", "provenance.json")
+# A result id names one directory directly under the store. It arrives from a trace file,
+# which is data, so it is validated as a name rather than trusted as a path.
+SAFE_RESULT_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
 PRUNABLE_FILES = ("clip.json", "animation.glb")
 TERMINAL_STATUSES = frozenset({"completed", "failed", "unsupported", "no_acceptable_candidate"})
 
@@ -114,13 +118,19 @@ def plan_prune(
         winner_result_id=winner_id,
         protected=sorted(protected),
     )
+    resolved_root = root.resolve()
     for result_id in candidate_result_ids(trace):
         if result_id in protected:
             continue
+        # Two independent checks, because this tool deletes. The first rejects anything
+        # that is not a bare directory name, on either platform's separator. The second
+        # is containment by ancestry rather than by parent equality: equality would also
+        # reject a legitimately nested layout, and on Windows `resolve` normalises case
+        # and 8.3 short names, so comparing one component is the wrong instrument.
+        if not SAFE_RESULT_ID.fullmatch(result_id) or Path(result_id).name != result_id:
+            continue
         folder = root / result_id
-        # `resolve` before the containment check: a result id from a trace is data, and
-        # a pruning tool must not be talked into deleting outside the store.
-        if not folder.is_dir() or folder.resolve().parent != root.resolve():
+        if not folder.is_dir() or resolved_root not in folder.resolve().parents:
             continue
         for name in PRUNABLE_FILES:
             path = folder / name
