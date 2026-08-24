@@ -166,7 +166,7 @@ def required_metric_keys(program: MotionProgram) -> frozenset[str]:
 # them. Kept here so the gap between "what the compiler emits" and "what the
 # analysis layer owns" is a readable number rather than folklore.
 DEFERRED_TO_COMPILER: dict[str, str] = {
-    "full-body per-action blocks (13 actions)": "02b",
+    "full-body per-action blocks (12 actions)": "02b",
     "IK support targets and commanded root yaw": "02b",
     "composite per-hand gesture-structure fold": "02c",
     "gesture/strike arm-landmark strike metrics": "02c",
