@@ -58,13 +58,18 @@ ANATOMY_CLAIMS: tuple[ClaimSpec, ...] = (
     ClaimSpec("anatomy.spine.flexion", "The back bends within a range a human spine could reach, ignoring whole-body rotation of the performer as a unit.", tag="arm_contortion"),
     ClaimSpec("anatomy.shoulder.abduction", "Each shoulder configuration is one a human shoulder could adopt.", tag="arm_contortion"),
     ClaimSpec("anatomy.elbow.flexion", "No elbow is bent backwards or hyperextended.", critical=True, tag="arm_contortion"),
-    # The most diagnostic claim in this set. Lane `anatomy` measured the peak
-    # frame carrying -96.1 deg of elbow abduction against 12.4 deg of flexion
-    # while humeral twist is identically zero (max 6.5e-05 deg over 1606 frames).
-    # A human must rotate the humerus to move the forearm out of the upper arm's
-    # sweep plane; Rigby bends the elbow sideways instead. Present above 45 deg
-    # in 251 of 1606 frames across 8 of 12 cases, so it is calibratable rather
-    # than a tail event. Asked as a plane question, which is what is visible.
+    # Lane `anatomy`, re-measured over the 47-case / 5034-frame corpus: peak
+    # elbow abduction 130.6 deg, and 87-94% of all frames carry more than 5 deg
+    # of it, with humeral twist identically zero. A human must rotate the
+    # humerus to move the forearm out of the upper arm's sweep plane; Rigby
+    # bends the elbow sideways instead, as its normal operating state.
+    #
+    # PROVISIONAL as a calibration instrument. At >5 deg this is near-universal
+    # and therefore close to non-discriminating -- the N/N degenerate case. The
+    # claim below is perceptual, so it fires in the large-deviation regime
+    # (nearer the 15.6%-of-frames-above-45-deg figure than the 87% one), but
+    # that is an argument, not a measurement. Do not report agreement on this
+    # claim until the per-case prevalence at a perceptual threshold exists.
     ClaimSpec("anatomy.elbow.abduction", "The forearm stays in the plane the upper arm's rotation allows, rather than swinging sideways off the elbow hinge.", critical=True, tag="arm_contortion"),
     ClaimSpec("anatomy.forearm.twist", "Forearm rotation about its own long axis stays within a human range.", critical=True, tag="wrist_contortion"),
     ClaimSpec("anatomy.wrist.flexion", "No wrist is bent past what a human wrist could reach.", critical=True, tag="wrist_contortion"),
