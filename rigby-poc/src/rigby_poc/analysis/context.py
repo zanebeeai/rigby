@@ -7,6 +7,7 @@ never pays for them.
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from functools import cached_property
 from typing import Any
 
@@ -61,15 +62,17 @@ class AnalysisContext:
 
     def __init__(
         self,
-        clip: ClipResult,
+        frames: list[ClipFrame],
         program: MotionProgram,
         scene: SceneManifest,
+        carried_metrics: Mapping[str, Any] | None = None,
         *,
         kinematics: RigKinematics | None = None,
     ) -> None:
-        self.clip = clip
+        self.frames = list(frames)
         self.program = program
         self.scene = scene
+        self.carried_metrics: Mapping[str, Any] = carried_metrics or {}
         self.kinematics = kinematics or rig_kinematics()
 
     @classmethod
@@ -78,12 +81,35 @@ class AnalysisContext:
         clip: ClipResult,
         program: MotionProgram,
         scene: SceneManifest,
+        *,
+        kinematics: RigKinematics | None = None,
     ) -> "AnalysisContext":
-        return cls(clip, program, scene)
+        return cls(
+            clip.frames, program, scene, clip.metrics, kinematics=kinematics
+        )
 
-    @property
-    def frames(self) -> list[ClipFrame]:
-        return self.clip.frames
+    @classmethod
+    def from_frames(
+        cls,
+        frames: list[ClipFrame],
+        program: MotionProgram,
+        scene: SceneManifest,
+        carried_metrics: Mapping[str, Any],
+        *,
+        kinematics: RigKinematics | None = None,
+    ) -> "AnalysisContext":
+        """Build a context before a :class:`ClipResult` exists.
+
+        ``compile_motion`` needs this: it has the frames and the carry-over
+        metrics in hand but has not assembled the result yet, and the whole
+        point of the extraction is that the compiler and a post-hoc analyzer run
+        the *same* code rather than two implementations that agree by
+        inspection.
+        """
+
+        return cls(
+            frames, program, scene, carried_metrics, kinematics=kinematics
+        )
 
     @property
     def intent(self) -> Intent:
@@ -113,7 +139,7 @@ class AnalysisContext:
         disagree with the clip.
         """
 
-        value = self.clip.metrics.get("phase_ranges_s")
+        value = self.carried_metrics.get("phase_ranges_s")
         return list(value) if isinstance(value, list) else []
 
     def ranges_for_kind(self, kind: str) -> list[tuple[float, float]]:
@@ -226,4 +252,4 @@ class AnalysisContext:
         02b–02e land, these disappear.
         """
 
-        return self.clip.metrics.get(key, default)
+        return self.carried_metrics.get(key, default)

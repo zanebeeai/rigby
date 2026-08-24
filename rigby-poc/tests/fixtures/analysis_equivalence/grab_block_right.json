@@ -1,4 +1,118 @@
 {
+  "compiler_metrics": {
+    "discontinuities": 0,
+    "finger_assertions": {
+      "shape_defined": true
+    },
+    "finger_assertions_computed_from_clip": true,
+    "fixed_root_foot_max_rotation_delta_rad": 0.0,
+    "foot_drift_m": 0.0,
+    "grasp_attempts": 1,
+    "hold_duration_s": 1.0,
+    "joint_limit_violations": 0,
+    "lift_height_m": 0.14242612583030567,
+    "lost_table_contact": true,
+    "max_frame_rotation_delta_rad": 0.2361547251807674,
+    "max_penetration_m": 0.00020399674067208076,
+    "nan_count": 0,
+    "normalized_finger_curls": {
+      "index": 0.9400000000000003,
+      "little": 0.9600000000000002,
+      "middle": 1.0,
+      "ring": 1.0,
+      "thumb": 0.6624000000000001
+    },
+    "opposing_contact_ratio": 1.0,
+    "opposing_contacts": true,
+    "palm_relative_slip_m": 0.0006087841467738311,
+    "phase_ranges_s": [
+      {
+        "end_s": 0.55,
+        "kind": "reach",
+        "start_s": 0.0
+      },
+      {
+        "end_s": 0.8,
+        "kind": "preshape",
+        "start_s": 0.55
+      },
+      {
+        "end_s": 1.0,
+        "kind": "contact",
+        "start_s": 0.8
+      },
+      {
+        "end_s": 1.35,
+        "kind": "close",
+        "start_s": 1.0
+      },
+      {
+        "end_s": 1.9500000000000002,
+        "kind": "lift",
+        "start_s": 1.35
+      },
+      {
+        "end_s": 2.95,
+        "kind": "hold",
+        "start_s": 1.9500000000000002
+      },
+      {
+        "end_s": 3.5,
+        "kind": "recover",
+        "start_s": 2.95
+      }
+    ],
+    "physics_engine": "MuJoCo",
+    "physics_model": {
+      "digit_actuators": [
+        "thumb_act",
+        "index_act",
+        "middle_act",
+        "ring_act",
+        "little_act"
+      ],
+      "digits": {
+        "index": {
+          "contactable": true,
+          "independently_actuated": true
+        },
+        "little": {
+          "contactable": true,
+          "independently_actuated": true
+        },
+        "middle": {
+          "contactable": true,
+          "independently_actuated": true
+        },
+        "ring": {
+          "contactable": true,
+          "independently_actuated": true
+        },
+        "thumb": {
+          "contactable": true,
+          "independently_actuated": true
+        }
+      },
+      "free_block_joint": true,
+      "independent_contact_digits": [
+        "thumb",
+        "index",
+        "middle",
+        "ring",
+        "little"
+      ],
+      "parallel_gripper_proxy": false
+    },
+    "physics_version": "3.11.0",
+    "quaternion_norm_max_error": 1.1102230246251565e-16,
+    "root_drift_m": 0.0,
+    "safety_derivation": "computed over every frame/local delta quaternion and authored hips translation; root motion must remain fixed",
+    "structural_failures": [],
+    "structural_valid": true,
+    "unresolved_non_hand_collisions": 0,
+    "vertical_drift_m": 0.0047466769045738655,
+    "weld_used": false
+  },
   "expected_metrics": {
     "discontinuities": 0,
     "fixed_root_foot_max_rotation_delta_rad": 0.0,

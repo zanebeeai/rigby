@@ -37,6 +37,11 @@ from .contract import (
     skipped,
     upper_bound_check,
 )
+from .full_body import (
+    BODY_ENTRIES,
+    commanded_root_yaw_rad,
+    full_body_metrics,
+)
 from .forearm import (
     parallel_forearm_checks,
     parallel_forearm_failures,
@@ -72,19 +77,8 @@ from .semantic import (
 
 
 # Bone sets each compile path feeds to the angular-kinematics pass. Keyed by
-# intent because the path, not the action, chooses them.
-_FULL_BODY_ANGULAR_BONES = (
-    "hips",
-    "chest",
-    "leftUpperLeg",
-    "leftLowerLeg",
-    "rightUpperLeg",
-    "rightLowerLeg",
-    "leftFoot",
-    "rightFoot",
-    "leftUpperArm",
-    "rightUpperArm",
-)
+# intent because the path, not the action, chooses them. The whole-body list
+# lives with its own pass in ``full_body.balance``.
 _SEQUENCE_ANGULAR_BONES = (
     "hips",
     "chest",
@@ -108,13 +102,13 @@ _ANGULAR_KEYS = (
 def _angular_metrics(ctx: AnalysisContext) -> dict[str, Any]:
     """Reproduce the angular-kinematics keys for the paths that emit them flat.
 
-    The composite path folds per-hand structures instead, so it is excluded
-    here and stays with the compiler until 02c.
+    Whole body has its own copy inside ``full_body.balance``, because that pass
+    owns the ordering of every block it runs. The composite path folds per-hand
+    structures instead, so it is excluded here and stays with the compiler until
+    02c.
     """
 
-    if ctx.intent == Intent.FULL_BODY:
-        bones = list(_FULL_BODY_ANGULAR_BONES)
-    elif ctx.intent == Intent.SEQUENCE:
+    if ctx.intent == Intent.SEQUENCE:
         bones = list(_SEQUENCE_ANGULAR_BONES)
     elif ctx.intent == Intent.OBJECT_INTERACTION:
         prefix = ctx.program.hand.value
@@ -156,6 +150,14 @@ def analyze_context(ctx: AnalysisContext) -> dict[str, Any]:
     if ctx.intent == Intent.UNSUPPORTED or not ctx.frames:
         return metrics
 
+    if ctx.intent == Intent.FULL_BODY:
+        # 02b ported this path whole, safety block included, in the compiler's
+        # order. Returning before the shared call below is not just tidiness:
+        # safety_metrics is one of the two costs that scale with frame count,
+        # and running it twice per analysis was measurably a quarter of the
+        # whole-body pass.
+        return full_body_metrics(ctx)
+
     metrics.update(
         safety_metrics(ctx.frames, allow_root_motion=ctx.allow_root_motion)
     )
@@ -168,10 +170,6 @@ def analyze_context(ctx: AnalysisContext) -> dict[str, Any]:
             semantic_cycle_metrics(ctx.frames, ctx.phase_ranges, ctx.program)
         )
         metrics.update(parallel_forearm_metrics(ctx.frames, ctx.phase_ranges))
-    elif ctx.intent == Intent.FULL_BODY:
-        metrics.update(
-            semantic_cycle_metrics(ctx.frames, ctx.phase_ranges, ctx.program)
-        )
 
     if not _is_handoff(ctx):
         metrics.update(_angular_metrics(ctx))
@@ -260,8 +258,11 @@ __all__ = [
     "CheckStatus",
     "analyze",
     "analyze_context",
+    "BODY_ENTRIES",
     "arm_landmarks",
     "body_analyzer",
+    "commanded_root_yaw_rad",
+    "full_body_metrics",
     "count_check",
     "deferred_actions",
     "evaluate_gesture_structure",
