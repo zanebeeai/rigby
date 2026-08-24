@@ -11,6 +11,9 @@ per-intent sets, and the harness gets stricter for free.
 
 from __future__ import annotations
 
+from collections.abc import Iterator, Mapping
+from typing import Any
+
 from ..models import Intent, MotionProgram, ObjectAction
 
 
@@ -387,3 +390,156 @@ DEFERRED_TO_COMPILER: dict[str, str] = {
     "MuJoCo grasp metrics": "02d",
     "sequence step re-splitting": "02e",
 }
+
+
+# --- the carry-over contract for mutated clips (02b.1) -----------------------
+#
+# A mutation perturbs a compiled ``ClipResult`` and recompiles nothing (plan 06
+# §3.5). So after a mutation ``clip.metrics`` holds three different kinds of
+# thing, and only two of them are safe to read:
+#
+# 1. keys the analysis layer recomputes from the mutated frames — correct by
+#    construction, because they are computed from what is actually there;
+# 2. keys that are **authoring intent** — correct *because* they did not change.
+#    ``support_constraints`` records where the IK solver was told to put the
+#    ankle; moving the frames does not change what was commanded, and holding it
+#    fixed is precisely what makes "the foot missed where it was told to go"
+#    measurable;
+# 3. keys that are **stale observations** — a measurement of a clip that no
+#    longer exists.
+#
+# The third kind is not merely wrong, it is wrong in the direction that
+# manufactures a false negative. ``structural_valid`` is deferred to the
+# compiler for object interaction and sequence, so a mutated object clip
+# inherits ``structural_valid: True`` from the clean compile. A detection matrix
+# scores that as "the targeted check did not fire", which is indistinguishable
+# from a genuine hole in check coverage — the harness hides exactly the finding
+# it exists to surface.
+#
+# Hence: reading a stale key off a mutated clip raises. It does not return
+# ``None`` and it is not silently absent, because a missing key becomes
+# ``metrics.get(key)`` returning ``None`` somewhere downstream and resurfaces as
+# an unrelated symptom three layers away.
+
+
+#: Keys ``compiler._base_metrics`` seeds on every clip and that several compile
+#: paths never write. They are not stale — they were never measured. A whole-body
+#: clip publishes ``max_penetration_m: 0.0`` having never looked for penetration,
+#: and ``lost_table_contact: True`` with no table in the scene.
+#:
+#: This is the same defect lane `infra` found in ``foot_drift_m``, which is a
+#: member of the same dict: a published constant compared against an acceptance
+#: criterion it can never breach. It is one constructor rather than one key, and
+#: which members are real depends on the compile path. Recorded here because the
+#: mutation ledger has to withhold them either way; measuring or deleting them is
+#: plan 08's work.
+UNWRITTEN_BASE_DEFAULTS = frozenset(
+    {
+        "finger_assertions",
+        "hold_duration_s",
+        "lift_height_m",
+        "lost_table_contact",
+        "max_penetration_m",
+        "opposing_contacts",
+        "palm_relative_slip_m",
+        "unresolved_non_hand_collisions",
+        "vertical_drift_m",
+        "weld_used",
+    }
+)
+
+
+class StaleMetricError(KeyError):
+    """A metric that describes the clip as it was before it was mutated."""
+
+
+#: Keys that survive a mutation because they were never observations of motion.
+#: Deliberately conservative: a key earns a place here only when its value is a
+#: function of the program, the scene or the compiler configuration, never of
+#: the frames. Everything else is treated as stale, because the failure modes are
+#: not symmetric — a key wrongly called stale raises an error a developer fixes
+#: in one line, while a key wrongly called intent returns a plausible number
+#: nobody ever questions.
+#:
+#: Incomplete on purpose for object interaction and sequence. Those paths keep
+#: ~79 metric keys inside ``compiler.py`` (plan 02 §6.4), and classifying them
+#: needs the same reading of the compiler that porting them would need. Until
+#: 02d/02e land, their keys stay stale unless listed here.
+CARRIED_AUTHORING_INTENT = frozenset(
+    {
+        # authored timing and structure, read back rather than re-derived
+        "phase_ranges_s",
+        "body_actions",
+        "root_motion_enabled",
+        "sequence_step_ranges_s",
+        "sequence_step_count",
+        "sequence_intents",
+        "object_action",
+        # commanded IK targets: what the solver was asked for, not what it hit
+        "support_constraints",
+        "climb_support_constraints",
+        # compiler and physics provenance
+        "physics_engine",
+        "physics_model",
+        "physics_version",
+        "safety_derivation",
+        "quality_reference_schema",
+        "quality_reference_source",
+        "quality_limits",
+        "full_fov_camera_contract",
+    }
+)
+
+
+def stale_after_mutation(
+    compiled_metrics: "Mapping[str, Any]", program: MotionProgram
+) -> frozenset[str]:
+    """Keys of a compiled clip that a mutation invalidates.
+
+    Derived, not listed: whatever the compiler emitted, minus what the analysis
+    layer recomputes for this program, minus verified authoring intent. That
+    makes the set shrink on its own as 02c–02e port more paths, and it cannot
+    drift out of step with the registry the way a hand-maintained list would —
+    the drift would be silent and in the direction of re-admitting stale keys.
+    """
+
+    return frozenset(
+        set(compiled_metrics) - owned_metric_keys(program) - CARRIED_AUTHORING_INTENT
+    )
+
+
+class MutationSafeMetrics(Mapping[str, Any]):
+    """``clip.metrics`` for a mutated clip, with the stale keys made loud.
+
+    Recomputed and carried keys read normally. A stale key raises
+    :class:`StaleMetricError` naming the key and the PR that would fix it, at
+    the line that asked for it.
+
+    Iteration and ``len`` cover only the readable keys, so a consumer that
+    enumerates metrics sees the honest set rather than one that explodes
+    halfway through. ``stale`` exposes what was withheld, which is what lets a
+    detection matrix render "no detector exists" instead of "zero detections" —
+    different claims, and only one of them is true.
+    """
+
+    def __init__(
+        self, compiled_metrics: "Mapping[str, Any]", program: MotionProgram
+    ) -> None:
+        self._metrics = dict(compiled_metrics)
+        self.stale = stale_after_mutation(compiled_metrics, program)
+
+    def __getitem__(self, key: str) -> Any:
+        if key in self.stale:
+            raise StaleMetricError(
+                f"{key!r} was measured before this clip was mutated and no "
+                "longer describes it. The analysis layer does not own it yet "
+                f"(see DEFERRED_TO_COMPILER); recompute it or drop the claim "
+                "that depends on it."
+            )
+        return self._metrics[key]
+
+    def __iter__(self) -> "Iterator[str]":
+        return iter(key for key in self._metrics if key not in self.stale)
+
+    def __len__(self) -> int:
+        return len(self._metrics) - len(self.stale)

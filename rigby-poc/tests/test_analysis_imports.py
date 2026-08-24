@@ -16,7 +16,19 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
-ALLOWED_SIBLINGS = {"rigby_poc", "rigby_poc.models", "rigby_poc.kinematics", "rigby_poc.primitives"}
+# ``thresholds`` is allowed because reading a committed limit file is part of
+# being runnable against a stored clip, not in tension with it: a check that
+# cannot reach its own threshold is no more portable than one that needs the
+# compiler. Its whole import closure is itself -- stdlib only, no numpy, no
+# scipy, no rig, no I/O beyond one lru_cached JSON read -- which makes it a
+# strictly cleaner dependency than ``primitives``, already allowed here.
+ALLOWED_SIBLINGS = {
+    "rigby_poc",
+    "rigby_poc.models",
+    "rigby_poc.kinematics",
+    "rigby_poc.primitives",
+    "rigby_poc.thresholds",
+}
 
 
 def _modules_after_importing(statement: str) -> set[str]:
