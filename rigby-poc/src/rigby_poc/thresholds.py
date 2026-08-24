@@ -26,11 +26,18 @@ SourceKind = Literal["measured", "invariant", "external", "provisional"]
 #: A source that claims empirical derivation must be able to state its n.
 #: Recording a ceiling as a bare float is how the current global kinematic
 #: ceilings came to be derived from six clips of one gesture.
+#:
+#: It must also state its ``reference_frame``. A number can carry a correct n,
+#: be computed correctly, and still be wrong because it was measured against the
+#: wrong zero -- lane ``anatomy`` published and then retracted an elbow
+#: hyperextension figure that compared rig-rest-relative deltas against clinical
+#: references assuming anatomical neutral. No n-and-baseline check catches that;
+#: stating the reference next to the number does.
 EMPIRICAL_KINDS: frozenset[str] = frozenset({"measured"})
 
 #: Required keys per source kind, beyond ``kind`` and ``cites``.
 REQUIRED_SOURCE_FIELDS: dict[str, frozenset[str]] = {
-    "measured": frozenset({"n", "derived_from", "date"}),
+    "measured": frozenset({"n", "derived_from", "date", "reference_frame"}),
     "invariant": frozenset({"rationale"}),
     "external": frozenset({"derived_from"}),
     "provisional": frozenset({"rationale"}),

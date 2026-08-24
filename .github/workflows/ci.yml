@@ -102,3 +102,42 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
+
+  # Cross-ISA hashes can only be contributed by a machine of that ISA, and every
+  # developer here is on darwin-arm64. This job runs the corpus bless on Windows
+  # and uploads the result as an artifact so lane `groundtruth` can merge the
+  # win32-amd64 column into evals/corpus without owning a Windows machine.
+  #
+  # It NEVER commits and it never gates: `continue-on-error` here is not papering
+  # over a failure, because the job asserts nothing. Its whole output is the
+  # artifact. The actual cross-platform assertion is in the pytest job above and
+  # that one is allowed to go red.
+  windows-corpus-hashes:
+    needs: select-platforms
+    if: contains(needs.select-platforms.outputs.os, 'windows')
+    runs-on: windows-latest
+    continue-on-error: true
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: rigby-poc
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: rigby-poc/uv.lock
+      - run: uv sync --extra dev
+
+      - name: bless the corpus for this platform
+        run: uv run python -m evals.corpus bless --write
+
+      - name: show what this platform contributed
+        run: git --no-pager diff --stat -- evals/corpus
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: corpus-hashes-win32-amd64
+          path: rigby-poc/evals/corpus/cases/**/expected.json
+          if-no-files-found: warn

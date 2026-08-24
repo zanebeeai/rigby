@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "$comment": "Single versioned home for every numeric gate. See docs/plans/08-threshold-consolidation.md. Every entry carries a structured `source`; an entry claiming empirical derivation must state its n. 08a ports values only -- no call site reads this file yet; 08b repoints them.",
   "source_kinds": {
-    "measured": "Derived from data. REQUIRES n, derived_from and date. May carry percentile.",
+    "measured": "Derived from data. REQUIRES n, derived_from, date and reference_frame. May carry percentile. `reference_frame` states the zero the measurement is relative to: a number with a correct n, correctly computed against the wrong reference, is wrong in a way no n-and-baseline check can catch.",
     "invariant": "An implementation contract, not a measurement. REQUIRES rationale.",
     "external": "Taken from a rig asset, spec or upstream artifact. REQUIRES derived_from.",
     "provisional": "Explicitly unvalidated. REQUIRES rationale. The value may be wrong."
@@ -167,12 +167,13 @@
         "date": "unrecorded"
       },
       "by_family_contract": {
-        "owner": "plan 10 PR 10d (lane groundtruth)",
+        "owner": "plan 10 PR 10d (lane groundtruth) -- from a SWEEP over generated clips, not from the corpus",
         "requires": [
           "n",
           "percentile",
           "derived_from",
-          "date"
+          "date",
+          "bone_set"
         ],
         "families": [
           "gesture",
@@ -183,7 +184,13 @@
           "composite",
           "sequence"
         ],
-        "note": "Empty by design. 08 SS6.2: do not invent per-family numbers here -- inventing them is precisely how the current default came to exist. groundtruth records that the corpus is selected by greedy set-cover over check coverage, not sampled to be distribution-representative, so a percentile over it is a percentile of a coverage-maximising sample; that limitation must be stated alongside any value written here."
+        "note": "Empty by design. 08 SS6.2: do not invent per-family numbers here -- inventing them is precisely how the current default came to exist. groundtruth records that the corpus is selected by greedy set-cover over check coverage, not sampled to be distribution-representative, so a percentile over it is a percentile of a coverage-maximising sample; that limitation must be stated alongside any value written here.",
+        "bone_set_note": "The angular-kinematics bone set is chosen per COMPILE PATH, not per action: whole body uses ten bones including both feet, sequence swaps the feet for both forearms, object interaction uses three bones of the active arm, and gesture and strike get theirs from evaluate_gesture_structure. A percentile pooled across families is therefore pooled across different skeletons and is not a measurement of one thing. Any value written here must name the bone set it was derived over, or it is not comparable to the value beside it. Raised by lane `anatomy`, 2026-08-24.",
+        "caveat": "The golden corpus is selected by greedy set-cover over check coverage, not sampled to be distribution-representative, so a percentile over it is a percentile of a coverage-maximising sample. With roughly 4 strike and 12 full-body cases across a 40-case target, a per-family percentile may not be derivable from the corpus at all. Leaving by_family empty and saying so is a legal and preferred outcome. Raised by lane `groundtruth`, 2026-08-24.",
+        "status": "NOT_DERIVABLE_FROM_THE_CORPUS",
+        "resolved": "2026-08-24",
+        "resolution": "08 SS6.2 resolved: by_family stays EMPTY and the per-family values are deferred to a sweep over generated clips, which must state its own n and its bone set. Three reasons, any one sufficient. (1) n is too small: the 46-case corpus holds 4 strike and 10 full-body cases; a p95 over 4 is not a ceiling. (2) The corpus is selected by greedy set-cover over check coverage, not sampled to be distribution-representative. (3) Disqualifying on its own: the angular bone set is chosen per compile path, so a full_body percentile and a sequence percentile are not measured over the same skeleton and are not comparable quantities. An empty map is the honest state.",
+        "why_by_family_is_needed_at_all": "Measured by lane `groundtruth` and confirmed by lane `analysis`, 2026-08-24: _compile_full_body computes max_angular_velocity/acceleration/jerk and NEVER compares them to hard_limits -- only the gesture/strike/composite path enforces the ceilings. Five of the ten committed full-body cases exceed the acceleration and jerk ceilings by up to 2.9x and 3.4x while reporting structural_valid: true, and two of the five are plain `walk` and `run`. So enforcing this PROVISIONAL default -- derived from six hand-picked hang-ten GESTURE clips -- on the full-body path would reject half of ordinary locomotion. That is the concrete case for per-family ceilings, and it is why deriving them badly would be worse than leaving them empty. Pinned by tests/test_corpus_known_bad.py::test_the_full_body_path_enforces_no_calibrated_ceiling."
       }
     },
     "signal.angular_acceleration_max_rad_s2": {
@@ -204,12 +211,13 @@
         "date": "unrecorded"
       },
       "by_family_contract": {
-        "owner": "plan 10 PR 10d (lane groundtruth)",
+        "owner": "plan 10 PR 10d (lane groundtruth) -- from a SWEEP over generated clips, not from the corpus",
         "requires": [
           "n",
           "percentile",
           "derived_from",
-          "date"
+          "date",
+          "bone_set"
         ],
         "families": [
           "gesture",
@@ -219,7 +227,13 @@
           "object",
           "composite",
           "sequence"
-        ]
+        ],
+        "bone_set_note": "The angular-kinematics bone set is chosen per COMPILE PATH, not per action: whole body uses ten bones including both feet, sequence swaps the feet for both forearms, object interaction uses three bones of the active arm, and gesture and strike get theirs from evaluate_gesture_structure. A percentile pooled across families is therefore pooled across different skeletons and is not a measurement of one thing. Any value written here must name the bone set it was derived over, or it is not comparable to the value beside it. Raised by lane `anatomy`, 2026-08-24.",
+        "caveat": "The golden corpus is selected by greedy set-cover over check coverage, not sampled to be distribution-representative, so a percentile over it is a percentile of a coverage-maximising sample. With roughly 4 strike and 12 full-body cases across a 40-case target, a per-family percentile may not be derivable from the corpus at all. Leaving by_family empty and saying so is a legal and preferred outcome. Raised by lane `groundtruth`, 2026-08-24.",
+        "status": "NOT_DERIVABLE_FROM_THE_CORPUS",
+        "resolved": "2026-08-24",
+        "resolution": "08 SS6.2 resolved: by_family stays EMPTY and the per-family values are deferred to a sweep over generated clips, which must state its own n and its bone set. Three reasons, any one sufficient. (1) n is too small: the 46-case corpus holds 4 strike and 10 full-body cases; a p95 over 4 is not a ceiling. (2) The corpus is selected by greedy set-cover over check coverage, not sampled to be distribution-representative. (3) Disqualifying on its own: the angular bone set is chosen per compile path, so a full_body percentile and a sequence percentile are not measured over the same skeleton and are not comparable quantities. An empty map is the honest state.",
+        "why_by_family_is_needed_at_all": "Measured by lane `groundtruth` and confirmed by lane `analysis`, 2026-08-24: _compile_full_body computes max_angular_velocity/acceleration/jerk and NEVER compares them to hard_limits -- only the gesture/strike/composite path enforces the ceilings. Five of the ten committed full-body cases exceed the acceleration and jerk ceilings by up to 2.9x and 3.4x while reporting structural_valid: true, and two of the five are plain `walk` and `run`. So enforcing this PROVISIONAL default -- derived from six hand-picked hang-ten GESTURE clips -- on the full-body path would reject half of ordinary locomotion. That is the concrete case for per-family ceilings, and it is why deriving them badly would be worse than leaving them empty. Pinned by tests/test_corpus_known_bad.py::test_the_full_body_path_enforces_no_calibrated_ceiling."
       }
     },
     "signal.angular_jerk_max_rad_s3": {
@@ -240,12 +254,13 @@
         "date": "unrecorded"
       },
       "by_family_contract": {
-        "owner": "plan 10 PR 10d (lane groundtruth)",
+        "owner": "plan 10 PR 10d (lane groundtruth) -- from a SWEEP over generated clips, not from the corpus",
         "requires": [
           "n",
           "percentile",
           "derived_from",
-          "date"
+          "date",
+          "bone_set"
         ],
         "families": [
           "gesture",
@@ -255,7 +270,13 @@
           "object",
           "composite",
           "sequence"
-        ]
+        ],
+        "bone_set_note": "The angular-kinematics bone set is chosen per COMPILE PATH, not per action: whole body uses ten bones including both feet, sequence swaps the feet for both forearms, object interaction uses three bones of the active arm, and gesture and strike get theirs from evaluate_gesture_structure. A percentile pooled across families is therefore pooled across different skeletons and is not a measurement of one thing. Any value written here must name the bone set it was derived over, or it is not comparable to the value beside it. Raised by lane `anatomy`, 2026-08-24.",
+        "caveat": "The golden corpus is selected by greedy set-cover over check coverage, not sampled to be distribution-representative, so a percentile over it is a percentile of a coverage-maximising sample. With roughly 4 strike and 12 full-body cases across a 40-case target, a per-family percentile may not be derivable from the corpus at all. Leaving by_family empty and saying so is a legal and preferred outcome. Raised by lane `groundtruth`, 2026-08-24.",
+        "status": "NOT_DERIVABLE_FROM_THE_CORPUS",
+        "resolved": "2026-08-24",
+        "resolution": "08 SS6.2 resolved: by_family stays EMPTY and the per-family values are deferred to a sweep over generated clips, which must state its own n and its bone set. Three reasons, any one sufficient. (1) n is too small: the 46-case corpus holds 4 strike and 10 full-body cases; a p95 over 4 is not a ceiling. (2) The corpus is selected by greedy set-cover over check coverage, not sampled to be distribution-representative. (3) Disqualifying on its own: the angular bone set is chosen per compile path, so a full_body percentile and a sequence percentile are not measured over the same skeleton and are not comparable quantities. An empty map is the honest state.",
+        "why_by_family_is_needed_at_all": "Measured by lane `groundtruth` and confirmed by lane `analysis`, 2026-08-24: _compile_full_body computes max_angular_velocity/acceleration/jerk and NEVER compares them to hard_limits -- only the gesture/strike/composite path enforces the ceilings. Five of the ten committed full-body cases exceed the acceleration and jerk ceilings by up to 2.9x and 3.4x while reporting structural_valid: true, and two of the five are plain `walk` and `run`. So enforcing this PROVISIONAL default -- derived from six hand-picked hang-ten GESTURE clips -- on the full-body path would reject half of ordinary locomotion. That is the concrete case for per-family ceilings, and it is why deriving them badly would be worse than leaving them empty. Pinned by tests/test_corpus_known_bad.py::test_the_full_body_path_enforces_no_calibrated_ceiling."
       }
     },
     "anatomy.wrist_swing_max_rad": {

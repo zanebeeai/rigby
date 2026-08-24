@@ -100,6 +100,26 @@ def test_an_empirical_source_cannot_omit_its_n() -> None:
         )
 
 
+def test_a_measured_source_states_the_zero_it_was_measured_against() -> None:
+    """A correct n over a correct computation against the wrong zero is still wrong.
+
+    Lane `anatomy` published, then retracted, an elbow hyperextension figure that
+    compared rig-rest-relative DOF deltas against clinical references assuming
+    anatomical neutral. The n was right and the arithmetic was right. No
+    n-and-baseline check catches that; requiring the reference next to the number
+    does.
+    """
+
+    for key, entry in _raw()["thresholds"].items():
+        source = entry["source"]
+        if source["kind"] not in EMPIRICAL_KINDS:
+            continue
+        assert source.get("reference_frame"), (
+            f"{key} claims an empirical source but does not state the reference "
+            f"frame its measurement is relative to"
+        )
+
+
 def test_a_provisional_source_says_so_in_its_rationale() -> None:
     """`provisional` is honest only if the entry does not read as validated."""
 
@@ -124,9 +144,29 @@ def test_per_family_entries_declare_their_derivation_contract() -> None:
         contract = entry.get("by_family_contract")
         assert contract, f"{key} has by_family but no by_family_contract"
         assert contract.get("owner"), f"{key}.by_family_contract must name an owner"
-        assert "n" in contract.get("requires", []), (
-            f"{key}.by_family_contract must require `n` of any value written into it"
+        for field in ("n", "bone_set"):
+            assert field in contract.get("requires", []), (
+                f"{key}.by_family_contract must require `{field}` of any value written "
+                f"into it"
+            )
+
+
+def test_an_unfilled_by_family_states_why_it_is_unfilled() -> None:
+    """An empty map is legal only if it is a decision rather than an omission.
+
+    08 §6.2 resolved 2026-08-24: not derivable from the corpus. The contract has
+    to carry the reason, or a later reader cannot tell "nobody got to it" from
+    "we established this cannot be done from this source".
+    """
+
+    for key, entry in _raw()["thresholds"].items():
+        if entry.get("by_family") != {}:
+            continue
+        contract = entry["by_family_contract"]
+        assert contract.get("resolution"), (
+            f"{key}.by_family is empty; the contract must say why, not just who"
         )
+        assert contract.get("resolved"), f"{key}.by_family_contract must be dated"
 
 
 def test_by_family_values_are_a_subset_of_the_declared_families() -> None:
