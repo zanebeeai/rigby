@@ -166,19 +166,25 @@ class AnalysisContext:
         """
 
         if self.intent == Intent.COMPOSITE:
-            ranges: list[tuple[float, float]] = []
-            for item in self.phase_ranges:
-                if item.get("kind") == PrimitiveKind.RECOVER.value:
-                    continue
-                start = float(item["start_s"])
-                duration = float(item["end_s"]) - start
-                offset = (
-                    duration * 0.50
-                    if item.get("label") == _TRAVEL_SETUP_LABEL
-                    else min(0.15, duration * 0.25)
+            # Read, never re-derived. The composite window opens at a fraction
+            # of each phase's *authored* duration, and ``phase_ranges_s`` cannot
+            # supply that: its bounds are running sums, so ``end_s - start_s``
+            # differs from the authored duration by whatever rounding the
+            # running total has accumulated. Measured on the finger-count case,
+            # re-deriving moved two of nine windows by one ulp -- small, and
+            # more than enough to move every metric computed over them.
+            #
+            # Plan 02 §1.5 called this "reconstructible from kind and label".
+            # It is reconstructible approximately, which for this layer is the
+            # same as not reconstructible.
+            persisted = self.carried_metrics.get("presentation_ranges_s")
+            if persisted is None:
+                raise ValueError(
+                    "composite clips carry presentation_ranges_s; this clip has "
+                    "none, so it was compiled before 02c and cannot be analysed "
+                    "without re-deriving a window that would not match"
                 )
-                ranges.append((start + offset, float(item["end_s"])))
-            return ranges
+            return [(float(start), float(end)) for start, end in persisted]
         kinds = _PRESENTATION_KINDS.get(self.intent)
         if kinds is None:
             return []

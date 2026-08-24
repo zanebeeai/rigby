@@ -68,7 +68,12 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from rigby_poc import analysis  # noqa: E402
 from rigby_poc.compiler import compile_motion  # noqa: E402
-from rigby_poc.models import CompileRequest, PlanRequest, default_scene  # noqa: E402
+from rigby_poc.models import (  # noqa: E402
+    CompileRequest,
+    MotionProgram,
+    PlanRequest,
+    default_scene,
+)
 from rigby_poc.planner import OfflinePlanner  # noqa: E402
 
 
@@ -136,7 +141,10 @@ CASES: list[tuple[str, str]] = [
     ("full_body_turn", "turn around"),
     ("full_body_run", "run forward four steps"),
     ("full_body_crouch", "crouch down"),
+    # --- 02c: hand paths, including a branch the planner cannot reach ---
+    ("strike_shake_echo", "jab while the wrist shakes"),
 ]
+
 
 
 def canonical(value: object) -> str:
@@ -147,14 +155,63 @@ def _compact(value: object) -> str:
     return json.dumps(value, sort_keys=True, ensure_ascii=False)
 
 
+#: Cases whose program cannot be reached through the offline planner but is
+#: accepted by ``MotionProgram`` validation, and therefore by the API. They
+#: exist to cover compiler branches that only a hand-authored program reaches —
+#: a real clip a caller can produce, not a synthetic one.
+AUTHORED_CASES: dict[str, "MotionProgram"] = {}
+
+
+def _authored_strike_shake() -> "MotionProgram":
+    """A strike that also carries a shake primitive.
+
+    Reaches the ``forearm_rotation_cycles`` echo described in plan 02 §1.6: the
+    compiler seeds the key from the planner's requested ``wrist_shake_cycles``
+    and only overwrites it with the measured value on the GESTURE path, so this
+    program publishes a metric named as a measurement whose value is the request
+    verbatim. The planner never emits it; ``MotionProgram`` accepts it.
+    """
+
+    from rigby_poc.models import (
+        Hand,
+        Intent,
+        MotionPrimitive,
+        PrimitiveKind,
+        PrimitiveParameters,
+        StrikeType,
+    )
+
+    return MotionProgram(
+        intent=Intent.STRIKE,
+        hand=Hand.RIGHT,
+        strike_type=StrikeType.JAB,
+        source_text="jab while the wrist shakes",
+        primitives=[
+            MotionPrimitive(
+                kind=PrimitiveKind.SHAKE,
+                label="strike_shake_1",
+                parameters=PrimitiveParameters(
+                    duration_s=1.0,
+                    wrist_shake_cycles=4.0,
+                    wrist_shake_amplitude=0.8,
+                ),
+            )
+        ],
+    )
+
+
 def build_case(case_id: str, prompt: str) -> tuple[dict, dict]:
     """Return ``(case, compiler_metrics)`` for one prompt."""
 
     scene = default_scene()
-    outcome = OfflinePlanner().plan(
-        PlanRequest(text=prompt, scene=scene, provider="offline")
-    )
-    program = outcome.program
+    authored = AUTHORED_CASES.get(case_id)
+    if authored is not None:
+        program = authored
+    else:
+        outcome = OfflinePlanner().plan(
+            PlanRequest(text=prompt, scene=scene, provider="offline")
+        )
+        program = outcome.program
     clip = compile_motion(
         CompileRequest(scene=scene, program=program, persist=False)
     )
@@ -170,6 +227,9 @@ def build_case(case_id: str, prompt: str) -> tuple[dict, dict]:
         "expected_metrics": analysis.analyze(clip, program, scene),
     }
     return case, json.loads(json.dumps(clip.metrics))
+
+
+AUTHORED_CASES["strike_shake_echo"] = _authored_strike_shake()
 
 
 def main() -> None:

@@ -316,6 +316,8 @@ FULL_BODY_KEYS = FULL_BODY_SHARED_KEYS.union(*FULL_BODY_GATED_KEYS.values())
 
 # Written by the compiler *before* the measurement pass and read by it, not
 # produced by it. ``analyze`` never emits them, so they belong in neither set.
+COMPOSITE_CARRIED_KEYS = frozenset({"phase_ranges_s", "presentation_ranges_s"})
+
 FULL_BODY_CARRIED_KEYS = frozenset(
     {
         "phase_ranges_s",
@@ -472,6 +474,7 @@ CARRIED_AUTHORING_INTENT = frozenset(
         "body_actions",
         "root_motion_enabled",
         "sequence_step_ranges_s",
+        "presentation_ranges_s",
         "sequence_step_count",
         "sequence_intents",
         "object_action",

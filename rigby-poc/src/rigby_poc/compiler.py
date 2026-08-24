@@ -3173,6 +3173,16 @@ def _compile_composite(scene: SceneManifest, program: MotionProgram) -> ClipResu
 
     metrics = _base_metrics()
     metrics["phase_ranges_s"] = phase_ranges
+    # Authoring intent, not observation, and not recoverable from phase_ranges_s.
+    # The window opens part-way into each phase, at a fraction of the phase's
+    # *authored* duration -- but phase_ranges_s stores start and end as running
+    # sums, so ``end_s - start_s`` carries whatever rounding ``elapsed`` has
+    # accumulated by then. On a ten-phase finger count that is enough to move
+    # the window by one ulp, which is enough to move a metric derived from it.
+    # Persist the interval rather than have a post-hoc pass re-derive it wrong.
+    metrics["presentation_ranges_s"] = [
+        [float(start), float(end)] for start, end in presentation_ranges
+    ]
     metrics["active_hands"] = [hand.value for hand in program.hands]
     metrics["composite_segment_count"] = len(program.primitives)
     metrics["trajectory_cycles"] = max(

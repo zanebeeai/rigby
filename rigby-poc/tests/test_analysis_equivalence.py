@@ -89,6 +89,11 @@ ADDED_COMPILER_KEYS: dict[str, str] = {
         "max_support_foot_target_error_m, max_support_foot_slide_per_frame_m "
         "and support_contact_fraction"
     ),
+    "presentation_ranges_s": (
+        "the composite presentation window, which opens at a fraction of each "
+        "phase's authored duration; phase_ranges_s stores running sums, so "
+        "re-deriving it moves the window by an ulp (plan 02 §1.5)"
+    ),
     "climb_support_constraints": (
         "commanded per-limb climb support targets; feeds "
         "climb_support_target_max_error_m and climb_three_point_support_fraction"
