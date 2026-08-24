@@ -968,57 +968,6 @@ class RoutedModelClient:
             return None
         return max(0, self.max_model_calls - self.model_calls_made)
 
-
-class VLMJudge(RoutedModelClient):
-    def __init__(
-        self,
-        client: OpenAI | None = None,
-        model: str | None = None,
-        *,
-        fallback_model: str | None = None,
-        reasoning_effort: str | None = None,
-        image_detail: str | None = None,
-        max_image_dimension_px: int | None = None,
-        escalation_confidence: float = DEFAULT_JUDGE_ESCALATION_CONFIDENCE,
-        max_model_calls: int | None = None,
-        grader_mode: str | None = None,
-    ) -> None:
-        super().__init__(
-            client=client,
-            model=model or os.getenv("OPENAI_JUDGE_MODEL", DEFAULT_JUDGE_MODEL),
-            fallback_model=(
-                fallback_model
-                or (model if model is not None else None)
-                or os.getenv("OPENAI_JUDGE_FALLBACK_MODEL", DEFAULT_JUDGE_FALLBACK_MODEL)
-            ),
-            reasoning_effort=reasoning_effort,
-            max_model_calls=max_model_calls,
-        )
-        self.image_detail = image_detail or os.getenv(
-            "OPENAI_JUDGE_IMAGE_DETAIL", DEFAULT_JUDGE_IMAGE_DETAIL
-        )
-        configured_dimension = max_image_dimension_px or int(
-            os.getenv(
-                "OPENAI_JUDGE_MAX_IMAGE_DIMENSION_PX",
-                str(DEFAULT_JUDGE_MAX_IMAGE_DIMENSION_PX),
-            )
-        )
-        if configured_dimension < 512:
-            raise ValueError("judge image dimension must be at least 512 pixels")
-        if self.image_detail not in {"low", "high", "original"}:
-            raise ValueError("judge image detail must be low, high, or original")
-        self.max_image_dimension_px = configured_dimension
-        self.escalation_confidence = escalation_confidence
-        # The split graders stay opt-in until 07d.  Production runs on a
-        # four-call budget (`pipeline.py:167`) that five graders per candidate
-        # cannot fit inside, so the flag defaults to the combined path.
-        resolved_mode = grader_mode or os.getenv(
-            "RIGBY_JUDGE_GRADER_MODE", DEFAULT_JUDGE_GRADER_MODE
-        )
-        if resolved_mode not in JUDGE_GRADER_MODES:
-            raise ValueError(f"judge grader mode must be one of {JUDGE_GRADER_MODES}")
-        self.grader_mode = resolved_mode
-
     def _parse_response(
         self,
         *,
@@ -1072,38 +1021,6 @@ class VLMJudge(RoutedModelClient):
                 # request without regenerating candidates or captures.
                 time.sleep(1.5 * (2**transient_attempt))
                 transient_attempt += 1
-
-    def _images(
-        self,
-        snapshots: list[dict[str, Any]],
-        *,
-        prefix: str = "",
-        labels: set[str] | None = None,
-        payload_audit: list[dict[str, Any]],
-    ) -> list[dict[str, Any]]:
-        return _image_content(
-            snapshots,
-            prefix=prefix,
-            labels=labels,
-            detail=self.image_detail,
-            max_dimension_px=self.max_image_dimension_px,
-            payload_audit=payload_audit,
-        )
-
-    def _timeline(
-        self,
-        snapshots: list[dict[str, Any]],
-        *,
-        prefix: str = "",
-        payload_audit: list[dict[str, Any]],
-    ) -> list[dict[str, Any]]:
-        return _timeline_content(
-            snapshots,
-            prefix=prefix,
-            detail=self.image_detail,
-            max_dimension_px=self.max_image_dimension_px,
-            payload_audit=payload_audit,
-        )
 
     def _routed_parse(
         self,
@@ -1176,6 +1093,89 @@ class VLMJudge(RoutedModelClient):
             "remaining_model_calls": self.remaining_model_calls,
         }
         return response, parsed, attempts, routing
+
+
+class VLMJudge(RoutedModelClient):
+    def __init__(
+        self,
+        client: OpenAI | None = None,
+        model: str | None = None,
+        *,
+        fallback_model: str | None = None,
+        reasoning_effort: str | None = None,
+        image_detail: str | None = None,
+        max_image_dimension_px: int | None = None,
+        escalation_confidence: float = DEFAULT_JUDGE_ESCALATION_CONFIDENCE,
+        max_model_calls: int | None = None,
+        grader_mode: str | None = None,
+    ) -> None:
+        super().__init__(
+            client=client,
+            model=model or os.getenv("OPENAI_JUDGE_MODEL", DEFAULT_JUDGE_MODEL),
+            fallback_model=(
+                fallback_model
+                or (model if model is not None else None)
+                or os.getenv("OPENAI_JUDGE_FALLBACK_MODEL", DEFAULT_JUDGE_FALLBACK_MODEL)
+            ),
+            reasoning_effort=reasoning_effort,
+            max_model_calls=max_model_calls,
+        )
+        self.image_detail = image_detail or os.getenv(
+            "OPENAI_JUDGE_IMAGE_DETAIL", DEFAULT_JUDGE_IMAGE_DETAIL
+        )
+        configured_dimension = max_image_dimension_px or int(
+            os.getenv(
+                "OPENAI_JUDGE_MAX_IMAGE_DIMENSION_PX",
+                str(DEFAULT_JUDGE_MAX_IMAGE_DIMENSION_PX),
+            )
+        )
+        if configured_dimension < 512:
+            raise ValueError("judge image dimension must be at least 512 pixels")
+        if self.image_detail not in {"low", "high", "original"}:
+            raise ValueError("judge image detail must be low, high, or original")
+        self.max_image_dimension_px = configured_dimension
+        self.escalation_confidence = escalation_confidence
+        # The split graders stay opt-in until 07d.  Production runs on a
+        # four-call budget (`pipeline.py:167`) that five graders per candidate
+        # cannot fit inside, so the flag defaults to the combined path.
+        resolved_mode = grader_mode or os.getenv(
+            "RIGBY_JUDGE_GRADER_MODE", DEFAULT_JUDGE_GRADER_MODE
+        )
+        if resolved_mode not in JUDGE_GRADER_MODES:
+            raise ValueError(f"judge grader mode must be one of {JUDGE_GRADER_MODES}")
+        self.grader_mode = resolved_mode
+
+    def _images(
+        self,
+        snapshots: list[dict[str, Any]],
+        *,
+        prefix: str = "",
+        labels: set[str] | None = None,
+        payload_audit: list[dict[str, Any]],
+    ) -> list[dict[str, Any]]:
+        return _image_content(
+            snapshots,
+            prefix=prefix,
+            labels=labels,
+            detail=self.image_detail,
+            max_dimension_px=self.max_image_dimension_px,
+            payload_audit=payload_audit,
+        )
+
+    def _timeline(
+        self,
+        snapshots: list[dict[str, Any]],
+        *,
+        prefix: str = "",
+        payload_audit: list[dict[str, Any]],
+    ) -> list[dict[str, Any]]:
+        return _timeline_content(
+            snapshots,
+            prefix=prefix,
+            detail=self.image_detail,
+            max_dimension_px=self.max_image_dimension_px,
+            payload_audit=payload_audit,
+        )
 
     def _evidence_contract(self, payload_audit: list[dict[str, Any]]) -> dict[str, Any]:
         return {
