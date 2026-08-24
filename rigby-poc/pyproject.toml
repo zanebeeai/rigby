@@ -25,6 +25,11 @@ dev = [
   "httpx==0.28.1",
   "pytest==8.4.1",
   "pytest-cov==6.2.1",
+  # Only used by tests/test_ci_workflow.py to parse .github/workflows/*.yml.
+  # It already arrives transitively via uvicorn[standard]; pinned here so the
+  # workflow guards cannot be silently disabled by a transitive dependency
+  # change.
+  "pyyaml==6.0.3",
 ]
 
 [project.scripts]

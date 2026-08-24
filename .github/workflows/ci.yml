@@ -1,0 +1,98 @@
+name: CI
+
+# Plan 09 §3.4. This repository had no CI at all before this workflow, and
+# development is split across macOS and Windows, so nothing caught a change that
+# worked on one and broke the other.
+#
+# The suite is hermetic: it needs no server, no browser, no API key and no
+# network. Verified by running it in full with OPENAI_API_KEY unset and every
+# AF_INET/AF_INET6 socket raising on construction. Do not add secrets to this
+# workflow -- see rigby-poc/docs/testing.md.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # 09 §6.2, resolved 2026-08-24: Windows runs on main and on any PR touching
+  # src/, evals/, config/, tests/, frontend/ or the workflow itself. A
+  # documentation-only PR skips it rather than paying roughly double for nothing.
+  # macOS always runs -- it is the primary development platform.
+  select-platforms:
+    runs-on: ubuntu-latest
+    outputs:
+      os: ${{ steps.pick.outputs.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: pick
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" != "pull_request" ]; then
+            echo 'os=["macos-latest","windows-latest"]' >> "$GITHUB_OUTPUT"
+            echo "not a pull request -- running the full matrix"
+            exit 0
+          fi
+          changed=$(git diff --name-only \
+            '${{ github.event.pull_request.base.sha }}' \
+            '${{ github.event.pull_request.head.sha }}')
+          printf 'changed files:\n%s\n' "$changed"
+          if printf '%s\n' "$changed" | grep -qE '^(rigby-poc/(src|evals|config|tests|frontend)/|rigby-poc/(pyproject\.toml|uv\.lock|acceptance_criteria\.yaml)$|\.github/)'; then
+            echo 'os=["macos-latest","windows-latest"]' >> "$GITHUB_OUTPUT"
+            echo "code changed -- Windows included"
+          else
+            echo 'os=["macos-latest"]' >> "$GITHUB_OUTPUT"
+            echo "docs-only change -- Windows skipped (09 §6.2)"
+          fi
+
+  python:
+    needs: select-platforms
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ${{ fromJSON(needs.select-platforms.outputs.os) }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: rigby-poc
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: rigby-poc/uv.lock
+      - run: uv sync --extra dev
+
+      # No secret is set for this step, deliberately. If the suite ever needs
+      # one, tests/test_invocations.py fails first and says why.
+      - name: pytest
+        run: uv run pytest
+
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: rigby-poc/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: rigby-poc/frontend/package-lock.json
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
