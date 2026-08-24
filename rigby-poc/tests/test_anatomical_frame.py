@@ -44,6 +44,8 @@ from rigby_poc.analysis.rig import canonical_bone_names, identity_bones, rig_pro
 from rigby_poc.kinematics import rig_kinematics
 from rigby_poc.models import BonePose, Quat
 
+pytestmark = pytest.mark.medium
+
 DEG = math.pi / 180.0
 
 
