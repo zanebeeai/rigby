@@ -16,6 +16,7 @@ from evals.capture import capture_result_frames
 from rigby_poc.compiler import PROJECT_ROOT, compile_motion
 from rigby_poc.judge import RepairPatch, VLMJudge, write_judge_record
 from rigby_poc.kinematics import rig_kinematics
+from rigby_poc.run_config import effective_configuration
 from rigby_poc.observability import (
     NullTracer,
     Tracer,
@@ -2735,6 +2736,17 @@ def main() -> None:
     # makes section 7's "structurally identical transcripts" checkable rather than a hope.
     run_root = arguments.run_root or (PROJECT_ROOT / "results" / "pipeline-runs")
     tracer = Tracer.open(run_root, run_id=arguments.run_id)
+    atomic_write_json(
+        tracer.run_dir / "config.json",
+        effective_configuration(
+            run_id=tracer.run_id,
+            prompt=arguments.prompt,
+            provider=arguments.provider,
+            selection_mode=arguments.selection_mode,
+            max_rounds=arguments.max_rounds,
+            extra={"launched_by": "cli", "output_dir": str(arguments.output_dir)},
+        ),
+    )
     with tracer.span(
         "run",
         "pipeline.run",

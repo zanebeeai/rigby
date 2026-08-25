@@ -13,6 +13,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from .observability import SpanLike, get_tracer
 from .models import (
     AssertionSpec,
     BodyAction,
@@ -4116,13 +4117,46 @@ class OpenAIPlanner:
         prompt = self._prompt(request)
         primary_model = os.getenv("OPENAI_PLANNER_MODEL", DEFAULT_PRIMARY_MODEL)
         repair_model = os.getenv("OPENAI_REPAIR_MODEL", DEFAULT_REPAIR_MODEL)
+        # Plan 01 section 1.1: the planner is the worse of the two model call sites -- the
+        # whole prompt string, roughly a hundred lines of catalog text, was never
+        # persisted at any layer, and the planner wrote nothing to disk at all.
+        with get_tracer().span(
+            "model_call",
+            "planner.plan",
+            provider="openai",
+            prompt_characters=len(prompt),
+        ) as call_span:
+            return self._plan_routed(
+                request=request,
+                prompt=prompt,
+                primary_model=primary_model,
+                repair_model=repair_model,
+                calls=calls,
+                call_span=call_span,
+            )
+
+    def _plan_routed(
+        self,
+        *,
+        request: PlanRequest,
+        prompt: str,
+        primary_model: str,
+        repair_model: str,
+        calls: int,
+        call_span: SpanLike,
+    ) -> PlannerOutcome:
         try:
             calls += 1
-            response = self.client.responses.parse(
-                model=primary_model,
-                input=prompt,
-                text_format=PlannerSelection,
-            )
+            with get_tracer().span("attempt", "planner.dispatch", model=primary_model) as span:
+                span.set(model=primary_model, attempt_index=0, role="primary")
+                span.record_request(prompt)
+                response = self.client.responses.parse(
+                    model=primary_model,
+                    input=prompt,
+                    text_format=PlannerSelection,
+                )
+                span.record_response(response)
+                span.set(response_id=str(getattr(response, "id", "")))
             selection = response.output_parsed
             if selection is None:
                 raise ValueError("provider returned no parsed planner selection")
@@ -4137,12 +4171,30 @@ class OpenAIPlanner:
             )
         except Exception as primary_error:
             primary_response_id = str(getattr(locals().get("response"), "id", ""))
-            calls += 1
-            response = self.client.responses.parse(
-                model=repair_model,
-                input=f"{prompt}\n\nThe first attempt failed validation: {type(primary_error).__name__}: {primary_error}. Repair it once.",
-                text_format=PlannerSelection,
+            # Section 1.2: the failure reason was interpolated into the repair prompt and
+            # then discarded, so the trace showed `model_calls: 2` and never said whether
+            # the repair was triggered by a schema violation, a semantic validation
+            # failure, or a network timeout.
+            call_span.set(
+                repair_triggered=True,
+                primary_error_type=type(primary_error).__name__,
+                primary_error_message=str(primary_error),
             )
+            calls += 1
+            repair_prompt = (
+                f"{prompt}\n\nThe first attempt failed validation: "
+                f"{type(primary_error).__name__}: {primary_error}. Repair it once."
+            )
+            with get_tracer().span("attempt", "planner.dispatch", model=repair_model) as span:
+                span.set(model=repair_model, attempt_index=1, role="repair")
+                span.record_request(repair_prompt)
+                response = self.client.responses.parse(
+                    model=repair_model,
+                    input=repair_prompt,
+                    text_format=PlannerSelection,
+                )
+                span.record_response(response)
+                span.set(response_id=str(getattr(response, "id", "")))
             selection = response.output_parsed
             if selection is None:
                 raise ValueError("repair returned no parsed planner selection") from primary_error

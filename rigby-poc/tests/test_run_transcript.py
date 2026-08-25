@@ -10,6 +10,18 @@ are checkable here and are checked with numbers rather than assertions of intent
   item 5  `duration_by_stage()` accounts for at least 95% of measured wall clock
 
 Zero model calls: the judge and the capture step are stubs.
+
+**Any per-stage share measured from this module is a share of a run whose two most
+expensive real components are faked.** The judge is a dict literal and capture is a 10 ms
+`time.sleep`; a real render measures 2.85 s per candidate against 369 ms of compile, so a
+render is roughly 7.7x a compile rather than the ~1% of wall clock a stubbed run reports.
+The *total* — stage spans accounting for ~99.8% of the run — is unaffected, because that
+is a claim about spans tiling rather than about what the stages contain.
+
+This caveat lives here, beside the numbers, because a caveat delivered in the message that
+accompanied a number does not travel with it: the 1.3% figure below was qualified to two
+lanes individually and still reached a third uncaveated, where it overturned a plan
+decision by three orders of magnitude.
 """
 
 from __future__ import annotations

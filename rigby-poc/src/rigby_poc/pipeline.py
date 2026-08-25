@@ -16,6 +16,7 @@ from uuid import uuid4
 
 from .compiler import PROJECT_ROOT
 from .observability import Tracer, get_tracer
+from .run_config import effective_configuration
 from .models import PipelineRunRequest
 from .io_utils import atomic_write_json
 
@@ -285,6 +286,18 @@ class PipelineRunStore:
             # the caller's side would leave every child span orphaned -- and a detached
             # span is a valid second root rather than an error, so nothing would report it.
             tracer = Tracer(run_dir, run_id=run_id)
+            atomic_write_json(
+                run_dir / "config.json",
+                effective_configuration(
+                    run_id=run_id,
+                    prompt=request.text,
+                    provider=request.provider,
+                    selection_mode="five_way",
+                    max_rounds=request.max_rounds,
+                    max_model_calls=4,
+                    extra={"launched_by": "api", "base_url": base_url},
+                ),
+            )
             with tracer.span(
                 "run",
                 "pipeline.run",

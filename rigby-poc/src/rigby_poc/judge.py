@@ -29,6 +29,7 @@ from .judge_prompts import (
     family_for_intent,
     grader_prompt,
 )
+from .observability import SpanLike, get_tracer
 from .planner import load_environment
 
 
@@ -974,20 +975,41 @@ class RoutedModelClient:
         model: str,
         input: list[dict[str, Any]],
         text_format: type[BaseModel],
+        image_metadata: Mapping[str, Mapping[str, Any]] | None = None,
     ) -> object:
         if self.remaining_model_calls == 0:
             raise ModelCallBudgetExhausted(
                 f"model call budget exhausted after {self.model_calls_made} calls"
             )
-        # Count immediately before dispatch so failed API requests remain inside
-        # the same hard ceiling as successful responses.
-        self.model_calls_made += 1
-        return self.client.responses.parse(
+        # One `attempt` span per *dispatch*, not per logical attempt: a transient retry
+        # is a separate HTTP request that burns budget, and plan 01 section 1.2's whole
+        # complaint is that those were invisible. The span wraps the dispatch rather than
+        # any caller's `except`, so a failure that propagates -- including the
+        # no-fallback re-raise in `_routed_parse` -- is still recorded on the way out.
+        with get_tracer().span(
+            "attempt",
+            f"{type(self).__name__}.dispatch",
             model=model,
-            reasoning={"effort": self.reasoning_effort},
-            input=input,
-            text_format=text_format,
-        )
+        ) as span:
+            span.set(
+                model=model,
+                reasoning_effort=self.reasoning_effort,
+                text_format=text_format.__name__,
+                attempt_index=self.model_calls_made,
+            )
+            span.record_request(input, image_metadata=image_metadata)
+            # Count immediately before dispatch so failed API requests remain inside
+            # the same hard ceiling as successful responses.
+            self.model_calls_made += 1
+            response = self.client.responses.parse(
+                model=model,
+                reasoning={"effort": self.reasoning_effort},
+                input=input,
+                text_format=text_format,
+            )
+            span.record_response(response)
+            span.set(usage=_usage(response), response_id=getattr(response, "id", None))
+            return response
 
     @staticmethod
     def _is_transient_dispatch_error(error: Exception) -> bool:
@@ -1004,11 +1026,17 @@ class RoutedModelClient:
         model: str,
         input: list[dict[str, Any]],
         text_format: type[BaseModel],
+        image_metadata: Mapping[str, Mapping[str, Any]] | None = None,
     ) -> object:
         transient_attempt = 0
         while True:
             try:
-                return self._parse_response(model=model, input=input, text_format=text_format)
+                return self._parse_response(
+                    model=model,
+                    input=input,
+                    text_format=text_format,
+                    image_metadata=image_metadata,
+                )
             except Exception as error:
                 if (
                     not self._is_transient_dispatch_error(error)
@@ -1030,6 +1058,42 @@ class RoutedModelClient:
         escalation_reason: Callable[[BaseModel], str | None],
         primary_model: str | None = None,
         allow_fallback: bool = True,
+        image_metadata: Mapping[str, Mapping[str, Any]] | None = None,
+        span_refs: Mapping[str, Any] | None = None,
+    ) -> tuple[object, BaseModel, list[dict[str, Any]], dict[str, Any]]:
+        """Route one structured-output call, with an optional fallback escalation.
+
+        The `model_call` span opened here is the parent of every `attempt` span the
+        dispatches below produce, so the transcript shows a routed decision and the one
+        or more HTTP requests it actually cost. It parents in turn to whichever `stage`
+        span is open -- `vlm_judge` inside a flywheel run -- which is what makes per-stage
+        model cost attributable without correlating by position.
+        """
+        with get_tracer().span(
+            "model_call",
+            f"{type(self).__name__}.{text_format.__name__}",
+            **dict(span_refs or {}),
+        ) as call_span:
+            return self._routed_parse_inner(
+                call_span=call_span,
+                input=input,
+                text_format=text_format,
+                escalation_reason=escalation_reason,
+                primary_model=primary_model,
+                allow_fallback=allow_fallback,
+                image_metadata=image_metadata,
+            )
+
+    def _routed_parse_inner(
+        self,
+        *,
+        call_span: SpanLike,
+        input: list[dict[str, Any]],
+        text_format: type[BaseModel],
+        escalation_reason: Callable[[BaseModel], str | None],
+        primary_model: str | None = None,
+        allow_fallback: bool = True,
+        image_metadata: Mapping[str, Mapping[str, Any]] | None = None,
     ) -> tuple[object, BaseModel, list[dict[str, Any]], dict[str, Any]]:
         attempts: list[dict[str, Any]] = []
         reason: str | None = None
@@ -1040,6 +1104,7 @@ class RoutedModelClient:
                 model=selected_primary,
                 input=input,
                 text_format=text_format,
+                image_metadata=image_metadata,
             )
             parsed = response.output_parsed
             if parsed is None:
@@ -1069,6 +1134,7 @@ class RoutedModelClient:
                 model=self.fallback_model,
                 input=input,
                 text_format=text_format,
+                image_metadata=image_metadata,
             )
             parsed = response.output_parsed
             if parsed is None:
@@ -1092,6 +1158,7 @@ class RoutedModelClient:
             "model_calls_made": self.model_calls_made,
             "remaining_model_calls": self.remaining_model_calls,
         }
+        call_span.set(**routing)
         return response, parsed, attempts, routing
 
 
@@ -1613,6 +1680,10 @@ class VLMJudge(RoutedModelClient):
             # is for retry, fallback, and observability parity only.
             escalation_reason=_never_escalate,
             primary_model=repair_model,
+            # Section 1.3: this record carried no identifier at all -- no round, no result
+            # id, no routing block -- so a repair could not be located from anything else
+            # in the run. `routing` now travels in the returned record as well.
+            span_refs={"result_id": judgment.get("result_id"), "repair_model": repair_model},
         )
         return {
             "schema_version": "1.0",
@@ -1673,6 +1744,16 @@ class VLMJudge(RoutedModelClient):
             # genuinely uncertain rankings.
             primary_model=self.model,
             allow_fallback=True,
+            span_refs={
+                # Section 1.3: `order` and `mapped_scores` are keyed by list position and
+                # the position-to-candidate map lived only in the caller. Recording the
+                # ids and the blinding seed makes the ranking interpretable on its own.
+                "result_ids": [str(manifest.get("result_id", "")) for manifest, _, _ in loaded],
+                "evidence_manifests": [str(path) for _, _, path in loaded],
+                "label_order": [labels[index] for index, _ in enumerate(randomized)],
+                "randomized_source_indices": [index for index, _ in randomized],
+                "random_seed": random_seed,
+            },
         )
         returned_labels = [item.label for item in parsed.candidates]
         if len(set(returned_labels)) != 5 or set(returned_labels) != set(labels):
