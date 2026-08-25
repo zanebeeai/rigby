@@ -56,13 +56,27 @@ def observables_sha256(clip: ClipResult) -> str:
     )
 
 
-def platform_key() -> str:
-    """Identify the (platform, architecture, MuJoCo version) this process runs on.
+def platform_key(solver_used: bool = True) -> str:
+    """Identify the platform a hash was blessed on.
 
-    MuJoCo guarantees determinism per platform and version, not across them, so any
-    case whose motion passes through the physics solver has to record one hash per
-    key of this shape.  03a contains no such case; the format carries the key so
-    03b can add them without a schema change.
+    **Not just a MuJoCo concern.**  03a assumed the physics solver was the only
+    source of cross-platform nondeterminism and classified everything else
+    ``portable``.  Windows CI disproved that: pure-Python/numpy compilation differs
+    between arm64 and x86-64 in the last few ulps, because the two differ in libm
+    transcendental implementations (``sin``/``cos``/``acos``) and in FMA
+    contraction, and numpy dispatches to different SIMD kernels.  Measured on
+    ``max_angular_jerk_rad_s3``: 705.8566226509565 on darwin-arm64 against
+    705.8566226509532 on win32-amd64, 29 ulps -- amplified there because jerk is a
+    third derivative and divides by ``dt`` three times.  Bit-identical floating
+    point across instruction sets is not achievable without pinning the math
+    library.  See plan 03 section 6.1.
+
+    So every case is keyed by platform.  ``solver_used`` decides whether the MuJoCo
+    version is part of the key: a case that never enters the solver must not have
+    its hashes invalidated by an unrelated ``mujoco`` upgrade, which would turn
+    re-blessing into a routine event and make a real drift indistinguishable from
+    a dependency bump at review time.
     """
     machine = platform.machine().lower() or "unknown"
-    return f"{sys.platform}-{machine}|mujoco-{version('mujoco')}"
+    base = f"{sys.platform}-{machine}"
+    return f"{base}|mujoco-{version('mujoco')}" if solver_used else base

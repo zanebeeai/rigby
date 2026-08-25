@@ -66,6 +66,25 @@ def test_a_platform_dependent_case_cannot_claim_a_portable_hash() -> None:
         _expected(
             determinism_class=DeterminismClass.PLATFORM_DEPENDENT,
             motion_sha256={PORTABLE_PLATFORM_KEY: "a" * 64},
+            metrics_sha256={PORTABLE_PLATFORM_KEY: "b" * 64},
+            observables_sha256={PORTABLE_PLATFORM_KEY: "c" * 64},
+        )
+
+
+def test_a_platform_is_blessed_for_all_three_digests_or_for_none() -> None:
+    """Partial blessing would silently stop asserting the two derived digests.
+
+    ``metrics_sha256`` and ``observables_sha256`` were bare strings before 03b, so a
+    naive migration that only keyed ``motion_sha256`` would leave the other two
+    asserting cross-platform bit-equality of floats -- the exact claim Windows CI
+    disproved.
+    """
+    with pytest.raises(ValidationError, match="blessed for all three digests"):
+        _expected(
+            determinism_class=DeterminismClass.PLATFORM_DEPENDENT,
+            motion_sha256={"darwin-arm64": "a" * 64, "win32-amd64": "d" * 64},
+            metrics_sha256={"darwin-arm64": "b" * 64},
+            observables_sha256={"darwin-arm64": "c" * 64},
         )
 
 
@@ -75,11 +94,15 @@ def test_an_unblessed_platform_is_a_skip_not_a_failure() -> None:
     Whoever runs second must see a clear "no hash for this platform", never a
     failure that looks like a compiler regression.
     """
+    foreign = "someotheros-riscv64|mujoco-0.0.0"
     recorded = _expected(
         determinism_class=DeterminismClass.PLATFORM_DEPENDENT,
-        motion_sha256={"someotheros-riscv64|mujoco-0.0.0": "a" * 64},
+        motion_sha256={foreign: "a" * 64},
+        metrics_sha256={foreign: "b" * 64},
+        observables_sha256={foreign: "c" * 64},
     )
-    assert recorded.resolve_motion_sha256(platform_key()) is None
+    for name in ExpectedResult.DIGESTS:
+        assert recorded.resolve(name, platform_key()) is None
 
 
 def test_blessing_a_platform_dependent_case_keeps_other_platforms_hashes(
@@ -93,16 +116,24 @@ def test_blessing_a_platform_dependent_case_keeps_other_platforms_hashes(
         update={
             "determinism_class": DeterminismClass.PLATFORM_DEPENDENT,
             "motion_sha256": {foreign: "a" * 64},
+            "metrics_sha256": {foreign: "b" * 64},
+            "observables_sha256": {foreign: "c" * 64},
         }
     )
     case = replace(case, expected=recorded)
 
     clip = compile_case(case)
-    observed = observe(case.id, clip, DeterminismClass.PLATFORM_DEPENDENT)
+    solver_used = case.expected.solver_used
+    observed = observe(
+        case.id, clip, DeterminismClass.PLATFORM_DEPENDENT, solver_used=solver_used
+    )
     merged = rebless(case, observed)
 
+    # Every digest keeps the other platform's entry, not just the motion one.
     assert merged.motion_sha256[foreign] == "a" * 64
-    assert merged.motion_sha256[platform_key()] == motion_sha256(clip)
+    assert merged.metrics_sha256[foreign] == "b" * 64
+    assert merged.observables_sha256[foreign] == "c" * 64
+    assert merged.motion_sha256[platform_key(solver_used)] == motion_sha256(clip)
 
 
 def test_loader_rejects_a_case_directory_the_manifest_does_not_list(
@@ -141,7 +172,9 @@ def test_bless_is_a_dry_run_until_write_is_passed(tmp_path: Path) -> None:
     path = root / "cases" / SAMPLE_CASE_ID / EXPECTED_FILE
     original = path.read_text(encoding="utf-8")
     payload = json.loads(original)
-    payload["motion_sha256"][PORTABLE_PLATFORM_KEY] = "b" * 64
+    # Corrupt this platform's entry rather than adding a portable one: no case is
+    # portable any more, so writing the reserved key would fail validation.
+    payload["motion_sha256"] = dict.fromkeys(payload["motion_sha256"], "b" * 64)
     payload["frame_count"] = 3
     path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
     stale = path.read_text(encoding="utf-8")
@@ -269,8 +302,8 @@ def _expected(**overrides: object) -> ExpectedResult:
         "case_id": "sample-case",
         "determinism_class": DeterminismClass.PORTABLE,
         "motion_sha256": {PORTABLE_PLATFORM_KEY: "a" * 64},
-        "metrics_sha256": "b" * 64,
-        "observables_sha256": "c" * 64,
+        "metrics_sha256": {PORTABLE_PLATFORM_KEY: "b" * 64},
+        "observables_sha256": {PORTABLE_PLATFORM_KEY: "c" * 64},
         "success": True,
         "structural_valid": True,
         "fps": 30,

@@ -7,6 +7,18 @@ from typing import Any
 
 from rigby_poc.compiler import PROJECT_ROOT
 
+#: Committed judge-calibration evidence.
+#:
+#: This replaces ``results/judge-calibration/005673-v4-pronation/run-02-truthful-joints``,
+#: a path from the original author's machine holding data that never shipped and
+#: cannot be reconstructed.  Because of it this audit could not run on a fresh
+#: clone -- see plan 03 section 3.6 and plan 10 section 9.3.
+#:
+#: The rates inside are the *old* human-pair calibration, and plan 10 deletes every
+#: human-rating gate.  Repointing preserves that gate rather than endorsing it: the
+#: audit becomes runnable on a clean clone now, and 10f replaces what it reads.
+COMMITTED_EVIDENCE = Path("docs/evidence/frozen-judge-calibration.json")
+
 
 def _read(path: Path) -> dict[str, Any] | None:
     if not path.is_file():
@@ -75,15 +87,27 @@ def _audit_run(project_root: Path, run: dict[str, Any], expected_intent: str) ->
     }
 
 
-def build_audit(project_root: Path = PROJECT_ROOT) -> dict[str, Any]:
-    calibration_root = project_root / "results/judge-calibration/005673-v4-pronation/run-02-truthful-joints"
-    automated = _read(calibration_root / "calibration-report.json") or {}
-    frozen_human = _read(calibration_root / "human-review/judge-human-score.json") or {}
+def build_audit(
+    project_root: Path = PROJECT_ROOT, evidence_path: Path | None = None
+) -> dict[str, Any]:
+    resolved_evidence = evidence_path or (project_root / COMMITTED_EVIDENCE)
+    evidence = _read(resolved_evidence)
     judge_failures: list[str] = []
-    if not automated.get("summary", {}).get("passed"):
-        judge_failures.append("automated corruption calibration is not passing")
-    if not frozen_human.get("passed"):
-        judge_failures.append("frozen final human calibration is not passing")
+    if evidence is None:
+        # Distinct from "did not pass" on purpose.  The old code read a missing
+        # machine-local path into an empty dict and reported it as a failing
+        # calibration, which is how an audit that could not run at all looked
+        # exactly like an audit that ran and failed.
+        automated: dict[str, Any] = {}
+        frozen_human: dict[str, Any] = {}
+        judge_failures.append(f"committed judge evidence is missing at {resolved_evidence}")
+    else:
+        automated = evidence.get("corruption_suite") or {}
+        frozen_human = evidence.get("human_calibration") or {}
+        if not automated.get("passed"):
+            judge_failures.append("automated corruption calibration is not passing")
+        if not frozen_human.get("passed"):
+            judge_failures.append("frozen final human calibration is not passing")
 
     runs: list[dict[str, Any]] = []
     root = project_root / "results/pipeline-runs"
@@ -112,7 +136,9 @@ def build_audit(project_root: Path = PROJECT_ROOT) -> dict[str, Any]:
             "measured": {
                 "vlm_human_agreement_rate": frozen_human.get("vlm_human_agreement_rate"),
                 "ab_order_consistency_rate": frozen_human.get("ab_order_consistency_rate"),
-                "automated_false_accepts": automated.get("summary", {}).get("false_accepts"),
+                "automated_false_accepts": automated.get("false_accepts"),
+                "human_pair_count": frozen_human.get("pair_count"),
+                "evidence_source": str(resolved_evidence),
             },
             "failures": judge_failures,
         },
@@ -138,10 +164,15 @@ def build_audit(project_root: Path = PROJECT_ROOT) -> dict[str, Any]:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Audit Rigby's autonomous authoring goal")
     parser.add_argument("--project-root", type=Path, default=PROJECT_ROOT)
+    parser.add_argument(
+        "--evidence",
+        type=Path,
+        help=f"committed judge evidence (default: <project-root>/{COMMITTED_EVIDENCE})",
+    )
     parser.add_argument("--output", type=Path, default=Path("results/autonomous-goal-audit.json"))
     args = parser.parse_args()
     output = args.output if args.output.is_absolute() else args.project_root / args.output
-    audit = build_audit(args.project_root.resolve())
+    audit = build_audit(args.project_root.resolve(), args.evidence)
     _atomic(output, audit)
     print(output)
 

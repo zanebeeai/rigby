@@ -1,22 +1,27 @@
 {
   "case_id": "strike-jab-left",
   "contact_count": 0,
-  "determinism_class": "portable",
+  "determinism_class": "platform_dependent",
   "duration_s": 3.17,
   "environment": {
-    "blessed_at": "2026-08-16T16:49:56+00:00",
+    "blessed_at": "2026-08-24T23:15:49+00:00",
     "compiler_version": "rigby-compiler-0.4.0",
-    "platform_key": "darwin-arm64|mujoco-3.11.0",
+    "platform_key": "darwin-arm64",
     "python_version": "3.12.13"
   },
   "fps": 30,
   "frame_count": 93,
-  "metrics_sha256": "b382821a49270c41ec2e8381cd1ceccc712e77046629438d5ef507071baeebe1",
-  "motion_sha256": {
-    "any": "56732597d2131a0b0fbc9031de665f5a020b78f57b69679ad5fedbaee1ae0fbd"
+  "metrics_sha256": {
+    "darwin-arm64": "b382821a49270c41ec2e8381cd1ceccc712e77046629438d5ef507071baeebe1"
   },
-  "observables_sha256": "361c0d4a17983145bf5a5d765452714f5fff54b67e1d6555dd6f7582d6b5029b",
-  "schema_version": "1.0",
+  "motion_sha256": {
+    "darwin-arm64": "56732597d2131a0b0fbc9031de665f5a020b78f57b69679ad5fedbaee1ae0fbd"
+  },
+  "observables_sha256": {
+    "darwin-arm64": "361c0d4a17983145bf5a5d765452714f5fff54b67e1d6555dd6f7582d6b5029b"
+  },
+  "schema_version": "1.1",
+  "solver_used": false,
   "structural_valid": true,
   "success": true
 }

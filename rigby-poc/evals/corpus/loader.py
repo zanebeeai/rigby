@@ -6,6 +6,7 @@ imports the planner.  ``tests/test_corpus_loads_offline.py`` enforces that.
 
 from __future__ import annotations
 
+import gzip
 import json
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -22,7 +23,9 @@ from rigby_poc.models import (
 )
 
 from .hashing import (
+    CANONICAL_MOTION_KEYS,
     PORTABLE_PLATFORM_KEY,
+    canonical_bytes,
     metrics_sha256,
     motion_sha256,
     observables_sha256,
@@ -34,6 +37,7 @@ from .models import (
     CorpusManifest,
     DeterminismClass,
     ExpectedResult,
+    StoragePolicy,
 )
 
 CORPUS_ROOT = Path(__file__).resolve().parent
@@ -49,9 +53,60 @@ EXPECTED_FILE = "expected.json"
 #: source of truth.
 SLIM_CLIP_FILE = "clip.slim.json.gz"
 
+#: Decimal places quaternion and position components are rounded to before the slim
+#: clip is written.  Plan 03 section 1.3 measured 1e-6 at 17 KB gzipped per case,
+#: which is what this buys; the *hash* is always taken from a recompile, never from
+#: the stored clip, so this rounding can never become the corpus's source of truth.
+SLIM_CLIP_PRECISION = 6
+
 
 class CorpusError(RuntimeError):
     """A corpus directory is missing, malformed, or inconsistent with its manifest."""
+
+
+def _round_floats(value: Any, places: int) -> Any:
+    """Round every float in a JSON-shaped structure, leaving ints alone."""
+    if isinstance(value, float):
+        return round(value, places)
+    if isinstance(value, list):
+        return [_round_floats(item, places) for item in value]
+    if isinstance(value, dict):
+        return {key: _round_floats(item, places) for key, item in value.items()}
+    return value
+
+
+def slim_clip_payload(clip: ClipResult, places: int = SLIM_CLIP_PRECISION) -> dict[str, Any]:
+    """The motion-defining half of a clip, rounded, ready to gzip.
+
+    Only :data:`~evals.corpus.hashing.CANONICAL_MOTION_KEYS` are kept: metrics are
+    recomputed by whoever reads this, and provenance is not motion.
+    """
+    payload = clip.model_dump(mode="json")
+    return {key: _round_floats(payload[key], places) for key in CANONICAL_MOTION_KEYS}
+
+
+def write_slim_clip(path: Path, clip: ClipResult) -> None:
+    """Write ``clip.slim.json.gz``.
+
+    Committed for MuJoCo cases only.  On a platform that has never blessed such a
+    case there is no hash to assert against, and plan 03 section 6.1 leaves that a
+    skip -- which means zero coverage there.  This file is what
+    ``tests/test_corpus_determinism.py`` falls back to instead, comparing frames
+    within a tolerance rather than skipping outright.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+    body = canonical_bytes(slim_clip_payload(clip))
+    # mtime=0 so the gzip container is byte-identical run to run; the corpus is
+    # committed and a header timestamp would show up as a diff on every re-bless.
+    with gzip.GzipFile(filename="", mode="wb", fileobj=path.open("wb"), mtime=0) as handle:
+        handle.write(body)
+
+
+def read_slim_clip(path: Path) -> dict[str, Any]:
+    if not path.is_file():
+        raise CorpusError(f"missing slim clip: {path}")
+    with gzip.open(path, "rb") as handle:
+        return json.loads(handle.read().decode("utf-8"))
 
 
 def _read_json(path: Path) -> Any:
@@ -83,6 +138,16 @@ class CorpusCase:
     @property
     def id(self) -> str:
         return self.entry.id
+
+    @property
+    def slim_clip_path(self) -> Path:
+        return self.root / SLIM_CLIP_FILE
+
+    def slim_clip(self) -> dict[str, Any] | None:
+        """The committed clip, or ``None`` when this case stores programs only."""
+        if self.entry.storage != StoragePolicy.PROGRAM_AND_CLIP:
+            return None
+        return read_slim_clip(self.slim_clip_path)
 
     def compile_request(self) -> CompileRequest:
         return CompileRequest(
@@ -179,22 +244,24 @@ def compile_case(case: CorpusCase) -> ClipResult:
 def observe(
     case_id: str,
     clip: ClipResult,
-    determinism_class: DeterminismClass,
+    determinism_class: DeterminismClass = DeterminismClass.PLATFORM_DEPENDENT,
     *,
+    solver_used: bool = False,
     now: str | None = None,
 ) -> ExpectedResult:
     """Build the ``expected.json`` a freshly compiled clip would be blessed to."""
     key = (
         PORTABLE_PLATFORM_KEY
         if determinism_class == DeterminismClass.PORTABLE
-        else platform_key()
+        else platform_key(solver_used)
     )
     return ExpectedResult(
         case_id=case_id,
         determinism_class=determinism_class,
+        solver_used=solver_used,
         motion_sha256={key: motion_sha256(clip)},
-        metrics_sha256=metrics_sha256(clip),
-        observables_sha256=observables_sha256(clip),
+        metrics_sha256={key: metrics_sha256(clip)},
+        observables_sha256={key: observables_sha256(clip)},
         success=clip.success,
         structural_valid=bool(clip.metrics.get("structural_valid", False)),
         fps=clip.fps,
@@ -202,7 +269,7 @@ def observe(
         duration_s=clip.duration_s,
         contact_count=len(clip.contacts),
         environment=BlessEnvironment(
-            platform_key=platform_key(),
+            platform_key=platform_key(solver_used),
             python_version=_python_version(),
             compiler_version=COMPILER_VERSION,
             blessed_at=now or datetime.now(UTC).isoformat(timespec="seconds"),

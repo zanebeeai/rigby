@@ -33,7 +33,9 @@ def corpus_root(tmp_path: Path) -> Path:
 def _break_case(root: Path, case_id: str) -> None:
     path = root / "cases" / case_id / EXPECTED_FILE
     payload = json.loads(path.read_text(encoding="utf-8"))
-    payload["motion_sha256"][PORTABLE_PLATFORM_KEY] = "f" * 64
+    # Corrupt this platform's entry.  Adding the reserved portable key would be
+    # rejected outright, since no case is portable after 03b.
+    payload["motion_sha256"] = dict.fromkeys(payload["motion_sha256"], "f" * 64)
     path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
 
 
@@ -42,10 +44,29 @@ def test_list_prints_every_case_and_the_deferred_reasons(
 ) -> None:
     assert main(["--root", str(corpus_root), "list"]) == 0
     output = capsys.readouterr().out
-    for entry in load_manifest(corpus_root).cases:
+    manifest = load_manifest(corpus_root)
+    for entry in manifest.cases:
         assert entry.id in output
-    assert "deferred:" in output
     assert "grab" in output
+    # Every coverage axis is reported, including the three 03b added.  The corpus
+    # currently has no deferrals at all, which is the point of 03b -- so asserting
+    # that "deferred:" appears would now assert a hole exists.
+    for name, axis in manifest.coverage.axes().items():
+        assert f"{name}: {len(axis.covered)} covered, {len(axis.deferred)} deferred" in output
+
+
+def test_list_prints_a_deferral_reason_when_there_is_one(
+    corpus_root: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The deferral reason must reach the reader; the live corpus has none to show."""
+    path = corpus_root / "manifest.json"
+    manifest = json.loads(path.read_text(encoding="utf-8"))
+    manifest["coverage"]["intent"]["covered"].remove("gesture")
+    manifest["coverage"]["intent"]["deferred"] = {"gesture": "a stated reason"}
+    path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    assert main(["--root", str(corpus_root), "list"]) == 0
+    output = capsys.readouterr().out
+    assert "gesture              deferred: a stated reason" in output
 
 
 def test_verify_exits_zero_when_nothing_moved(
