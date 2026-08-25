@@ -12,12 +12,16 @@ from evals.mutations.compose import compose, directional_pair, strata_b_pairs
 from evals.mutations.family import MutationFamily, Tier
 from evals.mutations.spec import Applicability, MutationSpec
 from evals.mutations.sweep import (
+
     DEFAULT_LEVELS,
     degrees_sweep,
     subperceptual_floor,
     sweep,
     tier_for,
 )
+
+#: Compiles corpus cases, so `medium` by input rather than by duration.
+pytestmark = pytest.mark.medium
 
 
 def _template(family: MutationFamily = MutationFamily.ANATOMY) -> MutationSpec:

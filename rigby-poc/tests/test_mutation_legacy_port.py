@@ -17,6 +17,10 @@ from evals.corruptions import corrupt_clip, corruption_specs
 from evals.mutations.family import MutationFamily, Tier
 from evals.mutations.legacy import _hand_of, legacy_specs
 
+#: Compiles corpus cases, so `medium` by input rather than by duration.
+pytestmark = pytest.mark.medium
+
+
 GESTURE_CASE = "gesture-hangten-shake-right"
 
 

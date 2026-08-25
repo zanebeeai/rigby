@@ -18,6 +18,10 @@ from evals.mutations.legacy import legacy_specs
 from evals.mutations.spec import NotApplicable
 from rigby_poc.models import ClipResult
 
+#: Compiles corpus cases, so `medium` by input rather than by duration.
+pytestmark = pytest.mark.medium
+
+
 GESTURE_CASE = "gesture-hangten-shake-right"
 FULL_BODY_CASE = "fullbody-walk-forward"
 

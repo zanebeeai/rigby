@@ -18,6 +18,9 @@ from evals.corpus import load_case
 from evals.corpus.loader import compile_case
 from evals.mutations.legacy import legacy_specs
 
+#: Compiles corpus cases, so `medium` by input rather than by duration.
+pytestmark = pytest.mark.medium
+
 GESTURE_CASE = "gesture-hangten-shake-right"
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
@@ -59,6 +62,7 @@ from evals.corpus import load_case
 from evals.corpus.loader import compile_case
 from evals.mutations.legacy import legacy_specs
 from evals.corpus.hashing import sha256_value
+
 clip = compile_case(load_case(sys.argv[1]))
 print(json.dumps({
     spec.id: sha256_value(spec.apply(clip).model_dump(mode="json")["frames"])

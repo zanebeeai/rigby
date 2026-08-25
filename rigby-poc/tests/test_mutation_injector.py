@@ -16,12 +16,16 @@ import pytest
 from evals.corpus import load_case
 from evals.corpus.loader import compile_case
 from evals.mutations.inject import (
+
     add_dof,
     bone_dof_series,
     is_static,
     peak_dof,
     signed_magnitude,
 )
+
+#: Compiles corpus cases, so `medium` by input rather than by duration.
+pytestmark = pytest.mark.medium
 
 #: The elbow carries flexion as well as abduction here, which is what makes it the
 #: case that distinguishes adding in DOF coordinates from post-multiplying.
