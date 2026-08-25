@@ -227,3 +227,72 @@ def test_handoff_attachment_slip_measures_float_noise_not_slip() -> None:
 
     assert slip < 1e-12, f"slip is {slip:.3e}; it used to be float noise"
     assert slip < 0.005 / 1e9, "the 0.005 gate is nine orders away from firing"
+
+
+def test_measured_support_spin_turns_is_an_echo_of_the_request() -> None:
+    """``object_measured_support_spin_turns`` equals ``spin_turns``, by construction.
+
+    The compiler sets ``support_spin_angle_rad = 2*pi * spin_turns * (alpha if
+    MOVE else 1.0)`` and then reports ``abs(angle) / (2*pi)`` as the *measured*
+    turn count. At the final frame of the move ``alpha`` is 1.0, so the measured
+    value is the requested one with a multiply and a divide in between.
+
+    Same class as the ``forearm_rotation_cycles`` echo in plan 02 §1.6: a metric
+    named as a measurement whose value is the request. Unlike that one it has no
+    branch that ever overwrites it with an observation, so it is an echo on
+    every clip that spins rather than on some of them.
+    """
+
+    from evals.corpus.loader import load_corpus
+
+    spun = [
+        case
+        for case in load_corpus()
+        if case.program.object_action is not None
+        and case.program.object_action.value == "spin"
+    ]
+    assert spun, "no spin case in the corpus; this pin has nothing to stand on"
+
+    from rigby_poc.compiler import compile_motion
+
+    for case in spun:
+        clip = compile_motion(case.compile_request())
+        requested = float(case.program.object_motion.spin_turns)
+        measured = float(clip.metrics["object_measured_support_spin_turns"])
+        assert measured == requested, (
+            f"{case.id}: measured {measured} vs requested {requested} -- if these "
+            "have diverged the metric has become a real measurement; delete this pin"
+        )
+
+
+def test_object_interaction_slip_is_float_noise_on_every_action() -> None:
+    """``palm_relative_object_slip_m`` cannot fire, on any of the eight actions.
+
+    Measured across the corpus: 2.8e-17 to 1.3e-16 m against a ``> 0.005`` gate
+    — thirteen to fourteen orders of magnitude away. Same mechanism as the
+    handoff slip: while the object is held, its position is *defined* relative
+    to the wrist, so the offset compared against its own first sample is the
+    offset itself and the metric reports the round-trip error of a rotation.
+
+    This is load-bearing for 02d's remaining scope rather than a curiosity. The
+    three distinct attachment-offset branches in ``_compile_object_interaction``
+    are the most intricate thing left to re-derive post-hoc, and this is the
+    only metric they feed. Reproducing them byte-for-byte would buy an exact
+    copy of a number that encodes nothing.
+    """
+
+    from evals.corpus.loader import load_corpus
+    from rigby_poc.compiler import compile_motion
+
+    measured: dict[str, float] = {}
+    for case in load_corpus():
+        clip = compile_motion(case.compile_request())
+        if "palm_relative_object_slip_m" in clip.metrics:
+            measured[case.id] = float(clip.metrics["palm_relative_object_slip_m"])
+
+    assert len(measured) >= 8, "the corpus lost its object-interaction cases"
+    worst = max(measured.values())
+    assert worst < 1e-12, (
+        f"worst slip is {worst:.3e}; it used to be float noise on every action"
+    )
+    assert worst < 0.005 / 1e9, "the 0.005 gate is nine orders from firing"
