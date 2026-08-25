@@ -23,12 +23,18 @@ from evals.calibration.detection import (
     DetectionError,
     detection_curve,
     detection_threshold,
+    scored_clip,
     skip_ledger,
     sweep_outcomes,
+    target_detected,
     unmutated_baseline,
 )
 from evals.corpus.loader import compile_case, load_corpus
 from evals.mutations.anatomy import rom_sweep
+from evals.mutations.family import MutationFamily, Tier
+from evals.mutations.inject import add_dof
+from evals.mutations.spec import MutationSpec
+from evals.mutations.structural import gates_tripped
 
 #: Compiles corpus cases.
 pytestmark = pytest.mark.medium
@@ -176,3 +182,61 @@ def test_a_permissive_guard_shows_the_baseline_really_measures(compiled) -> None
     # real guard the same sweep admits nothing at all rather than scoring a
     # perfect detection of the bound.
     assert unmutated_baseline(rom_sweep("rightLowerArm", "abduction"), compiled).n == 0
+
+
+def test_the_structural_channel_reads_the_analysed_clip_not_the_compilers_metrics(
+    compiled,
+) -> None:
+    """The defect the structural routing exists to avoid, shown on real clips.
+
+    `MutationSpec.apply` transforms `frames` and nothing in `evals.mutations`
+    touches `metrics`, so a mutated clip carries the **compiler's pre-mutation**
+    `structural_failures` list. Every gate in the namespace has a measured base
+    rate of zero, so that stale list is empty on a clean corpus case and stays
+    empty after a mutation that trips six gates.
+
+    Scoring from it would therefore return `False` at every severity for the whole
+    contact and balance surface -- not an error, not an empty curve, but a smooth
+    zero-detection result indistinguishable from a namespace of dead gates. This
+    file exists for defects that read as conservative results, and that is one.
+
+    Reuses the module fixture, so it adds no compile to this file's budget.
+    """
+    moved: list[str] = []
+    for case_id, clip, program, scene in compiled:
+        if "support_constraints" not in clip.metrics:
+            continue
+        base = scored_clip(clip, program, scene)
+        if gates_tripped(base.metrics):
+            continue  # only attribute against a clean base
+
+        mutated = add_dof(clip, "rightLowerLeg", "flexion", 40.0)
+        analysed = gates_tripped(scored_clip(mutated, program, scene).metrics)
+        stale = gates_tripped(mutated.metrics)
+        if not analysed:
+            continue
+        moved.append(case_id)
+
+        assert not stale, (
+            f"{case_id}: the compiler-written metrics now report {sorted(stale)}, so "
+            f"this test can no longer tell the two sources apart -- re-derive the "
+            f"claim rather than deleting the assertion"
+        )
+        assert analysed - stale == analysed
+
+        # And the routing reads the one that moved.
+        spec = MutationSpec(
+            id=f"structural-probe/{case_id}",
+            family=MutationFamily.ANATOMY,
+            targets=(sorted(analysed)[0],),
+            severity=0.5,
+            tier=Tier.MODERATE,
+        )
+        scored = scored_clip(mutated, program, scene)
+        assert target_detected(scored.results, spec, metrics=scored.metrics) is True
+        assert target_detected({}, spec, metrics=mutated.metrics) is False
+
+    assert moved, (
+        "no compiled case tripped a structural gate under the probe injection, so "
+        "every assertion above ran zero times"
+    )
