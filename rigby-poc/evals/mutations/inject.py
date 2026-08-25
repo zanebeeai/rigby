@@ -20,12 +20,14 @@ from __future__ import annotations
 import math
 from collections.abc import Iterable
 
+import numpy as np
 from rigby_poc.analysis.anatomy import (
     DofAngles,
     bone_anatomical_frame,
     compose,
     decompose,
 )
+from rigby_poc.analysis.anatomy.frame import decompose_series
 from rigby_poc.models import BonePose, ClipResult, Quat
 
 #: A bone whose rotation varies by less than this across a clip is treated as
@@ -44,13 +46,19 @@ def bone_dof_series(clip: ClipResult, bone: str, dof: str) -> list[float]:
     the rest offset -- shoulder abduction alone differs by -89.7 degrees, because a
     T-pose *is* 90 degrees of abduction.
     """
-    frame = bone_anatomical_frame(bone)
-    return [
-        getattr(decompose(pose.rotation.as_list(), frame), f"{dof}_rad")
-        for pose in (
-            clip_frame.bones[bone] for clip_frame in clip.frames if bone in clip_frame.bones
-        )
+    quaternions = [
+        clip_frame.bones[bone].rotation.as_list()
+        for clip_frame in clip.frames
+        if bone in clip_frame.bones
     ]
+    if not quaternions:
+        return []
+    # Batched: lane `anatomy` measured the scalar loop at 364 ms per 125 frames,
+    # over plan 02 section 5's ceiling from a single report-only check.
+    flexion, abduction, twist = decompose_series(
+        np.asarray(quaternions, dtype=float), bone_anatomical_frame(bone)
+    )
+    return [float(value) for value in {"flexion": flexion, "abduction": abduction, "twist": twist}[dof]]
 
 
 def is_static(clip: ClipResult, bone: str) -> bool:

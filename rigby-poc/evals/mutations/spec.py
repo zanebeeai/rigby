@@ -54,15 +54,27 @@ Severity = float
 
 @dataclass(frozen=True)
 class Applicability:
-    """Whether a spec can be applied to a clip, and why not when it cannot.
+    """Whether a spec can be applied to a clip, and what the result would mean.
 
     A reason is required for the negative case.  A driver that records
     ``skipped: true`` with no reason cannot tell "no detector exists here" from "the
     harness declined", and those are different findings.
+
+    ``static_target`` is the third state, and getting it wrong is subtle.  A spec
+    whose target bone never moves in this clip *is* applicable -- the base holds one
+    pose and the mutated clip holds a different one, so a grader that can see the
+    bone separates them perfectly.  But that is a **capability** result, not a
+    detection threshold: there is no real motion for a threshold to sit inside, so
+    the severity axis is meaningless and the curve is a step.  Scoring it alongside
+    threshold results inflates the sweep; skipping it discards a real capability
+    measurement.  So it is applied, and tagged, and reported separately.
     """
 
     ok: bool
     reason: str = ""
+    #: The mutation lands on a bone this clip never moves.  Applicable, but the
+    #: result is a capability measurement rather than a point on a threshold curve.
+    static_target: bool = False
 
     def __bool__(self) -> bool:
         return self.ok
