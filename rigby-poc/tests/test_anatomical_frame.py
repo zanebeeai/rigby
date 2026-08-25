@@ -553,13 +553,13 @@ def test_shipped_motion_treats_the_knee_as_a_pure_hinge(bone, corpus_angles) -> 
 
     If the knee's flexion axis were mislabelled, real motion would smear across
     two DOFs. It does not: across every frame of all twelve cases the knee's
-    off-axis excursion stays under a degree while flexion reaches 92.
+    off-axis excursion peaks at 4.4 degrees while flexion reaches 99.7, a
+    ratio of 22.6:1 over 5034 frames.
     """
 
     angles = corpus_angles[bone]
     flexion = _degrees(angles, "flexion")
     abduction = _degrees(angles, "abduction")
-    twist = _degrees(angles, "twist")
 
     assert len(angles) > 1000
     assert flexion.max() > 95.0
@@ -610,19 +610,50 @@ def test_shipped_motion_drives_the_elbow_far_off_its_hinge_axis(bone, corpus_ang
 
 @pytest.mark.parametrize("bone", ["leftUpperArm", "rightUpperArm", "leftUpperLeg", "rightUpperLeg"])
 def test_shipped_motion_is_predominantly_flexion_at_the_proximal_joints(bone, corpus_angles) -> None:
+    """Validates the *sign* of the flexion axis, via a statistic with margin.
+
+    This asserted ``mean(active > 0) > 0.90`` and `leftUpperLeg` measured
+    **0.913** on the 47-case corpus -- a 1.4% margin, so it was passing
+    incidentally rather than because the claim holds, and one new case with more
+    hip extension would have turned it red for a reason unrelated to the axis
+    label. Lane `capture` shipped and then found the same defect in a 95% span
+    bound that missed by 1.5 points on Windows; the lesson they drew is that
+    being right about someone else's bound does not make you look at your own.
+
+    Two scale-free forms replace it, both meaning "the positive direction is the
+    one this joint travels in":
+
+    * the median active excursion is clearly positive, and
+    * the integral of flexion outweighs the integral of extension.
+
+    Weakest measurement across the four bones is `leftUpperLeg` at a median of
+    19.7 degrees and a ratio of 9.8; the arms are effectively unbounded because
+    their flexion never goes negative at all.
+    """
+
     flexion = _degrees(corpus_angles[bone], "flexion")
     active = flexion[np.abs(flexion) > 1.0]
 
     assert len(active) > 100
-    assert float(np.mean(active > 0.0)) > 0.90
+    assert float(np.median(active)) > 10.0
+    positive = float(np.sum(np.clip(flexion, 0.0, None)))
+    negative = float(np.sum(np.clip(-flexion, 0.0, None)))
+    assert positive > 3.0 * negative
 
 
 @pytest.mark.parametrize("bone", ["leftIndexProximal", "leftMiddleProximal", "leftLittleProximal"])
 def test_shipped_finger_motion_is_flexion_only(bone, corpus_angles) -> None:
     angles = corpus_angles[bone]
 
-    assert _degrees(angles, "flexion").min() > 0.0
-    assert np.abs(_degrees(angles, "abduction")).max() < 12.0
+    flexion = _degrees(angles, "flexion")
+    abduction = _degrees(angles, "abduction")
+
+    assert flexion.min() > 0.0
+    # A ratio, not an absolute bound. This asserted |abduction| < 12.0 and
+    # `leftLittleProximal` measured 11.68 -- a 2.6% margin, passing by accident.
+    # The little finger genuinely splays, so the claim was never "abduction is
+    # near zero"; it is that flexion dominates. Weakest ratio is 5.6.
+    assert flexion.max() > 3.0 * np.abs(abduction).max()
     assert np.abs(_degrees(angles, "twist")).max() < 2.0
 
 

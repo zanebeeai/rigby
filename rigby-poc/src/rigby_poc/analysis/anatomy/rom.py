@@ -16,6 +16,7 @@ and the check this replaces cannot tell them apart.
 from __future__ import annotations
 
 import json
+import math
 from collections.abc import Iterable
 from dataclasses import asdict, dataclass
 from functools import lru_cache
@@ -28,7 +29,7 @@ from ...models import ClipFrame
 from ..contract import ANATOMY, CheckResult, skipped
 from ..rig import PROJECT_ROOT
 from .frame import all_frames, decompose_series
-from .neutral import rest_relative
+from .neutral import rest_offset, rest_relative
 
 ROM_FILE = PROJECT_ROOT / "config" / "rom.v1.json"
 
@@ -136,6 +137,12 @@ def rom_limits() -> dict[tuple[str, str], DofLimit]:
 
     limits: dict[tuple[str, str], DofLimit] = {}
     for bone, entry in _document()["limits"].items():
+        # Derived here rather than read from the file. Storing it made the
+        # committed JSON architecture-dependent: several offsets sit within
+        # 1e-5 degrees of a three-decimal rounding boundary, which is inside
+        # cross-architecture float drift, and the byte-equality test went red on
+        # Windows while passing on macOS.
+        offset = rest_offset(bone)
         for dof, value in entry["dofs"].items():
             limits[(bone, dof)] = DofLimit(
                 bone=bone,
@@ -143,7 +150,11 @@ def rom_limits() -> dict[tuple[str, str], DofLimit]:
                 typical_deg=tuple(value["typical_deg"]),
                 max_deg=tuple(value["max_deg"]),
                 hard_assert=bool(value["hard_assert"]),
-                rest_offset_deg=value["rest_offset_deg"],
+                rest_offset_deg=(
+                    None
+                    if offset is None
+                    else math.degrees(getattr(offset, f"{dof}_rad"))
+                ),
                 source=value["source"],
             )
     return limits

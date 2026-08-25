@@ -22,7 +22,7 @@ import json
 from collections import OrderedDict
 
 from rigby_poc.analysis.anatomy.conventions import bone_side, joint_class
-from rigby_poc.analysis.anatomy.neutral import rest_offset
+from rigby_poc.analysis.anatomy.neutral import NO_NEUTRAL
 from rigby_poc.analysis.rig import canonical_bone_names
 
 AAOS = "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
@@ -187,7 +187,6 @@ def key_for(bone):
 limits = OrderedDict()
 for bone in canonical_bone_names():
     entry = T[key_for(bone)]
-    off = rest_offset(bone)
     out = OrderedDict()
     side = bone_side(bone)
     for dof in ("flexion", "abduction", "twist"):
@@ -210,7 +209,9 @@ for bone in canonical_bone_names():
         src = dict(e.pop("source"))
         src["reference_frame"] = (
             "none -- no anatomical neutral exists for this entity"
-            if off is None else
+            # A class property, not a derived float: the thumb has no neutral by
+            # anatomy, which is stable across architectures.
+            if joint_class(bone) in NO_NEUTRAL else
             "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset")
         out[dof] = OrderedDict(
             typical_deg=[float(x) for x in e["typical_deg"]],
@@ -220,8 +221,13 @@ for bone in canonical_bone_names():
             # indistinguishable from an authored one, and a row added without
             # going through row() would silently become non-hard-asserted.
             hard_assert=bool(e["hard_assert"]),
-            rest_offset_deg=(None if off is None
-                             else round(float(getattr(off, f"{dof}_rad")) * 180.0 / 3.141592653589793, 3)),
+            # rest_offset_deg is deliberately NOT written. It is *derived* from
+            # rig geometry, and several of the 52 sit within 1e-5 degrees of a
+            # three-decimal rounding boundary -- leftIndexProximal.abduction is
+            # 3.7e-06 away. Cross-architecture float drift is enough to flip
+            # those, which turned the byte-equality test red on Windows CI while
+            # passing on macOS. A derived value has no business in a
+            # hand-authored config; the loader derives it at read time.
             source=src)
     limits[bone] = OrderedDict(joint_class=joint_class(bone),
                                enforceable=("mutation_only" if bone in IMMOBILE else "generation"),
@@ -239,7 +245,12 @@ def build_document() -> OrderedDict:
         },
         notes=OrderedDict(
             units="degrees",
-            frame="typical_deg and max_deg are ANATOMICAL angles. rest_offset_deg converts to the rig's rest-relative frame: rest_relative = anatomical - rest_offset_deg. See plan 04 6.4.",
+            frame=("typical_deg and max_deg are ANATOMICAL angles. The rest-relative bound is "
+                   "anatomical + the bone's rest offset, DERIVED at load time by "
+                   "rigby_poc.analysis.anatomy.neutral.rest_offset. It is deliberately not stored "
+                   "here: it is geometry rather than an authored value, and several offsets sit "
+                   "within 1e-5 deg of a rounding boundary, which made this file "
+                   "architecture-dependent. See plan 04 6.4."),
             mirroring="flexion and abduction are preserved across sides; only twist negates. Authored once, applied to both.",
             enforceable="'mutation_only' marks a bone compiler.py never assigns a rotation to on any path, so its limit can never fire from generated motion. Exercising it belongs to plan 06.",
             report_only="04b ships every check with status='pass' regardless of the measurement. Enforcement is 04c, per DOF, after the distribution review.",

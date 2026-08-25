@@ -9,7 +9,7 @@
   },
   "notes": {
     "units": "degrees",
-    "frame": "typical_deg and max_deg are ANATOMICAL angles. rest_offset_deg converts to the rig's rest-relative frame: rest_relative = anatomical - rest_offset_deg. See plan 04 6.4.",
+    "frame": "typical_deg and max_deg are ANATOMICAL angles. The rest-relative bound is anatomical + the bone's rest offset, DERIVED at load time by rigby_poc.analysis.anatomy.neutral.rest_offset. It is deliberately not stored here: it is geometry rather than an authored value, and several offsets sit within 1e-5 deg of a rounding boundary, which made this file architecture-dependent. See plan 04 6.4.",
     "mirroring": "flexion and abduction are preserved across sides; only twist negates. Authored once, applied to both.",
     "enforceable": "'mutation_only' marks a bone compiler.py never assigns a rotation to on any path, so its limit can never fire from generated motion. Exercising it belongs to plan 06.",
     "report_only": "04b ships every check with status='pass' regardless of the measurement. Enforcement is 04c, per DOF, after the distribution review."
@@ -29,7 +29,6 @@
             30.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "invariant",
             "cites": [
@@ -49,7 +48,6 @@
             30.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "invariant",
             "cites": [
@@ -69,7 +67,6 @@
             180.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "invariant",
             "cites": [
@@ -95,7 +92,6 @@
             35.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -115,7 +111,6 @@
             16.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -135,7 +130,6 @@
             20.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -161,7 +155,6 @@
             35.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -181,7 +174,6 @@
             16.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -201,7 +193,6 @@
             20.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -227,7 +218,6 @@
             35.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -247,7 +237,6 @@
             16.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -267,7 +256,6 @@
             20.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -293,7 +281,6 @@
             32.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -313,7 +300,6 @@
             30.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -333,7 +319,6 @@
             50.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -359,7 +344,6 @@
             32.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -379,7 +363,6 @@
             30.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -399,7 +382,6 @@
             50.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -425,7 +407,6 @@
             50.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -445,7 +426,6 @@
             35.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -465,7 +445,6 @@
             25.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -491,7 +470,6 @@
             185.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -0.008,
           "source": {
             "kind": "external",
             "cites": [
@@ -511,7 +489,6 @@
             185.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -89.695,
           "source": {
             "kind": "external",
             "cites": [
@@ -531,7 +508,6 @@
             95.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "external",
             "cites": [
@@ -557,7 +533,6 @@
             150.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -2.48,
           "source": {
             "kind": "external",
             "cites": [
@@ -577,7 +552,6 @@
             5.0
           ],
           "hard_assert": true,
-          "rest_offset_deg": 0.771,
           "source": {
             "kind": "invariant",
             "cites": [
@@ -597,7 +571,6 @@
             85.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -0.0,
           "source": {
             "kind": "external",
             "cites": [
@@ -625,7 +598,6 @@
             90.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.306,
           "source": {
             "kind": "external",
             "cites": [
@@ -645,7 +617,6 @@
             25.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -11.305,
           "source": {
             "kind": "external",
             "cites": [
@@ -665,7 +636,6 @@
             15.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.219,
           "source": {
             "kind": "external",
             "cites": [
@@ -691,7 +661,6 @@
             50.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -711,7 +680,6 @@
             35.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -731,7 +699,6 @@
             25.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -757,7 +724,6 @@
             185.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -0.008,
           "source": {
             "kind": "external",
             "cites": [
@@ -777,7 +743,6 @@
             185.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -89.695,
           "source": {
             "kind": "external",
             "cites": [
@@ -797,7 +762,6 @@
             95.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "external",
             "cites": [
@@ -823,7 +787,6 @@
             150.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -2.48,
           "source": {
             "kind": "external",
             "cites": [
@@ -843,7 +806,6 @@
             5.0
           ],
           "hard_assert": true,
-          "rest_offset_deg": 0.771,
           "source": {
             "kind": "invariant",
             "cites": [
@@ -863,7 +825,6 @@
             85.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "external",
             "cites": [
@@ -891,7 +852,6 @@
             90.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.306,
           "source": {
             "kind": "external",
             "cites": [
@@ -911,7 +871,6 @@
             25.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -11.305,
           "source": {
             "kind": "external",
             "cites": [
@@ -931,7 +890,6 @@
             15.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -0.219,
           "source": {
             "kind": "external",
             "cites": [
@@ -957,7 +915,6 @@
             130.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -2.518,
           "source": {
             "kind": "external",
             "cites": [
@@ -977,7 +934,6 @@
             50.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "external",
             "cites": [
@@ -997,7 +953,6 @@
             50.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "external",
             "cites": [
@@ -1023,7 +978,6 @@
             145.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -11.482,
           "source": {
             "kind": "external",
             "cites": [
@@ -1043,7 +997,6 @@
             5.0
           ],
           "hard_assert": true,
-          "rest_offset_deg": -0.003,
           "source": {
             "kind": "invariant",
             "cites": [
@@ -1063,7 +1016,6 @@
             35.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "external",
             "cites": [
@@ -1089,7 +1041,6 @@
             55.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -27.144,
           "source": {
             "kind": "external",
             "cites": [
@@ -1109,7 +1060,6 @@
             40.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.028,
           "source": {
             "kind": "external",
             "cites": [
@@ -1129,7 +1079,6 @@
             15.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -1155,7 +1104,6 @@
             45.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -2.382,
           "source": {
             "kind": "external",
             "cites": [
@@ -1175,7 +1123,6 @@
             15.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -1195,7 +1142,6 @@
             10.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -1221,7 +1167,6 @@
             130.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -2.518,
           "source": {
             "kind": "external",
             "cites": [
@@ -1241,7 +1186,6 @@
             50.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -0.0,
           "source": {
             "kind": "external",
             "cites": [
@@ -1261,7 +1205,6 @@
             50.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -0.0,
           "source": {
             "kind": "external",
             "cites": [
@@ -1287,7 +1230,6 @@
             145.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -11.482,
           "source": {
             "kind": "external",
             "cites": [
@@ -1307,7 +1249,6 @@
             5.0
           ],
           "hard_assert": true,
-          "rest_offset_deg": -0.003,
           "source": {
             "kind": "invariant",
             "cites": [
@@ -1327,7 +1268,6 @@
             15.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -0.0,
           "source": {
             "kind": "external",
             "cites": [
@@ -1353,7 +1293,6 @@
             55.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -27.144,
           "source": {
             "kind": "external",
             "cites": [
@@ -1373,7 +1312,6 @@
             40.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.028,
           "source": {
             "kind": "external",
             "cites": [
@@ -1393,7 +1331,6 @@
             15.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -1419,7 +1356,6 @@
             45.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -2.382,
           "source": {
             "kind": "external",
             "cites": [
@@ -1439,7 +1375,6 @@
             15.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -1459,7 +1394,6 @@
             10.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -1485,7 +1419,6 @@
             75.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": null,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -1506,7 +1439,6 @@
             75.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": null,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -1527,7 +1459,6 @@
             75.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": null,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -1554,7 +1485,6 @@
             75.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": null,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -1575,7 +1505,6 @@
             75.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": null,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -1596,7 +1525,6 @@
             75.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": null,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -1623,7 +1551,6 @@
             75.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": null,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -1644,7 +1571,6 @@
             75.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": null,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -1665,7 +1591,6 @@
             75.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": null,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -1692,7 +1617,6 @@
             100.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.727,
           "source": {
             "kind": "external",
             "cites": [
@@ -1712,7 +1636,6 @@
             25.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 2.331,
           "source": {
             "kind": "external",
             "cites": [
@@ -1732,7 +1655,6 @@
             10.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -1758,7 +1680,6 @@
             120.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "external",
             "cites": [
@@ -1778,7 +1699,6 @@
             10.0
           ],
           "hard_assert": true,
-          "rest_offset_deg": -1.235,
           "source": {
             "kind": "invariant",
             "cites": [
@@ -1798,7 +1718,6 @@
             10.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -1824,7 +1743,6 @@
             90.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "external",
             "cites": [
@@ -1844,7 +1762,6 @@
             10.0
           ],
           "hard_assert": true,
-          "rest_offset_deg": -1.247,
           "source": {
             "kind": "invariant",
             "cites": [
@@ -1864,7 +1781,6 @@
             10.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -1890,7 +1806,6 @@
             100.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.729,
           "source": {
             "kind": "external",
             "cites": [
@@ -1910,7 +1825,6 @@
             25.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 9.245,
           "source": {
             "kind": "external",
             "cites": [
@@ -1930,7 +1844,6 @@
             10.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -1956,7 +1869,6 @@
             120.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.001,
           "source": {
             "kind": "external",
             "cites": [
@@ -1976,7 +1888,6 @@
             10.0
           ],
           "hard_assert": true,
-          "rest_offset_deg": -0.251,
           "source": {
             "kind": "invariant",
             "cites": [
@@ -1996,7 +1907,6 @@
             10.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -2022,7 +1932,6 @@
             90.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -0.0,
           "source": {
             "kind": "external",
             "cites": [
@@ -2042,7 +1951,6 @@
             10.0
           ],
           "hard_assert": true,
-          "rest_offset_deg": -2.771,
           "source": {
             "kind": "invariant",
             "cites": [
@@ -2062,7 +1970,6 @@
             10.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -2088,7 +1995,6 @@
             100.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.734,
           "source": {
             "kind": "external",
             "cites": [
@@ -2108,7 +2014,6 @@
             25.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 14.309,
           "source": {
             "kind": "external",
             "cites": [
@@ -2128,7 +2033,6 @@
             10.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -2154,7 +2058,6 @@
             120.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "external",
             "cites": [
@@ -2174,7 +2077,6 @@
             10.0
           ],
           "hard_assert": true,
-          "rest_offset_deg": -2.263,
           "source": {
             "kind": "invariant",
             "cites": [
@@ -2194,7 +2096,6 @@
             10.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -2220,7 +2121,6 @@
             90.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -0.0,
           "source": {
             "kind": "external",
             "cites": [
@@ -2240,7 +2140,6 @@
             10.0
           ],
           "hard_assert": true,
-          "rest_offset_deg": -0.461,
           "source": {
             "kind": "invariant",
             "cites": [
@@ -2260,7 +2159,6 @@
             10.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -2286,7 +2184,6 @@
             100.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.737,
           "source": {
             "kind": "external",
             "cites": [
@@ -2306,7 +2203,6 @@
             25.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 16.762,
           "source": {
             "kind": "external",
             "cites": [
@@ -2326,7 +2222,6 @@
             10.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -2352,7 +2247,6 @@
             120.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "external",
             "cites": [
@@ -2372,7 +2266,6 @@
             10.0
           ],
           "hard_assert": true,
-          "rest_offset_deg": 1.593,
           "source": {
             "kind": "invariant",
             "cites": [
@@ -2392,7 +2285,6 @@
             10.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -2418,7 +2310,6 @@
             90.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -0.0,
           "source": {
             "kind": "external",
             "cites": [
@@ -2438,7 +2329,6 @@
             10.0
           ],
           "hard_assert": true,
-          "rest_offset_deg": -1.483,
           "source": {
             "kind": "invariant",
             "cites": [
@@ -2458,7 +2348,6 @@
             10.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -2484,7 +2373,6 @@
             75.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": null,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -2505,7 +2393,6 @@
             75.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": null,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -2526,7 +2413,6 @@
             75.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": null,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -2553,7 +2439,6 @@
             75.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": null,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -2574,7 +2459,6 @@
             75.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": null,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -2595,7 +2479,6 @@
             75.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": null,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -2622,7 +2505,6 @@
             75.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": null,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -2643,7 +2525,6 @@
             75.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": null,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -2664,7 +2545,6 @@
             75.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": null,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -2691,7 +2571,6 @@
             100.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.727,
           "source": {
             "kind": "external",
             "cites": [
@@ -2711,7 +2590,6 @@
             25.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 2.331,
           "source": {
             "kind": "external",
             "cites": [
@@ -2731,7 +2609,6 @@
             10.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -2757,7 +2634,6 @@
             120.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -0.001,
           "source": {
             "kind": "external",
             "cites": [
@@ -2777,7 +2653,6 @@
             10.0
           ],
           "hard_assert": true,
-          "rest_offset_deg": -1.235,
           "source": {
             "kind": "invariant",
             "cites": [
@@ -2797,7 +2672,6 @@
             10.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -2823,7 +2697,6 @@
             90.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.001,
           "source": {
             "kind": "external",
             "cites": [
@@ -2843,7 +2716,6 @@
             10.0
           ],
           "hard_assert": true,
-          "rest_offset_deg": -1.247,
           "source": {
             "kind": "invariant",
             "cites": [
@@ -2863,7 +2735,6 @@
             10.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -2889,7 +2760,6 @@
             100.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.73,
           "source": {
             "kind": "external",
             "cites": [
@@ -2909,7 +2779,6 @@
             25.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 9.245,
           "source": {
             "kind": "external",
             "cites": [
@@ -2929,7 +2798,6 @@
             10.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -2955,7 +2823,6 @@
             120.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -0.0,
           "source": {
             "kind": "external",
             "cites": [
@@ -2975,7 +2842,6 @@
             10.0
           ],
           "hard_assert": true,
-          "rest_offset_deg": -0.251,
           "source": {
             "kind": "invariant",
             "cites": [
@@ -2995,7 +2861,6 @@
             10.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -3021,7 +2886,6 @@
             90.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.001,
           "source": {
             "kind": "external",
             "cites": [
@@ -3041,7 +2905,6 @@
             10.0
           ],
           "hard_assert": true,
-          "rest_offset_deg": -2.771,
           "source": {
             "kind": "invariant",
             "cites": [
@@ -3061,7 +2924,6 @@
             10.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -3087,7 +2949,6 @@
             100.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.733,
           "source": {
             "kind": "external",
             "cites": [
@@ -3107,7 +2968,6 @@
             25.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 14.309,
           "source": {
             "kind": "external",
             "cites": [
@@ -3127,7 +2987,6 @@
             10.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -3153,7 +3012,6 @@
             120.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.001,
           "source": {
             "kind": "external",
             "cites": [
@@ -3173,7 +3031,6 @@
             10.0
           ],
           "hard_assert": true,
-          "rest_offset_deg": -2.263,
           "source": {
             "kind": "invariant",
             "cites": [
@@ -3193,7 +3050,6 @@
             10.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -3219,7 +3075,6 @@
             90.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -0.001,
           "source": {
             "kind": "external",
             "cites": [
@@ -3239,7 +3094,6 @@
             10.0
           ],
           "hard_assert": true,
-          "rest_offset_deg": -0.461,
           "source": {
             "kind": "invariant",
             "cites": [
@@ -3259,7 +3113,6 @@
             10.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -3285,7 +3138,6 @@
             100.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.737,
           "source": {
             "kind": "external",
             "cites": [
@@ -3305,7 +3157,6 @@
             25.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 16.762,
           "source": {
             "kind": "external",
             "cites": [
@@ -3325,7 +3176,6 @@
             10.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -3351,7 +3201,6 @@
             120.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": -0.001,
           "source": {
             "kind": "external",
             "cites": [
@@ -3371,7 +3220,6 @@
             10.0
           ],
           "hard_assert": true,
-          "rest_offset_deg": 1.593,
           "source": {
             "kind": "invariant",
             "cites": [
@@ -3391,7 +3239,6 @@
             10.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "provisional",
             "cites": [
@@ -3417,7 +3264,6 @@
             90.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.001,
           "source": {
             "kind": "external",
             "cites": [
@@ -3437,7 +3283,6 @@
             10.0
           ],
           "hard_assert": true,
-          "rest_offset_deg": -1.483,
           "source": {
             "kind": "invariant",
             "cites": [
@@ -3457,7 +3302,6 @@
             10.0
           ],
           "hard_assert": false,
-          "rest_offset_deg": 0.0,
           "source": {
             "kind": "provisional",
             "cites": [
