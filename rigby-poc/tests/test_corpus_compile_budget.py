@@ -67,6 +67,14 @@ COMPILE_BUDGET: dict[str, int] = {
     # Scoped to the object cases rather than the corpus: the first version looped
     # all 47 to reach nine, and this guard caught it.
     "test_vacuous_metrics.py": 30,
+    # 10d's detection curve against real compiled clips. Measured at 4: one
+    # module fixture compiling four named full-body cases, shared across five
+    # tests. Scoped to four rather than looping the corpus because the sweeps
+    # are per `(bone, dof)` and four moving cases exercise every branch --
+    # threshold point, static target and refusal. Budgeted rather than exempted
+    # so that scoping stays a decision somebody has to re-make in a diff if this
+    # file ever reaches for `load_corpus()` in a loop.
+    "test_detection_curve_on_the_corpus.py": 8,
 }
 
 #: Corpus-touching files deliberately not measured, with the reason.  Being here is

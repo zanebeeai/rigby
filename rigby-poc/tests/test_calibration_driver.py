@@ -7,10 +7,11 @@ refuses, because the number survives into a report and the refusal does not.
 
 from __future__ import annotations
 
+import json
+
 import pytest
 
 from evals.calibration.driver import (
-    ArmResult,
     CalibrationDataError,
     baseline_for,
     pool_arms,
@@ -124,7 +125,7 @@ def test_a_measured_arm_carries_its_n_beside_its_rates() -> None:
 # ------------------------------------------------------------- denominators
 
 
-def _arm(name: str, case_ids: list[str]) -> "object":
+def _arm(name: str, case_ids: list[str]) -> object:
     records = [
         UnaryJudgment(clip_id=case, is_good=index % 2 == 0, accepted=index % 2 == 0)
         for index, case in enumerate(case_ids)
@@ -175,3 +176,105 @@ def test_pooling_refuses_a_union_and_an_intersection_alike() -> None:
 def test_pooling_with_no_measured_arm_raises() -> None:
     with pytest.raises(CalibrationDataError, match="no measured arm"):
         pool_arms([score_arm("empty", [])])
+
+
+# --- 10d: the detection arm wired to 06b's sweeps -----------------------------
+
+
+def _sweep_result(name: str, threshold, *, measured: bool, reason: str = "", baseline=None):
+    from evals.calibration.driver import SweepResult
+    from evals.calibration_stats import proportion
+
+    return SweepResult(
+        name=name,
+        threshold=threshold,
+        curve=[],
+        capability=proportion(0, 0),
+        skips={},
+        measured=measured,
+        baseline=baseline if baseline is not None else proportion(0, 12),
+        reason=reason,
+    )
+
+
+def test_a_sweep_that_measured_nothing_is_not_a_detector_that_failed() -> None:
+    # Opposite findings that would otherwise share a cell: "every pair was
+    # refused" blames the corpus, "never reached 50%" blames the grader.
+    from evals.calibration.driver import detection_report
+
+    never = _sweep_result("jitter", None, measured=True, reason="never reached 50%")
+    nothing = _sweep_result("rom", None, measured=False, reason="no threshold points")
+    report = detection_report([never, nothing])
+    assert report["measured"] == []
+    assert report["unmeasured"]["jitter"] != report["unmeasured"]["rom"]
+    assert never.measured is True and nothing.measured is False
+
+
+def test_the_detection_report_refuses_to_pool_sweeps() -> None:
+    # Two sweeps, two thresholds, and no combined number anywhere in the payload.
+    from evals.calibration.driver import detection_report
+    from evals.calibration_stats import Interval
+
+    results = [
+        _sweep_result("a", Interval(0.16, 0.08, 0.28, 20), measured=True),
+        _sweep_result("b", Interval(0.68, 0.48, 1.00, 5), measured=True),
+    ]
+    report = detection_report(results)
+    assert sorted(report["measured"]) == ["a", "b"]
+    assert len(report["sweeps"]) == 2
+
+    # Both thresholds survive intact and separately keyed by sweep. Asserting only
+    # that no top-level "threshold" key exists would pass against a report that
+    # averaged them under any other name, and asserting "no float at top level"
+    # passes against every possible payload here -- a check that cannot fail is
+    # the second failure direction in docs/testing.md, wearing the language of
+    # the thing it audits.
+    estimates = {item["sweep"]: item["threshold"]["estimate"] for item in report["sweeps"]}
+    assert estimates == {"a": 0.16, "b": 0.68}
+
+    # The number pooling would produce, named and excluded.
+    pooled = (0.16 + 0.68) / 2
+    flat = json.dumps(report)
+    assert str(pooled) not in flat
+    assert "0.42" not in flat
+
+
+def test_an_empty_detection_report_raises_rather_than_reporting_nothing() -> None:
+    from evals.calibration.driver import detection_report
+
+    with pytest.raises(CalibrationDataError, match="no sweeps"):
+        detection_report([])
+
+
+def test_every_reported_threshold_carries_its_baseline() -> None:
+    # `ProportionResult` structurally carries an n and a bound; nothing
+    # structurally carries a baseline. A detection rate without one cannot be
+    # told apart from a check that was already firing before the mutation --
+    # found by lane `infra` in the published-rate guard's blind spot.
+    from evals.calibration.driver import detection_report
+    from evals.calibration_stats import Interval, proportion
+
+    result = _sweep_result(
+        "rom", Interval(0.16, 0.08, 0.28, 20), measured=True, baseline=proportion(0, 20)
+    )
+    report = detection_report([result])
+    entry = report["sweeps"][0]
+    assert entry["baseline_detection_rate"] is not None
+    assert entry["baseline_detection_rate"]["n"] == 20
+    assert entry["baseline_detection_rate"]["estimate"] == 0.0
+
+
+def test_a_baseline_that_already_fires_is_reported_not_hidden() -> None:
+    # The case the baseline exists for: the target check fires on most unmutated
+    # clips, so a high detection rate says nothing about the mutation. The report
+    # must carry the number rather than quietly publishing the curve alone.
+    from evals.calibration.driver import detection_report
+    from evals.calibration_stats import Interval, proportion
+
+    result = _sweep_result(
+        "jitter", Interval(0.04, 0.04, 0.08, 20), measured=True, baseline=proportion(18, 20)
+    )
+    entry = detection_report([result])["sweeps"][0]
+    assert entry["baseline_detection_rate"]["estimate"] == 0.9
+    # And it is not silently folded into the threshold.
+    assert entry["threshold"]["estimate"] == 0.04

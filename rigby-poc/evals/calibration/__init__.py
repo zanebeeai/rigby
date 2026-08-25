@@ -12,6 +12,24 @@ Reassigned from lane `groundtruth` mid-push; the design decisions in
 
 from __future__ import annotations
 
+from .detection import (
+    DetectionError,
+    LevelResult,
+    PairOutcome,
+    capability_rate,
+    detection_curve,
+    detection_threshold,
+    skip_ledger,
+    sweep_outcomes,
+    unmutated_baseline,
+)
+from .driver import (
+    ArmResult,
+    CalibrationDataError,
+    SweepResult,
+    detection_report,
+    run_sweep,
+)
 from .replay import (
     RecordedGrader,
     ReplayError,
@@ -21,9 +39,23 @@ from .replay import (
 )
 
 __all__ = [
+    "ArmResult",
+    "CalibrationDataError",
+    "DetectionError",
+    "LevelResult",
+    "PairOutcome",
     "RecordedGrader",
     "ReplayError",
     "ReplayStore",
+    "SweepResult",
+    "capability_rate",
+    "detection_curve",
+    "detection_report",
+    "detection_threshold",
     "graders_from_record",
     "prompt_versions_agree",
+    "run_sweep",
+    "skip_ledger",
+    "sweep_outcomes",
+    "unmutated_baseline",
 ]
