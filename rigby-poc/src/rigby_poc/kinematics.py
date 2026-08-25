@@ -1,24 +1,34 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import math
 import struct
+from collections.abc import Mapping
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
-from typing import Mapping
 
 import numpy as np
 from scipy.spatial.transform import Rotation
 
 from .models import BonePose, Quat
 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 
-def _glb_document(path: Path) -> dict:
+def _glb_document(path: Path) -> tuple[dict, str]:
+    """The parsed JSON chunk, and the sha256 of the bytes it was parsed from.
+
+    The digest is taken here, of the exact bytes read, rather than by re-reading
+    the file later. Re-reading would return the digest of whatever is on disk
+    *now* while the caller holds transforms parsed from what was there *then* --
+    which agrees with the declared hash exactly when it should not. Plan 04
+    §6.1d.
+    """
+
     raw = path.read_bytes()
+    digest = hashlib.sha256(raw).hexdigest()
     magic, version, _ = struct.unpack_from("<4sII", raw, 0)
     if magic != b"glTF" or version != 2:
         raise ValueError("rig asset is not a glTF 2.0 binary")
@@ -27,7 +37,7 @@ def _glb_document(path: Path) -> dict:
         length, kind = struct.unpack_from("<II", raw, offset)
         payload = raw[offset + 8 : offset + 8 + length]
         if kind == 0x4E4F534A:
-            return json.loads(payload.rstrip(b" \x00"))
+            return json.loads(payload.rstrip(b" \x00")), digest
         offset += 8 + length
     raise ValueError("rig asset does not contain a JSON chunk")
 
@@ -52,7 +62,17 @@ class RigKinematics:
     """Evaluate Rigby's exact source-rig hierarchy for deterministic gates."""
 
     def __init__(self, asset_path: Path, profile_path: Path) -> None:
-        document = _glb_document(asset_path)
+        document, self.asset_sha256 = _glb_document(asset_path)
+        """sha256 of the GLB bytes this instance was parsed from.
+
+        Load-bearing for provenance, not diagnostics. Every anatomical frame and
+        every range-of-motion verdict derives from these transforms, and the
+        evidence a grader sees comes from the browser's independent parse of the
+        same file. Comparing this against ``render_provenance.asset_sha256`` is
+        parse against parse; comparing either against the *declared* hash is not,
+        and is green precisely in the case that matters.
+        """
+
         profile = json.loads(profile_path.read_text(encoding="utf-8"))
         self.nodes = document["nodes"]
         self.parents = {
@@ -393,6 +413,17 @@ class RigKinematics:
 
 @lru_cache(maxsize=1)
 def rig_kinematics() -> RigKinematics:
+    """The one rig this process uses.
+
+    **The cache is load-bearing for provenance, not a performance detail.** It
+    is what makes "one skeleton per process" true, which is what lets
+    ``asset_sha256`` on this instance describe every frame derived anywhere in
+    the process. Clearing it between tests is the most natural thing for a
+    fixture author to reach for and it would silently break that. ``conftest.py``
+    carries the same warning and a test asserts the cache is never cleared --
+    do not add one without talking to lane ``anatomy``.
+    """
+
     return RigKinematics(
         PROJECT_ROOT / "assets" / "models" / "human-male.glb",
         PROJECT_ROOT / "config" / "rig_profiles" / "mesh2motion-human-vrm1.json",

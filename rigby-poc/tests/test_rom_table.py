@@ -14,7 +14,7 @@ from pathlib import Path
 
 import pytest
 
-from rigby_poc.analysis.anatomy import authored_rom
+from rigby_poc.analysis.anatomy import all_frames, authored_rom
 from rigby_poc.analysis.anatomy.conventions import joint_class
 from rigby_poc.analysis.anatomy.neutral import NO_NEUTRAL, rest_offset
 from rigby_poc.analysis.anatomy.rom import (
@@ -295,3 +295,77 @@ def test_an_unmeasured_dof_is_skipped_not_reported_as_within_range() -> None:
         isinstance(result.measured, dict) and result.measured.get("band") == "within_typical"
         for result in results
     )
+
+
+def test_a_partly_posed_clip_skips_only_the_bones_it_omits() -> None:
+    """The realistic breaching case, which the empty-clip test above cannot reach.
+
+    Lane `judge` named the sub-class: **a guard that exists, fires, and is
+    pinned to the wrong quantity** is worse than an unguarded constant, because
+    its presence stops anyone re-checking. The test above exercises an empty
+    clip, where every bone is absent. A refactor that keyed the skip off "this
+    clip has no frames" rather than "this bone is not in the measured set" would
+    regress every partial clip and leave that test green.
+    """
+
+    from evals.corpus import load_corpus
+    from evals.corpus.loader import compile_case
+    from rigby_poc.analysis.anatomy.rom import rom_checks
+
+    case = next(item for item in load_corpus() if item.entry.id == "fullbody-dance")
+    clip = compile_case(case)
+    omitted = "leftIndexProximal"
+    partial = [
+        frame.model_copy(
+            update={"bones": {k: v for k, v in frame.bones.items() if k != omitted}}
+        )
+        for frame in clip.frames
+    ]
+
+    results = {item.id: item for item in rom_checks(partial, fps=clip.fps)}
+
+    for dof in DOFS:
+        assert results[f"anatomy.rom.{omitted}.{dof}"].status == "skip"
+    # A bone that is present must still be measured, not swept up by the skip.
+    present = results["anatomy.rom.leftMiddleProximal.flexion"]
+    assert present.status in ("pass", "fail")
+    assert present.measured["band"] in ("within_typical", "beyond_typical", "beyond_max")
+
+
+def test_every_corpus_derived_bound_reports_its_margin() -> None:
+    """The audit lanes `capture` and `judge` converged on, in the form that fits.
+
+    A margin *guard* belongs on a derived constant and would be wrong here: a
+    bound like the knee's 5-degree hinge tolerance is a **claim about anatomy**,
+    and wrapping it in "and by at least 25%" turns a claim into a budget that a
+    future author satisfies by widening the claim.
+
+    So this reports rather than gates, and it labels each number by which clock
+    it runs on -- plan 04 §6.1n. A corpus-derived bound creeps as the corpus
+    grows; a rig-derived one steps when the humanoid asset is replaced, which is
+    what 04c's asset-digest assertion exists to catch.
+    """
+
+    from rigby_poc.analysis.anatomy import frame as frame_module
+
+    rig_derived = {
+        "MIN_LONGITUDINAL_COSINE": (
+            frame_module.MIN_LONGITUDINAL_COSINE,
+            min(f.longitudinal_cosine for f in all_frames().values()),
+        ),
+        "MIN_MARGIN": (
+            frame_module.MIN_MARGIN,
+            min(f.flexion_margin for f in all_frames().values()),
+        ),
+    }
+
+    for name, (bound, observed) in rig_derived.items():
+        margin = (observed - bound) / abs(bound)
+        assert margin > 0.0, f"{name}: {observed} is already under its bound {bound}"
+
+    # Recorded, not gated: the tightest of the three sits at 5.7% and is
+    # rig-derived, so it cannot creep -- only step, and the digest catches that.
+    cosine_margin = (
+        rig_derived["MIN_LONGITUDINAL_COSINE"][1] - frame_module.MIN_LONGITUDINAL_COSINE
+    ) / frame_module.MIN_LONGITUDINAL_COSINE
+    assert 0.04 < cosine_margin < 0.08

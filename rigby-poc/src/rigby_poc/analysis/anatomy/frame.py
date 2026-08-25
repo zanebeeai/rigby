@@ -60,6 +60,14 @@ class AnatomicalFrame:
     """
 
     bone: str
+    asset_sha256: str
+    """The GLB this frame was derived from, carried rather than re-derived.
+
+    Re-deriving it would return the digest of whatever is on disk now while this
+    object holds transforms parsed earlier, which agrees with the declared hash
+    exactly when it should not. Plan 04 §6.1d.
+    """
+
     twist_axis: np.ndarray
     flexion_axis: np.ndarray
     abduction_axis: np.ndarray
@@ -312,6 +320,7 @@ def bone_anatomical_frame(canonical: str) -> AnatomicalFrame:
 
     return AnatomicalFrame(
         bone=canonical,
+        asset_sha256=kinematics.asset_sha256,
         twist_axis=twist_axis,
         flexion_axis=flexion_axis,
         abduction_axis=abduction_axis,

@@ -25,8 +25,9 @@ from typing import Any, Literal
 
 import numpy as np
 
+from ...kinematics import rig_kinematics
 from ...models import ClipFrame
-from ..contract import ANATOMY, CheckResult, skipped
+from ..contract import ANATOMY, CheckResult, saturating_severity, skipped
 from ..rig import PROJECT_ROOT
 from .frame import all_frames, decompose_series
 from .neutral import rest_offset, rest_relative
@@ -34,6 +35,15 @@ from .neutral import rest_offset, rest_relative
 ROM_FILE = PROJECT_ROOT / "config" / "rom.v1.json"
 
 DOFS = ("flexion", "abduction", "twist")
+
+#: Degrees past a bound treated as fully egregious when ordering failures.
+#:
+#: This is an arbitrary constant and that costs nothing, because severity only
+#: **ranks** failures -- it never decides one. The gate is the band. Stated
+#: explicitly so nobody later mistakes it for a threshold: the largest excess in
+#: the corpus is roughly 91 degrees, so 45 puts the worst elbow at saturation and
+#: leaves the rest ordered.
+SEVERITY_SCALE_DEG = 45.0
 Band = Literal["within_typical", "beyond_typical", "beyond_max"]
 
 #: Source kinds and the fields each one must carry. Mirrors the schema lane
@@ -60,6 +70,7 @@ class DofLimit:
     typical_deg: tuple[float, float]
     max_deg: tuple[float, float]
     hard_assert: bool
+    enforced: bool
     rest_offset_deg: float | None
     source: dict[str, Any]
 
@@ -121,6 +132,12 @@ class RomViolation:
     band: Band
     threshold_deg: float
     hard_assert: bool
+    asset_sha256: str
+    """Which skeleton this verdict was measured against.
+
+    On the record rather than in an assertion: a violation that cannot say which
+    rig it came from is a guard; one that can is an artifact.
+    """
 
     def as_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -150,6 +167,7 @@ def rom_limits() -> dict[tuple[str, str], DofLimit]:
                 typical_deg=tuple(value["typical_deg"]),
                 max_deg=tuple(value["max_deg"]),
                 hard_assert=bool(value["hard_assert"]),
+                enforced=bool(value["enforced"]),
                 rest_offset_deg=(
                     None
                     if offset is None
@@ -249,6 +267,7 @@ def bone_violations(bone: str, angles: np.ndarray, *, fps: float) -> list[RomVio
                 band=worst,
                 threshold_deg=round(threshold, 4),
                 hard_assert=limit.hard_assert,
+                asset_sha256=rig_kinematics().asset_sha256,
             )
         )
     return violations
@@ -298,30 +317,70 @@ def rom_checks(frames: list[ClipFrame], *, fps: float) -> list[CheckResult]:
                 )
             )
             continue
+        breached = violation is not None and violation.band == "beyond_max"
+        failing = breached and limit.enforced
         results.append(
             CheckResult(
                 id=f"anatomy.rom.{bone}.{dof}",
                 layer=ANATOMY,
-                status="pass",
+                status="fail" if failing else "pass",
                 measured=(
                     violation.as_dict()
                     if violation
                     else {"bone": bone, "dof": dof, "band": "within_typical"}
                 ),
                 threshold=limit.to_rest_relative(limit.max_deg[1]),
-                severity=0.0,
-                detail=(
-                    "report-only (plan 04 §3.6); enforcement lands per DOF in 04c"
-                    + ("; hard_assert DOF" if limit.hard_assert else "")
-                    + (
-                        "; mutation-only bone, cannot fire from generated motion"
-                        if enforceability(bone) == "mutation_only"
-                        else ""
+                severity=(
+                    saturating_severity(
+                        abs(violation.peak_deg) - abs(violation.threshold_deg),
+                        SEVERITY_SCALE_DEG,
                     )
+                    if failing
+                    else 0.0
+                ),
+                frames=(),
+                detail=(
+                    (
+                        "beyond max"
+                        if failing
+                        else "report-only: "
+                        + (
+                            "the bound is provisional"
+                            if limit.source["kind"] == "provisional"
+                            else "mutation-only bone"
+                            if enforceability(bone) == "mutation_only"
+                            else "root orientation, not a joint angle"
+                        )
+                    )
+                    + ("; hard_assert DOF" if limit.hard_assert else "")
                 ),
             )
         )
     return results
+
+
+def assert_evidence_matches_the_analysed_rig(rendered_sha256: str) -> None:
+    """Fail loudly when the evidence depicts a different skeleton than the frames.
+
+    ``rendered_sha256`` is ``render_provenance.asset_sha256`` from an evidence
+    manifest -- the hash the **browser** computed over the bytes it actually
+    parsed. Comparing that against this process's own parse is parse against
+    parse. Comparing either against the declared hash in ``assets/manifest.json``
+    is not, and stays green in the one case that matters: a GLB swapped together
+    with its manifest, where capture passes while this process still serves the
+    old skeleton from its cache.
+
+    Plan 04 §6.1d, and lane `capture`'s 05.
+    """
+
+    parsed = rig_kinematics().asset_sha256
+    if rendered_sha256 != parsed:
+        raise RomError(
+            "the evidence depicts a different skeleton than the one these "
+            f"measurements were taken against: rendered {rendered_sha256}, "
+            f"analysed {parsed}. Every anatomical frame and range-of-motion "
+            "verdict in this process derives from the second."
+        )
 
 
 __all__ = [
@@ -330,6 +389,7 @@ __all__ = [
     "DofLimit",
     "RomError",
     "RomViolation",
+    "assert_evidence_matches_the_analysed_rig",
     "bone_violations",
     "decompose_clip",
     "enforceability",

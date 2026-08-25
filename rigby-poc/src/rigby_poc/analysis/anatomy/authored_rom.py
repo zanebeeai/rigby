@@ -174,6 +174,35 @@ for seg in ("Metacarpal", "Proximal", "Distal"):
 
 IMMOBILE = ("leftToes", "rightToes", "neck", "spine", "upperChest")
 
+#: The skeleton root. Its rotation is whole-body orientation rather than a
+#: joint angle, so its bounds are wide sanity checks and firing on them is not
+#: anatomical evidence -- a cartwheel legitimately rotates it. Never enforced.
+ROOT = ("hips",)
+
+
+def is_enforced(bone: str, source_kind: str) -> bool:
+    """Whether 04c gates on this entry, or leaves it report-only.
+
+    A mechanical rule rather than a hand-picked list, so what is enforced can be
+    audited from the config and a new entry inherits a decision rather than an
+    oversight:
+
+    * the value must be **cited** -- ``external`` or ``invariant``. A
+      ``provisional`` bound is by its own declaration unvalidated, and gating on
+      one would publish a rejection rate that means nothing. That is 69 of the
+      156, including every thumb and finger-twist entry and every per-segment
+      spine limit.
+    * the bone must be reachable from generation. A ``mutation_only`` bone
+      cannot fire from any prompt, so enforcing it asserts nothing.
+    * the bone must be a joint. The root is excluded by name.
+    """
+
+    return (
+        source_kind in ("external", "invariant")
+        and bone not in IMMOBILE
+        and bone not in ROOT
+    )
+
 def key_for(bone):
     cls = joint_class(bone)
     side = bone_side(bone)
@@ -221,6 +250,7 @@ for bone in canonical_bone_names():
             # indistinguishable from an authored one, and a row added without
             # going through row() would silently become non-hard-asserted.
             hard_assert=bool(e["hard_assert"]),
+            enforced=is_enforced(bone, src["kind"]),
             # rest_offset_deg is deliberately NOT written. It is *derived* from
             # rig geometry, and several of the 52 sit within 1e-5 degrees of a
             # three-decimal rounding boundary -- leftIndexProximal.abduction is
@@ -253,7 +283,7 @@ def build_document() -> OrderedDict:
                    "architecture-dependent. See plan 04 6.4."),
             mirroring="flexion and abduction are preserved across sides; only twist negates. Authored once, applied to both.",
             enforceable="'mutation_only' marks a bone compiler.py never assigns a rotation to on any path, so its limit can never fire from generated motion. Exercising it belongs to plan 06.",
-            report_only="04b ships every check with status='pass' regardless of the measurement. Enforcement is 04c, per DOF, after the distribution review.",
+            enforcement="04b shipped every check report-only. 04c gates on `enforced`, set by rigby_poc.analysis.anatomy.authored_rom.is_enforced: the bound must be cited (external or invariant), the bone must be reachable from generation, and the bone must not be the root. Everything else stays report-only and reports its measurement.",
         ),
         limits=limits)
 
