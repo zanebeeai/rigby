@@ -36,7 +36,12 @@ def _xml(block: SceneObject) -> str:
 <mujoco model="rigby_contact_proxy">
   <compiler angle="radian" inertiafromgeom="true"/>
   <option timestep="0.002" gravity="0 0 -9.81" solver="Newton" iterations="80" tolerance="1e-10"/>
-  <size njmax="2000" nconmax="500"/>
+  <!-- MuJoCo 3.x replaced the fixed njmax/nconmax constraint arena with a single
+       memory pool. The legacy attributes still parse, but they request a large
+       fixed allocation that fails outright as "engine error: Could not allocate
+       memory" when the machine is under memory pressure, which surfaces as an
+       intermittent failure in whichever test happened to run at the time. -->
+  <size memory="8M"/>
   <default>
     <joint damping="12" armature="0.02"/>
     <geom condim="6" solref="0.003 1" solimp="0.95 0.995 0.001" friction="{block.friction} 0.02 0.002"/>

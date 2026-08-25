@@ -5639,6 +5639,17 @@ def compile_motion(request: CompileRequest) -> ClipResult:
     assertions = metrics["finger_assertions"]
     actual_curls = metrics["normalized_finger_curls"]
     if program.intent == Intent.GRAB:
+        if target_object is not None:
+            # Half the target's bounding diagonal: the largest distance a point
+            # on its surface can be from its centre. Published here because the
+            # compiler is the only layer holding the scene, and read by
+            # ``analysis.embodiment`` to decide whether a rendered hand could
+            # be touching the object it is reported to be carrying.
+            dimensions = target_object.dimensions_m
+            metrics["carried_object_id"] = target_object.id
+            metrics["carried_object_contact_radius_m"] = 0.5 * float(
+                np.linalg.norm([dimensions.x, dimensions.y, dimensions.z])
+            )
         structural_failures: list[str] = []
         if physics is None or not physics.success:
             structural_failures.append("physical grasp gates did not pass")

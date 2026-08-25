@@ -63,6 +63,11 @@ EMITTED_BY_CASES: Mapping[str, int] = {
     "physics.ground.penetration": 47,
     "signal.activity.dead_limb": 47,
     "signal.smoothness.sparc": 47,
+    # The three object cases that lift something. The denominator is small on
+    # purpose: the check is only meaningful where the clip claims a carry, and
+    # it reports `skip` rather than `pass` on the other 44, so a detection rate
+    # quoted against this axis is over three cases and not forty-seven.
+    "physics.render_contact_plausible": 3,
     "signal.angular.acceleration": 14,
     "signal.angular.jerk": 14,
     "signal.angular.velocity": 14,

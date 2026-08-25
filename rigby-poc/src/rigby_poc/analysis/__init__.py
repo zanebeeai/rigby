@@ -21,6 +21,10 @@ from typing import Any
 from ..models import ClipFrame, ClipResult, Intent, MotionProgram, SceneManifest
 from .anatomy import rom_checks
 from .composite import composite_metrics
+from .embodiment import (
+    carried_object_divergence_checks,
+    carried_object_divergence_metrics,
+)
 from .contact import (
     intra_hand_contact_checks,
     intra_hand_contact_failures,
@@ -256,6 +260,11 @@ def validate(
         checks.extend(gesture_structure_checks(metrics))
     checks.extend(parallel_forearm_checks(metrics))
     checks.extend(intra_hand_contact_checks(program, metrics))
+    checks.extend(
+        carried_object_divergence_checks(
+            carried_object_divergence_metrics(frames, program, metrics)
+        )
+    )
     checks.extend(semantic_cycle_checks(program, metrics))
     checks.extend(
         safety_checks(metrics, allow_root_motion=root_motion_allowed(program))
@@ -337,6 +346,8 @@ __all__ = [
     "handoff_metrics",
     "identity_bones",
     "identity_pose",
+    "carried_object_divergence_checks",
+    "carried_object_divergence_metrics",
     "intra_hand_contact_checks",
     "intra_hand_contact_failures",
     "intra_hand_contact_metrics",

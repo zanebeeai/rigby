@@ -629,6 +629,34 @@
           "docs/plans/10-eval-redesign.md#32-new-signal-quality-l3"
         ]
       }
+    },
+    "physics.carried_lift_epsilon_m": {
+      "value": 0.02,
+      "unit": "m",
+      "applies_to": [
+        "*"
+      ],
+      "source": {
+        "kind": "invariant",
+        "cites": [
+          "src/rigby_poc/analysis/embodiment.py"
+        ],
+        "rationale": "Separates 'the object was lifted' from settling and solver noise. It is not a quality bound: it only selects which frames the divergence check looks at, and any value between contact jitter and a real lift selects the same frames. Chosen at a third of the smallest authored lift height so a deliberate lift is never excluded."
+      }
+    },
+    "physics.render_contact_untouched_ratio_max": {
+      "value": 0.0,
+      "unit": "ratio",
+      "applies_to": [
+        "*"
+      ],
+      "source": {
+        "kind": "invariant",
+        "cites": [
+          "src/rigby_poc/analysis/embodiment.py"
+        ],
+        "rationale": "Zero is the only defensible bound, because the measurement is already a lower bound on the divergence: a frame counts only when EVERY rendered hand landmark is farther from the object's centre than half its own bounding diagonal, which no hand geometry can turn into a contact. One such frame while the object is airborne is one frame of the renderer and the physics disagreeing about what happened."
+      }
     }
   }
 }
