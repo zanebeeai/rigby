@@ -87,6 +87,11 @@ COMPILE_BUDGET: dict[str, int] = {
     # traps -- one bone dominating the fold, a zero-frame clip scoring top marks --
     # are only visible against the real distribution of verdicts.
     "test_composite_score.py": 60,
+    # One corpus-wide pass in a module fixture, to find the full-body cases that
+    # evaluate structural gates at all. Measured at 55, same shape as the registry
+    # file above and budgeted for the same reason: it is a corpus-wide loop, which is
+    # what this file exists to keep visible.
+    "test_mutation_structural_gates.py": 60,
 }
 
 #: Corpus-touching files deliberately not measured, with the reason.  Being here is
