@@ -268,12 +268,14 @@ def observe(
         frame_count=len(clip.frames),
         duration_s=clip.duration_s,
         contact_count=len(clip.contacts),
-        environment=BlessEnvironment(
-            platform_key=platform_key(solver_used),
-            python_version=_python_version(),
-            compiler_version=COMPILER_VERSION,
-            blessed_at=now or datetime.now(UTC).isoformat(timespec="seconds"),
-        ),
+        environment={
+            key: BlessEnvironment(
+                platform_key=platform_key(solver_used),
+                python_version=_python_version(),
+                compiler_version=COMPILER_VERSION,
+                blessed_at=now or datetime.now(UTC).isoformat(timespec="seconds"),
+            )
+        },
     )
 
 

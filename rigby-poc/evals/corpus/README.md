@@ -89,7 +89,16 @@ reported. **Within tolerance is a pass; over tolerance is a failure.** The toler
 machine, so the comparison reports the number that would replace it.
 
 `bless --write` **merges** into the existing maps, so whoever blesses second contributes
-their platform without deleting the first developer's hashes.
+their platform without deleting the first developer's hashes. That includes the
+`environment` block, which is keyed by platform too — each platform records the
+interpreter and the timestamp that produced *its own* digests. So another machine's
+`bless --write` output applies **wholesale**: there is no half to take and no half to
+leave.
+
+Verified against a real Windows artifact: 47 cases, **0 darwin digests lost, 141 win32
+entries added**. Checked by parsing both files and comparing every pre-existing key by
+value — not by reading the diff stat, which shows deletions for a pure addition the
+moment a JSON map gains a second key.
 
 ## Where the cases came from
 

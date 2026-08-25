@@ -259,9 +259,9 @@ def rebless(case: CorpusCase, observed: ExpectedResult) -> ExpectedResult:
     """
     if observed.determinism_class == DeterminismClass.PORTABLE:
         return observed
-    merged: dict[str, dict[str, str]] = {}
-    for name in observed.DIGESTS:
-        digests = dict(getattr(case.expected, name))
-        digests.update(getattr(observed, name))
-        merged[name] = digests
+    merged: dict[str, dict] = {}
+    for name in (*observed.DIGESTS, "environment"):
+        existing = dict(getattr(case.expected, name))
+        existing.update(getattr(observed, name))
+        merged[name] = existing
     return observed.model_copy(update=merged)

@@ -26,7 +26,7 @@ from .hashing import PORTABLE_PLATFORM_KEY
 CASE_ID_PATTERN = r"^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
 
 MANIFEST_SCHEMA_VERSION = "1.1"
-EXPECTED_SCHEMA_VERSION = "1.1"
+EXPECTED_SCHEMA_VERSION = "1.2"
 
 
 class Family(StrEnum):
@@ -78,7 +78,23 @@ class StoragePolicy(StrEnum):
 
 
 class BlessEnvironment(Contract):
-    """Where a case was last blessed. Informational; never asserted against."""
+    """Where one platform's digests were produced.  Never asserted against.
+
+    Keyed by platform on :class:`ExpectedResult`, the same way the three digests
+    are.  It was a single block until 03d, which was a field that was structurally
+    singular describing a plural fact: one ``blessed_at`` and one ``python_version``
+    on a file carrying two platforms' hashes.  A second platform's ``bless --write``
+    then overwrote it, so the file said it was last blessed on win32 while holding
+    darwin digests that win32 never produced.
+
+    The criterion that was wrong is worth stating, because it is the reusable part:
+    the three digests were keyed because their *values* are platform-dependent, and
+    this was left singular because it is "informational".  But informational is
+    exactly what a human reads when a hash moves and they need to know who last
+    touched it -- which is when being wrong matters most.  **If the file can hold
+    two platforms' data, every per-platform field is keyed, whether or not anything
+    asserts against it.**
+    """
 
     platform_key: str
     python_version: str
@@ -113,7 +129,10 @@ class ExpectedResult(Contract):
     frame_count: Annotated[int, Field(ge=0)]
     duration_s: Annotated[float, Field(ge=0.0)]
     contact_count: Annotated[int, Field(ge=0)]
-    environment: BlessEnvironment
+    #: One entry per platform that has blessed this case, keyed exactly as the
+    #: digests are, so applying another platform's ``bless --write`` output merges
+    #: rather than overwrites.
+    environment: dict[str, BlessEnvironment] = Field(min_length=1)
 
     #: The digest fields, so callers iterate rather than repeat the three names.
     DIGESTS: ClassVar[tuple[str, ...]] = (
@@ -145,6 +164,12 @@ class ExpectedResult(Contract):
                     f"motion_sha256 for {sorted(motion_keys)}; a platform is blessed "
                     f"for all three digests or for none"
                 )
+        if set(self.environment) != motion_keys:
+            raise ValueError(
+                f"environment is recorded for {sorted(self.environment)} but digests "
+                f"for {sorted(motion_keys)}; every blessed platform records how it "
+                f"blessed, and nothing else does"
+            )
         return self
 
     def resolve(self, name: str, key: str) -> str | None:

@@ -21,6 +21,7 @@ compiles.
 
 from __future__ import annotations
 
+import pathlib
 import subprocess
 import sys
 from pathlib import Path
@@ -34,6 +35,13 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 #: Ceilings, not targets.  Each is the measured count plus a little room, so a
 #: refactor that shifts work between tests does not fail while a new corpus-wide
 #: loop does.  Raising one is a decision that should appear in a diff with a reason.
+#:
+#: Measuring a file costs a subprocess pytest session, so not every corpus-touching
+#: file is measured -- but every one is **declared**, here or in
+#: :data:`UNBUDGETED`, and ``test_every_corpus_touching_file_is_declared`` fails on
+#: a new one.  A name list nobody maintains goes stale invisibly, which is the exact
+#: failure lane `capture` hit when this corpus grew 12 -> 47 and their snapshot bound
+#: went stale with nothing connecting the two.
 COMPILE_BUDGET: dict[str, int] = {
     # 47 for the determinism sweep, plus the idempotence test's deliberate second
     # compile and the seed-invariance pair.  Was 130 before the shared compile: the
@@ -47,6 +55,70 @@ COMPILE_BUDGET: dict[str, int] = {
     "test_corpus_format.py": 30,
     "test_corpus_cli.py": 60,
 }
+
+#: Corpus-touching files deliberately not measured, with the reason.  Being here is
+#: a decision, not an oversight -- which is the whole difference between this and an
+#: undeclared file.
+UNBUDGETED: dict[str, str] = {
+    "conftest.py": "the session fixture itself; its compiles are attributed to callers",
+    "corpus_offline_probe.py": "a helper run in a subprocess by the offline test, not collected",
+    "test_analysis_equivalence.py": "lane analysis owns its budget; ours would constrain their PRs",
+    "test_anatomical_frame.py": "lane anatomy",
+    "test_rom_detects_injected_violation.py": "lane anatomy",
+    "test_rom_table.py": "lane anatomy",
+    "test_capture_sampling_bound.py": "lane capture; one corpus pass, measured at 41 by them",
+    "test_session_fixture_isolation.py": "proves the fixture copies; compiles are the subject",
+    "test_corpus_loads_offline.py": "runs its own subprocess probe; counting here would double-count",
+    "test_mutation_contract.py": "two module-scoped compiles",
+    "test_mutation_determinism.py": "one, plus two subprocesses",
+    "test_mutation_injector.py": "two module-scoped fixtures",
+    "test_mutation_sweep.py": "one",
+    "test_mutation_legacy_port.py": "one corpus pass for the applicability tally",
+}
+
+#: What marks a file as touching the corpus.  Deliberately broad: a false positive
+#: costs one line in ``UNBUDGETED``, a false negative costs an invisible regression.
+#: ``evals.corpus`` catches the CLI path -- ``test_corpus_cli.py`` compiles through
+#: ``python -m evals.corpus verify`` and names none of the functions directly.
+CORPUS_MARKERS = (
+    "load_corpus",
+    "compile_case",
+    "compile_corpus_case",
+    "evals.corpus",
+)
+
+
+def test_every_corpus_touching_file_is_declared() -> None:
+    """A new file that compiles the corpus must be budgeted or exempted by name.
+
+    Static and cheap -- no subprocess -- so it can cover every file while the
+    measurement covers a subset.  The point is that a corpus-wide loop cannot arrive
+    in a file nobody listed, which is how ``test_corpus_coverage`` reached 94
+    compiles unnoticed.
+    """
+    tests = pathlib.Path(__file__).parent
+    touching = {
+        path.name
+        for path in sorted(tests.glob("*.py"))
+        if any(marker in path.read_text(encoding="utf-8") for marker in CORPUS_MARKERS)
+        and path.name != pathlib.Path(__file__).name
+    }
+    declared = set(COMPILE_BUDGET) | set(UNBUDGETED)
+    undeclared = sorted(touching - declared)
+    assert not undeclared, (
+        f"these files compile the corpus and are neither budgeted nor exempted: "
+        f"{undeclared}. Add a ceiling to COMPILE_BUDGET, or an entry to UNBUDGETED "
+        f"saying why not. A full corpus recompile is 47 compiles."
+    )
+    # Only ``UNBUDGETED`` can go stale invisibly: a budgeted file is measured, so a
+    # file that stopped compiling would show up as a count of zero and fail the
+    # `ran > 0` assertion rather than sit here unnoticed.
+    stale = sorted(set(UNBUDGETED) - touching)
+    assert not stale, (
+        f"exempted but no longer touching the corpus: {stale}. Remove the entry, or "
+        f"the exemption outlives the reason for it."
+    )
+
 
 _COUNTER = """
 import sys
