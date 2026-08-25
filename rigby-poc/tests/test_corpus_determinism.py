@@ -11,10 +11,12 @@ import json
 import os
 import subprocess
 import sys
+from functools import lru_cache
 from pathlib import Path
 
 import pytest
 from evals.corpus import compile_case, load_corpus, motion_sha256, platform_key
+from rigby_poc.models import ClipResult
 from evals.corpus.freeze import (
     body_actions_of,
     hand_shapes_of,
@@ -41,6 +43,35 @@ CASE_IDS = sorted(CASES)
 CHEAP_CASE_IDS = ("gesture-shaka-playful-right", "strike-uppercut-right")
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
+
+@lru_cache(maxsize=None)
+def _compiled(case_id: str) -> tuple[ClipResult, int]:
+    """Compile a case once, and count the solver calls while doing it.
+
+    Three tests here need a compile of the same case, and a full-corpus recompile
+    is 12.0 s -- so compiling per test was 47 cases three times over for one case's
+    worth of information.  The ``simulate_grasp`` spy only counts and delegates, so
+    the clip is identical to one compiled without it, and every test below gets the
+    same object it would have got on its own.
+
+    ``test_recompiling_in_the_same_process_is_idempotent`` deliberately does *not*
+    use this: its whole point is to compile twice.
+    """
+    calls = 0
+    real = compiler.simulate_grasp
+
+    def counting(*args: object, **kwargs: object) -> object:
+        nonlocal calls
+        calls += 1
+        return real(*args, **kwargs)
+
+    compiler.simulate_grasp = counting  # type: ignore[assignment]
+    try:
+        clip = compile_case(CASES[case_id])
+    finally:
+        compiler.simulate_grasp = real  # type: ignore[assignment]
+    return clip, calls
 
 
 #: Cases whose motion passes through the MuJoCo solver, so the MuJoCo version is
@@ -94,7 +125,7 @@ def test_the_platform_key_names_mujoco_only_when_the_solver_ran(case_id: str) ->
 
 @pytest.mark.parametrize("case_id", CASE_IDS)
 def test_case_recompiles_to_its_recorded_motion(case_id: str) -> None:
-    comparison = compare_case(CASES[case_id])
+    comparison = compare_case(CASES[case_id], clip=_compiled(case_id)[0])
     if comparison.verdict is Verdict.UNBLESSED_PLATFORM:
         pytest.skip(comparison.render())
     if comparison.tolerance is not None:
@@ -142,19 +173,7 @@ def test_a_case_that_runs_the_solver_declares_itself(case_id: str) -> None:
     grasp-looking case ids would have missed every one, so this counts calls.
     """
     case = CASES[case_id]
-    calls = 0
-    real = compiler.simulate_grasp
-
-    def counting(*args: object, **kwargs: object) -> object:
-        nonlocal calls
-        calls += 1
-        return real(*args, **kwargs)
-
-    compiler.simulate_grasp = counting  # type: ignore[assignment]
-    try:
-        compile_case(case)
-    finally:
-        compiler.simulate_grasp = real  # type: ignore[assignment]
+    calls = _compiled(case_id)[1]
 
     assert case.expected.solver_used is (calls > 0), (
         f"{case_id} calls simulate_grasp {calls} time(s) but declares "
@@ -174,7 +193,7 @@ def test_the_committed_slim_clip_matches_a_fresh_compile_exactly(case_id: str) -
     solver noise, and the number a second platform reports would be meaningless.
     """
     case = CASES[case_id]
-    report = compare_slim_clip(case, compile_case(case))
+    report = compare_slim_clip(case, _compiled(case_id)[0])
     assert report.leaves > 1000, report
     assert report.max_deviation == 0.0, (
         f"{case_id} drifted by {report.max_deviation:.3e} at {report.at} on the "
@@ -195,7 +214,7 @@ def test_the_slim_clip_holds_only_motion(case_id: str) -> None:
 def test_a_slim_clip_that_changed_shape_is_not_absorbed_by_the_tolerance() -> None:
     """A dropped frame is a motion change, not solver drift."""
     case = CASES[SOLVER_CASE_IDS[0]]
-    clip = compile_case(case)
+    clip = _compiled(case.id)[0]
     shortened = clip.model_copy(update={"frames": clip.frames[:-1]})
     with pytest.raises(SlimClipShapeError):
         compare_slim_clip(case, shortened)
@@ -258,6 +277,9 @@ def test_hashes_survive_a_fresh_process_with_a_different_hash_seed(
     assert completed.returncode == 0, completed.stderr
     observed = json.loads(completed.stdout)
     for case_id in CHEAP_CASE_IDS:
-        expected = CASES[case_id].expected
-        key = platform_key(expected.solver_used)
-        assert observed[case_id] == expected.resolve_motion_sha256(key)
+        # Compared against *this process*, not against the committed hash.  The
+        # subject here is cross-process agreement; whether this platform's committed
+        # hash matches is `test_case_recompiles_to_its_recorded_motion`'s job, and
+        # conflating the two made this test fail on any platform nobody has blessed
+        # -- it compared a real hash against `None`.
+        assert observed[case_id] == motion_sha256(compile_case(CASES[case_id]))

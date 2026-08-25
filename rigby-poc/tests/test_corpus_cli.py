@@ -12,6 +12,7 @@ from shutil import copytree
 
 import pytest
 from evals.corpus import CORPUS_ROOT, PORTABLE_PLATFORM_KEY, load_manifest
+from evals.corpus.hashing import platform_key
 from evals.corpus.__main__ import main
 from evals.corpus.loader import EXPECTED_FILE
 from evals.corpus.seed_cases import SEED_CASES_BY_ID
@@ -30,12 +31,26 @@ def corpus_root(tmp_path: Path) -> Path:
     return root
 
 
+def _corrupt_digests(payload: dict, value: str) -> dict:
+    """Give *this* platform a wrong hash, so a mismatch is what verify sees.
+
+    Rewriting whatever keys happen to be there breaks on a platform nobody has
+    blessed: there is no entry for this machine, so the corruption lands on a
+    foreign column, `verify` reports an unblessed platform rather than a mismatch,
+    and the test asserts on a code path it did not mean to exercise. Writing this
+    platform's key explicitly makes the test say what it means everywhere.
+    """
+    from evals.corpus.hashing import platform_key
+
+    key = platform_key(bool(payload.get("solver_used")))
+    for name in ("motion_sha256", "metrics_sha256", "observables_sha256"):
+        payload[name] = {**payload[name], key: value}
+    return payload
+
+
 def _break_case(root: Path, case_id: str) -> None:
     path = root / "cases" / case_id / EXPECTED_FILE
-    payload = json.loads(path.read_text(encoding="utf-8"))
-    # Corrupt this platform's entry.  Adding the reserved portable key would be
-    # rejected outright, since no case is portable after 03b.
-    payload["motion_sha256"] = dict.fromkeys(payload["motion_sha256"], "f" * 64)
+    payload = _corrupt_digests(json.loads(path.read_text(encoding="utf-8")), "f" * 64)
     path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
 
 
@@ -135,8 +150,26 @@ def test_freeze_from_seed_rebuilds_a_committed_case_byte_for_byte(
             encoding="utf-8"
         )
     )
-    for key in ("motion_sha256", "metrics_sha256", "observables_sha256", "frame_count"):
-        assert rebuilt_expected[key] == committed_expected[key], key
+    assert rebuilt_expected["frame_count"] == committed_expected["frame_count"]
+    assert rebuilt_expected["solver_used"] == committed_expected["solver_used"]
+
+    # The digests are compared **per platform**, not as whole maps. A rebuild on a
+    # platform nobody has blessed writes this platform's column and the committed
+    # file has somebody else's, so the maps legitimately differ while the motion
+    # does not. Comparing the maps asserted "this machine blessed the corpus",
+    # which is not what this test is about -- and it was one of eight tests that
+    # failed on the first Windows CI run for exactly that reason.
+    key = platform_key(bool(committed_expected.get("solver_used")))
+    for name in ("motion_sha256", "metrics_sha256", "observables_sha256"):
+        rebuilt_here = rebuilt_expected[name].get(key)
+        assert rebuilt_here is not None, f"the rebuild recorded no {name} for {key!r}"
+        committed_here = committed_expected[name].get(key)
+        if committed_here is None:
+            pytest.skip(
+                f"{key!r} has no committed {name}; the rebuild is self-consistent "
+                f"but there is nothing on this platform to compare it against"
+            )
+        assert rebuilt_here == committed_here, name
 
 
 def test_freeze_rejects_an_unknown_seed_id(tmp_path: Path) -> None:

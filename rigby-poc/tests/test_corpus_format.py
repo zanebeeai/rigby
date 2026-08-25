@@ -172,9 +172,15 @@ def test_bless_is_a_dry_run_until_write_is_passed(tmp_path: Path) -> None:
     path = root / "cases" / SAMPLE_CASE_ID / EXPECTED_FILE
     original = path.read_text(encoding="utf-8")
     payload = json.loads(original)
-    # Corrupt this platform's entry rather than adding a portable one: no case is
-    # portable any more, so writing the reserved key would fail validation.
-    payload["motion_sha256"] = dict.fromkeys(payload["motion_sha256"], "b" * 64)
+    from evals.corpus.hashing import platform_key
+
+    # This platform's key explicitly: on a platform nobody has blessed there is no
+    # entry to rewrite, and corrupting a foreign column makes `bless` report an
+    # unblessed platform instead of a moved hash.
+    key = platform_key(bool(payload.get("solver_used")))
+    payload["motion_sha256"] = {**payload["motion_sha256"], key: "b" * 64}
+    payload["metrics_sha256"] = {**payload["metrics_sha256"], key: "b" * 64}
+    payload["observables_sha256"] = {**payload["observables_sha256"], key: "b" * 64}
     payload["frame_count"] = 3
     path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
     stale = path.read_text(encoding="utf-8")
@@ -333,3 +339,48 @@ def _corpus_copy(tmp_path: Path) -> Path:
         ignore=lambda _, names: [name for name in names if name == "__pycache__"],
     )
     return root
+
+
+def test_no_corpus_test_asserts_that_this_platform_is_blessed(tmp_path: Path) -> None:
+    """The whole corpus tooling must work on a platform nobody has blessed.
+
+    The first Windows CI run failed eight of these tests, and none of the eight was
+    about MuJoCo or about floating point. Every one assumed the running machine had
+    a column in ``expected.json``: the cross-process test compared a real hash
+    against ``None``, two corruption helpers rewrote whatever keys happened to be
+    there and so corrupted a *foreign* column, and the freeze round trip compared
+    whole digest maps rather than this platform's entry.
+
+    Simulating an unblessed platform is cheap -- rename every column to a foreign
+    key -- and it is the only way to exercise that path from a machine that *is*
+    blessed. Without this, the next such assumption is found by CI on somebody
+    else's machine, which is how the previous eight were found.
+    """
+    root = _corpus_copy(tmp_path)
+    for path in sorted((root / "cases").glob("*/expected.json")):
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        for name in ExpectedResult.DIGESTS:
+            payload[name] = {
+                f"foreignos-otherarch{'|mujoco-0.0.0' if '|' in key else ''}": value
+                for key, value in payload[name].items()
+            }
+        path.write_text(
+            json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
+
+    cases = load_corpus(root)
+    assert len(cases) == 47
+    key = platform_key()
+    for case in cases:
+        for name in ExpectedResult.DIGESTS:
+            assert case.expected.resolve(name, key) is None, (
+                f"{case.id} still resolves a {name} for {key!r} after the rename"
+            )
+        # The committed clip is what an unblessed platform compares against, so it
+        # has to be there for every case, not only the MuJoCo ones.
+        assert case.slim_clip_path.is_file(), case.id
+
+    comparison = compare_case(load_case(SAMPLE_CASE_ID, root))
+    assert comparison.verdict is Verdict.TOLERANCE_MATCH, comparison.render()
+    assert comparison.tolerance is not None
+    assert comparison.tolerance.max_deviation == 0.0
