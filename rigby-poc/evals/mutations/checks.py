@@ -57,6 +57,7 @@ EMITTED_BY_CASES: Mapping[str, int] = {
     "contract.camera.active_hand_visibility": 14,
     "contract.clip.joint_limit_violations": 47,
     "contract.clip.non_finite_transforms": 47,
+    "contract.clip.root_drift": 47,
     "contract.clip.rotational_discontinuities": 47,
     "signal.angular.acceleration": 14,
     "signal.angular.jerk": 14,

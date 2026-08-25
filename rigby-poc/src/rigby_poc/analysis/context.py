@@ -49,6 +49,19 @@ _PRESENTATION_KINDS: dict[Intent, frozenset[str]] = {
 _TRAVEL_SETUP_LABEL = "parallel_forearm_travel_setup"
 
 
+def root_motion_allowed(program: MotionProgram) -> bool:
+    """Whether this program's clip may translate its root.
+
+    Matches the ``allow_root_motion`` argument each compile path passes to the
+    safety metrics: only the whole-body and sequence paths enable it. One
+    definition, because :func:`rigby_poc.analysis.validate` needs the same
+    answer without an :class:`AnalysisContext` to hand, and two copies of a rule
+    that decides whether a gate applies is how the gate stops applying.
+    """
+
+    return program.intent in {Intent.FULL_BODY, Intent.SEQUENCE}
+
+
 class AnalysisContext:
     """A finished clip plus its effective program and scene.
 
@@ -121,13 +134,9 @@ class AnalysisContext:
 
     @property
     def allow_root_motion(self) -> bool:
-        """Whether the clip is permitted to translate its root.
+        """Whether the clip is permitted to translate its root."""
 
-        Matches the ``allow_root_motion`` argument each compile path passes to
-        the safety metrics: only the whole-body and sequence paths enable it.
-        """
-
-        return self.intent in {Intent.FULL_BODY, Intent.SEQUENCE}
+        return root_motion_allowed(self.program)
 
     @cached_property
     def phase_ranges(self) -> list[dict[str, float | str]]:

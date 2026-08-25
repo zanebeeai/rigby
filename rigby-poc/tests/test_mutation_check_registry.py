@@ -98,23 +98,29 @@ def test_the_declared_per_check_case_counts_are_the_measured_ones(
     assert fixed == dict(EMITTED_BY_CASES)
 
 
-def test_only_three_fixed_checks_reach_every_case(
+def test_only_the_clip_contract_checks_reach_every_case(
     emitted_over_corpus: dict[str, int],
 ) -> None:
-    """The denominator fact, restated after ROM went live.
+    """The denominator fact, restated after ROM went live and root drift was split out.
 
     Every ROM id now reaches every case -- a bone the clip never posed emits an
     explicit `skip` rather than silence, which is the right behaviour and is why they
-    are universal. The claim worth keeping is about the *fixed* ids: of the 19 the
-    analyzer emitted before ROM was wired, only the three clip-level contract checks
-    are emitted for all 47. The anatomy and signal axes still reach 14, which stays
-    the denominator for any rate quoted against them.
+    are universal. The claim worth keeping is about the *fixed* ids: only the
+    clip-level contract checks are emitted for all 47. The anatomy and signal axes
+    still reach 14, which stays the denominator for any rate quoted against them.
+
+    There are **four** since lane `analysis` deleted the legacy joint-limit check:
+    `contract.clip.root_drift` used to be folded into
+    `contract.clip.joint_limit_violations`, so a clip whose hips travelled too far was
+    reported as exceeding a joint limit. It is emitted on all 47 like the others, and
+    is a `skip` rather than a `pass` on a program that enables root motion.
     """
     total = len(load_corpus())
     universal = {cid for cid, n in emitted_over_corpus.items() if n == total}
     assert universal & FIXED_CHECK_IDS == {
         "contract.clip.joint_limit_violations",
         "contract.clip.non_finite_transforms",
+        "contract.clip.root_drift",
         "contract.clip.rotational_discontinuities",
     }
     # A `skip` is not a measurement, so universality here is emission, not coverage.

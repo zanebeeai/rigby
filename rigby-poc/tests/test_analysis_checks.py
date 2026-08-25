@@ -13,7 +13,9 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
+from rigby_poc.analysis.safety import root_drift_limit_m
 from rigby_poc.analysis import (
+    clip_contract_violations,
     evaluate_gesture_structure,
     gesture_structure_checks,
     safety_checks,
@@ -98,6 +100,18 @@ def test_a_single_frame_rotation_jump_counts_as_one_discontinuity() -> None:
     assert metrics["max_frame_rotation_delta_rad"] == pytest.approx(0.5, abs=1e-9)
 
 
+def _check(metrics: dict, check_id: str, *, allow_root_motion: bool = False):
+    """One check out of ``safety_checks``, by id, asserting it was emitted."""
+
+    found = [
+        check
+        for check in safety_checks(metrics, allow_root_motion=allow_root_motion)
+        if check.id == check_id
+    ]
+    assert found, f"{check_id} was not emitted at all"
+    return found[0]
+
+
 def test_a_rotation_step_just_under_the_threshold_is_not_a_discontinuity() -> None:
     nudge = _quat(Rotation.from_rotvec([0.0, 0.34, 0.0]))
     frames = [_frame(0), _frame(1, {"leftHand": nudge})]
@@ -105,7 +119,20 @@ def test_a_rotation_step_just_under_the_threshold_is_not_a_discontinuity() -> No
     assert safety_metrics(frames)["discontinuities"] == 0
 
 
-def test_root_translation_is_a_joint_limit_violation_unless_it_is_allowed() -> None:
+def test_root_translation_is_reported_as_root_drift_not_as_a_joint_limit() -> None:
+    """The mislabelling this file used to pin, corrected.
+
+    Until the legacy joint-limit check was deleted, a clip whose hips travelled
+    too far incremented ``joint_limit_violations`` -- a number published under a
+    name that does not describe it, and read by ten gates in ``compiler.py``.
+    The previous version of this test asserted exactly that, which is why it had
+    to be rewritten rather than extended: it was the defect's own pin.
+
+    The quantity is unchanged. What moved is that it is addressable under its own
+    name, and that the aggregate the compiler gates on is named for what it
+    aggregates.
+    """
+
     frames = [
         _frame(0, hips=Vec3(x=0.0, y=0.0, z=0.0)),
         _frame(1, hips=Vec3(x=0.0, y=0.0, z=0.4)),
@@ -115,20 +142,60 @@ def test_root_translation_is_a_joint_limit_violation_unless_it_is_allowed() -> N
     moving_root = safety_metrics(frames, allow_root_motion=True)
 
     assert fixed_root["root_drift_m"] == pytest.approx(0.4)
-    assert fixed_root["joint_limit_violations"] == 1
     assert moving_root["root_drift_m"] == pytest.approx(0.4)
+
+    # No longer a joint-limit violation, on either path.
+    assert fixed_root["joint_limit_violations"] == 0
     assert moving_root["joint_limit_violations"] == 0
+
+    # But still gated: the compiler's clip-level gates see it.
+    assert clip_contract_violations(fixed_root, allow_root_motion=False) == 1
+    assert clip_contract_violations(moving_root, allow_root_motion=True) == 0
+
+    # And addressable, against the bound the program implies.
+    fixed_check = _check(fixed_root, "contract.clip.root_drift", allow_root_motion=False)
+    moving_check = _check(moving_root, "contract.clip.root_drift", allow_root_motion=True)
+    assert fixed_check.status == "fail"
+    assert fixed_check.measured == pytest.approx(0.4)
+    assert fixed_check.threshold == root_drift_limit_m(allow_root_motion=False)
+    # A program that enables root motion has no bound, so this is not-measured
+    # rather than passing -- the conflation four lanes hit separately.
+    assert moving_check.status == "skip"
+    assert root_drift_limit_m(allow_root_motion=True) is None
+
     assert "must remain fixed" in fixed_root["safety_derivation"]
     assert "explicitly enabled" in moving_root["safety_derivation"]
 
 
-def test_an_elbow_past_its_profile_limit_is_counted_once_per_frame() -> None:
-    """``leftLowerArm`` is bounded at 2.75 rad by the rig profile."""
+def test_an_elbow_past_its_profile_limit_is_no_longer_counted_here() -> None:
+    """The legacy per-bone check is gone, and ``anatomy.rom.*`` is what replaced it.
+
+    This asserted 3 -- one per frame -- against ``profile["joint_limits_rad"]``.
+    That check fired on **0 of 47** corpus cases while the per-DOF layer found a
+    violation on 46 of 47 over the same clips and the same bones, so it was
+    inert rather than permissive and tightening it would have moved nothing.
+
+    Both halves are asserted, because "the old check is gone" on its own would
+    be satisfied by having no joint-limit gating at all, which is precisely the
+    window plan 04's ordering constraint exists to prevent.
+    """
+
+    from rigby_poc.analysis.anatomy.rom import rom_violations
 
     over = _quat(Rotation.from_rotvec([2.9, 0.0, 0.0]))
     frames = [_frame(index, {"leftLowerArm": over}) for index in range(3)]
 
-    assert safety_metrics(frames)["joint_limit_violations"] == 3
+    assert safety_metrics(frames)["joint_limit_violations"] == 0
+
+    offending = [
+        violation
+        for violation in rom_violations(frames, fps=30.0)
+        if violation.bone == "leftLowerArm"
+    ]
+    assert offending, (
+        "the legacy check is deleted and the per-DOF layer did not catch this "
+        "elbow either -- that is a window with no joint-limit gating at all"
+    )
 
 
 def test_a_non_finite_rotation_is_counted_component_wise() -> None:
@@ -143,14 +210,25 @@ def test_a_non_finite_rotation_is_counted_component_wise() -> None:
 
 
 def test_safety_checks_report_each_violation_separately() -> None:
-    over = _quat(Rotation.from_rotvec([2.9, 0.0, 0.0]))
-    frames = [_frame(index, {"leftLowerArm": over}) for index in range(3)]
+    """Each clip-level contract failure gets its own id, status and severity.
+
+    Driven by root drift rather than by an elbow: since the legacy per-bone
+    check was deleted, nothing this module computes puts a non-zero value in
+    ``joint_limit_violations`` -- the gesture path adds wrist swing/twist to it
+    in ``hand.py``, and per-bone range of motion is ``anatomy.rom.*``.
+    """
+
+    frames = [
+        _frame(0, hips=Vec3(x=0.0, y=0.0, z=0.0)),
+        _frame(1, hips=Vec3(x=0.0, y=0.0, z=0.4)),
+    ]
 
     checks = {check.id: check for check in safety_checks(safety_metrics(frames))}
 
-    assert checks["contract.clip.joint_limit_violations"].status == "fail"
-    assert checks["contract.clip.joint_limit_violations"].measured == 3.0
-    assert 0.0 < checks["contract.clip.joint_limit_violations"].severity <= 1.0
+    assert checks["contract.clip.root_drift"].status == "fail"
+    assert checks["contract.clip.root_drift"].measured == pytest.approx(0.4)
+    assert 0.0 < checks["contract.clip.root_drift"].severity <= 1.0
+    assert checks["contract.clip.joint_limit_violations"].status == "pass"
     assert checks["contract.clip.non_finite_transforms"].status == "pass"
     assert checks["contract.clip.non_finite_transforms"].severity == 0.0
 

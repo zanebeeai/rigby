@@ -71,7 +71,10 @@ from .analysis.rig import (
     RIG_PROFILE,
     identity_pose as _identity_pose,
 )
-from .analysis.safety import safety_metrics as _safety_metrics
+from .analysis.safety import (
+    clip_contract_violations as _clip_contract_violations,
+    safety_metrics as _safety_metrics,
+)
 from .analysis.semantic import semantic_cycle_assertion as _semantic_cycle_assertion
 
 
@@ -3163,7 +3166,7 @@ def _compile_composite(scene: SceneManifest, program: MotionProgram) -> ClipResu
         frames
         and not structural_failures
         and metrics["nan_count"] == 0
-        and metrics["joint_limit_violations"] == 0
+        and _clip_contract_violations(metrics, allow_root_motion=False) == 0
     )
     failure = None
     if not success:
@@ -3715,7 +3718,7 @@ def _compile_object_handoff(
             else Failure(
                 code=(
                     FailureCode.JOINT_LIMIT_EXCEEDED
-                    if metrics["joint_limit_violations"]
+                    if _clip_contract_violations(metrics, allow_root_motion=False)
                     else FailureCode.INVALID_PROGRAM
                 ),
                 message="; ".join(structural_failures),
@@ -4353,7 +4356,7 @@ def _compile_object_interaction(scene: SceneManifest, program: MotionProgram) ->
         structural_failures.append("object did not finish on its target surface")
     if safety["nan_count"]:
         structural_failures.append("clip contains non-finite transforms")
-    if safety["joint_limit_violations"]:
+    if _clip_contract_violations(safety, allow_root_motion=False):
         structural_failures.append("clip exceeds a joint limit")
     metrics = _base_metrics()
     if physics is not None:
@@ -4405,7 +4408,7 @@ def _compile_object_interaction(scene: SceneManifest, program: MotionProgram) ->
                 FailureCode.GRASP_UNSTABLE
                 if physics is not None and not physics.success
                 else FailureCode.JOINT_LIMIT_EXCEEDED
-                if safety["joint_limit_violations"]
+                if _clip_contract_violations(safety, allow_root_motion=False)
                 else FailureCode.INVALID_PROGRAM
             ),
             message="; ".join(structural_failures),
@@ -5641,7 +5644,7 @@ def compile_motion(request: CompileRequest) -> ClipResult:
             structural_failures.append("physical grasp gates did not pass")
         if metrics["nan_count"]:
             structural_failures.append("clip contains non-finite transforms")
-        if metrics["joint_limit_violations"]:
+        if _clip_contract_violations(metrics, allow_root_motion=False):
             structural_failures.append("clip exceeds a joint limit")
         if not all(assertions.values()):
             structural_failures.append("hand-shape assertion failed")
@@ -5649,7 +5652,7 @@ def compile_motion(request: CompileRequest) -> ClipResult:
         metrics["structural_valid"] = not structural_failures
     success = bool(
         metrics["nan_count"] == 0
-        and metrics["joint_limit_violations"] == 0
+        and _clip_contract_violations(metrics, allow_root_motion=False) == 0
         and all(assertions.values())
         and (physics is None or physics.success)
         and metrics.get("structural_valid", True)
@@ -5660,7 +5663,7 @@ def compile_motion(request: CompileRequest) -> ClipResult:
             code = FailureCode.GRASP_UNSTABLE
         elif metrics.get("self_collision_frames", 0):
             code = FailureCode.COLLISION_UNRESOLVED
-        elif metrics["joint_limit_violations"] or metrics.get("structural_failures"):
+        elif _clip_contract_violations(metrics, allow_root_motion=False) or metrics.get("structural_failures"):
             code = FailureCode.JOINT_LIMIT_EXCEEDED
         else:
             code = FailureCode.INVALID_PROGRAM

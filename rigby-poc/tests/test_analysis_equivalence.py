@@ -207,6 +207,34 @@ def test_analysis_owns_exactly_the_declared_key_set(case_id: str) -> None:
     )
 
 
+def test_the_declared_additions_are_still_additions() -> None:
+    """Every key in ``ADDED_COMPILER_KEYS`` must be absent from every baseline.
+
+    The declaration only means something while the key is genuinely outside the
+    frozen set. A re-bless that absorbs the added keys leaves this module's
+    ``undeclared`` assertion computing over an empty difference — passing, and
+    passing for the reason it exists to catch — while ``ADDED_COMPILER_KEYS``
+    silently becomes documentation of nothing.
+
+    That is not hypothetical: the first run of 08d's re-bless did exactly this,
+    folding `support_constraints` and `climb_support_constraints` into the
+    baseline as **19,558 lines** of per-frame IK targets, as a side effect of a
+    0.469 mm change to one shoulder origin. Nobody reviews a diff that size.
+    ``freeze.py --rebless-compiler`` now preserves the baseline's key set; this
+    is the assertion that says so, on the fixture rather than on the tool.
+    """
+
+    for case_id in CASE_IDS:
+        baseline = _load_case(case_id)["compiler_metrics"]
+        assert baseline, f"{case_id}: empty baseline asserts nothing"
+        absorbed = sorted(set(ADDED_COMPILER_KEYS) & set(baseline))
+        assert not absorbed, (
+            f"{case_id}: {absorbed} are declared in ADDED_COMPILER_KEYS but are "
+            "in the frozen baseline, so the declaration no longer describes "
+            "anything. A re-bless updates values, never the key set."
+        )
+
+
 def test_the_fixture_covers_every_supported_intent() -> None:
     intents = {_load_case(case_id)["intent"] for case_id in CASE_IDS}
 
