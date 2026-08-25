@@ -120,7 +120,9 @@ def call_cost(label: str, record: Mapping[str, Any]) -> CallCost:
     )
 
 
-def cost_report(costs: Sequence[CallCost]) -> dict[str, Any]:
+def cost_report(
+    costs: Sequence[CallCost], *, grader_mode: str | None = None
+) -> dict[str, Any]:
     """Cost with its attribution ratio, its n, and where the shortfall sits.
 
     The ratio is the number that licenses the cost figure. It is reported as a
@@ -135,6 +137,13 @@ def cost_report(costs: Sequence[CallCost]) -> dict[str, Any]:
         (item.label for item in costs if item.unattributed_dispatches),
     )
     return {
+        # Every count here is per *model call*, and 07d changed what a call is:
+        # one `score()` emits five under `grader_mode="split"` and one under
+        # `"combined"`. A count is invariant to load and platform and is *not*
+        # invariant to a change in what a call means, so the mode travels with
+        # the counts rather than being inferable from them. `None` says the
+        # caller did not state it -- which is a different fact from "combined".
+        "grader_mode": grader_mode,
         "n_calls": len(costs),
         "dispatches": dispatches,
         "attributed_attempts": attributed,
@@ -150,5 +159,9 @@ def cost_report(costs: Sequence[CallCost]) -> dict[str, Any]:
     }
 
 
-def report_records(records: Iterable[tuple[str, Mapping[str, Any]]]) -> dict[str, Any]:
-    return cost_report([call_cost(label, record) for label, record in records])
+def report_records(
+    records: Iterable[tuple[str, Mapping[str, Any]]], *, grader_mode: str | None = None
+) -> dict[str, Any]:
+    return cost_report(
+        [call_cost(label, record) for label, record in records], grader_mode=grader_mode
+    )

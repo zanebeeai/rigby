@@ -139,3 +139,34 @@ def test_the_token_total_is_the_attributed_total_not_an_estimate() -> None:
 def test_an_empty_report_raises_rather_than_reporting_a_ratio() -> None:
     with pytest.raises(ValueError, match="at least one call"):
         cost_report([])
+
+
+# ------------------------------------------------------------- what a call is
+
+
+def test_the_grader_mode_travels_with_the_counts() -> None:
+    """07d changed what a model call is.
+
+    One `score()` emits five calls under `grader_mode="split"` and one under
+    `"combined"`, so `n_calls`, `dispatches` and `attributed_attempts` are all
+    5x on the unary path without anything about cost having changed. A count is
+    invariant to load and platform and is *not* invariant to a change in what a
+    call means, so the mode is stated beside the counts rather than left to be
+    inferred from them.
+    """
+    report = cost_report([call_cost("g", _record(dispatches=1, usages=1))], grader_mode="split")
+    assert report["grader_mode"] == "split"
+
+
+def test_an_unstated_mode_is_none_not_a_default() -> None:
+    # `None` says the caller did not state it, which is a different fact from
+    # "combined" -- the absence-becomes-a-value defect, in a field about counts
+    # whose meaning depends on it.
+    assert cost_report([call_cost("g", _record(dispatches=1, usages=1))])["grader_mode"] is None
+
+
+def test_report_records_carries_the_mode_through() -> None:
+    report = report_records(
+        [("a", _record(dispatches=1, usages=1))], grader_mode="combined"
+    )
+    assert report["grader_mode"] == "combined"
