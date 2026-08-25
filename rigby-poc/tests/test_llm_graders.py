@@ -396,3 +396,27 @@ def test_both_repair_rates_carry_their_n_and_a_baseline() -> None:
     for key in ("sensitivity", "specificity"):
         assert scores[key].n == 20
         assert scores[key].lower_bound_95 <= scores[key].estimate
+
+
+# ------------------------------------------------- instrumentation reachability
+
+
+def test_the_llm_graders_inherit_the_routed_client_rather_than_composing_it() -> None:
+    """Switching to composition would silently drop them from the transcript.
+
+    PR 01b instruments `RoutedModelClient._routed_parse` as the single wrap point
+    for every model call in the judging layer. The four text-only graders are
+    covered by it *because they inherit* — nothing else connects them to it. A
+    later refactor to composition would look like tidying, would keep every test
+    in this file green, and would remove four graders from the transcript with
+    nothing reporting the loss.
+
+    This is the same shape as the bugs this suite keeps finding: a mechanism
+    that is present, correct, and structurally able to stop working unobserved.
+    """
+    from rigby_poc.judge import RoutedModelClient
+
+    assert issubclass(LLMGraders, RoutedModelClient)
+    # And it must be the inherited method, not a same-named one of its own.
+    assert "_routed_parse" not in vars(LLMGraders)
+    assert LLMGraders._routed_parse is RoutedModelClient._routed_parse
