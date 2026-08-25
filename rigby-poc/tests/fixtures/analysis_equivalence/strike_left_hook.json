@@ -96,6 +96,10 @@
     "active_hand_visibility_fraction": 1.0,
     "active_hand_visibility_samples": 74,
     "discontinuities": 0,
+    "finger_assertions": {
+      "shape_defined": true
+    },
+    "finger_assertions_computed_from_clip": true,
     "fixed_root_foot_max_rotation_delta_rad": 0.0,
     "foot_drift_m": 0.0,
     "full_fov_camera_contract": {
@@ -105,6 +109,7 @@
       "vertical_fov_deg": 94.0,
       "width_px": 1600
     },
+    "impact_elbow_angle_deg": 109.90923834325045,
     "joint_limit_violations": 0,
     "max_angular_acceleration_rad_s2": 18.92206511923847,
     "max_angular_jerk_rad_s3": 350.160906079933,
@@ -114,6 +119,13 @@
     "max_wrist_swing_rad": 0.027999999999999997,
     "max_wrist_twist_rad": 0.0,
     "nan_count": 0,
+    "normalized_finger_curls": {
+      "index": 0.9760000000000001,
+      "little": 0.9960000000000001,
+      "middle": 1.0,
+      "ring": 1.0,
+      "thumb": 0.6955200000000001
+    },
     "quality_limits": {
       "angular_acceleration_rad_s2": 82.0,
       "angular_jerk_rad_s3": 2100.0,
@@ -129,6 +141,10 @@
     "root_drift_m": 0.0,
     "safety_derivation": "computed over every frame/local delta quaternion and authored hips translation; root motion must remain fixed",
     "self_collision_frames": 0,
+    "strike_forward_excursion_m": 0.09736713824053927,
+    "strike_lateral_excursion_m": 0.3402336306820396,
+    "strike_type": "hook",
+    "strike_wrist_path_length_m": 0.41490114519859234,
     "structural_failures": [],
     "structural_valid": true,
     "unresolved_non_hand_collisions": 0,

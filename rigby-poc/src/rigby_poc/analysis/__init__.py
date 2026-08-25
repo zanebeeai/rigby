@@ -16,7 +16,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from ..models import ClipResult, Intent, MotionProgram, PrimitiveKind, SceneManifest
+from ..models import ClipResult, Intent, MotionProgram, SceneManifest
 from .composite import composite_metrics
 from .contact import (
     intra_hand_contact_checks,
@@ -48,6 +48,7 @@ from .forearm import (
     parallel_forearm_failures,
     parallel_forearm_metrics,
 )
+from .hand import assertion_frame_for, final_hand_shape, hand_metrics
 from .gesture import (
     arm_landmarks,
     evaluate_gesture_structure,
@@ -162,35 +163,17 @@ def analyze_context(ctx: AnalysisContext) -> dict[str, Any]:
     if ctx.intent == Intent.COMPOSITE:
         return composite_metrics(ctx)
 
+    if ctx.intent in {Intent.GESTURE, Intent.STRIKE, Intent.GRAB}:
+        # 02c ported these too. The MuJoCo grasp block and the GRAB structural
+        # branch stay with the compiler by design -- see analysis.hand.
+        return hand_metrics(ctx)
+
     metrics.update(
         safety_metrics(ctx.frames, allow_root_motion=ctx.allow_root_motion)
     )
 
     if not _is_handoff(ctx):
         metrics.update(_angular_metrics(ctx))
-
-    if ctx.intent in {Intent.GESTURE, Intent.STRIKE}:
-        structure = evaluate_gesture_structure(
-            ctx.frames,
-            ctx.program.hand,
-            ctx.presentation_ranges,
-        )
-        metrics.update(structure)
-        if ctx.intent == Intent.GESTURE:
-            metrics.update(
-                shake_joint_oscillation_metrics(
-                    ctx.frames,
-                    ctx.program.hand,
-                    ctx.ranges_for_kind(PrimitiveKind.SHAKE.value),
-                )
-            )
-        # The gesture path folds the wrist violations into the shared joint
-        # limit counter and republishes the collision count under the generic
-        # key. Reproduce both, in that order.
-        metrics["joint_limit_violations"] += structure[
-            "wrist_swing_twist_limit_violations"
-        ]
-        metrics["unresolved_non_hand_collisions"] = structure["self_collision_frames"]
 
     return metrics
 
@@ -258,7 +241,10 @@ __all__ = [
     "body_analyzer",
     "commanded_root_yaw_rad",
     "composite_metrics",
+    "assertion_frame_for",
+    "final_hand_shape",
     "full_body_metrics",
+    "hand_metrics",
     "count_check",
     "deferred_actions",
     "evaluate_gesture_structure",
