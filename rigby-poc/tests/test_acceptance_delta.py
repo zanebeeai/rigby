@@ -184,3 +184,69 @@ def test_one_render_mode_is_named_on_the_report() -> None:
         AcceptanceComparison("b", self_reported=True, rule_derived=False, render_mode="judged"),
     ]
     assert acceptance_delta(same)["render_mode"] == "judged"
+
+
+# ---------------------------------------------- isolation from the gate layer
+
+
+def test_the_delta_excludes_deterministic_valid_from_the_rule() -> None:
+    """§3.3's decision is `deterministic_valid and grader_verdict and threshold`.
+
+    Folding the first term into this measurement would make 07d's delta absorb
+    whatever the deterministic layer did that week. 04c rejects 100% of the
+    corpus on the elbow bound alone, so a combined rate would read 0% after and
+    be entirely 04c's doing.
+    """
+    record = _record(accept=True)
+    record["deterministic_valid"] = False
+    comparison = compare_record("c10", record)
+    assert comparison.deterministic_valid is False
+    assert comparison.rule_derived is True
+
+
+def test_a_gate_that_fires_on_everything_is_named_as_carrying_no_information() -> None:
+    all_invalid = [
+        AcceptanceComparison(
+            f"c{index}", self_reported=True, rule_derived=True, deterministic_valid=False
+        )
+        for index in range(10)
+    ]
+    report = acceptance_delta(all_invalid)
+    assert report["deterministic_valid_is_constant"] is True
+    assert report["measures"] == "grader_and_decision_layer_only"
+
+
+def test_a_gate_that_varies_is_not_flagged() -> None:
+    mixed = [
+        AcceptanceComparison("a", self_reported=True, rule_derived=True, deterministic_valid=True),
+        AcceptanceComparison("b", self_reported=True, rule_derived=True, deterministic_valid=False),
+    ]
+    assert acceptance_delta(mixed)["deterministic_valid_is_constant"] is False
+
+
+def test_an_absent_deterministic_flag_does_not_read_as_constant_evidence() -> None:
+    """`None` is "not recorded", not "recorded the same everywhere".
+
+    Discarding the unrecorded ones and calling the remainder constant would
+    claim the gate never varied across clips that never reported — the
+    not-measured / measured-negative conflation, in the file written to stop it.
+    Found by mutating the check to drop the `None` guard and watching nothing
+    go red.
+    """
+    absent = [
+        AcceptanceComparison(f"c{index}", self_reported=True, rule_derived=True)
+        for index in range(5)
+    ]
+    report = acceptance_delta(absent)
+    assert report["deterministic_valid_values"] == ["None"]
+    assert report["deterministic_valid_is_constant"] is None
+
+
+def test_a_partly_recorded_gate_is_unknown_not_constant() -> None:
+    partial = [
+        AcceptanceComparison("a", self_reported=True, rule_derived=True, deterministic_valid=True),
+        AcceptanceComparison("b", self_reported=True, rule_derived=True),
+    ]
+    # Every value that WAS recorded is True, which is exactly the shape that
+    # tempts a "constant" verdict. Half the corpus said nothing.
+    assert acceptance_delta(partial)["deterministic_valid_is_constant"] is None

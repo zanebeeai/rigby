@@ -101,6 +101,13 @@ def acceptance_delta(comparisons: Sequence[AcceptanceComparison]) -> dict[str, A
     """
     if not comparisons:
         raise ValueError("acceptance_delta needs at least one comparison")
+    # `deterministic_valid` is recorded but deliberately NOT part of `rule_derived`.
+    # §3.3's decision is `deterministic_valid and grader_verdict and score_threshold`,
+    # and folding the first term in here would make 07d's delta absorb whatever the
+    # deterministic layer did that week. 04c is about to reject 100% of the corpus on
+    # the elbow bound alone; a combined rate would then read 0% after and would be
+    # entirely 04c's doing.
+    deterministic = {item.deterministic_valid for item in comparisons}
     modes = {item.render_mode for item in comparisons}
     if len(modes) > 1:
         # Refused rather than reported with a caveat. A pooled rate across
@@ -129,6 +136,23 @@ def acceptance_delta(comparisons: Sequence[AcceptanceComparison]) -> dict[str, A
         ],
         "does_not_attribute_to": ["diagnostics_removal"],
         "render_mode": next(iter(modes)),
+        # A gate that fires on everything carries no information about anything,
+        # however correct it is. Named so a reader cannot mistake a constant label
+        # for a measured one -- the degenerate-label problem, arriving as a
+        # correctly-derived anatomical bound rather than as a bug.
+        #
+        # Tri-state, because `None` means "not recorded" and not "recorded the
+        # same everywhere". Discarding the Nones and calling the remainder
+        # constant would claim the gate never varied across clips that never
+        # reported -- the not-measured / measured-negative conflation, in the
+        # one file written to stop it.
+        "deterministic_valid_is_constant": (
+            None if None in deterministic else len(deterministic) <= 1
+        ),
+        "deterministic_valid_values": sorted(
+            str(value) for value in deterministic
+        ),
+        "measures": "grader_and_decision_layer_only",
     }
 
 
