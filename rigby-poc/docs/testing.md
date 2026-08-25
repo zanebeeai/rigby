@@ -214,6 +214,46 @@ queue discipline, not a licence to preempt a held slot. **It is separate from th
 merge lock and you hold at most one, never both.** A targeted run of a few files
 is not a full suite and does not need the slot.
 
+## No lane can `git checkout main`, and the obvious merge reports success anyway
+
+The main checkout holds `main`, so every worktree is refused it:
+
+```
+$ git checkout main
+fatal: 'main' is already used by worktree at '.../rigby'     # exit 128
+```
+
+That refusal is fine on its own. What is not fine is the next line. Written as
+two statements rather than an `&&` chain, the checkout fails, you stay on your
+own branch, and the merge merges that branch **into itself**:
+
+```
+$ git merge --no-ff eval/<pr>
+Already up to date.                                          # exit 0
+```
+
+A plausible message and a zero exit for an operation that did nothing at all.
+This is structural rather than anyone's slip -- **the obvious sequence silently
+no-ops for every lane, every time, and reports success.** Same family as
+`git rebase ... | tail` masking a failed rebase: a status that describes the
+wrong command, arriving through `worktree` instead of through a pipe, and
+failing toward green like every other member of that set.
+
+Merge through a temp branch in your own worktree, and check the tree afterwards:
+
+```bash
+git checkout -q -B merge-<pr> origin/main
+git merge --no-ff eval/<pr> -m "Merge PR <pr>: ..."
+git diff --stat <verified-sha> HEAD     # MUST be empty
+git push origin merge-<pr>:main
+```
+
+**The `git diff --stat` line is the one that catches it.** Empty means the merge
+result is byte-identical to the tree you actually verified; non-empty means you
+are about to push something you did not test. In the incident that produced this
+section it was empty against a tree that *had not moved*, and the merge log named
+no files -- which is what made the no-op visible. Found by lane `judge`.
+
 ## `git stash` is shared across every worktree -- do not use it here
 
 `refs/stash` lives in the one `.git` all six worktrees share, so a stash from any
