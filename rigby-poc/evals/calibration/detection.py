@@ -166,13 +166,19 @@ def check_results_by_id(
     again here would decompose all 52 bones twice per clip for identical
     results.
 
-    **Not `validate_clip(clip, program)`, deliberately.** The convenience form
-    reads `clip.metrics` — the compiler's whole dict — while this call passes
-    `analyze(...)`, which is only what the analysis layer owns. Those are
-    different metric sets and they select different non-ROM checks, so swapping
-    in the convenience form here would silently change what this instrument
-    measures. 04d's note said "nothing else here moves"; keeping the metrics
-    source explicit is what makes that true.
+    **Not `validate_clip(clip, program)`, deliberately, and the reason is worse
+    than a metric-set difference.** `analyze(...)` is required here because **a
+    mutated clip's `metrics` are the unmutated clip's**. `MutationSpec.apply`
+    deep-copies and transforms `frames` only — no transform in
+    `evals.mutations` touches `metrics`, measured: after a top-severity
+    `rom_sweep` on `fullbody-dance`, `mutated.metrics == clip.metrics` is True
+    while `mutated.frames != clip.frames`. So the convenience form would read
+    the compiler's **pre-mutation** dict: the right metric set from the wrong
+    clip. Every non-ROM target would score as undetected at every severity,
+    while the ROM half of the curve still rose plausibly with severity — a
+    systematic false negative wearing the shape of a real result, which is the
+    defect class this module exists to keep out. Keeping the metrics source
+    explicit is what makes 04d's "nothing else here moves" true.
     """
     from rigby_poc.analysis import analyze, validate
 

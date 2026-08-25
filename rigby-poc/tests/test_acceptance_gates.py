@@ -173,18 +173,22 @@ def test_the_split_path_rejects_each_published_dimension(dimension: str) -> None
 
 
 def test_every_consumer_of_the_accept_flag_is_a_known_one() -> None:
-    """`accept` is copied verbatim by five call sites (plan 07 §1.1).
+    """`accept` is copied verbatim by four call sites (plan 07 §1.1 named five).
 
     A new one appearing without review is how the decision layer 07d installs
     gets bypassed. This fails on a new copier so it is a deliberate decision,
     not a diff nobody read.
     """
     known = {
-        # The five that copy the model's self-reported flag verbatim (07 §1.1).
+        # The self-reported copiers (07 §1.1). Four, not the five the plan names:
+        # `evals/calibrate_judge.py` was the fifth and is deleted (L3 gate item 4).
+        # Removed from this set rather than left behind -- `found <= known` is a
+        # subset assertion, so a stale entry passes forever and outlives the reason
+        # for it, the same way an `UNBUDGETED` entry does in the compile-budget
+        # guard. That guard checks its own list for staleness; this one does not.
         "evals/flywheel.py",
         "evals/rerank_existing.py",
         "evals/select_structural_sweep.py",
-        "evals/calibrate_judge.py",
         "evals/autonomous_goal_audit.py",
         # 10d's driver, added deliberately after this guard caught it. It reads
         # the *derived* accept off `assemble_split_score` rather than a
