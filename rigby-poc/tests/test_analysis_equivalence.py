@@ -321,23 +321,28 @@ def test_forward_kinematics_is_evaluated_once_per_frame(case_id: str) -> None:
 
 
 @exact_snapshot
-def test_analysis_of_a_125_frame_clip_stays_cheap() -> None:
-    """A wall-clock ceiling on the whole layer, blessed per architecture.
+def test_analysis_stays_within_an_order_of_magnitude_of_its_budget() -> None:
+    """A catastrophic-regression ceiling, and deliberately nothing tighter.
 
-    Plan 02 §5 targets 100 ms for a 125-frame clip. The assertion is a
-    regression ceiling with room to spare rather than the target itself,
-    because a tight gate on unknown CI hardware would flake instead of inform.
+    Plan 02 §5 targets 100 ms for a 125-frame clip. The heaviest path now costs
+    ~225 ms: composite analysis owns the per-hand gesture-structure fold from
+    02c onwards, which ``analyze`` did not do before. The target is missed and
+    the honest number is recorded in the plan rather than hidden behind a bound
+    that happens to pass.
 
-    It carries the same architecture skip as the frozen float snapshots, and
-    for the same reason: a measured number is a statement about the machine
-    that measured it. 300 ms was blessed against ~72 ms on darwin-arm64; the
-    only cross-platform datapoint available is a whole-suite 4.2x on Windows
-    CI, which would put the same work at ~305 ms and turn this red for reasons
-    that have nothing to do with the code. Measure the layer on another
-    architecture before blessing this bound there.
+    A tighter assertion than this one cannot be made to hold, and the reason is
+    measured rather than assumed. In isolation the path is stable to 1.08x
+    across ten runs. Inside the full suite, with five worktrees compiling
+    concurrently on one machine, the same work exceeded 300 ms and turned red.
+    Platform was the exposure lane `anatomy` predicted; contention on the
+    *blessed* machine got there first.
 
-    ``test_forward_kinematics_is_evaluated_once_per_frame`` is the guard that
-    runs everywhere; this one documents the cost.
+    So this catches an order-of-magnitude regression and nothing finer.
+    ``test_forward_kinematics_is_evaluated_once_per_frame`` is the real guard:
+    it asserts the property that actually matters -- one world-position pass
+    per frame regardless of check count -- and it has neither platform nor
+    contention exposure. When the ``kinematics.py`` vectorisation lands, this
+    number should fall by roughly half and the budget can be revisited then.
     """
 
     case = _load_case("composite_travel_foul")
@@ -352,7 +357,11 @@ def test_analysis_of_a_125_frame_clip_stays_cheap() -> None:
         samples.append((time.perf_counter() - start) * 1000.0)
     elapsed_ms = min(samples)
 
-    assert elapsed_ms < 300.0, f"analysis took {elapsed_ms:.1f} ms for 125 frames"
+    assert elapsed_ms < 2000.0, (
+        f"analysis took {elapsed_ms:.1f} ms for 125 frames, an order of "
+        "magnitude over the ~225 ms this path costs. Something structural "
+        "changed; start with test_forward_kinematics_is_evaluated_once_per_frame."
+    )
 
 
 def test_a_stored_result_must_be_read_through_apply_overrides(tmp_path: Path) -> None:
