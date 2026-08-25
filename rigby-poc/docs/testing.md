@@ -203,11 +203,33 @@ Three lanes running full suites at once took the load average to 25 and a
 the instant the run ends -- green, red or killed:
 
 ```bash
-SLOT="/Users/tonypan/Developer/03 - Startups/rigby-wt/.verify-slot"
-mkdir "$SLOT" 2>/dev/null && echo "<lane> $(date +%H:%M)" > "$SLOT/owner"   # success = you hold it
+cd "/Users/tonypan/Developer/03 - Startups/rigby-wt"
+./lockq.sh enqueue slot <lane>                    # when READY, not when you start preparing
+./lockq.sh acquire slot <lane> && <your run>      # && -- see below
+./lockq.sh release slot <lane>                    # prints who is next; message them by name
 ```
 
-If `mkdir` fails, another lane is verifying: wait and retry rather than start.
+**Chain with `&&`, or check the status.** `acquire` refuses if you are not the
+head of the queue and **exits 1**, and a `;`-separated next command runs anyway,
+without the lock. That is the general rule two sections up -- *in `a; b; c` the
+overall status is `c`'s* -- and it is worth restating here because writing it
+down did not prevent it: the author of that rule chained past a `NOT-ACQUIRED`
+with `;` and wrote to shared state hours after landing it, and the conductor
+skipped the acquire entirely the same afternoon. Prose in the interface did not
+protect the person who wrote the prose. In a script, `set -e` and an explicit
+`if` are the mechanism:
+
+```bash
+set -e
+if ./lockq.sh acquire slot <lane>; then <your run>; else echo "not head"; exit 1; fi
+```
+
+Three lanes wrote to an unlocked 161 KB `TRACKING.md` within minutes of each
+other that day and lost nothing. That is luck, not design, and the absence of a
+lost update is the reason the next one will be a surprise.
+
+If `acquire` refuses, another lane is verifying or is ahead of you: wait and
+retry rather than start.
 Break a slot whose `owner` stamp is more than 45 minutes old, and say so in your
 broadcast. Order among waiters: infra, analysis, groundtruth, judge -- that is a
 queue discipline, not a licence to preempt a held slot. **It is separate from the
