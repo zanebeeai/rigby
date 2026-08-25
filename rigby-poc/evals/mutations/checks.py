@@ -73,16 +73,20 @@ EMITTED_BY_CASES: Mapping[str, int] = {
 #: bone entering or leaving ``config/rom.v1.json`` moves the registry with it.
 FIXED_CHECK_IDS: frozenset[str] = frozenset(EMITTED_BY_CASES)
 
-#: Prefixes whose checks are emitted but cannot currently reach ``status="fail"``,
-#: mapped to why.  A target in one of these is legitimate; scoring it by ``status``
-#: is not.
-REPORT_ONLY_PREFIXES: Mapping[str, str] = {
-    "anatomy.rom.": (
-        "report-only until lane `anatomy`'s 04c enables enforcement per DOF "
-        "(plan 04 section 3.6); every result is status=pass and the live signal is "
-        "the `band` inside `measured`"
-    ),
-}
+#: Prefixes whose checks were emitted but could not reach ``status="fail"``.
+#:
+#: **Empty since 04c, and deliberately kept rather than deleted.**  It held one entry,
+#: ``anatomy.rom.``, on the grounds that every ROM result was ``status="pass"`` until
+#: enforcement landed.  04c landed it, and the property stopped being true of the
+#: prefix: **82 of 156 DOFs are enforced and 74 are not**, so "report-only" is now a
+#: fact about a ``(bone, dof)`` pair and a prefix map cannot express it.  Leaving the
+#: old entry in place would have been a documented, structurally-wrong claim about
+#: 82 live gates -- the class this repository has catalogued six times.
+#:
+#: :func:`report_only_reason` therefore resolves ROM ids through
+#: :attr:`~rigby_poc.analysis.anatomy.rom.DofLimit.enforced` rather than through this
+#: map.  The map remains for a future axis whose whole prefix is genuinely report-only.
+REPORT_ONLY_PREFIXES: Mapping[str, str] = {}
 
 
 def rom_check_ids() -> frozenset[str]:
@@ -96,11 +100,39 @@ def known_check_ids() -> frozenset[str]:
 
 
 def report_only_reason(check_id: str) -> str:
-    """Why ``check_id`` cannot reach ``fail`` today, or ``""`` if it can."""
+    """Why ``check_id`` cannot reach ``fail`` today, or ``""`` if it can.
+
+    ROM ids are resolved per ``(bone, dof)`` against the committed limit, because
+    since 04c enforcement is per DOF: 82 of 156 gate and 74 remain report-only, so
+    ``anatomy.rom.rightLowerLeg.flexion`` can fail while
+    ``anatomy.rom.leftThumbProximal.twist`` cannot.  Answering at the prefix would be
+    wrong for whichever side of the 82/74 split it picked.
+    """
     for prefix, reason in REPORT_ONLY_PREFIXES.items():
         if check_id.startswith(prefix):
             return reason
-    return ""
+    bone_dof = _rom_bone_dof(check_id)
+    if bone_dof is None:
+        return ""
+    limit = rom_limits().get(bone_dof)
+    if limit is None or limit.enforced:
+        return ""
+    return (
+        f"{bone_dof[0]}.{bone_dof[1]} carries a report-only bound (04c enforces 82 of "
+        f"156 DOFs; this is one of the 74 that stay status=pass). The live signal is "
+        f"the `band` inside `measured`, which distinguishes beyond_typical and "
+        f"beyond_max where `status` never will"
+    )
+
+
+def _rom_bone_dof(check_id: str) -> tuple[str, str] | None:
+    """``("rightLowerLeg", "flexion")`` for a ROM id, else ``None``."""
+    if not check_id.startswith("anatomy.rom."):
+        return None
+    parts = check_id.split(".")
+    if len(parts) != 4:
+        return None
+    return parts[2], parts[3]
 
 
 def unknown_targets(specs: Iterable[MutationSpec]) -> dict[str, tuple[str, ...]]:

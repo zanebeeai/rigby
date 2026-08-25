@@ -75,6 +75,12 @@ COMPILE_BUDGET: dict[str, int] = {
     # so that scoping stays a decision somebody has to re-make in a diff if this
     # file ever reaches for `load_corpus()` in a loop.
     "test_detection_curve_on_the_corpus.py": 8,
+    # One corpus-wide pass in a module fixture, pinning that the per-DOF ROM layer
+    # is reachable from `validate()`. Corpus-wide on purpose and not reducible: the
+    # claim is about all 47 cases -- the legacy counter is inert on every one of
+    # them while the ROM layer fails on all but one -- so a sample would not
+    # support it. Budgeted rather than exempted for that reason.
+    "test_rom_is_wired_into_validate.py": 60,
 }
 
 #: Corpus-touching files deliberately not measured, with the reason.  Being here is

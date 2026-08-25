@@ -352,7 +352,7 @@ def test_a_lateral_wave_reports_its_reversals_and_excursion() -> None:
 
     metrics = semantic_cycle_metrics(frames, phase_ranges, program)
 
-    checks = {check.id: check for check in validate(metrics, program)}
+    checks = {check.id: check for check in validate(metrics, program, frames, fps=30.0)}
 
     assert metrics["semantic_cycle_action"] == "hello_wave"
     assert metrics["semantic_cycle_requested_cycles"] == 3.0
@@ -380,7 +380,7 @@ def test_a_wave_that_never_reverses_fails_the_reversal_check() -> None:
     ]
 
     metrics = semantic_cycle_metrics(frames, phase_ranges, program)
-    checks = {check.id: check for check in validate(metrics, program)}
+    checks = {check.id: check for check in validate(metrics, program, frames, fps=30.0)}
 
     assert metrics["semantic_cycle_min_reversal_count"] == 0
     assert checks["signal.semantic_cycle.reversals"].status == "fail"

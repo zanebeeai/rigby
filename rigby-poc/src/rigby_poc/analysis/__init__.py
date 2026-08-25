@@ -1,8 +1,10 @@
 """Pure post-hoc analysis of a finished clip.
 
 ``analyze(clip, program, scene)`` computes metrics from frames alone: no server,
-no browser, no API key, no recompilation. ``validate(metrics, program)`` turns
-those metrics into individually addressable :class:`CheckResult` verdicts.
+no browser, no API key, no recompilation. ``validate(metrics, program, frames,
+fps=...)`` turns a finished clip into individually addressable
+:class:`CheckResult` verdicts -- most of them read only the metrics, and the
+per-DOF range-of-motion layer reads the frames.
 
 Extraction is staged (see ``docs/plans/02-analysis-layer.md`` §4). This module
 owns exactly what PR 02a moved; :func:`owned_metric_keys` reports which keys
@@ -16,7 +18,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from ..models import ClipResult, Intent, MotionProgram, SceneManifest
+from ..models import ClipFrame, ClipResult, Intent, MotionProgram, SceneManifest
+from .anatomy import rom_checks
 from .composite import composite_metrics
 from .contact import (
     intra_hand_contact_checks,
@@ -195,12 +198,36 @@ def owned_metric_keys(program: MotionProgram) -> frozenset[str]:
     return _owned(program)
 
 
-def validate(metrics: dict[str, Any], program: MotionProgram) -> list[CheckResult]:
-    """Turn owned metrics into addressable check verdicts.
+def validate(
+    metrics: dict[str, Any],
+    program: MotionProgram,
+    frames: list[ClipFrame],
+    *,
+    fps: float,
+) -> list[CheckResult]:
+    """Turn a finished clip into addressable check verdicts.
 
-    Same thresholds and same ordering as the compiler's ``structural_failures``
-    list; this is a typed view of the checks the analysis layer owns, not an
-    additional opinion.
+    For every check with a compiler counterpart this is the same threshold and
+    the same ordering as the compiler's ``structural_failures`` list -- a typed
+    view of what the analysis layer owns, not an additional opinion. The
+    range-of-motion layer (plan 04 §3.6) has no counterpart; it is appended
+    after them.
+
+    ``frames`` and ``fps`` are required rather than optional, and that is the
+    substance of the wiring rather than a detail of it. 04c shipped ROM
+    enforcement **dark** -- 156 limits, 82 of them enforced, and no caller in
+    ``src/`` or ``evals/``. An optional ``frames=None`` would have left the one
+    real caller, the mutation detection matrix, still not passing them, and ROM
+    would have stayed dark behind the appearance of being wired. That is the
+    shape ``docs/testing.md`` calls a gate structurally incapable of failing.
+
+    Note what this does **not** do: it does not write ``structural_valid``.
+    Nothing in ``src/`` or ``evals/`` calls this function today, so the ROM
+    verdicts reach the typed check surface -- which ``evals/mutations/`` and
+    plan 10's layers read -- and not the compiler's accept decision. Wiring ROM
+    into ``structural_valid`` rejects 41 of 41 expected-valid corpus cases, 37
+    of them on one elbow bound; that is a product decision and it is filed as
+    one, not taken here.
     """
 
     checks: list[CheckResult] = []
@@ -210,7 +237,22 @@ def validate(metrics: dict[str, Any], program: MotionProgram) -> list[CheckResul
     checks.extend(intra_hand_contact_checks(program, metrics))
     checks.extend(semantic_cycle_checks(program, metrics))
     checks.extend(safety_checks(metrics))
+    checks.extend(rom_checks(frames, fps=fps))
     return checks
+
+
+def validate_clip(clip: ClipResult, program: MotionProgram) -> list[CheckResult]:
+    """:func:`validate` over a clip, which already carries its frames and rate.
+
+    The convenience matters because the two arguments a caller can get wrong
+    are the two this reads off the clip. ``fps`` is the clip's declared rate;
+    note that frame spacing is piecewise-uniform rather than uniform (plan 02
+    §Findings), so it is exact for nothing except the range-of-motion
+    ``integral_deg_s``, which only ranks. The gate is the band, and the band
+    does not read ``fps`` at all.
+    """
+
+    return validate(clip.metrics, program, clip.frames, fps=float(clip.fps))
 
 
 def structural_failures(
@@ -268,6 +310,7 @@ __all__ = [
     "parallel_forearm_metrics",
     "quality_reference",
     "rig_profile",
+    "rom_checks",
     "safety_checks",
     "safety_metrics",
     "saturating_severity",
@@ -282,4 +325,5 @@ __all__ = [
     "unregistered_actions",
     "upper_bound_check",
     "validate",
+    "validate_clip",
 ]

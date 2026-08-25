@@ -19,6 +19,7 @@ from evals.mutations.anatomy import rom_sweep
 from evals.mutations.checks import (
     EMITTED_BY_CASES,
     FIXED_CHECK_IDS,
+    REPORT_ONLY_PREFIXES,
     known_check_ids,
     report_only_reason,
     require_known_targets,
@@ -31,6 +32,7 @@ from evals.mutations.legacy import legacy_specs
 from evals.mutations.signal import jitter_sweep
 from evals.mutations.timing import freeze_sweep, snap_sweep
 from rigby_poc.analysis import validate
+from rigby_poc.analysis.anatomy.rom import rom_limits
 
 #: Compiles the whole corpus.
 pytestmark = pytest.mark.medium
@@ -51,7 +53,13 @@ def emitted_over_corpus() -> dict[str, int]:
     counts: dict[str, int] = {}
     for case in load_corpus():
         clip = compile_case(case)
-        for result in validate(clip.metrics, case.program):
+        # `frames` and `fps` are required, not optional, since lane `analysis` wired
+        # `rom_checks` into `validate()`. Optional would have meant this caller -- the
+        # only real one -- kept not passing them, leaving ROM dark behind the
+        # appearance of being wired.
+        for result in validate(
+            clip.metrics, case.program, clip.frames, fps=clip.fps
+        ):
             counts[result.id] = counts.get(result.id, 0) + 1
     return counts
 
@@ -70,27 +78,47 @@ def test_the_declared_registry_is_what_the_analyzer_emits(
     # Pinned by equality, not by containment. A subset assertion would let the
     # declaration silently rot back into a plan-derived wish list, which is the
     # defect this module was written for.
-    assert set(emitted_over_corpus) == FIXED_CHECK_IDS
+    #
+    # Against `known_check_ids()` rather than `FIXED_CHECK_IDS` since lane `analysis`
+    # wired `rom_checks` into `validate()`: the ROM ids are generated per (bone, dof)
+    # from the committed document, so the equality still holds and still catches a
+    # drifting declaration -- it just now spans both halves of the registry.
+    assert set(emitted_over_corpus) == known_check_ids()
 
 
 def test_the_declared_per_check_case_counts_are_the_measured_ones(
     emitted_over_corpus: dict[str, int],
 ) -> None:
     # The counts are the honest denominator for any rate quoted against an axis, so
-    # they are asserted rather than left as prose.
-    assert emitted_over_corpus == dict(EMITTED_BY_CASES)
+    # they are asserted rather than left as prose. Restricted to the fixed ids since
+    # ROM went live: the 156 generated ROM ids are emitted for every case (an
+    # unmeasured bone emits an explicit `skip`), so their count carries no
+    # per-axis information and declaring 156 constants would be noise.
+    fixed = {cid: n for cid, n in emitted_over_corpus.items() if cid in FIXED_CHECK_IDS}
+    assert fixed == dict(EMITTED_BY_CASES)
 
 
-def test_only_the_contract_checks_reach_every_case(
+def test_only_three_fixed_checks_reach_every_case(
     emitted_over_corpus: dict[str, int],
 ) -> None:
+    """The denominator fact, restated after ROM went live.
+
+    Every ROM id now reaches every case -- a bone the clip never posed emits an
+    explicit `skip` rather than silence, which is the right behaviour and is why they
+    are universal. The claim worth keeping is about the *fixed* ids: of the 19 the
+    analyzer emitted before ROM was wired, only the three clip-level contract checks
+    are emitted for all 47. The anatomy and signal axes still reach 14, which stays
+    the denominator for any rate quoted against them.
+    """
     total = len(load_corpus())
     universal = {cid for cid, n in emitted_over_corpus.items() if n == total}
-    assert universal == {
+    assert universal & FIXED_CHECK_IDS == {
         "contract.clip.joint_limit_violations",
         "contract.clip.non_finite_transforms",
         "contract.clip.rotational_discontinuities",
     }
+    # A `skip` is not a measurement, so universality here is emission, not coverage.
+    assert rom_check_ids() <= universal
 
 
 def test_the_ids_06a_declared_are_still_not_emitted(
@@ -145,9 +173,28 @@ def test_rom_ids_come_from_the_committed_document() -> None:
     assert not (ids & FIXED_CHECK_IDS)
 
 
-def test_rom_is_flagged_report_only_and_the_others_are_not() -> None:
-    assert report_only_reason("anatomy.rom.rightLowerLeg.flexion")
+def test_report_only_is_answered_per_dof_and_not_per_prefix() -> None:
+    """04c made "report-only" a fact about a (bone, dof), not about the prefix.
+
+    82 of 156 DOFs are enforced and 74 are not, so an answer at the prefix would be
+    wrong for whichever side of the split it picked. Both sides are asserted here
+    because a rule that answers "everything" or "nothing" would pass a smoke test and
+    mean nothing.
+    """
+    limits = rom_limits()
+    enforced = [key for key, limit in limits.items() if limit.enforced]
+    report_only = [key for key, limit in limits.items() if not limit.enforced]
+    assert enforced and report_only, "the split is what this test is about"
+
+    bone, dof = enforced[0]
+    assert report_only_reason(f"anatomy.rom.{bone}.{dof}") == ""
+    bone, dof = report_only[0]
+    assert report_only_reason(f"anatomy.rom.{bone}.{dof}")
+
     assert report_only_reason("contract.clip.rotational_discontinuities") == ""
+    # The prefix map is empty since 04c and must stay that way while the property is
+    # per-DOF; a re-added `anatomy.rom.` entry would be wrong for 82 live gates.
+    assert "anatomy.rom." not in REPORT_ONLY_PREFIXES
 
 
 def test_rom_detection_reads_the_band_and_refuses_an_unmeasured_bone() -> None:
