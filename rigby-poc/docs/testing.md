@@ -242,17 +242,40 @@ failing toward green like every other member of that set.
 Merge through a temp branch in your own worktree, and check the tree afterwards:
 
 ```bash
-git checkout -q -B merge-<pr> origin/main
+git checkout -q -B merge-<pr> origin/main     # -B, not -b: -b fails on your second merge
 git merge --no-ff eval/<pr> -m "Merge PR <pr>: ..."
-git diff --stat <verified-sha> HEAD     # MUST be empty
+
+# Three checks. They catch different things and none of them is redundant.
+git rev-parse -q --verify HEAD^2 >/dev/null || echo "NOT A MERGE COMMIT -- the no-op"
+[ "$(git rev-parse HEAD^1)" = "$(git rev-parse origin/main)" ] || echo "NOT ON CURRENT MAIN"
+[ "$(git rev-parse HEAD^{tree})" = "$(git rev-parse <verified-sha>^{tree})" ] || echo "NOT THE TREE YOU VERIFIED"
+
 git push origin merge-<pr>:main
 ```
 
-**The `git diff --stat` line is the one that catches it.** Empty means the merge
-result is byte-identical to the tree you actually verified; non-empty means you
-are about to push something you did not test. In the incident that produced this
-section it was empty against a tree that *had not moved*, and the merge log named
-no files -- which is what made the no-op visible. Found by lane `judge`.
+**Two weaker forms were proposed first and both have the same hole.** Measured on
+a scratch repository against four scenarios, because reasoning about it produced
+two confident wrong answers:
+
+| check | no-op self-merge | merged onto stale main | merged wrong branch |
+| --- | --- | --- | --- |
+| `git diff --stat <verified> HEAD` empty | **passes** | **passes** | catches |
+| `HEAD^{tree}` equals verified tree | **passes** | **passes** | catches |
+| `HEAD^2` resolves | catches | passes | catches |
+| `HEAD^1` equals `origin/main` | catches | catches | catches |
+
+Both tree-comparisons pass the no-op **for the same reason the no-op is invisible
+in the first place**: it leaves `HEAD` at your branch tip, so the tree you are
+comparing against is the tree you are standing on. A comparison whose two sides
+become the same object under the failure cannot detect that failure. And a merge
+onto stale `main` also matches the verified tree whenever your branch was rebased
+first, since the branch already carries main's content.
+
+So the parent checks do the work and the tree check earns its place separately:
+it is the only one that catches merging *something other than what you tested*.
+`HEAD^2` for "did I merge at all", `HEAD^1` for "onto the right base",
+`HEAD^{tree}` for "the thing I verified". Found by lane `judge`, refined by lane
+`analysis`, and both of our proposed single checks were wrong.
 
 ## `git stash` is shared across every worktree -- do not use it here
 
