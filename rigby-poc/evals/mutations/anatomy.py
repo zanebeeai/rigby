@@ -8,6 +8,16 @@ hyperextension -- all targeting ``anatomy.*``.  The injector is 06a's
 target ids, and the applicability rules that decide whether a given
 ``(spec, case)`` pair can be scored at all.
 
+**All three of section 3.3's anatomy mutations are covered, two of them by the same
+generator.**  Per-DOF ROM violation is :func:`rom_sweep`.  Hinge off-axis injection is
+:func:`hinge_off_axis_sweep`, which is ``rom_sweep`` restricted to a hinge's abduction
+DOF and refusing a bone that is not a hinge.  *Finger hyperextension* needs no separate
+mutation: a finger bone is a ``(bone, dof)`` pair like any other, and
+``rom_sweep("rightIndexProximal", "flexion")`` builds a seven-level sweep to a 110
+degree top against a target the registry resolves, on a base that is in band and moving
+in ``gesture-fist-right``.  Stated here rather than left implicit, so the coverage
+cannot be read as a silently dropped third mutation.
+
 **The top of a sweep is derived, not authored.**  ``top_magnitude`` is the width of
 the DOF's own typical band in ``config/rom.v1.json``.  A delta equal to the whole
 typical width, applied from anywhere inside that band, necessarily lands outside it,
@@ -37,12 +47,36 @@ re-deriving it; the observation added here is the consequence for plan 06's
 instrument, which is that such a pair is not a usable mutation target at all, at any
 severity.
 
-**Detection is read from the band, never from the status.**
-:func:`~rigby_poc.analysis.anatomy.rom.rom_checks` returns ``status="pass"`` on every
-result until lane ``anatomy``'s 04c enables enforcement per DOF, so a matrix keyed on
-status would score this whole family as undetected -- a manufactured false negative.
-:func:`evals.mutations.checks.rom_detected` reads ``band`` and raises on a bone the
-clip never posed, rather than folding "not measured" into "measured negative".
+**The scope of that refusal is small, and saying so matters as much as the rule.**
+The 46-of-46 rejection rate invites the conclusion that the corpus is unusable for
+this family; the band partition says the opposite.  Lane ``anatomy`` generated it per
+case at this module's request and the numbers were re-derived here from their file:
+over 46 cases with frames, **139 of the 156 (bone, dof) pairs are within band in
+every single case**, median 154 clean per case, minimum 148.  Exactly **two are never
+clean anywhere, and both are elbows** -- ``leftLowerArm.abduction`` and
+``rightLowerArm.abduction``.  Fifteen more are dirty in some cases only, so they are
+usable per case rather than corpus-wide, the largest being
+``rightLittleProximal.abduction`` at 8 of 46.  The elbow is catastrophic and almost
+nothing else is.  Sizing this family off the rejection rate rather than off the band
+partition would have been a decision to abandon a family that is 89% intact.
+
+``hips.*`` is excluded from targets independently of band, on lane ``anatomy``'s
+advice: it is the skeleton root rather than a joint, so a mutation there perturbs
+whole-body orientation, which is a semantic question and not an anatomical one.
+
+**Detection is read from the band, and ``status`` is a different question.**  Before
+04c, :func:`~rigby_poc.analysis.anatomy.rom.rom_checks` returns ``status="pass"`` on
+every result, so a matrix keyed on status would score this whole family as undetected
+-- a manufactured false negative.  After 04c, ``status`` becomes meaningful but is
+**not** equivalent to ``band != "within_typical"``: 82 of the 156 DOFs are enforced
+and 74 are not, so an out-of-band excursion on an unenforced DOF stays
+``status="pass"`` with its band recorded.  ``band`` is therefore the measurement and
+``status`` is the gating answer, and this module reads the measurement.  A pair that
+is out of band on an unenforced DOF must be rendered as a third state rather than as
+a zero, because "this bound is not enforced" and "no excursion occurred" are
+different facts.  :func:`evals.mutations.checks.rom_detected` reads ``band`` and
+raises on a bone the clip never posed, rather than folding "not measured" into
+"measured negative".
 """
 
 from __future__ import annotations
