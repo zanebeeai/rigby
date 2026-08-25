@@ -55,6 +55,34 @@ def test_waived_files_do_not_acquire_new_bare_rates(findings: list[Finding]) -> 
         )
 
 
+def test_finding_paths_are_posix_so_waivers_match_on_every_platform() -> None:
+    """Regression: the Windows CI job caught this guard failing on Windows only.
+
+    ``WAIVERS`` is keyed by POSIX-shaped repo-relative paths. A native ``str()``
+    of a ``Path`` yields backslashes on Windows, so every waiver stopped matching
+    and the guard went red there while passing on macOS -- a guard defeated by
+    the exact class of platform defect the CI matrix exists to find.
+
+    Asserting the separator directly is what makes this catchable on macOS, where
+    a native ``str()`` and ``as_posix()`` are indistinguishable.
+    """
+
+    findings = scan_repository()
+    assert findings, "expected the two waived files to still produce findings"
+    for finding in findings:
+        assert "\\" not in finding.path, (
+            f"{finding.path!r} contains a backslash; keys must be POSIX so they "
+            f"match WAIVERS on every platform"
+        )
+        assert finding.path in WAIVERS or "/" in finding.path
+
+
+def test_every_waived_path_is_posix_and_exists() -> None:
+    for path in WAIVERS:
+        assert "\\" not in path, f"{path!r} must be a POSIX-shaped key"
+        assert (REPO_ROOT / path).exists(), f"waiver for {path} outlived the file"
+
+
 def test_the_guard_documents_what_it_cannot_catch() -> None:
     """A guard that looks like it covers a class and covers part of it is itself
     an instance of the defect -- present, authoritative-looking, and not derived

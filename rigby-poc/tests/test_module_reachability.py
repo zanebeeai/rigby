@@ -152,7 +152,7 @@ def test_every_module_is_imported_or_is_an_executable_script(
                 continue
             if importers.get(stem, set()) - {path}:
                 continue
-            unreachable.append(str(path.relative_to(PROJECT_ROOT)))
+            unreachable.append(path.relative_to(PROJECT_ROOT).as_posix())
 
     assert not unreachable, (
         "these modules are imported by nothing and are not executable scripts, so "

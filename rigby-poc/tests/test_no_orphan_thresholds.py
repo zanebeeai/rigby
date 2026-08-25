@@ -75,7 +75,7 @@ def _production_readers() -> dict[str, list[str]]:
     for key in _keys():
         for path, text in texts:
             if f'"{key}"' in text or f"'{key}'" in text:
-                readers.setdefault(key, []).append(str(path.relative_to(PROJECT_ROOT)))
+                readers.setdefault(key, []).append(path.relative_to(PROJECT_ROOT).as_posix())
     return readers
 
 

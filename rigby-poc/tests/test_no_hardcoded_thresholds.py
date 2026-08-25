@@ -86,7 +86,8 @@ def _measured() -> dict[str, int]:
     for path in sorted(ANALYSIS.rglob("*.py")):
         found = comparison_thresholds(path.read_text(encoding="utf-8"))
         if found:
-            counts[str(path.relative_to(PROJECT_ROOT / "src" / "rigby_poc"))] = len(found)
+            name = path.relative_to(PROJECT_ROOT / "src" / "rigby_poc").as_posix()
+            counts[name] = len(found)
     return counts
 
 

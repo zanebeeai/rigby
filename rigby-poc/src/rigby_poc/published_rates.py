@@ -118,12 +118,19 @@ BASELINE_KEY = re.compile(r"(baseline|chance_level|control_rate)", re.I)
 
 
 def _display(path: Path) -> str:
-    """Repo-relative when the file is in the repository, absolute otherwise."""
+    """Repo-relative POSIX when the file is in the repository, absolute otherwise.
+
+    ``as_posix`` is not cosmetic here: ``WAIVERS`` is keyed by these strings, and
+    a native ``str()`` yields backslashes on Windows, so every waiver silently
+    stopped matching and the guard failed there while passing on macOS. Found by
+    the Windows CI job -- the exact class of defect that job exists to catch, in
+    the guard that was meant to catch defects.
+    """
 
     try:
-        return str(path.relative_to(REPO_ROOT))
+        return path.relative_to(REPO_ROOT).as_posix()
     except ValueError:
-        return str(path)
+        return path.as_posix()
 
 
 @dataclass(frozen=True)
