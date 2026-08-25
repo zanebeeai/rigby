@@ -227,3 +227,86 @@ def test_handoff_attachment_slip_measures_float_noise_not_slip() -> None:
 
     assert slip < 1e-12, f"slip is {slip:.3e}; it used to be float noise"
     assert slip < 0.005 / 1e9, "the 0.005 gate is nine orders away from firing"
+
+
+@pytest.fixture(scope="module")
+def object_clips() -> dict[str, tuple[object, object]]:
+    """Every corpus case carrying an object action, compiled once. ``id -> (case, clip)``.
+
+    Scoped to the object cases rather than to the whole corpus. Only that
+    compile path writes the two keys pinned below, so looping over all 47 to
+    reach nine of them is precisely the corpus-wide loop
+    ``tests/test_corpus_compile_budget.py`` exists to keep visible -- and this
+    file is budgeted there.
+    """
+
+    from evals.corpus.loader import load_corpus
+    from rigby_poc.compiler import compile_motion
+
+    cases = [case for case in load_corpus() if case.program.object_action is not None]
+    assert cases, "no object-action case in the corpus; these two pins stand on nothing"
+    return {case.id: (case, compile_motion(case.compile_request())) for case in cases}
+
+
+def test_measured_support_spin_turns_is_an_echo_of_the_request(
+    object_clips: dict[str, tuple[object, object]],
+) -> None:
+    """``object_measured_support_spin_turns`` equals ``spin_turns``, by construction.
+
+    The compiler sets ``support_spin_angle_rad = 2*pi * spin_turns * (alpha if
+    MOVE else 1.0)`` and then reports ``abs(angle) / (2*pi)`` as the *measured*
+    turn count. At the final frame of the move ``alpha`` is 1.0, so the measured
+    value is the requested one with a multiply and a divide in between.
+
+    Same class as the ``forearm_rotation_cycles`` echo in plan 02 §1.6: a metric
+    named as a measurement whose value is the request. Unlike that one it has no
+    branch that ever overwrites it with an observation, so it is an echo on
+    every clip that spins rather than on some of them.
+    """
+
+    spun = [
+        (case, clip)
+        for case, clip in object_clips.values()
+        if case.program.object_action.value == "spin"
+    ]
+    assert spun, "no spin case in the corpus; this pin has nothing to stand on"
+
+    for case, clip in spun:
+        requested = float(case.program.object_motion.spin_turns)
+        measured = float(clip.metrics["object_measured_support_spin_turns"])
+        assert measured == requested, (
+            f"{case.id}: measured {measured} vs requested {requested} -- if these "
+            "have diverged the metric has become a real measurement; delete this pin"
+        )
+
+
+def test_object_interaction_slip_is_float_noise_on_every_action(
+    object_clips: dict[str, tuple[object, object]],
+) -> None:
+    """``palm_relative_object_slip_m`` cannot fire, on any of the eight actions.
+
+    Measured across the corpus: 2.8e-17 to 1.3e-16 m against a ``> 0.005`` gate
+    — thirteen to fourteen orders of magnitude away. Same mechanism as the
+    handoff slip: while the object is held, its position is *defined* relative
+    to the wrist, so the offset compared against its own first sample is the
+    offset itself and the metric reports the round-trip error of a rotation.
+
+    This is load-bearing for 02d's remaining scope rather than a curiosity. The
+    three distinct attachment-offset branches in ``_compile_object_interaction``
+    are the most intricate thing left to re-derive post-hoc, and this is the
+    only metric they feed. Reproducing them byte-for-byte would buy an exact
+    copy of a number that encodes nothing.
+    """
+
+    measured = {
+        case_id: float(clip.metrics["palm_relative_object_slip_m"])
+        for case_id, (_case, clip) in object_clips.items()
+        if "palm_relative_object_slip_m" in clip.metrics
+    }
+
+    assert len(measured) >= 8, "the corpus lost its object-interaction cases"
+    worst = max(measured.values())
+    assert worst < 1e-12, (
+        f"worst slip is {worst:.3e}; it used to be float noise on every action"
+    )
+    assert worst < 0.005 / 1e9, "the 0.005 gate is nine orders from firing"
