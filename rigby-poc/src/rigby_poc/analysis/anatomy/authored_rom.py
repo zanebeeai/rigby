@@ -201,7 +201,7 @@ for bone in canonical_bone_names():
             # two knees by 9.0 deg in opposite signs.
             e["typical_deg"] = [-e["typical_deg"][1], -e["typical_deg"][0]]
             e["max_deg"] = [-e["max_deg"][1], -e["max_deg"][0]]
-        if e.get("hard_assert"):
+        if e["hard_assert"]:
             # A DOF the joint does not possess has no "typical range" distinct
             # from its tolerance, so collapsing the two bands is the honest
             # shape. Leaving typical at (0, 0) made every rest pose "beyond
@@ -215,7 +215,11 @@ for bone in canonical_bone_names():
         out[dof] = OrderedDict(
             typical_deg=[float(x) for x in e["typical_deg"]],
             max_deg=[float(x) for x in e["max_deg"]],
-            hard_assert=bool(e.get("hard_assert", False)),
+            # Required, not defaulted. False is a legitimate value here -- 145
+            # of the 156 entries carry it -- so a default would be
+            # indistinguishable from an authored one, and a row added without
+            # going through row() would silently become non-hard-asserted.
+            hard_assert=bool(e["hard_assert"]),
             rest_offset_deg=(None if off is None
                              else round(float(getattr(off, f"{dof}_rad")) * 180.0 / 3.141592653589793, 3)),
             source=src)
