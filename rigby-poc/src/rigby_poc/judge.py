@@ -950,6 +950,51 @@ def _key_pose_labels(manifest: dict[str, Any]) -> set[str]:
     return {"presented_pose"}
 
 
+def _paired_key_pose_labels(
+    manifest: dict[str, Any], snapshots: list[dict[str, Any]]
+) -> set[str]:
+    """Key-pose labels that this manifest actually carries, in both views.
+
+    `_key_pose_labels` is a declared list, and a declared list of labels nothing
+    emits is 06a's defect one layer over: it produces the same payload as "this
+    grader has no evidence" -- silently, on the intents nobody checked. Measured:
+    its default is `{presented_pose}`, which only the `present` phase emits
+    (`evals/capture.py:984`), so a full-body, composite or sequence clip matched
+    **nothing** and `crossview` was dispatched with zero images and still
+    returned claims. 17 of 47 corpus cases are those three intents.
+
+    So the declared set is honoured when the evidence contains it, and otherwise
+    the selection falls back to what is there. Both branches require the label to
+    appear in **both** views: `crossview` compares one moment across ego and
+    orbit, so a label present in only one view is not a cross-view observation at
+    all, and the mid-clip pose is the deterministic choice among those that are.
+
+    Returned rather than raising, because the guard belongs at dispatch: see
+    `_grader_content`.
+    """
+    by_label: dict[str, set[str]] = {}
+    for snapshot in snapshots:
+        label = str(snapshot.get("label", ""))
+        if label:
+            by_label.setdefault(label, set()).add(str(snapshot.get("view", "")))
+    paired = {label for label, views in by_label.items() if {"ego", "orbit"} <= views}
+    declared = _key_pose_labels(manifest) & paired
+    if declared:
+        return declared
+    if not paired:
+        return set()
+    ordered = [
+        str(snapshot.get("label", ""))
+        for snapshot in snapshots
+        if str(snapshot.get("label", "")) in paired
+    ]
+    seen: list[str] = []
+    for label in ordered:
+        if label not in seen:
+            seen.append(label)
+    return {seen[len(seen) // 2]}
+
+
 def _image_content(
     snapshots: list[dict[str, Any]],
     *,
@@ -1562,12 +1607,23 @@ class VLMJudge(RoutedModelClient):
             content.extend(
                 self._images(
                     snapshots,
-                    labels=_key_pose_labels(manifest),
+                    labels=_paired_key_pose_labels(manifest, snapshots),
                     payload_audit=payload_audit,
                 )
             )
         if spec.evidence in {"timelines", "both"}:
             content.extend(self._timeline(snapshots, payload_audit=payload_audit))
+        if not payload_audit:
+            # A grader that declares image evidence and receives none produces
+            # verdicts that are not a function of any evidence -- confidence it
+            # never had, in the vocabulary of a measurement. `crossview` did
+            # exactly this on every full-body clip and returned four claims each
+            # time. Raising is the point: not-measured must not be scored, and a
+            # blind dispatch is the one outcome this layer must never buy.
+            raise ValueError(
+                f"grader {name!r} declares evidence={spec.evidence!r} but its payload "
+                f"carries no images; refusing to dispatch a grader that cannot see"
+            )
         return content
 
     def grade(
