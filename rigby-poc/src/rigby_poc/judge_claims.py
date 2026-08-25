@@ -64,12 +64,14 @@ ANATOMY_CLAIMS: tuple[ClaimSpec, ...] = (
     # humerus to move the forearm out of the upper arm's sweep plane; Rigby
     # bends the elbow sideways instead, as its normal operating state.
     #
-    # PROVISIONAL as a calibration instrument. At >5 deg this is near-universal
-    # and therefore close to non-discriminating -- the N/N degenerate case. The
-    # claim below is perceptual, so it fires in the large-deviation regime
-    # (nearer the 15.6%-of-frames-above-45-deg figure than the 87% one), but
-    # that is an argument, not a measurement. Do not report agreement on this
-    # claim until the per-case prevalence at a perceptual threshold exists.
+    # Discriminating at the perceptual threshold, measured per case rather than
+    # per frame: 12/12 cases exceed 5 deg (non-discriminating) but only 8/12
+    # exceed 45 deg, and 9 of 03b's 47 sit under it. But 45 deg is a perceptual
+    # line, not where the check fires: under 04b's authored hinge bound of
+    # -4.23 to +5.77 deg, 46 of 46 cases are violations and none are clean. The
+    # unaffected subset is undetermined pending 04c's elbow bound and is empty
+    # on the current one. Every sub-45 case is full-body; object interaction,
+    # the worst path at 130.6 deg, has none.
     ClaimSpec("anatomy.elbow.abduction", "The forearm stays in the plane the upper arm's rotation allows, rather than swinging sideways off the elbow hinge.", critical=True, tag="arm_contortion"),
     ClaimSpec("anatomy.forearm.twist", "Forearm rotation about its own long axis stays within a human range.", critical=True, tag="wrist_contortion"),
     ClaimSpec("anatomy.wrist.flexion", "No wrist is bent past what a human wrist could reach.", critical=True, tag="wrist_contortion"),
