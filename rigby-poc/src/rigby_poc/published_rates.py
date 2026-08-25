@@ -94,6 +94,7 @@ letting the name imply the stronger property.
 from __future__ import annotations
 
 import json
+import math
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -322,7 +323,21 @@ def scan_report(path: Path) -> list[Finding]:
                 continue
             if not isinstance(item, (int, float)) or isinstance(item, bool):
                 continue
-            if not 0.0 <= float(item) <= 1.0:
+            # A rate on the 0..1 scale and the same rate on the 0..100 scale are
+            # the same published claim, and this filter used to check only the
+            # first -- so `"detection_rate": 82.0` was skipped while
+            # `"detection_rate": 0.82` was caught. A false negative in the
+            # direction that hides, inside the guard for L3 gate item 3.
+            # Measured before widening: zero rate-named keys sit outside 0..1 in
+            # any committed JSON today, so this closes the hole ahead of
+            # `eval-report.v2.json` rather than creating churn.
+            #
+            # Non-finite is still skipped, and that is not the same omission: an
+            # `inf` upper bound is an honest reading of "never established
+            # anywhere in the sweep" (10d's `Interval`), and a bound is not a
+            # rate. Flagged by lane `judge`, which is what prompted this look.
+            value = float(item)
+            if not math.isfinite(value) or not 0.0 <= value <= 100.0:
                 continue
             missing = tuple(
                 label

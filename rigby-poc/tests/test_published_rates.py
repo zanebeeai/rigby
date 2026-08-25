@@ -278,6 +278,42 @@ def test_report_gates_are_not_treated_as_published_rates(tmp_path) -> None:
     assert scan_report(path) == []
 
 
+def test_a_rate_on_the_percent_scale_is_the_same_claim_as_one_on_the_unit_scale(
+    tmp_path,
+) -> None:
+    """The guard used to check only the 0..1 scale.
+
+    `"detection_rate": 82.0` and `"detection_rate": 0.82` are the same published
+    claim, and only the second was caught -- a false negative in the direction
+    that hides, inside the guard for L3 gate item 3. Nothing in the repository
+    published a rate-named key outside 0..1 when this was widened, so it closes
+    the hole ahead of `eval-report.v2.json` rather than fixing a live failure.
+    """
+
+    path = tmp_path / "report.json"
+    for value in (82.0, 0.82):
+        path.write_text(json.dumps({"block": {"detection_rate": value}}))
+        found = scan_report(path)
+        assert len(found) == 1, f"{value} escaped the scan"
+        assert found[0].missing == ("its n", "its baseline")
+
+
+def test_a_non_finite_bound_is_not_a_rate(tmp_path) -> None:
+    """An `inf` upper bound is honest, not a defect, so it must not be flagged.
+
+    10d publishes a detection threshold as an interval whose 95% upper bound can
+    legitimately be `inf` -- the correct reading when detection is observed but
+    never established anywhere in the sweep. A bound is not a rate, and widening
+    the scale filter must not sweep one in. Flagged by lane `judge` before it
+    could fire on them.
+    """
+
+    path = tmp_path / "report.json"
+    for value in ("Infinity", "-Infinity", "NaN"):
+        path.write_text('{"block": {"detection_rate": %s}}' % value)
+        assert scan_report(path) == [], f"{value} was treated as a published rate"
+
+
 def test_report_scan_reaches_into_lists(tmp_path) -> None:
     path = tmp_path / "report.json"
     path.write_text(json.dumps({"runs": [{"n": 4, "accuracy": 0.75}]}))
