@@ -45,10 +45,15 @@ def _corrupt_digests(payload: dict, value: str) -> dict:
     """
     from evals.corpus.hashing import platform_key
 
+    from corpus_seed import seed_platform_column
+
+    # `seed_platform_column`, not three dict updates: 03d requires the `environment`
+    # keys to match the digest keys, and on an unblessed platform this key is new to
+    # both. Updating only the digests made the file fail validation inside
+    # `load_corpus`, before this test reached its own assertion -- one of three that
+    # died that way on Windows CI at 8e4edf0.
     key = platform_key(bool(payload.get("solver_used")))
-    for name in ("motion_sha256", "metrics_sha256", "observables_sha256"):
-        payload[name] = {**payload[name], key: value}
-    return payload
+    return seed_platform_column(payload, key, value)
 
 
 def _break_case(root: Path, case_id: str) -> None:

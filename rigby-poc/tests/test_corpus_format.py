@@ -181,11 +181,14 @@ def test_bless_is_a_dry_run_until_write_is_passed(tmp_path: Path) -> None:
 
     # This platform's key explicitly: on a platform nobody has blessed there is no
     # entry to rewrite, and corrupting a foreign column makes `bless` report an
-    # unblessed platform instead of a moved hash.
+    # unblessed platform instead of a moved hash. Seeded through the shared helper so
+    # `environment` gains the key alongside the digests -- 03d's validator rejects a
+    # file whose two key sets disagree, and on an unblessed platform the key is new
+    # to both.
+    from corpus_seed import seed_platform_column
+
     key = platform_key(bool(payload.get("solver_used")))
-    payload["motion_sha256"] = {**payload["motion_sha256"], key: "b" * 64}
-    payload["metrics_sha256"] = {**payload["metrics_sha256"], key: "b" * 64}
-    payload["observables_sha256"] = {**payload["observables_sha256"], key: "b" * 64}
+    seed_platform_column(payload, key, "b" * 64)
     payload["frame_count"] = 3
     path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
     stale = path.read_text(encoding="utf-8")
@@ -457,3 +460,66 @@ def test_a_second_platform_blesses_without_overwriting_anything(tmp_path: Path) 
     assert merged.environment[key].python_version != foreign_env.python_version, (
         "each platform records the interpreter that actually produced its digests"
     )
+
+
+def test_seeding_a_platform_column_keeps_environment_and_digests_in_step() -> None:
+    """The regression for the three tests that died on Windows CI at ``8e4edf0``.
+
+    03d made ``environment`` keyed by platform and added a validator refusing a file
+    whose environment keys and digest keys disagree. Several tests seeded *this*
+    platform's digest column without touching ``environment``. On a blessed machine
+    the key is already in both maps so nothing disagrees; on an unblessed one the key
+    is new to the digests alone, and the file is rejected inside ``load_corpus``
+    before the test reaches its own assertion.
+
+    **This asserts the unblessed case explicitly**, with a key no machine will ever
+    have blessed, because that is the only branch where the two behaviours differ and
+    it is unreachable from any machine anyone here develops on.
+    """
+    from corpus_seed import platform_columns_agree, seed_platform_column
+    from evals.corpus import CORPUS_ROOT
+
+    payload = json.loads(
+        (CORPUS_ROOT / "cases" / SAMPLE_CASE_ID / EXPECTED_FILE).read_text(
+            encoding="utf-8"
+        )
+    )
+    assert platform_columns_agree(payload), "the committed case is already inconsistent"
+
+    unblessed = "someotheros-riscv64"
+    assert unblessed not in payload["environment"], "pick a key nobody has blessed"
+
+    seeded = seed_platform_column(dict(payload), unblessed, "b" * 64)
+
+    # The property the validator enforces, asserted directly...
+    assert platform_columns_agree(seeded)
+    assert set(seeded["environment"]) == set(seeded["motion_sha256"])
+    assert seeded["environment"][unblessed]["platform_key"] == unblessed
+    # ...and asserted through the validator itself, so this cannot pass while the
+    # real gate rejects. A property test that agrees with a reimplementation of the
+    # rule rather than with the rule is the tautology this file exists to avoid.
+    ExpectedResult.model_validate(seeded)
+
+
+def test_seeding_only_the_digests_is_what_the_validator_rejects() -> None:
+    """The anti-tautology half: show the old behaviour red, on the unblessed path.
+
+    Without this, ``test_seeding_a_platform_column_keeps_environment_and_digests_in_step``
+    would pass against a helper that did nothing at all on a blessed machine.
+    """
+    from corpus_seed import platform_columns_agree
+    from evals.corpus import CORPUS_ROOT
+
+    payload = json.loads(
+        (CORPUS_ROOT / "cases" / SAMPLE_CASE_ID / EXPECTED_FILE).read_text(
+            encoding="utf-8"
+        )
+    )
+    unblessed = "someotheros-riscv64"
+    # Exactly what the three failing tests did: digests only, environment untouched.
+    for name in ("motion_sha256", "metrics_sha256", "observables_sha256"):
+        payload[name] = {**payload[name], unblessed: "b" * 64}
+
+    assert not platform_columns_agree(payload)
+    with pytest.raises(ValidationError, match="environment is recorded for"):
+        ExpectedResult.model_validate(payload)

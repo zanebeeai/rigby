@@ -84,6 +84,11 @@ UNBUDGETED: dict[str, str] = {
     "test_mutation_sweep.py": "one",
     "test_mutation_legacy_port.py": "one corpus pass for the applicability tally",
     "test_mutation_families.py": "three module-scoped compiles; measured at 3",
+    "corpus_seed.py": (
+        "a helper, not a test file; it compiles nothing and imports nothing from "
+        "evals.corpus -- it matches only because its docstring names `load_corpus` "
+        "while explaining the validation failure it exists to prevent"
+    ),
 }
 
 #: What marks a file as touching the corpus.  Deliberately broad: a false positive
