@@ -25,11 +25,13 @@ from evals.mutations.anatomy import (
     typical_width_deg,
 )
 from evals.mutations.checks import rom_detected
+from evals.mutations.family import MutationFamily
 from evals.mutations.clipping import limb_through_torso_sweep
 from evals.mutations.inject import bone_dof_series
 from evals.mutations.signal import expected_frame_delta_sigma_deg, jitter_sweep
 from evals.mutations.timing import freeze_sweep, snap_sweep
 from rigby_poc.analysis import analyze
+from rigby_poc.models import ClipResult
 from rigby_poc.analysis.anatomy.rom import rom_checks
 from rigby_poc.analysis.safety import safety_metrics
 from rigby_poc.thresholds import value_of
@@ -296,3 +298,138 @@ def test_a_case_the_mutation_cannot_reach_is_a_zero_not_a_miss() -> None:
         _collisions(case, spec.apply(clip)) for spec in limb_through_torso_sweep()
     ]
     assert set(counts) == {0}
+
+
+# -------------------------------------------------------------------- contract
+
+# Plan 06 section 5's `test_mutation_preserves_contract` applies to every family, not
+# only to the ported legacy specs. `tests/test_mutation_contract.py` covers
+# `legacy_specs()` and stops there, so 06b's four families would otherwise ship
+# without ever being checked for the thing that makes a mutated clip usable
+# downstream: capture and export must fail on the mutation's *content*, never on its
+# shape.
+
+
+def _body_families():
+    """Every 06b spec applicable to the full-body case, labelled by family."""
+    return [
+        *rom_sweep("rightLowerLeg", "flexion"),
+        *snap_sweep(),
+        *freeze_sweep(),
+        *jitter_sweep(),
+    ]
+
+
+def _gesture_families():
+    """Every 06b spec applicable to the gesture case."""
+    return [
+        *rom_sweep("rightIndexProximal", "flexion"),
+        *limb_through_torso_sweep(),
+        *snap_sweep(),
+    ]
+
+
+@pytest.fixture(scope="module")
+def body_mutants(body_clip):
+    specs = _body_families()
+    assert specs, "no specs reached the contract checks"
+    return [(spec, spec.apply(body_clip)) for spec in specs]
+
+
+@pytest.fixture(scope="module")
+def gesture_mutants(gesture_clip):
+    specs = _gesture_families()
+    assert specs, "no specs reached the contract checks"
+    return [(spec, spec.apply(gesture_clip)) for spec in specs]
+
+
+def test_the_contract_fixtures_cover_all_four_families(body_mutants, gesture_mutants) -> None:
+    """Instrument test: an empty or single-family collection passes everything below.
+
+    Four judge guards passed vacuously on an empty collection this push. The rule
+    that separates a real case from noise is to assert non-emptiness for a collection
+    the test did not construct -- and here, to assert the collection is actually the
+    four families it claims to be.
+    """
+    families = {spec.family for spec, _ in [*body_mutants, *gesture_mutants]}
+    assert families == {
+        MutationFamily.ANATOMY,
+        MutationFamily.TIMING,
+        MutationFamily.SIGNAL,
+        MutationFamily.CLIPPING,
+    }
+    assert len(body_mutants) + len(gesture_mutants) >= 40
+
+
+@pytest.mark.parametrize("fixture", ["body_mutants", "gesture_mutants"])
+def test_a_mutated_clip_is_still_schema_valid(fixture, request) -> None:
+    for spec, mutated in request.getfixturevalue(fixture):
+        # `model_validate` raises on an invalid payload, so the round trip is the
+        # assertion. Named in the failure via `pytest.fail` rather than a bare
+        # expression, which would discard the label silently.
+        try:
+            ClipResult.model_validate(mutated.model_dump(mode="json"))
+        except Exception as error:  # noqa: BLE001 - re-raised with the spec id
+            pytest.fail(f"{spec.id} produced a clip that no longer validates: {error}")
+
+
+@pytest.mark.parametrize("fixture", ["body_mutants", "gesture_mutants"])
+def test_a_mutated_clip_stays_finite_and_normalised(fixture, request) -> None:
+    for spec, mutated in request.getfixturevalue(fixture):
+        for frame in mutated.frames:
+            for name, pose in frame.bones.items():
+                values = pose.rotation.as_list()
+                assert all(math.isfinite(v) for v in values), f"{spec.id}/{name}"
+                norm = math.sqrt(sum(v * v for v in values))
+                # Bit-tight rather than approximate: a renormalisation bug that
+                # drifts a quaternion by 1e-6 per frame is invisible at a loose
+                # tolerance and visible in the render.
+                assert norm == pytest.approx(1.0, abs=1e-9), f"{spec.id}/{name}"
+
+
+@pytest.mark.parametrize("fixture", ["body_mutants", "gesture_mutants"])
+def test_a_mutated_clip_keeps_its_frame_count_and_timebase(fixture, request, body_clip, gesture_clip) -> None:
+    base = body_clip if fixture == "body_mutants" else gesture_clip
+    for spec, mutated in request.getfixturevalue(fixture):
+        assert len(mutated.frames) == len(base.frames), spec.id
+        assert [f.time_s for f in mutated.frames] == [f.time_s for f in base.frames], spec.id
+
+
+@pytest.mark.parametrize("fixture", ["body_mutants", "gesture_mutants"])
+def test_a_mutated_clip_does_not_announce_that_it_is_mutated(
+    fixture, request, body_clip, gesture_clip
+) -> None:
+    """Contract rule 1, the one `evals/corruptions.py` breaks three ways.
+
+    A clip that labels itself lets a scorer read the label instead of the grader's
+    verdict, which is how every rate the legacy suite produced stopped being a
+    function of the judge at all (plan 06 section 6.5).
+
+    The first draft of this test asserted `not getattr(mutated, "failures", None)`.
+    `ClipResult` has no `failures` field -- it is `failure`, singular -- so that
+    assertion read a default of `None` on every clip and passed unconditionally. It
+    is the bug class this push has catalogued six times, written into a guard against
+    it, and it is why the checks below compare against the *base clip* rather than
+    against a literal: a comparison to a value the base actually carries cannot be
+    satisfied by an attribute that does not exist.
+    """
+    base = body_clip if fixture == "body_mutants" else gesture_clip
+    for spec, mutated in request.getfixturevalue(fixture):
+        assert mutated.success == base.success, spec.id
+        assert mutated.failure == base.failure, spec.id
+        assert "deliberate_corruption" not in mutated.metrics, spec.id
+        blob = mutated.model_dump_json()
+        assert spec.id not in blob, f"{spec.id} leaks its own id into the clip"
+        assert "corruption" not in blob.lower(), f"{spec.id} leaks the word corruption"
+
+
+def test_applying_a_mutation_does_not_mutate_its_input(body_clip) -> None:
+    before = [
+        pose.rotation.as_list() for frame in body_clip.frames for pose in frame.bones.values()
+    ]
+    for spec in _body_families():
+        spec.apply(body_clip)
+    after = [
+        pose.rotation.as_list() for frame in body_clip.frames for pose in frame.bones.values()
+    ]
+    assert before == after
