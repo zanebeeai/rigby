@@ -60,7 +60,7 @@ def _write(tmp_path: Path, *, snapshot_overrides: dict | None = None, **manifest
             "path": f"{view}.png",
             "sha256": digest,
             "pixel_sha256": digest,
-            "pose_sha256": "0" * 64,
+            "pose_sha256": "0" * 64,  # single-machine digest; see the note below
             "width_px": 1600,
             "height_px": 900,
             "camera": {
@@ -128,8 +128,15 @@ def test_the_sha256_alias_equals_the_pixel_hash_while_it_exists(tmp_path: Path) 
 
 
 def test_the_pose_hash_is_carried_and_is_not_the_pixel_hash(tmp_path: Path) -> None:
-    # They answer different questions: `pose_sha256` is machine-independent and
+    # They answer different questions: `pose_sha256` reads the compiled clip and
     # survives a re-render; `pixel_sha256` does not.
+    #
+    # It is NOT machine independent, and this comment said it was. Lane `capture`
+    # retracted that in 01d: compilation is not bit-reproducible across ISAs —
+    # arm64 and x86-64 differ in libm transcendentals and FMA contraction, up to
+    # 56 ulps on a third derivative — so the digest is reproducible on one
+    # machine and not across architectures. Corrected here rather than left, a
+    # claim in a contract test being exactly where a retracted fact does damage.
     _, snapshots = _manifest(_write(tmp_path))
     assert snapshots
     for snapshot in snapshots:
