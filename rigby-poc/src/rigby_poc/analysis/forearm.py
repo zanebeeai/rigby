@@ -13,7 +13,14 @@ import numpy as np
 
 from ..kinematics import rig_kinematics
 from ..models import ClipFrame
-from .contract import ANATOMY, SIGNAL, CheckResult, lower_bound_check, upper_bound_check
+from .contract import (
+    ANATOMY,
+    SIGNAL,
+    CheckResult,
+    binary_check,
+    lower_bound_check,
+    upper_bound_check,
+)
 from .geometry import line_segment_distance
 
 
@@ -230,10 +237,10 @@ def parallel_forearm_checks(metrics: dict[str, Any]) -> list[CheckResult]:
             scale=0.20,
             detail="travel-signal fists stray too far from the opposite elbows",
         ),
-        CheckResult(
-            id="signal.travel_wheel.order_exchange",
-            layer=SIGNAL,
-            status="pass" if exchanged else "fail",
+        binary_check(
+            "signal.travel_wheel.order_exchange",
+            SIGNAL,
+            passed=exchanged,
             measured={
                 "minimum_vertical_order_m": float(
                     metrics["travel_wheel_minimum_vertical_order_m"]
@@ -248,8 +255,6 @@ def parallel_forearm_checks(metrics: dict[str, Any]) -> list[CheckResult]:
                     metrics["travel_wheel_maximum_depth_order_m"]
                 ),
             },
-            threshold=None,
-            severity=0.0 if exchanged else 1.0,
             detail="travel-signal forearms do not exchange over/under and front/back order",
         ),
     ]

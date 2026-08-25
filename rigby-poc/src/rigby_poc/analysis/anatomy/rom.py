@@ -27,7 +27,13 @@ import numpy as np
 
 from ...kinematics import rig_kinematics
 from ...models import ClipFrame
-from ..contract import ANATOMY, CheckResult, saturating_severity, skipped
+from ..contract import (
+    ANATOMY,
+    CheckResult,
+    saturating_margin,
+    saturating_severity,
+    skipped,
+)
 from ..rig import PROJECT_ROOT
 from .frame import all_frames, decompose_series
 from .neutral import rest_offset, rest_relative
@@ -107,6 +113,30 @@ class DofLimit:
         if measured_deg < low or measured_deg > high:
             return "beyond_typical"
         return "within_typical"
+
+    def room_deg(self, measured_deg: "float | np.ndarray") -> float:
+        """Degrees of room left before the **max** bound. Negative once past it.
+
+        Over a series, the worst frame decides: the room a DOF left is the
+        smallest room any single frame left.
+
+        The mirror of :meth:`excess_deg`, and the passing half of the same
+        ruler. ``excess_deg`` answers "how far past" and returns 0.0 inside the
+        band, which makes every in-band measurement look identical -- fine for
+        ordering failures, and the reason a severity-derived score cannot order
+        two clips that both pass. This answers "how much further it could have
+        gone", so two clean DOFs are still distinguishable.
+
+        Measured against ``max_deg`` rather than ``typical_deg`` deliberately.
+        ``typical_deg`` is the narrower band and 46 of 47 corpus cases sit
+        outside it on at least one DOF, so a typical-relative margin would be
+        negative nearly everywhere and would clamp to zero -- reintroducing the
+        flat-across-passing-clips problem this exists to remove.
+        """
+
+        low, high = (self.to_rest_relative(v) for v in self.max_deg)
+        values = np.asarray(measured_deg, dtype=float)
+        return float(np.min(np.minimum(high - values, values - low)))
 
     def excess_deg(self, measured_deg: float, band: Band) -> float:
         """How far past the band's own bound a measurement sits. 0 inside."""
@@ -276,7 +306,20 @@ def bone_violations(bone: str, angles: np.ndarray, *, fps: float) -> list[RomVio
 def rom_violations(frames: list[ClipFrame], *, fps: float) -> list[RomViolation]:
     """Every DOF excursion in a clip, worst first."""
 
-    series = decompose_clip(frames)
+    return violations_of_series(decompose_clip(frames), fps=fps)
+
+
+def violations_of_series(
+    series: dict[str, np.ndarray], *, fps: float
+) -> list[RomViolation]:
+    """:func:`rom_violations` over an already-decomposed clip.
+
+    Split out so :func:`rom_checks` can decompose once. It previously called
+    ``decompose_clip`` for the measured-bone set and then ``rom_violations``,
+    which decomposes again -- two full passes over every bone of every frame per
+    call, for one clip's worth of angles. Same output, one pass.
+    """
+
     found = [
         violation
         for bone, angles in series.items()
@@ -294,8 +337,9 @@ def rom_checks(frames: list[ClipFrame], *, fps: float) -> list[CheckResult]:
     enforcement on per DOF once that review says which limits are trustworthy.
     """
 
-    measured_bones = set(decompose_clip(frames))
-    violations = rom_violations(frames, fps=fps)
+    series = decompose_clip(frames)
+    measured_bones = set(series)
+    violations = violations_of_series(series, fps=fps)
     by_key = {(item.bone, item.dof): item for item in violations}
     results: list[CheckResult] = []
     for (bone, dof), limit in sorted(rom_limits().items()):
@@ -319,6 +363,19 @@ def rom_checks(frames: list[ClipFrame], *, fps: float) -> list[CheckResult]:
             continue
         breached = violation is not None and violation.band == "beyond_max"
         failing = breached and limit.enforced
+        severity = (
+            saturating_severity(
+                abs(violation.peak_deg) - abs(violation.threshold_deg),
+                SEVERITY_SCALE_DEG,
+            )
+            if failing
+            else 0.0
+        )
+        # The worst frame decides, so the room is the smallest room any frame
+        # left. A DOF past an *unenforced* max bound clamps to 0.0 rather than
+        # going negative: the verdict is a pass by design in that case, and
+        # "no room left" is the honest reading of a bound nothing enforces.
+        room = limit.room_deg(series[bone][:, DOFS.index(dof)])
         results.append(
             CheckResult(
                 id=f"anatomy.rom.{bone}.{dof}",
@@ -330,13 +387,11 @@ def rom_checks(frames: list[ClipFrame], *, fps: float) -> list[CheckResult]:
                     else {"bone": bone, "dof": dof, "band": "within_typical"}
                 ),
                 threshold=limit.to_rest_relative(limit.max_deg[1]),
-                severity=(
-                    saturating_severity(
-                        abs(violation.peak_deg) - abs(violation.threshold_deg),
-                        SEVERITY_SCALE_DEG,
-                    )
+                severity=severity,
+                headroom=(
+                    -severity
                     if failing
-                    else 0.0
+                    else saturating_margin(room, SEVERITY_SCALE_DEG)
                 ),
                 frames=(),
                 detail=(
@@ -392,6 +447,7 @@ __all__ = [
     "assert_evidence_matches_the_analysed_rig",
     "bone_violations",
     "decompose_clip",
+    "violations_of_series",
     "enforceability",
     "rom_checks",
     "rom_limit",
