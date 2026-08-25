@@ -1452,9 +1452,23 @@ def _canonical_vector(value: Any, length: int) -> list[float] | None:
 def pose_sha256(frame: dict[str, Any] | None) -> str:
     """Hash the pose applied at a frame: bone rotations, offsets, and object placement.
 
-    Machine independent by construction -- it reads the compiled clip, never the render
-    -- so it is the hash a determinism test should assert across machines. The pixel
-    hash cannot be: MSAA resolve and shadow filtering are GPU and driver dependent.
+    Independent of the *renderer*, because it reads the compiled clip and never the
+    pixels -- which is what the pixel hash cannot be, since MSAA resolve and shadow
+    filtering are GPU and driver dependent.
+
+    It is **not** machine independent, and the earlier wording here said it was. Compilation
+    is not bit-reproducible across ISAs: arm64 and x86-64 differ in libm transcendentals and
+    FMA contraction, measured at up to 56 ulps on a third derivative, so this digest is
+    reproducible on one machine (30/30) and not across architectures. Do not use it as a
+    cross-platform determinism key.
+
+    Nor does it answer "is this the same pose?". The document below is exact-float and
+    includes `time_s`, so two samples of a physically static hold hash differently: across
+    the three hold points of one 26-snapshot capture, 49 of 208 bone components differed,
+    every one by a single ulp, while the two renders were byte-identical. Comparing this
+    digest across sample times therefore reports "changed" essentially always -- a constant
+    predictor, which is what the 10a gate exists to reject. Compare pixels, or compare
+    values with a tolerance; do not compare this hash across time.
     """
     if frame is None:
         return hashlib.sha256(b"no-frame").hexdigest()
