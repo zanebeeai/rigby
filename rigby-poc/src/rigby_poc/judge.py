@@ -776,6 +776,15 @@ def _usage(response: object) -> dict[str, Any]:
     return dict(usage) if isinstance(usage, dict) else {}
 
 
+class CompactedEvidenceError(ValueError):
+    """The run was archived, not broken.
+
+    A `ValueError` subclass so existing handlers keep catching it, but nameable
+    so a caller that wants to skip archived runs can do so without matching on a
+    message string.
+    """
+
+
 def _manifest(path: Path) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     value = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(value, dict):
@@ -794,6 +803,20 @@ def _manifest(path: Path) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     for key, expected_value in expected.items():
         if contract.get(key) != expected_value:
             raise ValueError(f"capture contract {key} is not {expected_value!r}")
+    # A compacted run's PNGs have been transcoded to WebP and deleted (PR 01d),
+    # so every snapshot path below is genuinely missing. Saying so in the path
+    # layer's vocabulary -- "snapshot path escapes or is missing" -- is true and
+    # sends the reader to look for a capture bug. The run is archival by
+    # decision, not broken.
+    #
+    # Keyed off the manifest rather than importing `evals.compact_run`: `src/`
+    # should not depend on `evals/`, and the artifact-level key is what travels
+    # with the evidence. `tests/test_compacted_run_is_not_judgeable.py` pins this
+    # predicate against `is_compacted` so the two cannot drift apart.
+    if isinstance(value.get("compaction"), dict):
+        raise CompactedEvidenceError(
+            "this run is compacted: its evidence is archival and not judgeable"
+        )
     snapshots = value.get("snapshots")
     if not isinstance(snapshots, list) or not snapshots:
         raise ValueError("evidence manifest contains no snapshots")
