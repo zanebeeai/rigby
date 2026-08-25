@@ -7,6 +7,7 @@ import io
 import json
 import threading
 import time
+from datetime import datetime
 from pathlib import Path
 
 import pytest
@@ -634,3 +635,45 @@ def test_the_timeline_leaves_no_orphans_and_exactly_one_root(tmp_path: Path) -> 
     document = load(tmp_path / "run")
     assert document.orphans() == []
     assert len([span for span in document.spans if span.parent_id is None]) == 1
+
+
+def test_a_gap_between_stages_is_visible_in_the_timestamps(tmp_path: Path) -> None:
+    """The property `test_run_transcript` asserts on, shown to be detectable.
+
+    A timing *share* is platform sensitive -- the same code measured 99.8% on macOS and
+    93.5% on Windows CI, because untimed process startup sits inside the root span and
+    outside every stage. A gap *between* two stages is not: it is work escaping
+    instrumentation, and it looks the same on every machine.
+    """
+    tracer = Tracer(tmp_path / "run", run_id="20260824T120000-deadbeef")
+    with tracer.span("run", "pipeline"):
+        timeline = StageTimeline(tracer)
+        timeline.enter("planning")
+        timeline.close()
+        time.sleep(0.05)  # 50 ms of work attributed to no stage at all
+        timeline.enter("candidates")
+        timeline.close()
+    stages = sorted(load(tmp_path / "run").by_kind("stage"), key=lambda span: span.started_at)
+    first, second = stages
+    gap_ms = (
+        datetime.fromisoformat(second.started_at.replace("Z", "+00:00")).timestamp()
+        - datetime.fromisoformat(first.ended_at.replace("Z", "+00:00")).timestamp()
+    ) * 1000.0
+    assert gap_ms >= 40.0, "a deliberate 50 ms gap between stages was not detectable"
+
+
+def test_consecutive_stages_hand_over_without_a_gap(tmp_path: Path) -> None:
+    """And the normal case: entering a new stage closes the old one in the same breath."""
+    tracer = Tracer(tmp_path / "run", run_id="20260824T120000-deadbeef")
+    with tracer.span("run", "pipeline"):
+        with StageTimeline(tracer) as timeline:
+            timeline.enter("planning")
+            time.sleep(0.02)
+            timeline.enter("candidates")
+    stages = sorted(load(tmp_path / "run").by_kind("stage"), key=lambda span: span.started_at)
+    first, second = stages
+    gap_ms = (
+        datetime.fromisoformat(second.started_at.replace("Z", "+00:00")).timestamp()
+        - datetime.fromisoformat(first.ended_at.replace("Z", "+00:00")).timestamp()
+    ) * 1000.0
+    assert gap_ms < 20.0, f"{gap_ms:.1f} ms unattributed between two consecutive stages"
