@@ -19,6 +19,7 @@ import pytest
 from evals.calibration.detection import (
     BAND_READ_PREFIX,
     DETECTION_LEVEL,
+    STRUCTURAL_READ_PREFIX,
     DetectionError,
     PairOutcome,
     capability_rate,
@@ -30,12 +31,34 @@ from evals.calibration.detection import (
 )
 from evals.mutations.family import MutationFamily, Tier
 from evals.mutations.spec import MutationSpec
+from evals.mutations.structural import STRUCTURAL_GATES
 from rigby_poc.analysis.contract import CheckResult, CheckStatus, skipped
 
 pytestmark = pytest.mark.fast
 
 ROM_TARGET = "anatomy.rom.leftLowerArm.abduction"
 STATUS_TARGET = "anatomy.arm.self_collision"
+STRUCTURAL_TARGET = "structural.support_foot.planted_target"
+
+
+def _structural_spec(severity: float = 0.5) -> MutationSpec:
+    return MutationSpec(
+        id=f"structural@{severity:g}",
+        family=MutationFamily.ANATOMY,
+        targets=(STRUCTURAL_TARGET,),
+        severity=severity,
+        tier=Tier.MODERATE,
+    )
+
+
+def _metrics_reporting(*gate_ids: str) -> dict[str, list[str]]:
+    """An analysis metrics dict whose failure list trips exactly `gate_ids`.
+
+    Built from the registered prefixes rather than from hand-typed strings, so a
+    gate whose message is reworded moves this fixture with it instead of leaving a
+    test that passes against a message nothing emits any more.
+    """
+    return {"structural_failures": [STRUCTURAL_GATES[gate] for gate in gate_ids]}
 
 
 def _rom_spec(severity: float = 0.5, target: str = ROM_TARGET) -> MutationSpec:
@@ -420,6 +443,19 @@ def test_a_new_check_family_forces_a_routing_decision() -> None:
         "signal.angular",
         "signal.semantic_cycle",
         "signal.travel_wheel",
+        # The seven below are 06c's structural-gate namespace, and the answer this
+        # guard demanded is **neither** of the two it offered: they emit no
+        # `CheckResult`, so they have no `status` and no `measured` to read. They
+        # report by appending a string to `metrics["structural_failures"]` and are
+        # routed through STRUCTURAL_READ_PREFIX -- a third channel, added here
+        # rather than folded onto one of the first two.
+        "structural.balance",
+        "structural.ground",
+        "structural.pushup",
+        "structural.recovery_foot",
+        "structural.root",
+        "structural.semantic",
+        "structural.support_foot",
     }, (
         f"check families changed: {sorted(families)}. Decide how the new one "
         f"reports -- through `status`, or through `measured` like anatomy.rom.* "
@@ -428,3 +464,59 @@ def test_a_new_check_family_forces_a_routing_decision() -> None:
 
     # The band-read set is exactly one family, and it is one of the above.
     assert BAND_READ_PREFIX.rstrip(".") in families
+
+    # Every routing channel is non-empty and they partition the families rather
+    # than overlapping. A prefix that matched nothing would leave this guard
+    # asserting a set nobody routes, which is the failure mode it exists for.
+    band = {name for name in families if f"{name}.".startswith(BAND_READ_PREFIX)}
+    structural = {
+        name for name in families if f"{name}.".startswith(STRUCTURAL_READ_PREFIX)
+    }
+    assert band, "the band-read prefix matches no family"
+    assert structural, "the structural prefix matches no family"
+    assert not band & structural, f"a family is routed two ways: {band & structural}"
+
+
+def test_a_structural_target_is_read_from_the_failure_list() -> None:
+    """The third channel, and the two directions it has to separate.
+
+    These ids are absent from `results` by construction -- they emit no
+    `CheckResult` -- so the missing-target branch would raise "was not measured"
+    on every one of them if the structural branch did not come first.
+    """
+    spec = _structural_spec()
+
+    tripped = _metrics_reporting(STRUCTURAL_TARGET)
+    assert target_detected({}, spec, metrics=tripped) is True
+
+    # A different gate firing is not this spec's target firing. Detection has to
+    # be attributable to the declared target, or a family scores itself detected
+    # off its neighbour's gate.
+    other = _metrics_reporting("structural.balance.upright")
+    assert target_detected({}, spec, metrics=other) is False
+
+    # Evaluated and clean. Distinct from both of the above and from "no key".
+    assert target_detected({}, spec, metrics={"structural_failures": []}) is False
+
+
+def test_a_structural_target_without_metrics_raises_rather_than_scoring_clean() -> None:
+    """The whole namespace has a measured base rate of zero on every corpus case.
+
+    So `False` is precisely what a working detector returns, and a caller that
+    forgot to pass `metrics` would read as a family whose gates never fire --
+    at every severity, monotonically, exactly like a real negative result.
+    """
+    with pytest.raises(DetectionError, match="no metrics were passed"):
+        target_detected({}, _structural_spec())
+
+
+def test_a_path_that_evaluates_no_structural_gate_raises_rather_than_scoring_clean() -> None:
+    """"No detector on this path" and "the detectors ran and found nothing".
+
+    A metrics dict with no `structural_failures` key at all means the clip took a
+    compile path that evaluates none of these gates. That is a gap to report, not
+    a clean measurement, and folding it to `False` is the same not-measured /
+    measured-negative conflation the ROM and skip branches each refuse.
+    """
+    with pytest.raises(DetectionError, match="no detector on this clip's path"):
+        target_detected({}, _structural_spec(), metrics={})

@@ -8,10 +8,11 @@ motion produced is bit-identical to what the previous calibration used.
 **Three things the port deliberately does not carry across.**  ``corrupt_clip`` sets
 ``success=False``, attaches a ``Failure`` naming the corruption, and writes
 ``metrics["deliberate_corruption"]``.  Those made the mutated artifact announce
-itself, and ``evals/calibrate_judge.py:224`` then recorded the outcome as the **conjunction**
-of the grader's accept flag with ``structural_valid``, and the corruption was built to
-force the second term false -- so the recorded outcome was not a function of the
-grader's verdict.  See plan 06 section 6.5.  :func:`_strip_labels` removes all
+itself, and the legacy calibration scorer then recorded the outcome as the
+**conjunction** of the grader's accept flag with ``structural_valid``, and the
+corruption was built to force the second term false -- so the recorded outcome was not
+a function of the grader's verdict.  (That scorer was ``evals/calibrate_judge.py``,
+since deleted; the argument stands without it.)  See plan 06 section 6.5.  :func:`_strip_labels` removes all
 three.
 
 **Why they are all severe.**  The mildest wrist spec is 0.85 rad, about 49 degrees.

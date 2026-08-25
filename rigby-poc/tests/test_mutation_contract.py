@@ -53,9 +53,11 @@ def test_a_mutated_clip_does_not_announce_that_it_is_mutated(gesture_clip, mutat
 
     ``corrupt_clip`` sets ``success=False``, attaches a ``Failure`` naming the
     corruption, and writes ``metrics["deliberate_corruption"]``.  Then
-    ``calibrate_judge.py:224`` scores ``parsed["accept"] and structural_valid`` -- a
+    the legacy calibration scorer took ``parsed["accept"] and structural_valid`` -- a
     conjunction whose deterministic term the corruption was built to force false, so
-    the recorded outcome was not a function of the grader's verdict at all.
+    the recorded outcome was not a function of the grader's verdict at all. The defect
+    was not a wrong number but a number that was not a function of the thing it was
+    named after. (``evals/calibrate_judge.py``, deleted under L3 gate item 4.)
     """
     for spec_id, clip in mutated.items():
         assert "deliberate_corruption" not in clip.metrics, spec_id

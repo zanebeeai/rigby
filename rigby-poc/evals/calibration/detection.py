@@ -56,6 +56,7 @@ from evals.calibration_stats import (
 )
 from evals.mutations.checks import rom_detected
 from evals.mutations.spec import MutationSpec, Severity
+from evals.mutations.structural import gates_tripped
 from rigby_poc.models import ClipResult
 
 #: The rate a detection threshold is defined at (plan 10 §5.2).
@@ -63,6 +64,17 @@ DETECTION_LEVEL = 0.5
 
 #: Prefix whose targets must be read through `band` rather than `status`.
 BAND_READ_PREFIX = "anatomy.rom."
+
+#: Prefix whose targets emit no ``CheckResult`` at all and must be read from
+#: ``metrics["structural_failures"]`` through :func:`gates_tripped`.
+#:
+#: A **third** channel, not a variant of the other two. `anatomy.rom.*` reports
+#: through `measured["band"]` and everything else through `status`, but both are
+#: fields on a `CheckResult` that `validate` emitted. These gates append a string
+#: to a metrics list and emit nothing, so `results.get(target)` is `None` for them
+#: and the missing-target branch below would raise "was not measured" on a target
+#: that was measured perfectly well.
+STRUCTURAL_READ_PREFIX = "structural."
 
 
 class DetectionError(RuntimeError):
@@ -180,20 +192,60 @@ def check_results_by_id(
     defect class this module exists to keep out. Keeping the metrics source
     explicit is what makes 04d's "nothing else here moves" true.
     """
+    return scored_clip(clip, program, scene).results
+
+
+@dataclass(frozen=True)
+class ScoredClip:
+    """Both detector surfaces for one clip, from a single `analyze` pass.
+
+    The two are kept together because they must describe the same clip: `results`
+    holds what `validate` emitted and `metrics` holds the analysis dict the
+    `structural.*` gates wrote into. Reading one from the mutated clip and the other
+    from the base clip is the fold this module exists to prevent, and separate
+    accessors make that combination expressible.
+    """
+
+    results: dict[str, Any]
+    metrics: Mapping[str, Any]
+
+
+def scored_clip(clip: ClipResult, program: Any, scene: Any) -> ScoredClip:
+    """Analyse `clip` once and return both surfaces a target can be read through."""
     from rigby_poc.analysis import analyze, validate
 
-    checks = validate(
-        analyze(clip, program, scene), program, clip.frames, fps=float(clip.fps)
+    metrics = analyze(clip, program, scene)
+    checks = validate(metrics, program, clip.frames, fps=float(clip.fps))
+    return ScoredClip(
+        results={item.id: item for item in checks}, metrics=metrics
     )
-    return {item.id: item for item in checks}
 
 
-def target_detected(results: Mapping[str, Any], spec: MutationSpec) -> bool:
+def target_detected(
+    results: Mapping[str, Any],
+    spec: MutationSpec,
+    *,
+    metrics: Mapping[str, Any] | None = None,
+) -> bool:
     """Whether any check this spec targets fired on the mutated clip.
 
-    Routes by target id: `anatomy.rom.*` is read through `band`, everything else
-    through `status`. A target the run emitted no result for raises — it was not
-    measured, and returning `False` would publish an absence as a negative.
+    Routes by target id across **three** channels, not two: `anatomy.rom.*` through
+    `measured["band"]`, `structural.*` through `metrics["structural_failures"]`, and
+    everything else through `status`. A target the run emitted no result for raises —
+    it was not measured, and returning `False` would publish an absence as a negative.
+
+    `metrics` is required only for a `structural.*` target and is the **analysis**
+    metrics of the clip being scored, never `clip.metrics`. Measured on four full-body
+    corpus cases: a 40 deg `rightLowerLeg.flexion` injection trips up to six gates in
+    `analyze(...)` output while `clip.metrics["structural_failures"]` stays byte-identical
+    to the unmutated clip's, because the compiler wrote it before the mutation existed.
+    Scoring from the wrong one would report zero detection at every severity for the whole
+    namespace — the same systematic false negative `check_results_by_id` refuses on the
+    metric-source axis, arriving through the structural channel instead.
+
+    Omitting `metrics` for a structural target raises rather than defaulting to "clean":
+    the whole namespace has a measured base rate of zero, so a silent `False` is exactly
+    what a working detector looks like.
     """
     if not spec.targets:
         raise DetectionError(
@@ -201,6 +253,23 @@ def target_detected(results: Mapping[str, Any], spec: MutationSpec) -> bool:
         )
     detected = False
     for target in spec.targets:
+        if target.startswith(STRUCTURAL_READ_PREFIX):
+            # Before the `results` lookup: these ids are never keys in it.
+            if metrics is None:
+                raise DetectionError(
+                    f"{spec.id}: target {target!r} is read from "
+                    f"metrics['structural_failures'], but no metrics were passed. "
+                    f"Scoring it as undetected would be indistinguishable from a "
+                    f"working detector, since this namespace's base rate is zero"
+                )
+            try:
+                detected = detected or target in gates_tripped(metrics)
+            except KeyError as error:
+                raise DetectionError(
+                    f"{spec.id}: target {target!r} has no detector on this clip's "
+                    f"path -- {error.args[0]}"
+                ) from error
+            continue
         result = results.get(target)
         if result is None:
             raise DetectionError(
@@ -250,14 +319,14 @@ def outcome_for(
             reason=verdict.reason,
         )
     mutated = spec.apply(clip)
-    results = check_results_by_id(mutated, program, scene)
+    scored = scored_clip(mutated, program, scene)
     return PairOutcome(
         case_id=case_id,
         spec_id=spec.id,
         severity=spec.severity,
         applicable=True,
         static_target=verdict.static_target,
-        detected=target_detected(results, spec),
+        detected=target_detected(scored.results, spec, metrics=scored.metrics),
         reason="",
     )
 
@@ -415,7 +484,8 @@ def unmutated_baseline(
         if not template.applies_to(clip).ok:
             continue
         n += 1
-        if target_detected(check_results_by_id(clip, program, scene), template):
+        scored = scored_clip(clip, program, scene)
+        if target_detected(scored.results, template, metrics=scored.metrics):
             successes += 1
     return proportion(successes, n)
 
@@ -448,15 +518,18 @@ def sweep_outcomes(
 __all__ = [
     "BAND_READ_PREFIX",
     "DETECTION_LEVEL",
+    "STRUCTURAL_READ_PREFIX",
     "DetectionError",
     "LevelResult",
     "PairOutcome",
+    "ScoredClip",
     "capability_rate",
     "check_results_by_id",
     "clopper_pearson_upper",
     "detection_curve",
     "detection_threshold",
     "outcome_for",
+    "scored_clip",
     "skip_ledger",
     "sweep_outcomes",
     "target_detected",

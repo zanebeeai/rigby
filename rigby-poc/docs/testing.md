@@ -604,6 +604,63 @@ is worse than one that crashes.** A path-keyed acceptance guard reported
 finding, in the exact language of the thing it audits. A stack trace would have
 been cheaper.
 
+## A number that moves is not evidence the thing under it moved
+
+*Found by lane `groundtruth` scoring mutations, and independently by lane
+`analysis` in a composite oracle, within one hour. Two lanes, two call sites, one
+door — which is why it is here and not in either plan.*
+
+**Ask of a derived value: is this source still tracking its subject, or did it
+stop when the subject was transformed?** A stale source does not raise. It returns
+a well-formed number of the right type, and the number is right about a clip that
+no longer exists.
+
+The instance: `MutationSpec.apply` deep-copies and transforms `frames` and nothing
+in `evals/mutations` touches `metrics`, so a **mutated clip carries the compiler's
+pre-mutation metrics**. Measured on four full-body corpus cases, a 40° injection
+trips up to six structural gates in `analyze(...)` output while
+`clip.metrics["structural_failures"]` stays byte-identical to the unmutated clip's
+— empty, because that namespace's base rate is 0 on all 10 corpus cases that
+evaluate it. So the rule is: read `clip.metrics` for compiler-written keys, and
+`analyze()` output for anything scored against a transformed clip.
+
+**The general form is worse than "read the fresh one", and it is what makes this
+hard to see.** `validate()` splits its sources: `frames` for the ROM layer,
+`metrics` for everything else. A consumer handed a transformed clip therefore gets
+a live majority and a stale remainder: of the 176 ids `validate()` emits over the
+47-case corpus, **156 are ROM and move with `frames`, while the other 20 are read
+from the frozen `metrics`** — and the stale 20 are the ones carrying the
+discriminating signal, since the ROM verdicts are near-uniform across cases. The
+output moves, monotonically, with severity. It looks like it is working.
+`validate_clip(clip, program)`, the convenience form, is exactly this shape.
+
+Both failure directions land on green rather than on an error:
+
+| what you read | what you get | how it reads |
+| --- | --- | --- |
+| stale metrics, whole surface | "undetected" at every severity | a namespace of dead gates |
+| stale metrics, 4% of surface | a curve that rises with severity | a working detector |
+
+Neither is an exception, an empty result, or a missing key — which is what
+separates this from the not-measured/measured-negative family next door. There the
+absence is *visible* once you look for it. Here the value is present, correct,
+and about the wrong object.
+
+**The cheap check is a differential, not a review.** Score the same transformed
+input through both sources and assert they disagree. If they agree, either the
+transform did nothing or you are reading one source twice — and both of those are
+findings. A test that only asserts the fresh source is right will pass against the
+stale one whenever the transform happens to change nothing, which is every case
+the transform was inapplicable to.
+
+**And assert the differential ran.** The corpus test pinning this skips any case
+whose injection trips no gate; against the stale source that is *every* case, so
+the loop body executes zero times and the test passes vacuously against the exact
+defect it exists to catch. It is only red because it asserts its own sample is
+non-empty first. Same rule as the `all(...)`-over-nothing family above, reached
+from the other end: there the collection was empty because a scan found nothing,
+here because the thing being measured stopped moving.
+
 ## Measurements: which axis are you crossing?
 
 *Written by lane `capture`, from two failures an hour apart — their timing-ratio

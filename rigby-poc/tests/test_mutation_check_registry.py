@@ -29,6 +29,7 @@ from evals.mutations.checks import (
 )
 from evals.mutations.clipping import limb_through_torso_sweep
 from evals.mutations.legacy import legacy_specs
+from evals.mutations.structural import structural_gate_ids
 from evals.mutations.signal import jitter_sweep
 from evals.mutations.timing import freeze_sweep, snap_sweep
 from rigby_poc.analysis import validate
@@ -79,11 +80,28 @@ def test_the_declared_registry_is_what_the_analyzer_emits(
     # declaration silently rot back into a plan-derived wish list, which is the
     # defect this module was written for.
     #
-    # Against `known_check_ids()` rather than `FIXED_CHECK_IDS` since lane `analysis`
-    # wired `rom_checks` into `validate()`: the ROM ids are generated per (bone, dof)
-    # from the committed document, so the equality still holds and still catches a
-    # drifting declaration -- it just now spans both halves of the registry.
-    assert set(emitted_over_corpus) == known_check_ids()
+    # `known_check_ids()` spans **two namespaces** and only one of them is emitted by
+    # `validate()`. The `structural.*` ids name gates that append a string to
+    # `metrics["structural_failures"]` and deliberately emit no `CheckResult` -- that
+    # is what they are for -- so an equality against the whole registry cannot hold
+    # and would be wrong to make hold. The emitted half is `known_check_ids()` minus
+    # the structural half, and it is still asserted by **equality** so a drifting
+    # declaration is still caught on both sides.
+    emitting = known_check_ids() - structural_gate_ids()
+    assert set(emitted_over_corpus) == emitting
+
+
+def test_no_structural_id_is_ever_emitted_as_a_check(
+    emitted_over_corpus: dict[str, int],
+) -> None:
+    """The claim that licenses excluding them from the equality above.
+
+    Excluding a namespace from an assertion is only honest if its exclusion is
+    itself asserted. Otherwise the subtraction is a way of making a failing test
+    pass, which is indistinguishable from the fix at the point of the diff.
+    """
+    assert structural_gate_ids(), "an empty namespace would make this vacuous"
+    assert not (set(emitted_over_corpus) & structural_gate_ids())
 
 
 def test_the_declared_per_check_case_counts_are_the_measured_ones(
@@ -211,3 +229,30 @@ def test_rom_detection_reads_the_band_and_refuses_an_unmeasured_bone() -> None:
     # conflation four lanes hit independently this push.
     with pytest.raises(ValueError, match="not measured"):
         rom_detected({"bone": "leftToes", "dof": "flexion"})
+
+
+def test_this_file_stays_in_a_tier_that_actually_runs() -> None:
+    """This file is the sole exerciser of the entire typed check surface.
+
+    `analysis.validate()` has no production caller — it is defined at
+    `analysis/__init__.py:198` and every reference in `evals/mutations/*` is a `:func:`
+    docstring. Once the `rom_checks` wiring lands, deleting this file or retiering it
+    to `slow` would leave 175 check ids unexercised with nothing going red.
+
+    The count assertions above catch shrinkage *within* the file and are structurally
+    blind to the file ceasing to run. `test_module_reachability.py` reasons about
+    modules, and `validate()` lives in a module imported for other reasons.
+    `test_markers_complete.py` guarantees a tier marker but not *which* tier, so a
+    retier to `slow` passes it silently.
+
+    So the assertion lives here rather than in infra's tier gate: a tier-gate failure
+    would say "a file is mistiered", and this one says what is actually at risk.
+    """
+    marker = pytestmark
+    names = {marker.name} if hasattr(marker, "name") else {m.name for m in marker}
+    assert names & {"fast", "medium"}, (
+        f"this file is tiered {sorted(names)}. The default CI selection is "
+        f"`-m 'fast or medium'`, so any other tier silently stops running it — and it "
+        f"is the only caller of analysis.validate(), so 175 check ids would go "
+        f"unexercised with nothing going red."
+    )
