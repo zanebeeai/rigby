@@ -100,6 +100,39 @@ entries added**. Checked by parsing both files and comparing every pre-existing 
 value — not by reading the diff stat, which shows deletions for a pure addition the
 moment a JSON map gains a second key.
 
+## Capture cost per case
+
+How many evidence snapshots a case produces, measured 2026-08-25 over all 47 cases by
+compiling each and running `evals.capture.phase_sampling_points` on the real metrics.
+A corpus property, recorded here so nobody recompiles to rediscover it.
+
+| | points per view |
+| --- | --- |
+| min | 6 |
+| median | 15 |
+| mean | 17.4 |
+| max | 60 |
+
+46 cases counted; `knownbad-eigenvalues-unsupported` produces no frames and so no
+snapshots. Nineteen distinct values, so the distribution is genuinely per-case. Two
+views per point, so a full-corpus pass is **802 points per view, 1604 snapshots**. At
+the measured 385 KB per evidence PNG that is **0.59 GB per pass and 4.12 GB over a
+seven-level severity sweep**.
+
+The heavy tail is short and worth knowing before sizing anything: `fullbody-burpee-cycle`
+at 60, `knownbad-sequence-throw-then-catch` at 49, `sequence-push-then-pull` at 36. Those
+first and third are the cases that caused `MAX_SNAPSHOTS_PER_VIEW` to be raised to 96.
+
+**Read this from a compiled clip, never from a committed slim clip.**
+`CANONICAL_MOTION_KEYS` deliberately drops `metrics`, and `phase_sampling_points` reads
+`metrics["phase_ranges_s"]`, so a slim clip silently returns the minimal start/mid/end
+fallback of 3 points for every case. Lane `capture` hit exactly that and got a uniform 3
+across 46 diverse cases -- correct logic over wrong inputs, producing confident plausible
+output. They discarded it rather than publishing. **A uniform value across diverse inputs
+is a fallback path until proven otherwise**, which is why the pass that produced this
+table asserts the counts vary *and* that the two figures already on record are reproduced
+before it reports anything.
+
 ## Where the cases came from
 
 [`seed_cases.py`](seed_cases.py) records the prompt each case was planned from, and
