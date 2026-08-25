@@ -120,6 +120,19 @@ its meaning, so it passes when it should not — and it is only ever wrong in th
 direction that silences it. `"-gt 30" in command` is satisfied by `-gt 300`, so a
 tenfold loosening of the fast-tier budget passed silently. Not greppable.
 
+**A guard that fires for the wrong reason.** The check is live, it fails on a
+real measurement, and the measurement is of a quantity unrelated to what the
+message claims. A stage-gap assertion read "work is happening outside every
+stage" and failed at 22 ms on a loaded runner — but the timeline closes the
+previous span and opens the next in one call, so escaped work has **nowhere to
+escape to**. The guard could only ever fail on its own close-and-reopen
+overhead. Both statements were true and unrelated.
+
+That one is neither greppable nor findable by mutation, and it needs its own
+question: **what would the failure mode look like in the data, and can the data
+express it?** If the shape the guard exists to catch cannot occur in the
+structure being measured, the guard is measuring something else.
+
 The greppable half of the second kind is narrower than "empty collection", and
 this is the form worth remembering:
 
@@ -133,6 +146,28 @@ module constant is safe — it is non-empty by construction. Iterating an `rglob
 result, a fake client's recorded calls, or a scan of the source tree is not,
 because the collection being empty is precisely the failure the guard exists to
 detect.
+
+**Two external answerers, and they are different recommendations.** Both are the
+same move — let something you did not choose answer the question — but they catch
+different classes, and only one of them is expensive:
+
+| | catches | cost |
+| --- | --- | --- |
+| **a second platform** | assumptions true where you develop, false elsewhere | a CI matrix |
+| **a second dataset** | assumptions true when you wrote them, false now | nearly free |
+
+A stage-timing bound and a path-separator key were both invisible to review and
+obvious on Windows. A capture snapshot bound was wrong on **every** platform
+equally, so no amount of Windows would have found it — what found it was running
+capture against a corpus its author did not own. "Run it on another platform" and
+"run it on inputs you did not choose" are not the same advice at two price points.
+
+The operational rider, and it is the part that does the work: **a second dataset
+makes staleness findable, it does not make it found.** The corpus that could have
+revealed that bound sat there for hours revealing nothing, because nothing asked.
+The mechanical form is a **margin guard** — assert the constant covers the data
+*and* by how much — so the answer arrives before the constant is outgrown rather
+than when it is. Lanes `capture` and `anatomy`.
 
 **How to find them: point the scan at a directory that does not exist and see
 who stays green.** Run against this suite's guards, that found two —

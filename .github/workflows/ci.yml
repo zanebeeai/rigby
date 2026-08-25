@@ -187,7 +187,15 @@ jobs:
       - name: bless the corpus for this platform
         run: uv run python -m evals.corpus bless --write
 
-      - name: show what this platform contributed
+      # `git diff --stat` cannot answer the question a bless needs answered.
+      # Adding a second platform's digest rewrites the first entry's line, so a
+      # PURE ADDITION renders as deletions -- the first Windows bless reported
+      # 423 insertions and 282 deletions with zero digests changed. Compare by
+      # value instead; exit code is the number of pre-existing digests that moved.
+      - name: did this bless change any pre-existing digest?
+        run: uv run python -m evals.bless_diff
+
+      - name: the raw diff, for reference only
         run: git --no-pager diff --stat -- evals/corpus
 
       - uses: actions/upload-artifact@v4

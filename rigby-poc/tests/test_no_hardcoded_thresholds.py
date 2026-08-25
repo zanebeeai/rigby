@@ -4,8 +4,8 @@ Plan 08 §3.5, G4. A threshold that lives as a literal in a comparison has no
 source, no unit, and no way to be found -- which is how the repository arrived
 at three config files and ~20 code sites disagreeing with each other.
 
-**Defining "threshold" precisely is what makes this shippable.** `analysis/`
-holds roughly 190 float literals, most of them numerical-stability epsilons,
+**Defining "threshold" precisely is what makes this shippable.** The scanned tree
+holds roughly 250 float literals, most of them numerical-stability epsilons,
 unit-vector components and normalisation constants. A guard that fires on all of
 them is disabled inside a week. The tractable definition is AST-precise: a
 threshold is a float literal appearing as an **operand of a comparison**.
@@ -30,7 +30,28 @@ pytestmark = pytest.mark.fast
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-ANALYSIS = PROJECT_ROOT / "src" / "rigby_poc" / "analysis"
+PACKAGE = PROJECT_ROOT / "src" / "rigby_poc"
+
+#: Scanned trees. `compiler.py` is here deliberately, and it is the difference
+#: between a guard that means what it says and one that fires on non-events.
+#:
+#: The stated meaning is "no new hardcoded threshold in check code". While plan
+#: 02 is still moving check code OUT of the compiler, `analysis/` alone is not
+#: that set: 02c part 2 moved five HANG_TEN literals from `compiler.py` into
+#: `analysis/hand.py`, and an analysis-only scan reported +5 for a relocation
+#: that added nothing. Every remaining 02x move would have done the same.
+#:
+#: That is the dual of the class this file exists to catch. A gate that cannot
+#: fire and a gate that fires on non-events are one defect -- the assertion's
+#: scope not matching its meaning -- and the second is the more dangerous here,
+#: because a guard that reddens main for non-events is the one that gets an
+#: allowlist. Scanning both makes a relocation net-zero by construction and lets
+#: the total fall monotonically as the moves and the repointing land.
+#:
+#: Cost: a bigger honest number on day one. Raised by lane `analysis`, who
+#: proved the relocation with this file's own counter rather than a second
+#: implementation, and asked rather than editing the ledger.
+SCANNED = (PACKAGE / "analysis", PACKAGE / "compiler.py")
 
 #: Below this magnitude a literal is float noise, not a gate.
 EPSILON_FLOOR = 1e-7
@@ -47,6 +68,7 @@ IDENTITY_VALUES = frozenset({0.0, 1.0})
 #: moved the whole-body metric pass out of the compiler, and it arrived carrying
 #: 41 uncited gates. Every one is a real limit with no source and no unit.
 BUDGET: dict[str, int] = {
+    "compiler.py": 26,
     "analysis/anatomy/frame.py": 1,
     "analysis/contact.py": 1,
     "analysis/forearm.py": 11,
@@ -62,7 +84,7 @@ BUDGET: dict[str, int] = {
     "analysis/semantic.py": 1,
 }
 
-TOTAL_BUDGET = 79
+TOTAL_BUDGET = 105
 
 
 def comparison_thresholds(source: str) -> list[tuple[int, float]]:
@@ -84,9 +106,20 @@ def comparison_thresholds(source: str) -> list[tuple[int, float]]:
     return found
 
 
+def _scanned_files() -> list[Path]:
+    files: list[Path] = []
+    for root in SCANNED:
+        files.extend(sorted(root.rglob("*.py")) if root.is_dir() else [root])
+    assert len(files) > 10, (
+        f"only {len(files)} files found under {SCANNED}; the scan is broken, not "
+        f"the code. A budget compared against an empty measurement always passes."
+    )
+    return files
+
+
 def _measured() -> dict[str, int]:
     counts: dict[str, int] = {}
-    for path in sorted(ANALYSIS.rglob("*.py")):
+    for path in _scanned_files():
         found = comparison_thresholds(path.read_text(encoding="utf-8"))
         if found:
             name = path.relative_to(PROJECT_ROOT / "src" / "rigby_poc").as_posix()

@@ -188,6 +188,24 @@ def test_ci_times_the_fast_tier_against_its_budget() -> None:
     )
 
 
+def test_the_bless_job_compares_by_value_not_by_diff_stat() -> None:
+    """A diff stat cannot tell a pure addition from an overwrite.
+
+    Adding a second platform's digest to a map rewrites the first entry's line,
+    so the first Windows bless rendered as 423 insertions and 282 deletions with
+    zero digests changed. The job must run the value comparison, and it must run
+    it as a step that can fail rather than as printed output.
+    """
+
+    steps = _steps(CI, "windows-corpus-hashes")
+    comparisons = [step for step in steps if "bless_diff" in step.get("run", "")]
+    assert comparisons, "the bless job must compare digests by value"
+    assert not comparisons[0].get("continue-on-error"), (
+        "the comparison must be able to fail; the job-level continue-on-error "
+        "covers the bless itself, not the check on its result"
+    )
+
+
 def test_ci_runs_the_frontend_checks() -> None:
     commands = [step.get("run", "") for step in _steps(CI, "frontend")]
     assert any("npm ci" in command for command in commands)
