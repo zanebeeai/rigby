@@ -114,8 +114,16 @@ def test_the_judge_predicate_agrees_with_is_compacted(tmp_path: Path) -> None:
     what travels with the evidence. This pins the two definitions together so
     they cannot drift apart while both look correct.
     """
-    for compaction in ({"judgeable": False}, {"judgeable": False, "format": "webp"}, None):
-        path = _manifest_file(tmp_path / str(compaction), compaction=compaction)
+    # The label is written out rather than derived from `compaction`. `str()` of a
+    # dict yields `{'judgeable': False}`, and `:` is reserved on Windows, so the
+    # `mkdir` in `_manifest_file` raised NotADirectoryError there while POSIX
+    # accepted it -- green on every developer machine, red only in the matrix.
+    for label, compaction in (
+        ("compacted", {"judgeable": False}),
+        ("compacted-webp", {"judgeable": False, "format": "webp"}),
+        ("live", None),
+    ):
+        path = _manifest_file(tmp_path / label, compaction=compaction)
         payload = json.loads(path.read_text(encoding="utf-8"))
         judge_says_compacted = True
         try:

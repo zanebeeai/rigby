@@ -29,8 +29,23 @@ Checking it needs **two** lines, not one:
 
 ```bash
 grep -o 'EXIT=[0-9]*' "$LOG" | tail -1        # the result, if the run finished
-pgrep -f 'bin/pytest' >/dev/null && echo RUNNING || echo NOT-RUNNING
+pgrep -f "rigby-wt/$LANE/rigby-poc/.venv/bin/pytest" >/dev/null && echo RUNNING || echo NOT-RUNNING
 ```
+
+**Scope the second line to your own worktree, and note which direction the
+unscoped form fails in.** `pgrep -f 'bin/pytest'` matches every lane, so while
+anyone is verifying it answers RUNNING for everyone — and "no marker AND not
+running = killed" becomes unreachable. It never reports "killed"; it reports
+"still running", which is indistinguishable from a slow suite and invites
+waiting rather than re-running. That is a guard present, documented, and unable
+to fire, sitting inside the check written to catch that class.
+
+Scoping is necessary and not sufficient: **track the pid you launched.** A run
+started by a session that has since exited keeps matching its worktree's path
+for hours. And do not infer whose a pid is from whose session is alive — that
+guess was made here and was wrong, and acting on it would have killed another
+lane's verification. `ps -eo pid,ppid,lstart,command` gives the parent chain and
+the start time; the wrapper you launched is at the top of yours.
 
 **No marker AND not running = killed. No result. Re-run.** The marker only
 appears if pytest died and the wrapper survived; if the whole process group goes,
@@ -71,6 +86,14 @@ Every piece is load-bearing. Simpler forms of this were tried and each was wrong
 `>= 128` is the one worth knowing. It is not "some failure": there is no result
 at all, and reading the log sends you hunting through output with zero `FAILED`
 lines in it.
+
+**A wrong exit code does not merely mislead one run — it gets written down.** A
+comment inside `test_corpus_compile_budget.py` asserted that pytest exits `0`
+when `-m` deselects everything. It exits `5`. The claim came from a shell
+pipeline reading `tail`'s status rather than pytest's, and someone had to
+re-measure to find the real answer. A comment inside a guard is the last place
+anyone re-derives, because it reads as the output of exactly the rigour it is
+missing. Reported by lane `groundtruth`.
 
 **Re-run.** If it recurs, split the suite into disjoint halves and require
 `EXIT=0` from each — same tests, same markers, one extra process boundary, so it
@@ -117,6 +140,47 @@ For general awareness rather than as a log hazard: eight test files spawn
 `test_camera_config`, `test_corpus_compile_budget`, `test_run_transcript`,
 `test_mutation_determinism`. Their child output is captured
 (`capture_output=True`) and does not reach the parent log.
+
+## Run the repo-hygiene guards before the full suite
+
+`test_markers_complete`, `test_invocations`, `test_module_reachability`,
+`test_no_hardcoded_thresholds`, `test_no_orphan_thresholds`,
+`test_published_rates` and `test_ci_workflow` take about 75 s together and fail
+on exactly what a new PR breaks: an unmarked file, an undeclared
+corpus-touching file, a new uncited threshold. The full suite is minutes to tens
+of minutes under contention. Lane `anatomy` caught
+`test_every_corpus_touching_file_is_declared` this way and saved a full run.
+They are a filter, not a substitute — the full suite on a rebased tree is still
+the gate.
+
+## Windows-only path failures, and why there is no guard for them
+
+Two of these have now reached CI, both invisible to every macOS run:
+`str(Path)` returning backslashes defeated a path-keyed waiver in
+`test_published_rates`, and `tmp_path / str({"judgeable": False})` raised
+`NotADirectoryError` in `test_compacted_run_is_not_judgeable` because `:` is
+reserved on Windows and accepted on POSIX.
+
+A guard rejecting the Windows-reserved characters `<>:"/\|?*` in a `tmp_path`
+subdirectory name was proposed for the second. **Measured before building it, on
+`b958e41`: 15 sites build a `tmp_path` child from a non-literal and 14 are an
+`int`, an f-string of an index or a view name, or an already-slugged id.** After
+the one fix the guard's blast radius is zero. A guard for a class with one
+known, already-closed member only ever fires on false positives, acquires an
+allowlist, and then looks like coverage — so the shape is documented here
+instead:
+
+> **Never build a path component out of a `repr`.** `str()` of a dict, a tuple
+> or a dataclass embeds `:`, `'` and spaces. Write the label out; it is also
+> what you want to read in the failure.
+
+The general form is worth keeping separate from the fix, because the two halves
+have different prices. A second platform catches assumptions that are true where
+you develop and false elsewhere, and it costs a CI matrix. A second dataset
+catches assumptions that were true when you wrote them and are false now, and it
+is nearly free. Neither substitutes for the other: the backslash bug was
+behaviour, not data, and no amount of locally rewritten `platform_key` would
+have surfaced it.
 
 ## The invocations
 

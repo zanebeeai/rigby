@@ -117,9 +117,20 @@ def test_the_doc_states_that_the_exit_code_is_the_only_green_signal() -> None:
         "the completion check must be UNANCHORED: echo-appended markers land "
         "mid-line and an anchored grep misses them"
     )
-    assert "pgrep -f 'bin/pytest'" in checks, (
+    assert "pgrep -f" in checks and "bin/pytest" in checks, (
         "a marker check alone waits forever when the whole group is killed and "
         "the printf never runs; the liveness check is the second half"
+    )
+    assert "rigby-wt/" in checks and ".venv/bin/pytest" in checks, (
+        "the liveness check must be scoped to one worktree. The bare "
+        "`pgrep -f 'bin/pytest'` matches every lane, so while anyone is verifying "
+        "it answers RUNNING for all of them and 'no marker AND not running = "
+        "killed' can never be reached -- and it fails in the hiding direction, "
+        "reporting 'still running' rather than 'killed'"
+    )
+    assert "track the pid you launched" in _prose(TESTING_DOC), (
+        "scoping is necessary and not sufficient: a run from an exited session "
+        "keeps matching its worktree's path for hours"
     )
     assert "/tmp/rigby-$(whoami)-$$-" in block, (
         "the log path must be unique per run: a shared path lets two concurrent "
