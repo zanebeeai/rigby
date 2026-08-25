@@ -86,3 +86,33 @@ MuJoCo is the only hard external dependency, and only for grasp and pickup
 intents. It is a wheel, not a service. Note that importing it shells out to
 `sysctl` on macOS, so an offline guard must block sockets rather than
 subprocesses wholesale.
+
+### The cost of that, stated plainly
+
+The suite is hermetic **because the two most expensive real components are
+faked**, and that is a coverage statement as much as a speed one.
+
+Measured on a real browser: a render is **2.85 s per candidate** — both views, 30
+snapshots, batched seek path — against **369 ms** to compile the same candidate.
+A render is roughly **7.7x a compile**. The suite's capture double is a 10 ms
+sleep, so a per-stage share taken from a suite run says nothing about where real
+time goes.
+
+Be precise about what is uncovered, because the gap is narrower than "capture is
+untested" and mistaking it invites an expensive fix for the wrong thing.
+`tests/test_capture_asset_integrity.py` exercises the real `CaptureSession`
+against a fake page — manifest assembly, asset-hash verification, the deadline,
+the retry policy — with no browser, and those run everywhere including Windows.
+
+What has **no coverage at all is the browser boundary**: page load, seek, canvas
+read, and the PNG bytes. On Windows that boundary has never been exercised, since
+the end-to-end test skips cleanly without `npm ci` and a real Chrome on the
+runner. Skipping is correct behaviour; it also means the platform most likely to
+break that path is the one that never tests it.
+
+Likewise, do not read a green suite as evidence about model behaviour: every
+judge is a fake client.
+
+That gap is deliberate: closing it means running a browser in CI, and the cost is
+real while the risk is low. It is recorded here rather than left implicit so that
+"the suite is green on Windows" cannot harden into a claim about capture.
