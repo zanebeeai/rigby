@@ -462,6 +462,56 @@ def physical_trial(metrics: dict[str, Any], criteria: dict[str, Any]) -> tuple[b
     return not failures, failures
 
 
+#: Safety fields that ``compiler._base_metrics`` **seeds** and several compile
+#: paths never write, each mapped to the key that witnesses a real measurement.
+#: Plan 08 §1.1 item 3.
+#:
+#: A seeded value is present, well-typed and finite, so ``_number`` returns it and
+#: the gate compares it -- against a constant no clip can move. That is the §1.1
+#: shape exactly: a gate that is read, documented, and structurally unable to fail.
+#:
+#: The witness is a key **only the measuring path emits**, because which members
+#: are real depends on the compile path -- a grasp clip genuinely does measure
+#: penetration, and reporting it unverified would be the mirror error. ``None``
+#: means no path measures it at all.
+#:
+#: - ``foot_drift_m`` -- the literal ``0.0`` at ``compiler.py:484``,
+#:   ``analysis/safety.py:29`` and ``analysis/safety.py:98``. Nothing computes it:
+#:   foot world positions need forward kinematics and only ``hips`` carries a
+#:   position on a clip frame.
+#: - ``max_penetration_m`` -- measured only by the MuJoCo grasp trial
+#:   (``physics.py:273``), which is also the only producer of ``physics_engine``.
+#: - ``unresolved_non_hand_collisions`` -- ``physics.py:276`` writes a literal
+#:   ``0``; the only real producer is ``analysis/hand.py:207``, which copies
+#:   ``self_collision_frames`` out of the structure analysis that published it.
+#:
+#: The other seven members of ``analysis.equivalence.UNWRITTEN_BASE_DEFAULTS`` are
+#: read by ``physical_trial``, which ``grasp_and_physical_gates`` only ever hands
+#: real grasp trials, so they are measured wherever that gate can see them.
+#:
+#: Two guards in ``tests/test_acceptance_harness.py`` stop this going stale into
+#: the opposite error -- a real measurement discarded as a constant.
+#: ``test_no_live_producer_measures_foot_drift`` compiles through the real path,
+#: and is the one that fires the moment a producer changes;
+#: ``test_seeded_safety_fields_are_still_seeded_in_committed_compiler_output``
+#: scans 35 committed fixtures, which **lag** the producers until a re-bless and
+#: are therefore a backstop rather than the live check.
+SEEDED_SAFETY_FIELDS: dict[str, str | None] = {
+    "foot_drift_m": None,
+    "max_penetration_m": "physics_engine",
+    "unresolved_non_hand_collisions": "self_collision_frames",
+}
+
+
+def _is_seeded(metrics: dict[str, Any], key: str) -> bool:
+    """True when ``key`` holds its seeded constant rather than a measurement."""
+
+    if key not in SEEDED_SAFETY_FIELDS:
+        return False
+    witness = SEEDED_SAFETY_FIELDS[key]
+    return witness is None or lookup(metrics, [witness]) is None
+
+
 def safety_trial(metrics: dict[str, Any], criteria: dict[str, Any]) -> tuple[bool | None, list[str]]:
     values = {
         "joint_limit_violations": _number(metrics, ["joint_limit_violations"]),
@@ -473,18 +523,33 @@ def safety_trial(metrics: dict[str, Any], criteria: dict[str, Any]) -> tuple[boo
         "max_penetration_m": _number(metrics, ["max_penetration_m", "penetration_depth_m"]),
     }
     missing = [key for key, value in values.items() if value is None]
-    if missing:
-        return None, [f"missing {', '.join(missing)}"]
+    unmeasured = [key for key in values if key not in missing and _is_seeded(metrics, key)]
     maximums = {
         "joint_limit_violations": criteria["max_joint_limit_violations"],
         "root_drift_m": criteria["max_root_drift_m"],
-        "foot_drift_m": criteria["max_foot_drift_m"],
         "unresolved_non_hand_collisions": criteria["max_unresolved_non_hand_collisions"],
         "nan_count": criteria["max_nan_count"],
         "discontinuities": criteria["max_discontinuities"],
         "max_penetration_m": criteria["max_penetration_m"],
     }
-    failures = [f"{key}={values[key]} exceeds {limit}" for key, limit in maximums.items() if values[key] > limit]
+    # Breaches are collected even when the verdict is UNVERIFIED. An invariant
+    # that cannot be certified is not a reason to stop reporting the ones that
+    # were measured and did fail -- dropping them would trade one silence for
+    # another.
+    failures = [
+        f"{key}={values[key]} exceeds {limit}"
+        for key, limit in maximums.items()
+        if key not in missing and key not in unmeasured and values[key] > limit
+    ]
+    if missing or unmeasured:
+        reasons = []
+        if missing:
+            reasons.append(f"missing {', '.join(missing)}")
+        if unmeasured:
+            reasons.append(
+                f"not measured: {', '.join(unmeasured)} (seeded constant, no producer ran)"
+            )
+        return None, reasons + failures
     return not failures, failures
 
 
@@ -520,6 +585,7 @@ def safety_gate(items: list[dict[str, Any]], criteria: dict[str, Any]) -> GateRe
             passed += 1
         elif result is None:
             missing += 1
+            failures.append(f"{item['id']}: unverified -- {'; '.join(reasons)}")
         else:
             failures.append(f"{item['id']}: {'; '.join(reasons)}")
     status = Status.PASS if items and passed == len(items) else (Status.UNVERIFIED if missing or not items else Status.FAIL)

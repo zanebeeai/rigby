@@ -12,6 +12,10 @@ from .exporter import export_glb
 from .models import ClipResult, CompileRequest, ResultSummary
 
 
+#: The sequence number a result directory is named for. Six digits, then the slug.
+_SEQUENCE_PREFIX = re.compile(r"^(\d{6})-")
+
+
 class ResultStore:
     def __init__(self, root: Path | None = None) -> None:
         self.root = root or PROJECT_ROOT / "results"
@@ -31,6 +35,40 @@ class ResultStore:
             return {"schema_version": "1.0", "next_sequence": len(value) + 1, "results": value}
         return value
 
+    def _next_sequence(self, recorded: int) -> int:
+        """The next id, advanced past every sequence already on disk.
+
+        ``persist`` creates the directory, writes seven files, and updates
+        ``index.json`` **last**. A run killed in between leaves a directory the
+        index does not know about while ``next_sequence`` still points at it, so
+        the store hands out an id that already exists -- and keeps handing out
+        that same id, because only a successful persist advances the counter.
+        The worktree cannot pass the suite again until a human deletes the
+        folder, and it surfaces as a ``FileExistsError`` raised under
+        ``flywheel.py`` naming neither this store nor the kill that caused it.
+
+        Healing means skipping the id, not reusing it. ``exist_ok=True`` would
+        be the wrong fix twice over: it writes a live result into a dead one's
+        directory, so the seven files describe two different runs, and it turns
+        a loud failure into a silent corruption. The orphan is left alone
+        precisely because a killed run's directory is of unknown completeness --
+        deleting it is ``prune_run.py``'s decision, not this write path's.
+
+        The scan is keyed on the sequence number rather than the whole
+        directory name. A slug is derived from the prompt, so an orphan from a
+        *different* prompt does not collide on ``mkdir`` at all -- it silently
+        yields two directories sharing one sequence number, with the index
+        claiming that number for whichever wrote second. That is the quieter
+        half of the same bug.
+        """
+
+        highest = 0
+        for child in self.root.iterdir():
+            match = _SEQUENCE_PREFIX.match(child.name)
+            if match is not None and child.is_dir():
+                highest = max(highest, int(match.group(1)))
+        return max(recorded, highest + 1)
+
     @staticmethod
     def _write_json(path: Path, value: Any) -> None:
         path.write_text(json.dumps(value, indent=2, ensure_ascii=False), encoding="utf-8")
@@ -40,7 +78,7 @@ class ResultStore:
             self.root.mkdir(parents=True, exist_ok=True)
             index_document = self._index_document()
             index = index_document["results"]
-            next_number = int(index_document["next_sequence"])
+            next_number = self._next_sequence(int(index_document["next_sequence"]))
             result_id = f"{next_number:06d}-{self._slug(request.program.source_text)}"
             folder = self.root / result_id
             folder.mkdir(parents=False, exist_ok=False)

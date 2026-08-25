@@ -13,6 +13,7 @@ from evals.evidence import (
     parametric_gate,
     physical_trial,
     planner_gate,
+    safety_gate,
     safety_trial,
     structural_physics_gate,
 )
@@ -25,6 +26,9 @@ import pytest
 
 #: compiles, corpus, pipeline or subprocess -- see docs/testing.md
 pytestmark = pytest.mark.medium
+
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_acceptance_fixture_cardinality_is_exact() -> None:
@@ -157,20 +161,202 @@ def test_physical_proof_forbids_weld_and_treats_missing_as_unverified() -> None:
     assert physical_trial(missing, criteria)[0] is None
 
 
-def test_safety_thresholds_include_all_invariants() -> None:
-    criteria = load_criteria()["safety"]
-    values = {
+def _safety_metrics() -> dict:
+    """A clip whose every safety invariant was actually measured.
+
+    The two witness keys are what say so: ``physics_engine`` is emitted only by
+    the MuJoCo grasp trial (``physics.py:273``) and ``self_collision_frames``
+    only by the structure analysis ``analysis/hand.py:207`` reads. Without them
+    the corresponding values are ``compiler._base_metrics`` seeds -- see
+    ``evidence.SEEDED_SAFETY_FIELDS``.
+    """
+
+    return {
         "joint_limit_violations": 0,
         "root_drift_m": 0.001,
-        "foot_drift_m": 0.001,
         "unresolved_non_hand_collisions": 0,
+        "self_collision_frames": 0,
         "nan_count": 0,
         "discontinuities": 0,
         "max_penetration_m": 0.004,
+        "physics_engine": "MuJoCo",
     }
-    assert safety_trial(values, criteria)[0] is True
-    values["max_penetration_m"] = 0.0041
-    assert safety_trial(values, criteria)[0] is False
+
+
+def test_safety_thresholds_include_all_invariants() -> None:
+    """The six measurable invariants still gate, and still gate together.
+
+    The verdict is UNVERIFIED rather than PASS because `foot_drift_m` is never
+    measured on any path -- see
+    `test_the_safety_gate_cannot_certify_a_clip_while_foot_drift_is_unmeasured`.
+    A breach must still be *reported* under that verdict, or removing the
+    guaranteed pass would have bought silence at a different address.
+    """
+
+    criteria = load_criteria()["safety"]
+    clean_result, clean_reasons = safety_trial(_safety_metrics(), criteria)
+    assert clean_result is None
+    assert not [reason for reason in clean_reasons if "exceeds" in reason], clean_reasons
+
+    for field, breaching in (
+        ("max_penetration_m", 0.0041),
+        ("nan_count", 1),
+        ("discontinuities", 1),
+        ("joint_limit_violations", 1),
+        ("root_drift_m", 10.0),
+        ("unresolved_non_hand_collisions", 1),
+    ):
+        breached = _safety_metrics()
+        breached[field] = breaching
+        _, reasons = safety_trial(breached, criteria)
+        assert any(reason.startswith(f"{field}=") for reason in reasons), (field, reasons)
+
+
+def test_the_safety_gate_cannot_certify_a_clip_while_foot_drift_is_unmeasured() -> None:
+    """The consequence, stated as a test rather than left to be discovered.
+
+    `safety_and_quality` published "N/M clips passed every safety invariant"
+    while one of those invariants was the literal `0.0`. It cannot honestly say
+    PASS again until forward kinematics measures foot drift, so the gate reports
+    UNVERIFIED for every clip and this test is what makes that deliberate.
+    Deleting it means deciding to publish a narrower claim -- a product
+    decision, filed as a CONDUCTOR line, not a threshold to tune.
+    """
+
+    criteria = load_criteria()["safety"]
+    result = safety_gate(
+        [{"id": "clean", "metrics": _safety_metrics()}], criteria
+    )
+    assert result.status is Status.UNVERIFIED
+    assert result.measured["missing_evidence"] == 1
+    assert any("foot_drift_m" in failure for failure in result.failures), result.failures
+
+
+def test_a_seeded_safety_value_is_unverified_rather_than_a_guaranteed_pass() -> None:
+    """Plan 08 §1.1 item 3. Present, finite, and not a measurement.
+
+    Each of these three reached the comparison as a seeded constant, so the
+    dimension read as PASS on every clip while nothing had looked. The gate must
+    now say UNVERIFIED, and it must say which field and why -- a bare ``None``
+    is the same silence in a different place.
+    """
+
+    criteria = load_criteria()["safety"]
+    for field, witness in (
+        ("max_penetration_m", "physics_engine"),
+        ("unresolved_non_hand_collisions", "self_collision_frames"),
+    ):
+        seeded = _safety_metrics()
+        del seeded[witness]
+        result, reasons = safety_trial(seeded, criteria)
+        assert result is None, f"{field} gated on a seeded constant"
+        assert any(field in reason and "not measured" in reason for reason in reasons), reasons
+
+    drifting = _safety_metrics()
+    drifting["foot_drift_m"] = 0.0
+    result, reasons = safety_trial(drifting, criteria)
+    assert result is None
+    assert any("foot_drift_m" in reason and "not measured" in reason for reason in reasons), reasons
+
+
+def test_a_measured_breach_is_still_reported_under_an_unverified_verdict() -> None:
+    """Two independent problems must not collapse into one message.
+
+    A clip can both fail an invariant that WAS measured and carry one that was
+    not. Reporting only the second is how a real failure disappears behind an
+    UNVERIFIED badge.
+    """
+
+    criteria = load_criteria()["safety"]
+    both = _safety_metrics()
+    del both["physics_engine"]
+    both["nan_count"] = 3
+    result, reasons = safety_trial(both, criteria)
+    assert result is None
+    assert any("max_penetration_m" in reason and "not measured" in reason for reason in reasons), reasons
+    assert any(reason.startswith("nan_count=3") for reason in reasons), reasons
+
+
+def test_foot_drift_is_not_compared_at_all_because_no_path_measures_it() -> None:
+    """The comparison is gone, not merely unreachable.
+
+    A value that breaches ``max_foot_drift_m`` by three orders of magnitude must
+    still come back UNVERIFIED. If it came back ``False`` the gate would be
+    reporting a failure it did not measure, which is the mirror of the defect.
+    """
+
+    criteria = load_criteria()["safety"]
+    breaching = _safety_metrics()
+    breaching["foot_drift_m"] = criteria["max_foot_drift_m"] * 1000.0
+    assert safety_trial(breaching, criteria)[0] is None
+
+
+def test_seeded_safety_fields_are_still_seeded_in_committed_compiler_output() -> None:
+    """The ledger must not go stale into the opposite error.
+
+    ``SEEDED_SAFETY_FIELDS`` claims a producer never writes these. If one starts
+    computing a real value, that claim silently becomes the new defect -- a
+    measurement discarded as a constant. The evidence is 35 committed
+    ``compiler_metrics`` blocks covering walk, run, burpee, squat and push-up,
+    which move the feet as much as anything this compiler emits.
+
+    Asserted non-empty first: an ``all(...)`` over a moved or renamed fixture
+    directory is True, and greenness would then mean the scan found nothing.
+    """
+
+    fixtures = sorted((PROJECT_ROOT / "tests" / "fixtures" / "analysis_equivalence").glob("*.json"))
+    assert len(fixtures) >= 30, f"fixture corpus is missing or moved: {len(fixtures)} cases"
+
+    measured_foot_drift = {}
+    measured_penetration = {}
+    for path in fixtures:
+        metrics = json.loads(path.read_text(encoding="utf-8")).get("compiler_metrics") or {}
+        if "foot_drift_m" in metrics and metrics["foot_drift_m"] != 0.0:
+            measured_foot_drift[path.name] = metrics["foot_drift_m"]
+        if "physics_engine" not in metrics and metrics.get("max_penetration_m", 0.0) != 0.0:
+            measured_penetration[path.name] = metrics["max_penetration_m"]
+
+    assert not measured_foot_drift, (
+        "foot_drift_m is no longer a seeded constant -- something measures it now. "
+        f"Remove it from evidence.SEEDED_SAFETY_FIELDS: {measured_foot_drift}"
+    )
+    assert not measured_penetration, (
+        "max_penetration_m is non-zero on a clip that ran no physics trial: "
+        f"{measured_penetration}"
+    )
+
+
+def test_no_live_producer_measures_foot_drift() -> None:
+    """The producer-side half, and the fixture scan is not a substitute for it.
+
+    `test_seeded_safety_fields_are_still_seeded_in_committed_compiler_output`
+    reads committed fixtures, which lag the producers until someone re-blesses
+    them -- so it cannot fail *at the moment a producer changes*, which is the
+    moment that matters. Caught by lane `analysis`, who pointed out that reading
+    a fixture-scan's green as evidence about a producer is the same shape both
+    of us keep finding in other people's guards.
+
+    This compiles through the real path instead. If forward kinematics ever
+    lands and starts computing foot drift, this goes red and
+    `evidence.SEEDED_SAFETY_FIELDS` must drop its `foot_drift_m` entry -- which
+    is the opposite error, a real measurement discarded as a constant.
+    """
+
+    scene = default_scene()
+    program = OfflinePlanner().plan(
+        PlanRequest(text="Walk forward four steps.", scene=scene, provider="offline")
+    ).program
+    clip = compile_motion(CompileRequest(scene=scene, program=program, persist=False))
+    assert clip.success, clip.failure
+    assert clip.frames, "a clip with no frames cannot evidence anything about foot drift"
+    assert "foot_drift_m" in clip.metrics, (
+        "foot_drift_m vanished from the metrics dict; SEEDED_SAFETY_FIELDS keys on it"
+    )
+    assert clip.metrics["foot_drift_m"] == 0.0, (
+        f"a producer now measures foot drift ({clip.metrics['foot_drift_m']}). "
+        "Remove it from evidence.SEEDED_SAFETY_FIELDS -- the safety gate should "
+        "start certifying against it again rather than reporting UNVERIFIED."
+    )
 
 
 def test_structural_gate_rejects_parallel_gripper_and_requires_axis_conversion() -> None:
