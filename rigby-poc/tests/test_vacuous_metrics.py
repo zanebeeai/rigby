@@ -200,3 +200,30 @@ def test_a_climb_publishes_perfect_support_contact_having_measured_none() -> Non
     assert clip.metrics["max_support_foot_target_error_m"] == 0.0
     assert clip.metrics["max_support_foot_slide_per_frame_m"] == 0.0
     assert clip.metrics["support_contact_fraction"] == 1.0
+
+
+def test_handoff_attachment_slip_measures_float_noise_not_slip() -> None:
+    """The fifth instance, and plan 02 §6.1 named it as a *drift risk*.
+
+    The handoff path defines the object's position as
+    ``wrist + hand_world.apply(offset)`` and then measures slip as
+    ``hand_world.inv().apply(position - wrist)`` compared against its own first
+    sample. Algebraically that is the offset itself, so the object is rigidly
+    attached by construction and the metric can only ever report the round-trip
+    error of ``R.inv().apply(R.apply(x))``.
+
+    Measured on the corpus: 1.4e-16 m against a 0.005 m gate — 2.9e-14 of the
+    limit. "object slipped relative to an owning palm" cannot fire.
+
+    Worth pinning because §6.1 lists ``attachment_slip`` as one of the two
+    numeric-drift risks that make 02d hard. The drift risk is real; the metric
+    it threatens measures nothing physical, so re-deriving it exactly is not
+    worth buying with a persisted accumulator.
+    """
+
+    clip = _compile("object_handoff")
+
+    slip = float(clip.metrics["handoff_attachment_slip_m"])
+
+    assert slip < 1e-12, f"slip is {slip:.3e}; it used to be float noise"
+    assert slip < 0.005 / 1e9, "the 0.005 gate is nine orders away from firing"
