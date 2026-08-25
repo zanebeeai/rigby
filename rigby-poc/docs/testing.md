@@ -300,6 +300,33 @@ partially, and a restored-but-unchecked tree is how a mutation reaches a commit.
 Two lanes had independently arrived at the equivalent of this (copy aside,
 `git checkout`, copy back) before it was written down.
 
+**The git form silently does nothing for a file that is not tracked yet, and its
+verification step passes.** Measured: `git diff` excludes untracked files, so a
+new test file yields a **0-byte patch**; `git checkout -- <newfile>` errors with
+"did not match any file(s) known to git"; and
+`diff <(git diff) /tmp/...patch` then compares empty against empty and
+**passes**. Nothing was set aside, nothing was restored, and the check said so
+was fine -- which is this file's own fourth direction, a comparison whose two
+sides become the same object under the failure it guards. Found in this recipe
+within an hour of it landing, by an `infra` restore that quietly left a scan
+pointed at a directory that did not exist.
+
+So **copy by path and verify per file with `cmp`**, which works whether or not
+git has heard of the file:
+
+```bash
+mkdir -p /tmp/rigby-<lane>-antitaut
+cp <files> /tmp/rigby-<lane>-antitaut/            # tracked or not
+# ... break it, run the new test, show it RED ...
+cp /tmp/rigby-<lane>-antitaut/<basenames> <paths>
+cmp <path> /tmp/rigby-<lane>-antitaut/<basename>  # per file; silence is the pass
+```
+
+`cmp` per file cannot degenerate the way a diff-of-diffs can: there is no state
+in which both sides are trivially equal because both are absent. And if you do
+use the git form, `git status --porcelain` first -- a `??` line means that file
+is not in your patch.
+
 If you must recover from an existing stash: find it by sha with
 `git stash list --format='%H %gs'` and `git stash apply <sha>`. **`drop` cannot
 take a sha** -- it must name an index, so re-check the index in the same command:
