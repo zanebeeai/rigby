@@ -17,6 +17,7 @@ from __future__ import annotations
 import pytest
 
 from evals.calibration.detection import (
+    BAND_READ_PREFIX,
     DETECTION_LEVEL,
     DetectionError,
     PairOutcome,
@@ -136,6 +137,26 @@ def test_a_rom_mapping_with_no_band_raises_rather_than_reading_as_clean() -> Non
     }
     with pytest.raises(ValueError, match="not measured"):
         target_detected(results, _rom_spec())
+
+
+def test_a_skipped_non_rom_target_raises_rather_than_scoring_a_miss() -> None:
+    # The fold this module refuses on the ROM path, arriving through `status`.
+    # `contract.clip.root_drift` (04e) skips on whole-body and sequence programs,
+    # which enable root motion and have no bound to apply. Reading `status !=
+    # "fail"` scores that as undetected at every severity -- a manufactured false
+    # negative on exactly the clips the check declined to judge.
+    spec = _rom_spec(target=STATUS_TARGET)
+    skipped_result = skipped(STATUS_TARGET, "anatomy", detail="root motion is enabled")
+    assert skipped_result.status == "skip"
+    with pytest.raises(DetectionError, match="not measured"):
+        target_detected({STATUS_TARGET: skipped_result}, spec)
+
+
+def test_a_passing_non_rom_target_is_still_a_measured_negative() -> None:
+    # The other half: `pass` really is "measured and clean", and must NOT raise.
+    spec = _rom_spec(target=STATUS_TARGET)
+    passing = CheckResult(id=STATUS_TARGET, layer="anatomy", status="pass", measured=0.0)
+    assert target_detected({STATUS_TARGET: passing}, spec) is False
 
 
 def test_a_target_nothing_emitted_raises_rather_than_returning_false() -> None:
@@ -301,3 +322,95 @@ def test_the_bounds_bracket_the_estimate() -> None:
         lower_of_complement = clopper_pearson_upper(successes, 20)
         assert 0.0 <= lower_of_complement <= 1.0
         assert lower_of_complement >= successes / 20
+
+
+# --- no emitted state reaches the router without a branch ---------------------
+
+
+def test_the_router_handles_every_member_of_checkstatus() -> None:
+    """Derived from the type, not from what I remember the analyzer emitting.
+
+    The `skip`-scored-as-a-miss defect was latent for exactly as long as no
+    emitted non-ROM check skipped; a test over hand-written results could not see
+    it, and a test over a 4-case corpus sample would only have seen it once
+    `contract.clip.root_drift` happened to land in that sample.
+
+    `CheckStatus` is a `Literal`, so the state space is **closed**: every status a
+    check can carry is enumerable without compiling anything. This asserts each
+    one reaches an explicit branch, so adding a fourth status turns this red
+    rather than silently scoring as "not detected" -- which is the direction the
+    missing branch always fails in. Lane `analysis` proposed the corpus-walk form
+    of this; the type is the same instrument with complete coverage and no
+    compiles.
+    """
+    from typing import get_args
+
+    statuses = set(get_args(CheckStatus))
+    assert statuses == {"pass", "fail", "skip"}, (
+        f"CheckStatus gained or lost a member: {sorted(statuses)}. Add a branch to "
+        f"`target_detected` for it, or it scores as an undetected mutation."
+    )
+
+    spec = _rom_spec(target=STATUS_TARGET)
+    handled: dict[str, str] = {}
+    for status in sorted(statuses):
+        result = CheckResult(
+            id=STATUS_TARGET,
+            layer="anatomy",
+            status=status,
+            measured=1.0 if status == "fail" else 0.0,
+            severity=0.4 if status == "fail" else 0.0,
+        )
+        try:
+            handled[status] = "detected" if target_detected({STATUS_TARGET: result}, spec) else "clean"
+        except DetectionError:
+            handled[status] = "raised"
+
+    # Each status maps to a *different* meaning. Two statuses collapsing onto one
+    # outcome is how "not measured" became "measured negative" in the first place.
+    assert handled == {"fail": "detected", "pass": "clean", "skip": "raised"}, handled
+    assert len(set(handled.values())) == len(statuses), (
+        f"two statuses share an outcome, so one of them is being folded: {handled}"
+    )
+
+
+def test_a_new_check_family_forces_a_routing_decision() -> None:
+    """The status dimension is closed by the type; the *family* dimension is not.
+
+    `test_the_router_handles_every_member_of_checkstatus` proves no status is
+    unhandled. It cannot prove a new check *family* is routed correctly, and that
+    is the live risk: `anatomy.rom.*` carries its signal in `measured["band"]`
+    while `status` stays `pass` on the 74 unenforced DOFs, so a family that
+    likewise reports through `measured` would be silently mis-scored by the
+    status branch -- the same defect as reading `status` for ROM, arriving
+    through a family nobody classified.
+
+    Pinned from `known_check_ids()`, which is itself measured against what the
+    analyzer emits (`test_mutation_check_registry`), so this cannot drift into a
+    hand-maintained wish list. A new family turns this red and the reviewer has
+    to answer one question: does it report through `status`, or through
+    `measured`? Red for a family that routes correctly is the intended cost --
+    the decision is what is being guarded, not the outcome.
+    """
+    from evals.mutations.checks import known_check_ids
+
+    families = {".".join(check_id.split(".")[:2]) for check_id in known_check_ids()}
+    assert families == {
+        "anatomy.arm",
+        "anatomy.forearm",
+        "anatomy.rom",          # reads `measured["band"]` -- see BAND_READ_PREFIX
+        "anatomy.travel_wheel",
+        "anatomy.wrist",
+        "contract.camera",
+        "contract.clip",
+        "signal.angular",
+        "signal.semantic_cycle",
+        "signal.travel_wheel",
+    }, (
+        f"check families changed: {sorted(families)}. Decide how the new one "
+        f"reports -- through `status`, or through `measured` like anatomy.rom.* "
+        f"-- and route it in `target_detected` before updating this set."
+    )
+
+    # The band-read set is exactly one family, and it is one of the above.
+    assert BAND_READ_PREFIX.rstrip(".") in families
