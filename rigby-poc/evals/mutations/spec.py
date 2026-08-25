@@ -101,11 +101,11 @@ class MutationSpec:
     #: Deterministic seed.  Mutations are pure: same seed, byte-identical output.
     seed: int = 0
     #: Applied to a deep copy of the clip.  Set by the family module.
-    transform: Callable[[ClipResult, "MutationSpec"], ClipResult] | None = None
+    transform: Callable[[ClipResult, MutationSpec], ClipResult] | None = None
     #: Answers whether this spec can meaningfully be applied to a given clip.
     #: The default accepts everything; families that need a moving bone, a named
     #: phase, or an attached object override it.
-    guard: Callable[[ClipResult, "MutationSpec"], Applicability] | None = None
+    guard: Callable[[ClipResult, MutationSpec], Applicability] | None = None
     #: For ``semantic`` mutations: a program-level difference that must be
     #: independently observable, so the negative is valid without a deterministic
     #: oracle.  Plan 06 section 6.1.
@@ -148,7 +148,7 @@ class MutationSpec:
             raise NotApplicable(f"{self.id}: has no transform")
         return self.transform(clip.model_copy(deep=True), self)
 
-    def at(self, severity: Severity, tier: Tier) -> "MutationSpec":
+    def at(self, severity: Severity, tier: Tier) -> MutationSpec:
         """A copy of this spec at another point on the same axis."""
         return replace(self, id=f"{self.id}@{severity:g}", severity=severity, tier=tier)
 

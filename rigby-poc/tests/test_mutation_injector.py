@@ -12,6 +12,7 @@ from __future__ import annotations
 import math
 
 import pytest
+
 from evals.corpus import load_case
 from evals.corpus.loader import compile_case
 from evals.mutations.inject import (
@@ -122,7 +123,7 @@ def test_the_static_case_really_is_static_to_the_last_decimal(static_clip):
     """Pins the *fixture* for the test above, the way `anatomy` pinned theirs."""
     series = bone_dof_series(static_clip, ELBOW, "abduction")
     assert len(series) > 50
-    assert len(set(round(value, 9) for value in series)) == 1
+    assert len({round(value, 9) for value in series}) == 1
     assert math.degrees(abs(series[0])) == pytest.approx(42.23, abs=0.01)
 
 

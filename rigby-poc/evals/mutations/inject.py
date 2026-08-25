@@ -21,6 +21,7 @@ import math
 from collections.abc import Iterable
 
 import numpy as np
+
 from rigby_poc.analysis.anatomy import (
     DofAngles,
     bone_anatomical_frame,

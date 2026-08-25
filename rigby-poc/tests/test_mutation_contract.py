@@ -11,6 +11,7 @@ from __future__ import annotations
 import math
 
 import pytest
+
 from evals.corpus import load_case
 from evals.corpus.loader import compile_case
 from evals.mutations.legacy import legacy_specs

@@ -47,16 +47,33 @@ def sweep(
     template: MutationSpec,
     *,
     top_magnitude: float,
+    unit: str,
     magnitude_key: str = "magnitude_rad",
     levels: Sequence[Severity] = DEFAULT_LEVELS,
 ) -> list[MutationSpec]:
     """Expand one template into a graded series.
 
     ``template.params[magnitude_key]`` is replaced at each level with
-    ``level * top_magnitude``, and ``severity`` is set to the level, so the report's
-    x-axis is normalised while the physical magnitude stays in ``params`` where a
-    reader can see it in real units.
+    ``level * top_magnitude``, and ``severity`` is set to the level.
+
+    **``unit`` is required, and that is the point.**  ``severity`` is a *share* of
+    the family's top magnitude, so "the detection threshold is 0.16" means nothing
+    outside this sweep and changes meaning if the top is ever retuned.  The physical
+    magnitude and its unit travel.  Lane `capture` measured the general form of this
+    the hard way: a stage-duration share that was 99.8% on macOS was 93.5% on
+    Windows for identical code, because the denominator moved.  **A share is not
+    portable; an absolute is.**  Plan 10 section 5.2 publishes detection thresholds
+    with confidence intervals, so any threshold expressed as a fraction of something
+    that itself moves carries the same exposure.
+
+    Requiring the unit here means a spec cannot reach the report without one.
     """
+    if not unit.strip():
+        raise ValueError(
+            f"{template.id}: a sweep must declare the unit its magnitude is in; a "
+            f"detection threshold reported as a bare severity is a share of a top "
+            f"magnitude that may be retuned, and does not travel"
+        )
     if not levels:
         raise ValueError(f"{template.id}: a sweep needs at least one level")
     if any(not 0.0 < level <= 1.0 for level in levels):
@@ -70,7 +87,12 @@ def sweep(
             targets=template.targets,
             severity=level,
             tier=tier_for(level),
-            params={**template.params, magnitude_key: level * top_magnitude},
+            params={
+                **template.params,
+                magnitude_key: level * top_magnitude,
+                "magnitude_unit": unit,
+                "sweep_top_magnitude": top_magnitude,
+            },
             seed=template.seed,
             transform=template.transform,
             guard=template.guard,
@@ -96,6 +118,7 @@ def degrees_sweep(
     specs = sweep(
         template,
         top_magnitude=math.radians(top_magnitude_deg),
+        unit="rad",
         levels=levels,
     )
     return [
@@ -118,6 +141,7 @@ def degrees_sweep(
                 "params": {
                     **spec.params,
                     "magnitude_deg": math.degrees(spec.params["magnitude_rad"]),
+                    "reported_unit": "deg",
                 },
             }
         )
