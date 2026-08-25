@@ -25,9 +25,6 @@ import pytest
 #: no compile, no corpus, no pipeline, no subprocess -- see docs/testing.md
 pytestmark = pytest.mark.fast
 
-#: no compile, no corpus, no pipeline, no subprocess -- see docs/testing.md
-pytestmark = pytest.mark.fast
-
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 TESTS = PROJECT_ROOT / "tests"
@@ -62,6 +59,39 @@ def collected_files() -> list[Path]:
         f"only {len(found)} collected test files found under {TESTS}; the scan is "
         f"broken, not the suite. An assertion over an empty collection passes."
     )
+    return found
+
+
+def tier_assignments(source: str) -> list[set[str]]:
+    """One entry per module-level ``pytestmark`` assignment, in source order.
+
+    ``declared_tiers`` unions these, which is what the tier gate wants -- and it
+    is also why a **duplicate** assignment is invisible to it: two assignments of
+    the same tier collapse to one set and pass. This file itself carried an exact
+    duplicate for a merge, and its own guard could not see it.
+
+    The case that matters is a file growing a second assignment naming a
+    *different* tier. ``pytestmark`` is a plain rebinding, so the last one wins
+    silently while a reader scanning the top of the module sees the first. Found
+    by lane ``capture``.
+    """
+
+    found: list[set[str]] = []
+    for node in ast.parse(source).body:
+        if not isinstance(node, ast.Assign):
+            continue
+        if not any(
+            isinstance(target, ast.Name) and target.id == "pytestmark"
+            for target in node.targets
+        ):
+            continue
+        tiers = {
+            inner.attr
+            for inner in ast.walk(node.value)
+            if isinstance(inner, ast.Attribute) and inner.attr in TIERS
+        }
+        if tiers:
+            found.append(tiers)
     return found
 
 
@@ -127,6 +157,40 @@ def test_no_file_declares_two_tiers() -> None:
         if len(tiers := declared_tiers(path.read_text(encoding="utf-8"))) > 1
     }
     assert not conflicted, f"files declaring more than one tier: {conflicted}"
+
+
+def test_no_file_carries_two_pytestmark_assignments() -> None:
+    """Counting tiers is not counting assignments, and only the second catches this.
+
+    `pytestmark` is a plain rebinding: a second assignment silently replaces the
+    first, so a file can declare `fast` at the top and `medium` twenty lines down
+    and run as `medium` while reading as `fast`. Two assignments of the SAME tier
+    -- which is how this file arrived -- collapse to one set and pass the tier
+    check entirely.
+    """
+
+    repeated = {
+        path.relative_to(PROJECT_ROOT).as_posix(): [sorted(t) for t in assignments]
+        for path in collected_files()
+        if len(assignments := tier_assignments(path.read_text(encoding="utf-8"))) > 1
+    }
+    assert not repeated, (
+        f"files with more than one module-level pytestmark assignment: {repeated}. "
+        "The last one wins at runtime; delete the others."
+    )
+
+
+@pytest.mark.parametrize(
+    "source, expected",
+    [
+        ("import pytest\npytestmark = pytest.mark.fast\n", 1),
+        ("import pytest\npytestmark = pytest.mark.fast\npytestmark = pytest.mark.fast\n", 2),
+        ("import pytest\npytestmark = pytest.mark.fast\npytestmark = pytest.mark.medium\n", 2),
+        ("import pytest\npytestmark = [pytest.mark.slow, pytest.mark.skipif(True, reason='x')]\n", 1),
+    ],
+)
+def test_the_assignment_counter(source: str, expected: int) -> None:
+    assert len(tier_assignments(source)) == expected
 
 
 def test_uncollected_helpers_are_not_required_to_be_marked() -> None:

@@ -216,10 +216,15 @@ def test_the_doc_warns_that_a_pipe_masks_pytests_exit_code() -> None:
 
     text = TESTING_DOC.read_text(encoding="utf-8")
     prose = _prose(TESTING_DOC)
-    assert "exits with `tail`'s status" in prose, (
-        "the doc must name the pipeline hazard concretely: `a; b; c` exits with "
-        "c's status, so a wrapper reads success over a failing run"
+    assert "exits with `tail`'s status" in prose or "it is `tail`'s" in prose, (
+        "the doc must name the pipeline hazard concretely"
     )
+    assert "not a pytest rule" in prose, (
+        "the rule must be stated for ANY piped or chained command -- written as a "
+        "pytest idiom it reads as being about pytest, and `git rebase | tail` "
+        "masked a failed rebase that then ran a suite on an unrebased tree"
+    )
+    assert "git rebase" in prose, "the doc must carry the non-pytest instance"
 
 
 def test_the_doc_says_fast_or_medium_is_the_bar() -> None:

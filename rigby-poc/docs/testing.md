@@ -90,11 +90,17 @@ warning more than they deserve a theory.
 
 ## Two more rules
 
-**Do not judge by the wrapper's reported status.** In `a; b; c` the overall
-status is `c`'s, so `pytest > log; echo "EXIT=$?"; tail log` exits with `tail`'s
-status. It masks a signal death identically to a clean pass: a task runner
-reported "completed (exit code 0)" over a log that said `EXIT=143`. Read the
-number out of the file.
+**Do not judge by the wrapper's reported status. This is not a pytest rule — it
+is true of any command you pipe or chain.** In `a; b; c` the overall status is
+`c`'s, and in `a | tail` it is `tail`'s. Two instances, twenty minutes apart:
+`pytest > log; echo "EXIT=$?"; tail log` had a task runner report "completed
+(exit code 0)" over a log saying `EXIT=143`; and `git rebase … | tail` masked a
+rebase that failed on unstaged changes, after which the `&&` chain started a full
+suite **on an unrebased tree**.
+
+So it masks a signal death identically to a clean pass, and it masks a failed
+rebase identically to a successful one. Redirect, then read the status out of the
+file — for rebases and merges as much as for pytest.
 
 **Do not grep the log for `FAILED`, `ERROR`, `F` or `E` — and do not use that as
 licence to dismiss one.** The reason is the shared-log-path collision above: a
