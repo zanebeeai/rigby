@@ -12,8 +12,11 @@ enum member added anywhere in that set is a build failure.
 
 from __future__ import annotations
 
+from functools import lru_cache
+
 import pytest
 from evals.corpus import load_corpus, load_manifest
+from evals.corpus.loader import read_slim_clip
 from evals.corpus.freeze import (
     body_actions_of,
     hand_shapes_of,
@@ -28,6 +31,7 @@ from rigby_poc.models import BodyAction, HandShape, Intent, ObjectAction, Strike
 
 MANIFEST = load_manifest()
 CASES = load_corpus()
+CASES_BY_ID = {case.id: case for case in CASES}
 
 #: ``Intent.UNSUPPORTED`` produces no frames, so it can never carry a motion hash.
 #: It is still required to be *declared*, so that its absence is a decision on the
@@ -136,24 +140,33 @@ IMMOBILE_BONES = frozenset(
 BONE_MOTION_EPSILON = 1e-6
 
 
-def _bones_moved(case: object) -> set[str]:
-    from evals.corpus.loader import compile_case
+@lru_cache(maxsize=None)
+def _bones_moved(case_id: str) -> frozenset[str]:
+    """Bone names this case rotates away from its own frame 0.
 
-    clip = compile_case(case)
-    if not clip.frames:
-        return set()
-    rest = clip.frames[0].bones
+    Reads the **committed slim clip** rather than recompiling.  Two tests ask this
+    of all 47 cases, and recompiling would be 94 compiles -- around nineteen
+    minutes -- to answer a question the stored frames already answer.
+
+    Sound because ``test_corpus_determinism`` proves the stored clip is identical to
+    a fresh compile on this platform, and because the question is about *coverage*
+    rather than about the hash.  This is the first consumer of the stored clip, which
+    plan 03 section 3.3 noted did not yet exist.
+    """
+    frames = read_slim_clip((CASES_BY_ID[case_id]).slim_clip_path)["frames"]
+    if not frames:
+        return frozenset()
+    rest = frames[0]["bones"]
     moved: set[str] = set()
-    for frame in clip.frames:
-        for name, bone in frame.bones.items():
-            reference, rotation = rest[name].rotation, bone.rotation
+    for frame in frames:
+        for name, bone in frame["bones"].items():
+            reference, rotation = rest[name]["rotation"], bone["rotation"]
             if any(
-                abs(getattr(rotation, axis) - getattr(reference, axis))
-                > BONE_MOTION_EPSILON
+                abs(rotation[axis] - reference[axis]) > BONE_MOTION_EPSILON
                 for axis in ("w", "x", "y", "z")
             ):
                 moved.add(name)
-    return moved
+    return frozenset(moved)
 
 
 def test_five_bones_are_immobile_in_every_case_and_in_the_compiler() -> None:
@@ -170,7 +183,7 @@ def test_five_bones_are_immobile_in_every_case_and_in_the_compiler() -> None:
     """
     still = set(IMMOBILE_BONES)
     for case in CASES:
-        still -= _bones_moved(case)
+        still -= _bones_moved(case.id)
     assert still == IMMOBILE_BONES, (
         f"these bones now move somewhere: {sorted(IMMOBILE_BONES - still)}"
     )
@@ -186,6 +199,8 @@ def test_the_clavicles_are_covered_by_exactly_one_case() -> None:
     thin and is stated as such; it is the difference between thin and impossible.
     """
     movers = sorted(
-        case.id for case in CASES if {"leftShoulder", "rightShoulder"} <= _bones_moved(case)
+        case.id
+        for case in CASES
+        if {"leftShoulder", "rightShoulder"} <= _bones_moved(case.id)
     )
     assert movers == ["fullbody-shrug-shoulders"], movers
