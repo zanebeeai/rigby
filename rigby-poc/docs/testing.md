@@ -203,11 +203,33 @@ Three lanes running full suites at once took the load average to 25 and a
 the instant the run ends -- green, red or killed:
 
 ```bash
-SLOT="/Users/tonypan/Developer/03 - Startups/rigby-wt/.verify-slot"
-mkdir "$SLOT" 2>/dev/null && echo "<lane> $(date +%H:%M)" > "$SLOT/owner"   # success = you hold it
+cd "/Users/tonypan/Developer/03 - Startups/rigby-wt"
+./lockq.sh enqueue slot <lane>                    # when READY, not when you start preparing
+./lockq.sh acquire slot <lane> && <your run>      # && -- see below
+./lockq.sh release slot <lane>                    # prints who is next; message them by name
 ```
 
-If `mkdir` fails, another lane is verifying: wait and retry rather than start.
+**Chain with `&&`, or check the status.** `acquire` refuses if you are not the
+head of the queue and **exits 1**, and a `;`-separated next command runs anyway,
+without the lock. That is the general rule two sections up -- *in `a; b; c` the
+overall status is `c`'s* -- and it is worth restating here because writing it
+down did not prevent it: the author of that rule chained past a `NOT-ACQUIRED`
+with `;` and wrote to shared state hours after landing it, and the conductor
+skipped the acquire entirely the same afternoon. Prose in the interface did not
+protect the person who wrote the prose. In a script, `set -e` and an explicit
+`if` are the mechanism:
+
+```bash
+set -e
+if ./lockq.sh acquire slot <lane>; then <your run>; else echo "not head"; exit 1; fi
+```
+
+Three lanes wrote to an unlocked 161 KB `TRACKING.md` within minutes of each
+other that day and lost nothing. That is luck, not design, and the absence of a
+lost update is the reason the next one will be a surprise.
+
+If `acquire` refuses, another lane is verifying or is ahead of you: wait and
+retry rather than start.
 Break a slot whose `owner` stamp is more than 45 minutes old, and say so in your
 broadcast. Order among waiters: infra, analysis, groundtruth, judge -- that is a
 queue discipline, not a licence to preempt a held slot. **It is separate from the
@@ -299,6 +321,52 @@ diff <(git diff) /tmp/rigby-<lane>-antitaut.patch    # verify the restore
 partially, and a restored-but-unchecked tree is how a mutation reaches a commit.
 Two lanes had independently arrived at the equivalent of this (copy aside,
 `git checkout`, copy back) before it was written down.
+
+**The git form silently does nothing for a file that is not tracked yet, and its
+verification step passes.** Measured: `git diff` excludes untracked files, so a
+new test file yields a **0-byte patch**; `git checkout -- <newfile>` errors with
+"did not match any file(s) known to git"; and
+`diff <(git diff) /tmp/...patch` then compares empty against empty and
+**passes**. Nothing was set aside, nothing was restored, and the check said so
+was fine -- which is this file's own fourth direction, a comparison whose two
+sides become the same object under the failure it guards. Found in this recipe
+within an hour of it landing, by an `infra` restore that quietly left a scan
+pointed at a directory that did not exist.
+
+So **copy by path and verify per file with `cmp`**, which works whether or not
+git has heard of the file:
+
+```bash
+mkdir -p /tmp/rigby-<lane>-antitaut
+cp <files> /tmp/rigby-<lane>-antitaut/            # tracked or not
+[ -s /tmp/rigby-<lane>-antitaut/<basename> ] || { echo "backup empty"; exit 1; }
+# ... break it, run the new test, show it RED ...
+cp /tmp/rigby-<lane>-antitaut/<basenames> <paths>
+cmp <path> /tmp/rigby-<lane>-antitaut/<basename>  # per file; silence is the pass
+```
+
+**Assert the backup is non-empty BEFORE mutating, or `cmp` certifies the
+damage.** If the `cp` produced nothing, the "restore" copies an empty file over
+your source and `cmp` then compares empty against empty and passes. Measured: a
+20-byte source became 0 bytes and the check said the restore was correct. That
+is the empty-versus-empty collapse one layer below the `git diff` one, inside
+the fix for it -- and it is the same rule this file already gives for evidence
+collections, *assert non-emptiness for a collection you did not construct*,
+pointed at the backup instead of at a scan. Found by lane `judge`.
+
+`cmp` per file still beats a diff-of-diffs, because there is no state in which
+both sides are trivially equal *for a reason you did not create* -- but it is
+only sound once the backup is known to exist. And if you use the git form,
+`git status --porcelain` first: a `??` line means that file is not in your patch.
+
+**Nothing tests the recipes in this file.** `test_invocations` guards what it
+says about commands and `test_markers_complete` guards what it says about tiers,
+but the procedures are prose that no test executes -- so a documented procedure
+is a guard nobody runs. Both collapses above were found by *using* the recipe,
+within an hour of it landing, in the document that describes that exact failure
+family. A scratch-directory test that extracts these blocks and executes them
+against a throwaway file is the missing guard; `test_invocations` already parses
+this file, so the extraction half exists. Named by lane `judge`.
 
 If you must recover from an existing stash: find it by sha with
 `git stash list --format='%H %gs'` and `git stash apply <sha>`. **`drop` cannot
