@@ -23,7 +23,7 @@ from evals.corpus import (
 )
 from evals.corpus.bless import bless
 from evals.corpus.freeze import freeze_from_prompt, freeze_from_result, pin_seed
-from evals.corpus.loader import EXPECTED_FILE, MANIFEST_NAME, PROGRAM_FILE, OVERRIDES_FILE
+from evals.corpus.loader import EXPECTED_FILE, MANIFEST_NAME, PROGRAM_FILE, OVERRIDES_FILE, write_json
 from evals.corpus.verify import Verdict, compare_case, rebless
 from evals.review import motion_sha256 as review_motion_sha256
 from pydantic import ValidationError
@@ -88,6 +88,7 @@ def test_a_platform_is_blessed_for_all_three_digests_or_for_none() -> None:
             motion_sha256={"darwin-arm64": "a" * 64, "win32-amd64": "d" * 64},
             metrics_sha256={"darwin-arm64": "b" * 64},
             observables_sha256={"darwin-arm64": "c" * 64},
+            environment={"darwin-arm64": _environment(), "win32-amd64": _environment()},
         )
 
 
@@ -103,6 +104,7 @@ def test_an_unblessed_platform_is_a_skip_not_a_failure() -> None:
         motion_sha256={foreign: "a" * 64},
         metrics_sha256={foreign: "b" * 64},
         observables_sha256={foreign: "c" * 64},
+        environment={foreign: _environment()},
     )
     for name in ExpectedResult.DIGESTS:
         assert recorded.resolve(name, platform_key()) is None
@@ -304,6 +306,17 @@ def test_case_programs_on_disk_round_trip_through_their_models() -> None:
         assert case.program.model_dump(mode="json") == raw
 
 
+def _environment() -> "BlessEnvironment":
+    from evals.corpus.models import BlessEnvironment
+
+    return BlessEnvironment(
+        platform_key="darwin-arm64|mujoco-3.11.0",
+        python_version="3.12.0",
+        compiler_version="rigby-compiler-0.4.0",
+        blessed_at="2026-01-01T00:00:00+00:00",
+    )
+
+
 def _expected(**overrides: object) -> ExpectedResult:
     from evals.corpus.models import BlessEnvironment
 
@@ -319,12 +332,14 @@ def _expected(**overrides: object) -> ExpectedResult:
         "frame_count": 10,
         "duration_s": 0.33,
         "contact_count": 0,
-        "environment": BlessEnvironment(
-            platform_key="darwin-arm64|mujoco-3.11.0",
-            python_version="3.12.0",
-            compiler_version="rigby-compiler-0.4.0",
-            blessed_at="2026-01-01T00:00:00+00:00",
-        ),
+        "environment": {
+            PORTABLE_PLATFORM_KEY: BlessEnvironment(
+                platform_key="darwin-arm64|mujoco-3.11.0",
+                python_version="3.12.0",
+                compiler_version="rigby-compiler-0.4.0",
+                blessed_at="2026-01-01T00:00:00+00:00",
+            )
+        },
     }
     payload.update(overrides)
     return ExpectedResult.model_validate(payload)
@@ -362,7 +377,7 @@ def test_no_corpus_test_asserts_that_this_platform_is_blessed(tmp_path: Path) ->
     root = _corpus_copy(tmp_path)
     for path in sorted((root / "cases").glob("*/expected.json")):
         payload = json.loads(path.read_text(encoding="utf-8"))
-        for name in ExpectedResult.DIGESTS:
+        for name in (*ExpectedResult.DIGESTS, "environment"):
             payload[name] = {
                 f"foreignos-otherarch{'|mujoco-0.0.0' if '|' in key else ''}": value
                 for key, value in payload[name].items()
@@ -387,3 +402,58 @@ def test_no_corpus_test_asserts_that_this_platform_is_blessed(tmp_path: Path) ->
     assert comparison.verdict is Verdict.TOLERANCE_MATCH, comparison.render()
     assert comparison.tolerance is not None
     assert comparison.tolerance.max_deviation == 0.0
+
+
+def test_a_second_platform_blesses_without_overwriting_anything(tmp_path: Path) -> None:
+    """The property 03d exists to deliver: another platform's bless merges wholesale.
+
+    Before this, `bless --write` on a second machine replaced the singular
+    ``environment`` block, so the file claimed it was last blessed on win32 while
+    holding darwin digests win32 never produced. Applying a real Windows artifact
+    therefore needed a caveat -- take the hashes, not the environment -- and a
+    caveat is a thing somebody eventually does not read.
+
+    Verified against a real artifact by lane `infra`: 47 cases, 0 darwin digests
+    lost, 141 win32 entries added. This is the same check as a test, over the
+    ``environment`` block as well, so the next platform needs no instructions.
+    """
+    root = _corpus_copy(tmp_path)
+    case = load_case(SAMPLE_CASE_ID, root)
+    key = platform_key(case.expected.solver_used)
+    foreign = "someotheros-riscv64"
+
+    # A foreign platform got there first and recorded everything about itself.
+    foreign_env = _environment().model_copy(
+        update={"platform_key": foreign, "python_version": "3.11.9"}
+    )
+    seeded = case.expected.model_copy(
+        update={
+            "motion_sha256": {foreign: "a" * 64},
+            "metrics_sha256": {foreign: "b" * 64},
+            "observables_sha256": {foreign: "c" * 64},
+            "environment": {foreign: foreign_env},
+        }
+    )
+    write_json(
+        root / "cases" / SAMPLE_CASE_ID / EXPECTED_FILE, seeded.model_dump(mode="json")
+    )
+
+    report = bless([SAMPLE_CASE_ID], root=root, write=True)
+    assert report.written == [SAMPLE_CASE_ID], report.render()
+
+    merged = load_case(SAMPLE_CASE_ID, root).expected
+    for name in ExpectedResult.DIGESTS:
+        digests = getattr(merged, name)
+        assert set(digests) == {foreign, key}, name
+        assert digests[foreign] == getattr(seeded, name)[foreign], (
+            f"{name} lost the foreign platform's value"
+        )
+        assert digests[key] is not None
+
+    # And the block that used to be overwritten now holds both.
+    assert set(merged.environment) == {foreign, key}
+    assert merged.environment[foreign] == foreign_env, "the foreign bless record was lost"
+    assert merged.environment[key].platform_key == key
+    assert merged.environment[key].python_version != foreign_env.python_version, (
+        "each platform records the interpreter that actually produced its digests"
+    )
