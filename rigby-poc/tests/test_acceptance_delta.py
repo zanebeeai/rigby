@@ -17,6 +17,8 @@ from rigby_poc.acceptance_delta import (
     compare_records,
 )
 
+pytestmark = pytest.mark.fast
+
 
 def _record(*, accept: bool, unjudged: list[str] | None = None, **scores: int) -> dict:
     parsed = {

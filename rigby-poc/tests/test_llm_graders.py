@@ -37,6 +37,8 @@ from rigby_poc.llm_graders import (
 from rigby_poc.models import BodyAction, Intent, ObjectAction
 from rigby_poc.planner import DEFAULT_PRIMARY_MODEL
 
+pytestmark = pytest.mark.medium
+
 
 class FakeUsage:
     def model_dump(self, mode: str = "json") -> dict[str, int]:

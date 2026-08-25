@@ -28,6 +28,8 @@ from PIL import Image
 
 from rigby_poc.judge import _manifest
 
+pytestmark = pytest.mark.medium
+
 
 CAPTURE_CONTRACT_KEYS = {
     "raw_canvas_only",

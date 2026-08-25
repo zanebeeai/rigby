@@ -36,6 +36,8 @@ from rigby_poc.judge import (
 from rigby_poc.judge_claims import claim_specs
 from rigby_poc.judge_prompts import GRADER_NAMES, GRADER_SPECS
 
+pytestmark = pytest.mark.medium
+
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 CRITERIA = json.loads((PROJECT_ROOT / "acceptance_criteria.yaml").read_text(encoding="utf-8"))
@@ -188,7 +190,14 @@ def test_every_consumer_of_the_accept_flag_is_a_known_one() -> None:
     for path in sorted((PROJECT_ROOT / "evals").rglob("*.py")):
         text = path.read_text(encoding="utf-8")
         if re.search(r'\["accept"\]|\.get\("accept"\)|\.accept\b', text):
-            found.add(str(path.relative_to(PROJECT_ROOT)))
+            # `as_posix()`, not `str()`: on Windows `relative_to` yields
+            # backslashes and every entry in `known` would look unrecognised,
+            # so the guard would fail on the platform rather than on a finding.
+            found.add(path.relative_to(PROJECT_ROOT).as_posix())
+    # Pinned so the Windows fix cannot regress unnoticed on a POSIX-only run:
+    # `str(relative_to(...))` yields backslashes there and every entry would look
+    # unrecognised, failing the guard on the platform rather than on a finding.
+    assert all("\\" not in name and "/" in name for name in found), sorted(found)
     assert found <= known, f"unreviewed consumer of the accept flag: {sorted(found - known)}"
 
 

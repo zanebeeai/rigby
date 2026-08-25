@@ -15,6 +15,8 @@ import pytest
 
 from rigby_poc.grader_cost import CallCost, call_cost, cost_report, report_records
 
+pytestmark = pytest.mark.fast
+
 
 def _record(*, dispatches: int, usages: int, retries: int = 0, tokens: int = 100) -> dict:
     return {
