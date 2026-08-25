@@ -24,7 +24,6 @@ from rigby_poc.analysis.equivalence import (
 from rigby_poc.compiler import compile_motion
 from rigby_poc.models import CompileRequest, MotionProgram, SceneManifest
 
-
 # Every analysis test compiles or reads a compiled clip (plan 09 §3.3 tiering).
 pytestmark = pytest.mark.medium
 
