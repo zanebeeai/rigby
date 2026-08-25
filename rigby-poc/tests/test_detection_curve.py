@@ -321,3 +321,53 @@ def test_the_bounds_bracket_the_estimate() -> None:
         lower_of_complement = clopper_pearson_upper(successes, 20)
         assert 0.0 <= lower_of_complement <= 1.0
         assert lower_of_complement >= successes / 20
+
+
+# --- no emitted state reaches the router without a branch ---------------------
+
+
+def test_the_router_handles_every_member_of_checkstatus() -> None:
+    """Derived from the type, not from what I remember the analyzer emitting.
+
+    The `skip`-scored-as-a-miss defect was latent for exactly as long as no
+    emitted non-ROM check skipped; a test over hand-written results could not see
+    it, and a test over a 4-case corpus sample would only have seen it once
+    `contract.clip.root_drift` happened to land in that sample.
+
+    `CheckStatus` is a `Literal`, so the state space is **closed**: every status a
+    check can carry is enumerable without compiling anything. This asserts each
+    one reaches an explicit branch, so adding a fourth status turns this red
+    rather than silently scoring as "not detected" -- which is the direction the
+    missing branch always fails in. Lane `analysis` proposed the corpus-walk form
+    of this; the type is the same instrument with complete coverage and no
+    compiles.
+    """
+    from typing import get_args
+
+    statuses = set(get_args(CheckStatus))
+    assert statuses == {"pass", "fail", "skip"}, (
+        f"CheckStatus gained or lost a member: {sorted(statuses)}. Add a branch to "
+        f"`target_detected` for it, or it scores as an undetected mutation."
+    )
+
+    spec = _rom_spec(target=STATUS_TARGET)
+    handled: dict[str, str] = {}
+    for status in sorted(statuses):
+        result = CheckResult(
+            id=STATUS_TARGET,
+            layer="anatomy",
+            status=status,
+            measured=1.0 if status == "fail" else 0.0,
+            severity=0.4 if status == "fail" else 0.0,
+        )
+        try:
+            handled[status] = "detected" if target_detected({STATUS_TARGET: result}, spec) else "clean"
+        except DetectionError:
+            handled[status] = "raised"
+
+    # Each status maps to a *different* meaning. Two statuses collapsing onto one
+    # outcome is how "not measured" became "measured negative" in the first place.
+    assert handled == {"fail": "detected", "pass": "clean", "skip": "raised"}, handled
+    assert len(set(handled.values())) == len(statuses), (
+        f"two statuses share an outcome, so one of them is being folded: {handled}"
+    )
