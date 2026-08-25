@@ -252,3 +252,38 @@ def test_a_partly_recorded_gate_is_unknown_not_constant() -> None:
     # Every value that WAS recorded is True, which is exactly the shape that
     # tempts a "constant" verdict. Half the corpus said nothing.
     assert acceptance_delta(partial)["deterministic_valid_is_constant"] is None
+
+
+# ------------------------------------------- the record kind this cannot measure
+
+
+def test_a_split_record_is_refused_rather_than_reporting_a_structural_zero() -> None:
+    """On the split path both sides of the comparison are the same predicate.
+
+    `assemble_split_score` already derives `accept` from the published rule and
+    materialises it at `call.parsed.accept`; `compare_record` would then recompute
+    that same predicate over that same dict. The delta is zero by construction,
+    and a zero meaning "wrong record kind" is indistinguishable from a zero
+    meaning "the rule changed nothing".
+
+    Found by lane `groundtruth`'s independent check of this instrument.
+    """
+    record = _record(accept=True)
+    record["kind"] = "split_motion_judgment"
+    with pytest.raises(ValueError, match="equal by construction"):
+        compare_record("split", record)
+
+
+def test_a_combined_record_is_accepted() -> None:
+    record = _record(accept=True, semantic_match=1)
+    record["kind"] = "unary_motion_judgment"
+    assert compare_record("combined", record).direction == "newly_rejected"
+
+
+def test_claim_aggregation_is_named_as_not_attributed() -> None:
+    # It changes the dimension scores themselves, and both sides here derive from
+    # one already-aggregated payload. Measuring it needs a paired combined/split
+    # judgment of the same clip, which this instrument has no entry point for.
+    report = acceptance_delta(_comparisons(unchanged=1, rejected=1, accepted=0))
+    assert "claim_aggregation" in report["does_not_attribute_to"]
+    assert "claim_aggregation" not in report["attributes_to"]

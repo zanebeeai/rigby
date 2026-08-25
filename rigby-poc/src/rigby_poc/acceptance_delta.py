@@ -63,7 +63,35 @@ class AcceptanceComparison:
 
 
 def compare_record(case_id: str, record: Mapping[str, Any]) -> AcceptanceComparison:
-    """Read one judge record both ways. Pure; no model, no render."""
+    """Read one **combined-path** judge record both ways. Pure; no model, no render.
+
+    Refuses a `split_motion_judgment`, and the reason is a defect this module was
+    written to prevent and then contained.
+
+    On the split path `assemble_split_score` already sets
+    `accept = fully_judged and meets_acceptance_thresholds(scores)` and
+    materialises it at `call.parsed.accept` so existing consumers keep working.
+    This function then reads that value as `self_reported` and recomputes
+    `rule_derived` as `meets_acceptance_thresholds(parsed)` and not-unjudged —
+    which is the *same predicate over the same dict*. Both sides are equal by
+    construction, so the delta is a structural zero.
+
+    A zero that means "wrong record kind" and a zero that means "the rule changed
+    nothing" are the not-measured / measured-negative conflation, in the file
+    written to stop it. Found by lane `groundtruth`'s independent check, which
+    swept 20000 synthetic split records over random claim verdicts and got zero
+    disagreements with both accept values present.
+
+    The measurement 07d owes is over **combined** records, where `accept` is the
+    model's own boolean and the rule is genuinely a second opinion.
+    """
+    kind = record.get("kind")
+    if kind == "split_motion_judgment":
+        raise ValueError(
+            f"{case_id}: the split path already derives accept from the published rule, "
+            "so before and after are equal by construction; 07d's delta needs "
+            "combined-path records"
+        )
     parsed = record.get("call", {}).get("parsed", {})
     if not isinstance(parsed, Mapping):
         raise ValueError(f"{case_id}: judge record carries no parsed score")
@@ -129,12 +157,17 @@ def acceptance_delta(comparisons: Sequence[AcceptanceComparison]) -> dict[str, A
         "newly_rejected_case_ids": sorted(item.case_id for item in newly_rejected),
         "newly_accepted_case_ids": sorted(item.case_id for item in newly_accepted),
         #: Named so a reader cannot take the delta as the effect of 07d in full.
+        #: `claim_aggregation` was listed here and is not measurable by this
+        #: instrument: it changes the dimension scores themselves, and both sides
+        #: of the comparison are derived from one already-aggregated `parsed`.
+        #: Measuring it needs a combined and a split judgment of the *same* clip,
+        #: paired, and `compare_record` takes one record with no paired entry
+        #: point. Moved to the deferred list rather than left implying coverage.
         "attributes_to": [
             "decision_layer_authority",
-            "claim_aggregation",
             "unjudged_dimension_rejection",
         ],
-        "does_not_attribute_to": ["diagnostics_removal"],
+        "does_not_attribute_to": ["diagnostics_removal", "claim_aggregation"],
         "render_mode": next(iter(modes)),
         # A gate that fires on everything carries no information about anything,
         # however correct it is. Named so a reader cannot mistake a constant label
