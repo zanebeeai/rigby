@@ -203,7 +203,7 @@ def _manifest(tmp_path: Path, *, bad_fov: bool = False, result_id: str = "test-r
 
 def test_unary_judge_sends_resized_uncropped_full_fov_images_and_keeps_usage(tmp_path: Path) -> None:
     client = FakeClient()
-    record = VLMJudge(client=client, model="test-vlm").score(_manifest(tmp_path))
+    record = VLMJudge(client=client, model="test-vlm").score_combined(_manifest(tmp_path))
     assert record["call"]["usage"]["input_tokens"] == 123
     assert record["call"]["parsed"]["accept"] is True
     call = client.responses.calls[0]
@@ -232,7 +232,7 @@ def test_unary_judge_sends_resized_uncropped_full_fov_images_and_keeps_usage(tmp
 def test_judge_refuses_egocentric_evidence_with_reduced_fov(tmp_path: Path) -> None:
     client = FakeClient()
     with pytest.raises(ValueError, match="complete 94-degree FOV"):
-        VLMJudge(client=client, model="test-vlm").score(_manifest(tmp_path, bad_fov=True))
+        VLMJudge(client=client, model="test-vlm").score_combined(_manifest(tmp_path, bad_fov=True))
     assert client.responses.calls == []
 
 
@@ -281,7 +281,7 @@ def test_low_confidence_luna_judgment_escalates_once_to_terra(tmp_path: Path) ->
         client=client,
         model="gpt-5.6-luna",
         fallback_model="gpt-5.6-terra",
-    ).score(_manifest(tmp_path))
+    ).score_combined(_manifest(tmp_path))
     assert [call["model"] for call in client.responses.calls] == [
         "gpt-5.6-luna",
         "gpt-5.6-terra",
@@ -300,7 +300,7 @@ def test_hard_model_call_budget_skips_fallback_without_losing_primary(tmp_path: 
         fallback_model="gpt-5.6-terra",
         max_model_calls=1,
     )
-    record = judge.score(_manifest(tmp_path))
+    record = judge.score_combined(_manifest(tmp_path))
     assert [call["model"] for call in client.responses.calls] == ["gpt-5.6-luna"]
     assert record["routing"]["escalated"] is False
     assert record["routing"]["escalation_requested_reason"] == "low_confidence"
@@ -319,7 +319,7 @@ def test_transient_provider_error_retries_lightweight_judge_once(tmp_path: Path)
         max_model_calls=2,
     )
 
-    record = judge.score(_manifest(tmp_path))
+    record = judge.score_combined(_manifest(tmp_path))
 
     assert [call["model"] for call in client.responses.calls] == [
         "gpt-5.6-luna",

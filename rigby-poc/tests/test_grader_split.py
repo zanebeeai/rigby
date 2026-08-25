@@ -212,12 +212,31 @@ def _text_of(call: dict) -> str:
 # ---------------------------------------------------------------- the flag
 
 
-def test_combined_path_is_still_the_default(tmp_path: Path) -> None:
+def test_the_split_path_is_the_default(tmp_path: Path) -> None:
+    """07d flips it. Before this, `score()` ran one mega-prompt call.
+
+    The combined path stays reachable as `score_combined` for the calibration
+    comparison plan 10 §10.4 needs — production selection is the five-way
+    listwise call, not this one, so the four-call budget is unaffected (§6.1).
+    """
     client = FakeClient()
     record = VLMJudge(client=client, model="test-vlm").score(_manifest(tmp_path))
+    assert record["kind"] == "split_motion_judgment"
+    assert len(client.responses.calls) == len(GRADER_NAMES)
+
+
+def test_the_combined_path_is_still_reachable(tmp_path: Path) -> None:
+    client = FakeClient()
+    record = VLMJudge(client=client, model="test-vlm").score_combined(_manifest(tmp_path))
     assert record["kind"] == "unary_motion_judgment"
     assert len(client.responses.calls) == 1
     assert UNARY_SYSTEM_PROMPT in _text_of(client.responses.calls[0])
+
+
+def test_combined_mode_can_still_be_selected_by_flag(tmp_path: Path) -> None:
+    client = FakeClient()
+    judge = VLMJudge(client=client, model="test-vlm", grader_mode="combined")
+    assert judge.score(_manifest(tmp_path))["kind"] == "unary_motion_judgment"
 
 
 def test_split_mode_runs_one_call_per_grader(tmp_path: Path) -> None:
@@ -355,16 +374,21 @@ def test_only_the_semantic_grader_is_family_specific() -> None:
 
 def test_each_grader_prompt_is_far_shorter_than_the_mega_prompt() -> None:
     # §1.2: attention dilution across unrelated questions is the point of the
-    # split. Measured over every family, so the worst case is the one asserted
-    # (`full_body`, which carries the longest fragment): semantic tops out at
-    # 0.51 of the mega-prompt and every blinded grader at 0.26 of it.
+    # split. Measured over every family, so the worst case is the one asserted.
+    #
+    # The ratios moved in 07d and the reason is worth stating: removing the
+    # diagnostics instructions shrank the mega-prompt from 12421 to 11711 chars,
+    # so every grader's *share* of it rose without any grader growing. A ratio
+    # whose denominator moved is not the same measurement — the absolute cap
+    # below is the one that means what it says.
     mega = len(UNARY_SYSTEM_PROMPT)
     for name in GRADER_NAMES:
         longest = max(
             len(grader_prompt(name, intent=family).text) for family in FAMILY_NAMES
         )
-        limit = 0.55 if name == "semantic" else 0.30
+        limit = 0.60 if name == "semantic" else 0.35
         assert longest < mega * limit, (name, longest, mega)
+        assert longest < 7000, (name, longest)
 
 
 # -------------------------------------------------------- prompt version

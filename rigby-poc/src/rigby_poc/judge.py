@@ -9,7 +9,8 @@ import os
 import random
 import time
 from pathlib import Path
-from typing import Any, Callable, Literal, Mapping
+from dataclasses import dataclass
+from typing import Any, Callable, Iterable, Literal, Mapping
 
 from openai import OpenAI
 from PIL import Image, ImageDraw
@@ -196,7 +197,10 @@ def meets_acceptance_thresholds(score: BaseModel | Mapping[str, Any]) -> bool:
     return True
 
 
-DEFAULT_JUDGE_GRADER_MODE = "combined"
+# 07d: the split graders become the default. The combined path stays reachable
+# for the calibration comparison plan 10 §10.4 needs, and because production
+# selection is the five-way listwise call rather than this one (07 §6.1).
+DEFAULT_JUDGE_GRADER_MODE = "split"
 JUDGE_GRADER_MODES: tuple[str, ...] = ("combined", "split")
 
 
@@ -254,6 +258,73 @@ OVERALL_SOURCE_DIMENSIONS: tuple[str, ...] = (
 # — so an unjudged clip is never accepted — without asserting the failure that a
 # 1 would claim was observed.
 UNJUDGED_DIMENSION_SCORE = 3
+
+
+@dataclass(frozen=True)
+class AcceptanceDecision:
+    """The explicit combination plan 07 §3.3 asks for, with its reason attached.
+
+    `accepted = deterministic_valid and grader_verdict and score_threshold`.
+
+    Before 07d each term lived somewhere different: `deterministic_valid` in the
+    structural layer, `score_threshold` in `meets_acceptance_thresholds`, and
+    `grader_verdict` nowhere at all — the model's self-reported boolean was
+    copied verbatim by five call sites and never checked against the published
+    rule. Making the combination one function is what lets the graders be
+    measured against the deterministic layer instead of quietly agreeing with it.
+
+    `reasons` is ordered and complete rather than short-circuited: a clip that
+    fails on two terms says so. A single first-failure reason reads as though the
+    other terms passed.
+    """
+
+    accepted: bool
+    deterministic_valid: bool
+    meets_thresholds: bool
+    fully_judged: bool
+    reasons: tuple[str, ...]
+
+    def record(self) -> dict[str, Any]:
+        return {
+            "accepted": self.accepted,
+            "deterministic_valid": self.deterministic_valid,
+            "meets_thresholds": self.meets_thresholds,
+            "fully_judged": self.fully_judged,
+            "reasons": list(self.reasons),
+        }
+
+
+def decide(
+    scores: BaseModel | Mapping[str, Any],
+    *,
+    deterministic_valid: bool,
+    unjudged_dimensions: Iterable[str] = (),
+) -> AcceptanceDecision:
+    """Apply the published rule as the authority. Pure and total.
+
+    `deterministic_valid` is a required keyword with no default. A default here
+    would be a value indistinguishable from a measurement — a caller that forgot
+    to pass it would get a decision that looks complete, and the term the plan
+    calls "always the authority" would silently be assumed true.
+    """
+    unjudged = set(unjudged_dimensions)
+    gating_unjudged = sorted(unjudged & set(ACCEPTANCE_MINIMUM_SCORES))
+    fully_judged = not gating_unjudged
+    meets = meets_acceptance_thresholds(scores)
+    reasons: list[str] = []
+    if not deterministic_valid:
+        reasons.append("deterministic_invalid")
+    if not meets:
+        reasons.append("below_published_thresholds")
+    if gating_unjudged:
+        reasons.append("unjudged_gating_dimensions:" + ",".join(gating_unjudged))
+    return AcceptanceDecision(
+        accepted=deterministic_valid and meets and fully_judged,
+        deterministic_valid=deterministic_valid,
+        meets_thresholds=meets,
+        fully_judged=fully_judged,
+        reasons=tuple(reasons),
+    )
 
 
 def _claim_verdicts(payload: Mapping[str, Any]) -> dict[str, str]:
@@ -426,10 +497,7 @@ at least 4, anatomy is at least 4, recognizability is at least 4, and no severe 
 snapshot ids for every important conclusion. For temporal readability, explicitly compare consecutive timeline
 tiles: penalize a pose that stays nearly frozen and then jumps, advances in steps, reverses during presentation,
 or fails to hold. Do not infer smooth timing from the final pose alone. Use failure tag 'none' only when no failure
-tag applies. Objective motion diagnostics are measurements from the rendered clip, not a hidden acceptance label.
-Treat a measurement as direct failure evidence only when its payload includes an explicit motion-family reference
-bound and the value exceeds it. A value without a reference bound is descriptive context, not a hidden rejection
-threshold. For finger semantics,
+tag applies. For finger semantics,
 compare every measured normalized curl with the requested hand shape's reference: a hang-ten must have low thumb
 and little-finger curl and high index, middle, and ring curl. Reject when these measurements contradict the gesture.
 A thumbs-up requires an extended thumb with the other four fingers curled; a peace/victory sign requires extended,
@@ -442,10 +510,8 @@ head-only substitute, wrong order, simultaneous collapse, skipped fingertip, or 
 When the request asks for a shake or back-and-forth motion, require visible repeated direction reversals during
 that phase, roughly the requested number of beats, and a clean return to the relaxed default after it. For a
 hang-ten/shaka shake, the oscillation must be forearm pronation/supination about the forearm's long axis. Penalize
-wrist flexion/extension or side-to-side wrist deviation used as the main oscillation. The joint-specific cycle
-and amplitude diagnostics are recomputed from rendered frame rotations: reject a requested forearm shake when
-forearm_rotation_cycles is zero or materially below the requested beats while wrist_flexion_cycles or
-wrist_deviation_cycles carries those beats instead. For punches, require a closed fist, readable guard/load,
+wrist flexion/extension or side-to-side wrist deviation used as the main oscillation. Reject a requested forearm shake whose oscillation is carried by
+wrist flexion or side-to-side deviation instead of forearm rotation. For punches, require a closed fist, readable guard/load,
 decisive impact path, controlled follow-through, and recovery. A hook must travel on a lateral curved arc with
 a visibly bent elbow and torso participation; reject a hook that reads as a straight jab, static crossed-arm pose,
   or slow arm placement.
@@ -480,8 +546,7 @@ an explicit basketball travel signal, require two closed-fist forearms held acro
 with each fist staying near the opposite elbow. The complete parallel forearms must roll together around one shared
 cross-body axis, repeatedly exchanging over/under and front/back order for about three revolutions. Reject two
 independent hand circles, fixed elbows with small wrist flourishes, diverging forearm axes, intersecting forearms,
-or a static crossed-arm substitute. Treat supplied parallel-axis, opposite-elbow, cross-body, order-range, and
-minimum-separation bounds as decisive failure evidence when exceeded. Judge the whole chronological
+or a static crossed-arm substitute. Judge the whole chronological
 sequence—including setup and recovery—not merely one attractive endpoint pose. For an
 ordered mixed-action request, require every clause exactly once and in the requested order. Reject a dropped,
 reordered, repeated, reset, or abruptly snapped step, and do not overlap actions connected by "then". For
@@ -518,8 +583,7 @@ For ladder climbing, require the named ladder to remain visible, alternating con
 continuous vertical root travel in the requested direction, at least three stable limb contacts after acquisition,
 and a supported terminal pose. Reject floating ascent, ground walking, wrong-object contact, or limbs passing through
 the ladder instead of meeting its front/rungs.
-Root and support diagnostics are measurements, not hidden
-pass labels. For a grounded pose request, verify the requested root shift/drop and pelvis, torso, hip, knee, ankle,
+For a grounded pose request, verify the requested root shift/drop and pelvis, torso, hip, knee, ankle,
 and staggered-foot configuration at the decisive pose. Distinguish a waist bend from a crouch, a lateral lean from
 a turn, a one-knee kneel from a symmetric squat, and a seated posture from kneeling. A lie-down request must rotate
 the full body to a clearly horizontal axis, establish broad floor support without penetration or hovering, preserve
@@ -537,8 +601,7 @@ and missing holds rather than inferring smooth timing from a final pose.
 Prefer the candidate whose gesture is more immediately recognizable, anatomically natural, fully visible,
 temporally readable, and consistent across views. Ignore candidate ordering. Choose tie only when differences
 are genuinely negligible, and neither when both clearly fail. Cite snapshot ids that include the candidate
-prefix. Objective motion diagnostics are measured from each rendered clip; prefer in-bound kinematics and reject
-out-of-bound wrist, collision, or visibility measurements. Never infer quality from hidden parameters, seeds,
+prefix. Never infer quality from hidden parameters, seeds,
 filenames, or prior scores. When a shake is requested, compare the visible direction reversals and recovery—not
 just the held endpoint—and penalize a single flourish, frozen motion, or failure to return to default. A
 hang-ten/shaka shake should rotate through forearm pronation/supination about the long axis while the wrist joint
@@ -664,16 +727,13 @@ contact, absorption, and stable retention. Reject teleports, object/palm gaps, p
 wrong direction, or a flight unnecessarily hidden outside the complete egocentric FOV.
 Visually indistinguishable candidates should receive the same scores. Also return none if none pass. Candidate
 labels are randomized, so ignore ordering. Explicitly compare consecutive timeline tiles for snaps, steps,
-reversals, and missing holds. Objective motion diagnostics are measured from each rendered clip; treat a measurement
-as direct failure evidence only when its payload supplies an explicit motion-family reference bound that it exceeds.
-Unbounded values are descriptive context, and small in-bound differences are not a substitute for a visible
-preference. Cite candidate-prefixed snapshot ids for the decisive visual
+reversals, and missing holds. Cite candidate-prefixed snapshot ids for the decisive visual
 evidence. When the request includes a repeated shake, score its visible direction reversals, requested beat count,
 and return to default as explicit semantic requirements rather than treating all matching endpoint poses as equal.
 For an ordered thumb-to-fingertip action, require distinct contacts in the requested sequence with open separation
 between them; reject a single held pinch, wrong order, skipped digit, or all fingers closing together. When looking
 at the hand is requested, require the head/camera gaze to follow the active hand concurrently instead of replacing
-the dexterous action. Treat bounded fingertip-distance, release-separation, and gaze-angle diagnostics as decisive.
+the dexterous action.
 For a hang-ten/shaka, require forearm pronation/supination about the forearm's long axis with a stable wrist joint;
 penalize flexion/extension or side-to-side wrist deviation used as the oscillation. For a punch, require a closed
 fist, readable guard/load, decisive strike, controlled follow-through, and recovery. A hook specifically requires
@@ -922,6 +982,27 @@ def _call_record(response: object, parsed: BaseModel, model: str) -> dict[str, A
         "usage": _usage(response),
         "parsed": parsed.model_dump(mode="json"),
     }
+
+
+def _summed_usage(graders: Mapping[str, Mapping[str, Any]]) -> dict[str, int]:
+    """Token usage across every grader attempt that reported some.
+
+    Attempts that raised carry no usage anywhere, so this is the *attributed*
+    total rather than the cost of every dispatch. `grader_cost.cost_report`
+    reports the ratio between them; summing here without that ratio beside it
+    would understate cost by an unknown amount concentrated in the calls that
+    failed hardest.
+    """
+    totals: dict[str, int] = {}
+    for record in graders.values():
+        for attempt in record.get("attempts", []):
+            usage = attempt.get("usage") if isinstance(attempt, Mapping) else None
+            if not isinstance(usage, Mapping):
+                continue
+            for key, value in usage.items():
+                if isinstance(value, int) and not isinstance(value, bool):
+                    totals[key] = totals.get(key, 0) + value
+    return totals
 
 
 def _never_escalate(_value: BaseModel) -> str | None:
@@ -1298,11 +1379,6 @@ class VLMJudge(RoutedModelClient):
                             "type": "input_text",
                             "text": f"USER MOTION REQUEST: {prompt}\nDetailed presented-pose frames and full chronological timelines follow.",
                         },
-                        {
-                            "type": "input_text",
-                            "text": "OBJECTIVE MOTION DIAGNOSTICS: "
-                            + json.dumps(manifest.get("motion_diagnostics", {}), ensure_ascii=False),
-                        },
                         *self._images(
                             snapshots, labels=_key_pose_labels(manifest), payload_audit=payload_audit
                         ),
@@ -1466,11 +1542,16 @@ class VLMJudge(RoutedModelClient):
             # Materialized in the combined path's shape so every existing consumer
             # of `record["call"]["parsed"]["accept"]` keeps working unchanged.
             "call": {
+                # No single response id: five calls produced this score. The
+                # per-grader ids are under `graders`. `usage` is summed across
+                # the attempts that carried one -- see `grader_cost` for why that
+                # is not the same as the cost of every dispatch.
                 "response_id": None,
                 "model": self.model,
-                "usage": {},
+                "usage": _summed_usage(graders),
                 "parsed": aggregated.model_dump(mode="json"),
             },
+            "decision": None,
             "attempts": [
                 attempt
                 for name in GRADER_NAMES
@@ -1528,16 +1609,6 @@ class VLMJudge(RoutedModelClient):
                 {
                     "type": "input_text",
                     "text": f"USER MOTION REQUEST: {first.get('prompt')}\nCandidate A frames, then candidate B frames:",
-                },
-                {
-                    "type": "input_text",
-                    "text": "CANDIDATE A OBJECTIVE MOTION DIAGNOSTICS: "
-                    + json.dumps(order[0][1].get("motion_diagnostics", {}), ensure_ascii=False),
-                },
-                {
-                    "type": "input_text",
-                    "text": "CANDIDATE B OBJECTIVE MOTION DIAGNOSTICS: "
-                    + json.dumps(order[1][1].get("motion_diagnostics", {}), ensure_ascii=False),
                 },
                 *self._images(
                     left_snapshots, prefix="A-", labels=_key_pose_labels(order[0][1]), payload_audit=payload_audit
@@ -1714,13 +1785,6 @@ class VLMJudge(RoutedModelClient):
         for label, (original_index, (candidate_manifest, snapshots, _)) in zip(labels, randomized):
             label_map[label] = original_index
             content.append({"type": "input_text", "text": f"CANDIDATE {label}"})
-            content.append(
-                {
-                    "type": "input_text",
-                    "text": f"CANDIDATE {label} OBJECTIVE MOTION DIAGNOSTICS: "
-                    + json.dumps(candidate_manifest.get("motion_diagnostics", {}), ensure_ascii=False),
-                }
-            )
             content.extend(
                 self._images(
                     snapshots,
