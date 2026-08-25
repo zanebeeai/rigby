@@ -393,6 +393,26 @@ SHAKE_ECHO_KEYS = frozenset(
     }
 )
 
+HANDOFF_KEYS = frozenset(
+    {
+        "object_action",
+        "active_hands",
+        "handoff_source_hand",
+        "handoff_receiver_hand",
+        "handoff_source_attachment_time_s",
+        "handoff_receiver_contact_time_s",
+        "handoff_transfer_time_s",
+        "handoff_dual_contact_duration_s",
+        "handoff_receiver_retained",
+        "handoff_attachment_slip_m",
+        "handoff_attachment_slip_by_hand_m",
+        "object_max_step_m",
+        "object_max_step_reference_m",
+        "structural_failures",
+        "structural_valid",
+    }
+)
+
 STRIKE_KEYS = frozenset(
     {
         "strike_type",
@@ -434,6 +454,8 @@ def owned_metric_keys(program: MotionProgram) -> frozenset[str]:
         owned |= ANGULAR_KEYS
     if program.intent == Intent.OBJECT_INTERACTION and not _handoff(program):
         owned |= ANGULAR_KEYS
+    if _handoff(program):
+        owned |= HANDOFF_KEYS
     return frozenset(owned)
 
 
@@ -460,6 +482,8 @@ def required_metric_keys(program: MotionProgram) -> frozenset[str]:
         required |= FULL_BODY_SHARED_KEYS
     if program.intent == Intent.OBJECT_INTERACTION and not _handoff(program):
         required |= ANGULAR_KEYS
+    if _handoff(program):
+        required |= HANDOFF_KEYS
     return frozenset(required)
 
 
@@ -468,7 +492,7 @@ def required_metric_keys(program: MotionProgram) -> frozenset[str]:
 # analysis layer owns" is a readable number rather than folklore.
 DEFERRED_TO_COMPILER: dict[str, str] = {
     "MuJoCo grasp metrics and the GRAB structural branch": "never -- see analysis.hand",
-    "object interaction and handoff lifecycle": "02d",
+    "object interaction lifecycle (handoff ported in 02d part 1)": "02d",
     "MuJoCo grasp metrics": "02d",
     "sequence step re-splitting": "02e",
 }

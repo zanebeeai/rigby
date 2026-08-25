@@ -65,6 +65,7 @@ from .analysis.composite import composite_metrics as _composite_metrics
 from .analysis.full_body import full_body_metrics as _full_body_metrics
 from .analysis.geometry import line_segment_distance as _line_segment_distance
 from .analysis.hand import hand_metrics as _hand_metrics
+from .analysis.objects import handoff_metrics as _handoff_metrics
 from .analysis.rig import (
     EGO_NEUTRAL_GAZE as _EGO_NEUTRAL_GAZE,
     RIG_PROFILE,
@@ -3682,71 +3683,21 @@ def _compile_object_handoff(
         current = target_pose
         elapsed += phase_duration_s
 
-    safety = _safety_metrics(frames)
-    max_step = max(object_steps, default=0.0)
-    slip_by_hand = {
-        hand.value: (
-            max(
-                float(np.linalg.norm(offset - offsets[0]))
-                for offset in offsets
-            )
-            if offsets
-            else float("inf")
-        )
-        for hand, offsets in attachment_offsets.items()
-    }
-    dual_contact_duration = (
-        transfer_time_s - receiver_contact_time_s
-        if transfer_time_s is not None and receiver_contact_time_s is not None
-        else 0.0
-    )
-    structural_failures: list[str] = []
-    if source_attachment_time_s is None:
-        structural_failures.append("handoff source never secured the object")
-    if receiver_contact_time_s is None:
-        structural_failures.append("handoff receiver never contacted the object")
-    if transfer_time_s is None:
-        structural_failures.append("object ownership never transferred")
-    if dual_contact_duration < 0.08:
-        structural_failures.append("handoff lacks a stable dual-hand overlap")
-    if owner != receiver:
-        structural_failures.append("receiver did not retain the object")
-    if any(value > 0.005 for value in slip_by_hand.values()):
-        structural_failures.append("object slipped relative to an owning palm")
-    if max_step > 0.08:
-        structural_failures.append("handoff object trajectory contains a teleport-sized step")
-    if safety["nan_count"]:
-        structural_failures.append("clip contains non-finite transforms")
-    if safety["joint_limit_violations"]:
-        structural_failures.append("clip exceeds a joint limit")
-    if safety["discontinuities"]:
-        structural_failures.append(
-            f"clip contains {safety['discontinuities']} rotational discontinuities"
-        )
-
     metrics = _base_metrics()
-    metrics.update(safety)
+    metrics["phase_ranges_s"] = phase_ranges
+    # Carried, not measured. The lifecycle transitions fire on authored phase
+    # kinds at fixed progress fractions, so rebuilding them post-hoc would mean
+    # recomputing ``elapsed + progress * phase_duration_s`` from phase_ranges_s
+    # -- running sums, which is the arithmetic that moved the composite
+    # presentation window by an ulp in 02c. It is already a published key, so
+    # writing it before the measurement pass costs nothing.
+    metrics["object_lifecycle"] = lifecycle
     metrics.update(
-        {
-            "phase_ranges_s": phase_ranges,
-            "object_action": ObjectAction.HANDOFF.value,
-            "object_lifecycle": lifecycle,
-            "active_hands": [source.value, receiver.value],
-            "handoff_source_hand": source.value,
-            "handoff_receiver_hand": receiver.value,
-            "handoff_source_attachment_time_s": source_attachment_time_s,
-            "handoff_receiver_contact_time_s": receiver_contact_time_s,
-            "handoff_transfer_time_s": transfer_time_s,
-            "handoff_dual_contact_duration_s": dual_contact_duration,
-            "handoff_receiver_retained": owner == receiver,
-            "handoff_attachment_slip_m": max(slip_by_hand.values()),
-            "handoff_attachment_slip_by_hand_m": slip_by_hand,
-            "object_max_step_m": max_step,
-            "object_max_step_reference_m": 0.08,
-            "structural_failures": structural_failures,
-            "structural_valid": not structural_failures,
-        }
+        _handoff_metrics(
+            _AnalysisContext.from_frames(frames, program, scene, metrics)
+        )
     )
+    structural_failures = list(metrics["structural_failures"])
     success = not structural_failures
     return ClipResult(
         success=success,
@@ -3764,7 +3715,7 @@ def _compile_object_handoff(
             else Failure(
                 code=(
                     FailureCode.JOINT_LIMIT_EXCEEDED
-                    if safety["joint_limit_violations"]
+                    if metrics["joint_limit_violations"]
                     else FailureCode.INVALID_PROGRAM
                 ),
                 message="; ".join(structural_failures),
