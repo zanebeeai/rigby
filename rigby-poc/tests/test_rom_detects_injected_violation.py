@@ -150,22 +150,31 @@ def test_the_chosen_case_has_a_moving_elbow(clip) -> None:
 def test_no_corpus_case_is_clean_on_elbow_abduction(clip) -> None:
     """04b's headline measurement, pinned as the reason the control is synthetic.
 
-    n = 12 cases / 1606 frames. Every case exceeds the 5-degree hinge bound on
-    at least one elbow. This is report-only, so nothing fails today; 04c is
-    where it starts rejecting, and plan §6.4 says that is the intended outcome.
+    Every case with frames in it exceeds the 5-degree hinge bound on at least one
+    elbow. Asserted as "all of them" rather than as a count, so growing the
+    corpus does not turn this red for the wrong reason -- and because the count
+    was never the claim. Lane `groundtruth` re-measured over 47 cases: still all
+    of them, the only exception being a known-bad case that compiles to zero
+    frames.
+
+    This is report-only, so nothing fails today. 04c is where it starts
+    rejecting, and plan §6.4 says that is the intended outcome.
     """
 
-    dirty = []
+    clean, dirty = [], []
     for case in load_corpus():
         compiled = compile_case(case)
+        if not compiled.frames:
+            continue
         violations = rom_violations(compiled.frames, fps=compiled.fps)
-        if any(
+        target = dirty if any(
             v.dof == "abduction" and v.band == "beyond_max" and v.bone.endswith("LowerArm")
             for v in violations
-        ):
-            dirty.append(case.entry.id)
+        ) else clean
+        target.append(case.entry.id)
 
-    assert len(dirty) == 12
+    assert dirty, "no corpus case compiled any frames"
+    assert clean == [], f"cases with a clean elbow now exist: {clean}"
 
 
 @pytest.mark.parametrize("degrees", [30.0, 60.0])
