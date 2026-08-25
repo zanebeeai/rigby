@@ -66,15 +66,9 @@ from .analysis import (
     shake_joint_oscillation_metrics,
 )
 from .analysis.context import AnalysisContext as _AnalysisContext
-from .analysis.contact import (
-    intra_hand_contact_failures as _intra_hand_contact_failures,
-    intra_hand_contact_metrics as _intra_hand_contact_metrics,
-)
-from .analysis.forearm import (
-    parallel_forearm_failures as _parallel_forearm_failures,
-    parallel_forearm_metrics as _parallel_forearm_metrics,
-)
+from .analysis.composite import composite_metrics as _composite_metrics
 from .analysis.full_body import full_body_metrics as _full_body_metrics
+from .analysis.fingers import curl_values_from_frame as _curl_values_from_frame
 from .analysis.geometry import line_segment_distance as _line_segment_distance
 from .analysis.rig import (
     EGO_NEUTRAL_GAZE as _EGO_NEUTRAL_GAZE,
@@ -82,11 +76,7 @@ from .analysis.rig import (
     identity_pose as _identity_pose,
 )
 from .analysis.safety import safety_metrics as _safety_metrics
-from .analysis.semantic import (
-    semantic_cycle_assertion as _semantic_cycle_assertion,
-    semantic_cycle_failures as _semantic_cycle_failures,
-    semantic_cycle_metrics as _semantic_cycle_metrics,
-)
+from .analysis.semantic import semantic_cycle_assertion as _semantic_cycle_assertion
 
 
 from .thresholds import value_of
@@ -537,22 +527,6 @@ def _provenance(program: MotionProgram) -> Provenance:
             "trajectory_roundtrip_error_m": 0.0,
         },
     )
-
-
-def _curl_values_from_frame(frame: ClipFrame, hand_value: str) -> dict[str, float]:
-    segment = {
-        "thumb": "ThumbMetacarpal",
-        "index": "IndexProximal",
-        "middle": "MiddleProximal",
-        "ring": "RingProximal",
-        "little": "LittleProximal",
-    }
-    result: dict[str, float] = {}
-    for digit, suffix in segment.items():
-        quat = frame.bones[f"{hand_value}{suffix}"].rotation
-        curl_angle = abs(float(Rotation.from_quat(quat.as_list()).as_euler("xyz")[0]))
-        result[digit] = float(np.clip(curl_angle / (0.95 if digit == "thumb" else 1.15), 0.0, 1.0))
-    return result
 
 
 def _composite_workspace_target(target: EffectorTarget) -> Vec3:
@@ -3183,129 +3157,12 @@ def _compile_composite(scene: SceneManifest, program: MotionProgram) -> ClipResu
     metrics["presentation_ranges_s"] = [
         [float(start), float(end)] for start, end in presentation_ranges
     ]
-    metrics["active_hands"] = [hand.value for hand in program.hands]
-    metrics["composite_segment_count"] = len(program.primitives)
-    metrics["trajectory_cycles"] = max(
-        (primitive.parameters.trajectory_cycles for primitive in program.primitives),
-        default=0.0,
-    )
-    metrics["trajectory_amplitude_m"] = max(
-        (primitive.parameters.trajectory_amplitude_m for primitive in program.primitives),
-        default=0.0,
-    )
-    metrics["axial_rotation_amplitude"] = max(
-        (primitive.parameters.axial_rotation_amplitude for primitive in program.primitives),
-        default=0.0,
-    )
-    metrics.update(_intra_hand_contact_metrics(frames, phase_ranges, program))
-    metrics.update(_semantic_cycle_metrics(frames, phase_ranges, program))
-    metrics.update(_parallel_forearm_metrics(frames, phase_ranges))
-    metrics.update(_safety_metrics(frames))
-    travel_hand_shapes = {
-        effector.hand: effector.hand_shape
-        for primitive in program.primitives
-        if primitive.label in {
-            "parallel_forearm_travel_setup",
-            "parallel_forearm_travel_cycle",
-        }
-        for effector in primitive.effectors
-    }
-    structures = {
-        hand: evaluate_gesture_structure(
-            frames,
-            hand,
-            presentation_ranges,
-            travel_hand_shapes.get(hand),
-        )
-        for hand in program.hands
-    }
-    structural_failures: list[str] = []
-    for hand, structure in structures.items():
-        structural_failures.extend(
-            f"{hand.value}: {failure}" for failure in structure["structural_failures"]
-        )
-        for key, value in structure.items():
-            metrics[f"{hand.value}_{key}"] = value
     metrics.update(
-        {
-            "max_wrist_swing_rad": max(
-                (float(value["max_wrist_swing_rad"]) for value in structures.values()),
-                default=0.0,
-            ),
-            "max_wrist_twist_rad": max(
-                (float(value["max_wrist_twist_rad"]) for value in structures.values()),
-                default=0.0,
-            ),
-            "max_forearm_twist_rad": max(
-                (float(value["max_forearm_twist_rad"]) for value in structures.values()),
-                default=0.0,
-            ),
-            "self_collision_frames": sum(
-                int(value["self_collision_frames"]) for value in structures.values()
-            ),
-            "active_hand_visibility_fraction": min(
-                (float(value["active_hand_visibility_fraction"]) for value in structures.values()),
-                default=0.0,
-            ),
-            "max_angular_velocity_rad_s": max(
-                (float(value["max_angular_velocity_rad_s"]) for value in structures.values()),
-                default=0.0,
-            ),
-            "max_angular_acceleration_rad_s2": max(
-                (float(value["max_angular_acceleration_rad_s2"]) for value in structures.values()),
-                default=0.0,
-            ),
-            "max_angular_jerk_rad_s3": max(
-                (float(value["max_angular_jerk_rad_s3"]) for value in structures.values()),
-                default=0.0,
-            ),
-        }
+        _composite_metrics(
+            _AnalysisContext.from_frames(frames, program, scene, metrics)
+        )
     )
-    cycle_ranges = [
-        (float(item["start_s"]), float(item["end_s"]))
-        for item in phase_ranges
-        if item["kind"] == PrimitiveKind.CYCLE.value
-    ]
-    if cycle_ranges:
-        joint_motion = {
-            hand: shake_joint_oscillation_metrics(frames, hand, cycle_ranges)
-            for hand in program.hands
-        }
-        for hand, values in joint_motion.items():
-            for key, value in values.items():
-                metrics[f"{hand.value}_{key}"] = value
-        metrics["forearm_rotation_cycles"] = min(
-            values["forearm_rotation_cycles"] for values in joint_motion.values()
-        )
-        metrics["forearm_rotation_amplitude_rad"] = min(
-            values["forearm_rotation_amplitude_rad"] for values in joint_motion.values()
-        )
-        metrics["wrist_flexion_cycles"] = max(
-            values["wrist_flexion_cycles"] for values in joint_motion.values()
-        )
-        metrics["wrist_deviation_cycles"] = max(
-            values["wrist_deviation_cycles"] for values in joint_motion.values()
-        )
-    structural_failures.extend(_parallel_forearm_failures(metrics))
-    if metrics["nan_count"]:
-        structural_failures.append("clip contains non-finite transforms")
-    if metrics["joint_limit_violations"]:
-        structural_failures.append("clip exceeds a joint limit")
-    structural_failures.extend(_intra_hand_contact_failures(program, metrics))
-    structural_failures.extend(_semantic_cycle_failures(program, metrics))
-    metrics["structural_failures"] = structural_failures
-    metrics["structural_valid"] = not structural_failures
-    metrics["finger_assertions"] = {
-        f"{hand.value}_shape_defined": all(
-            f"{hand.value}{digit}Proximal" in frames[-1].bones
-            for digit in ("Index", "Middle", "Ring", "Little")
-        )
-        for hand in program.hands
-    }
-    metrics["normalized_finger_curls"] = {
-        hand.value: _curl_values_from_frame(frames[-1], hand.value)
-        for hand in program.hands
-    }
+    structural_failures = list(metrics["structural_failures"])
     success = bool(
         frames
         and not structural_failures

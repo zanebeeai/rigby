@@ -17,6 +17,7 @@ from __future__ import annotations
 from typing import Any
 
 from ..models import ClipResult, Intent, MotionProgram, PrimitiveKind, SceneManifest
+from .composite import composite_metrics
 from .contact import (
     intra_hand_contact_checks,
     intra_hand_contact_failures,
@@ -150,42 +151,20 @@ def analyze_context(ctx: AnalysisContext) -> dict[str, Any]:
     if ctx.intent == Intent.UNSUPPORTED or not ctx.frames:
         return metrics
 
+    # A path ported whole computes its own safety block, in the compiler's own
+    # order, so it returns before the shared call below rather than extending
+    # it. Not tidiness: safety_metrics traverses every frame, and running it
+    # twice per analysis was a quarter of the whole-body pass when 02b first
+    # measured it. 02c reintroduced the same duplication for composite by
+    # returning after the shared call instead of before it.
     if ctx.intent == Intent.FULL_BODY:
-        # 02b ported this path whole, safety block included, in the compiler's
-        # order. Returning before the shared call below is not just tidiness:
-        # safety_metrics is one of the two costs that scale with frame count,
-        # and running it twice per analysis was measurably a quarter of the
-        # whole-body pass.
         return full_body_metrics(ctx)
+    if ctx.intent == Intent.COMPOSITE:
+        return composite_metrics(ctx)
 
     metrics.update(
         safety_metrics(ctx.frames, allow_root_motion=ctx.allow_root_motion)
     )
-
-    if ctx.intent == Intent.COMPOSITE:
-        metrics.update(
-            intra_hand_contact_metrics(
-                ctx.frames,
-                ctx.phase_ranges,
-                ctx.program,
-                world_positions=ctx.world_positions,
-            )
-        )
-        metrics.update(
-            semantic_cycle_metrics(
-                ctx.frames,
-                ctx.phase_ranges,
-                ctx.program,
-                world_positions=ctx.world_positions,
-            )
-        )
-        metrics.update(
-            parallel_forearm_metrics(
-                ctx.frames,
-                ctx.phase_ranges,
-                world_positions=ctx.world_positions,
-            )
-        )
 
     if not _is_handoff(ctx):
         metrics.update(_angular_metrics(ctx))
@@ -278,6 +257,7 @@ __all__ = [
     "arm_landmarks",
     "body_analyzer",
     "commanded_root_yaw_rad",
+    "composite_metrics",
     "full_body_metrics",
     "count_check",
     "deferred_actions",

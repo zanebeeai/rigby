@@ -318,6 +318,46 @@ FULL_BODY_KEYS = FULL_BODY_SHARED_KEYS.union(*FULL_BODY_GATED_KEYS.values())
 # produced by it. ``analyze`` never emits them, so they belong in neither set.
 COMPOSITE_CARRIED_KEYS = frozenset({"phase_ranges_s", "presentation_ranges_s"})
 
+#: Keys the composite pass emits beyond the shared families. The per-hand block
+#: is generated rather than listed: composite runs the gesture-structure
+#: evaluation once per active hand and prefixes every key it returns, so the
+#: set depends on which hands the program drives.
+COMPOSITE_FLAT_KEYS = frozenset(
+    {
+        "active_hands",
+        "composite_segment_count",
+        "trajectory_cycles",
+        "trajectory_amplitude_m",
+        "axial_rotation_amplitude",
+        "max_wrist_swing_rad",
+        "max_wrist_twist_rad",
+        "max_forearm_twist_rad",
+        "self_collision_frames",
+        "active_hand_visibility_fraction",
+        "max_angular_velocity_rad_s",
+        "max_angular_acceleration_rad_s2",
+        "max_angular_jerk_rad_s3",
+        "forearm_rotation_cycles",
+        "forearm_rotation_amplitude_rad",
+        "wrist_flexion_cycles",
+        "wrist_deviation_cycles",
+        "structural_failures",
+        "structural_valid",
+        "finger_assertions",
+        "normalized_finger_curls",
+    }
+)
+
+_PER_HAND_SUFFIXES = frozenset(
+    GESTURE_STRUCTURE_KEYS
+    | SHAKE_KEYS
+    | {"active_hand_visibility_samples", "wrist_swing_twist_limit_violations"}
+)
+
+COMPOSITE_KEYS = COMPOSITE_FLAT_KEYS | frozenset(
+    f"{side}_{key}" for side in ("left", "right") for key in _PER_HAND_SUFFIXES
+)
+
 FULL_BODY_CARRIED_KEYS = frozenset(
     {
         "phase_ranges_s",
@@ -348,6 +388,7 @@ def owned_metric_keys(program: MotionProgram) -> frozenset[str]:
         owned |= SHAKE_KEYS
     if program.intent == Intent.COMPOSITE:
         owned |= CONTACT_KEYS | SEMANTIC_KEYS | PARALLEL_FOREARM_KEYS
+        owned |= COMPOSITE_KEYS
     if program.intent == Intent.FULL_BODY:
         owned |= SEMANTIC_KEYS | ANGULAR_KEYS | FULL_BODY_KEYS
     if program.intent == Intent.SEQUENCE:
