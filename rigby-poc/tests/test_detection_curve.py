@@ -17,6 +17,7 @@ from __future__ import annotations
 import pytest
 
 from evals.calibration.detection import (
+    BAND_READ_PREFIX,
     DETECTION_LEVEL,
     DetectionError,
     PairOutcome,
@@ -371,3 +372,45 @@ def test_the_router_handles_every_member_of_checkstatus() -> None:
     assert len(set(handled.values())) == len(statuses), (
         f"two statuses share an outcome, so one of them is being folded: {handled}"
     )
+
+
+def test_a_new_check_family_forces_a_routing_decision() -> None:
+    """The status dimension is closed by the type; the *family* dimension is not.
+
+    `test_the_router_handles_every_member_of_checkstatus` proves no status is
+    unhandled. It cannot prove a new check *family* is routed correctly, and that
+    is the live risk: `anatomy.rom.*` carries its signal in `measured["band"]`
+    while `status` stays `pass` on the 74 unenforced DOFs, so a family that
+    likewise reports through `measured` would be silently mis-scored by the
+    status branch -- the same defect as reading `status` for ROM, arriving
+    through a family nobody classified.
+
+    Pinned from `known_check_ids()`, which is itself measured against what the
+    analyzer emits (`test_mutation_check_registry`), so this cannot drift into a
+    hand-maintained wish list. A new family turns this red and the reviewer has
+    to answer one question: does it report through `status`, or through
+    `measured`? Red for a family that routes correctly is the intended cost --
+    the decision is what is being guarded, not the outcome.
+    """
+    from evals.mutations.checks import known_check_ids
+
+    families = {".".join(check_id.split(".")[:2]) for check_id in known_check_ids()}
+    assert families == {
+        "anatomy.arm",
+        "anatomy.forearm",
+        "anatomy.rom",          # reads `measured["band"]` -- see BAND_READ_PREFIX
+        "anatomy.travel_wheel",
+        "anatomy.wrist",
+        "contract.camera",
+        "contract.clip",
+        "signal.angular",
+        "signal.semantic_cycle",
+        "signal.travel_wheel",
+    }, (
+        f"check families changed: {sorted(families)}. Decide how the new one "
+        f"reports -- through `status`, or through `measured` like anatomy.rom.* "
+        f"-- and route it in `target_detected` before updating this set."
+    )
+
+    # The band-read set is exactly one family, and it is one of the above.
+    assert BAND_READ_PREFIX.rstrip(".") in families
