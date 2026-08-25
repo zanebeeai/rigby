@@ -439,3 +439,103 @@ def test_the_report_reports_nothing_unmeasured_when_both_oracles_ran(tmp_path: P
         document, trace, accepted_clips=1, selection=selection, repair=repair
     )
     assert report.unmeasured == ()
+
+
+# -- escalation, read from the recorded routing rather than inferred --------------------
+
+
+def test_escalation_is_read_from_the_recorded_flag_not_the_model_set(tmp_path: Path) -> None:
+    """`judge.py:1242` stamps routing onto the call span; the flag is stated, not inferred.
+
+    Both attempts carry the same model, so the model-set heuristic would see no escalation.
+    The recorded `escalated` says otherwise and wins.
+    """
+
+    document = _transcript(
+        [
+            _span(span_id="01ROOT", kind="run", name="pipeline.run"),
+            _span(
+                span_id="01C",
+                parent_id="01ROOT",
+                kind="model_call",
+                name="judge.call",
+                attrs={"primary_model": "m", "fallback_model": "other", "escalated": True},
+            ),
+            _span(span_id="01A1", parent_id="01C", kind="attempt", name="d", refs={"model": "m"}),
+            _span(span_id="01A2", parent_id="01C", kind="attempt", name="d", refs={"model": "m"}),
+        ],
+        tmp_path,
+    )
+    report = escalation_report(document)
+    assert report.escalated_calls == 1
+    assert report.precision == 1.0
+
+
+def test_a_retry_that_reuses_one_model_is_not_counted_as_escalation(tmp_path: Path) -> None:
+    """Two dispatches of the same model with `escalated: False` is a retry, not a fallback."""
+    document = _transcript(
+        [
+            _span(span_id="01ROOT", kind="run", name="pipeline.run"),
+            _span(
+                span_id="01C",
+                parent_id="01ROOT",
+                kind="model_call",
+                name="judge.call",
+                attrs={"primary_model": "m", "fallback_model": "other", "escalated": False},
+            ),
+            _span(span_id="01A1", parent_id="01C", kind="attempt", name="d", refs={"model": "m"}),
+            _span(span_id="01A2", parent_id="01C", kind="attempt", name="d", refs={"model": "m"}),
+        ],
+        tmp_path,
+    )
+    report = escalation_report(document)
+    assert report.escalated_calls == 0
+    assert report.unavailable_calls == 0
+    assert report.precision is None
+
+
+def test_a_call_with_no_usable_fallback_is_reported_as_unavailable(tmp_path: Path) -> None:
+    """`precision is None` must not conflate "primary sufficed" with "safety net was off".
+
+    `VLMJudge` resolves `fallback_model` to the primary when `model=` is passed without an
+    explicit fallback (judge.py:1263-1266), and the escalation guard requires the two to
+    differ (judge.py:1205-1206) — so escalation is *disabled*, not invisible. Zero is the
+    truth, and it is a different zero.
+    """
+
+    document = _transcript(
+        [
+            _span(span_id="01ROOT", kind="run", name="pipeline.run"),
+            _span(
+                span_id="01C",
+                parent_id="01ROOT",
+                kind="model_call",
+                name="judge.call",
+                attrs={"primary_model": "m", "fallback_model": "m", "escalated": False},
+            ),
+            _span(span_id="01A1", parent_id="01C", kind="attempt", name="d", refs={"model": "m"}),
+        ],
+        tmp_path,
+    )
+    report = escalation_report(document)
+    assert report.escalated_calls == 0
+    assert report.unavailable_calls == 1
+    assert report.precision is None
+
+
+def test_a_transcript_without_routing_attrs_still_falls_back_to_the_heuristic(
+    tmp_path: Path,
+) -> None:
+    """A transcript written before routing was stamped must report something, not zero."""
+    document = _transcript(
+        [
+            _span(span_id="01ROOT", kind="run", name="pipeline.run"),
+            _span(span_id="01C", parent_id="01ROOT", kind="model_call", name="judge.call"),
+            _span(span_id="01A1", parent_id="01C", kind="attempt", name="d", refs={"model": "a"}),
+            _span(span_id="01A2", parent_id="01C", kind="attempt", name="d", refs={"model": "b"}),
+        ],
+        tmp_path,
+    )
+    report = escalation_report(document)
+    assert report.escalated_calls == 1
+    assert report.unavailable_calls == 0

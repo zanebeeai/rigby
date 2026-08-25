@@ -158,13 +158,18 @@ class EscalationReport:
     escalations_that_succeeded: int
     escalations_that_failed_too: int
     models_used: tuple[str, ...]
+    #: Calls where no fallback was configured, so escalation could not occur at all.
+    #: `precision is None` otherwise conflates "the primary always sufficed" with "the
+    #: safety net was switched off", which are opposite facts about a run (lane `judge`).
+    unavailable_calls: int = 0
 
     @property
     def precision(self) -> float | None:
         """Share of escalations that produced a usable answer. None when none occurred.
 
         None rather than 1.0: a run that never escalated has no precision to report, and
-        1.0 would read as "escalation always works" on evidence that does not exist.
+        1.0 would read as "escalation always works" on evidence that does not exist. Read
+        it beside `unavailable_calls` — see that field.
         """
 
         return (
@@ -175,17 +180,44 @@ class EscalationReport:
 
 
 def escalation_report(document: Transcript) -> EscalationReport:
-    """Escalation is a `model_call` whose `attempt` children used more than one model."""
+    """Escalation, read from what the judge recorded rather than inferred from models.
+
+    `judge.py:1242` stamps its whole routing dict onto the `model_call` span, so
+    `escalated` is stated rather than reconstructed. Reading it matters for two reasons
+    the model-set heuristic gets wrong:
+
+    * A **transient retry** re-dispatches the *same* model, so it never looked like an
+      escalation — but `transient_retry_count` is recorded and the heuristic could not
+      have reported it either way.
+    * `VLMJudge` resolves `fallback_model` to the primary when a `model=` is passed with
+      no explicit fallback (`judge.py:1263-1266`), and the escalation guard then requires
+      `fallback_model != selected_primary` (`judge.py:1205-1206`). So escalation is
+      **disabled**, not invisible — zero is the truth, but it is a different zero from
+      "the primary always sufficed". `unavailable_calls` separates them.
+
+    The model-set heuristic stays as the fallback for spans with no routing attrs, so a
+    transcript written before this was recorded still reports something rather than zero.
+    """
 
     escalated = 0
     succeeded = 0
     failed = 0
+    unavailable = 0
     models: set[str] = set()
     for call in document.model_calls():
         attempts = [span for span in document.children(call.span_id) if span.kind == "attempt"]
         used = [str(span.refs.get("model")) for span in attempts if span.refs.get("model")]
         models.update(used)
-        if len(set(used)) <= 1:
+        primary = call.attrs.get("primary_model")
+        fallback = call.attrs.get("fallback_model")
+        if primary is not None and (fallback is None or fallback == primary):
+            unavailable += 1
+        recorded = call.attrs.get("escalated")
+        if isinstance(recorded, bool):
+            did_escalate = recorded
+        else:
+            did_escalate = len(set(used)) > 1
+        if not did_escalate:
             continue
         escalated += 1
         # The last attempt decides the call: escalation succeeded when the fallback
@@ -199,6 +231,7 @@ def escalation_report(document: Transcript) -> EscalationReport:
         escalations_that_succeeded=succeeded,
         escalations_that_failed_too=failed,
         models_used=tuple(sorted(models)),
+        unavailable_calls=unavailable,
     )
 
 
