@@ -68,7 +68,8 @@ def app(payload: dict[str, Any]) -> Iterator[tuple[str, Any]]:
 
 
 def _capture(base_url: str, output_dir: Path, **kwargs: Any) -> dict[str, Any]:
-    path = capture_result_frames(RESULT_ID, output_dir, base_url=base_url, views=("orbit",), **kwargs)
+    kwargs.setdefault("views", ("orbit",))
+    path = capture_result_frames(RESULT_ID, output_dir, base_url=base_url, **kwargs)
     return json.loads(path.read_text(encoding="utf-8"))
 
 
@@ -262,3 +263,40 @@ def test_the_seek_path_is_materially_faster_than_the_page_reload(
         f"seek took {seek_s:.2f}s against reload's {reload_s:.2f}s "
         f"(ratio {seek_s / reload_s:.2f}); the seek hook is not paying for itself"
     )
+
+
+def test_the_rendered_ego_fov_is_the_one_config_declares(
+    app: tuple[str, Any], tmp_path: Path
+) -> None:
+    """Close the last leg of the camera-constant loop: config -> TS -> rendered pixels.
+
+    `evals/generate_camera_ts.py --check` proves `frontend/src/generated/camera.ts` is not
+    stale against `config/camera.v1.json`, and `tests/test_camera_config.py` proves the
+    Python constants agree with the same file. Neither proves the *browser* used the
+    value: before 08c the frontend carried its own literals, and after it the import could
+    still be bypassed by re-hardcoding one.
+
+    This renders an ego frame and reads the FOV back out of the manifest the page
+    reported, so the assertion runs the whole boundary. Verified to fail by setting the
+    generated constant to 80.0.
+    """
+    import json as _json
+
+    base_url, _ = app
+    declared = _json.loads(
+        (Path(__file__).resolve().parents[1] / "config" / "camera.v1.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    camera = declared["camera"]
+    expected_fov = float(camera["ego_vertical_fov_deg"]["value"])
+    expected_width = int(camera["capture_width_px"]["value"])
+    expected_height = int(camera["capture_height_px"]["value"])
+
+    manifest = _capture(base_url, tmp_path, views=("ego",))
+    ego = [s for s in manifest["snapshots"] if s["view"] == "ego"]
+    assert ego, "no ego snapshot was captured"
+    for snapshot in ego:
+        assert float(snapshot["camera"]["vertical_fov_deg"]) == expected_fov
+        assert snapshot["width_px"] == expected_width
+        assert snapshot["height_px"] == expected_height

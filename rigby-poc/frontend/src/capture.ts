@@ -5,6 +5,11 @@ import {
   shouldShowTaskEnvironment,
   shouldShowTaskSupportSurface,
 } from "./environment";
+import {
+  captureHeightPx,
+  captureWidthPx,
+  egoVerticalFovDeg,
+} from "./generated/camera";
 import { frameAt, unwrapClip } from "./motion";
 import { RigbyScene, type RenderProvenance } from "./scene";
 import {
@@ -41,9 +46,9 @@ declare global {
   }
 }
 
-const WIDTH = 1600;
-const HEIGHT = 900;
-const EGO_FOV_DEG = 94;
+const WIDTH = captureWidthPx;
+const HEIGHT = captureHeightPx;
+const EGO_FOV_DEG = egoVerticalFovDeg;
 const mount = document.querySelector<HTMLElement>("#capture-app");
 if (!mount) throw new Error("Capture mount not found");
 const captureHost = mount;
