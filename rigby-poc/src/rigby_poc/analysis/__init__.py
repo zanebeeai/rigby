@@ -49,6 +49,7 @@ from .forearm import (
     parallel_forearm_metrics,
 )
 from .hand import assertion_frame_for, final_hand_shape, hand_metrics
+from .objects import carried_object_id, handoff_metrics
 from .gesture import (
     arm_landmarks,
     evaluate_gesture_structure,
@@ -162,6 +163,9 @@ def analyze_context(ctx: AnalysisContext) -> dict[str, Any]:
         return full_body_metrics(ctx)
     if ctx.intent == Intent.COMPOSITE:
         return composite_metrics(ctx)
+    if _is_handoff(ctx):
+        # 02d part 1. Not a relocation -- see analysis.objects.
+        return handoff_metrics(ctx)
 
     if ctx.intent in {Intent.GESTURE, Intent.STRIKE, Intent.GRAB}:
         # 02c ported these too. The MuJoCo grasp block and the GRAB structural
@@ -244,7 +248,9 @@ __all__ = [
     "assertion_frame_for",
     "final_hand_shape",
     "full_body_metrics",
+    "carried_object_id",
     "hand_metrics",
+    "handoff_metrics",
     "count_check",
     "deferred_actions",
     "evaluate_gesture_structure",
