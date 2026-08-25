@@ -43,9 +43,17 @@ def bone_dof_series(clip: ClipResult, bone: str, dof: str) -> list[float]:
     """The per-frame value of one DOF, in radians, relative to the rig's rest pose.
 
     Rest-relative, **not** anatomical: ``decompose`` measures from the T-pose, which
-    is not the anatomical neutral.  A caller that needs an anatomical angle must add
-    the rest offset -- shoulder abduction alone differs by -89.7 degrees, because a
-    T-pose *is* 90 degrees of abduction.
+    is not the anatomical neutral.  A caller reporting an *absolute* angle must apply
+    ``anatomy.neutral.rest_relative`` -- the knee's rest is 11.48 degrees flexed and
+    the shoulder's is 89.70 degrees abducted, because a T-pose *is* 90 degrees of
+    abduction.
+
+    A **delta** needs no such correction, because the offset is a constant and
+    cancels.  :func:`add_dof` injects a delta, so applying the offset to a mutation
+    magnitude would be a double-correction -- every level of every sweep shifted by a
+    constant, giving a curve that is monotonic, plausible, correctly shaped and
+    uniformly wrong.  The offset belongs where a report states *where a mutated clip
+    lands*, applied exactly once, there.
     """
     quaternions = [
         clip_frame.bones[bone].rotation.as_list()
