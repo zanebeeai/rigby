@@ -22,6 +22,25 @@ So cost is reported with **tokens attributed / dispatches made** beside it.  Nea
 somewhere and the report must say where rather than average over it.
 
 Instrumentation for all three arrived in PR 01b; this reads it and adds nothing.
+
+**Do not add a threshold on the attribution ratio.** The obvious improvement here
+is a constant like ``MINIMUM_ATTRIBUTION_RATIO = 0.95`` and a check against it.
+That single line would convert this module from something with no staleness
+exposure into something with the standard one, because a *reported* ratio has no
+exposure and a *verdict* on a ratio does. Any such bound would be calibrated
+against the grader behaviour observable today, and 10e's text-only graders on a
+different model family and 10f's real calls replacing stubs each move that
+distribution without touching the constant.
+
+The ratio itself is safe in a way the bound would not be: it is a count over a
+count, invariant to load, platform and harness. That is why the module reports
+it, names the calls carrying the shortfall, and renders no judgement — the reader
+decides whether the cost figure is sound, with the evidence in front of them.
+
+The one exact comparison here is deliberate and must stay exact. ``attributed >
+dispatches`` raising is a *claim*, not a derived constant: more usage blocks than
+HTTP requests is impossible from the provider's side. A margin there would
+convert an impossibility into a budget.
 """
 
 from __future__ import annotations
