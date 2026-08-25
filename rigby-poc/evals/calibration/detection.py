@@ -210,8 +210,22 @@ def target_detected(results: Mapping[str, Any], spec: MutationSpec) -> bool:
             )
         if target.startswith(BAND_READ_PREFIX):
             detected = detected or rom_detected(result.measured)
-        else:
-            detected = detected or str(result.status) == "fail"
+            continue
+        status = str(result.status)
+        if status == "skip":
+            # A skipped check ran and declined to measure: `contract.clip.root_drift`
+            # skips on whole-body and sequence programs, which enable root motion and
+            # so have no bound to apply (lane `analysis`, 04e). Scoring that as
+            # `False` would fold "not measured" into "measured negative" -- the same
+            # fold this module refuses on the ROM path, arriving through `status`
+            # instead of through a missing `band`. The caller must exclude the pair
+            # as unmeasured rather than count it as a miss.
+            raise DetectionError(
+                f"{spec.id}: target {target!r} reports status='skip' on this clip, so "
+                f"it was not measured. Exclude the pair as unmeasured rather than "
+                f"scoring it as undetected"
+            )
+        detected = detected or status == "fail"
     return detected
 
 

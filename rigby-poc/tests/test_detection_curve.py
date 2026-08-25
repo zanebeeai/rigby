@@ -138,6 +138,26 @@ def test_a_rom_mapping_with_no_band_raises_rather_than_reading_as_clean() -> Non
         target_detected(results, _rom_spec())
 
 
+def test_a_skipped_non_rom_target_raises_rather_than_scoring_a_miss() -> None:
+    # The fold this module refuses on the ROM path, arriving through `status`.
+    # `contract.clip.root_drift` (04e) skips on whole-body and sequence programs,
+    # which enable root motion and have no bound to apply. Reading `status !=
+    # "fail"` scores that as undetected at every severity -- a manufactured false
+    # negative on exactly the clips the check declined to judge.
+    spec = _rom_spec(target=STATUS_TARGET)
+    skipped_result = skipped(STATUS_TARGET, "anatomy", detail="root motion is enabled")
+    assert skipped_result.status == "skip"
+    with pytest.raises(DetectionError, match="not measured"):
+        target_detected({STATUS_TARGET: skipped_result}, spec)
+
+
+def test_a_passing_non_rom_target_is_still_a_measured_negative() -> None:
+    # The other half: `pass` really is "measured and clean", and must NOT raise.
+    spec = _rom_spec(target=STATUS_TARGET)
+    passing = CheckResult(id=STATUS_TARGET, layer="anatomy", status="pass", measured=0.0)
+    assert target_detected({STATUS_TARGET: passing}, spec) is False
+
+
 def test_a_target_nothing_emitted_raises_rather_than_returning_false() -> None:
     # A missing target and an undetected mutation produce the same matrix cell.
     with pytest.raises(DetectionError, match="not measured"):
