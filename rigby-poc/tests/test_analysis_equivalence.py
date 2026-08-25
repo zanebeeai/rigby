@@ -324,6 +324,13 @@ def test_forward_kinematics_is_evaluated_once_per_frame(case_id: str) -> None:
 def test_analysis_stays_within_an_order_of_magnitude_of_its_budget() -> None:
     """A catastrophic-regression ceiling, and deliberately nothing tighter.
 
+    **This assertion runs on darwin-arm64 only.** It carries ``@exact_snapshot``,
+    so on any other architecture it skips and asserts nothing. A green suite
+    elsewhere says nothing about how long analysis took there — reading the
+    number below as a verified property of the layer everywhere would be the
+    same "present but not derived from what it claims" mistake this cycle has
+    found in a dozen places.
+
     Plan 02 §5 targets 100 ms for a 125-frame clip. The heaviest path now costs
     ~225 ms: composite analysis owns the per-hand gesture-structure fold from
     02c onwards, which ``analyze`` did not do before. The target is missed and
