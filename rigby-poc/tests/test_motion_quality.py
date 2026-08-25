@@ -12,6 +12,11 @@ from rigby_poc.models import BonePose, CompileRequest, PlanRequest, Quat, defaul
 from rigby_poc.planner import OfflinePlanner
 from rigby_poc.quality import evaluate_gesture_structure, quality_reference, swing_twist_angles
 
+import pytest
+
+#: compiles, corpus, pipeline or subprocess -- see docs/testing.md
+pytestmark = pytest.mark.medium
+
 
 def _gesture(prompt: str = "Throw up a hang-ten sign."):
     scene = default_scene()

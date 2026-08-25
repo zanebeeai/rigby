@@ -35,6 +35,9 @@ from rigby_poc.judge_claims import (
 )
 from rigby_poc.judge_prompts import FAMILY_NAMES, GRADER_NAMES, GRADER_SPECS
 
+#: no compile, no corpus, no pipeline, no subprocess -- see docs/testing.md
+pytestmark = pytest.mark.fast
+
 
 INTENT = "strike"
 

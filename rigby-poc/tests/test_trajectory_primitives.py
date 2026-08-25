@@ -8,6 +8,11 @@ from rigby_poc.compiler import compile_motion
 from rigby_poc.models import CompileRequest, PlanRequest, default_scene
 from rigby_poc.planner import plan_motion
 
+import pytest
+
+#: compiles, corpus, pipeline or subprocess -- see docs/testing.md
+pytestmark = pytest.mark.medium
+
 
 def _angular_delta(first: list[float], second: list[float]) -> float:
     return 2.0 * math.acos(float(np.clip(abs(np.dot(first, second)), 0.0, 1.0)))

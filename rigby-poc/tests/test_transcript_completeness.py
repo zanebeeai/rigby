@@ -25,6 +25,9 @@ from rigby_poc.judge import RepairPatch, RoutedModelClient, _never_escalate
 from rigby_poc.observability import Tracer, stage_timeline
 from rigby_poc.transcript import load
 
+#: no compile, no corpus, no pipeline, no subprocess -- see docs/testing.md
+pytestmark = pytest.mark.fast
+
 
 class _Usage:
     def __init__(self, total: int) -> None:

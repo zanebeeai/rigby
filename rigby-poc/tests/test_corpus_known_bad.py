@@ -32,6 +32,9 @@ from evals.corpus.loader import compile_case
 from evals.corpus.models import Family
 from rigby_poc.models import Intent
 
+#: compiles, corpus, pipeline or subprocess -- see docs/testing.md
+pytestmark = pytest.mark.medium
+
 CASES = {case.id: case for case in load_corpus()}
 METRICS = {case_id: compile_case(case).metrics for case_id, case in CASES.items()}
 CASE_IDS = sorted(CASES)

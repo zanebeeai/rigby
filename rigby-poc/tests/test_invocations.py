@@ -13,6 +13,9 @@ from pathlib import Path
 
 import pytest
 
+#: no compile, no corpus, no pipeline, no subprocess -- see docs/testing.md
+pytestmark = pytest.mark.fast
+
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 PYPROJECT = PROJECT_ROOT / "pyproject.toml"
@@ -41,10 +44,26 @@ def test_addopts_does_not_enable_coverage(flag: str) -> None:
     )
 
 
-def test_default_invocation_is_quiet_only() -> None:
-    assert _addopts().split() == ["-q"], (
-        "addopts has grown beyond -q. Anything added here is paid by every local "
-        "run and every CI job; document the invocation in docs/testing.md instead."
+def test_the_default_invocation_selects_fast_and_medium_but_never_slow() -> None:
+    """`slow` starts a real browser; a bare `pytest` must not."""
+
+    addopts = _addopts()
+    assert "-q" in addopts
+    assert "fast or medium" in addopts, (
+        "the default invocation must select the fast and medium tiers explicitly"
+    )
+    assert "slow" not in addopts.replace("fast or medium", ""), (
+        "`slow` must be opt-in via -m slow, never implied by the default"
+    )
+
+
+def test_the_default_invocation_carries_nothing_else() -> None:
+    """Anything added here is paid by every local run and every CI job."""
+
+    allowed = {"-q", "-m", "'fast", "or", "medium'"}
+    assert set(_addopts().split()) <= allowed, (
+        f"addopts grew beyond the tier selection: {_addopts()!r}. Document the "
+        "invocation in docs/testing.md instead of making everyone pay for it."
     )
 
 
@@ -56,10 +75,23 @@ def test_testing_doc_exists_and_states_the_coverage_rule() -> None:
 
 
 def _tests_tree() -> list[tuple[Path, ast.AST]]:
-    return [
+    """Every test module, parsed.
+
+    The hermeticity guards below assert that *nothing* in this list reads a
+    provider key or launches a browser. An empty list satisfies that vacuously,
+    so a broken scan would report a hermetic suite rather than a broken scan.
+    The collection is the evidence. Rule from lane `judge`.
+    """
+
+    parsed = [
         (path, ast.parse(path.read_text(encoding="utf-8"), str(path)))
         for path in sorted((PROJECT_ROOT / "tests").rglob("*.py"))
     ]
+    assert len(parsed) > 50, (
+        f"only {len(parsed)} test modules parsed; the scan is broken, not the "
+        f"suite. `no test reads an API key` is trivially true of no tests."
+    )
+    return parsed
 
 
 def _is_dotted(node: ast.AST, *names: str) -> bool:
@@ -72,6 +104,25 @@ def _is_dotted(node: ast.AST, *names: str) -> bool:
     if isinstance(node, ast.Name):
         parts.append(node.id)
     return ".".join(reversed(parts)) in names
+
+
+def test_the_measurement_axes_rule_is_documented() -> None:
+    """The rule that produced this PR's own retraction must stay in the file.
+
+    Two lanes shipped a timing assertion that passed for a reason unrelated to
+    what it checked, an hour apart. The rule is short, it is the thing you need
+    *before* writing the assertion, and a plan document is where it would go to
+    die.
+    """
+
+    text = TESTING_DOC.read_text(encoding="utf-8")
+    assert "which axis are you crossing" in text.lower()
+    for form in (
+        "Ratios cancel load but not platform",
+        "Absolutes survive platform but not load",
+        "Counts survive both",
+    ):
+        assert form in text, f"the {form!r} rule was dropped from docs/testing.md"
 
 
 def test_no_test_reads_an_api_key() -> None:

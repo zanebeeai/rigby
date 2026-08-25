@@ -10,6 +10,11 @@ from evals.variant_review import (
     score_variant_review,
 )
 
+import pytest
+
+#: compiles, corpus, pipeline or subprocess -- see docs/testing.md
+pytestmark = pytest.mark.medium
+
 
 def test_variant_review_is_blinded_and_scores_recipes(tmp_path: Path) -> None:
     trace = {

@@ -12,6 +12,11 @@ from rigby_poc.models import PrimitiveKind
 from rigby_poc.models import PlanRequest, default_scene
 from rigby_poc.planner import OfflinePlanner
 
+import pytest
+
+#: compiles, corpus, pipeline or subprocess -- see docs/testing.md
+pytestmark = pytest.mark.medium
+
 
 def test_thirty_heldout_hangten_profiles_are_unique_and_unseen() -> None:
     cases = heldout_hangten_cases()

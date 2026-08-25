@@ -31,6 +31,9 @@ from rigby_poc.physics import app_to_mj_position, mj_to_app_position
 import rigby_poc.primitives as primitive_library
 from rigby_poc.store import ResultStore
 
+#: compiles, corpus, pipeline or subprocess -- see docs/testing.md
+pytestmark = pytest.mark.medium
+
 
 def _plan(text: str):
     scene = default_scene()

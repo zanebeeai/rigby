@@ -14,6 +14,9 @@ import pytest
 
 from rigby_poc.judge import RepairPatch, VLMJudge
 
+#: no compile, no corpus, no pipeline, no subprocess -- see docs/testing.md
+pytestmark = pytest.mark.fast
+
 
 class FakeUsage:
     def model_dump(self, mode: str = "json") -> dict[str, int]:

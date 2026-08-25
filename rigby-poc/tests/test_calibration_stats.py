@@ -25,6 +25,9 @@ from evals.calibration_stats import (
     proportion,
 )
 
+#: no compile, no corpus, no pipeline, no subprocess -- see docs/testing.md
+pytestmark = pytest.mark.fast
+
 
 # --------------------------------------------------------------------------- #
 # Clopper-Pearson

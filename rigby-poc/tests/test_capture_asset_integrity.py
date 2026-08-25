@@ -31,6 +31,9 @@ from evals.capture import (
     subprocess_timeout_s,
 )
 
+#: no compile, no corpus, no pipeline, no subprocess -- see docs/testing.md
+pytestmark = pytest.mark.fast
+
 
 ASSET_SHA = "c7" + "0" * 62
 OTHER_SHA = "ff" + "0" * 62

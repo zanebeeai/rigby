@@ -5,6 +5,11 @@ from pathlib import Path
 
 from evals.preference_review import create_preference_review, score_preference_review
 
+import pytest
+
+#: no compile, no corpus, no pipeline, no subprocess -- see docs/testing.md
+pytestmark = pytest.mark.fast
+
 
 def _write_batch(path: Path) -> None:
     path.write_text(

@@ -12,6 +12,9 @@ from rigby_poc import transcript as transcript_module
 from rigby_poc.observability import Tracer
 from rigby_poc.transcript import TokenUsage, TranscriptError, load
 
+#: compiles, corpus, pipeline or subprocess -- see docs/testing.md
+pytestmark = pytest.mark.medium
+
 
 FIXTURE_RUN_ID = "20260816T042756-f2107423"
 FIXTURE = Path(__file__).resolve().parent / "fixtures" / "transcript" / FIXTURE_RUN_ID

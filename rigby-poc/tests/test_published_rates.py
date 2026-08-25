@@ -23,6 +23,9 @@ from rigby_poc.published_rates import (
     waived_counts,
 )
 
+#: no compile, no corpus, no pipeline, no subprocess -- see docs/testing.md
+pytestmark = pytest.mark.fast
+
 
 @pytest.fixture(scope="module")
 def findings() -> list[Finding]:
@@ -94,7 +97,13 @@ def test_the_guard_documents_what_it_cannot_catch() -> None:
 
     documentation = module.__doc__ or ""
     assert "does NOT catch" in documentation
-    for hole in ("_base_metrics", "STALE_AFTER_MUTATION", "reference_frame"):
+    for hole in (
+        "_base_metrics",
+        "STALE_AFTER_MUTATION",
+        "reference_frame",
+        "the wrong quantity",
+        "prevalence",
+    ):
         assert hole in documentation, (
             f"the known hole {hole!r} must stay documented on the guard itself"
         )
@@ -143,6 +152,57 @@ def test_statistical_parameters_are_not_published_rates(tmp_path, line: str) -> 
     path = tmp_path / "doc.md"
     path.write_text(line, encoding="utf-8")
     assert scan_prose(path) == []
+
+
+def test_an_n_on_the_next_line_still_counts(tmp_path) -> None:
+    """The unit of judgement is the paragraph, because prose wraps.
+
+    A line-scoped check reported three false positives in this repository's own
+    documentation, where the rate and its n sat on adjacent lines of one
+    sentence. That is a defect in the guard, not in the writing.
+    """
+
+    path = tmp_path / "doc.md"
+    path.write_text(
+        "Semantic discrimination measured 82% across\n"
+        "240 clips against a 50% chance baseline.\n",
+        encoding="utf-8",
+    )
+    assert scan_prose(path) == []
+
+
+def test_a_blank_line_ends_the_window(tmp_path) -> None:
+    """A qualifier two paragraphs away does not qualify anything."""
+
+    path = tmp_path / "doc.md"
+    path.write_text(
+        "The grader accepted 82%.\n\nSeparately, we ran 240 clips against a "
+        "50% chance baseline.\n",
+        encoding="utf-8",
+    )
+    found = scan_prose(path)
+    assert [finding.rate for finding in found] == ["82%"]
+
+
+def test_a_rate_inside_a_fenced_block_is_a_transcript_not_a_claim(tmp_path) -> None:
+    """`97% cpu` in pasted `time` output is not a published rate."""
+
+    path = tmp_path / "doc.md"
+    path.write_text(
+        "Measured:\n\n```\n344 passed\n77.01s user 0.67s system 97% cpu\n```\n",
+        encoding="utf-8",
+    )
+    assert scan_prose(path) == []
+
+
+def test_a_rate_outside_the_fence_is_still_caught(tmp_path) -> None:
+    """Closing the fence must not swallow the prose after it."""
+
+    path = tmp_path / "doc.md"
+    path.write_text(
+        "```\n97% cpu\n```\n\nThe grader accepted 82%.\n", encoding="utf-8"
+    )
+    assert [finding.rate for finding in scan_prose(path)] == ["82%"]
 
 
 def test_a_bare_measured_rate_is_caught(tmp_path) -> None:

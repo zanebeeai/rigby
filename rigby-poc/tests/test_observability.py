@@ -29,6 +29,9 @@ from rigby_poc.observability import (
     ulid_timestamp_ms,
 )
 
+#: compiles, corpus, pipeline or subprocess -- see docs/testing.md
+pytestmark = pytest.mark.medium
+
 
 def read_lines(path: Path) -> list[dict]:
     return [

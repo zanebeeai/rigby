@@ -22,6 +22,11 @@ from rigby_poc.models import (
 )
 from rigby_poc.planner import OpenAIPlanner, plan_motion
 
+import pytest
+
+#: compiles, corpus, pipeline or subprocess -- see docs/testing.md
+pytestmark = pytest.mark.medium
+
 
 def _program(text: str):
     scene = default_scene()

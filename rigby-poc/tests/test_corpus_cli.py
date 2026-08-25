@@ -17,6 +17,9 @@ from evals.corpus.__main__ import main
 from evals.corpus.loader import EXPECTED_FILE
 from evals.corpus.seed_cases import SEED_CASES_BY_ID
 
+#: compiles, corpus, pipeline or subprocess -- see docs/testing.md
+pytestmark = pytest.mark.medium
+
 SAMPLE_CASE_ID = "strike-uppercut-right"
 
 

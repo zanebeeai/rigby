@@ -35,6 +35,9 @@ from evals.corpus.verify import (
 )
 from rigby_poc import compiler
 
+#: compiles, corpus, pipeline or subprocess -- see docs/testing.md
+pytestmark = pytest.mark.medium
+
 CASES = {case.id: case for case in load_corpus()}
 CASE_IDS = sorted(CASES)
 

@@ -5,6 +5,11 @@ from pathlib import Path
 
 from evals.goal_audit import _audit_judge, _candidate_trace_failures, build_goal_audit
 
+import pytest
+
+#: no compile, no corpus, no pipeline, no subprocess -- see docs/testing.md
+pytestmark = pytest.mark.fast
+
 
 def _write(path: Path, value: dict) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)

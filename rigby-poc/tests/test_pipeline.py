@@ -8,6 +8,11 @@ from evals import flywheel
 from rigby_poc.models import PipelineRunRequest, default_scene
 from rigby_poc.pipeline import PipelineRunStore
 
+import pytest
+
+#: compiles, corpus, pipeline or subprocess -- see docs/testing.md
+pytestmark = pytest.mark.medium
+
 
 def test_pipeline_run_persists_live_events_and_winner(tmp_path: Path, monkeypatch) -> None:
     def fake_best_of_five(prompt: str, output_dir: Path, **kwargs) -> Path:

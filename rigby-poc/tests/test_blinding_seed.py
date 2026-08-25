@@ -11,6 +11,11 @@ import random
 
 from evals.flywheel import blinding_seed
 
+import pytest
+
+#: compiles, corpus, pipeline or subprocess -- see docs/testing.md
+pytestmark = pytest.mark.medium
+
 
 RECIPE_COUNT = 5
 LABELS = ("A", "B", "C", "D", "E")

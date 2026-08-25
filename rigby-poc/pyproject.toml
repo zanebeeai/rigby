@@ -42,7 +42,9 @@ packages = ["src/rigby_poc", "evals"]
 pythonpath = ["src", "."]
 testpaths = ["tests"]
 python_files = ["test_*.py", "backend_*.py"]
-addopts = "-q"
+# `slow` needs a real browser and must never be implied by a bare `pytest`.
+# `fast or medium` is everything else. Coverage stays off -- see docs/testing.md.
+addopts = "-q -m 'fast or medium'"
 # Registered here in 08c so lanes can mark their own files ahead of 09b without
 # emitting PytestUnknownMarkWarning. 09b adds the default `-m "fast or medium"`
 # selection and the marker-completeness test; until then every marker is

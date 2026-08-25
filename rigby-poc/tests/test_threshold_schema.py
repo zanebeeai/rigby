@@ -24,6 +24,9 @@ from rigby_poc.thresholds import (
     value_of,
 )
 
+#: no compile, no corpus, no pipeline, no subprocess -- see docs/testing.md
+pytestmark = pytest.mark.fast
+
 
 def _raw() -> dict:
     return json.loads(THRESHOLDS_FILE.read_text(encoding="utf-8"))

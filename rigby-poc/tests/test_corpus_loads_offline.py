@@ -17,6 +17,9 @@ from pathlib import Path
 import pytest
 from evals.corpus import load_corpus
 
+#: compiles, corpus, pipeline or subprocess -- see docs/testing.md
+pytestmark = pytest.mark.medium
+
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 PROBE = Path(__file__).resolve().parent / "corpus_offline_probe.py"
 

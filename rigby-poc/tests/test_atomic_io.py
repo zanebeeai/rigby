@@ -4,6 +4,11 @@ import json
 
 from rigby_poc import io_utils
 
+import pytest
+
+#: no compile, no corpus, no pipeline, no subprocess -- see docs/testing.md
+pytestmark = pytest.mark.fast
+
 
 def test_atomic_write_json_retries_transient_windows_lock(tmp_path, monkeypatch) -> None:
     target = tmp_path / "run.json"

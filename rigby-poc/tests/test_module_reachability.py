@@ -36,6 +36,9 @@ from pathlib import Path
 
 import pytest
 
+#: no compile, no corpus, no pipeline, no subprocess -- see docs/testing.md
+pytestmark = pytest.mark.fast
+
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SOURCE_ROOTS = (PROJECT_ROOT / "src" / "rigby_poc", PROJECT_ROOT / "evals")

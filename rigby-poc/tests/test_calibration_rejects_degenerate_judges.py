@@ -37,6 +37,9 @@ from evals.calibration_stats import (
     evaluate_gate,
 )
 
+#: compiles, corpus, pipeline or subprocess -- see docs/testing.md
+pytestmark = pytest.mark.medium
+
 THRESHOLDS = GateThresholds(
     max_acceptable_severity=0.35,
     min_sensitivity=0.85,

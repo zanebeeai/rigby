@@ -9,6 +9,11 @@ from evals.calibrate_judge import (
     structural_prefilter_record,
 )
 
+import pytest
+
+#: no compile, no corpus, no pipeline, no subprocess -- see docs/testing.md
+pytestmark = pytest.mark.fast
+
 
 def test_calibration_thresholds_require_all_three_metrics() -> None:
     unary = [

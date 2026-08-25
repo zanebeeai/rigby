@@ -6,6 +6,11 @@ from pathlib import Path
 from evals.goal_audit import _candidate_trace_failures
 from evals.select_structural_sweep import FIXTURE, run_sweep_selection
 
+import pytest
+
+#: compiles, corpus, pipeline or subprocess -- see docs/testing.md
+pytestmark = pytest.mark.medium
+
 
 def _fixture(tmp_path: Path) -> Path:
     cases = []

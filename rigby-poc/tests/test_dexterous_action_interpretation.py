@@ -20,6 +20,9 @@ from rigby_poc.models import (
 from rigby_poc.planner import OfflinePlanner, OpenAIPlanner, PlannerSelection
 from rigby_poc.primitives import hand_pose
 
+#: compiles, corpus, pipeline or subprocess -- see docs/testing.md
+pytestmark = pytest.mark.medium
+
 
 PROMPT = (
     "use your right thumb to one by one count each of the fingers on your "

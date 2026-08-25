@@ -35,6 +35,9 @@ from rigby_poc.planner import (
     PlannerSelection,
 )
 
+#: compiles, corpus, pipeline or subprocess -- see docs/testing.md
+pytestmark = pytest.mark.medium
+
 
 def _program(prompt: str):
     scene = default_scene()

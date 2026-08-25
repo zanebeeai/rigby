@@ -28,7 +28,13 @@ from tests.capture_e2e_server import frontend_prerequisites, serve_capture_app
 
 
 _MISSING = frontend_prerequisites()
-pytestmark = pytest.mark.skipif(_MISSING is not None, reason=str(_MISSING))
+#: needs a real browser -- see docs/testing.md. `slow` is never implied by the
+#: default invocation, and the skipif stays so a machine without npm/Chrome
+#: skips cleanly rather than failing.
+pytestmark = [
+    pytest.mark.slow,
+    pytest.mark.skipif(_MISSING is not None, reason=str(_MISSING)),
+]
 
 RESULT_ID = "000001-capture-integrity"
 PROMPT = "Throw up a hang-ten sign with your right hand."

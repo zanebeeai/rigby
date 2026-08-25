@@ -9,6 +9,11 @@ from rigby_poc.models import CompileRequest, PlanRequest, default_scene
 from rigby_poc.planner import OfflinePlanner
 from rigby_poc.store import ResultStore
 
+import pytest
+
+#: compiles, corpus, pipeline or subprocess -- see docs/testing.md
+pytestmark = pytest.mark.medium
+
 
 ROOT = Path(__file__).resolve().parents[1]
 

@@ -14,6 +14,9 @@ import pytest
 from rigby_poc.analysis import registry
 from rigby_poc.models import BodyAction, ObjectAction
 
+#: compiles, corpus, pipeline or subprocess -- see docs/testing.md
+pytestmark = pytest.mark.medium
+
 
 def test_every_body_action_has_a_registry_entry() -> None:
     missing = [action.name for action in BodyAction if action not in registry.BODY_ANALYZERS]

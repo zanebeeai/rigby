@@ -9,6 +9,11 @@ from evals.complex_judge_calibration import (
     summarize_complex_judge_calibration,
 )
 
+import pytest
+
+#: no compile, no corpus, no pipeline, no subprocess -- see docs/testing.md
+pytestmark = pytest.mark.fast
+
 
 def _comparison(winner: str, *, consistent: bool = True) -> dict:
     calls = [

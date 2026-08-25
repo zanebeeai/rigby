@@ -7,6 +7,9 @@ import pytest
 
 from evals.judge_human_review import create_judge_human_review, score_judge_human_review
 
+#: no compile, no corpus, no pipeline, no subprocess -- see docs/testing.md
+pytestmark = pytest.mark.fast
+
 
 def _write_fixture(root: Path, *, unstable: int = 0) -> Path:
     run = root / "calibration" / "run-01"

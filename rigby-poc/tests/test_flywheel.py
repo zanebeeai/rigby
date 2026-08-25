@@ -14,6 +14,11 @@ from rigby_poc.judge import RepairPatch
 from rigby_poc.models import CompileRequest, Intent, PlanRequest, PrimitiveKind, default_scene
 from rigby_poc.planner import OfflinePlanner
 
+import pytest
+
+#: compiles, corpus, pipeline or subprocess -- see docs/testing.md
+pytestmark = pytest.mark.medium
+
 
 def _program():
     scene = default_scene()

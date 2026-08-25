@@ -20,6 +20,9 @@ import pytest
 from evals.capture import capture_deadline_s, subprocess_timeout_s
 from rigby_poc.pipeline import _capture_budget_s, _run_capture, capture_in_subprocess
 
+#: compiles, corpus, pipeline or subprocess -- see docs/testing.md
+pytestmark = pytest.mark.medium
+
 
 def _alive(pid: int) -> bool:
     if os.name == "posix":

@@ -15,6 +15,14 @@ narrow about what counts as publishing:
   requirement; it makes no claim about observed data and needs no n.
 * A **statistical parameter** is not a published rate. "95% confidence interval",
   "50% detection threshold" name a method, not a result.
+* A **prevalence** is not a published rate. "87-94% of frames carry more than 5
+  degrees of abduction" describes how often a thing occurs in a population; there
+  is no prior state it improved on and no null model it beats, so demanding a
+  baseline invites a fabricated comparison ("against a baseline of 0% of frames").
+  It still needs its n, and the scanner still requires one. Named by lane
+  ``judge`` as the exclusion most likely to tempt someone into inventing a
+  baseline to silence the guard, so it is documented as deliberate rather than
+  left to look incidental.
 * A **measured claim** is a published rate and must carry both.
 
 Waivers exist, carry an owner and a reason, and are themselves checked: a waived
@@ -40,6 +48,20 @@ found by other lanes:
    is a ``not_measured`` sentinel distinct from a measured zero, not a change
    here.
 
+1a. **And ``success`` itself is partly one of them.** ``finger_assertions`` is a
+   tautology for every hand shape but ``HANG_TEN``: the else branch is
+   ``{"shape_defined": len(actual_curls) == 5}`` and the curl helper iterates a
+   five-entry table, so it returns exactly five or raises -- it cannot be False.
+   ``compile_motion`` folds ``all(assertions.values())`` into ``success``, so it
+   reads as a load-bearing hand-shape gate and is not one. Measured by lane
+   ``analysis`` at 5 of 6 gesture/strike/grab fixture cases.
+
+   This is the worst version of the hole, because ``success`` is the field a
+   published rate is most likely to be computed over. **A "success rate" is not
+   a rate over successes**; for those shapes it is a rate over a constant folded
+   into a conjunction. n and baseline are both correct and the quantity is not
+   what its name says.
+
 2. **Carried-over observations.** Mutations recompile nothing, so a mutated clip
    inherits metrics describing the pre-mutation motion -- including
    ``structural_valid``. A rate over "clips that passed structural validation"
@@ -53,8 +75,20 @@ found by other lanes:
    ``config/thresholds.v1.json`` requiring ``reference_frame`` on any measured
    source.
 
-The common shape is that n and baseline describe the *sample*, and none of these
-three is a defect of the sample.
+4. **An n that is the wrong quantity.** "99.8% of a 5392 ms run across 44 spans"
+   satisfies every check here: it names a number, and 44 looks like an n. But 44
+   counts spans *within* one run, not runs -- the claim is *this run was 99.8%
+   stage-covered*, not *runs are 99.8% stage-covered*, and only the second is a
+   rate. No scanner can separate those from the text; it would have to know what
+   the denominator is a denominator of. Named by lane ``judge``.
+
+The common shape of the first three is that n and baseline describe the *sample*,
+and none of them is a defect of the sample. The fourth is different: the sample
+description is present and is about the wrong thing.
+
+**So this catches rates MISSING their n and baseline. It does not catch a rate
+whose n is the wrong quantity.** That is worth stating plainly rather than
+letting the name imply the stronger property.
 """
 
 from __future__ import annotations
@@ -186,29 +220,73 @@ def _iter_markdown(root: Path) -> Iterator[Path]:
         yield path
 
 
+def _paragraphs(text: str) -> list[tuple[int, str]]:
+    """Blank-line-delimited blocks, with the 1-based line each starts on.
+
+    The unit of judgement is the paragraph, not the line. Prose wraps, so a rate
+    and the n that qualifies it routinely land on adjacent lines -- and a
+    line-scoped check reports that as a bare rate, which is a false positive in
+    the guard rather than a defect in the writing. It found three in this
+    repository's own documentation before this changed.
+
+    Widening the window does weaken the check: a paragraph offers more places for
+    an unrelated number to look like an n. That is the right trade, because the
+    alternative trains the reader to dismiss it.
+    """
+
+    blocks: list[tuple[int, str]] = []
+    start = 1
+    current: list[str] = []
+    fenced = False
+    for number, line in enumerate(text.splitlines(), 1):
+        if line.lstrip().startswith("```"):
+            fenced = not fenced
+            if current:
+                blocks.append((start, "\n".join(current)))
+                current = []
+            continue
+        if fenced or line.startswith("    ") and not current:
+            # A fenced or indented block is a transcript, not a claim. `97% cpu`
+            # in pasted `time` output is not a published rate, and flagging it
+            # teaches the reader to skim past real findings.
+            continue
+        if line.strip():
+            if not current:
+                start = number
+            current.append(line)
+        elif current:
+            blocks.append((start, "\n".join(current)))
+            current = []
+    if current:
+        blocks.append((start, "\n".join(current)))
+    return blocks
+
+
 def scan_prose(path: Path) -> list[Finding]:
     """Published rates in a markdown file that lack their n or their baseline."""
 
     findings: list[Finding] = []
-    for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
-        for match in RATE_IN_PROSE.finditer(line):
-            if TARGET_PHRASING.search(line) or STATISTICAL_PHRASING.search(line):
-                continue
-            missing = tuple(
-                label
-                for label, pattern in (("its n", N_PHRASING), ("its baseline", BASELINE_PHRASING))
-                if not pattern.search(line)
-            )
-            if missing:
-                findings.append(
-                    Finding(
-                        path=_display(path),
-                        locator=str(number),
-                        rate=match.group(0),
-                        missing=missing,
-                        context=line.strip()[:120],
-                    )
+    for start, block in _paragraphs(path.read_text(encoding="utf-8")):
+        if TARGET_PHRASING.search(block) or STATISTICAL_PHRASING.search(block):
+            continue
+        missing = tuple(
+            label
+            for label, pattern in (("its n", N_PHRASING), ("its baseline", BASELINE_PHRASING))
+            if not pattern.search(block)
+        )
+        if not missing:
+            continue
+        for match in RATE_IN_PROSE.finditer(block):
+            offset = block[: match.start()].count("\n")
+            findings.append(
+                Finding(
+                    path=_display(path),
+                    locator=str(start + offset),
+                    rate=match.group(0),
+                    missing=missing,
+                    context=" ".join(block.split())[:120],
                 )
+            )
     return findings
 
 

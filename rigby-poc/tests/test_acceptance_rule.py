@@ -19,6 +19,9 @@ from rigby_poc.judge import (
     meets_acceptance_thresholds,
 )
 
+#: no compile, no corpus, no pipeline, no subprocess -- see docs/testing.md
+pytestmark = pytest.mark.fast
+
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 

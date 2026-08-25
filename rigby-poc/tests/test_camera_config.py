@@ -17,6 +17,9 @@ import pytest
 
 from evals.generate_camera_ts import CAMERA_CONFIG, GENERATED_TS, render
 
+#: no compile, no corpus, no pipeline, no subprocess -- see docs/testing.md
+pytestmark = pytest.mark.fast
+
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 

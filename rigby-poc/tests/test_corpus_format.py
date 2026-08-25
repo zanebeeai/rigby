@@ -35,6 +35,9 @@ from rigby_poc.models import (
     default_scene,
 )
 
+#: compiles, corpus, pipeline or subprocess -- see docs/testing.md
+pytestmark = pytest.mark.medium
+
 SAMPLE_CASE_ID = "gesture-shaka-playful-right"
 
 

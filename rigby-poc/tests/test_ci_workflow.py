@@ -14,11 +14,15 @@ in capture output directories, and the ``PermissionError`` retry ladder in
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from typing import Any
 
 import pytest
 import yaml
+
+#: no compile, no corpus, no pipeline, no subprocess -- see docs/testing.md
+pytestmark = pytest.mark.fast
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -155,6 +159,32 @@ def test_main_pushes_are_never_cancelled_by_a_later_merge() -> None:
     )
     assert "pull_request" in cancel, (
         "only pull_request runs may cancel an in-progress run"
+    )
+
+
+def test_ci_times_the_fast_tier_against_its_budget() -> None:
+    """Plan 09 §5: the tier fails if it exceeds 30s, so it cannot rot quietly."""
+
+    steps = _steps(CI, "python")
+    timed = [step for step in steps if "-m fast" in step.get("run", "")]
+    assert timed, "CI must time the fast tier"
+    command = timed[0]["run"]
+    # Match the number, not a prefix of it: `"-gt 30" in "-gt 300"` is true, and
+    # that substring check passed a budget loosened tenfold.
+    budgets = [int(value) for value in re.findall(r"-gt\s+(\d+)", command)]
+    assert budgets == [90], (
+        f"the fast tier ceiling must be the recorded 90s rot ceiling, found {budgets}. "
+        f"It is deliberately loose: the 30s budget in plan 09 §5 has never been "
+        f"measured on a controlled machine. Tighten it from CI data, not from the plan."
+    )
+    assert "::notice::" in command, (
+        "the tier duration must be reported every run, not only on failure -- the "
+        "trend is what shows rot"
+    )
+    assert "exit 1" in command, "exceeding the budget must fail the job"
+    assert timed[0].get("if"), (
+        "the budget is a claim about a developer machine; it must not run on the "
+        "Windows runner, which is roughly 4x slower for unrelated reasons"
     )
 
 

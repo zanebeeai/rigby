@@ -43,6 +43,9 @@ from rigby_poc.judge_prompts import (
 )
 from rigby_poc.models import Intent
 
+#: compiles, corpus, pipeline or subprocess -- see docs/testing.md
+pytestmark = pytest.mark.medium
+
 
 PROMPT_TEXT = "Throw a left hook then step over the box."
 DIAGNOSTIC_SENTINEL = 0.1234567

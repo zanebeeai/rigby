@@ -16,6 +16,9 @@ from evals.prune_run import (
     plan_prune,
 )
 
+#: no compile, no corpus, no pipeline, no subprocess -- see docs/testing.md
+pytestmark = pytest.mark.fast
+
 
 def _store(root: Path, result_ids: list[str]) -> None:
     for result_id in result_ids:

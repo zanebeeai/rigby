@@ -29,6 +29,9 @@ from evals.corpus.seed_cases import SEED_CASES_BY_ID
 from pydantic import ValidationError
 from rigby_poc.models import BodyAction, HandShape, Intent, ObjectAction, StrikeType
 
+#: compiles, corpus, pipeline or subprocess -- see docs/testing.md
+pytestmark = pytest.mark.medium
+
 MANIFEST = load_manifest()
 CASES = load_corpus()
 CASES_BY_ID = {case.id: case for case in CASES}

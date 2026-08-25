@@ -3,6 +3,11 @@ from __future__ import annotations
 import tomllib
 from pathlib import Path
 
+import pytest
+
+#: no compile, no corpus, no pipeline, no subprocess -- see docs/testing.md
+pytestmark = pytest.mark.fast
+
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 

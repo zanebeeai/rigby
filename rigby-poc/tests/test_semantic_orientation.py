@@ -9,6 +9,11 @@ from evals.models import Status
 from evals.orientation import camera_orientation_gate, inspect_egocentric_camera_source, semantic_forward_gate
 from evals.runner import DEFAULT_SCENE
 
+import pytest
+
+#: compiles, corpus, pipeline or subprocess -- see docs/testing.md
+pytestmark = pytest.mark.medium
+
 
 ROOT = Path(__file__).resolve().parents[1]
 PROFILE = json.loads((ROOT / "config" / "rig_profiles" / "mesh2motion-human-vrm1.json").read_text(encoding="utf-8"))

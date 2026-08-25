@@ -27,6 +27,11 @@ from rigby_poc.planner import (
     PlannerSelection,
 )
 
+import pytest
+
+#: compiles, corpus, pipeline or subprocess -- see docs/testing.md
+pytestmark = pytest.mark.medium
+
 
 TRAVEL_PROMPT = (
     'roll your forearms around eachother repeatedly, as if you are indicating '

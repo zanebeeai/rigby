@@ -39,6 +39,9 @@ from rigby_poc.observability import Tracer
 from rigby_poc.pipeline import PipelineRunStore
 from rigby_poc.transcript import load
 
+#: compiles, corpus, pipeline or subprocess -- see docs/testing.md
+pytestmark = pytest.mark.medium
+
 
 PROMPT = "throw a right jab"
 # Consecutive stages hand over inside one function; anything above this is real work

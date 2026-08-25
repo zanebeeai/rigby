@@ -20,6 +20,9 @@ from rigby_poc.models import (
 )
 from rigby_poc.planner import OfflinePlanner, OpenAIPlanner, PlannerSelection
 
+#: compiles, corpus, pipeline or subprocess -- see docs/testing.md
+pytestmark = pytest.mark.medium
+
 
 @pytest.mark.parametrize(
     ("prompt", "hands", "cycles", "amplitude"),

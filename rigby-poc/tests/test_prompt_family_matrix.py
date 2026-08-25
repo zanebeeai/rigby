@@ -6,6 +6,9 @@ from rigby_poc.compiler import compile_motion
 from rigby_poc.models import CompileRequest, Intent, PlanRequest, default_scene
 from rigby_poc.planner import plan_motion
 
+#: compiles, corpus, pipeline or subprocess -- see docs/testing.md
+pytestmark = pytest.mark.medium
+
 
 @pytest.mark.parametrize(
     ("family", "prompt", "intent"),

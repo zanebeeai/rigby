@@ -9,6 +9,9 @@ import pytest
 from evals.criteria import load_criteria as real_load_criteria
 from evals import review
 
+#: compiles, corpus, pipeline or subprocess -- see docs/testing.md
+pytestmark = pytest.mark.medium
+
 
 def _rotation(angle: float) -> dict[str, float]:
     return {"x": math.sin(angle / 2), "y": 0.0, "z": 0.0, "w": math.cos(angle / 2)}

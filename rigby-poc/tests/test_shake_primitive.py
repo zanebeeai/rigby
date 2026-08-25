@@ -16,6 +16,11 @@ from rigby_poc.models import (
 )
 from rigby_poc.planner import OfflinePlanner
 
+import pytest
+
+#: compiles, corpus, pipeline or subprocess -- see docs/testing.md
+pytestmark = pytest.mark.medium
+
 
 PROMPT = (
     'Throw up a "hang-ten" sign with your right hand, there should be a swift motion up to '

@@ -19,6 +19,11 @@ from evals.capture import (
     pose_sha256,
 )
 
+import pytest
+
+#: compiles, corpus, pipeline or subprocess -- see docs/testing.md
+pytestmark = pytest.mark.medium
+
 
 def test_phase_sampling_uses_compiled_phase_ranges() -> None:
     payload = {
