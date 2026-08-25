@@ -43,3 +43,12 @@ pythonpath = ["src", "."]
 testpaths = ["tests"]
 python_files = ["test_*.py", "backend_*.py"]
 addopts = "-q"
+# Registered here in 08c so lanes can mark their own files ahead of 09b without
+# emitting PytestUnknownMarkWarning. 09b adds the default `-m "fast or medium"`
+# selection and the marker-completeness test; until then every marker is
+# declarative only and nothing is deselected. See docs/testing.md.
+markers = [
+  "fast: no compile, no pipeline, no corpus, no subprocess -- pure units, contract, schema",
+  "medium: live compiles, corpus recompiles, flywheel with stubs",
+  "slow: render, real browser, model calls, calibration -- opt-in, never implied",
+]

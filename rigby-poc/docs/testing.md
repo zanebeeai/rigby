@@ -15,8 +15,34 @@ That is a property worth protecting, so it is stated here and enforced by
 | Frontend type-check | `npm --prefix frontend run build` |
 | Coverage (rarely — see below) | `COVERAGE_CORE=sysmon uv run pytest --cov=rigby_poc --cov=evals` |
 
-Tiering markers (`fast` / `medium` / `slow`) arrive in PR 09b; this file gains the
-`-m` invocations then.
+## Tiers
+
+Three markers are registered, and each lane marks its own files:
+
+| Marker | Contents |
+| --- | --- |
+| `fast` | no compile, no pipeline, no corpus, no subprocess -- pure units, contract, schema |
+| `medium` | live compiles, corpus recompiles, flywheel with stubs |
+| `slow` | render, real browser, model calls, calibration -- opt-in, never implied |
+
+Declare at module scope, as the first statement after the imports:
+
+```python
+import pytest
+
+pytestmark = pytest.mark.medium
+```
+
+**Until 09b lands these are declarative only** -- registered so marking a file
+emits no warning, but nothing is deselected and the default invocation still runs
+everything. 09b adds the default `-m "fast or medium"` selection and a
+marker-completeness test that fails collection on an unmarked file.
+
+Measured for 09b, so the budget is not mistaken for a margin: the 30 cheapest of
+41 test files total **29.3 s** against the 30 s `fast` budget, on a suite that
+went 344 to 920 tests in a single session. It is met but not durable. When it
+breaches, re-derive the budget rather than demoting a file to `medium` -- that is
+how a tier stops meaning anything.
 
 ## Coverage is not on by default, and must not become so
 
