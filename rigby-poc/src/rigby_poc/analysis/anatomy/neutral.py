@@ -182,6 +182,15 @@ def rest_relative(anatomical_deg: float, offset_deg: float) -> float:
     intent and would have silently swallowed any *other* ``None`` -- a future
     bone whose offset failed to derive would have been converted with a zero
     offset and reported as an ordinary limit.
+
+    **A delta does not need this function.** The offset is a constant, so it
+    cancels in any difference: adding 30 degrees anatomically and adding 30
+    degrees rest-relatively are the same 30 degrees. Convert an *absolute*
+    angle -- a limit, or a claim about where a mutated clip lands -- and never a
+    magnitude. Lane `groundtruth` caught this before building on it: applying
+    the offset to a mutation magnitude would shift every level of every severity
+    sweep by a constant, giving a curve that is monotonic, plausible, correctly
+    shaped and uniformly wrong.
     """
 
     if offset_deg is None:
