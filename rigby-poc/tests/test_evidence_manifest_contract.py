@@ -26,6 +26,7 @@ from pathlib import Path
 import pytest
 from PIL import Image
 
+from evals.criteria import load_criteria
 from rigby_poc.judge import _manifest
 
 pytestmark = pytest.mark.medium
@@ -41,10 +42,16 @@ CAPTURE_CONTRACT_KEYS = {
 }
 
 
-def _write(tmp_path: Path, *, snapshot_overrides: dict | None = None, **manifest_overrides) -> Path:
+def _write(
+    tmp_path: Path,
+    *,
+    views: tuple[str, ...] = ("ego", "orbit"),
+    snapshot_overrides: dict | None = None,
+    **manifest_overrides,
+) -> Path:
     tmp_path.mkdir(parents=True, exist_ok=True)
     snapshots = []
-    for index, view in enumerate(("ego", "orbit"), start=1):
+    for index, view in enumerate(views, start=1):
         buffer = io.BytesIO()
         Image.new("RGB", (1600, 900), color=(10 * index, 30, 60)).save(buffer, format="PNG")
         image = buffer.getvalue()
@@ -92,6 +99,42 @@ def _write(tmp_path: Path, *, snapshot_overrides: dict | None = None, **manifest
     path = tmp_path / "evidence-manifest.json"
     path.write_text(json.dumps(payload), encoding="utf-8")
     return path
+
+
+#: Every place in `acceptance_criteria.yaml` that publishes a view vocabulary.
+#: Plan 08 §1.1 item 5: `gesture` said `egocentric` and `autonomous_pipeline`
+#: said `ego`, and neither was checked against the vocabulary the judge accepts.
+REQUIRED_VIEW_SITES = ("autonomous_pipeline", "gesture")
+
+
+def test_the_published_required_views_are_names_the_judge_accepts(tmp_path: Path) -> None:
+    """Plan 08 §1.1 item 5, asserted by use rather than by comparison.
+
+    `judge._manifest` refuses any view outside `{"ego", "orbit"}`, so a criteria
+    file naming `egocentric` describes evidence that cannot exist. Nothing reads
+    `required_views` today, which is exactly why the two sites were free to
+    disagree for the whole life of the file -- a comparison against a hardcoded
+    literal here would restate the vocabulary rather than check it, so the guard
+    drives the declared names through the verifier instead.
+    """
+
+    criteria = load_criteria()
+    seen = 0
+    for site in REQUIRED_VIEW_SITES:
+        views = criteria[site]["required_views"]
+        assert views, f"{site}.required_views is empty"
+        _, snapshots = _manifest(_write(tmp_path / site, views=tuple(views)))
+        assert [snapshot["view"] for snapshot in snapshots] == list(views)
+        seen += 1
+    assert seen == len(REQUIRED_VIEW_SITES)
+
+
+def test_the_two_published_view_vocabularies_agree() -> None:
+    """One vocabulary, published twice. They drifted once; they may not again."""
+
+    criteria = load_criteria()
+    published = {site: criteria[site]["required_views"] for site in REQUIRED_VIEW_SITES}
+    assert len(set(map(tuple, published.values()))) == 1, published
 
 
 def test_a_05_era_manifest_parses(tmp_path: Path) -> None:
