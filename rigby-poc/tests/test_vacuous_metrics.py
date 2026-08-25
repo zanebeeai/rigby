@@ -153,3 +153,50 @@ def test_the_whole_body_path_compares_its_kinematics_to_no_limit(
         "angular" in failure or "jerk" in failure
         for failure in clip.metrics["structural_failures"]
     ), "a kinematic ceiling now fires on the whole-body path; update this file"
+
+
+def test_the_support_metrics_measure_solver_convergence_not_motion() -> None:
+    """The three keys 02b unlocked read ~5000x below their own gates.
+
+    Plan 02 §1.4 called persisting ``support_constraints`` "the highest-leverage
+    edit in this PR" because it unblocks four metrics. It does — but on a
+    generated clip those metrics measure how well the IK solver converged, not
+    whether the motion is good. Across the whole-body corpus,
+    ``max_support_foot_target_error_m`` sits at ~2e-6 m against a 0.012 gate and
+    ``max_support_foot_slide_per_frame_m`` at ~1e-7 against 0.006. They cannot
+    fire unless the solver fails.
+
+    That does not make persisting them wrong: a mutation moves the achieved foot
+    while the commanded target stays fixed, which is exactly what makes "the foot
+    missed where it was told to go" detectable, and is why plan 06 carries them
+    over unchanged. But the plan's framing oversold what they measure *today*,
+    and this pins the distinction so nobody reads a passing gate as evidence the
+    motion was checked.
+    """
+
+    clip = _compile("full_body_walk")
+
+    assert clip.metrics["max_support_foot_target_error_m"] < 1e-5
+    assert clip.metrics["max_support_foot_slide_per_frame_m"] < 1e-5
+
+
+def test_a_climb_publishes_perfect_support_contact_having_measured_none() -> None:
+    """The fourth instance, and it is in code this lane moved.
+
+    The climb path records ``climb_support_constraints`` and never
+    ``support_constraints``, so the support block runs over an empty list.
+    ``max(..., default=0.0)`` gives two zeros that read as perfect tracking, and
+    ``support_contacts / len(...) if ... else 1.0`` gives
+    ``support_contact_fraction: 1.0`` — a positive claim of full support contact
+    on a clip where nothing counted a single contact.
+
+    Same shape as ``lost_table_contact: True`` with no table in the scene: not
+    merely unmeasured, but asserted in the direction that passes.
+    """
+
+    clip = _compile("full_body_climb")
+
+    assert clip.metrics["support_constraints"] == []
+    assert clip.metrics["max_support_foot_target_error_m"] == 0.0
+    assert clip.metrics["max_support_foot_slide_per_frame_m"] == 0.0
+    assert clip.metrics["support_contact_fraction"] == 1.0
