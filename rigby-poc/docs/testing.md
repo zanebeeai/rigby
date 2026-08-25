@@ -317,15 +317,34 @@ git has heard of the file:
 ```bash
 mkdir -p /tmp/rigby-<lane>-antitaut
 cp <files> /tmp/rigby-<lane>-antitaut/            # tracked or not
+[ -s /tmp/rigby-<lane>-antitaut/<basename> ] || { echo "backup empty"; exit 1; }
 # ... break it, run the new test, show it RED ...
 cp /tmp/rigby-<lane>-antitaut/<basenames> <paths>
 cmp <path> /tmp/rigby-<lane>-antitaut/<basename>  # per file; silence is the pass
 ```
 
-`cmp` per file cannot degenerate the way a diff-of-diffs can: there is no state
-in which both sides are trivially equal because both are absent. And if you do
-use the git form, `git status --porcelain` first -- a `??` line means that file
-is not in your patch.
+**Assert the backup is non-empty BEFORE mutating, or `cmp` certifies the
+damage.** If the `cp` produced nothing, the "restore" copies an empty file over
+your source and `cmp` then compares empty against empty and passes. Measured: a
+20-byte source became 0 bytes and the check said the restore was correct. That
+is the empty-versus-empty collapse one layer below the `git diff` one, inside
+the fix for it -- and it is the same rule this file already gives for evidence
+collections, *assert non-emptiness for a collection you did not construct*,
+pointed at the backup instead of at a scan. Found by lane `judge`.
+
+`cmp` per file still beats a diff-of-diffs, because there is no state in which
+both sides are trivially equal *for a reason you did not create* -- but it is
+only sound once the backup is known to exist. And if you use the git form,
+`git status --porcelain` first: a `??` line means that file is not in your patch.
+
+**Nothing tests the recipes in this file.** `test_invocations` guards what it
+says about commands and `test_markers_complete` guards what it says about tiers,
+but the procedures are prose that no test executes -- so a documented procedure
+is a guard nobody runs. Both collapses above were found by *using* the recipe,
+within an hour of it landing, in the document that describes that exact failure
+family. A scratch-directory test that extracts these blocks and executes them
+against a throwaway file is the missing guard; `test_invocations` already parses
+this file, so the extraction half exists. Named by lane `judge`.
 
 If you must recover from an existing stash: find it by sha with
 `git stash list --format='%H %gs'` and `git stash apply <sha>`. **`drop` cannot
