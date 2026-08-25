@@ -42,11 +42,32 @@ from .spec import Applicability, MutationSpec
 #: purpose, so it is a visual-anatomy defect for a model grader rather than a
 #: deterministic-gate failure.  It is therefore carried as a semantic mutation with
 #: an asserted program-level difference, per plan 06 section 6.1.
+#:
+#: **Corrected in 06b: the four ids here were names no check emits.**  06a took them
+#: from plan 06 section 3.3 -- ``anatomy.wrist.swing``, ``anatomy.wrist.twist``,
+#: ``signal.min_jerk`` and ``signal.sparc`` -- and measured over all 47 corpus cases
+#: :func:`rigby_poc.analysis.validate` emits none of them; ``min_jerk`` and ``sparc``
+#: occur nowhere in the repository outside that one declaration.  All 28 ported specs
+#: therefore pointed at checks that could not fire, and the detection matrix would
+#: have rendered them identically to "no detector exists" -- a total detection
+#: failure by the deterministic layer, as a result rather than as a visible gap.
+#: The real ids are below, and :func:`evals.mutations.checks.require_known_targets`
+#: now refuses a spec that names one that is not emitted.
 LEGACY_FAMILIES: dict[str, tuple[MutationFamily, tuple[str, ...]]] = {
-    "wrist_rotation": (MutationFamily.ANATOMY, ("anatomy.wrist.swing", "anatomy.wrist.twist")),
+    # One check covers both swing and twist; there is no separate id per axis.
+    "wrist_rotation": (MutationFamily.ANATOMY, ("anatomy.wrist.swing_twist_limit",)),
     "fist_shape": (MutationFamily.SEMANTIC, ()),
     "open_middle_fingers": (MutationFamily.SEMANTIC, ()),
-    "timing": (MutationFamily.TIMING, ("signal.min_jerk", "signal.sparc")),
+    # The legacy timing corruptions perturb when the motion happens, which this
+    # repo measures as angular kinematics and frame-to-frame discontinuity.
+    "timing": (
+        MutationFamily.TIMING,
+        (
+            "signal.angular.jerk",
+            "signal.angular.acceleration",
+            "contract.clip.rotational_discontinuities",
+        ),
+    ),
     "wrong_joint_shake": (MutationFamily.SEMANTIC, ()),
 }
 
