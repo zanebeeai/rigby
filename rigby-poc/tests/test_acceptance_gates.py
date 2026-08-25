@@ -180,11 +180,18 @@ def test_every_consumer_of_the_accept_flag_is_a_known_one() -> None:
     not a diff nobody read.
     """
     known = {
+        # The five that copy the model's self-reported flag verbatim (07 §1.1).
         "evals/flywheel.py",
         "evals/rerank_existing.py",
         "evals/select_structural_sweep.py",
         "evals/calibrate_judge.py",
         "evals/autonomous_goal_audit.py",
+        # 10d's driver, added deliberately after this guard caught it. It reads
+        # the *derived* accept off `assemble_split_score` rather than a
+        # self-reported one, so it does not bypass the decision layer -- it is
+        # downstream of it. Reviewed and admitted rather than allowlisted to make
+        # a red suite go green.
+        "evals/calibration/driver.py",
     }
     found: set[str] = set()
     for path in sorted((PROJECT_ROOT / "evals").rglob("*.py")):
