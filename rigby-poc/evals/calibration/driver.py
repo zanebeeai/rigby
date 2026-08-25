@@ -24,10 +24,17 @@ threshold to sit inside. Pooling them inflates the sweep, so they are tagged by
 
 **`evals.corruptions` is not used here and must not be.** `corrupt_clip` labels
 its own output — it sets `success=False`, attaches a `Failure`, and writes
-`metrics["deliberate_corruption"]` — and `calibrate_judge` scored the conjunction
-of the grader's accept flag with `structural_valid`, which the corruption forces
-false. Every rate that suite produced was therefore not a function of the
-grader's verdict at all. `evals.mutations.legacy` strips all three.
+`metrics["deliberate_corruption"]` — and the legacy calibration scorer took
+`accept AND structural_valid` over a corruption built to force the second term
+false. So every rate that suite published was **not a function of the grader's
+verdict at all**: the conjunction was already false before the grader answered.
+The defect was not that the number was wrong, it was that the number was not a
+function of the thing it was named after. (The scorer was `evals/calibrate_judge.py`,
+deleted under L3 gate item 4; the argument above does not depend on it existing.)
+`evals.mutations.legacy` strips all three labels — and note it still imports
+`corrupt_clip` itself, deliberately, to keep the 28-spec port bit-identical to the
+motion the previous calibration used. That import is live and is not part of the
+retirement.
 """
 
 from __future__ import annotations
