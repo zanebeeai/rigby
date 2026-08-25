@@ -29,6 +29,7 @@ from evals.mutations.checks import (
 )
 from evals.mutations.clipping import limb_through_torso_sweep
 from evals.mutations.legacy import legacy_specs
+from evals.mutations.structural import structural_gate_ids
 from evals.mutations.signal import jitter_sweep
 from evals.mutations.timing import freeze_sweep, snap_sweep
 from rigby_poc.analysis import validate
@@ -79,11 +80,28 @@ def test_the_declared_registry_is_what_the_analyzer_emits(
     # declaration silently rot back into a plan-derived wish list, which is the
     # defect this module was written for.
     #
-    # Against `known_check_ids()` rather than `FIXED_CHECK_IDS` since lane `analysis`
-    # wired `rom_checks` into `validate()`: the ROM ids are generated per (bone, dof)
-    # from the committed document, so the equality still holds and still catches a
-    # drifting declaration -- it just now spans both halves of the registry.
-    assert set(emitted_over_corpus) == known_check_ids()
+    # `known_check_ids()` spans **two namespaces** and only one of them is emitted by
+    # `validate()`. The `structural.*` ids name gates that append a string to
+    # `metrics["structural_failures"]` and deliberately emit no `CheckResult` -- that
+    # is what they are for -- so an equality against the whole registry cannot hold
+    # and would be wrong to make hold. The emitted half is `known_check_ids()` minus
+    # the structural half, and it is still asserted by **equality** so a drifting
+    # declaration is still caught on both sides.
+    emitting = known_check_ids() - structural_gate_ids()
+    assert set(emitted_over_corpus) == emitting
+
+
+def test_no_structural_id_is_ever_emitted_as_a_check(
+    emitted_over_corpus: dict[str, int],
+) -> None:
+    """The claim that licenses excluding them from the equality above.
+
+    Excluding a namespace from an assertion is only honest if its exclusion is
+    itself asserted. Otherwise the subtraction is a way of making a failing test
+    pass, which is indistinguishable from the fix at the point of the diff.
+    """
+    assert structural_gate_ids(), "an empty namespace would make this vacuous"
+    assert not (set(emitted_over_corpus) & structural_gate_ids())
 
 
 def test_the_declared_per_check_case_counts_are_the_measured_ones(
