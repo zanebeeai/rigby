@@ -205,6 +205,29 @@ def test_a_rate_outside_the_fence_is_still_caught(tmp_path) -> None:
     assert [finding.rate for finding in scan_prose(path)] == ["82%"]
 
 
+def test_a_rate_in_an_inline_code_span_is_a_quotation(tmp_path) -> None:
+    """`[100%]` is pytest's progress output, not a published rate.
+
+    The second false positive this scanner produced against this repository's own
+    documentation. A code span quotes; it does not claim.
+    """
+
+    path = tmp_path / "doc.md"
+    path.write_text(
+        "The entire output of a green run is a row of dots and a `[100%]`.\n",
+        encoding="utf-8",
+    )
+    assert scan_prose(path) == []
+
+
+def test_a_rate_outside_a_code_span_on_the_same_line_is_caught(tmp_path) -> None:
+    """Stripping spans must not swallow the prose around them."""
+
+    path = tmp_path / "doc.md"
+    path.write_text("Run `pytest -q` — the grader accepted 82%.\n", encoding="utf-8")
+    assert [finding.rate for finding in scan_prose(path)] == ["82%"]
+
+
 def test_a_bare_measured_rate_is_caught(tmp_path) -> None:
     path = tmp_path / "doc.md"
     path.write_text("The judge agreed with humans 90% of the time.", encoding="utf-8")

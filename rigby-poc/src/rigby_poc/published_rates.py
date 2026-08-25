@@ -138,6 +138,9 @@ BASELINE_PHRASING = re.compile(
     re.I,
 )
 
+#: An inline code span: a quotation of output or an identifier, never a claim.
+INLINE_CODE = re.compile(r"`[^`\n]*`")
+
 #: JSON keys whose value is a published rate.
 RATE_KEY = re.compile(r"(_rate|_fraction|agreement|consistency|accuracy|precision|recall)$", re.I)
 
@@ -253,7 +256,12 @@ def _paragraphs(text: str) -> list[tuple[int, str]]:
         if line.strip():
             if not current:
                 start = number
-            current.append(line)
+            # An inline code span is a quotation, not a claim -- `[100%]` is
+            # pytest's progress output. Blanked rather than removed so column
+            # offsets, and therefore reported line numbers, stay correct. Applied
+            # per line and after the fence check, because a fence marker is
+            # itself backticks.
+            current.append(INLINE_CODE.sub(lambda m: " " * len(m.group(0)), line))
         elif current:
             blocks.append((start, "\n".join(current)))
             current = []

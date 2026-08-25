@@ -66,10 +66,18 @@ def collected_files() -> list[Path]:
 
 
 def declared_tiers(source: str) -> set[str]:
-    """Tier markers named by a module-level ``pytestmark`` assignment."""
+    """Tier markers named by a **module-level** ``pytestmark`` assignment.
+
+    ``tree.body`` rather than ``ast.walk``: pytest honours ``pytestmark`` only at
+    module scope, so an assignment inside a function or a class does nothing at
+    runtime. Walking the whole tree accepted those, which meant the gate could
+    certify a file as tiered while pytest treated it as untiered -- the gate
+    passing on a property the runner does not have. Found by lane ``groundtruth``
+    asking whether placement mattered, before it cost anyone anything.
+    """
 
     found: set[str] = set()
-    for node in ast.walk(ast.parse(source)):
+    for node in ast.parse(source).body:
         if not isinstance(node, ast.Assign):
             continue
         if not any(
@@ -159,4 +167,22 @@ def test_a_function_level_marker_does_not_count_as_a_file_tier() -> None:
     """Tiering is per file. A single marked test does not tier its module."""
 
     source = "import pytest\n\n@pytest.mark.slow\ndef test_x():\n    pass\n"
+    assert declared_tiers(source) == set()
+
+
+@pytest.mark.parametrize(
+    "source",
+    [
+        "import pytest\ndef f():\n    pytestmark = pytest.mark.fast\n",
+        "import pytest\nclass C:\n    pytestmark = pytest.mark.fast\n",
+        "import pytest\nif True:\n    pytestmark = pytest.mark.fast\n",
+    ],
+)
+def test_a_pytestmark_that_is_not_module_level_does_not_tier_the_file(source: str) -> None:
+    """pytest ignores these, so the gate must too.
+
+    Accepting them would let a file pass the gate while the runner treats it as
+    untiered -- the gate certifying a property the thing it guards does not have.
+    """
+
     assert declared_tiers(source) == set()

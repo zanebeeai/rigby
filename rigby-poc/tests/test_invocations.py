@@ -18,6 +18,19 @@ pytestmark = pytest.mark.fast
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
+
+def _prose(path: Path) -> str:
+    """Document text with whitespace collapsed, lowercased.
+
+    Every substring check below has to run against this rather than the raw
+    file. Markdown wraps, so a phrase that reads as one sentence is split by a
+    newline in the source and a naive `in` check misses it -- which has now cost
+    three separate guards in this repository a false failure. Collapse first,
+    then match.
+    """
+
+    return " ".join(path.read_text(encoding="utf-8").split()).lower()
 PYPROJECT = PROJECT_ROOT / "pyproject.toml"
 TESTING_DOC = PROJECT_ROOT / "docs" / "testing.md"
 
@@ -65,6 +78,156 @@ def test_the_default_invocation_carries_nothing_else() -> None:
         f"addopts grew beyond the tier selection: {_addopts()!r}. Document the "
         "invocation in docs/testing.md instead of making everyone pay for it."
     )
+
+
+def test_the_doc_states_that_the_exit_code_is_the_only_green_signal() -> None:
+    """This suite prints no summary line, so `$?` is the only result.
+
+    A green run's entire output is dots and `[100%]`. That makes a completed
+    green run indistinguishable from a truncated one to anything reading the
+    text, and the reflex on seeing no `=== N passed ===` is to re-run a suite
+    that already passed. The rule has to be in the file, not in anyone's head.
+    """
+
+    text = TESTING_DOC.read_text(encoding="utf-8")
+    assert "no summary line" in text.lower(), (
+        "docs/testing.md must state that this pytest prints no summary line"
+    )
+    block = text.split("```bash", 1)[1].split("```", 1)[0]
+    # The marker is nested inside a shell string inside a Python string, so the
+    # backslash depth varies with the wrapper. Match the format specifier, and
+    # assert the leading-newline REASON separately in prose -- that is the part a
+    # later editor would drop.
+    assert "printf" in block and "EXIT=%s" in block, (
+        "the command must use printf, not echo: pytest's final progress line is "
+        "unterminated, so echo appends onto it and the marker lands mid-line"
+    )
+    assert "leading newline" in _prose(TESTING_DOC), (
+        "the doc must say why printf carries a leading newline"
+    )
+    # `setsid nohup` appears in prose explaining why NOT to use it, so scope the
+    # negative check to the block a lane would copy.
+    assert "os.setsid()" in block and "setsid nohup" not in block, (
+        "the command must detach via Python's os.setsid, not the setsid BINARY, "
+        "which does not exist on macOS -- the binary form runs zero tests and "
+        "then reports 'still running' forever"
+    )
+    checks = text.split("Checking it needs", 1)[1].split("```", 2)[1]
+    assert "grep -o 'EXIT=[0-9]*'" in checks, (
+        "the completion check must be UNANCHORED: echo-appended markers land "
+        "mid-line and an anchored grep misses them"
+    )
+    assert "pgrep -f 'bin/pytest'" in checks, (
+        "a marker check alone waits forever when the whole group is killed and "
+        "the printf never runs; the liveness check is the second half"
+    )
+    assert "/tmp/rigby-$(whoami)-$$-" in block, (
+        "the log path must be unique per run: a shared path lets two concurrent "
+        "runs interleave into a file that describes neither"
+    )
+
+
+def test_the_doc_carries_the_exit_code_taxonomy() -> None:
+    """143 is not a failure. Three lanes hunted a log that had no result in it."""
+
+    prose = _prose(TESTING_DOC)
+    assert "no tests collected" in prose, "EXIT=5 must be documented"
+    assert "killed by a signal" in prose, "EXIT>=128 must be documented"
+    assert "neither pass nor fail" in prose, (
+        "the doc must say a signal death is NO RESULT, not a failure"
+    )
+
+
+def test_the_doc_does_not_assert_an_underived_cause() -> None:
+    """The retracted draft blamed nested pytest.main(); that was wrong.
+
+    The real cause was two concurrent runs sharing a log path. Asserting an
+    underived mechanism in this file would make the correction another instance
+    of the pattern it describes.
+    """
+
+    prose = _prose(TESTING_DOC)
+    assert "pytest.main()" not in prose, (
+        "the nested-pytest log-contamination mechanism was retracted; the child "
+        "output is captured and never reaches the parent log"
+    )
+    assert "cause not established" in prose, (
+        "the 143 clause must state that no cause is established"
+    )
+    assert "without a command you can name that produced it" in prose, (
+        "the warning against attaching an underived cause must stay -- four "
+        "mechanisms were proposed for this and all four were retracted"
+    )
+
+
+def test_the_doc_does_not_tell_readers_to_grep_the_log_for_failures() -> None:
+    """Exit code is the ONLY green signal; a text check makes it unsound.
+
+    A log can contain output from more than one run, because two concurrent runs
+    sharing a path interleave. So a `FAILED` line may belong to a process other
+    than the one being judged. A later editor will be tempted to add
+    belt-and-braces back; this is the brace on the brace.
+
+    The scoping matters as much as the rule: it licenses ignoring a line traced
+    to another run, and nothing else.
+    """
+
+    text = TESTING_DOC.read_text(encoding="utf-8")
+    lowered = _prose(TESTING_DOC)
+    assert "do not grep the log for" in lowered, (
+        "docs/testing.md must state that the exit code is the only signal"
+    )
+    assert "an untraced failure is a failure" in lowered, (
+        "the rule must be scoped: it licenses ignoring a FAILED line traced to a "
+        "known-nesting file, not any FAILED line anywhere"
+    )
+    assert "test_semantic_orientation" in text, (
+        "the doc must name a counter-example whose FAILED lines are always real"
+    )
+    assert "more than one run" in lowered, (
+        "the doc must give the REAL reason -- a log can contain output from more "
+        "than one run -- not the retracted nested-pytest mechanism"
+    )
+
+
+def test_the_documented_invocations_all_capture_the_exit_code() -> None:
+    """Every pytest command in the invocation table shows `EXIT=$?`.
+
+    A table row without it teaches the habit the section above warns against.
+    """
+
+    text = TESTING_DOC.read_text(encoding="utf-8")
+    table = text.split("## The invocations", 1)[1].split("##", 1)[0]
+    rows = [
+        line
+        for line in table.splitlines()
+        if line.startswith("|") and "uv run pytest" in line
+    ]
+    assert rows, "the invocation table must contain pytest commands"
+    missing = [row for row in rows if 'echo "EXIT=$?" >> ' not in row]
+    assert not missing, (
+        "these documented pytest invocations do not capture the exit code:\n"
+        + "\n".join(f"  {row.strip()}" for row in missing)
+    )
+
+
+def test_the_doc_warns_that_a_pipe_masks_pytests_exit_code() -> None:
+    """`pytest ... | tail` reports tail's status. Two lanes hit this today."""
+
+    text = TESTING_DOC.read_text(encoding="utf-8")
+    prose = _prose(TESTING_DOC)
+    assert "exits with `tail`'s status" in prose, (
+        "the doc must name the pipeline hazard concretely: `a; b; c` exits with "
+        "c's status, so a wrapper reads success over a failing run"
+    )
+
+
+def test_the_doc_says_fast_or_medium_is_the_bar() -> None:
+    """`slow` is excluded by design; a green default run is a pass."""
+
+    text = TESTING_DOC.read_text(encoding="utf-8")
+    assert "is the bar" in text
+    assert "-m ''" in text, "the doc must warn against widening the selection"
 
 
 def test_testing_doc_exists_and_states_the_coverage_rule() -> None:

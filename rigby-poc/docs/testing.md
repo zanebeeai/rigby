@@ -4,16 +4,133 @@ The suite is hermetic. It needs no server, no browser, no API key and no network
 That is a property worth protecting, so it is stated here and enforced by
 `tests/test_invocations.py`.
 
+## Read the exit code. There is no summary line.
+
+**This suite prints no `=== N passed ===` line.** Not on a full run, not on one
+file, not on `--collect-only`. The entire output of a green run is a row of dots
+and a `[100%]`. So a green run and a run whose tail you did not capture look
+identical, and `tail` on the log tells you nothing.
+
+**Copy the command, not the paragraph.**
+
+```bash
+LOG=/tmp/rigby-$(whoami)-$$-$(date +%H%M%S).log
+python3 -c "
+import os, subprocess, sys
+if os.fork() == 0:
+    os.setsid()
+    with open(sys.argv[1], 'w') as f:
+        subprocess.run(['sh','-c','uv run pytest -q --tb=line; printf \"\nEXIT=%s\n\" \"\$?\"'],
+                       stdout=f, stderr=f)
+    os._exit(0)" "$LOG"
+```
+
+Checking it needs **two** lines, not one:
+
+```bash
+grep -o 'EXIT=[0-9]*' "$LOG" | tail -1        # the result, if the run finished
+pgrep -f 'bin/pytest' >/dev/null && echo RUNNING || echo NOT-RUNNING
+```
+
+**No marker AND not running = killed. No result. Re-run.** The marker only
+appears if pytest died and the wrapper survived; if the whole process group goes,
+the `printf` never runs and a one-line check waits forever.
+
+Every piece is load-bearing. Simpler forms of this were tried and each was wrong:
+
+- **`python3 -c` with `os.fork()`/`os.setsid()`, not the `setsid` binary.**
+  The `setsid` **binary does not exist on macOS** and every lane here is on
+  darwin-arm64. That form exits 127, writes `command not found` into the log,
+  runs zero tests, and then the finished-check reports "still in flight" forever
+  — indistinguishable from a long suite under contention, which is the exact
+  state the check exists to disambiguate. Two lanes reproduced it, one with a
+  31-byte log containing only the shell error. `os.setsid` is in the stdlib and
+  works; `nohup … & disown` is also available.
+- **A unique log path.** A shared `/tmp/t.log` is what actually caused this
+  section's first draft to be wrong: two concurrent runs interleave into a file
+  that describes neither, and an `EXIT=` line on a shared path may be another
+  run's, so "has mine finished?" answers yes early.
+- **`printf "\nEXIT=%s\n"`, not `echo "EXIT=$?"`.** pytest's final progress line
+  is unterminated, so `echo` appends onto it: the file ends `........EXIT=143`
+  and an anchored `grep '^EXIT='` returns nothing. It fails that way on killed
+  runs specifically, which is the case it exists for. Hence the leading newline
+  *and* the unanchored `grep -o` above.
+- **Detachment is recommended, not established as necessary.** One lane reports
+  kills surviving tool-level backgrounding; another cannot reproduce that and has
+  backgrounded suites completing past 25 minutes. Detaching costs nothing.
+
+## Reading the result
+
+| Exit code | Meaning |
+| --- | --- |
+| `0` | green |
+| `1` | real failures — read the log |
+| `5` | **no tests collected** — e.g. a `-m` expression matching nothing |
+| `>= 128` | killed by a signal (143 = SIGTERM). **No result**, neither pass nor fail |
+
+`>= 128` is the one worth knowing. It is not "some failure": there is no result
+at all, and reading the log sends you hunting through output with zero `FAILED`
+lines in it.
+
+**Re-run.** If it recurs, split the suite into disjoint halves and require
+`EXIT=0` from each — same tests, same markers, one extra process boundary, so it
+does not lower the bar. Report it as "verified in two halves, N+M files, zero
+overlap, both `EXIT=0`", not as a full green.
+
+**Cause not established.** Ruled out: memory pressure (ample free memory, no
+swap in use, no jetsam events); the 600 s foreground tool ceiling alone (a run
+killed at about three minutes); `pipeline.py`'s `killpg` (scoped to a child
+spawned with `start_new_session=True`, and it sends SIGKILL/137, not
+SIGTERM/143). Full detachment does not fix it either.
+
+**Do not attach an explanation to this line without a command you can name that
+produced it.** Four mechanisms were proposed for this in one evening, by four
+different people, and every one was retracted. The next editor deserves the
+warning more than they deserve a theory.
+
+## Two more rules
+
+**Do not judge by the wrapper's reported status.** In `a; b; c` the overall
+status is `c`'s, so `pytest > log; echo "EXIT=$?"; tail log` exits with `tail`'s
+status. It masks a signal death identically to a clean pass: a task runner
+reported "completed (exit code 0)" over a log that said `EXIT=143`. Read the
+number out of the file.
+
+**Do not grep the log for `FAILED`, `ERROR`, `F` or `E` — and do not use that as
+licence to dismiss one.** The reason is the shared-log-path collision above: a
+log can contain output from more than one run. Judge on the exit code.
+
+That licenses ignoring a `FAILED` line only when it is **traced to another run**.
+It licenses nothing else. `test_semantic_orientation.py` spawns no subprocess and
+shares no log, so a `FAILED` line from it is real and must be investigated. An
+untraced failure is a failure.
+
+For general awareness rather than as a log hazard: eight test files spawn
+`sys.executable` subprocesses — `test_corpus_determinism`,
+`test_corpus_loads_offline`, `test_capture_timeout`, `test_analysis_imports`,
+`test_camera_config`, `test_corpus_compile_budget`, `test_run_transcript`,
+`test_mutation_determinism`. Their child output is captured
+(`capture_output=True`) and does not reach the parent log.
+
 ## The invocations
+
+Every command below is written with its exit-code check, deliberately.
 
 | What you want | Command |
 | --- | --- |
-| Everything (the default) | `uv run pytest` |
-| One file | `uv run pytest tests/test_full_body_motion.py` |
-| One test | `uv run pytest tests/test_full_body_motion.py::test_walk_forward` |
+| Everything (the default) | `uv run pytest -q > /tmp/t.log 2>&1; echo "EXIT=$?" >> /tmp/t.log` |
+| One file | `uv run pytest -q tests/test_full_body_motion.py > /tmp/t.log 2>&1; echo "EXIT=$?" >> /tmp/t.log` |
+| One test | `uv run pytest -q tests/test_x.py::test_y > /tmp/t.log 2>&1; echo "EXIT=$?" >> /tmp/t.log` |
+| The fast tier | `uv run pytest -q -m fast > /tmp/t.log 2>&1; echo "EXIT=$?" >> /tmp/t.log` |
+| The slow tier (opt-in) | `uv run pytest -q -m slow > /tmp/t.log 2>&1; echo "EXIT=$?" >> /tmp/t.log` |
+| Coverage (rarely — see below) | `COVERAGE_CORE=sysmon uv run pytest -q --cov=rigby_poc --cov=evals > /tmp/t.log 2>&1; echo "EXIT=$?" >> /tmp/t.log` |
 | Frontend | `npm --prefix frontend test` |
 | Frontend type-check | `npm --prefix frontend run build` |
-| Coverage (rarely — see below) | `COVERAGE_CORE=sysmon uv run pytest --cov=rigby_poc --cov=evals` |
+
+**`fast or medium` is the bar.** That is what `addopts` selects, and it is what
+CI runs. `slow` is excluded by design — it needs a real browser, real model calls
+or calibration. A green `uv run pytest` **is a pass**; do not reach for `-m ''`
+to chase a fuller suite, because that is not the suite this project runs.
 
 ## Tiers
 
