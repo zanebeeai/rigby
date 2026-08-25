@@ -84,6 +84,22 @@ exact_snapshot = pytest.mark.skipif(
 # Each one is authoring intent that no post-hoc pass can invert out of a clip,
 # so persisting it is what lets the analysis layer reproduce the metrics that
 # compare achieved motion against what was commanded (plan 02 §1.4).
+#
+# BEFORE YOU ADD ONE: an added key is a 47-case GOLDEN CORPUS re-bless, in lane
+# `groundtruth`'s territory, on byte-identical motion.
+#
+# `evals/corpus/hashing.py:45` takes `metrics_sha256` over the **whole** metrics
+# dict, so a key nothing had before moves the digest for every case whatever its
+# value -- `test_corpus_determinism` goes red on all 47 while the frames are
+# unchanged. This declaration is the cheap half: it satisfies the equivalence
+# fixture below and buys nothing from the corpus.
+#
+# That asymmetry is a signpost pointing the wrong way, which is why the warning
+# is here rather than only in TRACKING. 04e published `root_drift_limit_m` for
+# good reasons -- to carry a bound beside its measurement -- and turned all 47
+# corpus cases red; it now derives the bound instead and adds no key. If you
+# need a value at check time and not in the published clip, derive it from the
+# program the way `analysis.safety.root_drift_limit_m` does.
 ADDED_COMPILER_KEYS: dict[str, str] = {
     "support_constraints": (
         "commanded ankle position per constrained frame; feeds "
