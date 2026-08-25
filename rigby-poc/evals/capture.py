@@ -1287,18 +1287,45 @@ SEEK_TIMEOUT_MS = 15_000
 SCREENSHOT_TIMEOUT_MS = 15_000
 CAPTURE_ATTEMPTS = 3
 
-# Phase sampling is per intent and grows with the phase count; the largest observed is
-# 24 (a two-step sequence). The bound exists so a timeout budget can be computed before
-# the sampling table has been consulted, and it is checked rather than assumed, so an
-# intent that outgrows it fails loudly here instead of timing out two layers up. Raising
-# it means raising the budget with it -- which is the point of deriving one from the other.
-MAX_SNAPSHOTS_PER_VIEW = 32
+# Phase sampling is per intent and grows with the phase count. The bound exists so a
+# timeout budget can be computed before the sampling table has been consulted, and it is
+# checked rather than assumed, so an intent that outgrows it fails loudly here instead of
+# timing out two layers up. Raising it means raising the budget with it -- which is the
+# point of deriving one from the other.
+#
+# Measured across all 47 corpus cases (41 compile; the rest are known-bad by design):
+#
+#     60 pts   589 frames   full_body            fullbody-burpee-cycle
+#     36 pts   163 frames   sequence             sequence-push-then-pull
+#     30 pts   221 frames   sequence             sequence-grab-then-wave
+#     29 pts   141 frames   object_interaction   object-throw-far
+#
+# The previous value of 32 was set from a 7-intent sample whose largest was 24, and the
+# 47-case corpus that arrived with 03b breaches it on two cases. 96 is 60% above the
+# measured maximum. This is the second time this constant has been set from too small a
+# sample, so: the number below is a *measurement of the corpus*, and it must be re-derived
+# from the corpus rather than adjusted upward until the error stops -- which is what
+# `test_the_snapshot_bound_covers_the_corpus` exists to force.
+MAX_SNAPSHOTS_PER_VIEW = 96
 
 # Capture enforces its own wall-clock deadline and `pipeline.py` derives the subprocess
 # budget from it, so `TimeoutExpired` at the subprocess layer means "capture is wedged",
-# never "capture was still working". Per-snapshot cost was measured at ~0.17 s in the
-# reload path and is lower through the seek hook, so 3 s is roughly 17x headroom.
-PER_SNAPSHOT_BUDGET_S = 3.0
+# never "capture was still working".
+#
+# Per-snapshot cost measured on real captures, seek path, one browser:
+#
+#     122 ms   15 snapshots   jab, orbit only
+#     116 ms   32 snapshots   composite-beckon-right
+#      98 ms   30 snapshots   jab, both views
+#      89 ms   24 snapshots   two-step sequence, orbit only
+#      65 ms   48 snapshots   two-step sequence, both views
+#
+# Longer captures are cheaper per snapshot because the fixed per-result cost -- page
+# open, result fetch, GLB fetch and parse, roughly 0.75 s -- spreads over more of them.
+# 1.0 s is 8x the worst measured. It was 3 s, chosen when the snapshot bound was 32; at
+# a bound of 96 that made the five-candidate backstop 52 minutes, which is too loose to
+# reap a wedged browser in any useful time.
+PER_SNAPSHOT_BUDGET_S = 1.0
 PER_RESULT_OVERHEAD_S = 30.0
 SESSION_OVERHEAD_S = 30.0
 SUBPROCESS_GRACE_S = 60.0
