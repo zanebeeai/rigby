@@ -72,6 +72,8 @@ UNBUDGETED: dict[str, str] = {
     "test_analysis_equivalence.py": "lane analysis owns its budget; ours would constrain their PRs",
     "test_anatomical_frame.py": "lane anatomy",
     "test_rom_detects_injected_violation.py": "lane anatomy",
+    "test_rom_enforcement.py": "lane anatomy",
+    "test_rig_provenance.py": "lane anatomy",
     "test_rom_table.py": "lane anatomy",
     "test_capture_sampling_bound.py": "lane capture; one corpus pass, measured at 41 by them",
     "test_session_fixture_isolation.py": "proves the fixture copies; compiles are the subject",
