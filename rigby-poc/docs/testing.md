@@ -47,6 +47,20 @@ guess was made here and was wrong, and acting on it would have killed another
 lane's verification. `ps -eo pid,ppid,lstart,command` gives the parent chain and
 the start time; the wrapper you launched is at the top of yours.
 
+The rule that follows, and it is the one to keep: **a scoped hit that is not
+your pid is somebody else's run, not yours.** The scoped pattern answers "is
+anything running in this worktree", never "is my run still going". Only the
+`EXIT=` marker in a unique log is run-scoped; the `pgrep` is a tiebreaker for
+the marker-absent case.
+
+**And a run started before an edit is testing a tree that no longer exists.** One
+lane had a full suite in flight when `ruff` rewrote three files it was
+collecting; the mix of old and new is unknowable, so the honest answer is to
+discard the run rather than read its exit code. Note the launch time and check
+`git status` plus `find -newermt <launch time>` over the tracked tree before you
+believe a green. A one-commit delta is exactly the size where "too small to
+matter" is tempting.
+
 **No marker AND not running = killed. No result. Re-run.** The marker only
 appears if pytest died and the wrapper survived; if the whole process group goes,
 the `printf` never runs and a one-line check waits forever.
@@ -182,6 +196,122 @@ is nearly free. Neither substitutes for the other: the backslash bug was
 behaviour, not data, and no amount of locally rewritten `platform_key` would
 have surfaced it.
 
+## Full suites serialise on the verify slot
+
+Three lanes running full suites at once took the load average to 25 and a
+79-second suite to 25 minutes. So take the slot before a full run, and release it
+the instant the run ends -- green, red or killed:
+
+```bash
+SLOT="/Users/tonypan/Developer/03 - Startups/rigby-wt/.verify-slot"
+mkdir "$SLOT" 2>/dev/null && echo "<lane> $(date +%H:%M)" > "$SLOT/owner"   # success = you hold it
+```
+
+If `mkdir` fails, another lane is verifying: wait and retry rather than start.
+Break a slot whose `owner` stamp is more than 45 minutes old, and say so in your
+broadcast. Order among waiters: infra, analysis, groundtruth, judge -- that is a
+queue discipline, not a licence to preempt a held slot. **It is separate from the
+merge lock and you hold at most one, never both.** A targeted run of a few files
+is not a full suite and does not need the slot.
+
+## No lane can `git checkout main`, and the obvious merge reports success anyway
+
+The main checkout holds `main`, so every worktree is refused it:
+
+```
+$ git checkout main
+fatal: 'main' is already used by worktree at '.../rigby'     # exit 128
+```
+
+That refusal is fine on its own. What is not fine is the next line. Written as
+two statements rather than an `&&` chain, the checkout fails, you stay on your
+own branch, and the merge merges that branch **into itself**:
+
+```
+$ git merge --no-ff eval/<pr>
+Already up to date.                                          # exit 0
+```
+
+A plausible message and a zero exit for an operation that did nothing at all.
+This is structural rather than anyone's slip -- **the obvious sequence silently
+no-ops for every lane, every time, and reports success.** Same family as
+`git rebase ... | tail` masking a failed rebase: a status that describes the
+wrong command, arriving through `worktree` instead of through a pipe, and
+failing toward green like every other member of that set.
+
+Merge through a temp branch in your own worktree, and check the tree afterwards:
+
+```bash
+git checkout -q -B merge-<pr> origin/main     # -B, not -b: -b fails on your second merge
+git merge --no-ff eval/<pr> -m "Merge PR <pr>: ..."
+
+# Three checks. They catch different things and none of them is redundant.
+git rev-parse -q --verify HEAD^2 >/dev/null || echo "NOT A MERGE COMMIT -- the no-op"
+[ "$(git rev-parse HEAD^1)" = "$(git rev-parse origin/main)" ] || echo "NOT ON CURRENT MAIN"
+[ "$(git rev-parse HEAD^{tree})" = "$(git rev-parse <verified-sha>^{tree})" ] || echo "NOT THE TREE YOU VERIFIED"
+
+git push origin merge-<pr>:main
+```
+
+**Two weaker forms were proposed first and both have the same hole.** Measured on
+a scratch repository against four scenarios, because reasoning about it produced
+two confident wrong answers:
+
+| check | no-op self-merge | merged onto stale main | merged wrong branch |
+| --- | --- | --- | --- |
+| `git diff --stat <verified> HEAD` empty | **passes** | **passes** | catches |
+| `HEAD^{tree}` equals verified tree | **passes** | **passes** | catches |
+| `HEAD^2` resolves | catches | passes | catches |
+| `HEAD^1` equals `origin/main` | catches | catches | catches |
+
+Both tree-comparisons pass the no-op **for the same reason the no-op is invisible
+in the first place**: it leaves `HEAD` at your branch tip, so the tree you are
+comparing against is the tree you are standing on. A comparison whose two sides
+become the same object under the failure cannot detect that failure. And a merge
+onto stale `main` also matches the verified tree whenever your branch was rebased
+first, since the branch already carries main's content.
+
+So the parent checks do the work and the tree check earns its place separately:
+it is the only one that catches merging *something other than what you tested*.
+`HEAD^2` for "did I merge at all", `HEAD^1` for "onto the right base",
+`HEAD^{tree}` for "the thing I verified". Found by lane `judge`, refined by lane
+`analysis`, and both of our proposed single checks were wrong.
+
+## `git stash` is shared across every worktree -- do not use it here
+
+`refs/stash` lives in the one `.git` all six worktrees share, so a stash from any
+lane renumbers everyone else's `stash@{n}`. **`git stash pop` applies whatever is
+at `{0}` right now, which may be another lane's WIP, and drops their entry.** One
+lane read `stash@{0}` twice twenty minutes apart and got two different lanes'
+work; another watched its own entry move `{1}` -> `{0}` inside an hour.
+
+This matters because the anti-tautology step tells you to set your change aside
+and put it back. Use a patch file instead -- no shared ref, no index ambiguity:
+
+```bash
+git diff > /tmp/rigby-<lane>-antitaut.patch
+git checkout -- <the source files>          # run the new test, show it RED
+git apply /tmp/rigby-<lane>-antitaut.patch
+diff <(git diff) /tmp/rigby-<lane>-antitaut.patch    # verify the restore
+```
+
+**Verify the restore rather than assuming it.** `git apply` can succeed
+partially, and a restored-but-unchecked tree is how a mutation reaches a commit.
+Two lanes had independently arrived at the equivalent of this (copy aside,
+`git checkout`, copy back) before it was written down.
+
+If you must recover from an existing stash: find it by sha with
+`git stash list --format='%H %gs'` and `git stash apply <sha>`. **`drop` cannot
+take a sha** -- it must name an index, so re-check the index in the same command:
+
+```bash
+[ "$(git rev-parse stash@{0})" = "$MINE" ] && git stash drop stash@{0}
+```
+
+And a stash entry is a **merge** commit, so `git show <sha>` emits a combined
+`diff --cc` that `git apply` refuses. Extract with `git diff <sha>^1 <sha>` and
+check it with `git apply --check` before relying on it.
+
 ## The invocations
 
 Every command below is written with its exit-code check, deliberately.
@@ -219,6 +349,20 @@ import pytest
 
 pytestmark = pytest.mark.medium
 ```
+
+**If your test compiles the corpus, declare it too.** Add it to
+`tests/test_corpus_compile_budget.py` -- `COMPILE_BUDGET` with a measured
+ceiling, or `UNBUDGETED` with the reason. Measure it with that file's own
+counter rather than guessing; a guessed ceiling is the next defect, where
+`groundtruth`'s 55 and `judge`'s `COMPILES=4 RAN=5` were exact.
+`test_every_corpus_touching_file_is_declared` fails the suite otherwise, and it
+has caught three lanes this way -- each costing a full cycle on a loaded
+machine.
+
+That requirement was already written down, in the tracker, correctly, before two
+of those three hit it. **A trap recorded in the record and not in the interface
+will keep firing.** TRACKING is the record; this file is what a lane actually
+opens while writing a test. Put the operational half here.
 
 **Classify by input, never by duration.** A file that reads a compiled clip is
 `medium` at 0.2 s; a file that reads one committed JSON is `fast` at 1.0 s.
@@ -291,7 +435,7 @@ Two rules follow:
    Python 3.12's `sys.monitoring` backend instead of the `settrace` one and
    removes most of the multiplier. The nightly CI job sets it.
 
-## Guards fail in two directions
+## Guards fail in more directions than they are written for
 
 A guard can be unable to fire, or it can fire correctly except when it matters.
 The second is harder to find and this repository has produced both.
@@ -306,6 +450,30 @@ comparison blind to half its input domain. Greppable at the call site.
 its meaning, so it passes when it should not — and it is only ever wrong in the
 direction that silences it. `"-gt 30" in command` is satisfied by `-gt 300`, so a
 tenfold loosening of the fast-tier budget passed silently. Not greppable.
+
+**A guard structurally blind to its own failure case.** The check is live, it
+compares two real things, and the failure it exists to catch is precisely the
+condition that makes those two things equal. It cannot fire, not because it is
+unreachable, but because its inputs collapse into agreement exactly when the
+thing has gone wrong.
+
+The instance that cost the most: a merge-verification step asserting the merged
+tree was byte-identical to the tree that had been verified. The failure it was
+meant to catch -- a merge that silently did nothing -- leaves `HEAD` at the
+branch tip, so both sides of the comparison become the same object and the check
+passes. It printed `IDENTICAL` on the no-op it was written to detect. Two lanes
+then proposed variants of the same comparison, and a third believed both; four
+confident wrong answers about a three-line check, settled in two minutes by a
+scratch repository with four scenarios in it.
+
+**The question to ask of any comparison: under the failure you are guarding
+against, do the two sides stay different?** If the failure makes them the same,
+you have written a tautology with extra steps. That is the same family as
+`all(...)` over an empty collection and a scan pointed at a missing directory --
+the guard agrees with itself when its subject has vanished -- but it is worth
+naming separately, because those two are about *absent* inputs and this one has
+two perfectly real inputs that happen to coincide. Found by lane `judge`, whose
+own run printed the passing line.
 
 **A guard that fires for the wrong reason.** The check is live, it fails on a
 real measurement, and the measurement is of a quantity unrelated to what the

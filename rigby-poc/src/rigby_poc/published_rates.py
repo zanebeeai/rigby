@@ -94,6 +94,7 @@ letting the name imply the stronger property.
 from __future__ import annotations
 
 import json
+import math
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -142,6 +143,30 @@ BASELINE_PHRASING = re.compile(
 INLINE_CODE = re.compile(r"`[^`\n]*`")
 
 #: JSON keys whose value is a published rate.
+#: A key whose name says its value is a published rate.
+#:
+#: **Typed statistical output is out of scope, and that is a decision rather than
+#: an oversight.** `calibration_stats.ProportionResult.to_dict()` puts its number
+#: under `estimate`, which matches nothing here, so no `ProportionResult` in the
+#: repository is ever scanned. The reasoning for leaving it that way: the type
+#: cannot be constructed without its `n` and its `lower_bound_95`, so scanning it
+#: would re-check what `__post_init__` already enforces.
+#:
+#: **But the exemption is partial, and the uncovered half is the load-bearing
+#: one.** `ProportionResult` guarantees an n and a bound. It does not carry a
+#: baseline, and this guard requires both -- rename `estimate` to
+#: `detection_rate` and the scan reports "states 0.87 without its baseline".
+#: A constant predictor posts a fine rate with a large n and a tight interval;
+#: only a baseline shows it is chance. So typed output is exempt from the n half
+#: because the type enforces it, and exempt from the baseline half because
+#: nothing enforces it anywhere. Plan 10 §10.5 is where that gets closed, not
+#: here.
+#:
+#: Widening this pattern to reach `estimate` would flag every `ProportionResult`
+#: for a missing baseline. Measured 2026-08-25: zero such dicts in committed
+#: JSON, so the cost today is zero and the decision is about what
+#: `eval-report.v2.json` should be required to carry. Raised by lane `judge`,
+#: who found the exemption and asked that it be recorded either way.
 RATE_KEY = re.compile(r"(_rate|_fraction|agreement|consistency|accuracy|precision|recall)$", re.I)
 
 #: JSON keys that are gates, not results.
@@ -322,7 +347,21 @@ def scan_report(path: Path) -> list[Finding]:
                 continue
             if not isinstance(item, (int, float)) or isinstance(item, bool):
                 continue
-            if not 0.0 <= float(item) <= 1.0:
+            # A rate on the 0..1 scale and the same rate on the 0..100 scale are
+            # the same published claim, and this filter used to check only the
+            # first -- so `"detection_rate": 82.0` was skipped while
+            # `"detection_rate": 0.82` was caught. A false negative in the
+            # direction that hides, inside the guard for L3 gate item 3.
+            # Measured before widening: zero rate-named keys sit outside 0..1 in
+            # any committed JSON today, so this closes the hole ahead of
+            # `eval-report.v2.json` rather than creating churn.
+            #
+            # Non-finite is still skipped, and that is not the same omission: an
+            # `inf` upper bound is an honest reading of "never established
+            # anywhere in the sweep" (10d's `Interval`), and a bound is not a
+            # rate. Flagged by lane `judge`, which is what prompted this look.
+            value = float(item)
+            if not math.isfinite(value) or not 0.0 <= value <= 100.0:
                 continue
             missing = tuple(
                 label
