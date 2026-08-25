@@ -312,6 +312,8 @@ def test_timing_grader_receives_timelines_only(tmp_path: Path) -> None:
 def test_result_id_never_reaches_any_grader(tmp_path: Path) -> None:
     client = FakeClient()
     VLMJudge(client=client, model="test-vlm", grader_mode="split").score(_manifest(tmp_path))
+    # Vacuous otherwise: a judge that made no call leaks no result id.
+    assert len(client.responses.calls) == len(GRADER_NAMES)
     for call in client.responses.calls:
         assert "split-result" not in json.dumps(call["input"])
 

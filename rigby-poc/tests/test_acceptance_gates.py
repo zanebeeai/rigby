@@ -194,6 +194,11 @@ def test_every_consumer_of_the_accept_flag_is_a_known_one() -> None:
             # backslashes and every entry in `known` would look unrecognised,
             # so the guard would fail on the platform rather than on a finding.
             found.add(path.relative_to(PROJECT_ROOT).as_posix())
+    # This guard fails OPEN on an empty scan: `set() <= known` is True and
+    # `all(...)` over nothing is True, so a glob that stops matching -- a moved
+    # directory, a renamed package -- reports a clean result rather than a broken
+    # one. Assert the scan found something before believing what it found.
+    assert found, "the accept-flag scan matched no files; the guard is not running"
     # Pinned so the Windows fix cannot regress unnoticed on a POSIX-only run:
     # `str(relative_to(...))` yields backslashes there and every entry would look
     # unrecognised, failing the guard on the platform rather than on a finding.

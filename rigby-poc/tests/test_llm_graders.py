@@ -160,6 +160,8 @@ def test_graders_use_a_different_model_family_than_the_planner() -> None:
 def test_no_grader_ever_sends_an_image(method: str, kwargs: dict) -> None:
     graders, client = _graders()
     getattr(graders, method)(**kwargs)
+    # Vacuous otherwise: a grader that dispatched nothing would "send no image".
+    assert client.responses.calls
     for call in client.responses.calls:
         for message in call["input"]:
             for item in message["content"]:

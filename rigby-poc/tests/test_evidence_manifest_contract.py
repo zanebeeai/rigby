@@ -121,6 +121,7 @@ def test_the_sha256_alias_equals_the_pixel_hash_while_it_exists(tmp_path: Path) 
     drops the alias, which is the opposite of what a contract test should do.
     """
     _, snapshots = _manifest(_write(tmp_path))
+    assert snapshots
     for snapshot in snapshots:
         if "sha256" in snapshot:
             assert snapshot["sha256"] == snapshot["pixel_sha256"]
@@ -130,6 +131,7 @@ def test_the_pose_hash_is_carried_and_is_not_the_pixel_hash(tmp_path: Path) -> N
     # They answer different questions: `pose_sha256` is machine-independent and
     # survives a re-render; `pixel_sha256` does not.
     _, snapshots = _manifest(_write(tmp_path))
+    assert snapshots
     for snapshot in snapshots:
         assert len(snapshot["pose_sha256"]) == 64
         assert snapshot["pose_sha256"] != snapshot["pixel_sha256"]
