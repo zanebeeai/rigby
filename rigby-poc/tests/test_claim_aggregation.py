@@ -103,6 +103,23 @@ def test_the_insufficient_evidence_boundary_is_a_strict_majority() -> None:
     assert over.score is None
 
 
+def test_the_derived_constants_stay_bound_to_the_published_minimums() -> None:
+    """Both constants are *derived* from `ACCEPTANCE_MINIMUM_SCORES` and nothing
+    in the source connects them to it.
+
+    That is the staleness shape lanes `capture` and `anatomy` hit when 03b grew
+    the corpus: a constant correct when set, silently invalidated by someone
+    else's merge, with no link between the two. Here the trigger would be the
+    published minimums changing rather than the corpus growing. Each constant's
+    stated property is "below the gate", so each is asserted against the
+    *minimum* of every published dimension, not against one of them — a single
+    dimension dropping is exactly the case a per-dimension assertion misses.
+    """
+    floor = min(ACCEPTANCE_MINIMUM_SCORES.values())
+    assert CRITICAL_FAILURE_CAP < floor
+    assert UNJUDGED_DIMENSION_SCORE < floor
+
+
 def test_a_critical_no_caps_the_dimension_below_the_gate() -> None:
     specs = _specs(10, critical_at=0)
     # Nine of ten pass, which would otherwise round to 5.
@@ -303,7 +320,7 @@ def test_an_unjudged_gating_dimension_is_never_accepted() -> None:
     score, verdicts = assemble_split_score(_parts({"anatomy": "cannot_tell"}), intent=INTENT)
     assert verdicts["anatomical_naturalness"].score is None
     assert score.anatomical_naturalness == UNJUDGED_DIMENSION_SCORE
-    assert UNJUDGED_DIMENSION_SCORE < ACCEPTANCE_MINIMUM_SCORES["anatomical_naturalness"]
+    assert UNJUDGED_DIMENSION_SCORE < min(ACCEPTANCE_MINIMUM_SCORES.values())
     assert score.accept is False
 
 
