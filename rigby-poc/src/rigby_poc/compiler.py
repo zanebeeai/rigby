@@ -59,17 +59,12 @@ from .primitives import (
     thumb_to_fingertip_pose,
     wrist_flourish_amplitude_rad,
 )
-from .analysis import (
-    _angular_kinematics,
-    arm_landmarks,
-    evaluate_gesture_structure,
-    shake_joint_oscillation_metrics,
-)
+from .analysis import _angular_kinematics, arm_landmarks
 from .analysis.context import AnalysisContext as _AnalysisContext
 from .analysis.composite import composite_metrics as _composite_metrics
 from .analysis.full_body import full_body_metrics as _full_body_metrics
-from .analysis.fingers import curl_values_from_frame as _curl_values_from_frame
 from .analysis.geometry import line_segment_distance as _line_segment_distance
+from .analysis.hand import hand_metrics as _hand_metrics
 from .analysis.rig import (
     EGO_NEUTRAL_GAZE as _EGO_NEUTRAL_GAZE,
     RIG_PROFILE,
@@ -5454,7 +5449,6 @@ def compile_motion(request: CompileRequest) -> ClipResult:
     )
     observable_target = last_target
     observable_params = _program_params(program)
-    assertion_frame: ClipFrame | None = None
     presentation_ranges: list[tuple[float, float]] = []
     phase_ranges: list[dict[str, float | str]] = []
     shake_primitive = next(
@@ -5673,126 +5667,24 @@ def compile_motion(request: CompileRequest) -> ClipResult:
         last_target = target
         final_shape = shape
         elapsed += phase_duration_s
-        if primitive.kind == PrimitiveKind.HOLD and frames:
-            assertion_frame = frames[-1]
-        if primitive.kind == PrimitiveKind.STRIKE and frames:
-            assertion_frame = frames[-1]
 
-    params = program.primitives[-1].parameters
-    assertions = finger_assertions(final_shape, program.hand, hand_pose(program.hand, final_shape, params))
-    asserted_shape = final_shape
-    if program.intent == Intent.GESTURE:
-        gesture_shape = next((item.hand_shape for item in program.primitives if item.kind == PrimitiveKind.HOLD), final_shape)
-        asserted_shape = gesture_shape or final_shape
-    elif program.intent == Intent.STRIKE:
-        strike_shape = next(
-            (item.hand_shape for item in program.primitives if item.kind == PrimitiveKind.STRIKE),
-            HandShape.FIST,
-        )
-        asserted_shape = strike_shape or HandShape.FIST
-    actual_curls = _curl_values_from_frame(assertion_frame or frames[-1], program.hand.value)
-    if asserted_shape == HandShape.HANG_TEN:
-        assertions = {
-            "thumb_extended": actual_curls["thumb"] < 0.35,
-            "little_extended": actual_curls["little"] < 0.35,
-            "index_curled": actual_curls["index"] > 0.65,
-            "middle_curled": actual_curls["middle"] > 0.65,
-            "ring_curled": actual_curls["ring"] > 0.65,
-            "all_finger_bones_present": all(
-                f"{program.hand.value}{finger}{segment}" in (assertion_frame or frames[-1]).bones
-                for finger, segments in {
-                    "Thumb": ("Metacarpal", "Proximal", "Distal"),
-                    "Index": ("Proximal", "Intermediate", "Distal"),
-                    "Middle": ("Proximal", "Intermediate", "Distal"),
-                    "Ring": ("Proximal", "Intermediate", "Distal"),
-                    "Little": ("Proximal", "Intermediate", "Distal"),
-                }.items()
-                for segment in segments
-            ),
-        }
-    else:
-        assertions = {"shape_defined": len(actual_curls) == 5}
     metrics = _base_metrics()
-    metrics["finger_assertions"] = assertions
     metrics["phase_ranges_s"] = phase_ranges
-    metrics["normalized_finger_curls"] = actual_curls
-    metrics["finger_assertions_computed_from_clip"] = True
-    shake_params = next(
-        (item.parameters for item in program.primitives if item.kind == PrimitiveKind.SHAKE),
-        None,
-    )
-    if shake_params is not None:
-        shake_amplitude_rad = (
-            forearm_shake_amplitude_rad(shake_params.duration_s, shake_params.wrist_shake_cycles)
-            * shake_params.wrist_shake_amplitude
-        )
-        metrics["forearm_rotation_cycles"] = shake_params.wrist_shake_cycles
-        metrics["forearm_rotation_amplitude_rad"] = shake_amplitude_rad
-        # Legacy aliases are kept for old reports and API clients.
-        metrics["wrist_shake_cycles"] = shake_params.wrist_shake_cycles
-        metrics["wrist_shake_amplitude_rad"] = shake_amplitude_rad
-        metrics["shake_duration_s"] = shake_params.duration_s
     if physics is not None:
         metrics.update(physics.metrics)
-    metrics.update(_safety_metrics(frames))
-    if program.intent in {Intent.GESTURE, Intent.STRIKE}:
-        structure = evaluate_gesture_structure(frames, program.hand, presentation_ranges)
-        metrics.update(structure)
-        if program.intent == Intent.GESTURE:
-            shake_ranges = [
-                (float(item["start_s"]), float(item["end_s"]))
-                for item in phase_ranges
-                if item["kind"] == PrimitiveKind.SHAKE.value
-            ]
-            metrics.update(shake_joint_oscillation_metrics(frames, program.hand, shake_ranges))
-        else:
-            metrics["strike_type"] = program.strike_type.value if program.strike_type else None
-            strike_range = next(
-                (
-                    (float(item["start_s"]), float(item["end_s"]))
-                    for item in phase_ranges
-                    if item["kind"] == PrimitiveKind.STRIKE.value
-                ),
-                None,
-            )
-            strike_frames = (
-                [
-                    frame
-                    for frame in frames
-                    if strike_range[0] - 1e-8 <= frame.time_s <= strike_range[1] + 1e-8
-                ]
-                if strike_range is not None
-                else []
-            )
-            landmarks = [arm_landmarks(frame, program.hand) for frame in strike_frames]
-            wrists = [item[2] for item in landmarks]
-            metrics["strike_wrist_path_length_m"] = float(
-                sum(np.linalg.norm(second - first) for first, second in zip(wrists, wrists[1:]))
-            )
-            metrics["strike_lateral_excursion_m"] = float(
-                max((wrist[0] for wrist in wrists), default=0.0)
-                - min((wrist[0] for wrist in wrists), default=0.0)
-            )
-            metrics["strike_forward_excursion_m"] = float(
-                max((wrist[2] for wrist in wrists), default=0.0)
-                - min((wrist[2] for wrist in wrists), default=0.0)
-            )
-            if landmarks:
-                shoulder, elbow, wrist, _ = landmarks[-1]
-                upper = shoulder - elbow
-                lower = wrist - elbow
-                cosine = float(
-                    np.clip(
-                        np.dot(upper, lower)
-                        / max(np.linalg.norm(upper) * np.linalg.norm(lower), 1e-8),
-                        -1.0,
-                        1.0,
-                    )
-                )
-                metrics["impact_elbow_angle_deg"] = math.degrees(math.acos(cosine))
-        metrics["joint_limit_violations"] += structure["wrist_swing_twist_limit_violations"]
-        metrics["unresolved_non_hand_collisions"] = structure["self_collision_frames"]
-    elif program.intent == Intent.GRAB:
+    # The measurement pass lives in ``analysis.hand`` from 02c onwards. What
+    # stays here is the part that cannot: ``physics.metrics`` above comes from a
+    # MuJoCo grasp simulation, and the GRAB branch below reads its verdict.
+    # ``analysis`` must not import ``rigby_poc.physics`` -- a check has to run
+    # where MuJoCo is absent -- so those keys are deferred by design.
+    metrics.update(
+        _hand_metrics(
+            _AnalysisContext.from_frames(frames, program, scene, metrics)
+        )
+    )
+    assertions = metrics["finger_assertions"]
+    actual_curls = metrics["normalized_finger_curls"]
+    if program.intent == Intent.GRAB:
         structural_failures: list[str] = []
         if physics is None or not physics.success:
             structural_failures.append("physical grasp gates did not pass")

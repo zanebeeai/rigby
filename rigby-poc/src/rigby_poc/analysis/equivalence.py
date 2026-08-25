@@ -369,6 +369,41 @@ FULL_BODY_CARRIED_KEYS = frozenset(
 )
 
 
+#: Emitted on every gesture, strike and grab clip: the hand-shape assertions and
+#: the normalised curls they are read from.
+HAND_SHAPE_KEYS = frozenset(
+    {
+        "finger_assertions",
+        "finger_assertions_computed_from_clip",
+        "normalized_finger_curls",
+    }
+)
+
+#: The shake echo, seeded from the planner's requested cycles. Present whenever a
+#: SHAKE primitive exists, on any hand-path intent -- which is what makes the
+#: plan 02 §1.6 echo reachable rather than theoretical: only the GESTURE path
+#: overwrites forearm_rotation_* with the measured value afterwards.
+SHAKE_ECHO_KEYS = frozenset(
+    {
+        "forearm_rotation_cycles",
+        "forearm_rotation_amplitude_rad",
+        "wrist_shake_cycles",
+        "wrist_shake_amplitude_rad",
+        "shake_duration_s",
+    }
+)
+
+STRIKE_KEYS = frozenset(
+    {
+        "strike_type",
+        "strike_wrist_path_length_m",
+        "strike_lateral_excursion_m",
+        "strike_forward_excursion_m",
+        "impact_elbow_angle_deg",
+    }
+)
+
+
 def _handoff(program: MotionProgram) -> bool:
     return (
         program.intent == Intent.OBJECT_INTERACTION
@@ -382,8 +417,12 @@ def owned_metric_keys(program: MotionProgram) -> frozenset[str]:
     if program.intent == Intent.UNSUPPORTED:
         return frozenset()
     owned = set(SAFETY_KEYS)
+    if program.intent in {Intent.GESTURE, Intent.STRIKE, Intent.GRAB}:
+        owned |= HAND_SHAPE_KEYS | SHAKE_ECHO_KEYS
     if program.intent in {Intent.GESTURE, Intent.STRIKE}:
         owned |= GESTURE_STRUCTURE_KEYS
+    if program.intent == Intent.STRIKE:
+        owned |= STRIKE_KEYS
     if program.intent == Intent.GESTURE:
         owned |= SHAKE_KEYS
     if program.intent == Intent.COMPOSITE:
@@ -409,6 +448,8 @@ def required_metric_keys(program: MotionProgram) -> frozenset[str]:
     if program.intent == Intent.UNSUPPORTED:
         return frozenset()
     required = set(SAFETY_KEYS)
+    if program.intent in {Intent.GESTURE, Intent.STRIKE, Intent.GRAB}:
+        required |= HAND_SHAPE_KEYS
     if program.intent in {Intent.GESTURE, Intent.STRIKE}:
         required |= GESTURE_STRUCTURE_KEYS
     if program.intent == Intent.GESTURE:
@@ -426,9 +467,7 @@ def required_metric_keys(program: MotionProgram) -> frozenset[str]:
 # them. Kept here so the gap between "what the compiler emits" and "what the
 # analysis layer owns" is a readable number rather than folklore.
 DEFERRED_TO_COMPILER: dict[str, str] = {
-    "composite per-hand gesture-structure fold": "02c",
-    "gesture/strike arm-landmark strike metrics": "02c",
-    "shake parameter echo (wrist_shake_* aliases)": "02c",
+    "MuJoCo grasp metrics and the GRAB structural branch": "never -- see analysis.hand",
     "object interaction and handoff lifecycle": "02d",
     "MuJoCo grasp metrics": "02d",
     "sequence step re-splitting": "02e",
