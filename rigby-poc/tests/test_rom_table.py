@@ -267,3 +267,31 @@ def test_decomposition_is_batched_not_per_frame(monkeypatch) -> None:
         "see rigby_poc.analysis.anatomy.frame.decompose_series."
     )
     assert long <= 4 * len(rom_limits()) / len(DOFS)
+
+
+def test_an_unmeasured_dof_is_skipped_not_reported_as_within_range() -> None:
+    """A DOF nothing measured must not claim a band.
+
+    Report-only mode makes this easy to get wrong: every check returns
+    ``status="pass"``, so the tempting shape is to emit ``within_typical`` for
+    anything that produced no violation. That puts a value in the output which
+    is present and not derived from what it claims to describe -- and an empty
+    clip yielded 156 of them.
+
+    Lanes `infra`, `analysis` and `groundtruth` each hit the same shape
+    independently: ten never-written ``_base_metrics`` defaults, stale
+    post-mutation metric reads, and the ``NOT_MEASURED`` versus ``PASSED``
+    distinction in ``evals/corpus/gates.py``. This keeps 04b off that list.
+    """
+
+    from rigby_poc.analysis.anatomy.rom import rom_checks
+
+    results = rom_checks([], fps=30.0)
+
+    assert len(results) == 156
+    assert {result.status for result in results} == {"skip"}
+    assert all("nothing was measured" in result.detail for result in results)
+    assert not any(
+        isinstance(result.measured, dict) and result.measured.get("band") == "within_typical"
+        for result in results
+    )

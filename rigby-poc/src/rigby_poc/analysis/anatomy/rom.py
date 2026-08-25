@@ -25,7 +25,7 @@ from typing import Any, Literal
 import numpy as np
 
 from ...models import ClipFrame
-from ..contract import ANATOMY, CheckResult
+from ..contract import ANATOMY, CheckResult, skipped
 from ..rig import PROJECT_ROOT
 from .frame import all_frames, decompose_series
 from .neutral import rest_relative
@@ -260,11 +260,29 @@ def rom_checks(frames: list[ClipFrame], *, fps: float) -> list[CheckResult]:
     enforcement on per DOF once that review says which limits are trustworthy.
     """
 
+    measured_bones = set(decompose_clip(frames))
     violations = rom_violations(frames, fps=fps)
     by_key = {(item.bone, item.dof): item for item in violations}
     results: list[CheckResult] = []
     for (bone, dof), limit in sorted(rom_limits().items()):
         violation = by_key.get((bone, dof))
+        if bone not in measured_bones:
+            # NOT the same as "measured and within range". A bone absent from
+            # the clip has no measurement, and saying `within_typical` here
+            # would put a value in the output that is present and not derived
+            # from what it claims to describe -- the shape lanes `infra`,
+            # `analysis` and `groundtruth` each hit separately in
+            # `_base_metrics` defaults, stale post-mutation reads and the
+            # NOT_MEASURED gate state. An empty clip used to yield 156 checks
+            # all claiming `within_typical`.
+            results.append(
+                skipped(
+                    f"anatomy.rom.{bone}.{dof}",
+                    ANATOMY,
+                    detail=f"{bone} carries no pose in this clip; nothing was measured",
+                )
+            )
+            continue
         results.append(
             CheckResult(
                 id=f"anatomy.rom.{bone}.{dof}",
