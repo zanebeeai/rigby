@@ -211,3 +211,30 @@ def test_rom_detection_reads_the_band_and_refuses_an_unmeasured_bone() -> None:
     # conflation four lanes hit independently this push.
     with pytest.raises(ValueError, match="not measured"):
         rom_detected({"bone": "leftToes", "dof": "flexion"})
+
+
+def test_this_file_stays_in_a_tier_that_actually_runs() -> None:
+    """This file is the sole exerciser of the entire typed check surface.
+
+    `analysis.validate()` has no production caller — it is defined at
+    `analysis/__init__.py:198` and every reference in `evals/mutations/*` is a `:func:`
+    docstring. Once the `rom_checks` wiring lands, deleting this file or retiering it
+    to `slow` would leave 175 check ids unexercised with nothing going red.
+
+    The count assertions above catch shrinkage *within* the file and are structurally
+    blind to the file ceasing to run. `test_module_reachability.py` reasons about
+    modules, and `validate()` lives in a module imported for other reasons.
+    `test_markers_complete.py` guarantees a tier marker but not *which* tier, so a
+    retier to `slow` passes it silently.
+
+    So the assertion lives here rather than in infra's tier gate: a tier-gate failure
+    would say "a file is mistiered", and this one says what is actually at risk.
+    """
+    marker = pytestmark
+    names = {marker.name} if hasattr(marker, "name") else {m.name for m in marker}
+    assert names & {"fast", "medium"}, (
+        f"this file is tiered {sorted(names)}. The default CI selection is "
+        f"`-m 'fast or medium'`, so any other tier silently stops running it — and it "
+        f"is the only caller of analysis.validate(), so 175 check ids would go "
+        f"unexercised with nothing going red."
+    )
