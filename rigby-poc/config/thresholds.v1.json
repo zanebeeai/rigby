@@ -79,20 +79,6 @@
         "rationale": "Zero-tolerance count gate. Meaningful only in combination with signal.discontinuity_rad, which defines the event."
       }
     },
-    "safety.joint_limit_epsilon_rad": {
-      "value": 1e-06,
-      "unit": "rad",
-      "applies_to": [
-        "*"
-      ],
-      "source": {
-        "kind": "invariant",
-        "cites": [
-          "src/rigby_poc/analysis/safety.py:68"
-        ],
-        "rationale": "Float-noise slack added to the rig-profile joint bound before counting a violation. Distinct in meaning from physics.root_drift_max_m despite sharing the literal 1e-6."
-      }
-    },
     "safety.joint_limit_violations_max": {
       "value": 0,
       "unit": "count",
@@ -104,7 +90,7 @@
         "cites": [
           "acceptance_criteria.yaml:90"
         ],
-        "rationale": "Zero-tolerance count gate over config/rig_profiles joint_limits_rad."
+        "rationale": "Zero-tolerance count gate over joint_limit_violations, which since the legacy per-bone check was deleted counts wrist swing/twist excursions from analysis/hand.py alone. Per-bone range of motion is gated by anatomy.rom.* instead."
       }
     },
     "safety.nan_count_max": {

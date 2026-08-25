@@ -140,7 +140,7 @@ def test_every_ledger_entry_names_what_still_reads_it() -> None:
 
 @pytest.mark.parametrize(
     "key",
-    ["signal.discontinuity_rad", "physics.root_drift_max_m", "safety.joint_limit_epsilon_rad"],
+    ["signal.discontinuity_rad", "physics.root_drift_max_m"],
 )
 def test_the_keys_08b_repointed_have_production_readers(key: str) -> None:
     """Pins 08b's own work so it cannot silently regress."""

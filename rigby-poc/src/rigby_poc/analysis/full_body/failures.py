@@ -13,6 +13,7 @@ from typing import Any
 from ...models import BodyAction, BodyObstacleMode, BodyRotationMode
 from ..semantic import semantic_cycle_failures as _semantic_cycle_failures
 from .selectors import FullBodyPass
+from ..safety import clip_contract_violations
 
 
 def full_body_failures(fb: FullBodyPass, metrics: dict[str, Any], horizontal_contact_count: int) -> list[str]:
@@ -34,7 +35,7 @@ def full_body_failures(fb: FullBodyPass, metrics: dict[str, Any], horizontal_con
     structural_failures: list[str] = []
     if metrics["nan_count"]:
         structural_failures.append("clip contains non-finite transforms")
-    if metrics["joint_limit_violations"]:
+    if clip_contract_violations(metrics, allow_root_motion=True):
         structural_failures.append("clip exceeds a joint limit")
     if metrics["discontinuities"]:
         structural_failures.append(

@@ -26,7 +26,7 @@ from .contact import (
     intra_hand_contact_failures,
     intra_hand_contact_metrics,
 )
-from .context import AnalysisContext
+from .context import AnalysisContext, root_motion_allowed
 from .contract import (
     ANATOMY,
     CONTRACT,
@@ -73,7 +73,7 @@ from .registry import (
     unregistered_actions,
 )
 from .rig import RIG_PROFILE, identity_bones, identity_pose, rig_profile
-from .safety import safety_checks, safety_metrics
+from .safety import clip_contract_violations, safety_checks, safety_metrics
 from .semantic import (
     semantic_cycle_assertion,
     semantic_cycle_checks,
@@ -236,7 +236,9 @@ def validate(
     checks.extend(parallel_forearm_checks(metrics))
     checks.extend(intra_hand_contact_checks(program, metrics))
     checks.extend(semantic_cycle_checks(program, metrics))
-    checks.extend(safety_checks(metrics))
+    checks.extend(
+        safety_checks(metrics, allow_root_motion=root_motion_allowed(program))
+    )
     checks.extend(rom_checks(frames, fps=fps))
     return checks
 
@@ -291,6 +293,8 @@ __all__ = [
     "final_hand_shape",
     "full_body_metrics",
     "carried_object_id",
+    "clip_contract_violations",
+    "root_motion_allowed",
     "hand_metrics",
     "handoff_metrics",
     "count_check",

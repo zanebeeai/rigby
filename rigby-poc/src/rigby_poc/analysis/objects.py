@@ -34,7 +34,7 @@ import numpy as np
 from ..models import Hand, ObjectAction
 from .context import AnalysisContext
 from .gesture import arm_landmarks
-from .safety import safety_metrics as _safety_metrics
+from .safety import clip_contract_violations, safety_metrics as _safety_metrics
 
 #: The reference the compiler compares ``object_max_step_m`` against. A step
 #: larger than this is a teleport rather than motion.
@@ -150,7 +150,7 @@ def handoff_metrics(ctx: AnalysisContext) -> dict[str, Any]:
         )
     if safety["nan_count"]:
         structural_failures.append("clip contains non-finite transforms")
-    if safety["joint_limit_violations"]:
+    if clip_contract_violations(safety, allow_root_motion=False):
         structural_failures.append("clip exceeds a joint limit")
     if safety["discontinuities"]:
         structural_failures.append(
