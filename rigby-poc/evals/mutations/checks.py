@@ -96,8 +96,18 @@ def rom_check_ids() -> frozenset[str]:
 
 
 def known_check_ids() -> frozenset[str]:
-    """Every id a mutation may name as a target."""
-    return FIXED_CHECK_IDS | rom_check_ids()
+    """Every id a mutation may name as a target, across both detector namespaces.
+
+    ``structural.*`` ids are not check ids -- they name gates that append a string to
+    ``metrics["structural_failures"]`` and emit no ``CheckResult``. They are included
+    here because a *target* is a claim about what a mutation should trip, and the
+    contact and balance families trip gates in that namespace exclusively. Excluding
+    them would have forced those families to declare no target at all, which
+    :meth:`MutationSpec.__post_init__` refuses, or a check id that cannot fire.
+    """
+    from .structural import structural_gate_ids
+
+    return FIXED_CHECK_IDS | rom_check_ids() | structural_gate_ids()
 
 
 def report_only_reason(check_id: str) -> str:
