@@ -8,10 +8,13 @@ well-formed, monotonic result that measures the harness rather than the check.
 **1. A mutated clip does not announce that it is mutated.**  ``apply`` never sets
 ``success=False``, never attaches a ``Failure``, and never writes its own id into
 ``metrics``.  ``evals/corruptions.py`` does all three, and
-``evals/calibrate_judge.py:224`` then records the outcome as the **conjunction**
-of the grader's accept flag with ``structural_valid`` -- and the corruption was built
-to force the second term false.  The recorded outcome was therefore not a function of
-the grader's verdict at all.
+the legacy calibration scorer then recorded the outcome as the
+**conjunction** of the grader's accept flag with ``structural_valid`` -- and the
+corruption was built to force the second term false.  The recorded outcome was
+therefore not a function of the grader's verdict at all.  **The defect was not that
+the number was wrong; it was that the number was not a function of the thing it was
+named after.**  (The scorer was ``evals/calibrate_judge.py``, deleted under L3 gate
+item 4; the reasoning does not depend on the file surviving.)
 Provenance belongs in the driver's record, keyed by ``(case, spec)``.  Plan 06
 section 6.5.
 
