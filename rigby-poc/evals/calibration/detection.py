@@ -156,29 +156,30 @@ def check_results_by_id(
     program: Any,
     scene: Any,
 ) -> dict[str, Any]:
-    """Every check id a mutated clip can be scored against, from both sources.
+    """Every check id a mutated clip can be scored against.
 
-    `analysis.validate` does not emit `anatomy.rom.*` — `rom_checks` is a separate
-    entry point and, as of `b958e41`, is wired into neither `validate` nor
-    `compiler.structural_failures`. Merging here rather than assuming one source
-    is what keeps a ROM target from looking like a check that never fires.
+    `analysis.validate` emits `anatomy.rom.*` since lane `analysis`'s 04d wired
+    `rom_checks` into it. Before that it did not, and this function merged the
+    two sources by hand so that a ROM target could not look like a check that
+    never fires. The merge is gone because it is now a duplicate: `validate`
+    calls `rom_checks(frames, fps=fps)` with the same arguments, so running it
+    again here would decompose all 52 bones twice per clip for identical
+    results.
 
-    **This function is the single site lane `analysis`'s 04d touches.** That PR
-    lands `validate(metrics, program, frames, *, fps)` and a `validate_clip(clip,
-    program)` convenience, so the `validate` call below becomes
-    `validate_clip(clip, program)` and nothing else here moves. Written against
-    the signature that exists rather than the one that is coming: a capability
-    dispatch would put two untestable branches inside the instrument, which is
-    the defect class this module is otherwise built to avoid.
+    **Not `validate_clip(clip, program)`, deliberately.** The convenience form
+    reads `clip.metrics` — the compiler's whole dict — while this call passes
+    `analyze(...)`, which is only what the analysis layer owns. Those are
+    different metric sets and they select different non-ROM checks, so swapping
+    in the convenience form here would silently change what this instrument
+    measures. 04d's note said "nothing else here moves"; keeping the metrics
+    source explicit is what makes that true.
     """
     from rigby_poc.analysis import analyze, validate
-    from rigby_poc.analysis.anatomy import rom_checks
 
-    checks = validate(analyze(clip, program, scene), program)
-    results = {item.id: item for item in checks}
-    for item in rom_checks(clip.frames, fps=float(clip.fps)):
-        results[item.id] = item
-    return results
+    checks = validate(
+        analyze(clip, program, scene), program, clip.frames, fps=float(clip.fps)
+    )
+    return {item.id: item for item in checks}
 
 
 def target_detected(results: Mapping[str, Any], spec: MutationSpec) -> bool:
