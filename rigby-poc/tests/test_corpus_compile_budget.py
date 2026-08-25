@@ -54,6 +54,13 @@ COMPILE_BUDGET: dict[str, int] = {
     "test_corpus_known_bad.py": 60,
     "test_corpus_format.py": 30,
     "test_corpus_cli.py": 60,
+    # One corpus-wide pass in a module fixture, to pin the emitted check-id registry
+    # against what the analyzer actually emits. Measured at 55: the 47-case pass plus
+    # the loader revalidating a handful. Budgeted rather than exempted because it is
+    # exactly the corpus-wide loop this file exists to keep visible -- 06a's target
+    # ids went unchecked for a whole PR, and the fix for that must not itself be the
+    # thing nobody is counting.
+    "test_mutation_check_registry.py": 60,
 }
 
 #: Corpus-touching files deliberately not measured, with the reason.  Being here is
@@ -74,6 +81,7 @@ UNBUDGETED: dict[str, str] = {
     "test_mutation_injector.py": "two module-scoped fixtures",
     "test_mutation_sweep.py": "one",
     "test_mutation_legacy_port.py": "one corpus pass for the applicability tally",
+    "test_mutation_families.py": "three module-scoped compiles; measured at 3",
 }
 
 #: What marks a file as touching the corpus.  Deliberately broad: a false positive
