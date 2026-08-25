@@ -44,10 +44,6 @@ pytestmark = pytest.mark.medium
 
 
 PROMPT = "throw a right jab"
-# Consecutive stages hand over inside one function; anything above this is real work
-# escaping instrumentation rather than scheduling noise. Absolute, so it does not move
-# with a platform's process-startup cost the way a share of the run does.
-_MAX_INTER_STAGE_GAP_MS = 250.0
 # Six of the seven stages `_progress` declares. The seventh, `repair`, only fires when a
 # candidate needs repairing, so a clean run does not record it and asserting it here would
 # make this test depend on the run failing.
@@ -209,13 +205,15 @@ def test_stage_spans_leave_no_gap_between_consecutive_stages(
             f"stage {later.name!r} started before {earlier.name!r} ended; stages overlap "
             "and duration_by_stage over-reports"
         )
-        gap_ms = (
-            _millis(later.started_at) - _millis(earlier.ended_at)
-        )
-        assert gap_ms <= _MAX_INTER_STAGE_GAP_MS, (
-            f"{gap_ms:.1f} ms is unattributed between {earlier.name!r} and {later.name!r}; "
-            "work is happening outside every stage"
-        )
+        # Deliberately NOT a bound on the gap. `StageTimeline.enter` closes the previous
+        # span and opens the next one in the same call, so work between two `_progress`
+        # calls is attributed to the *earlier* stage, which stays open until the next
+        # enter. A gap between consecutive stages can therefore only ever be the
+        # timeline's own close-and-reopen overhead -- it cannot detect work escaping
+        # instrumentation, which is what an earlier version of this test claimed it did.
+        # Bounding it measured instrumentation overhead on a loaded CI runner and called
+        # the result a correctness property: 22.0 ms against a 20 ms bound on one Windows
+        # run, under it on the next, same code both times.
 
 
 def test_the_untimed_head_is_reported_as_a_duration_not_only_as_a_share(
@@ -236,11 +234,19 @@ def test_the_untimed_head_is_reported_as_a_duration_not_only_as_a_share(
         f"\nstage coverage: {share * 100:.1f}% of {root:.0f} ms; "
         f"untimed head {head_ms:.0f} ms across {len(document.by_kind('stage'))} stage spans"
     )
-    assert head_ms >= 0.0
-    # Deliberately loose and absolute. The head is process setup, not pipeline work, so a
-    # slow machine makes it larger without anything being wrong; what would be wrong is
-    # seconds of it, which would mean real work escaping every stage.
-    assert head_ms < 5000.0, f"{head_ms:.0f} ms of the run happened outside every stage"
+    # The only assertion here is that the head is not negative, which would mean stages
+    # summed to more than the run and `duration_by_stage` was over-reporting.
+    #
+    # There is deliberately no upper bound. The head is process and import setup before
+    # the first `_progress` call, so "seconds of head" means slow imports on that machine,
+    # not work escaping a stage -- and no threshold separates the two. Measured 5 ms on
+    # macOS against 5405 ms on Windows CI for the same code, a 1081x spread on the very
+    # quantity a bound would have to sit inside. A 5000 ms bound failed one run and passed
+    # the next with nothing changed between them.
+    assert head_ms >= 0.0, (
+        f"stages summed to {total:.0f} ms of a {root:.0f} ms run; duration_by_stage "
+        "over-reports, which means stages overlap"
+    )
 
 
 def test_the_seven_declared_stages_are_all_recorded(tmp_path: Path, stubbed: None) -> None:

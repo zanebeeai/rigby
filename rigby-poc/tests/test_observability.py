@@ -665,8 +665,19 @@ def test_a_gap_between_stages_is_visible_in_the_timestamps(tmp_path: Path) -> No
     assert gap_ms >= 40.0, "a deliberate 50 ms gap between stages was not detectable"
 
 
-def test_consecutive_stages_hand_over_without_a_gap(tmp_path: Path) -> None:
-    """And the normal case: entering a new stage closes the old one in the same breath."""
+def test_entering_a_stage_closes_the_previous_one_before_opening_it(tmp_path: Path) -> None:
+    """The handover, asserted as an ordering rather than as a duration.
+
+    An earlier version bounded the gap at 20 ms and called it a correctness property. It
+    is not one: `enter` closes and reopens in a single call, so the gap is the timeline's
+    own overhead and nothing else. Bounding it measured a loaded CI runner -- 22.0 ms on
+    one Windows run, under 20 ms on the next, identical code -- while being unable to
+    detect the thing it claimed to guard, because work between two `_progress` calls is
+    attributed to the earlier stage rather than falling into a gap.
+
+    What is worth asserting is that the previous span is closed and does not overlap the
+    next. That is true on every machine at every load.
+    """
     tracer = Tracer(tmp_path / "run", run_id="20260824T120000-deadbeef")
     with tracer.span("run", "pipeline"):
         with StageTimeline(tracer) as timeline:
@@ -675,8 +686,6 @@ def test_consecutive_stages_hand_over_without_a_gap(tmp_path: Path) -> None:
             timeline.enter("candidates")
     stages = sorted(load(tmp_path / "run").by_kind("stage"), key=lambda span: span.started_at)
     first, second = stages
-    gap_ms = (
-        datetime.fromisoformat(second.started_at.replace("Z", "+00:00")).timestamp()
-        - datetime.fromisoformat(first.ended_at.replace("Z", "+00:00")).timestamp()
-    ) * 1000.0
-    assert gap_ms < 20.0, f"{gap_ms:.1f} ms unattributed between two consecutive stages"
+    assert first.ended_at is not None, "the previous stage was left open"
+    assert second.started_at >= first.ended_at, "consecutive stage spans overlap"
+    assert first.name == "planning" and second.name == "candidates"
