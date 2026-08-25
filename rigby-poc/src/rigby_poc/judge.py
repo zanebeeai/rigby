@@ -10,11 +10,12 @@ import random
 import time
 from pathlib import Path
 from dataclasses import dataclass
+from functools import cache
 from typing import Any, Callable, Iterable, Literal, Mapping
 
 from openai import OpenAI
 from PIL import Image, ImageDraw
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, create_model
 
 from .judge_claims import (
     INSUFFICIENT_EVIDENCE_FRACTION,
@@ -237,6 +238,87 @@ GRADER_OUTPUT_MODELS: dict[GraderName, type[BaseModel]] = {
     "timing": GraderClaims,
     "crossview": GraderClaims,
 }
+
+
+
+def _citable_snapshot_ids(payload_audit: list[dict[str, Any]]) -> tuple[str, ...]:
+    """Every snapshot id this grader was actually shown, in payload order.
+
+    A contact sheet is one image carrying many frames, so both the sheet's own id
+    and the source ids tiled into it are legitimate citations. Derived from the
+    audit the payload builder already writes rather than re-deriving from the
+    manifest, so the enum cannot drift from what was sent.
+    """
+    seen: list[str] = []
+    for entry in payload_audit:
+        for key in ("snapshot_id",):
+            value = entry.get(key)
+            if isinstance(value, str) and value not in seen:
+                seen.append(value)
+        for value in entry.get("source_snapshot_ids") or ():
+            if isinstance(value, str) and value not in seen:
+                seen.append(value)
+    return tuple(seen)
+
+
+@cache
+def grader_output_model(
+    grader: GraderName,
+    intent: str | None = None,
+    snapshot_ids: tuple[str, ...] = (),
+) -> type[BaseModel]:
+    """The output schema for one grader, with `Claim.id` closed to its own claim set.
+
+    **The free-form `id` was a real defect and it was invisible until a real
+    model ran.** `Claim.id` was `str(min_length=1, max_length=64)` and `claims`
+    was `1..24`, so nothing tied the response to the claim set the prompt asks
+    for. `aggregate_claims` then requires every spec id exactly and raises on a
+    miss — deliberately, so a truncated response cannot pass as an honest
+    abstention. Schema permissive, aggregator strict, nothing between them.
+
+    Measured against `gpt-5.6-luna` on one clip, five calls: the grader returned
+    twelve claims every time and rendered the id's **final** separator as an
+    underscore — `anatomy.elbow_abduction` for `anatomy.elbow.abduction` — on
+    four of five calls, up to eight ids at once. Complete: 1 of 5. At five
+    graders a clip, that is a run which scores almost nothing.
+
+    Every judge in the test suite is a fake client (`docs/testing.md`), so no
+    test could see it: the fakes emit the ids the aggregator wants. The split
+    path has been the default since 07d and this contract had never met a real
+    model until 10f's first call.
+
+    Closing the enum is the fix rather than normalising `_` to `.` on read.
+    Normalising accepts a malformed id and silently repairs it, which is how the
+    next divergence goes unnoticed; a `Literal` makes the wrong id unrepresentable
+    in the response, and the provider enforces it rather than this module hoping
+    for it. `claims` is also pinned to exactly the expected count, so an omission
+    is refused at the same boundary rather than surviving to the aggregator.
+    """
+    ids = claim_ids(grader, intent=intent)
+    if not ids:
+        raise ValueError(f"{grader}: no claim ids for intent {intent!r}")
+    fields: dict[str, Any] = {"id": (Literal[ids], ...)}  # type: ignore[valid-type]
+    if snapshot_ids:
+        # `snapshot_id` was the second open field and it failed the same way. The
+        # grader returned "01-orbit, 02-orbit, 03-orbit, 04-orbit, 05-orbit" -- a
+        # comma-joined list in a scalar -- which `Claim` accepted at 48 chars and
+        # `MotionJudgeScore.evidence[].snapshot_id` then rejected at 32, so the
+        # clip died two layers downstream of the field that let it through. The
+        # citable set is known exactly: it is what the payload actually showed
+        # this grader. Closing it makes "cite one snapshot" unrepresentable as
+        # "cite five".
+        fields["snapshot_id"] = (Literal[snapshot_ids], ...)  # type: ignore[valid-type]
+    closed_claim = create_model(
+        f"Claim_{grader}_{family_for_intent(intent) if grader == 'semantic' else 'any'}",
+        __base__=Claim,
+        **fields,
+    )
+    base = SemanticGraderClaims if grader == "semantic" else GraderClaims
+    return create_model(
+        f"{base.__name__}_{grader}_{family_for_intent(intent) if grader == 'semantic' else 'any'}",
+        __base__=base,
+        claims=(list[closed_claim], Field(min_length=len(ids), max_length=len(ids))),  # type: ignore[valid-type]
+    )
 
 
 # `overall` is a summary of the dimensions that are measured directly, not a
@@ -1506,7 +1588,9 @@ class VLMJudge(RoutedModelClient):
                 {"role": "system", "content": [{"type": "input_text", "text": prompt.text}]},
                 {"role": "user", "content": content},
             ],
-            text_format=GRADER_OUTPUT_MODELS[name],
+            text_format=grader_output_model(
+                name, manifest.get("intent"), _citable_snapshot_ids(payload_audit)
+            ),
             escalation_reason=self._grader_escalation,
         )
         return {
