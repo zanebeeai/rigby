@@ -66,6 +66,12 @@ class ArmResult:
     #: Capability results, held apart from threshold results by
     #: `Applicability.static_target`. Never pooled into the arm's own numbers.
     static_target_n: int = 0
+    #: The exact cases this arm was measured over. Not every axis reaches every
+    #: case: 06b emits the three `contract.clip.*` checks on all 47 corpus cases
+    #: but the anatomy and signal axes on 14, so a rate quoted per case has
+    #: denominator 14 or 47 depending on the axis and never a single n. Recorded
+    #: so `pool_arms` can refuse rather than average two different denominators.
+    cases: frozenset[str] = frozenset()
 
     @property
     def measured(self) -> bool:
@@ -78,6 +84,7 @@ class ArmResult:
             "n": self.n,
             "reason": self.reason,
             "static_target_n": self.static_target_n,
+            "cases": sorted(self.cases),
             "scores": self.scores.to_dict() if self.scores else None,
         }
 
@@ -96,6 +103,7 @@ def score_arm(
     """
     if not records:
         return ArmResult(name, None, 0, "no records", static_target_n)
+    cases = frozenset(record.clip_id for record in records)
     labels = [record.is_good for record in records]
     if len(set(labels)) < 2:
         only = "good" if labels[0] else "bad"
@@ -105,8 +113,9 @@ def score_arm(
             len(records),
             f"no variation: every clip is {only}, so one of the two rates has no denominator",
             static_target_n,
+            cases,
         )
-    return ArmResult(name, score_unary(records), len(records), "", static_target_n)
+    return ArmResult(name, score_unary(records), len(records), "", static_target_n, cases)
 
 
 def replay_accept(store: ReplayStore, case_id: str, *, intent: str | None) -> bool:
@@ -180,3 +189,33 @@ def baseline_for(records: Sequence[UnaryJudgment]) -> float | None:
     if not records:
         return None
     return majority_class_baseline([record.is_good for record in records])
+
+
+def pool_arms(arms: Sequence[ArmResult]) -> frozenset[str]:
+    """Refuse to pool arms measured over different case sets.
+
+    Not every axis reaches every case. 06b emits the three `contract.clip.*`
+    checks on all 47 corpus cases and the anatomy and signal axes on 14, so a
+    detection rate quoted per case has denominator 14 or 47 depending on the
+    axis. Averaging them produces a number whose overlap subset is unstated —
+    the same defect §2.5 warns about for §5.2's kappa, arriving through the
+    denominator instead of through the population.
+
+    Returns the shared case set when the arms agree, so a caller that pools has
+    to have obtained one. Raises when they do not, naming the difference rather
+    than reporting a union or an intersection: either choice would be a silent
+    decision about which arm's denominator wins.
+    """
+    measured = [arm for arm in arms if arm.measured]
+    if not measured:
+        raise CalibrationDataError("no measured arm to pool")
+    case_sets = {arm.name: arm.cases for arm in measured}
+    distinct = {frozenset(cases) for cases in case_sets.values()}
+    if len(distinct) > 1:
+        sizes = ", ".join(
+            f"{name} over {len(cases)}" for name, cases in sorted(case_sets.items())
+        )
+        raise CalibrationDataError(
+            f"cannot pool arms measured over different case sets: {sizes}"
+        )
+    return next(iter(distinct))

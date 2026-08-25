@@ -11,7 +11,9 @@ import pytest
 
 from evals.calibration.driver import (
     ArmResult,
+    CalibrationDataError,
     baseline_for,
+    pool_arms,
     score_arm,
 )
 from evals.calibration_stats import UnaryJudgment
@@ -117,3 +119,59 @@ def test_a_measured_arm_carries_its_n_beside_its_rates() -> None:
     assert payload["n"] == 8
     assert payload["scores"]["sensitivity"]["n"] == 4
     assert payload["scores"]["specificity"]["n"] == 4
+
+
+# ------------------------------------------------------------- denominators
+
+
+def _arm(name: str, case_ids: list[str]) -> "object":
+    records = [
+        UnaryJudgment(clip_id=case, is_good=index % 2 == 0, accepted=index % 2 == 0)
+        for index, case in enumerate(case_ids)
+    ]
+    return score_arm(name, records)
+
+
+def test_an_arm_records_the_cases_it_was_measured_over() -> None:
+    assert _arm("a", ["c1", "c2"]).cases == frozenset({"c1", "c2"})
+
+
+def test_pooling_arms_with_different_case_sets_is_refused() -> None:
+    """Not every axis reaches every case.
+
+    06b emits the three `contract.clip.*` checks on all 47 corpus cases but the
+    anatomy and signal axes on 14, so a rate quoted per case has denominator 14
+    or 47 depending on the axis. Averaging them produces a number whose overlap
+    subset is unstated — §2.5's warning arriving through the denominator instead
+    of the population.
+    """
+    wide = _arm("contract", ["c1", "c2", "c3", "c4"])
+    narrow = _arm("anatomy", ["c1", "c2"])
+    with pytest.raises(CalibrationDataError, match="different case sets"):
+        pool_arms([wide, narrow])
+
+
+def test_the_refusal_names_both_denominators() -> None:
+    # So a reader can see which arm reaches fewer cases rather than being told
+    # only that pooling failed.
+    with pytest.raises(CalibrationDataError, match="anatomy over 2.*contract over 4"):
+        pool_arms([_arm("contract", ["c1", "c2", "c3", "c4"]), _arm("anatomy", ["c1", "c2"])])
+
+
+def test_pooling_agreeing_arms_returns_the_shared_case_set() -> None:
+    # A caller that pools has to have obtained the shared set, rather than
+    # pooling and hoping.
+    shared = pool_arms([_arm("a", ["c1", "c2"]), _arm("b", ["c1", "c2"])])
+    assert shared == frozenset({"c1", "c2"})
+
+
+def test_pooling_refuses_a_union_and_an_intersection_alike() -> None:
+    # Either choice would be a silent decision about which arm's denominator
+    # wins, so neither is offered.
+    with pytest.raises(CalibrationDataError):
+        pool_arms([_arm("a", ["c1"]), _arm("b", ["c2"])])
+
+
+def test_pooling_with_no_measured_arm_raises() -> None:
+    with pytest.raises(CalibrationDataError, match="no measured arm"):
+        pool_arms([score_arm("empty", [])])
