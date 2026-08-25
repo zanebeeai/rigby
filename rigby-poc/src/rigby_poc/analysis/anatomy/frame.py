@@ -374,6 +374,46 @@ def decompose(quaternion_xyzw, frame: AnatomicalFrame) -> DofAngles:
     )
 
 
+def decompose_series(
+    quaternions_xyzw: np.ndarray, frame: AnatomicalFrame
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """:func:`decompose` over a whole clip at once, as three ``(n,)`` arrays.
+
+    Identical maths, vectorised. The scalar form builds four ``Rotation``
+    objects per call, which is fine for a test and not for a check: measured at
+    **2.9 ms per frame** over all 52 bones, a 589-frame clip cost 1.75 s, well
+    past plan 02 §5's 300 ms ceiling for the whole analysis layer. Batching per
+    bone turns 52 x n scalar constructions into 52 vectorised ones.
+    """
+
+    values = np.asarray(quaternions_xyzw, dtype=float)
+    if values.ndim != 2 or values.shape[1] != 4:
+        raise ValueError("expected an (n, 4) array of xyzw quaternions")
+    norms = np.linalg.norm(values, axis=1, keepdims=True)
+    values = values / np.maximum(norms, 1e-12)
+
+    axis = frame.twist_axis
+    projected = np.outer(values[:, :3] @ axis, axis)
+    twist_quat = np.concatenate([projected, values[:, 3:4]], axis=1)
+    twist_norm = np.linalg.norm(twist_quat, axis=1, keepdims=True)
+    degenerate = twist_norm[:, 0] < 1e-12
+    safe = np.where(degenerate[:, None], np.asarray([0.0, 0.0, 0.0, 1.0]), twist_quat)
+    safe = safe / np.maximum(np.linalg.norm(safe, axis=1, keepdims=True), 1e-12)
+
+    twist = Rotation.from_quat(safe)
+    swing_rotvec = (Rotation.from_quat(values) * twist.inv()).as_rotvec()
+    twist_rotvec = twist.as_rotvec()
+
+    twist_angle = np.linalg.norm(twist_rotvec, axis=1)
+    twist_angle = np.where(twist_rotvec @ axis < 0.0, -twist_angle, twist_angle)
+
+    return (
+        swing_rotvec @ frame.flexion_axis,
+        swing_rotvec @ frame.abduction_axis,
+        twist_angle,
+    )
+
+
 def compose(angles: DofAngles, frame: AnatomicalFrame) -> np.ndarray:
     """Inverse of :func:`decompose`, as an xyzw quaternion.
 
@@ -415,6 +455,7 @@ __all__ = [
     "bone_anatomical_frame",
     "compose",
     "decompose",
+    "decompose_series",
     "digit_bones",
     "palmar_direction",
     "radial_direction",

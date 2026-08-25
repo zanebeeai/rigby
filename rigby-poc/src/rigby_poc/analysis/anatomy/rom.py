@@ -16,17 +16,18 @@ and the check this replaces cannot tell them apart.
 from __future__ import annotations
 
 import json
-import math
 from collections.abc import Iterable
 from dataclasses import asdict, dataclass
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Literal
 
+import numpy as np
+
 from ...models import ClipFrame
 from ..contract import ANATOMY, CheckResult
 from ..rig import PROJECT_ROOT
-from .frame import DofAngles, all_frames, decompose
+from .frame import all_frames, decompose_series
 from .neutral import rest_relative
 
 ROM_FILE = PROJECT_ROOT / "config" / "rom.v1.json"
@@ -166,30 +167,44 @@ def enforceability(bone: str) -> str:
     return _document()["limits"][bone]["enforceable"]
 
 
-def decompose_clip(frames: Iterable[ClipFrame]) -> dict[str, list[DofAngles]]:
-    """Resolve every frame's every bone onto its anatomical frame."""
+def decompose_clip(frames: Iterable[ClipFrame]) -> dict[str, np.ndarray]:
+    """Resolve every bone onto its anatomical frame, as ``(n, 3)`` degree arrays.
+
+    Columns are flexion, abduction, twist. Batched per bone rather than per
+    frame: see :func:`~rigby_poc.analysis.anatomy.frame.decompose_series`.
+    """
 
     derived = all_frames()
-    series: dict[str, list[DofAngles]] = {}
-    for frame in frames:
-        for bone, pose in frame.bones.items():
-            if bone not in derived:
-                continue
-            series.setdefault(bone, []).append(
-                decompose(pose.rotation.as_list(), derived[bone])
-            )
-    return series
+    collected = list(frames)
+    if not collected:
+        return {}
+    stacked: dict[str, np.ndarray] = {}
+    for bone, frame in derived.items():
+        quaternions = np.asarray(
+            [
+                item.bones[bone].rotation.as_list()
+                for item in collected
+                if bone in item.bones
+            ],
+            dtype=float,
+        )
+        if quaternions.size == 0:
+            continue
+        flexion, abduction, twist = decompose_series(quaternions, frame)
+        stacked[bone] = np.degrees(np.column_stack((flexion, abduction, twist)))
+    return stacked
 
 
-def bone_violations(
-    bone: str, angles: list[DofAngles], *, fps: float
-) -> list[RomViolation]:
-    """Every DOF of one bone that leaves its typical band, worst band first."""
+def bone_violations(bone: str, angles: np.ndarray, *, fps: float) -> list[RomViolation]:
+    """Every DOF of one bone that leaves its typical band, worst band first.
+
+    ``angles`` is the ``(n, 3)`` degree array :func:`decompose_clip` returns.
+    """
 
     violations: list[RomViolation] = []
-    for dof in DOFS:
+    for index, dof in enumerate(DOFS):
         limit = rom_limit(bone, dof)
-        values = [math.degrees(getattr(item, f"{dof}_rad")) for item in angles]
+        values = [float(value) for value in np.asarray(angles)[:, index]]
         bands = [limit.band_of(value) for value in values]
         worst = (
             "beyond_max"

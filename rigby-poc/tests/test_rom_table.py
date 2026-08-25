@@ -210,3 +210,41 @@ def test_twist_limits_are_negated_and_swapped_across_sides() -> None:
     # rotation is ~10 deg internal against ~30 external, so the knee is the only
     # joint in the table whose twist range is not symmetric.
     assert asymmetric == 1
+
+
+def test_decomposition_is_batched_not_per_frame() -> None:
+    """A guard against the regression this file's own history contains.
+
+    The first implementation called the scalar ``decompose`` once per bone per
+    frame, building four ``Rotation`` objects each time. Measured at 2.9 ms per
+    frame over 52 bones, which put the longest corpus clip at 1.75 s -- past
+    plan 02 §5's 300 ms ceiling for the *entire* analysis layer, from one check.
+    Batching per bone made it 11x faster.
+
+    The bound is deliberately loose. It is not a benchmark; it is a tripwire for
+    someone reintroducing a per-frame ``Rotation`` construction, which costs an
+    order of magnitude rather than a few percent. A loose bound survives a slow
+    CI box; a tight one would flake and get deleted.
+    """
+
+    import time
+
+    from evals.corpus import load_corpus
+    from evals.corpus.loader import compile_case
+
+    from rigby_poc.analysis.anatomy.rom import rom_violations
+
+    case = next(item for item in load_corpus() if item.entry.id == "fullbody-burpee-cycle")
+    clip = compile_case(case)
+    rom_violations(clip.frames[:2], fps=clip.fps)  # warm the config read
+
+    started = time.perf_counter()
+    rom_violations(clip.frames, fps=clip.fps)
+    elapsed_ms = (time.perf_counter() - started) * 1000.0
+
+    assert len(clip.frames) > 500
+    assert elapsed_ms < 900.0, (
+        f"range-of-motion checking took {elapsed_ms:.0f} ms on {len(clip.frames)} frames; "
+        "the batched implementation runs in ~150 ms. A per-frame Rotation "
+        "construction is the usual cause."
+    )
