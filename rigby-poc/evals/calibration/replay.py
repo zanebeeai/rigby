@@ -28,9 +28,10 @@ let the second dimension silently overwrite the first.
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any
 
 from rigby_poc.io_utils import atomic_write_json
 from rigby_poc.judge_prompts import GRADER_NAMES

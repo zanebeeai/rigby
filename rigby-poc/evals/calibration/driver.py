@@ -32,16 +32,30 @@ grader's verdict at all. `evals.mutations.legacy` strips all three.
 
 from __future__ import annotations
 
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from typing import Any, Mapping, Sequence
+from typing import Any
 
+from evals.calibration.detection import (
+    DetectionError,
+    LevelResult,
+    capability_rate,
+    detection_curve,
+    detection_threshold,
+    skip_ledger,
+    sweep_outcomes,
+    unmutated_baseline,
+)
 from evals.calibration.replay import ReplayStore, prompt_versions_agree
 from evals.calibration_stats import (
+    Interval,
+    ProportionResult,
     UnaryJudgment,
     UnaryScores,
     majority_class_baseline,
     score_unary,
 )
+from evals.mutations.spec import MutationSpec
 from rigby_poc.judge import assemble_split_score
 
 
@@ -189,6 +203,107 @@ def baseline_for(records: Sequence[UnaryJudgment]) -> float | None:
     if not records:
         return None
     return majority_class_baseline([record.is_good for record in records])
+
+
+@dataclass(frozen=True)
+class SweepResult:
+    """One named sweep's detection curve, and the threshold it did or did not locate.
+
+    `threshold` is `None` for two different reasons and `reason` says which, because
+    they are opposite findings. A sweep that ran and never reached 50% detection is
+    a detector that does not detect, and `_detection_criterion` fails the gate on
+    it. A sweep with no threshold points never measured anything — every pair was
+    refused or static — and reporting that as a failed detector would blame the
+    grader for the corpus.
+    """
+
+    name: str
+    threshold: Interval | None
+    curve: list[LevelResult]
+    capability: ProportionResult
+    skips: Mapping[str, int]
+    measured: bool
+    #: Detection on the **unmutated** clip over the same applicable cases. The
+    #: baseline every rate here is stated against, and the half `ProportionResult`
+    #: cannot supply: the type structurally carries an n and a bound, and nothing
+    #: structurally carries a baseline. A detection rate without it cannot be told
+    #: apart from a check that was already firing (lane `infra`, on the
+    #: published-rate guard's blind spot).
+    baseline: ProportionResult | None = None
+    reason: str = ""
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "sweep": self.name,
+            "measured": self.measured,
+            "reason": self.reason,
+            "threshold": self.threshold.to_dict() if self.threshold else None,
+            "baseline_detection_rate": self.baseline.to_dict() if self.baseline else None,
+            "capability": self.capability.to_dict(),
+            "skips": dict(self.skips),
+            "curve": [level.to_dict() for level in self.curve],
+        }
+
+
+def run_sweep(
+    name: str,
+    specs: Sequence[MutationSpec],
+    cases: Sequence[tuple[str, Any, Any, Any]],
+) -> SweepResult:
+    """Drive one 06b sweep across compiled cases and score its curve.
+
+    Zero model calls: detection is the deterministic layer's own verdict on the
+    mutated clip, read through `band` for `anatomy.rom.*` and `status` elsewhere
+    (`evals.calibration.detection`). This is the instrument 10f's per-grader curve
+    is compared against, not a substitute for it.
+
+    The baseline is computed **before** the threshold and travels with it. A
+    detection curve whose target check was already firing on the unmutated clip
+    is a measurement of the check's resting state, not of the mutation, and the
+    two are indistinguishable from the rate alone.
+    """
+    outcomes = sweep_outcomes(specs, cases)
+    curve = detection_curve(outcomes)
+    capability = capability_rate(curve)
+    skips = skip_ledger(curve)
+    baseline = unmutated_baseline(specs, cases)
+    try:
+        threshold = detection_threshold(curve)
+    except DetectionError as error:
+        return SweepResult(
+            name, None, curve, capability, skips, False, baseline, str(error)
+        )
+    if threshold is None:
+        return SweepResult(
+            name,
+            None,
+            curve,
+            capability,
+            skips,
+            True,
+            baseline,
+            "the sweep ran and never reached 50% detection at any severity",
+        )
+    return SweepResult(name, threshold, curve, capability, skips, True, baseline)
+
+
+def detection_report(results: Sequence[SweepResult]) -> dict[str, Any]:
+    """Every sweep's threshold, reported side by side and never pooled.
+
+    Pooling is refused for the same reason `pool_arms` refuses it: the sweeps
+    target different checks over different applicable subsets, so one severity
+    averaged across them has a denominator no single sweep had. `min` would be no
+    better — it would report the easiest family's threshold as the instrument's.
+    """
+    if not results:
+        raise CalibrationDataError("no sweeps to report")
+    return {
+        "sweeps": [result.to_dict() for result in results],
+        "measured": sorted(result.name for result in results if result.threshold),
+        "unmeasured": {
+            result.name: result.reason for result in results if not result.threshold
+        },
+    }
 
 
 def pool_arms(arms: Sequence[ArmResult]) -> frozenset[str]:
