@@ -326,6 +326,39 @@ def test_seeded_safety_fields_are_still_seeded_in_committed_compiler_output() ->
     )
 
 
+def test_no_live_producer_measures_foot_drift() -> None:
+    """The producer-side half, and the fixture scan is not a substitute for it.
+
+    `test_seeded_safety_fields_are_still_seeded_in_committed_compiler_output`
+    reads committed fixtures, which lag the producers until someone re-blesses
+    them -- so it cannot fail *at the moment a producer changes*, which is the
+    moment that matters. Caught by lane `analysis`, who pointed out that reading
+    a fixture-scan's green as evidence about a producer is the same shape both
+    of us keep finding in other people's guards.
+
+    This compiles through the real path instead. If forward kinematics ever
+    lands and starts computing foot drift, this goes red and
+    `evidence.SEEDED_SAFETY_FIELDS` must drop its `foot_drift_m` entry -- which
+    is the opposite error, a real measurement discarded as a constant.
+    """
+
+    scene = default_scene()
+    program = OfflinePlanner().plan(
+        PlanRequest(text="Walk forward four steps.", scene=scene, provider="offline")
+    ).program
+    clip = compile_motion(CompileRequest(scene=scene, program=program, persist=False))
+    assert clip.success, clip.failure
+    assert clip.frames, "a clip with no frames cannot evidence anything about foot drift"
+    assert "foot_drift_m" in clip.metrics, (
+        "foot_drift_m vanished from the metrics dict; SEEDED_SAFETY_FIELDS keys on it"
+    )
+    assert clip.metrics["foot_drift_m"] == 0.0, (
+        f"a producer now measures foot drift ({clip.metrics['foot_drift_m']}). "
+        "Remove it from evidence.SEEDED_SAFETY_FIELDS -- the safety gate should "
+        "start certifying against it again rather than reporting UNVERIFIED."
+    )
+
+
 def test_structural_gate_rejects_parallel_gripper_and_requires_axis_conversion() -> None:
     metadata = {
         "physics_model": {

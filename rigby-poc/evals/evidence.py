@@ -489,8 +489,13 @@ def physical_trial(metrics: dict[str, Any], criteria: dict[str, Any]) -> tuple[b
 #: read by ``physical_trial``, which ``grasp_and_physical_gates`` only ever hands
 #: real grasp trials, so they are measured wherever that gate can see them.
 #:
-#: ``tests/test_acceptance_harness.py`` fails if a producer starts measuring one,
-#: so this cannot go stale into the opposite error.
+#: Two guards in ``tests/test_acceptance_harness.py`` stop this going stale into
+#: the opposite error -- a real measurement discarded as a constant.
+#: ``test_no_live_producer_measures_foot_drift`` compiles through the real path,
+#: and is the one that fires the moment a producer changes;
+#: ``test_seeded_safety_fields_are_still_seeded_in_committed_compiler_output``
+#: scans 35 committed fixtures, which **lag** the producers until a re-bless and
+#: are therefore a backstop rather than the live check.
 SEEDED_SAFETY_FIELDS: dict[str, str | None] = {
     "foot_drift_m": None,
     "max_penetration_m": "physics_engine",
