@@ -21,6 +21,8 @@ def intra_hand_contact_metrics(
     frames: list[ClipFrame],
     phase_ranges: list[dict[str, float | str]],
     program: MotionProgram,
+    *,
+    world_positions: list[dict[str, np.ndarray]] | None = None,
 ) -> dict[str, Any]:
     contacts = [
         primitive
@@ -133,8 +135,16 @@ def intra_hand_contact_metrics(
         interval = ranges.get(primitive.label or "")
         if interval is None:
             continue
-        frame = min(frames, key=lambda item: abs(item.time_s - interval[1]))
-        positions = kinematics.canonical_positions(frame.bones)
+        index = min(
+            range(len(frames)),
+            key=lambda item: abs(frames[item].time_s - interval[1]),
+        )
+        frame = frames[index]
+        positions = (
+            world_positions[index]
+            if world_positions is not None
+            else kinematics.canonical_positions(frame.bones)
+        )
         if gaze.hand is not None:
             target = positions[f"{gaze.hand.value}Hand"]
         else:

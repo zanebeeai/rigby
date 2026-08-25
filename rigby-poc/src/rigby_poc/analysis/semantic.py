@@ -37,8 +37,19 @@ def semantic_cycle_metrics(
     frames: list[ClipFrame],
     phase_ranges: list[dict[str, float | str]],
     program: MotionProgram,
+    *,
+    world_positions: list[dict[str, np.ndarray]] | None = None,
 ) -> dict[str, Any]:
-    """Measure the observable path promised by a motion-bearing verb."""
+    """Measure the observable path promised by a motion-bearing verb.
+
+    ``world_positions`` lets a caller that already holds the shared per-frame
+    forward-kinematics cache hand it over instead of having this pass rebuild
+    it. Same inputs, same evaluation, same numbers — but a 68-node hierarchy
+    per frame is the dominant cost of the whole analysis pass, and paying it
+    twice on a clip that waves while walking was ~40% of that path.
+    ``tests/test_analysis_equivalence.py`` asserts the whole pass evaluates FK
+    at most once per frame, which is what caught it.
+    """
 
     assertion = semantic_cycle_assertion(program)
     if assertion is None:
@@ -86,11 +97,15 @@ def semantic_cycle_metrics(
             primitive.parameters.trajectory_amplitude_m,
         )
     values: dict[Hand, list[float]] = {hand: [] for hand in hand_axes}
-    kinematics = rig_kinematics()
-    for frame in frames:
+    kinematics = rig_kinematics() if world_positions is None else None
+    for index, frame in enumerate(frames):
         if not any(start <= frame.time_s <= end for start, end in intervals):
             continue
-        positions = kinematics.canonical_positions(frame.bones)
+        positions = (
+            world_positions[index]
+            if world_positions is not None
+            else kinematics.canonical_positions(frame.bones)  # type: ignore[union-attr]
+        )
         for hand, axis in hand_axes.items():
             # Measure the path in the moving shoulder frame. World-space
             # wrist positions are dominated by root travel when someone

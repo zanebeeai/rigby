@@ -23,6 +23,8 @@ TRAVEL_CYCLE_LABEL = "parallel_forearm_travel_cycle"
 def parallel_forearm_metrics(
     frames: list[ClipFrame],
     phase_ranges: list[dict[str, float | str]],
+    *,
+    world_positions: list[dict[str, np.ndarray]] | None = None,
 ) -> dict[str, float]:
     intervals = [
         (float(item["start_s"]), float(item["end_s"]))
@@ -31,7 +33,7 @@ def parallel_forearm_metrics(
     ]
     if not intervals:
         return {}
-    kinematics = rig_kinematics()
+    kinematics = rig_kinematics() if world_positions is None else None
     axis_errors: list[float] = []
     frontal_axis_errors: list[float] = []
     separations: list[float] = []
@@ -40,10 +42,14 @@ def parallel_forearm_metrics(
     cross_body_samples: list[bool] = []
     wrist_vertical_orders: list[float] = []
     wrist_depth_orders: list[float] = []
-    for frame in frames:
+    for index, frame in enumerate(frames):
         if not any(start <= frame.time_s <= end for start, end in intervals):
             continue
-        positions = kinematics.canonical_positions(frame.bones)
+        positions = (
+            world_positions[index]
+            if world_positions is not None
+            else kinematics.canonical_positions(frame.bones)  # type: ignore[union-attr]
+        )
         left_elbow = positions["leftLowerArm"]
         left_wrist = positions["leftHand"]
         right_elbow = positions["rightLowerArm"]
