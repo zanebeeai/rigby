@@ -68,12 +68,24 @@ loader.compile_motion = counting
 
 import pytest
 
-code = pytest.main(["-q", "-p", "no:warnings", "--no-header", sys.argv[1]])
-print(f"COMPILES={calls['n']} EXIT={int(code)}")
+
+class _Ran:
+    # Counts tests that actually executed, not tests that were collected.
+    def __init__(self):
+        self.n = 0
+
+    def pytest_runtest_logreport(self, report):
+        if report.when == "call":
+            self.n += 1
+
+
+ran = _Ran()
+code = pytest.main(["-q", "-p", "no:warnings", "--no-header", sys.argv[1]], plugins=[ran])
+print(f"COMPILES={calls['n']} RAN={ran.n} EXIT={int(code)}")
 """
 
 
-def _count_compiles(test_file: str) -> tuple[int, int]:
+def _count_compiles(test_file: str) -> tuple[int, int, int]:
     completed = subprocess.run(
         [sys.executable, "-c", _COUNTER, f"tests/{test_file}"],
         cwd=PROJECT_ROOT,
@@ -83,14 +95,33 @@ def _count_compiles(test_file: str) -> tuple[int, int]:
     )
     marker = [line for line in completed.stdout.splitlines() if line.startswith("COMPILES=")]
     assert marker, completed.stdout[-2000:] + completed.stderr[-2000:]
-    compiles, exit_code = marker[-1].split()
-    return int(compiles.removeprefix("COMPILES=")), int(exit_code.removeprefix("EXIT="))
+    compiles, ran, exit_code = marker[-1].split()
+    return (
+        int(compiles.removeprefix("COMPILES=")),
+        int(ran.removeprefix("RAN=")),
+        int(exit_code.removeprefix("EXIT=")),
+    )
 
 
 @pytest.mark.parametrize("test_file", sorted(COMPILE_BUDGET))
 def test_a_corpus_test_file_stays_within_its_compile_budget(test_file: str) -> None:
-    compiles, exit_code = _count_compiles(test_file)
+    compiles, ran, exit_code = _count_compiles(test_file)
     assert exit_code == 0, f"{test_file} did not pass while being counted"
+    # A budget met by running nothing is a guard that cannot fail, and the child
+    # inherits `addopts` -- currently `-m 'fast or medium'` -- so a file retiered to
+    # `slow` would be deselected entirely and report zero compiles against every
+    # ceiling.
+    #
+    # Measured: pytest exits **5** on that path, so the exit assertion above already
+    # catches today's version of it. (An earlier comment here claimed it exits 0,
+    # from a shell pipeline that read `tail`'s status rather than pytest's.) This
+    # assertion is the direct statement of the property rather than a consequence
+    # of pytest's exit-code convention, which is not ours to depend on.
+    assert ran > 0, (
+        f"{test_file} ran no tests while being counted, so its zero compiles mean "
+        f"nothing. The child inherits addopts (-m 'fast or medium'); check the "
+        f"file's tier marker."
+    )
     budget = COMPILE_BUDGET[test_file]
     assert compiles <= budget, (
         f"{test_file} performs {compiles} compiles against a budget of {budget}. "
