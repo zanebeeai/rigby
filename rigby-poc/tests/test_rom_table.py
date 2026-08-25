@@ -212,39 +212,58 @@ def test_twist_limits_are_negated_and_swapped_across_sides() -> None:
     assert asymmetric == 1
 
 
-def test_decomposition_is_batched_not_per_frame() -> None:
+def test_decomposition_is_batched_not_per_frame(monkeypatch) -> None:
     """A guard against the regression this file's own history contains.
 
     The first implementation called the scalar ``decompose`` once per bone per
     frame, building four ``Rotation`` objects each time. Measured at 2.9 ms per
-    frame over 52 bones, which put the longest corpus clip at 1.75 s -- past
-    plan 02 §5's 300 ms ceiling for the *entire* analysis layer, from one check.
-    Batching per bone made it 11x faster.
+    frame over 52 bones, which put ``fullbody-burpee-cycle`` at 1.75 s for a
+    single report-only check. Batching per bone made it 11x faster.
 
-    The bound is deliberately loose. It is not a benchmark; it is a tripwire for
-    someone reintroducing a per-frame ``Rotation`` construction, which costs an
-    order of magnitude rather than a few percent. A loose bound survives a slow
-    CI box; a tight one would flake and get deleted.
+    **This asserts the structural property, not a wall-clock bound.** A timing
+    test is the wrong instrument here and lane `capture` sized the problem: the
+    only cross-platform datapoint anyone has is a 4.2x whole-suite ratio between
+    Windows CI and local macOS, which is itself confounded by runner hardware
+    and dominated by startup rather than numpy. A bound loose enough to survive
+    that is close to loose enough to miss the regression it exists for -- the
+    usable window sits between roughly 640 ms and 1750 ms, which is not a window
+    worth betting a guard on.
+
+    Counting ``Rotation`` constructions has none of that exposure. Batched, the
+    count is a function of the bone count alone; per-frame, it scales with the
+    clip. Ten frames and a hundred frames must therefore cost the same.
     """
 
-    import time
+    from scipy.spatial.transform import Rotation
 
     from evals.corpus import load_corpus
     from evals.corpus.loader import compile_case
-
     from rigby_poc.analysis.anatomy.rom import rom_violations
 
     case = next(item for item in load_corpus() if item.entry.id == "fullbody-burpee-cycle")
     clip = compile_case(case)
-    rom_violations(clip.frames[:2], fps=clip.fps)  # warm the config read
+    rom_violations(clip.frames[:2], fps=clip.fps)  # warm every cache
 
-    started = time.perf_counter()
-    rom_violations(clip.frames, fps=clip.fps)
-    elapsed_ms = (time.perf_counter() - started) * 1000.0
+    calls = {"n": 0}
+    original = Rotation.from_quat
 
-    assert len(clip.frames) > 500
-    assert elapsed_ms < 900.0, (
-        f"range-of-motion checking took {elapsed_ms:.0f} ms on {len(clip.frames)} frames; "
-        "the batched implementation runs in ~150 ms. A per-frame Rotation "
-        "construction is the usual cause."
+    def counting(*args, **kwargs):
+        calls["n"] += 1
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(Rotation, "from_quat", counting)
+
+    calls["n"] = 0
+    rom_violations(clip.frames[:10], fps=clip.fps)
+    short = calls["n"]
+
+    calls["n"] = 0
+    rom_violations(clip.frames[:100], fps=clip.fps)
+    long = calls["n"]
+
+    assert short == long, (
+        f"Rotation.from_quat was called {short} times for 10 frames and {long} "
+        "for 100. The decomposition is running per frame rather than per bone; "
+        "see rigby_poc.analysis.anatomy.frame.decompose_series."
     )
+    assert long <= 4 * len(rom_limits()) / len(DOFS)
