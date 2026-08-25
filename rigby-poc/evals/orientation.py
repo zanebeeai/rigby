@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import math
 import re
 from pathlib import Path
@@ -131,6 +132,19 @@ def semantic_forward_gate(items: list[dict[str, Any]], profile: dict[str, Any], 
     )
 
 
+def _declared_neutral_gaze() -> list[float] | None:
+    """The neutral gaze from `config/camera.v1.json`, the single source since 08c."""
+    config = Path(__file__).resolve().parents[1] / "config" / "camera.v1.json"
+    if not config.is_file():
+        return None
+    try:
+        document = json.loads(config.read_text(encoding="utf-8"))
+        value = document["camera"]["ego_neutral_gaze"]["value"]
+    except (json.JSONDecodeError, KeyError, TypeError):
+        return None
+    return [float(component) for component in value] if len(value) == 3 else None
+
+
 def inspect_egocentric_camera_source(path: Path) -> dict[str, Any]:
     source = path.read_text(encoding="utf-8")
     start = source.find('if (this.mode === "ego")')
@@ -159,6 +173,20 @@ def inspect_egocentric_camera_source(path: Path) -> dict[str, Any]:
             )
             if neutral:
                 vectors.insert(0, [float(neutral.group(index)) for index in (1, 2, 3)])
+            elif re.search(r"NEUTRAL_GAZE\s*=\s*new THREE\.Vector3\(\.\.\.egoNeutralGaze\)", camera_source):
+                # Plan 08 §3.3 replaced the hand-written literal with a generated import,
+                # which is the point of that PR and which silently emptied this gate: the
+                # regex above finds numeric literals, and there are no longer any to find.
+                # A source inspector reading constants out of code is defeated by exactly
+                # the refactor that centralises those constants, and it fails *open* --
+                # one branch instead of two, reported as unverified rather than as wrong.
+                #
+                # Following the import to config/camera.v1.json rather than parsing the
+                # generated TypeScript: the generator's --check job already proves the two
+                # agree on every CI run, so the JSON is the same fact with less parsing.
+                declared = _declared_neutral_gaze()
+                if declared is not None:
+                    vectors.insert(0, declared)
     source_digest = hashlib.sha256(
         "\n".join(f"{name}\n{sources[name]}" for name in sorted(sources)).encode("utf-8")
     ).hexdigest()

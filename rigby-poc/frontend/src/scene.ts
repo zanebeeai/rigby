@@ -8,6 +8,7 @@ import {
   sha256Hex,
 } from "./avatar";
 import { applyEgoCameraPose, computeEgoCameraPose, trackOrbitRoot } from "./camera";
+import { egoVerticalFovDeg } from "./generated/camera";
 import type {
   BlockParameters,
   CameraMode,
@@ -120,7 +121,7 @@ export class RigbyScene {
   private readonly scene = new THREE.Scene();
   private readonly renderer: THREE.WebGLRenderer;
   private readonly orbitCamera = new THREE.PerspectiveCamera(46, 1, 0.01, 40);
-  private readonly egoCamera = new THREE.PerspectiveCamera(94, 1, 0.015, 40);
+  private readonly egoCamera = new THREE.PerspectiveCamera(egoVerticalFovDeg, 1, 0.015, 40);
   private readonly controls: OrbitControls;
   private readonly resizeObserver: ResizeObserver;
   private readonly readyPromise: Promise<void>;

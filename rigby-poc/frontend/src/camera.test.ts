@@ -6,6 +6,10 @@ import { DEFAULT_PARAMETERS } from "./types";
 const HEAD_REST = new THREE.Vector3(0, 1.5685, 0.0114);
 
 function cameraFor(pose: ReturnType<typeof computeEgoCameraPose>): THREE.PerspectiveCamera {
+  // 94 is deliberately NOT imported from ./generated/camera. A test that reads the
+  // constant it is verifying asserts only that the file parses; this literal is the
+  // independent check. If it ever disagrees with config/camera.v1.json, one of the
+  // two is wrong and that is the finding.
   const camera = new THREE.PerspectiveCamera(94, 16 / 9, 0.015, 40);
   applyEgoCameraPose(camera, pose);
   return camera;
