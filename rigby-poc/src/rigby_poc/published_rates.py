@@ -19,6 +19,42 @@ narrow about what counts as publishing:
 
 Waivers exist, carry an owner and a reason, and are themselves checked: a waived
 file may not acquire new deficiencies. See ``WAIVERS``.
+
+What this guard does NOT catch
+------------------------------
+
+Stated here rather than in a plan, because a guard that appears to cover a class
+while covering only part of it is itself an instance of the defect it exists to
+prevent -- something present, authoritative-looking, and not derived from what it
+claims to describe.
+
+This guard checks that a rate is *stated* with its n and its baseline. It cannot
+check that the underlying values were ever *measured*. Two known holes, both
+found by other lanes:
+
+1. **Seeded defaults.** ``compiler._base_metrics`` initialises ten metrics that
+   several compile paths never write -- ``max_penetration_m: 0.0`` with nothing
+   having looked, ``lost_table_contact: True`` with no table in the scene. A rate
+   computed over those carries a perfectly good n and a perfectly good baseline
+   while summarising a constant. Pinned as ``UNWRITTEN_BASE_DEFAULTS``; the fix
+   is a ``not_measured`` sentinel distinct from a measured zero, not a change
+   here.
+
+2. **Carried-over observations.** Mutations recompile nothing, so a mutated clip
+   inherits metrics describing the pre-mutation motion -- including
+   ``structural_valid``. A rate over "clips that passed structural validation"
+   would, for the deferred intents, be computed over a cached answer to a
+   different question. Guarded by ``analysis.equivalence``'s
+   ``STALE_AFTER_MUTATION``, which raises on read.
+
+3. **A correct n against the wrong reference frame.** A number can be correctly
+   computed over a correctly stated sample and still be wrong because it was
+   measured from the wrong zero. No static check catches that; the mitigation is
+   ``config/thresholds.v1.json`` requiring ``reference_frame`` on any measured
+   source.
+
+The common shape is that n and baseline describe the *sample*, and none of these
+three is a defect of the sample.
 """
 
 from __future__ import annotations

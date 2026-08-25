@@ -55,6 +55,23 @@ def test_waived_files_do_not_acquire_new_bare_rates(findings: list[Finding]) -> 
         )
 
 
+def test_the_guard_documents_what_it_cannot_catch() -> None:
+    """A guard that looks like it covers a class and covers part of it is itself
+    an instance of the defect -- present, authoritative-looking, and not derived
+    from what it claims to describe. So the limitation lives in the module, not
+    in a plan someone has to find.
+    """
+
+    import rigby_poc.published_rates as module
+
+    documentation = module.__doc__ or ""
+    assert "does NOT catch" in documentation
+    for hole in ("_base_metrics", "STALE_AFTER_MUTATION", "reference_frame"):
+        assert hole in documentation, (
+            f"the known hole {hole!r} must stay documented on the guard itself"
+        )
+
+
 def test_every_waiver_names_an_owner_and_the_pr_that_retires_it() -> None:
     for path, waiver in WAIVERS.items():
         assert (REPO_ROOT / path).exists(), f"waiver for {path} outlived the file"
