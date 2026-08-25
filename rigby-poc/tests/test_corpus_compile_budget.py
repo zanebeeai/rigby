@@ -81,6 +81,12 @@ COMPILE_BUDGET: dict[str, int] = {
     # them while the ROM layer fails on all but one -- so a sample would not
     # support it. Budgeted rather than exempted for that reason.
     "test_rom_is_wired_into_validate.py": 60,
+    # Plan 10 §3.3's composite. One corpus-wide pass in a module fixture, the same
+    # shape as the ROM wiring file above and measured at the same 55 + loader
+    # revalidation. The corpus pass is the point of the file: the composite's
+    # traps -- one bone dominating the fold, a zero-frame clip scoring top marks --
+    # are only visible against the real distribution of verdicts.
+    "test_composite_score.py": 60,
 }
 
 #: Corpus-touching files deliberately not measured, with the reason.  Being here is

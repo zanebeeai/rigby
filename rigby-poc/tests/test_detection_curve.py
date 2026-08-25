@@ -54,6 +54,10 @@ def _rom_result(band: str, status: CheckStatus = "pass") -> CheckResult:
         layer="anatomy",
         status=status,
         measured={"bone": "leftLowerArm", "dof": "abduction", "band": band},
+        # This file is about the band router, not about ranking, so the headroom
+        # is only whatever the contract requires for the status. It is 0.0 on the
+        # failing branch because these fixtures carry no severity.
+        headroom=0.0 if status != "skip" else None,
     )
 
 
@@ -105,9 +109,16 @@ def test_a_non_rom_target_is_still_read_through_status() -> None:
     # and reading `band` there would find nothing.
     spec = _rom_spec(target=STATUS_TARGET)
     failing = CheckResult(
-        id=STATUS_TARGET, layer="anatomy", status="fail", measured=1.0, severity=0.4
+        id=STATUS_TARGET,
+        layer="anatomy",
+        status="fail",
+        measured=1.0,
+        severity=0.4,
+        headroom=-0.4,
     )
-    passing = CheckResult(id=STATUS_TARGET, layer="anatomy", status="pass", measured=0.0)
+    passing = CheckResult(
+        id=STATUS_TARGET, layer="anatomy", status="pass", measured=0.0, headroom=1.0
+    )
     assert target_detected({STATUS_TARGET: failing}, spec) is True
     assert target_detected({STATUS_TARGET: passing}, spec) is False
 
@@ -155,7 +166,9 @@ def test_a_skipped_non_rom_target_raises_rather_than_scoring_a_miss() -> None:
 def test_a_passing_non_rom_target_is_still_a_measured_negative() -> None:
     # The other half: `pass` really is "measured and clean", and must NOT raise.
     spec = _rom_spec(target=STATUS_TARGET)
-    passing = CheckResult(id=STATUS_TARGET, layer="anatomy", status="pass", measured=0.0)
+    passing = CheckResult(
+        id=STATUS_TARGET, layer="anatomy", status="pass", measured=0.0, headroom=1.0
+    )
     assert target_detected({STATUS_TARGET: passing}, spec) is False
 
 
@@ -360,6 +373,7 @@ def test_the_router_handles_every_member_of_checkstatus() -> None:
             status=status,
             measured=1.0 if status == "fail" else 0.0,
             severity=0.4 if status == "fail" else 0.0,
+            headroom={"fail": -0.4, "pass": 1.0, "skip": None}[status],
         )
         try:
             handled[status] = "detected" if target_detected({STATUS_TARGET: result}, spec) else "clean"

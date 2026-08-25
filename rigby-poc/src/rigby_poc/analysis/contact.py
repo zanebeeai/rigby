@@ -13,7 +13,14 @@ import numpy as np
 
 from ..kinematics import rig_kinematics
 from ..models import ClipFrame, MotionProgram
-from .contract import ANATOMY, CONTRACT, CheckResult, lower_bound_check, upper_bound_check
+from .contract import (
+    ANATOMY,
+    CONTRACT,
+    CheckResult,
+    binary_check,
+    lower_bound_check,
+    upper_bound_check,
+)
 from .rig import EGO_NEUTRAL_GAZE, identity_bones
 
 
@@ -268,10 +275,10 @@ def intra_hand_contact_checks(
             else (min(1.0, missed / max(expected_count, 1)) if missed else 1.0)
         )
         checks.append(
-            CheckResult(
-                id="contract.contact.ordered_intra_hand",
-                layer=CONTRACT,
-                status="pass" if ordered else "fail",
+            binary_check(
+                "contract.contact.ordered_intra_hand",
+                CONTRACT,
+                passed=ordered,
                 measured={
                     "expected_order": list(expected_order),
                     "observed_order": list(observed_order),
