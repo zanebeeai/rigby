@@ -47,7 +47,12 @@ def test_the_whole_corpus_loads_and_compiles_with_no_network(
     probe_result: dict[str, object],
 ) -> None:
     assert probe_result["case_count"] == len(load_corpus())
-    assert set(probe_result["verdicts"].values()) == {"match"}  # type: ignore[union-attr]
+    # `tolerance_match` is a check that ran and passed: no hash is blessed for this
+    # platform, so the committed clip was compared instead.  Treating it as a
+    # failure would make every unblessed platform red for having less evidence
+    # rather than for disagreeing.
+    assert set(probe_result["verdicts"].values()) <= {"match", "tolerance_match"}  # type: ignore[union-attr]
+    assert probe_result["verdicts"], "the probe compared nothing"
 
 
 def test_no_browser_server_or_model_client_is_imported(

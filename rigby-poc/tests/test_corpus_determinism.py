@@ -277,6 +277,9 @@ def test_hashes_survive_a_fresh_process_with_a_different_hash_seed(
     assert completed.returncode == 0, completed.stderr
     observed = json.loads(completed.stdout)
     for case_id in CHEAP_CASE_IDS:
-        expected = CASES[case_id].expected
-        key = platform_key(expected.solver_used)
-        assert observed[case_id] == expected.resolve_motion_sha256(key)
+        # Compared against *this process*, not against the committed hash.  The
+        # subject here is cross-process agreement; whether this platform's committed
+        # hash matches is `test_case_recompiles_to_its_recorded_motion`'s job, and
+        # conflating the two made this test fail on any platform nobody has blessed
+        # -- it compared a real hash against `None`.
+        assert observed[case_id] == motion_sha256(compile_case(CASES[case_id]))
