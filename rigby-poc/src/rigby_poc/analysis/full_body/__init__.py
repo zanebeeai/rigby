@@ -83,7 +83,14 @@ def full_body_metrics(ctx: "Any") -> dict[str, Any]:
     angular_metrics(fb, metrics)
     final_balance_metrics(fb, metrics)
 
-    metrics.update(semantic_cycle_metrics(fb.frames, fb.phase_ranges, fb.program))
+    metrics.update(
+        semantic_cycle_metrics(
+            fb.frames,
+            fb.phase_ranges,
+            fb.program,
+            world_positions=fb.world_positions,
+        )
+    )
 
     failures = full_body_failures(fb, metrics, horizontal_contact_count)
     metrics["structural_failures"] = failures

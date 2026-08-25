@@ -164,12 +164,28 @@ def analyze_context(ctx: AnalysisContext) -> dict[str, Any]:
 
     if ctx.intent == Intent.COMPOSITE:
         metrics.update(
-            intra_hand_contact_metrics(ctx.frames, ctx.phase_ranges, ctx.program)
+            intra_hand_contact_metrics(
+                ctx.frames,
+                ctx.phase_ranges,
+                ctx.program,
+                world_positions=ctx.world_positions,
+            )
         )
         metrics.update(
-            semantic_cycle_metrics(ctx.frames, ctx.phase_ranges, ctx.program)
+            semantic_cycle_metrics(
+                ctx.frames,
+                ctx.phase_ranges,
+                ctx.program,
+                world_positions=ctx.world_positions,
+            )
         )
-        metrics.update(parallel_forearm_metrics(ctx.frames, ctx.phase_ranges))
+        metrics.update(
+            parallel_forearm_metrics(
+                ctx.frames,
+                ctx.phase_ranges,
+                world_positions=ctx.world_positions,
+            )
+        )
 
     if not _is_handoff(ctx):
         metrics.update(_angular_metrics(ctx))

@@ -29,6 +29,7 @@ from pathlib import Path
 import pytest
 
 from rigby_poc import analysis
+from rigby_poc.kinematics import RigKinematics
 from rigby_poc.analysis.equivalence import owned_metric_keys, required_metric_keys
 from rigby_poc.compiler import compile_motion
 from rigby_poc.models import (
@@ -263,14 +264,80 @@ def test_analysis_needs_no_network(monkeypatch: pytest.MonkeyPatch) -> None:
     assert analysis.analyze(clip, program, scene)
 
 
-def test_analysis_of_a_125_frame_clip_stays_cheap() -> None:
-    """The fast tier depends on analysis being cheap enough to run everywhere.
+@pytest.mark.parametrize("case_id", CASE_IDS)
+def test_forward_kinematics_is_evaluated_once_per_frame(case_id: str) -> None:
+    """The invariant ``AnalysisContext`` exists to provide, asserted structurally.
 
-    Plan 02 §5 targets 100 ms for a 125-frame clip. Measured on the heaviest
-    path (composite travel signal, one full-hierarchy FK evaluation per frame)
-    that is ~85 ms, so the target holds but with little headroom. The assertion
-    below is a regression ceiling with room for slower CI hardware, not the
-    target itself — a tight gate here would flake rather than inform.
+    Every check that needs world positions reads ``ctx.world_positions``, a
+    cached property, so the per-frame position pass runs once no matter how
+    many checks there are. A check that calls ``canonical_positions`` itself
+    instead adds a whole second pass, and that is the specific regression the
+    wall-clock bound below was really protecting against. Writing this test
+    found three checks already doing it — semantic cycle, parallel forearm and
+    intra-hand contact — worth ~40% of the whole-body path and ~70% of
+    composite travel.
+
+    Scoped to ``canonical_positions`` deliberately. ``fingertip_positions`` and
+    ``canonical_world_rotation`` also evaluate the hierarchy, but they return
+    data the position cache does not hold — leaf pivots and 3x3 rotations — and
+    their call count is bounded by contact events rather than by frames.
+    Folding all three onto one shared per-frame matrix evaluation is the
+    vectorisation plan 02 §5 already names, and it belongs there rather than
+    in a move.
+
+    This says the same thing without a stopwatch. It has no platform exposure,
+    it fails for the right reason, and it names the function to fix. That
+    matters because the timing bound's headroom turns out to be thin: the
+    heaviest path is ~72 ms locally against a 300 ms bound, and the only
+    cross-platform anchor anyone has measured is a whole-suite 4.2x on Windows
+    CI, which would put it at ~305 ms. A guard whose usable band is under 3x
+    wide is a bet dressed as a test, so the bet is confined to the machine it
+    was measured on and the structural claim runs everywhere.
+    """
+
+    case = _load_case(case_id)
+    scene, program, clip = _compile_case(case)
+
+    evaluations = 0
+    original = RigKinematics.canonical_positions
+
+    def counting(self: RigKinematics, bones: object) -> object:
+        nonlocal evaluations
+        evaluations += 1
+        return original(self, bones)
+
+    RigKinematics.canonical_positions = counting  # type: ignore[method-assign]
+    try:
+        analysis.analyze(clip, program, scene)
+    finally:
+        RigKinematics.canonical_positions = original  # type: ignore[method-assign]
+
+    # One per frame, plus one for the neutral pose the ground plane needs.
+    assert evaluations <= len(clip.frames) + 1, (
+        f"{case_id}: {evaluations} world-position passes for "
+        f"{len(clip.frames)} frames. A check is recomputing forward kinematics "
+        "instead of reading AnalysisContext.world_positions."
+    )
+
+
+@exact_snapshot
+def test_analysis_of_a_125_frame_clip_stays_cheap() -> None:
+    """A wall-clock ceiling on the whole layer, blessed per architecture.
+
+    Plan 02 §5 targets 100 ms for a 125-frame clip. The assertion is a
+    regression ceiling with room to spare rather than the target itself,
+    because a tight gate on unknown CI hardware would flake instead of inform.
+
+    It carries the same architecture skip as the frozen float snapshots, and
+    for the same reason: a measured number is a statement about the machine
+    that measured it. 300 ms was blessed against ~72 ms on darwin-arm64; the
+    only cross-platform datapoint available is a whole-suite 4.2x on Windows
+    CI, which would put the same work at ~305 ms and turn this red for reasons
+    that have nothing to do with the code. Measure the layer on another
+    architecture before blessing this bound there.
+
+    ``test_forward_kinematics_is_evaluated_once_per_frame`` is the guard that
+    runs everywhere; this one documents the cost.
     """
 
     case = _load_case("composite_travel_foul")
