@@ -61,6 +61,12 @@ COMPILE_BUDGET: dict[str, int] = {
     # ids went unchecked for a whole PR, and the fix for that must not itself be the
     # thing nobody is counting.
     "test_mutation_check_registry.py": 60,
+    # Two vacuous-metric pins that need the object-interaction path's own metrics,
+    # which the committed clips do not carry -- only hashes. Measured at 22: nine
+    # object cases plus the file's thirteen synthetic single-program compiles.
+    # Scoped to the object cases rather than the corpus: the first version looped
+    # all 47 to reach nine, and this guard caught it.
+    "test_vacuous_metrics.py": 30,
 }
 
 #: Corpus-touching files deliberately not measured, with the reason.  Being here is

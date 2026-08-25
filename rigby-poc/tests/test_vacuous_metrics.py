@@ -229,7 +229,28 @@ def test_handoff_attachment_slip_measures_float_noise_not_slip() -> None:
     assert slip < 0.005 / 1e9, "the 0.005 gate is nine orders away from firing"
 
 
-def test_measured_support_spin_turns_is_an_echo_of_the_request() -> None:
+@pytest.fixture(scope="module")
+def object_clips() -> dict[str, tuple[object, object]]:
+    """Every corpus case carrying an object action, compiled once. ``id -> (case, clip)``.
+
+    Scoped to the object cases rather than to the whole corpus. Only that
+    compile path writes the two keys pinned below, so looping over all 47 to
+    reach nine of them is precisely the corpus-wide loop
+    ``tests/test_corpus_compile_budget.py`` exists to keep visible -- and this
+    file is budgeted there.
+    """
+
+    from evals.corpus.loader import load_corpus
+    from rigby_poc.compiler import compile_motion
+
+    cases = [case for case in load_corpus() if case.program.object_action is not None]
+    assert cases, "no object-action case in the corpus; these two pins stand on nothing"
+    return {case.id: (case, compile_motion(case.compile_request())) for case in cases}
+
+
+def test_measured_support_spin_turns_is_an_echo_of_the_request(
+    object_clips: dict[str, tuple[object, object]],
+) -> None:
     """``object_measured_support_spin_turns`` equals ``spin_turns``, by construction.
 
     The compiler sets ``support_spin_angle_rad = 2*pi * spin_turns * (alpha if
@@ -243,20 +264,14 @@ def test_measured_support_spin_turns_is_an_echo_of_the_request() -> None:
     every clip that spins rather than on some of them.
     """
 
-    from evals.corpus.loader import load_corpus
-
     spun = [
-        case
-        for case in load_corpus()
-        if case.program.object_action is not None
-        and case.program.object_action.value == "spin"
+        (case, clip)
+        for case, clip in object_clips.values()
+        if case.program.object_action.value == "spin"
     ]
     assert spun, "no spin case in the corpus; this pin has nothing to stand on"
 
-    from rigby_poc.compiler import compile_motion
-
-    for case in spun:
-        clip = compile_motion(case.compile_request())
+    for case, clip in spun:
         requested = float(case.program.object_motion.spin_turns)
         measured = float(clip.metrics["object_measured_support_spin_turns"])
         assert measured == requested, (
@@ -265,7 +280,9 @@ def test_measured_support_spin_turns_is_an_echo_of_the_request() -> None:
         )
 
 
-def test_object_interaction_slip_is_float_noise_on_every_action() -> None:
+def test_object_interaction_slip_is_float_noise_on_every_action(
+    object_clips: dict[str, tuple[object, object]],
+) -> None:
     """``palm_relative_object_slip_m`` cannot fire, on any of the eight actions.
 
     Measured across the corpus: 2.8e-17 to 1.3e-16 m against a ``> 0.005`` gate
@@ -281,14 +298,11 @@ def test_object_interaction_slip_is_float_noise_on_every_action() -> None:
     copy of a number that encodes nothing.
     """
 
-    from evals.corpus.loader import load_corpus
-    from rigby_poc.compiler import compile_motion
-
-    measured: dict[str, float] = {}
-    for case in load_corpus():
-        clip = compile_motion(case.compile_request())
-        if "palm_relative_object_slip_m" in clip.metrics:
-            measured[case.id] = float(clip.metrics["palm_relative_object_slip_m"])
+    measured = {
+        case_id: float(clip.metrics["palm_relative_object_slip_m"])
+        for case_id, (_case, clip) in object_clips.items()
+        if "palm_relative_object_slip_m" in clip.metrics
+    }
 
     assert len(measured) >= 8, "the corpus lost its object-interaction cases"
     worst = max(measured.values())
