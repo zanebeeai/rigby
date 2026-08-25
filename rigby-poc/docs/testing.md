@@ -435,7 +435,7 @@ Two rules follow:
    Python 3.12's `sys.monitoring` backend instead of the `settrace` one and
    removes most of the multiplier. The nightly CI job sets it.
 
-## Guards fail in two directions
+## Guards fail in more directions than they are written for
 
 A guard can be unable to fire, or it can fire correctly except when it matters.
 The second is harder to find and this repository has produced both.
@@ -450,6 +450,30 @@ comparison blind to half its input domain. Greppable at the call site.
 its meaning, so it passes when it should not — and it is only ever wrong in the
 direction that silences it. `"-gt 30" in command` is satisfied by `-gt 300`, so a
 tenfold loosening of the fast-tier budget passed silently. Not greppable.
+
+**A guard structurally blind to its own failure case.** The check is live, it
+compares two real things, and the failure it exists to catch is precisely the
+condition that makes those two things equal. It cannot fire, not because it is
+unreachable, but because its inputs collapse into agreement exactly when the
+thing has gone wrong.
+
+The instance that cost the most: a merge-verification step asserting the merged
+tree was byte-identical to the tree that had been verified. The failure it was
+meant to catch -- a merge that silently did nothing -- leaves `HEAD` at the
+branch tip, so both sides of the comparison become the same object and the check
+passes. It printed `IDENTICAL` on the no-op it was written to detect. Two lanes
+then proposed variants of the same comparison, and a third believed both; four
+confident wrong answers about a three-line check, settled in two minutes by a
+scratch repository with four scenarios in it.
+
+**The question to ask of any comparison: under the failure you are guarding
+against, do the two sides stay different?** If the failure makes them the same,
+you have written a tautology with extra steps. That is the same family as
+`all(...)` over an empty collection and a scan pointed at a missing directory --
+the guard agrees with itself when its subject has vanished -- but it is worth
+naming separately, because those two are about *absent* inputs and this one has
+two perfectly real inputs that happen to coincide. Found by lane `judge`, whose
+own run printed the passing line.
 
 **A guard that fires for the wrong reason.** The check is live, it fails on a
 real measurement, and the measurement is of a quantity unrelated to what the
