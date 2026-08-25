@@ -399,3 +399,100 @@ def test_the_composite_is_not_degenerate_across_the_corpus(scored) -> None:
         f"{len(values)} cases; a severity fold takes 12"
     )
     assert min(values) < max(values)
+
+
+# -- the point of the exercise: the two blocked §6 metrics now have a producer -----------
+
+
+def test_the_composite_satisfies_the_trajectory_oracle_contract(scored) -> None:
+    """Plan 10 §6's selection regret runs on this, which is why §3.3 exists.
+
+    ``evals/trajectory.py`` ships selection regret and repair efficacy with an
+    injected ``oracle`` and no default, and names them in ``unmeasured``,
+    because §3.3's producer did not exist. This is the end-to-end demonstration
+    that it does now: real corpus clips, scored by the composite, driven through
+    the real ``selection_regret``.
+
+    Asserted through ``evals.trajectory``'s public functions rather than by
+    reimplementing the fold here -- plan 10 §8.1's rule, that a harness which
+    reaches past the production path measures the harness.
+    """
+
+    from evals.trajectory import selection_regret
+
+    ranked = sorted(
+        (
+            (case_id, score.normalised)
+            for case_id, (_checks, score) in scored.items()
+            if score.normalised is not None
+        ),
+        key=lambda pair: pair[1],
+    )
+    assert len(ranked) >= 46
+
+    # A trace whose winner is deliberately not the best candidate. Regret must
+    # see that; the judge's own score never could, because the winner is its
+    # argmax.
+    worst_id, worst_score = ranked[0]
+    best_id, best_score = ranked[-1]
+    by_id = dict(ranked)
+    trace = {
+        "rounds": [{"candidates": [{"result_id": worst_id}, {"result_id": best_id}]}],
+        "winner_result_id": worst_id,
+    }
+    result = selection_regret(
+        trace,
+        oracle=lambda clip: by_id[clip["id"]],
+        clip_of=lambda rid: {"id": rid},
+    )
+    assert result.candidates_scored == 2
+    assert result.regret == pytest.approx(best_score - worst_score)
+    assert result.regret > 0.0
+    assert result.winner_was_best is False
+
+    # And it reports no regret when the winner really was the best available.
+    trace["winner_result_id"] = best_id
+    happy = selection_regret(
+        trace,
+        oracle=lambda clip: by_id[clip["id"]],
+        clip_of=lambda rid: {"id": rid},
+    )
+    assert happy.regret == pytest.approx(0.0)
+    assert happy.winner_was_best is True
+
+
+def test_an_unscoreable_clip_is_dropped_rather_than_given_a_number(scored) -> None:
+    """The contract ``normalised`` returning ``None`` puts on the caller.
+
+    Substituting 0.0 for an unmeasured candidate ranks it worst available and
+    1.0 ranks it best; both are claims about a clip nothing looked at. The
+    caller drops it in ``clip_of``, which ``selection_regret`` already skips.
+    """
+
+    from evals.trajectory import selection_regret
+
+    _checks, unscoreable = scored[NO_FRAMES_CASE]
+    assert unscoreable.normalised is None
+
+    scoreable = {
+        case_id: score.normalised
+        for case_id, (_c, score) in scored.items()
+        if score.normalised is not None
+    }
+    good_id = next(iter(scoreable))
+    trace = {
+        "rounds": [
+            {"candidates": [{"result_id": NO_FRAMES_CASE}, {"result_id": good_id}]}
+        ],
+        "winner_result_id": good_id,
+    }
+    result = selection_regret(
+        trace,
+        oracle=lambda clip: scoreable[clip["id"]],
+        clip_of=lambda rid: None if rid == NO_FRAMES_CASE else {"id": rid},
+    )
+    assert result.candidates_scored == 1, (
+        "the unscoreable clip entered the candidate set; a clip nothing measured "
+        "must not be ranked against clips that were measured"
+    )
+    assert result.regret == pytest.approx(0.0)
