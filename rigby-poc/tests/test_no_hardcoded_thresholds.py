@@ -68,7 +68,7 @@ IDENTITY_VALUES = frozenset({0.0, 1.0})
 #: moved the whole-body metric pass out of the compiler, and it arrived carrying
 #: 41 uncited gates. Every one is a real limit with no source and no unit.
 BUDGET: dict[str, int] = {
-    "compiler.py": 21,
+    "compiler.py": 18,
     "analysis/anatomy/frame.py": 1,
     "analysis/contact.py": 1,
     "analysis/forearm.py": 11,
@@ -77,6 +77,7 @@ BUDGET: dict[str, int] = {
     "analysis/full_body/exercises.py": 7,
     "analysis/full_body/failures.py": 41,
     "analysis/hand.py": 5,
+    "analysis/objects.py": 2,
     "analysis/full_body/ground.py": 2,
     "analysis/full_body/posture.py": 4,
     "analysis/full_body/rotation.py": 2,
