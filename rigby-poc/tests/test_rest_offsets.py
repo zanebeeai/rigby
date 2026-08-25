@@ -211,3 +211,30 @@ def test_ignoring_the_offset_would_reject_ordinary_shoulder_motion() -> None:
 
     assert limit.band_of(observed) == "within_typical"
     assert observed < limit.max_deg[0]  # outside the same band left unconverted
+
+
+def test_rest_relative_refuses_a_missing_offset_rather_than_zeroing_it() -> None:
+    """An absence must not silently become a value.
+
+    Lane `judge` named the three shapes this defect lives in after hitting it
+    three times in one day: ``dict.get(k, default)``, ``set - {None}`` and
+    ``int(x or 0)``. This function was the third. It was correct for the thumb
+    by intent, and would have converted any *other* ``None`` -- a bone whose
+    offset failed to derive -- with a zero offset and reported it as an
+    ordinary limit.
+    """
+
+    from rigby_poc.analysis.anatomy.neutral import rest_relative
+
+    assert rest_relative(135.0, -11.5) == pytest.approx(123.5)
+    with pytest.raises(TypeError, match="branch on that explicitly"):
+        rest_relative(135.0, None)
+
+
+def test_a_thumb_limit_converts_by_an_explicit_branch_not_a_zero_offset() -> None:
+    from rigby_poc.analysis.anatomy.rom import rom_limit
+
+    limit = rom_limit("leftThumbProximal", "flexion")
+
+    assert limit.rest_offset_deg is None
+    assert limit.to_rest_relative(60.0) == 60.0

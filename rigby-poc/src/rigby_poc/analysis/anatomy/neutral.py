@@ -134,6 +134,12 @@ def rest_offset(canonical: str) -> DofAngles | None:
     rest = _long_axis(canonical)
     target = _neutral_tip_direction(canonical)
     if rest is None or target is None:
+        if joint_class(canonical) not in NO_NEUTRAL:
+            raise ValueError(
+                f"{canonical}: no rest offset could be derived, but its joint class "
+                "is not one that lacks an anatomical neutral. None here would be "
+                "read as 'no neutral exists' rather than 'derivation failed'."
+            )
         return None
     axis = np.cross(rest, target)
     norm = float(np.linalg.norm(axis))
@@ -155,7 +161,7 @@ def rest_offsets() -> dict[str, DofAngles | None]:
     return {name: rest_offset(name) for name in canonical_bone_names()}
 
 
-def rest_relative(anatomical_deg: float, offset_deg: float | None) -> float:
+def rest_relative(anatomical_deg: float, offset_deg: float) -> float:
     """The one definition of the rest/anatomical conversion in this codebase.
 
     The offset is the delta taking **rest to neutral**, so a rest-relative angle
@@ -165,12 +171,26 @@ def rest_relative(anatomical_deg: float, offset_deg: float | None) -> float:
     put the knee's own rest pose outside the knee's own band -- so both callers
     now go through here.
 
-    ``offset_deg`` of ``None`` means no anatomical neutral exists, in which case
-    the bound was authored rest-relatively already and the frames coincide by
-    fiat.
+    ``offset_deg`` must be a real offset. A bone with no anatomical neutral has
+    no conversion to do and its caller must say so explicitly -- see
+    :meth:`~rigby_poc.analysis.anatomy.rom.DofLimit.to_rest_relative`.
+
+    This used to read ``anatomical_deg + (offset_deg or 0.0)``, which is the
+    shape lane `judge` named after hitting the same defect three times in one
+    day: ``dict.get(k, default)``, ``set - {None}`` and ``int(x or 0)`` are
+    where an absence silently becomes a value. It was correct for the thumb by
+    intent and would have silently swallowed any *other* ``None`` -- a future
+    bone whose offset failed to derive would have been converted with a zero
+    offset and reported as an ordinary limit.
     """
 
-    return anatomical_deg + (offset_deg or 0.0)
+    if offset_deg is None:
+        raise TypeError(
+            "rest_relative needs a real offset; a bone with no anatomical "
+            "neutral has no conversion to perform and the caller must branch "
+            "on that explicitly rather than passing None"
+        )
+    return anatomical_deg + offset_deg
 
 
 def to_rest_relative(canonical: str, dof: str, published_deg: float) -> float:

@@ -76,11 +76,15 @@ class DofLimit:
         which for the shoulder is 179 degrees; the first smoke test of this
         module reported a knee sitting at its own rest pose as beyond_max.
 
-        For a bone with no anatomical neutral the two frames coincide by fiat,
-        because the authored bound was written rest-relatively in the first
-        place -- which is why those entries are ``provisional``.
+        For a bone with no anatomical neutral there is no conversion to perform:
+        the authored bound was written rest-relatively in the first place, which
+        is why those entries are ``provisional``. That branch is explicit rather
+        than folded into an ``or 0.0``, so a ``None`` arriving for any other
+        reason raises instead of being silently treated as zero.
         """
 
+        if self.rest_offset_deg is None:
+            return anatomical_deg
         return rest_relative(anatomical_deg, self.rest_offset_deg)
 
     def band_of(self, measured_deg: float) -> Band:
