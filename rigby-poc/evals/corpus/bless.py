@@ -14,10 +14,12 @@ from .freeze import upsert_entry
 from .loader import (
     EXPECTED_FILE,
     CorpusCase,
+    compile_case,
     load_corpus,
     load_manifest,
     manifest_path,
     write_json,
+    write_slim_clip,
 )
 from .verify import CaseComparison, Verdict, compare_case, rebless
 
@@ -113,12 +115,29 @@ def bless(
     written: list[str] = []
     manifest = load_manifest(root)
     for case in cases:
-        comparison = compare_case(case)
+        # Compiled here rather than inside `compare_case` so the *same* clip object
+        # produces the hash and the committed slim clip below. Two compiles would
+        # make their agreement a coincidence to be re-verified; one makes it
+        # structural.
+        clip = compile_case(case)
+        comparison = compare_case(case, clip)
         comparisons.append(comparison)
         needs_write = comparison.verdict is not Verdict.MATCH
         if write and needs_write and comparison.observed is not None:
             merged = rebless(case, comparison.observed)
             write_json(case.root / EXPECTED_FILE, merged.model_dump(mode="json"))
+            # The committed clip is a recorded expectation exactly like the hashes,
+            # and before 08d this loop refreshed the hashes and left it stale. A
+            # compiler change that moved motion therefore produced a corpus whose
+            # `expected.json` described the new motion and whose `clip.slim.json.gz`
+            # described the old -- caught by
+            # `test_the_committed_slim_clip_matches_a_fresh_compile_exactly` on 7 of
+            # 47 cases, and only 7 because the slim clip is rounded to
+            # SLIM_CLIP_PRECISION and a sub-millimetre change crosses that threshold
+            # only on the solver-sensitive paths. The other 40 were stale too; they
+            # just rounded to the same bytes.
+            if case.slim_clip_path.is_file():
+                write_slim_clip(case.slim_clip_path, clip)
             written.append(case.id)
             # Keep the manifest row consistent with what was just recorded. The
             # *diff*, not a stale manifest, is what makes a moved hash visible.
