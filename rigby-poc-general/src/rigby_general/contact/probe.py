@@ -135,6 +135,7 @@ def probe_grasp(
         "required_lift_m": round(required_lift, 5),
         "final_height_m": round(result.final_height_m, 5),
         "grip_force_n": round(result.peak_force_n, 3),
+        "carry_offset_m": round(result.carry_offset_m, 5),
         "penetration_m": round(result.max_penetration_m, 5),
         "duration_s": result.duration_s,
         "equality_constraints": int(scene.model.neq),
