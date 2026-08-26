@@ -507,28 +507,77 @@ class OrbitCamera {
       this.target[2] + Math.sin(this.elevation) * this.distance,
     ];
   }
+  // The camera's own right and up, for panning. Dragging has to move the scene
+  // the way the pointer moves regardless of where the camera has been orbited
+  // to, so the translation is built in view space rather than in world axes.
+  basis() {
+    const eye = this.eye();
+    const forward = normalize([
+      this.target[0] - eye[0], this.target[1] - eye[1], this.target[2] - eye[2],
+    ]);
+    const right = normalize(cross(forward, [0, 0, 1]));
+    return { right, up: cross(right, forward) };
+  }
+
+  pan(dx, dy) {
+    // Scaled by distance so a drag covers the same fraction of the screen
+    // whether you are looking at a whole arm or at one fingertip.
+    const { right, up } = this.basis();
+    const scale = this.distance * 0.0018;
+    for (let i = 0; i < 3; i++) {
+      this.target[i] += (-dx * right[i] + dy * up[i]) * scale;
+    }
+  }
+
   attach(canvas, onChange) {
-    let dragging = false, lastX = 0, lastY = 0;
+    let mode = null, lastX = 0, lastY = 0;
+
+    const modeFor = (e) => {
+      // Left drag orbits, right or middle drag pans, and shift-left pans too --
+      // the three conventions a 3D viewer is expected to answer to.
+      if (e.button === 1 || e.button === 2 || e.shiftKey) return 'pan';
+      return 'orbit';
+    };
+
     canvas.addEventListener('pointerdown', (e) => {
-      dragging = true; lastX = e.clientX; lastY = e.clientY;
+      mode = modeFor(e);
+      lastX = e.clientX; lastY = e.clientY;
       canvas.setPointerCapture(e.pointerId);
+      canvas.style.cursor = mode === 'pan' ? 'move' : 'grabbing';
     });
-    canvas.addEventListener('pointerup', (e) => {
-      dragging = false;
+    const release = (e) => {
+      mode = null;
+      canvas.style.cursor = '';
       try { canvas.releasePointerCapture(e.pointerId); } catch (_) {}
-    });
+    };
+    canvas.addEventListener('pointerup', release);
+    canvas.addEventListener('pointercancel', release);
+    // Right-drag is a pan, so the context menu must not interrupt it.
+    canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+
     canvas.addEventListener('pointermove', (e) => {
-      if (!dragging) return;
-      this.azimuth -= (e.clientX - lastX) * 0.01;
-      this.elevation = Math.max(-1.45, Math.min(1.45,
-        this.elevation + (e.clientY - lastY) * 0.01));
+      if (!mode) return;
+      const dx = e.clientX - lastX;
+      const dy = e.clientY - lastY;
+      if (mode === 'pan') {
+        this.pan(dx, dy);
+      } else {
+        this.azimuth -= dx * 0.01;
+        this.elevation = Math.max(-1.45, Math.min(1.45, this.elevation + dy * 0.01));
+      }
       lastX = e.clientX; lastY = e.clientY;
       onChange();
     });
+
     canvas.addEventListener('wheel', (e) => {
       e.preventDefault();
-      this.distance = Math.max(0.15, Math.min(80,
-        this.distance * Math.exp(e.deltaY * 0.0012)));
+      if (e.shiftKey) {
+        // Shift-scroll pans vertically, for trackpads with no middle button.
+        this.pan(0, -e.deltaY * 0.6);
+      } else {
+        this.distance = Math.max(0.15, Math.min(80,
+          this.distance * Math.exp(e.deltaY * 0.0012)));
+      }
       onChange();
     }, { passive: false });
   }
@@ -658,8 +707,14 @@ function mountViewer(host, scene, options = {}) {
     setPose(values) { pose = values.slice(); state.track = null; invalidate(); },
     resetPose() { pose = rest.slice(); invalidate(); },
     frameCamera() {
+      // Also the way back from a pan: recentres on the robot and restores the
+      // framing distance, so a viewer lost in the corner of a scene has one
+      // button that returns it.
       const b = renderer.bounds(pose);
       camera.target = [(b.lo[0]+b.hi[0])/2, (b.lo[1]+b.hi[1])/2, (b.lo[2]+b.hi[2])/2];
+      const extent = Math.max(
+        b.hi[0]-b.lo[0], b.hi[1]-b.lo[1], b.hi[2]-b.lo[2], 0.2);
+      camera.distance = Math.max(extent * 1.45, 0.25);
       invalidate();
     },
     invalidate,

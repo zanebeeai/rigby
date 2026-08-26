@@ -709,8 +709,9 @@ function renderRun(){
 
   ${playerForTrace(t) ? `<section><h2>What the robot actually did</h2>
     ${playerForTrace(t)}
-    <div class="note">The simulated trace, not the plan. Drag to orbit, scroll to
-      zoom, space or the button to pause. Forward kinematics runs in the browser
+    <div class="note">The simulated trace, not the plan. Drag to orbit,
+      right-drag or shift-drag to pan, scroll to zoom, space or the button to
+      pause, and &#9678; to recentre. Forward kinematics runs in the browser
       against the same model MuJoCo simulated${
         t.kind === 'contact_probe' ? ', block and support plate included' : ''}.</div>
   </section>` : (t.clip ? `<section><h2>What the robot actually did</h2>
