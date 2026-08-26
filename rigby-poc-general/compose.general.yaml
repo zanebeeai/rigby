@@ -1,0 +1,23 @@
+name: rigby-general
+
+services:
+  postgres:
+    image: pgvector/pgvector:0.8.2-pg18-trixie@sha256:b7337db8fe39d12fe8ecb0003c72680f24479813a744b43154eee6f2eab5a5f3
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${RIGBY_GENERAL_POSTGRES_DB:-rigby_general}
+      POSTGRES_USER: ${RIGBY_GENERAL_POSTGRES_USER:-rigby}
+      POSTGRES_PASSWORD: ${RIGBY_GENERAL_POSTGRES_PASSWORD:-rigby-local-only}
+    ports:
+      - "127.0.0.1:${RIGBY_GENERAL_POSTGRES_PORT:-54330}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    volumes:
+      - rigby-general-postgres-data:/var/lib/postgresql
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+
+volumes:
+  rigby-general-postgres-data:
