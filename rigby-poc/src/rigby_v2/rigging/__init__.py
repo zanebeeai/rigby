@@ -1,0 +1,102 @@
+"""Canonical rig and coordinate boundary for Rigby v2."""
+
+from .canonical_human import load_canonical_human, xml_for_profile
+from .coordinates import (
+    GltfDirection,
+    GltfPosition,
+    GltfQuaternionXYZW,
+    GltfTransform,
+    MujocoDirection,
+    MujocoPosition,
+    MujocoQuaternionWXYZ,
+    MujocoTransform,
+    convert_gltf_matrix_to_mujoco,
+    convert_mujoco_matrix_to_gltf,
+    gltf_direction_to_mujoco,
+    gltf_position_to_mujoco,
+    gltf_quaternion_to_mujoco,
+    gltf_transform_to_mujoco,
+    mujoco_direction_to_gltf,
+    mujoco_position_to_gltf,
+    mujoco_quaternion_to_gltf,
+    mujoco_transform_to_gltf,
+)
+from .mapping import BodySizeProfile, RigManifest, load_rig_manifest
+from .pose_adapter import (
+    PoseAdapterError,
+    PoseRoundTripDiagnostics,
+    PoseRoundTripResult,
+    VisualBoneLocalTransform,
+    VisualPhysicalPoseAdapter,
+    VisualSkeletonPose,
+)
+from .manifest_builder import (
+    StagedCanonicalRig,
+    build_canonical_rig_manifest,
+    stage_canonical_rig,
+)
+from .exporter import (
+    ExportedSimulation,
+    export_simulated_glb_bytes,
+    export_trace_to_artifact,
+)
+from .export_validation import (
+    FixedVisualBoneAudit,
+    GlbFrameRoundTripMetrics,
+    GlbRoundTripAudit,
+    audit_simulated_glb_round_trip,
+    validate_simulated_glb_round_trip,
+)
+from .references import (
+    ModelingReferenceV1,
+    ReferenceAssetLicenseV1,
+    ReferenceLicensePolicyV1,
+    load_menagerie_reference,
+)
+
+__all__ = [
+    "BodySizeProfile",
+    "GltfDirection",
+    "GltfPosition",
+    "GltfQuaternionXYZW",
+    "GltfTransform",
+    "MujocoDirection",
+    "MujocoPosition",
+    "MujocoQuaternionWXYZ",
+    "MujocoTransform",
+    "ModelingReferenceV1",
+    "ReferenceAssetLicenseV1",
+    "ReferenceLicensePolicyV1",
+    "RigManifest",
+    "PoseAdapterError",
+    "PoseRoundTripDiagnostics",
+    "PoseRoundTripResult",
+    "VisualBoneLocalTransform",
+    "VisualPhysicalPoseAdapter",
+    "VisualSkeletonPose",
+    "convert_gltf_matrix_to_mujoco",
+    "convert_mujoco_matrix_to_gltf",
+    "gltf_direction_to_mujoco",
+    "gltf_position_to_mujoco",
+    "gltf_quaternion_to_mujoco",
+    "gltf_transform_to_mujoco",
+    "load_canonical_human",
+    "load_menagerie_reference",
+    "load_rig_manifest",
+    "StagedCanonicalRig",
+    "build_canonical_rig_manifest",
+    "stage_canonical_rig",
+    "ExportedSimulation",
+    "export_simulated_glb_bytes",
+    "export_trace_to_artifact",
+    "FixedVisualBoneAudit",
+    "GlbFrameRoundTripMetrics",
+    "GlbRoundTripAudit",
+    "audit_simulated_glb_round_trip",
+    "validate_simulated_glb_round_trip",
+    "mujoco_direction_to_gltf",
+    "mujoco_position_to_gltf",
+    "mujoco_quaternion_to_gltf",
+    "mujoco_transform_to_gltf",
+    "xml_for_profile",
+]
