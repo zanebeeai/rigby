@@ -24,6 +24,7 @@ from rigby_poc.analysis import validate_clip
 from rigby_poc.analysis.contract import (
     ANATOMY,
     CONTRACT,
+    LAYERS,
     SIGNAL,
     CheckResult,
     binary_check,
@@ -301,7 +302,14 @@ def test_the_coverage_floor_sits_in_a_gap_rather_than_on_the_data(scored) -> Non
 
 
 def test_an_absent_layer_is_named_rather_than_scored(scored) -> None:
-    """Plan 10's physics layer is unbuilt, so this is the ordinary case.
+    """Every layer is either scored or named, and never both.
+
+    This asserted that ``physics`` specifically was missing, which was true when
+    written and stopped being true the moment 10b shipped `physics.ground.*` and
+    `physics.contact.*`. A test that pins today's layer inventory fails on the
+    work it is meant to protect, so it now pins the *partition* instead: scored
+    layers and named-missing layers together are exactly ``LAYERS``, and nothing
+    is in both. That holds whatever ships next.
 
     A mean over an empty collection is the failure ``docs/testing.md`` opens
     with. The layer is left out of the fold and named, so a score cannot rise
@@ -309,7 +317,10 @@ def test_an_absent_layer_is_named_rather_than_scored(scored) -> None:
     """
 
     for case_id, (_checks, score) in scored.items():
-        assert "physics" in score.missing_layers, case_id
+        named = set(score.missing_layers)
+        present = {layer.layer for layer in score.layers}
+        assert named | present == set(LAYERS), case_id
+        assert not (named & present), f"{case_id}: a layer is both present and missing"
         assert all(layer.contributing > 0 for layer in score.layers), case_id
 
 
