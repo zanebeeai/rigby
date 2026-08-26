@@ -4273,6 +4273,104 @@
           }
         }
       ]
+    },
+    "left_grip_precision": {
+      "description": "Precision grasp: thumb pad to index pad. The other three stay clear -- a pinch that curls them is a power grasp with a smaller object in it.",
+      "steps": [
+        {
+          "at": 0.0,
+          "label": "open",
+          "moves": {
+            "left_thumb": "reposition",
+            "left_index": "extend",
+            "left_middle": "extend",
+            "left_ring": "extend",
+            "left_little": "extend"
+          }
+        },
+        {
+          "at": 0.4,
+          "label": "approach_pads",
+          "moves": {
+            "left_thumb": "oppose",
+            "left_index": "flex_light",
+            "left_middle": "extend",
+            "left_ring": "extend",
+            "left_little": "extend"
+          }
+        },
+        {
+          "at": 0.75,
+          "label": "pad_contact",
+          "moves": {
+            "left_thumb": "oppose",
+            "left_index": "flex",
+            "left_middle": "extend",
+            "left_ring": "extend",
+            "left_little": "extend"
+          }
+        },
+        {
+          "at": 1.0,
+          "label": "secure",
+          "moves": {
+            "left_thumb": "oppose",
+            "left_index": "flex",
+            "left_middle": "flex_light",
+            "left_ring": "extend",
+            "left_little": "extend"
+          }
+        }
+      ]
+    },
+    "right_grip_precision": {
+      "description": "Precision grasp: thumb pad to index pad. The other three stay clear -- a pinch that curls them is a power grasp with a smaller object in it.",
+      "steps": [
+        {
+          "at": 0.0,
+          "label": "open",
+          "moves": {
+            "right_thumb": "reposition",
+            "right_index": "extend",
+            "right_middle": "extend",
+            "right_ring": "extend",
+            "right_little": "extend"
+          }
+        },
+        {
+          "at": 0.4,
+          "label": "approach_pads",
+          "moves": {
+            "right_thumb": "oppose",
+            "right_index": "flex_light",
+            "right_middle": "extend",
+            "right_ring": "extend",
+            "right_little": "extend"
+          }
+        },
+        {
+          "at": 0.75,
+          "label": "pad_contact",
+          "moves": {
+            "right_thumb": "oppose",
+            "right_index": "flex",
+            "right_middle": "extend",
+            "right_ring": "extend",
+            "right_little": "extend"
+          }
+        },
+        {
+          "at": 1.0,
+          "label": "secure",
+          "moves": {
+            "right_thumb": "oppose",
+            "right_index": "flex",
+            "right_middle": "flex_light",
+            "right_ring": "extend",
+            "right_little": "extend"
+          }
+        }
+      ]
     }
   }
 }
