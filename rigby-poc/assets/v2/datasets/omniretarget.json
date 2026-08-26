@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "dataset_id": "omniretarget",
+  "title": "OmniRetarget-style interaction structures",
+  "source_url": "https://arxiv.org/abs/2509.26633",
+  "license": "research reference only; no bundled dataset media",
+  "namespace_policy": {
+    "namespace": "research.object_contact",
+    "research_only": true,
+    "allowed_uses": ["object_contact_research", "interaction_retargeting_research"],
+    "prohibited_claims": ["production-ready animation capability"],
+    "requires_expert_review": false
+  },
+  "permitted_uses": ["object_contact_research", "interaction_retargeting_research"],
+  "prohibited_uses": ["generic_gesture", "production_animation"],
+  "prohibited_claims": ["generic_gesture_capability", "signing_capability", "asl_capability", "production_ready"],
+  "input_role": "interaction-mesh and contact-retargeting research input only",
+  "media_downloaded": false
+}

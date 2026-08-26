@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "dataset_id": "humoto",
+  "title": "HUMOTO",
+  "source_url": "https://jiaxin-lu.github.io/humoto/",
+  "license": "research-only; verify upstream asset-specific terms",
+  "namespace_policy": {
+    "namespace": "research.object_contact",
+    "research_only": true,
+    "allowed_uses": ["object_contact_research", "articulated_interaction_analysis"],
+    "prohibited_claims": ["production-ready animation capability"],
+    "requires_expert_review": false
+  },
+  "permitted_uses": ["object_contact_research", "articulated_interaction_analysis"],
+  "prohibited_uses": ["generic_gesture", "production_animation"],
+  "prohibited_claims": ["generic_gesture_capability", "signing_capability", "asl_capability", "production_ready"],
+  "input_role": "object/contact structure and articulated interaction research input only",
+  "media_downloaded": false
+}
