@@ -248,6 +248,9 @@ class PipelineRunStore:
             "created_at": created,
             "updated_at": created,
             "winner_result_id": None,
+            "inspection_result_id": None,
+            "inspection_reason": None,
+            "candidate_result_ids": [],
             "trace_url": None,
             "error": None,
             "events": [
@@ -353,6 +356,17 @@ class PipelineRunStore:
                 ),
                 stage="finalize",
                 winner_result_id=winner,
+                # Surfaced on the record rather than left in the trace file: a
+                # rejection nobody can open is indistinguishable from the
+                # pipeline breaking, and the UI reads the record, not the trace.
+                inspection_result_id=trace.get("inspection_result_id"),
+                inspection_reason=trace.get("inspection_reason"),
+                candidate_result_ids=[
+                    candidate.get("result_id")
+                    for item in trace.get("rounds", [])
+                    for candidate in item.get("candidates", [])
+                    if candidate.get("result_id")
+                ],
                 trace_url=f"/results/pipeline-runs/{run_id}/artifacts/flywheel-trace.json",
                 error=(
                     {"type": "UnsupportedMotion", "message": unsupported_reason}

@@ -42,7 +42,9 @@ from .models import (
     Vec3,
 )
 from .kinematics import rig_kinematics
-from .physics import PhysicsOutcome, simulate_grasp
+from .gaze_controller import aim_gaze
+from .motion_states import state_for, state_for_primitive
+from .physics import PhysicsOutcome, simulate_embodied_grasp, simulate_grasp
 from .primitives import (
     MAX_WRIST_TWIST_RAD,
     ARM_REACH_M,
@@ -431,6 +433,38 @@ def _app_quaternion_from_mj(wxyz: list[float]) -> Quat:
     app_rotation = conversion.T @ mj_rotation @ conversion
     xyzw = Rotation.from_matrix(app_rotation).as_quat()
     return Quat(x=float(xyzw[0]), y=float(xyzw[1]), z=float(xyzw[2]), w=float(xyzw[3]))
+
+
+def _embodied_physics_for(
+    program: MotionProgram,
+    scene: SceneManifest,
+    frames: list[ClipFrame],
+    phase_ranges: list[dict[str, float | str]],
+) -> PhysicsOutcome:
+    """Simulate the hand the renderer draws, not a stand-in for it."""
+    object_id = next(
+        item.object_id for item in program.primitives if item.object_id is not None
+    )
+    block = scene.object_by_id(object_id)
+    if block is None:
+        raise KeyError(object_id)
+    lift = next(
+        item.parameters for item in program.primitives if item.kind == PrimitiveKind.LIFT
+    )
+    hold = next(
+        item.parameters for item in program.primitives if item.kind == PrimitiveKind.HOLD
+    )
+    outcome = simulate_embodied_grasp(
+        block=block,
+        hand=program.hand,
+        frames=frames,
+        phase_ranges=phase_ranges,
+        lift_height_m=lift.lift_height_m,
+        hold_duration_s=hold.hold_duration_s,
+        support_height_m=scene.support_height_m,
+    )
+    outcome.metrics["grasp_attempts"] = 1
+    return outcome
 
 
 def _nearest_object_transform(
@@ -5379,7 +5413,13 @@ def compile_motion(request: CompileRequest) -> ClipResult:
                 },
             )
 
-    physics = _physics_for(program, scene) if program.intent == Intent.GRAB else None
+    # Grab compilation is two-pass. The first pass authors the humanoid armature
+    # with the object at its scene pose; MuJoCo then receives collision bodies
+    # driven from those exact rendered bones, and its free-body trajectory is
+    # copied back into the same frames below. Running physics first, as the
+    # Cartesian proxy did, means the object's motion is decided before the hand
+    # that is supposed to be moving it has been posed at all.
+    physics = None
     total_s = sum(item.parameters.duration_s for item in program.primitives)
     fps = scene.fps
     # Both authored motion families begin from a relaxed humanoid stance. The
@@ -5419,7 +5459,7 @@ def compile_motion(request: CompileRequest) -> ClipResult:
             * shake_primitive.parameters.wrist_shake_amplitude
         )
 
-    for primitive in program.primitives:
+    for primitive_index, primitive in enumerate(program.primitives):
         start = current.copy()
         shape = primitive.hand_shape or final_shape
         if program.intent == Intent.GRAB and target_object is not None:
@@ -5612,6 +5652,32 @@ def compile_motion(request: CompileRequest) -> ClipResult:
                         [0.0, shake_angle, 0.0],
                     )
                 )
+            if program.intent == Intent.GRAB and target_object is not None:
+                # Closed loop, per frame, against the pose this frame actually
+                # has. A one-shot aim per phase cannot correct for what the arm
+                # and torso do afterwards, and using the head bone alone stalls
+                # ~23 degrees short: head flexion is bounded at 25/-30 in
+                # rom.v1.json and a block on a table needs more. Neck and head
+                # solved together as a chain reach what neither reaches alone.
+                # enumerate, not list.index: two primitives with identical
+                # parameters compare equal, and index() would return the first
+                # of them, silently assigning both the same state.
+                gaze_state = state_for_primitive(
+                    program, primitive_index, primitive.kind.value
+                )
+                gaze_kind = gaze_state.gaze if gaze_state else "object"
+                if gaze_kind != "forward":
+                    if gaze_kind == "grasp":
+                        aim_at = rig_kinematics().canonical_positions(pose)[
+                            f"{program.hand.value}Hand"
+                        ]
+                    else:
+                        aim_at = np.asarray(
+                            target_object.transform.translation.as_list()
+                        )
+                    for bone, rotation in aim_gaze(pose, aim_at).bones.items():
+                        pose[bone] = BonePose(rotation=rotation)
+
             now = elapsed + local_index / fps
             objects: dict[str, Transform] = {}
             for item in scene.objects:
@@ -5621,6 +5687,22 @@ def compile_motion(request: CompileRequest) -> ClipResult:
         last_target = target
         final_shape = shape
         elapsed += phase_duration_s
+
+    if program.intent == Intent.GRAB and target_object is not None:
+        physics = _embodied_physics_for(program, scene, frames, phase_ranges)
+        frames = [
+            frame.model_copy(
+                update={
+                    "objects": {
+                        **frame.objects,
+                        target_object.id: _nearest_object_transform(
+                            physics, frame.time_s, total_s, target_object.transform
+                        ),
+                    }
+                }
+            )
+            for frame in frames
+        ]
 
     metrics = _base_metrics()
     metrics["phase_ranges_s"] = phase_ranges

@@ -624,6 +624,21 @@ function renderCandidateProgress(run: PipelineRun): void {
     const judged = Object.keys(judgment).length > 0;
     const card = document.createElement("article");
     card.className = `candidate-card ${selected ? "selected" : ""} ${!structurallyValid ? "rejected" : ""}`;
+    const candidateResultId = typeof value.result_id === "string" ? value.result_id : null;
+    if (candidateResultId) {
+      // Every candidate is written to disk whether or not it passed, so any of
+      // them can be watched. Filtering decides what is selected, not what exists.
+      card.classList.add("inspectable");
+      card.title = "Click to watch this candidate";
+      card.style.cursor = "pointer";
+      card.addEventListener("click", () => {
+        void loadResultForInspection(
+          candidateResultId,
+          structurallyValid ? `Inspecting ${candidateResultId}` : `Rejected candidate ${candidateResultId}`,
+          String(listValue(value.structural_failures).join("; ") || "shown for inspection"),
+        ).catch(() => showToast(`Could not open ${candidateResultId}.`, "error"));
+      });
+    }
     const top = document.createElement("div");
     const index = Number(value.candidate_index ?? 0);
     const title = document.createElement("strong");
@@ -712,13 +727,47 @@ async function watchPipeline(initial: PipelineRun): Promise<PipelineRun> {
   return run;
 }
 
+/** Load any saved result into the viewer. Used for accepted winners and for
+ *  rejected candidates alike -- a failure you cannot watch is not evidence. */
+async function loadResultForInspection(resultId: string, label: string, detail: string): Promise<boolean> {
+  const loaded = await api.getResult(resultId);
+  clip = loaded;
+  program = loaded.program ?? program;
+  currentTime = 0;
+  setPlaying(false);
+  renderProgram();
+  renderClip();
+  setRunState(label, detail, "fail");
+  return false;
+}
+
 async function showPipelineOutcome(run: PipelineRun): Promise<boolean> {
   if (run.status !== "completed" || !run.winner_result_id) {
+    const trace = recordValue(run.trace);
+    const inspectionId = run.inspection_result_id
+      ?? (typeof trace.inspection_result_id === "string" ? trace.inspection_result_id : null);
+    const inspectionReason = run.inspection_reason
+      ?? (typeof trace.inspection_reason === "string" ? trace.inspection_reason : "");
+
+    // A rejection nobody can watch is indistinguishable from the pipeline
+    // breaking. When every candidate failed, still load the closest one so the
+    // failure is on screen -- labelled as a failure, never as a result.
+    if (inspectionId) {
+      try {
+        const detail = inspectionReason
+          ? `No candidate passed. Showing the closest one so you can watch it fail: ${inspectionReason}`
+          : "No candidate passed. Showing the closest one so you can watch it fail.";
+        showToast(detail, "error");
+        return await loadResultForInspection(inspectionId, "Rejected — shown for inspection", detail);
+      } catch {
+        // fall through to the empty state below
+      }
+    }
+
     clip = null;
     currentTime = 0;
     setPlaying(false);
     renderClip();
-    const trace = recordValue(run.trace);
     const message = run.error?.message ?? (
       listValue(trace.rankings).length === 0
         ? "The pipeline could not assemble a complete five-candidate judging batch."

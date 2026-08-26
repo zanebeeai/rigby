@@ -117,6 +117,10 @@ export interface RenderProvenance {
   asset_error: string | null;
 }
 
+const TABLE_THICKNESS_M = 0.055;
+/** Matches SceneManifest.support_height_m. Used only until a scene arrives. */
+const DEFAULT_SUPPORT_HEIGHT_M = 1.01;
+
 export class RigbyScene {
   private readonly scene = new THREE.Scene();
   private readonly renderer: THREE.WebGLRenderer;
@@ -240,10 +244,13 @@ export class RigbyScene {
     this.scene.add(floor);
 
     this.table = new THREE.Mesh(
-      new THREE.BoxGeometry(1.05, 0.055, 0.72),
+      new THREE.BoxGeometry(1.05, TABLE_THICKNESS_M, 0.72),
       new THREE.MeshStandardMaterial({ color: 0x303a43, roughness: 0.82 }),
     );
-    this.table.position.set(0, 0.985, 0.5);
+    // Positioned by its TOP surface, not its centre. The old literal put the
+    // top at 1.0125 m while physics rested objects on 1.01 m, so the block sat
+    // 2.5 mm inside the table it was standing on.
+    this.setSupportHeight(DEFAULT_SUPPORT_HEIGHT_M);
     this.table.castShadow = true;
     this.table.receiveShadow = true;
     this.taskEnvironment.add(this.table);
@@ -374,6 +381,14 @@ export class RigbyScene {
     this.debugVisible = visible;
     this.socketMarker.visible = visible;
     this.contactMarkers.visible = visible;
+  }
+
+  /** Place the table so its top surface is exactly the scene's declared support
+   *  height. The renderer must not invent this value: it is the surface physics
+   *  rests objects on, and two authorities for one surface is the defect this
+   *  replaces. */
+  setSupportHeight(supportHeightM: number): void {
+    this.table.position.set(0, supportHeightM - TABLE_THICKNESS_M / 2, 0.5);
   }
 
   setTaskEnvironmentVisible(visible: boolean, supportSurfaceVisible = visible): void {
