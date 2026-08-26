@@ -16,6 +16,7 @@ from evals.capture import (
     CAPTURE_HEIGHT,
     CAPTURE_WIDTH,
     SAFE_RESULT_ID,
+    _launch_capture_browser,
     _png_size,
     _result_payload,
 )
@@ -125,7 +126,7 @@ def render_demo_gif(
     with tempfile.TemporaryDirectory(prefix="rigby-demo-") as temporary:
         temporary_path = Path(temporary)
         with sync_playwright() as playwright:
-            browser = playwright.chromium.launch(channel="chrome", headless=True)
+            browser, _channel = _launch_capture_browser(playwright.chromium)
             context = browser.new_context(
                 viewport={"width": CAPTURE_WIDTH, "height": CAPTURE_HEIGHT},
                 device_scale_factor=1,
