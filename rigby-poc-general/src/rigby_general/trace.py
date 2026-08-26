@@ -82,6 +82,10 @@ class RunTrace:
     grounded: dict[str, Any] | None = None
     certification: dict[str, Any] | None = None
     grasp: dict[str, Any] | None = None
+    trial: dict[str, Any] | None = None
+    """Set on an ``environment_trial``: which world, which object, and what
+    admission decided before anything was simulated."""
+
     failure: dict[str, Any] | None = None
     clip: str | None = None
     elapsed_seconds: float = 0.0
@@ -127,6 +131,7 @@ class RunTrace:
             "grounded": self.grounded,
             "certification": self.certification,
             "grasp": self.grasp,
+            "trial": self.trial,
             "failure": self.failure,
             "clip": self.clip,
             "provenance": {"base_tree": base_tree_fingerprint().as_dict()},

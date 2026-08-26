@@ -329,7 +329,11 @@ def build_page(
     )
 
     viewer = json.dumps(
-        {"robots": _viewer_robots(), "runs": run_tracks or {}},
+        {
+            "robots": _viewer_robots(),
+            "runs": run_tracks or {},
+            "envs": _viewer_environments(),
+        },
         separators=(",", ":"),
         sort_keys=True,
     )
@@ -344,6 +348,25 @@ def build_page(
         .replace("__VIEWER_JS__", viewer_js)
         .replace("__COUNT__", str(len(traces)))
     )
+
+
+def _viewer_environments() -> dict[str, dict]:
+    """Playable scenes for the environment trials, keyed environment.robot.
+
+    Written by scripts/run_trials.py. Missing is not fatal: the Worlds view
+    still renders its matrix from the traces, it just has nothing to play.
+    """
+
+    directory = ROOT / "results" / "viewer" / "env"
+    if not directory.is_dir():
+        return {}
+    out: dict[str, dict] = {}
+    for path in sorted(directory.glob("*.json")):
+        try:
+            out[path.stem] = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as error:  # pragma: no cover
+            print(f"{'':18} !! environment payload {path.name}: {error}")
+    return out
 
 
 def _viewer_robots() -> dict[str, dict]:
@@ -548,6 +571,7 @@ td.mono,th.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-siz
   <button class="tab" data-view="invariance" aria-selected="false">Schema invariance</button>
   <button class="tab" data-view="contact" aria-selected="false">Contact</button>
   <button class="tab" data-view="library" aria-selected="false">Primitive libraries</button>
+  <button class="tab" data-view="worlds" aria-selected="false">Worlds</button>
   <button class="tab" data-view="explorer" aria-selected="false">Explorer</button>
   <button class="tab" data-view="intake" aria-selected="false">Intake</button>
   <button class="tab" data-view="audit" aria-selected="false">Audit</button>
@@ -592,6 +616,7 @@ function renderList(){
   const rows = DATA.traces.map((t,i)=>({t,i}));
   const prompts = rows.filter(x => (x.t.kind || 'prompt') === 'prompt');
   const probes  = rows.filter(x => x.t.kind === 'contact_probe');
+  const trials  = rows.filter(x => x.t.kind === 'environment_trial');
   const accepted = prompts.filter(x=>x.t.accepted);
   const refused  = prompts.filter(x=>!x.t.accepted);
   const row = ({t,i}) => `
@@ -599,7 +624,11 @@ function renderList(){
       <div class="p">${esc(t.prompt)}</div>
       <div class="m">
         <span>${esc(t.robot_id)}</span>
-        ${t.kind === 'contact_probe'
+        ${t.kind === 'environment_trial'
+          ? (t.accepted
+              ? `<span class="ok">held</span><span>${esc(t.trial?.environment)}</span>`
+              : `<span class="bad">${esc(t.failure?.code)}</span><span>${esc(t.trial?.environment)}</span>`)
+          : t.kind === 'contact_probe'
           ? (t.accepted
               ? `<span class="ok">held</span><span>${(t.grasp.lift_height_m*1000).toFixed(0)} mm lift</span>`
               : `<span class="bad">${esc(t.failure?.code)}</span>`)
@@ -616,6 +645,10 @@ function renderList(){
     (probes.length
       ? `<div class="group">Contact probes &middot; ${probes.length}</div>`
         + probes.map(row).join('')
+      : '') +
+    (trials.length
+      ? `<div class="group">Environment trials &middot; ${trials.length}</div>`
+        + trials.map(row).join('')
       : '');
 }
 
@@ -988,12 +1021,14 @@ function render(){
     : view === 'invariance' ? renderInvariance()
     : view === 'contact' ? renderContact()
     : view === 'library' ? renderLibrary()
+    : view === 'worlds' ? renderWorlds()
     : view === 'explorer' ? renderExplorer()
     : view === 'intake' ? renderIntake() : renderAudit();
   // Markup is built as strings; live viewers attach only once it is in the DOM.
   mountPending();
   wireSeeks();
   if (view === 'explorer') wireExplorer();
+  if (view === 'worlds') wireWorlds();
   window.scrollTo({top:0});
 }
 function select(i){ current = i; render(); }
