@@ -1,0 +1,55 @@
+{
+  "development": [
+    {
+      "actuated_joint_count": 5,
+      "morphology_class": "fixed_base_arm",
+      "robot_id": "zoo_tool_arm",
+      "source": "zoo_tool_arm/robot.urdf",
+      "source_sha256": "676027304f6be91e6af3083e3b17e7a9b23572dec99dd3d8f8fcb1690e45eda3",
+      "split": "development"
+    },
+    {
+      "actuated_joint_count": 8,
+      "morphology_class": "fixed_base_arm",
+      "robot_id": "zoo_jaw_arm",
+      "source": "zoo_jaw_arm/robot.urdf",
+      "source_sha256": "e471721a99f33a062ff4f96fef38d7523b1e8196bd7c95406ddb2ebe4778cd3d",
+      "split": "development"
+    },
+    {
+      "actuated_joint_count": 10,
+      "morphology_class": "fixed_base_arm",
+      "robot_id": "zoo_hand_arm",
+      "source": "zoo_hand_arm/robot.urdf",
+      "source_sha256": "44222086fe981a572136e3d0508ab1c5e08ab3de730c615ed37362d3258945d6",
+      "split": "development"
+    },
+    {
+      "actuated_joint_count": 14,
+      "morphology_class": "fixed_base_bimanual",
+      "robot_id": "zoo_dual_arm",
+      "source": "zoo_dual_arm/robot.urdf",
+      "source_sha256": "628edbed60eb5732d38f1542a1411ea76518bc8c0f78c43f5910f6e9a0868d71",
+      "split": "development"
+    }
+  ],
+  "holdout": [
+    {
+      "actuated_joint_count": 6,
+      "morphology_class": "fixed_base_arm",
+      "robot_id": "zoo_compact_arm",
+      "source": "zoo_compact_arm/robot.urdf",
+      "source_sha256": "67461be18b9f49b7af8547ddb7599a7b0815d1f1bef7aeff8ef6056f3db153bd",
+      "split": "holdout"
+    },
+    {
+      "actuated_joint_count": 8,
+      "morphology_class": "fixed_base_arm",
+      "robot_id": "zoo_long_arm",
+      "source": "zoo_long_arm/robot.urdf",
+      "source_sha256": "126c4beb1379d7a3e92f03e85109f892b90e25d633715f8a8f2a26a79ba74ecc",
+      "split": "holdout"
+    }
+  ],
+  "schema_version": "1.0"
+}
