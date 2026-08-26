@@ -1,0 +1,63 @@
+{
+  "schema_version": "1.0",
+  "units": "meters_degrees_kilograms",
+  "pack_id": "grasp_place_block",
+  "description": "A free block, work table, and marked placement surface for grasp, lift, carry, and place tasks.",
+  "supports": [
+    {
+      "support_id": "work_table",
+      "pos": [0.0, -0.55, 1.12],
+      "size": [0.75, 0.35, 0.04],
+      "material": {"name": "wood", "friction": [0.8, 0.02, 0.002], "rgba": [0.42, 0.26, 0.14, 1.0]},
+      "site_name": "place_surface"
+    },
+    {
+      "support_id": "grasp_pedestal", "pos": [0.633291, -0.254357, 1.1825], "size": [0.02, 0.012, 0.0225],
+      "material": {"name": "pedestal_rubber", "friction": [1.0, 0.02, 0.002], "rgba": [0.18, 0.18, 0.18, 1.0]}, "site_name": "pedestal_top"
+    },
+    {
+      "support_id": "pedestal_lip_left", "pos": [0.590731, -0.254357, 1.22], "size": [0.003, 0.055, 0.015],
+      "material": {"name": "lip_acetal", "friction": [0.05, 0.001, 0.0001], "rgba": [0.18, 0.18, 0.18, 1.0]}, "site_name": "lip_left"
+    },
+    {
+      "support_id": "pedestal_lip_right", "pos": [0.675851, -0.254357, 1.22], "size": [0.003, 0.055, 0.015],
+      "material": {"name": "lip_acetal", "friction": [0.05, 0.001, 0.0001], "rgba": [0.18, 0.18, 0.18, 1.0]}, "site_name": "lip_right"
+    },
+    {
+      "support_id": "pedestal_lip_front", "pos": [0.633291, -0.302797, 1.22], "size": [0.05, 0.003, 0.015],
+      "material": {"name": "lip_acetal", "friction": [0.05, 0.001, 0.0001], "rgba": [0.18, 0.18, 0.18, 1.0]}, "site_name": "lip_front"
+    },
+    {
+      "support_id": "pedestal_lip_back", "pos": [0.633291, -0.205917, 1.22], "size": [0.05, 0.003, 0.015],
+      "material": {"name": "lip_acetal", "friction": [0.05, 0.001, 0.0001], "rgba": [0.18, 0.18, 0.18, 1.0]}, "site_name": "lip_back"
+    }
+  ],
+  "objects": [
+    {
+      "object_id": "block",
+      "pos": [0.633291, -0.254357, 1.245],
+      "quat_wxyz": [0.878817113, 0.0, 0.0, -0.477158760],
+      "dynamic": true,
+      "articulated": false,
+      "mass_kg": 0.02,
+      "material": {"name": "rubberized_foam", "friction": [1.5, 0.025, 0.003], "rgba": [0.18, 0.5, 0.85, 1.0]},
+      "parts": [
+        {
+          "part_id": "body", "mass_kg": 0.02, "collision_kind": "primitive",
+          "geoms": [{"name": "box", "type": "box", "size": [0.04, 0.02, 0.04]}]
+        }
+      ],
+      "sites": [
+        {"name": "grasp_center", "part": "body", "kind": "grasp", "pos": [0.0, 0.0, 0.0]},
+        {"name": "bottom_center", "part": "body", "kind": "contact", "pos": [0.0, 0.0, -0.04]}
+      ],
+      "affordances": [
+        {"name": "pinch_grasp", "kind": "grasp", "site": "grasp_center", "allowed_effectors": ["left_palm", "right_palm"]},
+        {"name": "place", "kind": "place", "site": "bottom_center", "allowed_effectors": ["left_palm", "right_palm"]}
+      ],
+      "state_predicates": [
+        {"name": "lifted", "target": "bottom_center", "operator": "ge", "values": [0.12], "units": "meters"}
+      ]
+    }
+  ]
+}

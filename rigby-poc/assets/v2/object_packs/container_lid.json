@@ -1,0 +1,55 @@
+{
+  "schema_version": "1.0",
+  "units": "meters_degrees_kilograms",
+  "pack_id": "container_lid",
+  "description": "A free five-wall container with an explicitly hinged lid and bimanual open/close semantics.",
+  "supports": [
+    {
+      "support_id": "container_table", "pos": [0.0, -0.44, 0.85], "size": [0.7, 0.16, 0.04],
+      "material": {"name": "laminate", "friction": [0.75, 0.02, 0.002], "rgba": [0.5, 0.46, 0.4, 1.0]}, "site_name": "surface"
+    }
+  ],
+  "objects": [
+    {
+      "object_id": "container", "pos": [0.0, -0.34, 0.905], "dynamic": true, "articulated": true, "mass_kg": 1.5,
+      "material": {"name": "polymer", "friction": [0.9, 0.025, 0.003], "rgba": [0.2, 0.55, 0.48, 1.0]},
+      "parts": [
+        {
+          "part_id": "base", "mass_kg": 1.2, "collision_kind": "primitive",
+          "geoms": [
+            {"name": "bottom", "type": "box", "size": [0.20, 0.15, 0.015], "pos": [0.0, 0.0, 0.0]},
+            {"name": "left_wall", "type": "box", "size": [0.015, 0.15, 0.10], "pos": [-0.185, 0.0, 0.10]},
+            {"name": "right_wall", "type": "box", "size": [0.015, 0.15, 0.10], "pos": [0.185, 0.0, 0.10]},
+            {"name": "front_wall", "type": "box", "size": [0.17, 0.015, 0.10], "pos": [0.0, -0.135, 0.10]},
+            {"name": "back_wall", "type": "box", "size": [0.17, 0.015, 0.10], "pos": [0.0, 0.135, 0.10]}
+          ]
+        },
+        {
+          "part_id": "lid", "parent": "base", "pos": [0.0, 0.14, 0.21], "mass_kg": 0.25,
+          "joint": {"name": "lid_hinge", "type": "hinge", "axis": [-1.0, 0.0, 0.0], "range": [0.0, 125.0], "damping": 0.5, "frictionloss": 0.4},
+          "collision_kind": "primitive",
+          "geoms": [{"name": "lid_panel", "type": "box", "size": [0.20, 0.15, 0.018], "pos": [0.0, -0.14, 0.0]}]
+        },
+        {
+          "part_id": "lid_knob", "parent": "lid", "pos": [-0.08, -0.28, 0.055], "mass_kg": 0.05,
+          "collision_kind": "primitive",
+          "geoms": [
+            {"name": "knob_neck", "type": "cylinder", "size": [0.015, 0.03], "pos": [0.0, 0.0, -0.04]},
+            {"name": "knob_grip", "type": "sphere", "size": [0.025]}
+          ]
+        }
+      ],
+      "sites": [
+        {"name": "base_hold", "part": "base", "kind": "grasp", "pos": [-0.19, 0.0, 0.10]},
+        {"name": "lid_handle", "part": "lid", "kind": "grasp", "pos": [0.0, -0.28, 0.0]},
+        {"name": "lid_knob", "part": "lid_knob", "kind": "grasp", "pos": [0.0, 0.0, 0.0]}
+      ],
+      "affordances": [
+        {"name": "stabilize", "kind": "grasp", "site": "base_hold", "allowed_effectors": ["left_palm", "right_palm"]},
+        {"name": "open_lid", "kind": "open", "site": "lid_knob", "allowed_effectors": ["left_palm", "right_palm"]},
+        {"name": "bimanual_open", "kind": "open", "site": "lid_knob", "allowed_effectors": ["both_palms"]}
+      ],
+      "state_predicates": [{"name": "lid_open", "target": "lid_hinge", "operator": "ge", "values": [80.0], "units": "degrees"}]
+    }
+  ]
+}

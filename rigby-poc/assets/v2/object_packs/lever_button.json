@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0",
+  "units": "meters_degrees_kilograms",
+  "pack_id": "lever_button",
+  "description": "A fixed control panel with independently articulated lever and push button.",
+  "objects": [
+    {
+      "object_id": "control_panel",
+      "pos": [0.26, -0.58, 1.2],
+      "dynamic": false,
+      "articulated": true,
+      "mass_kg": 4.0,
+      "material": {"name": "industrial_polymer", "friction": [0.75, 0.02, 0.002], "rgba": [0.25, 0.29, 0.32, 1.0]},
+      "parts": [
+        {
+          "part_id": "housing", "mass_kg": 3.35, "collision_kind": "primitive",
+          "geoms": [{"name": "panel", "type": "box", "size": [0.30, 0.04, 0.24]}]
+        },
+        {
+          "part_id": "lever", "parent": "housing", "pos": [-0.10, 0.07, 0.02], "mass_kg": 0.5,
+          "joint": {"name": "lever_hinge", "type": "hinge", "axis": [1.0, 0.0, 0.0], "range": [-45.0, 45.0], "damping": 0.5, "frictionloss": 0.1},
+          "collision_kind": "primitive",
+          "geoms": [{"name": "lever_stem", "type": "capsule", "size": [0.022, 0.15], "pos": [0.0, 0.0, -0.15]}]
+        },
+        {
+          "part_id": "button", "parent": "housing", "pos": [0.14, 0.10, 0.02], "mass_kg": 0.15,
+          "joint": {"name": "button_slide", "type": "slide", "axis": [0.0, 1.0, 0.0], "range": [-0.025, 0.0], "damping": 1.0, "frictionloss": 0.2},
+          "collision_kind": "primitive",
+          "geoms": [{"name": "button_cap", "type": "cylinder", "size": [0.045, 0.018], "quat_wxyz": [0.7071067812, 0.7071067812, 0.0, 0.0]}]
+        }
+      ],
+      "sites": [
+        {"name": "lever_grasp", "part": "lever", "kind": "grasp", "pos": [0.0, 0.0, -0.29]},
+        {"name": "button_surface", "part": "button", "kind": "contact", "pos": [0.0, 0.018, 0.0]}
+      ],
+      "affordances": [
+        {"name": "rotate_lever", "kind": "rotate", "site": "lever_grasp", "allowed_effectors": ["left_palm", "right_palm"]},
+        {"name": "press_button", "kind": "push", "site": "button_surface", "allowed_effectors": ["left_palm", "right_palm"]}
+      ],
+      "state_predicates": [
+        {"name": "lever_activated", "target": "lever_hinge", "operator": "ge", "values": [35.0], "units": "degrees"},
+        {"name": "button_pressed", "target": "button_slide", "operator": "le", "values": [-0.02], "units": "meters"}
+      ]
+    }
+  ]
+}

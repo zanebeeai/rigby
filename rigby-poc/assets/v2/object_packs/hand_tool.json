@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "units": "meters_degrees_kilograms",
+  "pack_id": "hand_tool",
+  "description": "A free hammer with distinct handle-grasp and striking-face semantics.",
+  "supports": [
+    {
+      "support_id": "tool_bench", "pos": [0.0, -0.55, 1.12], "size": [0.75, 0.35, 0.04],
+      "material": {"name": "bench_wood", "friction": [0.8, 0.02, 0.002], "rgba": [0.38, 0.23, 0.12, 1.0]}, "site_name": "surface"
+    }
+  ],
+  "objects": [
+    {
+      "object_id": "hammer", "pos": [0.64, -0.10, 1.21], "quat_wxyz": [0.707106781, 0.707106781, 0.0, 0.0], "dynamic": true, "articulated": false, "mass_kg": 1.0,
+      "material": {"name": "tool", "friction": [0.85, 0.02, 0.002], "rgba": [0.30, 0.23, 0.16, 1.0]},
+      "parts": [
+        {
+          "part_id": "body", "mass_kg": 1.0, "collision_kind": "primitive",
+          "geoms": [
+            {"name": "handle", "type": "capsule", "size": [0.025, 0.18], "pos": [0.0, 0.0, 0.18]},
+            {"name": "head", "type": "box", "size": [0.13, 0.045, 0.055], "pos": [0.0, 0.0, 0.39]}
+          ]
+        }
+      ],
+      "sites": [
+        {"name": "handle_grasp", "part": "body", "kind": "grasp", "pos": [0.0, 0.0, 0.15]},
+        {"name": "strike_face", "part": "body", "kind": "contact", "pos": [0.135, 0.0, 0.39]}
+      ],
+      "affordances": [
+        {"name": "power_grasp", "kind": "grasp", "site": "handle_grasp", "allowed_effectors": ["left_palm", "right_palm"]},
+        {"name": "strike", "kind": "strike", "site": "strike_face", "allowed_effectors": ["left_palm", "right_palm"]}
+      ],
+      "state_predicates": [{"name": "lifted", "target": "handle_grasp", "operator": "ge", "values": [0.15], "units": "meters"}]
+    }
+  ]
+}

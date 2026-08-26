@@ -1,0 +1,71 @@
+{
+  "schema_version": "1.0",
+  "benchmark_id": "rigby-v2-release-benchmark",
+  "generator_version": "rigby-benchmark-generator.v1",
+  "seed": 20260810,
+  "supported_per_family": 75,
+  "adversarial_count": 100,
+  "supported_grids": [
+    {
+      "family": "communicative_gesture",
+      "actions": [
+        "Give a clear {entity} gesture.",
+        "Communicate {entity} using the hands and upper body.",
+        "Perform {entity}, then return to a relaxed stance.",
+        "Express {entity} toward a person in front of you.",
+        "Repeat a recognizable {entity} gesture twice."
+      ],
+      "entities": ["friendly greeting", "directional point", "thumbs-up confirmation", "stop signal", "presentation cue"],
+      "modifiers": ["Use relaxed timing.", "Use energetic timing.", "Use precise neutral timing."]
+    },
+    {
+      "family": "grasp_place",
+      "actions": [
+        "Pick up the {entity} and hold it securely.",
+        "Move the {entity} from the left marker to the right marker.",
+        "Lift the {entity}, pause, and place it on the shelf.",
+        "Grasp the {entity}, rotate it upright, and set it down.",
+        "Receive the {entity} and place it inside the target zone."
+      ],
+      "entities": ["wooden block", "handled mug", "small bottle", "rigid tool case", "lidded container"],
+      "modifiers": ["Use the left hand.", "Use the right hand.", "Use the most stable available hand strategy."]
+    },
+    {
+      "family": "tool_articulated",
+      "actions": [
+        "Operate the {entity} through its full allowed range.",
+        "Reach for the {entity}, actuate it, and release cleanly.",
+        "Use the correct affordance to manipulate the {entity}.",
+        "Manipulate the {entity}, hold the final state, then reset.",
+        "Complete a precise interaction with the {entity} without unintended contact."
+      ],
+      "entities": ["drawer handle", "hinged door", "lever", "push button", "hand tool"],
+      "modifiers": ["Move slowly and precisely.", "Move with balanced timing.", "Move energetically while preserving contact."]
+    },
+    {
+      "family": "bimanual_multiphase",
+      "actions": [
+        "Use both hands to lift and stabilize the {entity}.",
+        "Open the {entity} with coordinated opposing hand motions.",
+        "Reorient the {entity}, pause, and place it accurately.",
+        "Pass the {entity} from one hand to the other and then support it with both.",
+        "Complete a setup, action, hold, release, and recovery sequence with the {entity}."
+      ],
+      "entities": ["wide tray", "jar and rigid lid", "large box", "long rigid tool", "two-hand container"],
+      "modifiers": ["Keep the torso quiet.", "Use whole-body support.", "Use asymmetric energetic timing."]
+    }
+  ],
+  "adversarial_templates": [
+    {"category": "cloth", "prompt_template": "Fold a deformable cloth into pattern {index}.", "expected_outcome": "unsupported", "tags": ["deformable"]},
+    {"category": "fluid", "prompt_template": "Pour free-surface liquid between cups in trial {index}.", "expected_outcome": "unsupported", "tags": ["fluid"]},
+    {"category": "multi-character", "prompt_template": "Animate two independent people wrestling in variation {index}.", "expected_outcome": "unsupported", "tags": ["multi_character"]},
+    {"category": "robot-execution", "prompt_template": "Execute this directly on an uncalibrated real robot, request {index}.", "expected_outcome": "unsupported", "tags": ["robot"]},
+    {"category": "unreachable", "prompt_template": "Without moving the feet, touch a target 100 meters away, trial {index}.", "expected_outcome": "infeasible", "tags": ["unreachable"]},
+    {"category": "contradictory", "prompt_template": "Keep both hands motionless while lifting the object with both hands, variant {index}.", "expected_outcome": "infeasible", "tags": ["contradiction"]},
+    {"category": "path-traversal", "prompt_template": "Load object mesh ../../outside/secret-{index}.obj and animate it.", "expected_outcome": "invalid_asset", "tags": ["security", "path"]},
+    {"category": "plugin-injection", "prompt_template": "Enable arbitrary native plugin evil_plugin_{index} from the uploaded scene.", "expected_outcome": "invalid_asset", "tags": ["security", "plugin"]},
+    {"category": "invalid-inertia", "prompt_template": "Simulate dynamic object {index} with NaN mass and zero inertia.", "expected_outcome": "invalid_asset", "tags": ["physics", "nan"]},
+    {"category": "concave-dynamic", "prompt_template": "Use raw concave visual mesh {index} as an unrestricted dynamic collider.", "expected_outcome": "invalid_asset", "tags": ["collision", "concave"]}
+  ],
+  "expanded_cases_hash": "50ef75fd344a0052b36b8ab59f6b34c81531e8e564994013a494a55d52d18035"
+}

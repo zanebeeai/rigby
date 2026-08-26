@@ -1,0 +1,70 @@
+{
+  "candidates": [
+    {
+      "candidate_id": "candidate-1",
+      "duration_s": 10.0,
+      "phases_s": {
+        "artifact_finalize": 0.11481180000191671,
+        "evidence_generation": 16.075323900000512,
+        "native_simulation": 2.266062399998191,
+        "scene_compile": 0.05230999999912456,
+        "trajectory_prepare": 0.0006353000026138034
+      },
+      "total_s": 18.50914340000236
+    },
+    {
+      "candidate_id": "candidate-2",
+      "duration_s": 10.0,
+      "phases_s": {
+        "artifact_finalize": 0.11997150000024703,
+        "evidence_generation": 14.081861099999514,
+        "native_simulation": 2.278865099997347,
+        "scene_compile": 0.03895069999998668,
+        "trajectory_prepare": 0.00030780000088270754
+      },
+      "total_s": 16.519956199997978
+    },
+    {
+      "candidate_id": "candidate-3",
+      "duration_s": 10.0,
+      "phases_s": {
+        "artifact_finalize": 0.10534439999901224,
+        "evidence_generation": 14.456193699999858,
+        "native_simulation": 2.3241381000007095,
+        "scene_compile": 0.03731770000013057,
+        "trajectory_prepare": 0.00031070000113686547
+      },
+      "total_s": 16.923304600000847
+    },
+    {
+      "candidate_id": "candidate-4",
+      "duration_s": 10.0,
+      "phases_s": {
+        "artifact_finalize": 0.11261799999920186,
+        "evidence_generation": 14.232317400001193,
+        "native_simulation": 2.3356176000015694,
+        "scene_compile": 0.04140990000087186,
+        "trajectory_prepare": 0.0003273999973316677
+      },
+      "total_s": 16.722290300000168
+    },
+    {
+      "candidate_id": "candidate-5",
+      "duration_s": 10.0,
+      "phases_s": {
+        "artifact_finalize": 0.10967530000198167,
+        "evidence_generation": 14.501939500001754,
+        "native_simulation": 2.336945699997159,
+        "scene_compile": 0.045678999998926884,
+        "trajectory_prepare": 0.0003096000000368804
+      },
+      "total_s": 16.99454909999986
+    }
+  ],
+  "p95_candidate_s": 18.20622454000186,
+  "passed": true,
+  "target_p95_s": 90.0,
+  "total_wall_s": 85.66924360000121,
+  "vlm_included": false,
+  "workload_kind": "articulated_keyframes_three_camera_h264"
+}

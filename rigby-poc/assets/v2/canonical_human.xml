@@ -1,0 +1,356 @@
+<mujoco model="rigby_canonical_human_medium">
+  <compiler angle="degree" autolimits="true" inertiafromgeom="auto"/>
+  <option timestep="0.0041666667" integrator="implicitfast" solver="Newton" iterations="100">
+    <flag filterparent="enable"/>
+  </option>
+  <size nconmax="600" njmax="3000"/>
+  <visual>
+    <headlight ambient="0.35 0.35 0.35" diffuse="0.65 0.65 0.65"/>
+  </visual>
+  <default>
+    <joint armature="0.006" damping="0.35" frictionloss="0.03"/>
+    <geom type="capsule" density="560" friction="0.9 0.03 0.003"
+          solref="0.006 1" solimp="0.9 0.97 0.002" contype="1" conaffinity="1"/>
+    <site type="sphere" size="0.008" rgba="1 0.25 0.15 1" group="3"/>
+    <motor ctrllimited="true" ctrlrange="-150 150"/>
+    <default class="trunk">
+      <geom rgba="0.36 0.48 0.72 1"/>
+      <joint armature="0.02" damping="1.4"/>
+    </default>
+    <default class="limb">
+      <geom rgba="0.68 0.55 0.45 1"/>
+      <joint damping="0.75"/>
+    </default>
+    <default class="hand">
+      <geom rgba="0.76 0.60 0.50 1" density="530"/>
+      <joint armature="0.001" damping="0.08" frictionloss="0.01"/>
+    </default>
+  </default>
+
+  <worldbody>
+    <geom name="ground" type="plane" size="4 4 0.1" density="0"
+          rgba="0.16 0.18 0.20 1" friction="1.0 0.02 0.002"/>
+    <body name="pelvis" pos="0 0 0.900" childclass="trunk">
+      <freejoint name="pelvis_free"/>
+      <geom name="pelvis_collision" type="capsule" fromto="0 0 -0.08 0 0 0.09" size="0.135"/>
+      <site name="pelvis_center" pos="0 0 0" size="0.012"/>
+
+      <body name="lumbar" pos="0 0 0.10">
+        <joint name="spine_flex" axis="1 0 0" range="-35 45"/>
+        <joint name="spine_side" axis="0 1 0" range="-28 28"/>
+        <joint name="spine_twist" axis="0 0 1" range="-40 40"/>
+        <geom name="lumbar_collision" fromto="0 0 0 0 0 0.21" size="0.115"/>
+        <body name="torso" pos="0 0 0.19">
+          <joint name="chest_flex" axis="1 0 0" range="-25 35"/>
+          <joint name="chest_side" axis="0 1 0" range="-22 22"/>
+          <joint name="chest_twist" axis="0 0 1" range="-35 35"/>
+          <geom name="torso_collision" fromto="0 0 0 0 0 0.31" size="0.17"/>
+          <site name="sternum" pos="0 -0.16 0.21" size="0.01"/>
+
+          <body name="neck" pos="0 0 0.30">
+            <joint name="neck_flex" axis="1 0 0" range="-45 55"/>
+            <joint name="neck_side" axis="0 1 0" range="-35 35"/>
+            <joint name="neck_twist" axis="0 0 1" range="-70 70"/>
+            <geom name="neck_collision" fromto="0 0 0 0 0 0.10" size="0.055"/>
+            <body name="head" pos="0 0 0.11">
+              <geom name="head_collision" type="sphere" pos="0 -0.01 0.075" size="0.105" density="480"/>
+              <site name="head_center" pos="0 -0.01 0.075" size="0.012"/>
+              <site name="gaze_origin" pos="0 -0.10 0.09" size="0.006"/>
+            </body>
+          </body>
+
+          <body name="left_upper_arm" pos="0.19 0 0.23" childclass="limb">
+            <joint name="left_shoulder_flex" axis="0 1 0" range="-170 170"/>
+            <joint name="left_shoulder_abduct" axis="1 0 0" range="-100 180"/>
+            <joint name="left_shoulder_twist" axis="0 0 1" range="-100 100"/>
+            <geom name="left_upper_arm_collision" fromto="0 0 0 0.28 0 0" size="0.055"/>
+            <body name="left_lower_arm" pos="0.28 0 0">
+              <joint name="left_elbow_flex" axis="0 1 0" range="0 150"/>
+              <joint name="left_forearm_twist" axis="1 0 0" range="-90 90"/>
+              <geom name="left_lower_arm_collision" fromto="0 0 0 0.25 0 0" size="0.045"/>
+              <body name="left_hand" pos="0.25 0 0" childclass="hand">
+                <joint name="left_wrist_flex" axis="0 1 0" range="-75 75"/>
+                <joint name="left_wrist_deviation" axis="0 0 1" range="-30 35"/>
+                <geom name="left_palm_collision" type="box" pos="0.055 0 0" size="0.060 0.042 0.018"/>
+                <site name="left_palm" pos="0.06 -0.043 0" size="0.01"/>
+
+                <body name="left_thumb_proximal" pos="0.045 -0.047 -0.005">
+                  <joint name="left_thumb_opposition" axis="0 0 1" range="-55 55"/>
+                  <joint name="left_thumb_mcp" axis="0 1 0" range="-20 70"/>
+                  <geom name="left_thumb_proximal_collision" fromto="0 0 0 0.035 -0.018 0" size="0.014"/>
+                  <body name="left_thumb_middle" pos="0.035 -0.018 0">
+                    <joint name="left_thumb_pip" axis="0 1 0" range="0 85"/>
+                    <geom name="left_thumb_middle_collision" fromto="0 0 0 0.028 0 0" size="0.012"/>
+                    <body name="left_thumb_distal" pos="0.028 0 0">
+                      <joint name="left_thumb_dip" axis="0 1 0" range="0 80"/>
+                      <geom name="left_thumb_distal_collision" fromto="0 0 0 0.025 0 0" size="0.011"/>
+                      <site name="left_thumb_tip" pos="0.026 0 0"/>
+                    </body>
+                  </body>
+                </body>
+                <body name="left_index_proximal" pos="0.108 -0.031 0">
+                  <joint name="left_index_mcp" axis="0 1 0" range="-15 95"/>
+                  <geom name="left_index_proximal_collision" fromto="0 0 0 0.040 0 0" size="0.012"/>
+                  <body name="left_index_middle" pos="0.040 0 0">
+                    <joint name="left_index_pip" axis="0 1 0" range="0 115"/>
+                    <geom name="left_index_middle_collision" fromto="0 0 0 0.027 0 0" size="0.0105"/>
+                    <body name="left_index_distal" pos="0.027 0 0">
+                      <joint name="left_index_dip" axis="0 1 0" range="0 90"/>
+                      <geom name="left_index_distal_collision" fromto="0 0 0 0.022 0 0" size="0.0095"/>
+                      <site name="left_index_tip" pos="0.023 0 0"/>
+                    </body>
+                  </body>
+                </body>
+                <body name="left_middle_proximal" pos="0.112 -0.010 0">
+                  <joint name="left_middle_mcp" axis="0 1 0" range="-15 95"/>
+                  <geom name="left_middle_proximal_collision" fromto="0 0 0 0.043 0 0" size="0.0125"/>
+                  <body name="left_middle_middle" pos="0.043 0 0">
+                    <joint name="left_middle_pip" axis="0 1 0" range="0 115"/>
+                    <geom name="left_middle_middle_collision" fromto="0 0 0 0.030 0 0" size="0.011"/>
+                    <body name="left_middle_distal" pos="0.030 0 0">
+                      <joint name="left_middle_dip" axis="0 1 0" range="0 90"/>
+                      <geom name="left_middle_distal_collision" fromto="0 0 0 0.023 0 0" size="0.010"/>
+                      <site name="left_middle_tip" pos="0.024 0 0"/>
+                    </body>
+                  </body>
+                </body>
+                <body name="left_ring_proximal" pos="0.108 0.012 0">
+                  <joint name="left_ring_mcp" axis="0 1 0" range="-15 95"/>
+                  <geom name="left_ring_proximal_collision" fromto="0 0 0 0.040 0 0" size="0.012"/>
+                  <body name="left_ring_middle" pos="0.040 0 0">
+                    <joint name="left_ring_pip" axis="0 1 0" range="0 115"/>
+                    <geom name="left_ring_middle_collision" fromto="0 0 0 0.028 0 0" size="0.0105"/>
+                    <body name="left_ring_distal" pos="0.028 0 0">
+                      <joint name="left_ring_dip" axis="0 1 0" range="0 90"/>
+                      <geom name="left_ring_distal_collision" fromto="0 0 0 0.022 0 0" size="0.0095"/>
+                      <site name="left_ring_tip" pos="0.023 0 0"/>
+                    </body>
+                  </body>
+                </body>
+                <body name="left_little_proximal" pos="0.100 0.033 0">
+                  <joint name="left_little_mcp" axis="0 1 0" range="-15 100"/>
+                  <geom name="left_little_proximal_collision" fromto="0 0 0 0.034 0 0" size="0.011"/>
+                  <body name="left_little_middle" pos="0.034 0 0">
+                    <joint name="left_little_pip" axis="0 1 0" range="0 120"/>
+                    <geom name="left_little_middle_collision" fromto="0 0 0 0.023 0 0" size="0.0095"/>
+                    <body name="left_little_distal" pos="0.023 0 0">
+                      <joint name="left_little_dip" axis="0 1 0" range="0 95"/>
+                      <geom name="left_little_distal_collision" fromto="0 0 0 0.019 0 0" size="0.0085"/>
+                      <site name="left_little_tip" pos="0.020 0 0"/>
+                    </body>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+
+          <body name="right_upper_arm" pos="-0.19 0 0.23" childclass="limb">
+            <joint name="right_shoulder_flex" axis="0 1 0" range="-170 170"/>
+            <joint name="right_shoulder_abduct" axis="1 0 0" range="-180 100"/>
+            <joint name="right_shoulder_twist" axis="0 0 1" range="-100 100"/>
+            <geom name="right_upper_arm_collision" fromto="0 0 0 -0.28 0 0" size="0.055"/>
+            <body name="right_lower_arm" pos="-0.28 0 0">
+              <joint name="right_elbow_flex" axis="0 -1 0" range="0 150"/>
+              <joint name="right_forearm_twist" axis="1 0 0" range="-90 90"/>
+              <geom name="right_lower_arm_collision" fromto="0 0 0 -0.25 0 0" size="0.045"/>
+              <body name="right_hand" pos="-0.25 0 0" childclass="hand">
+                <joint name="right_wrist_flex" axis="0 -1 0" range="-75 75"/>
+                <joint name="right_wrist_deviation" axis="0 0 1" range="-35 30"/>
+                <geom name="right_palm_collision" type="box" pos="-0.055 0 0" size="0.060 0.042 0.018"/>
+                <site name="right_palm" pos="-0.06 -0.043 0" size="0.01"/>
+
+                <body name="right_thumb_proximal" pos="-0.045 -0.047 -0.005">
+                  <joint name="right_thumb_opposition" axis="0 0 -1" range="-55 55"/>
+                  <joint name="right_thumb_mcp" axis="0 -1 0" range="-20 70"/>
+                  <geom name="right_thumb_proximal_collision" fromto="0 0 0 -0.035 -0.018 0" size="0.014"/>
+                  <body name="right_thumb_middle" pos="-0.035 -0.018 0">
+                    <joint name="right_thumb_pip" axis="0 -1 0" range="0 85"/>
+                    <geom name="right_thumb_middle_collision" fromto="0 0 0 -0.028 0 0" size="0.012"/>
+                    <body name="right_thumb_distal" pos="-0.028 0 0">
+                      <joint name="right_thumb_dip" axis="0 -1 0" range="0 80"/>
+                      <geom name="right_thumb_distal_collision" fromto="0 0 0 -0.025 0 0" size="0.011"/>
+                      <site name="right_thumb_tip" pos="-0.026 0 0"/>
+                    </body>
+                  </body>
+                </body>
+                <body name="right_index_proximal" pos="-0.108 -0.031 0">
+                  <joint name="right_index_mcp" axis="0 -1 0" range="-15 95"/>
+                  <geom name="right_index_proximal_collision" fromto="0 0 0 -0.040 0 0" size="0.012"/>
+                  <body name="right_index_middle" pos="-0.040 0 0">
+                    <joint name="right_index_pip" axis="0 -1 0" range="0 115"/>
+                    <geom name="right_index_middle_collision" fromto="0 0 0 -0.027 0 0" size="0.0105"/>
+                    <body name="right_index_distal" pos="-0.027 0 0">
+                      <joint name="right_index_dip" axis="0 -1 0" range="0 90"/>
+                      <geom name="right_index_distal_collision" fromto="0 0 0 -0.022 0 0" size="0.0095"/>
+                      <site name="right_index_tip" pos="-0.023 0 0"/>
+                    </body>
+                  </body>
+                </body>
+                <body name="right_middle_proximal" pos="-0.112 -0.010 0">
+                  <joint name="right_middle_mcp" axis="0 -1 0" range="-15 95"/>
+                  <geom name="right_middle_proximal_collision" fromto="0 0 0 -0.043 0 0" size="0.0125"/>
+                  <body name="right_middle_middle" pos="-0.043 0 0">
+                    <joint name="right_middle_pip" axis="0 -1 0" range="0 115"/>
+                    <geom name="right_middle_middle_collision" fromto="0 0 0 -0.030 0 0" size="0.011"/>
+                    <body name="right_middle_distal" pos="-0.030 0 0">
+                      <joint name="right_middle_dip" axis="0 -1 0" range="0 90"/>
+                      <geom name="right_middle_distal_collision" fromto="0 0 0 -0.023 0 0" size="0.010"/>
+                      <site name="right_middle_tip" pos="-0.024 0 0"/>
+                    </body>
+                  </body>
+                </body>
+                <body name="right_ring_proximal" pos="-0.108 0.012 0">
+                  <joint name="right_ring_mcp" axis="0 -1 0" range="-15 95"/>
+                  <geom name="right_ring_proximal_collision" fromto="0 0 0 -0.040 0 0" size="0.012"/>
+                  <body name="right_ring_middle" pos="-0.040 0 0">
+                    <joint name="right_ring_pip" axis="0 -1 0" range="0 115"/>
+                    <geom name="right_ring_middle_collision" fromto="0 0 0 -0.028 0 0" size="0.0105"/>
+                    <body name="right_ring_distal" pos="-0.028 0 0">
+                      <joint name="right_ring_dip" axis="0 -1 0" range="0 90"/>
+                      <geom name="right_ring_distal_collision" fromto="0 0 0 -0.022 0 0" size="0.0095"/>
+                      <site name="right_ring_tip" pos="-0.023 0 0"/>
+                    </body>
+                  </body>
+                </body>
+                <body name="right_little_proximal" pos="-0.100 0.033 0">
+                  <joint name="right_little_mcp" axis="0 -1 0" range="-15 100"/>
+                  <geom name="right_little_proximal_collision" fromto="0 0 0 -0.034 0 0" size="0.011"/>
+                  <body name="right_little_middle" pos="-0.034 0 0">
+                    <joint name="right_little_pip" axis="0 -1 0" range="0 120"/>
+                    <geom name="right_little_middle_collision" fromto="0 0 0 -0.023 0 0" size="0.0095"/>
+                    <body name="right_little_distal" pos="-0.023 0 0">
+                      <joint name="right_little_dip" axis="0 -1 0" range="0 95"/>
+                      <geom name="right_little_distal_collision" fromto="0 0 0 -0.019 0 0" size="0.0085"/>
+                      <site name="right_little_tip" pos="-0.020 0 0"/>
+                    </body>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+
+      <body name="left_thigh" pos="0.10 0 -0.08" childclass="limb">
+        <joint name="left_hip_flex" axis="1 0 0" range="-125 45"/>
+        <joint name="left_hip_abduct" axis="0 1 0" range="-45 55"/>
+        <joint name="left_hip_twist" axis="0 0 1" range="-55 55"/>
+        <geom name="left_thigh_collision" fromto="0 0 0 0 0 -0.38" size="0.075"/>
+        <body name="left_shin" pos="0 0 -0.38">
+          <joint name="left_knee_flex" axis="1 0 0" range="0 155"/>
+          <geom name="left_shin_collision" fromto="0 0 0 0 0 -0.38" size="0.058"/>
+          <body name="left_foot" pos="0 0 -0.38">
+            <joint name="left_ankle_flex" axis="1 0 0" range="-45 45"/>
+            <joint name="left_ankle_roll" axis="0 1 0" range="-25 25"/>
+            <geom name="left_foot_collision" type="box" pos="0 -0.075 -0.025" size="0.055 0.115 0.035" margin="0.001"/>
+            <site name="left_foot_sole" pos="0 -0.075 -0.061" size="0.012"/>
+          </body>
+        </body>
+      </body>
+      <body name="right_thigh" pos="-0.10 0 -0.08" childclass="limb">
+        <joint name="right_hip_flex" axis="1 0 0" range="-125 45"/>
+        <joint name="right_hip_abduct" axis="0 1 0" range="-55 45"/>
+        <joint name="right_hip_twist" axis="0 0 1" range="-55 55"/>
+        <geom name="right_thigh_collision" fromto="0 0 0 0 0 -0.38" size="0.075"/>
+        <body name="right_shin" pos="0 0 -0.38">
+          <joint name="right_knee_flex" axis="1 0 0" range="0 155"/>
+          <geom name="right_shin_collision" fromto="0 0 0 0 0 -0.38" size="0.058"/>
+          <body name="right_foot" pos="0 0 -0.38">
+            <joint name="right_ankle_flex" axis="1 0 0" range="-45 45"/>
+            <joint name="right_ankle_roll" axis="0 1 0" range="-25 25"/>
+            <geom name="right_foot_collision" type="box" pos="0 -0.075 -0.025" size="0.055 0.115 0.035" margin="0.001"/>
+            <site name="right_foot_sole" pos="0 -0.075 -0.061" size="0.012"/>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <contact>
+    <exclude body1="pelvis" body2="lumbar"/>
+    <exclude body1="pelvis" body2="torso"/>
+    <exclude body1="lumbar" body2="torso"/>
+    <exclude body1="torso" body2="neck"/>
+    <exclude body1="neck" body2="head"/>
+    <exclude body1="torso" body2="left_upper_arm"/>
+    <exclude body1="left_upper_arm" body2="left_lower_arm"/>
+    <exclude body1="left_lower_arm" body2="left_hand"/>
+    <exclude body1="torso" body2="right_upper_arm"/>
+    <exclude body1="right_upper_arm" body2="right_lower_arm"/>
+    <exclude body1="right_lower_arm" body2="right_hand"/>
+    <exclude body1="pelvis" body2="left_thigh"/>
+    <exclude body1="left_thigh" body2="left_shin"/>
+    <exclude body1="left_shin" body2="left_foot"/>
+    <exclude body1="pelvis" body2="right_thigh"/>
+    <exclude body1="right_thigh" body2="right_shin"/>
+    <exclude body1="right_shin" body2="right_foot"/>
+    <exclude body1="left_hand" body2="left_thumb_proximal"/>
+    <exclude body1="left_thumb_proximal" body2="left_thumb_middle"/>
+    <exclude body1="left_thumb_middle" body2="left_thumb_distal"/>
+    <exclude body1="left_hand" body2="left_index_proximal"/>
+    <exclude body1="left_index_proximal" body2="left_index_middle"/>
+    <exclude body1="left_index_middle" body2="left_index_distal"/>
+    <exclude body1="left_hand" body2="left_middle_proximal"/>
+    <exclude body1="left_middle_proximal" body2="left_middle_middle"/>
+    <exclude body1="left_middle_middle" body2="left_middle_distal"/>
+    <exclude body1="left_hand" body2="left_ring_proximal"/>
+    <exclude body1="left_ring_proximal" body2="left_ring_middle"/>
+    <exclude body1="left_ring_middle" body2="left_ring_distal"/>
+    <exclude body1="left_hand" body2="left_little_proximal"/>
+    <exclude body1="left_little_proximal" body2="left_little_middle"/>
+    <exclude body1="left_little_middle" body2="left_little_distal"/>
+    <exclude body1="left_index_proximal" body2="left_middle_proximal"/>
+    <exclude body1="left_index_proximal" body2="left_middle_middle"/>
+    <exclude body1="left_index_middle" body2="left_middle_proximal"/>
+    <exclude body1="left_index_middle" body2="left_middle_middle"/>
+    <exclude body1="left_middle_proximal" body2="left_ring_proximal"/>
+    <exclude body1="left_middle_proximal" body2="left_ring_middle"/>
+    <exclude body1="left_ring_proximal" body2="left_little_proximal"/>
+    <exclude body1="left_ring_proximal" body2="left_little_middle"/>
+    <exclude body1="right_hand" body2="right_thumb_proximal"/>
+    <exclude body1="right_thumb_proximal" body2="right_thumb_middle"/>
+    <exclude body1="right_thumb_middle" body2="right_thumb_distal"/>
+    <exclude body1="right_hand" body2="right_index_proximal"/>
+    <exclude body1="right_index_proximal" body2="right_index_middle"/>
+    <exclude body1="right_index_middle" body2="right_index_distal"/>
+    <exclude body1="right_hand" body2="right_middle_proximal"/>
+    <exclude body1="right_middle_proximal" body2="right_middle_middle"/>
+    <exclude body1="right_middle_middle" body2="right_middle_distal"/>
+    <exclude body1="right_hand" body2="right_ring_proximal"/>
+    <exclude body1="right_ring_proximal" body2="right_ring_middle"/>
+    <exclude body1="right_ring_middle" body2="right_ring_distal"/>
+    <exclude body1="right_hand" body2="right_little_proximal"/>
+    <exclude body1="right_little_proximal" body2="right_little_middle"/>
+    <exclude body1="right_little_middle" body2="right_little_distal"/>
+    <exclude body1="right_index_proximal" body2="right_middle_proximal"/>
+    <exclude body1="right_index_proximal" body2="right_middle_middle"/>
+    <exclude body1="right_index_middle" body2="right_middle_proximal"/>
+    <exclude body1="right_index_middle" body2="right_middle_middle"/>
+    <exclude body1="right_middle_proximal" body2="right_ring_proximal"/>
+    <exclude body1="right_middle_proximal" body2="right_ring_middle"/>
+    <exclude body1="right_ring_proximal" body2="right_little_proximal"/>
+    <exclude body1="right_ring_proximal" body2="right_little_middle"/>
+  </contact>
+
+  <actuator>
+    <motor name="a_spine_flex" joint="spine_flex"/><motor name="a_spine_side" joint="spine_side"/><motor name="a_spine_twist" joint="spine_twist"/>
+    <motor name="a_chest_flex" joint="chest_flex"/><motor name="a_chest_side" joint="chest_side"/><motor name="a_chest_twist" joint="chest_twist"/>
+    <motor name="a_neck_flex" joint="neck_flex"/><motor name="a_neck_side" joint="neck_side"/><motor name="a_neck_twist" joint="neck_twist"/>
+    <motor name="a_left_shoulder_flex" joint="left_shoulder_flex"/><motor name="a_left_shoulder_abduct" joint="left_shoulder_abduct"/><motor name="a_left_shoulder_twist" joint="left_shoulder_twist"/>
+    <motor name="a_left_elbow_flex" joint="left_elbow_flex"/><motor name="a_left_forearm_twist" joint="left_forearm_twist"/><motor name="a_left_wrist_flex" joint="left_wrist_flex"/><motor name="a_left_wrist_deviation" joint="left_wrist_deviation"/>
+    <motor name="a_right_shoulder_flex" joint="right_shoulder_flex"/><motor name="a_right_shoulder_abduct" joint="right_shoulder_abduct"/><motor name="a_right_shoulder_twist" joint="right_shoulder_twist"/>
+    <motor name="a_right_elbow_flex" joint="right_elbow_flex"/><motor name="a_right_forearm_twist" joint="right_forearm_twist"/><motor name="a_right_wrist_flex" joint="right_wrist_flex"/><motor name="a_right_wrist_deviation" joint="right_wrist_deviation"/>
+    <motor name="a_left_hip_flex" joint="left_hip_flex"/><motor name="a_left_hip_abduct" joint="left_hip_abduct"/><motor name="a_left_hip_twist" joint="left_hip_twist"/><motor name="a_left_knee_flex" joint="left_knee_flex"/><motor name="a_left_ankle_flex" joint="left_ankle_flex"/><motor name="a_left_ankle_roll" joint="left_ankle_roll"/>
+    <motor name="a_right_hip_flex" joint="right_hip_flex"/><motor name="a_right_hip_abduct" joint="right_hip_abduct"/><motor name="a_right_hip_twist" joint="right_hip_twist"/><motor name="a_right_knee_flex" joint="right_knee_flex"/><motor name="a_right_ankle_flex" joint="right_ankle_flex"/><motor name="a_right_ankle_roll" joint="right_ankle_roll"/>
+    <motor name="a_left_thumb_opposition" joint="left_thumb_opposition"/><motor name="a_left_thumb_mcp" joint="left_thumb_mcp"/><motor name="a_left_thumb_pip" joint="left_thumb_pip"/><motor name="a_left_thumb_dip" joint="left_thumb_dip"/>
+    <motor name="a_left_index_mcp" joint="left_index_mcp"/><motor name="a_left_index_pip" joint="left_index_pip"/><motor name="a_left_index_dip" joint="left_index_dip"/>
+    <motor name="a_left_middle_mcp" joint="left_middle_mcp"/><motor name="a_left_middle_pip" joint="left_middle_pip"/><motor name="a_left_middle_dip" joint="left_middle_dip"/>
+    <motor name="a_left_ring_mcp" joint="left_ring_mcp"/><motor name="a_left_ring_pip" joint="left_ring_pip"/><motor name="a_left_ring_dip" joint="left_ring_dip"/>
+    <motor name="a_left_little_mcp" joint="left_little_mcp"/><motor name="a_left_little_pip" joint="left_little_pip"/><motor name="a_left_little_dip" joint="left_little_dip"/>
+    <motor name="a_right_thumb_opposition" joint="right_thumb_opposition"/><motor name="a_right_thumb_mcp" joint="right_thumb_mcp"/><motor name="a_right_thumb_pip" joint="right_thumb_pip"/><motor name="a_right_thumb_dip" joint="right_thumb_dip"/>
+    <motor name="a_right_index_mcp" joint="right_index_mcp"/><motor name="a_right_index_pip" joint="right_index_pip"/><motor name="a_right_index_dip" joint="right_index_dip"/>
+    <motor name="a_right_middle_mcp" joint="right_middle_mcp"/><motor name="a_right_middle_pip" joint="right_middle_pip"/><motor name="a_right_middle_dip" joint="right_middle_dip"/>
+    <motor name="a_right_ring_mcp" joint="right_ring_mcp"/><motor name="a_right_ring_pip" joint="right_ring_pip"/><motor name="a_right_ring_dip" joint="right_ring_dip"/>
+    <motor name="a_right_little_mcp" joint="right_little_mcp"/><motor name="a_right_little_pip" joint="right_little_pip"/><motor name="a_right_little_dip" joint="right_little_dip"/>
+  </actuator>
+</mujoco>

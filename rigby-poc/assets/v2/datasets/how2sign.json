@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "dataset_id": "how2sign",
+  "title": "How2Sign",
+  "source_url": "https://how2sign.github.io/",
+  "license": "CC BY-NC 4.0; non-commercial research",
+  "namespace_policy": {
+    "namespace": "research.language.sign",
+    "research_only": true,
+    "allowed_uses": ["sign_language_research", "linguistic_motion_analysis"],
+    "prohibited_claims": ["generic gesture capability", "unreviewed signing capability"],
+    "requires_expert_review": true
+  },
+  "permitted_uses": ["sign_language_research", "linguistic_motion_analysis"],
+  "prohibited_uses": ["generic_gesture", "production_animation"],
+  "claims_requiring_deaf_expert_review": ["signing_capability", "asl_capability"],
+  "prohibited_claims": ["generic_gesture_capability", "production_ready"],
+  "input_role": "language-specific sign motion research with alignment and bias caveats",
+  "media_downloaded": false
+}
