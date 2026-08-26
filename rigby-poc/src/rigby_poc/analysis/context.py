@@ -15,7 +15,6 @@ import numpy as np
 
 from ..kinematics import RigKinematics, rig_kinematics
 from ..models import (
-    BonePose,
     ClipFrame,
     ClipResult,
     Hand,
@@ -26,15 +25,17 @@ from ..models import (
     SceneManifest,
     Transform,
 )
-from .rig import rig_profile
-
 
 # Phase kinds whose interval counts as an active presentation, per intent.
 # ``compile_motion`` appends exactly these while it emits frames; reading them
 # back off ``phase_ranges_s`` reproduces the same list.
 _PRESENTATION_KINDS: dict[Intent, frozenset[str]] = {
     Intent.GESTURE: frozenset(
-        {PrimitiveKind.PRESENT.value, PrimitiveKind.HOLD.value, PrimitiveKind.SHAKE.value}
+        {
+            PrimitiveKind.PRESENT.value,
+            PrimitiveKind.HOLD.value,
+            PrimitiveKind.SHAKE.value,
+        }
     ),
     Intent.STRIKE: frozenset(
         {
@@ -96,10 +97,8 @@ class AnalysisContext:
         scene: SceneManifest,
         *,
         kinematics: RigKinematics | None = None,
-    ) -> "AnalysisContext":
-        return cls(
-            clip.frames, program, scene, clip.metrics, kinematics=kinematics
-        )
+    ) -> AnalysisContext:
+        return cls(clip.frames, program, scene, clip.metrics, kinematics=kinematics)
 
     @classmethod
     def from_frames(
@@ -110,7 +109,7 @@ class AnalysisContext:
         carried_metrics: Mapping[str, Any],
         *,
         kinematics: RigKinematics | None = None,
-    ) -> "AnalysisContext":
+    ) -> AnalysisContext:
         """Build a context before a :class:`ClipResult` exists.
 
         ``compile_motion`` needs this: it has the frames and the carry-over
@@ -120,9 +119,7 @@ class AnalysisContext:
         inspection.
         """
 
-        return cls(
-            frames, program, scene, carried_metrics, kinematics=kinematics
-        )
+        return cls(frames, program, scene, carried_metrics, kinematics=kinematics)
 
     @property
     def intent(self) -> Intent:
@@ -211,12 +208,17 @@ class AnalysisContext:
 
     @cached_property
     def ground_height(self) -> float:
-        neutral_bones = {name: BonePose() for name in rig_profile()["bone_map"]}
-        neutral_positions = self.kinematics.canonical_positions(neutral_bones)
-        return min(
-            float(neutral_positions["leftToes"][1]),
-            float(neutral_positions["rightToes"][1]),
-        )
+        """The floor, from the one definition of it. See :func:`physics.ground_height_of`.
+
+        Delegated rather than duplicated: the physics layer needs the same
+        number and two implementations of a datum agree on the day they are
+        written and nothing holds them equal afterwards. The skeleton is passed
+        in so this context's injected kinematics still decides.
+        """
+
+        from .physics import ground_height_of
+
+        return ground_height_of(self.kinematics)
 
     @cached_property
     def toe_clearances(self) -> dict[str, np.ndarray]:
