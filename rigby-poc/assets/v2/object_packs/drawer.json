@@ -1,0 +1,42 @@
+{
+  "schema_version": "1.0",
+  "units": "meters_degrees_kilograms",
+  "pack_id": "drawer",
+  "description": "A fixed cabinet with a physically sliding drawer and pull affordance.",
+  "objects": [
+    {
+      "object_id": "drawer_unit",
+      "pos": [0.30, -0.925, 1.21],
+      "quat_wxyz": [0.0, 0.0, 0.0, 1.0],
+      "dynamic": false,
+      "articulated": true,
+      "mass_kg": 22.0,
+      "material": {"name": "painted_wood", "friction": [0.65, 0.015, 0.002], "rgba": [0.52, 0.39, 0.27, 1.0]},
+      "parts": [
+        {
+          "part_id": "cabinet", "mass_kg": 19.5, "collision_kind": "primitive",
+          "geoms": [
+            {"name": "left_wall", "type": "box", "size": [0.035, 0.28, 0.34], "pos": [-0.34, 0.0, 0.0]},
+            {"name": "right_wall", "type": "box", "size": [0.035, 0.28, 0.34], "pos": [0.34, 0.0, 0.0]},
+            {"name": "top", "type": "box", "size": [0.34, 0.28, 0.035], "pos": [0.0, 0.0, 0.34]},
+            {"name": "bottom", "type": "box", "size": [0.34, 0.28, 0.035], "pos": [0.0, 0.0, -0.34]},
+            {"name": "back", "type": "box", "size": [0.34, 0.035, 0.30], "pos": [0.0, 0.245, 0.0]}
+          ]
+        },
+        {
+          "part_id": "drawer", "parent": "cabinet", "pos": [0.0, -0.17, 0.02], "mass_kg": 2.5,
+          "joint": {"name": "drawer_slide", "type": "slide", "axis": [0.0, -1.0, 0.0], "range": [0.0, 0.30], "damping": 20.0, "frictionloss": 3.0},
+          "collision_kind": "primitive",
+          "geoms": [
+            {"name": "drawer_box", "type": "box", "size": [0.29, 0.16, 0.105]},
+            {"name": "front", "type": "box", "size": [0.32, 0.025, 0.14], "pos": [0.0, -0.17, 0.0]},
+            {"name": "handle", "type": "box", "size": [0.10, 0.01, 0.06], "pos": [0.0, -0.34, 0.0], "margin_m": 0.008, "contact_time_constant_s": 0.05, "contact_damping_ratio": 2.0}
+          ]
+        }
+      ],
+      "sites": [{"name": "handle_grasp", "part": "drawer", "kind": "grasp", "pos": [0.0, -0.375, 0.0]}],
+      "affordances": [{"name": "pull_open", "kind": "pull", "site": "handle_grasp", "allowed_effectors": ["left_palm", "right_palm"]}],
+      "state_predicates": [{"name": "opened", "target": "drawer_slide", "operator": "ge", "values": [0.22], "units": "meters"}]
+    }
+  ]
+}

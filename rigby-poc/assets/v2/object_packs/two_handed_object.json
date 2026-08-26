@@ -1,0 +1,55 @@
+{
+  "schema_version": "1.0",
+  "units": "meters_degrees_kilograms",
+  "pack_id": "two_handed_object",
+  "description": "A long free bar with separated left and right grasp regions for bimanual carrying.",
+  "supports": [
+    {
+      "support_id": "bar_rack", "pos": [0.0, -0.68, 0.74], "size": [0.68, 0.16, 0.025],
+      "material": {"name": "rack", "friction": [0.7, 0.02, 0.002], "rgba": [0.25, 0.25, 0.27, 1.0]}, "site_name": "rest_surface"
+    }
+  ],
+  "objects": [
+    {
+      "object_id": "carry_bar", "pos": [0.0, -0.68, 0.82], "dynamic": true, "articulated": false, "mass_kg": 3.5,
+      "material": {"name": "coated_metal", "friction": [0.95, 0.025, 0.003], "rgba": [0.8, 0.42, 0.12, 1.0]},
+      "parts": [
+        {
+          "part_id": "bar", "mass_kg": 3.4, "collision_kind": "primitive",
+          "geoms": [{"name": "bar_capsule", "type": "capsule", "size": [0.035, 0.58], "quat_wxyz": [0.7071067812, 0.0, 0.7071067812, 0.0]}]
+        },
+        {
+          "part_id": "left_forward_handle", "parent": "bar", "pos": [0.42, 0.24, 0.0], "mass_kg": 0.05,
+          "collision_kind": "primitive",
+          "geoms": [
+            {"name": "left_handle_stem", "type": "capsule", "size": [0.015, 0.12], "pos": [0.0, -0.12, 0.0], "quat_wxyz": [0.7071067812, 0.7071067812, 0.0, 0.0]},
+            {"name": "left_handle_grip", "type": "capsule", "size": [0.025, 0.065]}
+          ]
+        },
+        {
+          "part_id": "right_forward_handle", "parent": "bar", "pos": [-0.42, 0.24, 0.0], "mass_kg": 0.05,
+          "collision_kind": "primitive",
+          "geoms": [
+            {"name": "right_handle_stem", "type": "capsule", "size": [0.015, 0.12], "pos": [0.0, -0.12, 0.0], "quat_wxyz": [0.7071067812, 0.7071067812, 0.0, 0.0]},
+            {"name": "right_handle_grip", "type": "capsule", "size": [0.025, 0.065]}
+          ]
+        }
+      ],
+      "sites": [
+        {"name": "left_grasp", "part": "bar", "kind": "grasp", "pos": [-0.42, 0.0, 0.0]},
+        {"name": "right_grasp", "part": "bar", "kind": "grasp", "pos": [0.42, 0.0, 0.0]},
+        {"name": "left_forward_grasp", "part": "left_forward_handle", "kind": "grasp", "pos": [0.0, 0.0, 0.0]},
+        {"name": "right_forward_grasp", "part": "right_forward_handle", "kind": "grasp", "pos": [0.0, 0.0, 0.0]},
+        {"name": "center", "part": "bar", "kind": "state", "pos": [0.0, 0.0, 0.0]}
+      ],
+      "affordances": [
+        {"name": "bimanual_lift", "kind": "lift", "site": "center", "allowed_effectors": ["both_palms"]},
+        {"name": "left_grip", "kind": "grasp", "site": "left_grasp", "allowed_effectors": ["left_palm"]},
+        {"name": "right_grip", "kind": "grasp", "site": "right_grasp", "allowed_effectors": ["right_palm"]},
+        {"name": "left_forward_grip", "kind": "grasp", "site": "left_forward_grasp", "allowed_effectors": ["left_palm"]},
+        {"name": "right_forward_grip", "kind": "grasp", "site": "right_forward_grasp", "allowed_effectors": ["right_palm"]}
+      ],
+      "state_predicates": [{"name": "lifted", "target": "center", "operator": "ge", "values": [0.18], "units": "meters"}]
+    }
+  ]
+}

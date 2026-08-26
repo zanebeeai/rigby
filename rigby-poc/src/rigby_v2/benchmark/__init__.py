@@ -1,0 +1,73 @@
+"""Immutable release benchmark and audited hard-gate evaluation."""
+
+from .evaluator import BOOTSTRAP_SAMPLES, BenchmarkEvaluationError, evaluate_release_gate
+from .manifest import DEFAULT_SPEC_PATH, expand_benchmark_spec, load_benchmark_manifest
+from .execution import (
+    ADVERSARIAL_EVIDENCE_KINDS,
+    SUPPORTED_EVIDENCE_KINDS,
+    BenchmarkCaseRunner,
+    BenchmarkEvidenceArtifact,
+    BenchmarkExecutionArtifacts,
+    BenchmarkExecutionError,
+    BenchmarkExecutionFailureCode,
+    EvidencedBenchmarkCaseResult,
+    execute_and_record_benchmark,
+)
+from .adversarial_acceptance import (
+    AdversarialBenchmarkAttempt,
+    AdversarialBenchmarkSealV1,
+    AdversarialFirewallEvidenceV1,
+    evaluate_adversarial_cases,
+    run_adversarial_benchmark_100,
+)
+from .models import (
+    AdversarialCaseResultV1,
+    BenchmarkCaseKind,
+    BenchmarkCaseV1,
+    BenchmarkFamily,
+    BenchmarkManifestV1,
+    BenchmarkMetricsV1,
+    BenchmarkRunV1,
+    BenchmarkSpecV1,
+    ExpectedOutcome,
+    ObservedOutcome,
+    ReleaseGateCheckV1,
+    ReleaseGateReportV1,
+    SupportedCaseResultV1,
+)
+
+__all__ = [
+    "BOOTSTRAP_SAMPLES",
+    "DEFAULT_SPEC_PATH",
+    "AdversarialCaseResultV1",
+    "AdversarialBenchmarkAttempt",
+    "AdversarialBenchmarkSealV1",
+    "AdversarialFirewallEvidenceV1",
+    "ADVERSARIAL_EVIDENCE_KINDS",
+    "BenchmarkCaseRunner",
+    "BenchmarkCaseKind",
+    "BenchmarkCaseV1",
+    "BenchmarkEvidenceArtifact",
+    "BenchmarkEvaluationError",
+    "BenchmarkExecutionArtifacts",
+    "BenchmarkExecutionError",
+    "BenchmarkExecutionFailureCode",
+    "BenchmarkFamily",
+    "BenchmarkManifestV1",
+    "BenchmarkMetricsV1",
+    "BenchmarkRunV1",
+    "BenchmarkSpecV1",
+    "ExpectedOutcome",
+    "EvidencedBenchmarkCaseResult",
+    "ObservedOutcome",
+    "ReleaseGateCheckV1",
+    "ReleaseGateReportV1",
+    "SUPPORTED_EVIDENCE_KINDS",
+    "SupportedCaseResultV1",
+    "evaluate_release_gate",
+    "evaluate_adversarial_cases",
+    "execute_and_record_benchmark",
+    "expand_benchmark_spec",
+    "load_benchmark_manifest",
+    "run_adversarial_benchmark_100",
+]

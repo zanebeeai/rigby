@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "checklist_version": "rigby-v2-release-1",
+  "requirements": [
+    {"id": "fresh_machine_preflight", "description": "Offline read-only preflight passes on the reference Windows machine.", "required": true},
+    {"id": "dependency_lock_audit", "description": "Runtime and build dependencies are exactly pinned and match the lock evidence.", "required": true},
+    {"id": "wheel_smoke", "description": "Offline wheel build, contents, entry points, and import smoke pass.", "required": true},
+    {"id": "fresh_machine_install", "description": "Documented clean-machine install and first-run procedure passes without undeclared dependencies.", "required": true},
+    {"id": "startup_readiness", "description": "PostgreSQL, artifact store, API health, and worker job-store readiness all pass.", "required": true},
+    {"id": "database_backup_restore", "description": "A database and artifact backup is restored and integrity-checked.", "required": true},
+    {"id": "migration_replay", "description": "Schema migration and archived v1/v2 replay evidence passes.", "required": true},
+    {"id": "supported_benchmark_300", "description": "The immutable 300-prompt supported benchmark meets all acceptance thresholds.", "required": true},
+    {"id": "adversarial_benchmark_100", "description": "All 100 unsupported/adversarial cases return typed failures without fabricated success.", "required": true},
+    {"id": "deterministic_replay", "description": "Three identical replays agree on task outcome and required numerical tolerances.", "required": true},
+    {"id": "performance_p95", "description": "Five ten-second candidates complete simulation and evidence generation within 90 seconds p95, excluding VLM.", "required": true},
+    {"id": "human_calibration", "description": "Human calibration meets kappa, order-consistency, and critical false-accept thresholds.", "required": true},
+    {"id": "rag_ab_evaluation", "description": "Held-out RAG-on improvement has a positive 95% confidence interval and retrieval quality passes.", "required": true},
+    {"id": "license_dataset_review", "description": "Dataset namespace, research-only, attribution, and Deaf expert review obligations are audited.", "required": true},
+    {"id": "operator_dry_run", "description": "Backup, rollback, degraded-mode, and incident-response runbook is exercised by an operator.", "required": true}
+  ]
+}

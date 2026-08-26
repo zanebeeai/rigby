@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rigby MuJoCo Replay Viewer</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0b0d12;
+      color: #f5f7fb;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(80, 124, 255, 0.18), transparent 34rem),
+        #0b0d12;
+    }
+
+    header, main {
+      width: min(1480px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    header { padding: 36px 0 20px; }
+
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 8px; font-size: clamp(28px, 4vw, 46px); letter-spacing: -0.04em; }
+    h2 { margin: 34px 0 14px; font-size: 22px; }
+    h3 { margin-bottom: 4px; font-size: 16px; }
+
+    .subtitle { color: #aeb8ca; max-width: 850px; line-height: 1.55; }
+
+    .toolbar {
+      position: sticky;
+      top: 12px;
+      z-index: 10;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin: 8px 0 24px;
+      padding: 12px;
+      border: 1px solid #2a3140;
+      border-radius: 14px;
+      background: rgba(17, 21, 29, 0.92);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.28);
+    }
+
+    button, select, .file-link {
+      min-height: 38px;
+      border: 1px solid #374052;
+      border-radius: 9px;
+      background: #1b2130;
+      color: #f5f7fb;
+      padding: 8px 12px;
+      font: inherit;
+    }
+
+    button, select { cursor: pointer; }
+    button:hover, select:hover, .file-link:hover { border-color: #6e8cff; background: #232b3d; }
+    label { color: #c8d0df; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      overflow: hidden;
+      border: 1px solid #242b39;
+      border-radius: 15px;
+      background: linear-gradient(180deg, #151a24, #11151d);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22);
+    }
+
+    .card.certified { border-color: rgba(67, 211, 150, 0.55); }
+
+    video {
+      display: block;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      background: #050609;
+      object-fit: contain;
+    }
+
+    .card-body { padding: 13px 14px 15px; }
+    .meta { color: #95a0b4; font-size: 13px; text-transform: capitalize; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      margin-bottom: 8px;
+      border-radius: 999px;
+      padding: 4px 8px;
+      background: rgba(67, 211, 150, 0.15);
+      color: #78e3b2;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .actions { display: flex; gap: 8px; margin-top: 12px; }
+    .file-link { display: inline-flex; align-items: center; text-decoration: none; font-size: 13px; }
+    .error { display: none; margin-top: 10px; color: #ffadad; font-size: 13px; line-height: 1.4; }
+    .error.visible { display: block; }
+
+    .note {
+      margin: 34px 0 50px;
+      padding: 15px 17px;
+      border-left: 3px solid #6e8cff;
+      border-radius: 8px;
+      background: #131925;
+      color: #aeb8ca;
+      line-height: 1.55;
+    }
+
+    @media (max-width: 560px) {
+      header, main { width: min(100% - 20px, 1480px); }
+      header { padding-top: 24px; }
+      .toolbar { top: 6px; }
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Rigby MuJoCo Replay Viewer</h1>
+    <p class="subtitle">
+      Retained H.264 evidence from the latest local iteration. The certified button replay is a task result;
+      the remaining clips are representative articulated-motion renderer tests and do not claim task success.
+    </p>
+  </header>
+
+  <main>
+    <div class="toolbar" aria-label="Playback controls">
+      <button type="button" id="play-all">Play all</button>
+      <button type="button" id="pause-all">Pause all</button>
+      <button type="button" id="restart-all">Restart all</button>
+      <label for="speed">Speed</label>
+      <select id="speed">
+        <option value="0.5">0.5×</option>
+        <option value="1" selected>1×</option>
+        <option value="1.5">1.5×</option>
+        <option value="2">2×</option>
+      </select>
+      <label><input type="checkbox" id="mute-all" checked> Mute all</label>
+    </div>
+
+    <section>
+      <h2>Certified task result</h2>
+      <div class="grid" id="certified-grid"></div>
+    </section>
+
+    <section>
+      <h2>Three-camera renderer benchmark</h2>
+      <div class="grid" id="benchmark-grid"></div>
+    </section>
+
+    <p class="note">
+      The content-addressed files intentionally have no extension. Each video element declares them as
+      <code>video/mp4</code>. If your browser still refuses a clip, use “Open source file” and open it with VLC.
+    </p>
+  </main>
+
+  <script>
+    const replays = [
+      {
+        kind: "certified",
+        scene: "Button press",
+        camera: "task close-up",
+        path: "artifacts-v2/library/button-rag-canary/objects/sha256/67/05e0bb223f5b369dbc4f941bd28d5d821c78ae74f0a79d194a684fa25e378f"
+      },
+      { kind: "benchmark", scene: "Grasp/place", camera: "orbit", path: "artifacts-v2/benchmarks/final-integrated/objects/sha256/d9/ae90a492dabe3544c76e792965031408c223f1369d27b1062e9053527afee6" },
+      { kind: "benchmark", scene: "Grasp/place", camera: "egocentric", path: "artifacts-v2/benchmarks/final-integrated/objects/sha256/9b/825cd23c447a0a566b0de5b980e9f28d3a79f35cdb3ddcb9c2cf8e3a9dce70" },
+      { kind: "benchmark", scene: "Grasp/place", camera: "task close-up", path: "artifacts-v2/benchmarks/final-integrated/objects/sha256/0a/c713882c1e73e65b74121fb5bef54c552cadd4185a48039d02da057ae49659" },
+      { kind: "benchmark", scene: "Drawer", camera: "orbit", path: "artifacts-v2/benchmarks/final-integrated/objects/sha256/ed/555bf72172bd3f6498188525510dffb396b6ae9c2e75c2aac5fdbbbe94df8b" },
+      { kind: "benchmark", scene: "Drawer", camera: "egocentric", path: "artifacts-v2/benchmarks/final-integrated/objects/sha256/1b/2a19b1cedec9c9ef24101daad95e94c4ed89a7aaf04c5d9f96fa32565c6755" },
+      { kind: "benchmark", scene: "Drawer", camera: "task close-up", path: "artifacts-v2/benchmarks/final-integrated/objects/sha256/6a/32310253bf0f3237b7703934006cfb51d6cd8a04af35b5ea24fd9c3e910118" },
+      { kind: "benchmark", scene: "Lever/button", camera: "orbit", path: "artifacts-v2/benchmarks/final-integrated/objects/sha256/26/5df197fc2296ac5afc5830f0fee260e3506c218c1a4c490c60dd67db644cb8" },
+      { kind: "benchmark", scene: "Lever/button", camera: "egocentric", path: "artifacts-v2/benchmarks/final-integrated/objects/sha256/f2/4b818385f59648cd89bd79e020883d9d5d55a16de7d8fd30e9a3cd771a2ac4" },
+      { kind: "benchmark", scene: "Lever/button", camera: "task close-up", path: "artifacts-v2/benchmarks/final-integrated/objects/sha256/8d/1c68fbeb768961e37ff744156aae8c82791fefcc15dca00d28f1a23b917d1c" },
+      { kind: "benchmark", scene: "Hand tool", camera: "orbit", path: "artifacts-v2/benchmarks/final-integrated/objects/sha256/dd/684c262eabb776f6ff3516787d87b94e03db05ce66cc3d75a2242e4378869d" },
+      { kind: "benchmark", scene: "Hand tool", camera: "egocentric", path: "artifacts-v2/benchmarks/final-integrated/objects/sha256/cc/a9b0b86f8838157e24660622c3a75ec58e339abf92fb2997d5ebf4cab4b0e9" },
+      { kind: "benchmark", scene: "Hand tool", camera: "task close-up", path: "artifacts-v2/benchmarks/final-integrated/objects/sha256/e1/f5afae99ce012d91e513485cb212d4cafe9312105b4f2ba4c67fee7f3dc56f" },
+      { kind: "benchmark", scene: "Container/lid", camera: "orbit", path: "artifacts-v2/benchmarks/final-integrated/objects/sha256/cd/45f351cb79e3542e1c9b8ceb298cf0bcbd776c8535f055c5bdbd875e27cede" },
+      { kind: "benchmark", scene: "Container/lid", camera: "egocentric", path: "artifacts-v2/benchmarks/final-integrated/objects/sha256/e9/dba36b36deb34c5170b620df24dc883c675abefb11406cde670eb284c9542c" },
+      { kind: "benchmark", scene: "Container/lid", camera: "task close-up", path: "artifacts-v2/benchmarks/final-integrated/objects/sha256/dd/346b36a90519a86eb8d11d8defd30684e2d6bdf44bfd461b0dcd6a2fd46671" }
+    ];
+
+    function cardFor(replay) {
+      const card = document.createElement("article");
+      card.className = `card ${replay.kind}`;
+
+      const video = document.createElement("video");
+      video.controls = true;
+      video.loop = true;
+      video.muted = true;
+      video.preload = "metadata";
+      video.playsInline = true;
+
+      const source = document.createElement("source");
+      source.src = replay.path;
+      source.type = "video/mp4";
+      video.append(source);
+
+      const body = document.createElement("div");
+      body.className = "card-body";
+      body.innerHTML = `
+        ${replay.kind === "certified" ? '<span class="badge">Certified result</span>' : ''}
+        <h3>${replay.scene}</h3>
+        <div class="meta">${replay.camera}</div>
+        <div class="actions"><a class="file-link" href="${replay.path}">Open source file</a></div>
+        <div class="error">This browser could not decode the extensionless MP4. Open the source file with VLC.</div>
+      `;
+
+      video.addEventListener("error", () => body.querySelector(".error").classList.add("visible"));
+      card.append(video, body);
+      return card;
+    }
+
+    const certifiedGrid = document.querySelector("#certified-grid");
+    const benchmarkGrid = document.querySelector("#benchmark-grid");
+    replays.forEach((replay) => {
+      (replay.kind === "certified" ? certifiedGrid : benchmarkGrid).append(cardFor(replay));
+    });
+
+    const videos = () => [...document.querySelectorAll("video")];
+    document.querySelector("#play-all").addEventListener("click", () => {
+      videos().forEach((video) => video.play().catch(() => {}));
+    });
+    document.querySelector("#pause-all").addEventListener("click", () => {
+      videos().forEach((video) => video.pause());
+    });
+    document.querySelector("#restart-all").addEventListener("click", () => {
+      videos().forEach((video) => { video.currentTime = 0; });
+    });
+    document.querySelector("#speed").addEventListener("change", (event) => {
+      videos().forEach((video) => { video.playbackRate = Number(event.target.value); });
+    });
+    document.querySelector("#mute-all").addEventListener("change", (event) => {
+      videos().forEach((video) => { video.muted = event.target.checked; });
+    });
+  </script>
+</body>
+</html>
