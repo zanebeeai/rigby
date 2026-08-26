@@ -10,11 +10,12 @@ import random
 import time
 from pathlib import Path
 from dataclasses import dataclass
+from functools import cache
 from typing import Any, Callable, Iterable, Literal, Mapping
 
 from openai import OpenAI
 from PIL import Image, ImageDraw
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, create_model
 
 from .judge_claims import (
     INSUFFICIENT_EVIDENCE_FRACTION,
@@ -237,6 +238,87 @@ GRADER_OUTPUT_MODELS: dict[GraderName, type[BaseModel]] = {
     "timing": GraderClaims,
     "crossview": GraderClaims,
 }
+
+
+
+def _citable_snapshot_ids(payload_audit: list[dict[str, Any]]) -> tuple[str, ...]:
+    """Every snapshot id this grader was actually shown, in payload order.
+
+    A contact sheet is one image carrying many frames, so both the sheet's own id
+    and the source ids tiled into it are legitimate citations. Derived from the
+    audit the payload builder already writes rather than re-deriving from the
+    manifest, so the enum cannot drift from what was sent.
+    """
+    seen: list[str] = []
+    for entry in payload_audit:
+        for key in ("snapshot_id",):
+            value = entry.get(key)
+            if isinstance(value, str) and value not in seen:
+                seen.append(value)
+        for value in entry.get("source_snapshot_ids") or ():
+            if isinstance(value, str) and value not in seen:
+                seen.append(value)
+    return tuple(seen)
+
+
+@cache
+def grader_output_model(
+    grader: GraderName,
+    intent: str | None = None,
+    snapshot_ids: tuple[str, ...] = (),
+) -> type[BaseModel]:
+    """The output schema for one grader, with `Claim.id` closed to its own claim set.
+
+    **The free-form `id` was a real defect and it was invisible until a real
+    model ran.** `Claim.id` was `str(min_length=1, max_length=64)` and `claims`
+    was `1..24`, so nothing tied the response to the claim set the prompt asks
+    for. `aggregate_claims` then requires every spec id exactly and raises on a
+    miss — deliberately, so a truncated response cannot pass as an honest
+    abstention. Schema permissive, aggregator strict, nothing between them.
+
+    Measured against `gpt-5.6-luna` on one clip, five calls: the grader returned
+    twelve claims every time and rendered the id's **final** separator as an
+    underscore — `anatomy.elbow_abduction` for `anatomy.elbow.abduction` — on
+    four of five calls, up to eight ids at once. Complete: 1 of 5. At five
+    graders a clip, that is a run which scores almost nothing.
+
+    Every judge in the test suite is a fake client (`docs/testing.md`), so no
+    test could see it: the fakes emit the ids the aggregator wants. The split
+    path has been the default since 07d and this contract had never met a real
+    model until 10f's first call.
+
+    Closing the enum is the fix rather than normalising `_` to `.` on read.
+    Normalising accepts a malformed id and silently repairs it, which is how the
+    next divergence goes unnoticed; a `Literal` makes the wrong id unrepresentable
+    in the response, and the provider enforces it rather than this module hoping
+    for it. `claims` is also pinned to exactly the expected count, so an omission
+    is refused at the same boundary rather than surviving to the aggregator.
+    """
+    ids = claim_ids(grader, intent=intent)
+    if not ids:
+        raise ValueError(f"{grader}: no claim ids for intent {intent!r}")
+    fields: dict[str, Any] = {"id": (Literal[ids], ...)}  # type: ignore[valid-type]
+    if snapshot_ids:
+        # `snapshot_id` was the second open field and it failed the same way. The
+        # grader returned "01-orbit, 02-orbit, 03-orbit, 04-orbit, 05-orbit" -- a
+        # comma-joined list in a scalar -- which `Claim` accepted at 48 chars and
+        # `MotionJudgeScore.evidence[].snapshot_id` then rejected at 32, so the
+        # clip died two layers downstream of the field that let it through. The
+        # citable set is known exactly: it is what the payload actually showed
+        # this grader. Closing it makes "cite one snapshot" unrepresentable as
+        # "cite five".
+        fields["snapshot_id"] = (Literal[snapshot_ids], ...)  # type: ignore[valid-type]
+    closed_claim = create_model(
+        f"Claim_{grader}_{family_for_intent(intent) if grader == 'semantic' else 'any'}",
+        __base__=Claim,
+        **fields,
+    )
+    base = SemanticGraderClaims if grader == "semantic" else GraderClaims
+    return create_model(
+        f"{base.__name__}_{grader}_{family_for_intent(intent) if grader == 'semantic' else 'any'}",
+        __base__=base,
+        claims=(list[closed_claim], Field(min_length=len(ids), max_length=len(ids))),  # type: ignore[valid-type]
+    )
 
 
 # `overall` is a summary of the dimensions that are measured directly, not a
@@ -868,6 +950,51 @@ def _key_pose_labels(manifest: dict[str, Any]) -> set[str]:
     return {"presented_pose"}
 
 
+def _paired_key_pose_labels(
+    manifest: dict[str, Any], snapshots: list[dict[str, Any]]
+) -> set[str]:
+    """Key-pose labels that this manifest actually carries, in both views.
+
+    `_key_pose_labels` is a declared list, and a declared list of labels nothing
+    emits is 06a's defect one layer over: it produces the same payload as "this
+    grader has no evidence" -- silently, on the intents nobody checked. Measured:
+    its default is `{presented_pose}`, which only the `present` phase emits
+    (`evals/capture.py:984`), so a full-body, composite or sequence clip matched
+    **nothing** and `crossview` was dispatched with zero images and still
+    returned claims. 17 of 47 corpus cases are those three intents.
+
+    So the declared set is honoured when the evidence contains it, and otherwise
+    the selection falls back to what is there. Both branches require the label to
+    appear in **both** views: `crossview` compares one moment across ego and
+    orbit, so a label present in only one view is not a cross-view observation at
+    all, and the mid-clip pose is the deterministic choice among those that are.
+
+    Returned rather than raising, because the guard belongs at dispatch: see
+    `_grader_content`.
+    """
+    by_label: dict[str, set[str]] = {}
+    for snapshot in snapshots:
+        label = str(snapshot.get("label", ""))
+        if label:
+            by_label.setdefault(label, set()).add(str(snapshot.get("view", "")))
+    paired = {label for label, views in by_label.items() if {"ego", "orbit"} <= views}
+    declared = _key_pose_labels(manifest) & paired
+    if declared:
+        return declared
+    if not paired:
+        return set()
+    ordered = [
+        str(snapshot.get("label", ""))
+        for snapshot in snapshots
+        if str(snapshot.get("label", "")) in paired
+    ]
+    seen: list[str] = []
+    for label in ordered:
+        if label not in seen:
+            seen.append(label)
+    return {seen[len(seen) // 2]}
+
+
 def _image_content(
     snapshots: list[dict[str, Any]],
     *,
@@ -1480,12 +1607,23 @@ class VLMJudge(RoutedModelClient):
             content.extend(
                 self._images(
                     snapshots,
-                    labels=_key_pose_labels(manifest),
+                    labels=_paired_key_pose_labels(manifest, snapshots),
                     payload_audit=payload_audit,
                 )
             )
         if spec.evidence in {"timelines", "both"}:
             content.extend(self._timeline(snapshots, payload_audit=payload_audit))
+        if not payload_audit:
+            # A grader that declares image evidence and receives none produces
+            # verdicts that are not a function of any evidence -- confidence it
+            # never had, in the vocabulary of a measurement. `crossview` did
+            # exactly this on every full-body clip and returned four claims each
+            # time. Raising is the point: not-measured must not be scored, and a
+            # blind dispatch is the one outcome this layer must never buy.
+            raise ValueError(
+                f"grader {name!r} declares evidence={spec.evidence!r} but its payload "
+                f"carries no images; refusing to dispatch a grader that cannot see"
+            )
         return content
 
     def grade(
@@ -1506,7 +1644,9 @@ class VLMJudge(RoutedModelClient):
                 {"role": "system", "content": [{"type": "input_text", "text": prompt.text}]},
                 {"role": "user", "content": content},
             ],
-            text_format=GRADER_OUTPUT_MODELS[name],
+            text_format=grader_output_model(
+                name, manifest.get("intent"), _citable_snapshot_ids(payload_audit)
+            ),
             escalation_reason=self._grader_escalation,
         )
         return {

@@ -117,7 +117,13 @@ def _stub_for(model: type, system: str = ""):
     from rigby_poc.judge_claims import claim_specs
     from rigby_poc.judge_prompts import GRADER_NAMES
 
-    if model in (GraderClaims, SemanticGraderClaims):
+    # `issubclass`, not identity: `grader_output_model()` returns a *dynamically
+    # created subclass* per (grader, intent) with `Claim.id` and
+    # `Claim.snapshot_id` closed to their known sets, so an identity check stops
+    # matching and the stub falls through to `FiveWayJudgeDecision` -- a
+    # well-formed object of the wrong shape, whose claim list is empty, which
+    # surfaces four frames away as "claim X has no usable verdict".
+    if issubclass(model, GraderClaims):
         # Keyed off the system prompt: `GraderClaims` validates any claim list,
         # so returning the first grader's answers for all five would replay one
         # grader's claims against another's questions -- the exact defect the
@@ -132,7 +138,7 @@ def _stub_for(model: type, system: str = ""):
             ],
             "summary": "Nothing notable.",
         }
-        if model is SemanticGraderClaims:
+        if issubclass(model, SemanticGraderClaims):
             body["suggested_adjustment"] = "Preserve the pose."
         return model.model_validate(body)
     if model is MotionJudgeScore:
@@ -254,7 +260,7 @@ def test_no_prompt_instructs_the_model_on_diagnostics(name: str, prompt: str) ->
     to a human *without access to* parameters or diagnostics — which reinforces
     the blinding rather than instructing on their use.
     """
-    instructing = re.findall(r"[^.]*\bdiagnostics\b[^.]*\.", prompt, flags=re.I)
+    instructing = re.findall(r"[^.]*\bdiagnostics\b[^.]*\.", prompt, flags=re.IGNORECASE)
     allowed = "without access to parameters or diagnostics"
     offending = [s for s in instructing if allowed not in s]
     assert offending == [], (name, offending)
