@@ -98,12 +98,22 @@ def _waypoints(
     block = scene.block_position_m
     above = np.array([block[0], block[1], scene.approach_height_m])
     at_block = np.array([block[0], block[1], block[2] + standoff_m])
-    lifted = np.array(
-        [
-            block[0],
-            block[1],
-            block[2] + LIFT_HEIGHT_FRACTION * scene.block_half_extent_m * 2.0,
-        ]
+    # Lift generously, then pull the target back inside the measured envelope.
+    # The two constraints pull opposite ways and both are real: a lift that only
+    # just clears the required height fails whenever tracking lags, and a lift
+    # commanded past the arm's reach fails outright. Swept on the authored
+    # worlds, raising the multiple from 2.5 to 5.0 took held grasps from 1 of 13
+    # to 3 of 13; unclamped, the same change cost the derived probe its only
+    # working grasp, because that block sits at 0.55 of reach and 5x its height
+    # is outside the envelope. Clamping keeps both.
+    lifted = frame.clamp(
+        np.array(
+            [
+                block[0],
+                block[1],
+                block[2] + scene.lift_fraction * scene.block_half_extent_m * 2.0,
+            ]
+        )
     )
     return [frame.home, above, at_block, lifted]
 

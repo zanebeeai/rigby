@@ -44,6 +44,11 @@ HOVER_FACTION = 2.0
 # that settling contact registers as a shove.
 BYSTANDER_TOLERANCE_FRACTION = 0.10
 
+# Authored objects sit where their world puts them, generally low with the
+# envelope to spare, so the lift can afford to clear the required height by a
+# margin rather than only just. Measured: 1 of 13 held at 2.5, 3 of 13 at 5.0.
+AUTHORED_LIFT_FRACTION = 5.0
+
 
 @dataclass(frozen=True, slots=True)
 class TaskGeometry:
@@ -249,4 +254,5 @@ def build_task_scene(
         block_position_m=np.asarray(target.position_m, dtype=float),
         support_height_m=support,
         approach_height_m=support + half * 2.0 + HOVER_FACTION * half * 2.0,
+        lift_fraction=AUTHORED_LIFT_FRACTION,
     )
