@@ -869,6 +869,7 @@ function renderProgram(): void {
     });
   }
   scene.setObjectId(taskObjectId);
+  scene.setApertureSide(program?.hand === "left" ? "left" : "right");
   const isBilateral = (program?.hands?.length ?? 0) > 1;
   ui.handedness.disabled = isBilateral;
   ui.handedness.title = isBilateral

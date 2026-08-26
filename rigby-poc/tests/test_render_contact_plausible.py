@@ -43,9 +43,6 @@ from rigby_poc.planner import plan_motion
 pytestmark = pytest.mark.fast
 
 
-#: Untouched carried frames produced by the shipped ``pick up box`` pickup.
-#: MAY ONLY FALL. See this module's docstring.
-UNTOUCHED_FRAME_LEDGER = 59
 
 
 def _pickup():
@@ -126,30 +123,28 @@ def test_the_check_is_reachable_from_validate() -> None:
     assert "physics.render_contact_plausible" in ids
 
 
-def test_untouched_carried_frame_ledger_only_falls() -> None:
-    """Record what the shipped pickup actually does.
+def test_the_pickup_is_rejected_and_the_hand_no_longer_floats() -> None:
+    """The ledger this replaces assumed the pickup compiled successfully.
 
-    The compiled clip reports success and raises the block, and in every frame
-    where it is airborne no rendered hand landmark is within half the block's
-    own bounding diagonal of it. The proxy gripper closed; the humanoid did not.
+    It did, under the Cartesian proxy: the block rose 0.142 m while the nearest
+    rendered landmark stayed 0.078 m away, and the ledger recorded 59 untouched
+    airborne frames. Coupled physics ended that -- the pickup is now honestly
+    rejected, so there is no airborne block to measure and the old assertion's
+    premise is gone rather than its logic being wrong.
+
+    What is worth pinning instead is that the failure is the *right* failure:
+    the clip is refused, and the block does not float.
     """
     _scene, program, clip = _pickup()
-    assert clip.success, "fixture assumes the shipped pickup still compiles"
+    assert not clip.success, "coupled physics must not report a grasp it did not make"
+    assert clip.failure is not None
+    assert clip.failure.code.value == "grasp_unstable"
 
     metrics = carried_object_divergence_metrics(clip.frames, program, clip.metrics)
-    untouched = metrics["carried_object_untouched_frame_count"]
-    assert untouched <= UNTOUCHED_FRAME_LEDGER, (
-        f"{untouched} untouched carried frames, ledger allows "
-        f"{UNTOUCHED_FRAME_LEDGER}. This number may only fall."
+    # No frame lifts the block, so the divergence metric reports a zero carry
+    # rather than a count -- and that absence is the assertion. A block that
+    # rose while untouched is the defect this file exists for.
+    assert metrics["carried_frame_count"] == 0, (
+        "the block is airborne; check whether a hand is anywhere near it"
     )
-    if untouched < UNTOUCHED_FRAME_LEDGER:
-        pytest.fail(
-            f"{untouched} untouched carried frames, ledger says "
-            f"{UNTOUCHED_FRAME_LEDGER}. The grasp improved -- lower the ledger."
-        )
-    # The distance is not marginal: the nearest landmark of the whole hand is
-    # outside the radius, not merely the fingertips.
-    assert (
-        metrics["carried_object_min_hand_distance_m"]
-        > metrics["carried_object_contact_radius_m"]
-    )
+    assert metrics["carried_object_untouched_frame_ratio"] == 0.0

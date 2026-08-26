@@ -43,6 +43,8 @@ from .models import (
 )
 from .kinematics import rig_kinematics
 from .gaze_controller import aim_gaze
+from .force_closure import close_until_contact
+from .grasp_aperture import plan_grasp_pose
 from .motion_states import state_for, state_for_primitive
 from .physics import PhysicsOutcome, simulate_embodied_grasp, simulate_grasp
 from .primitives import (
@@ -5459,22 +5461,51 @@ def compile_motion(request: CompileRequest) -> ClipResult:
             * shake_primitive.parameters.wrist_shake_amplitude
         )
 
+    # The grasp pose is chosen by aperture, once, before any frame is authored.
+    # The old fixed offsets asked "put the wrist a palm-length in front of the
+    # block"; measured over the resulting clips the block was never once between
+    # the fingertips, and the hand closed on empty air every time. This asks the
+    # question that actually decides a grasp -- how much of the object lies
+    # inside the quad the thumb and the virtual finger span -- and takes the
+    # placement that maximises it.
+    grasp_plan = None
+    closure = None
+    if program.intent == Intent.GRAB and target_object is not None:
+        grasp_plan = plan_grasp_pose(
+            {name: BonePose(rotation=rotation) for name, rotation in base.items()},
+            program.hand,
+            target_object,
+            shoulder_position(program.hand),
+        )
+
     for primitive_index, primitive in enumerate(program.primitives):
         start = current.copy()
         shape = primitive.hand_shape or final_shape
-        if program.intent == Intent.GRAB and target_object is not None:
-            target = target_object.transform.translation.model_copy(
-                update={
-                    "x": target_object.transform.translation.x + primitive.parameters.lateral_offset * 0.08,
-                    "y": target_object.transform.translation.y
-                    + (primitive.parameters.lift_height_m if primitive.kind in (PrimitiveKind.LIFT, PrimitiveKind.HOLD, PrimitiveKind.RECOVER) else 0.0)
-                    + primitive.parameters.arm_height * 0.08,
-                    # The IK target is the wrist, not the block center. Keep a
-                    # palm-length offset along the object's front approach
-                    # axis so the block sits between the fingers instead of
-                    # intersecting the wrist/forearm mesh.
-                    "z": target_object.transform.translation.z - 0.085 + primitive.parameters.arm_depth * 0.08,
-                }
+        if program.intent == Intent.GRAB and target_object is not None and grasp_plan is not None:
+            # Approach retreats along the closure axis -- the direction the
+            # aperture shuts -- so reach and preshape sit outside the quad and
+            # the hand arrives along the axis it will close on, rather than
+            # crossing it and knocking the object out on the way in.
+            standoff = (
+                0.11 if primitive.kind == PrimitiveKind.REACH
+                else 0.06 if primitive.kind == PrimitiveKind.PRESHAPE
+                else 0.0
+            )
+            lift = (
+                primitive.parameters.lift_height_m
+                if primitive.kind in (PrimitiveKind.LIFT, PrimitiveKind.HOLD, PrimitiveKind.RECOVER)
+                else 0.0
+            )
+            place = grasp_plan.wrist_target - grasp_plan.closure_direction * standoff
+            target = Vec3(
+                x=float(place[0] + primitive.parameters.lateral_offset * 0.08),
+                y=float(
+                    place[1]
+                    + lift
+                    + primitive.parameters.arm_height * 0.08
+                    + (0.16 if primitive.kind == PrimitiveKind.REACH else 0.0)
+                ),
+                z=float(place[2] + primitive.parameters.arm_depth * 0.08),
             )
         elif program.intent == Intent.STRIKE and program.strike_type is not None:
             target = strike_target(
@@ -5485,6 +5516,19 @@ def compile_motion(request: CompileRequest) -> ClipResult:
             )
         else:
             target = gesture_target(program.hand, primitive.parameters)
+        # The plan's aperture was measured at these wrist angles; solving with
+        # the primitive's instead would build a different quad from the one that
+        # was chosen, and the placement would be aiming at a shape that is not
+        # the shape the hand takes.
+        solve_parameters = primitive.parameters
+        if program.intent == Intent.GRAB and grasp_plan is not None:
+            solve_parameters = primitive.parameters.model_copy(
+                update={
+                    "wrist_pitch": grasp_plan.wrist_pitch,
+                    "wrist_yaw": grasp_plan.wrist_yaw,
+                    "wrist_roll": grasp_plan.wrist_roll,
+                }
+            )
         if program.intent == Intent.GESTURE and primitive.kind == PrimitiveKind.HOLD:
             observable_target = target
             observable_params = primitive.parameters
@@ -5499,7 +5543,7 @@ def compile_motion(request: CompileRequest) -> ClipResult:
                 program.hand,
                 shoulder_position(program.hand),
                 target,
-                primitive.parameters,
+                solve_parameters,
                 present_hand=program.intent == Intent.GESTURE,
                 forearm_twist_reserve_rad=(
                     forearm_twist_reserve_rad
@@ -5507,7 +5551,7 @@ def compile_motion(request: CompileRequest) -> ClipResult:
                     else 0.0
                 ),
             )
-            fingers = hand_pose(program.hand, shape, primitive.parameters)
+            fingers = hand_pose(program.hand, shape, solve_parameters)
             target_pose = current.copy()
             target_pose.update(arm)
             target_pose.update(fingers)
@@ -5689,6 +5733,15 @@ def compile_motion(request: CompileRequest) -> ClipResult:
         elapsed += phase_duration_s
 
     if program.intent == Intent.GRAB and target_object is not None:
+        # Force-controlled closure is NOT wired in. It is implemented in
+        # rigby_poc.force_closure and measurably worse here than the authored
+        # shape, for a reason worth recording: it seats a digit on first contact
+        # and holds it there, and the approach places the thumb already touching
+        # the block, so the thumb froze at its opening curl carrying 72 N while
+        # all four fingers closed past it and reported 0.0 N. Seating cannot be
+        # reconciled with the aperture plan until the approach is genuinely
+        # clear; the clearance margin added to the planner reduced the collision
+        # (163 N -> 72 N) without removing it.
         physics = _embodied_physics_for(program, scene, frames, phase_ranges)
         frames = [
             frame.model_copy(
@@ -5707,6 +5760,8 @@ def compile_motion(request: CompileRequest) -> ClipResult:
     metrics = _base_metrics()
     metrics["phase_ranges_s"] = phase_ranges
     if physics is not None:
+        if closure is not None:
+            metrics["force_closure"] = closure.to_dict()
         metrics.update(physics.metrics)
     # The measurement pass lives in ``analysis.hand`` from 02c onwards. What
     # stays here is the part that cannot: ``physics.metrics`` above comes from a

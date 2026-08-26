@@ -42,7 +42,7 @@ from typing import Any
 import mujoco
 import numpy as np
 
-from .models import BonePose, ClipFrame, Hand, Quat, SceneObject
+from .models import BonePose, ClipFrame, Hand, HandShape, Quat, SceneObject
 from .physics import (
     _body_id,
     _contact_digit,
@@ -78,10 +78,21 @@ class ClosureConfig:
     distinguishes a contact from solver noise, not a grip strength.
     """
 
-    seat_force_n: float = 0.25
-    curl_rate_per_s: float = 1.1
+    #: Keep closing until a digit carries THIS much, not until it merely
+    #: touches. Measured directly: two plates squeezing the block's side faces
+    #: needed about 42 N at 1 mm of squeeze to carry it, and slipped below that.
+    #: Seating at 0.25 N -- the first whisper of contact -- stopped every digit
+    #: an order of magnitude short of a grip, which is why the hand closed
+    #: correctly and the block stayed on the table.
+    seat_force_n: float = 8.0
+    #: Fast enough to shut fully inside the closure window. At 1.1/s a 0.55 s
+    #: window only reaches a curl of 0.6, so the hand never took the shape the
+    #: aperture plan was built against and coverage fell from 0.97 to 0.29. The
+    #: rate is a ceiling, not a schedule: a digit still stops the moment it
+    #: carries load.
+    curl_rate_per_s: float = 3.0
     max_curl: float = 1.0
-    opposition_force_n: float = 0.30
+    opposition_force_n: float = 2.0
 
 
 @dataclass
@@ -124,27 +135,39 @@ _SEGMENT_GAINS = (0.92, 1.12, 0.82)
 _THUMB_MAX_RAD = 0.95
 _FINGER_MAX_RAD = 1.25
 _OPPOSITION_MAX_RAD = 0.75
+_SPLAY_MAX_RAD = 0.30
 
 
-def digit_rotations(hand: Hand, curls: dict[str, float], opposition: float) -> dict[str, Quat]:
+def digit_rotations(
+    hand: Hand, curls: dict[str, float], opposition: float
+) -> dict[str, Quat]:
     """Normalized per-digit curl to rig rotations.
 
-    Mirrors ``primitives.hand_pose``'s control math so a pose produced here can
-    be replayed by the shipped compiler unchanged.
+    Mirrors ``primitives.hand_pose`` in full -- curl, splay and thumb opposition
+    -- because a closure that starts from a *different* open pose than the one
+    the aperture plan cleared is not closing on what the plan measured. Omitting
+    splay and pinning opposition at its gripping value put the thumb across the
+    palm from the first frame, and it seated at its opening curl carrying 134 N:
+    buried in the block before the closure began, while all four fingers shut on
+    nothing.
     """
+    from .primitives import HAND_SHAPES
+
+    open_shape = HAND_SHAPES[HandShape.OPEN]
     side = 1.0 if hand == Hand.LEFT else -1.0
     out: dict[str, Quat] = {}
     for digit in DIGITS:
         curl = float(np.clip(curls.get(digit, 0.0), 0.0, 1.0))
+        stem = _STEM[digit]
+        splay = float(open_shape.splay[stem])
         for index, segment in enumerate(_SEGMENTS[digit]):
             maximum = _THUMB_MAX_RAD if digit == "thumb" else _FINGER_MAX_RAD
-            oppose = (
-                opposition * _OPPOSITION_MAX_RAD * side
-                if digit == "thumb" and index == 0
-                else 0.0
-            )
-            out[f"{hand.value}{_STEM[digit]}{segment}"] = quat_euler(
-                curl * _SEGMENT_GAINS[index] * maximum, oppose, 0.0
+            splay_angle = splay * _SPLAY_MAX_RAD * side if index == 0 else 0.0
+            oppose = 0.0
+            if digit == "thumb" and index == 0:
+                oppose = opposition * _OPPOSITION_MAX_RAD * side
+            out[f"{hand.value}{stem}{segment}"] = quat_euler(
+                curl * _SEGMENT_GAINS[index] * maximum, oppose, splay_angle
             )
     return out
 
@@ -169,13 +192,44 @@ def close_until_contact(
     if not frames:
         raise ValueError("closure needs authored frames to ride on")
 
+    from .primitives import HAND_SHAPES
+
+    # Each digit closes toward its FIST value, not toward a uniform 1.0. The
+    # aperture plan scores placements against hand_pose(FIST); a closure that
+    # drives every digit to the same maximum arrives at a different hand than
+    # the one that was chosen, which is why the plan reported three opposition
+    # pairs holding while the fingers measured 0.0 N.
+    fist = HAND_SHAPES[HandShape.FIST]
+    ceilings = {
+        digit: float(np.clip(fist.curls[_STEM[digit]], 0.0, config.max_curl))
+        for digit in DIGITS
+    }
+    grip_opposition = float(fist.thumb_opposition)
+
     segment_pairs = _hand_segment_pairs(hand)
     state = {d: DigitState(curl=0.02) for d in DIGITS}
 
+    from .primitives import HAND_SHAPES
+
+    open_opposition = float(HAND_SHAPES[HandShape.OPEN].thumb_opposition)
+
     def posed(frame: ClipFrame) -> ClipFrame:
         bones = dict(frame.bones)
+        # Opposition arrives with the closure, not before it. The thumb swings
+        # across the palm as the hand shuts; starting there is what collided.
+        progress = float(
+            np.clip(
+                np.mean(
+                    [s.curl / max(ceilings[d], 1e-6) for d, s in state.items()]
+                ),
+                0.0,
+                1.0,
+            )
+        )
         rotations = digit_rotations(
-            hand, {d: s.curl for d, s in state.items()}, opposition
+            hand,
+            {d: s.curl for d, s in state.items()},
+            open_opposition + (grip_opposition - open_opposition) * progress,
         )
         for name, rotation in rotations.items():
             bones[name] = BonePose(rotation=rotation)
@@ -234,7 +288,7 @@ def close_until_contact(
             for digit, digit_state in state.items():
                 if not digit_state.seated:
                     digit_state.curl = min(
-                        config.max_curl, digit_state.curl + config.curl_rate_per_s * dt
+                        ceilings[digit], digit_state.curl + config.curl_rate_per_s * dt
                     )
 
         current = posed(frame)
