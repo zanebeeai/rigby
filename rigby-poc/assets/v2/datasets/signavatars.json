@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "dataset_id": "signavatars",
+  "title": "SignAvatars",
+  "source_url": "https://signavatars.github.io/",
+  "license": "research-only; verify upstream terms before every release",
+  "namespace_policy": {
+    "namespace": "research.language.sign",
+    "research_only": true,
+    "allowed_uses": ["sign_language_research", "linguistic_motion_analysis"],
+    "prohibited_claims": ["generic gesture capability", "unreviewed signing capability"],
+    "requires_expert_review": true
+  },
+  "permitted_uses": ["sign_language_research", "linguistic_motion_analysis"],
+  "prohibited_uses": ["generic_gesture", "production_animation"],
+  "claims_requiring_deaf_expert_review": ["signing_capability", "asl_capability"],
+  "prohibited_claims": ["generic_gesture_capability", "production_ready"],
+  "input_role": "language-specific sign motion research only; never generic gesture context",
+  "media_downloaded": false
+}
