@@ -253,6 +253,16 @@ class EffectorV1(Contract):
     """Member groups that must oppose one another for a stable grasp."""
 
     max_aperture_m: float | None = Field(default=None, gt=0.0)
+
+    closes_toward_upper: bool = True
+    """Which end of the grip joints' range closes this gripper.
+
+    Measured during the closure sweep, where it falls out of which end produced
+    the smaller separation. It has to be carried because it is not a convention:
+    the Franka hand closes toward its *lower* limit, and a controller that
+    assumes otherwise opens the jaw when it means to grip.
+    """
+
     site_names: tuple[str, ...] = Field(min_length=1)
 
     @model_validator(mode="after")

@@ -782,6 +782,7 @@ def _build_effector(
             ),
             opposition_groups=groups,
             max_aperture_m=round(aperture, 6),
+            closes_toward_upper=bool(chain.closure.drive_to_upper),
             site_names=site_names,
         )
 

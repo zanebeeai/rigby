@@ -49,6 +49,12 @@ LIFT_HEIGHT_FRACTION = 2.5
 
 MIN_LIFT_FRACTION = 0.8
 
+CARRY_OFFSET_FRACTION = 2.5
+"""Of the gripper's aperture. Generous on purpose -- the grasp centre sits on
+the palm and the block's origin is at its own centre, so even a perfect grip
+leaves a real offset between them. What this rejects is not an imperfect hold
+but an object that has departed."""
+
 
 @dataclass(frozen=True, slots=True)
 class GraspViolation:
@@ -70,24 +76,44 @@ class GraspResult:
     duration_s: float
     qpos: np.ndarray = field(repr=False, default_factory=lambda: np.zeros((0, 0)))
     times_s: np.ndarray = field(repr=False, default_factory=lambda: np.zeros(0))
+    carry_offset_m: float = 0.0
+
 
     @property
     def failed_gate(self) -> str | None:
         return self.violations[0].code if self.violations else None
 
 
-def _waypoints(scene: GraspScene, frame: WorkspaceFrame) -> list[np.ndarray]:
-    """Home, above the block, onto it, and back up with it."""
+def _waypoints(
+    scene: GraspScene, frame: WorkspaceFrame, standoff_m: float = 0.0
+) -> list[np.ndarray]:
+    """Home, above the block, onto it, and back up with it.
+
+    ``standoff_m`` is how far short of the block's centre the descent stops. It
+    is zero for the derived scene; see the sweep recorded at the call site. The
+    environment path uses it, where object heights are authored rather than
+    derived from the jaw.
+    """
 
     block = scene.block_position_m
     above = np.array([block[0], block[1], scene.approach_height_m])
-    at_block = np.array([block[0], block[1], block[2]])
-    lifted = np.array(
-        [
-            block[0],
-            block[1],
-            block[2] + LIFT_HEIGHT_FRACTION * scene.block_half_extent_m * 2.0,
-        ]
+    at_block = np.array([block[0], block[1], block[2] + standoff_m])
+    # Lift generously, then pull the target back inside the measured envelope.
+    # The two constraints pull opposite ways and both are real: a lift that only
+    # just clears the required height fails whenever tracking lags, and a lift
+    # commanded past the arm's reach fails outright. Swept on the authored
+    # worlds, raising the multiple from 2.5 to 5.0 took held grasps from 1 of 13
+    # to 3 of 13; unclamped, the same change cost the derived probe its only
+    # working grasp, because that block sits at 0.55 of reach and 5x its height
+    # is outside the envelope. Clamping keeps both.
+    lifted = frame.clamp(
+        np.array(
+            [
+                block[0],
+                block[1],
+                block[2] + scene.lift_fraction * scene.block_half_extent_m * 2.0,
+            ]
+        )
     )
     return [frame.home, above, at_block, lifted]
 
@@ -125,6 +151,26 @@ def attempt_grasp(
     )
     rest = _scene_rest_qpos(model, manifest)
 
+    # KNOWN DEFECT, and the cause of most of the remaining failures. This solves
+    # the approach for the grasp site's *position* only. Nothing constrains the
+    # wrist, so the hand arrives at the right point in whatever orientation the
+    # solver reached it in -- measured on the authored worlds, the jaw shows up
+    # 166 degrees from straight down, which is to say very nearly upside-down,
+    # with the grasp centre 91 to 200 mm off the block. A jaw pointing at the
+    # ceiling cannot close on something under it, and no amount of closure or
+    # lift tuning repairs that.
+    #
+    # The fix is an orientation objective on the approach axis -- v2's refinement
+    # layer already has SiteOrientationObjective -- so the hand is required to
+    # point along the approach direction as well as arrive at the point. Not done
+    # here; it changes every grasp trajectory and wants its own change.
+    #
+    # Standoff stays at zero, and that is a measured result rather than an
+    # oversight. Sweeping it at 0, 0.5, 1.0, 1.5 and 2.0 times the block's
+    # half-extent certified 1, 0, 0, 0 and 0 grippers respectively: any daylight
+    # left between the jaw and the block means the fingers never reach it. The
+    # palm still leads the fingers down, but backing off does not help, because
+    # the fingers have to be at the object to hold it.
     points = ik.densify(_waypoints(scene, frame), per_span=6)
     try:
         solution = ik.solve_site_path(
@@ -189,6 +235,12 @@ def attempt_grasp(
     peak_penetration = 0.0
     opposition = False
     peak_height = start_height
+    # How far the block ever gets from the grasp centre once the jaws have it.
+    # A carried object stays within the hand; a launched one does not.
+    grasp_site = mujoco.mj_name2id(
+        model, mujoco.mjtObj.mjOBJ_SITE, effector_grasp_site(manifest, effector)
+    )
+    max_carry_offset = 0.0
 
     target = mujoco.MjData(model)
     for step in range(steps + 1):
@@ -239,6 +291,12 @@ def attempt_grasp(
         qpos_log[step] = data.qpos
         times[step] = step * dt
         peak_height = max(peak_height, float(data.qpos[block_adr + 2]))
+        if opposition and grasp_site >= 0:
+            offset = np.linalg.norm(
+                np.array(data.site_xpos[grasp_site], dtype=float)
+                - np.array(data.qpos[block_adr : block_adr + 3], dtype=float)
+            )
+            max_carry_offset = max(max_carry_offset, float(offset))
 
         if step < steps:
             data.ctrl[:] = command
@@ -275,6 +333,21 @@ def attempt_grasp(
                 limit=required * 0.5,
             )
         )
+    # A launched block satisfies "it went up" perfectly well. The lift gates
+    # bound the height from below only, so a block batted across the room by a
+    # closing jaw passed them -- 8.4 m of "lift" with zero grip force, certified.
+    # What distinguishes carrying from launching is that a carried object stays
+    # in the hand, so that is what gets measured.
+    carry_limit = CARRY_OFFSET_FRACTION * (effector.max_aperture_m or 0.05)
+    if opposition and max_carry_offset > carry_limit:
+        violations.append(
+            GraspViolation(
+                "object_not_carried",
+                "the block left the gripper instead of being carried by it",
+                measured=max_carry_offset,
+                limit=carry_limit,
+            )
+        )
     if peak_penetration > closure.config.max_penetration_m:
         violations.append(
             GraspViolation(
@@ -289,6 +362,7 @@ def attempt_grasp(
         certified=not violations,
         violations=tuple(violations),
         lift_height_m=lift,
+        carry_offset_m=max_carry_offset,
         final_height_m=final_height,
         peak_force_n=peak_force,
         max_penetration_m=peak_penetration,
@@ -297,6 +371,25 @@ def attempt_grasp(
         qpos=qpos_log,
         times_s=times,
     )
+
+
+def effector_grasp_site(manifest, effector) -> str:
+    """The site to measure carriage from: the grasp centre, else the tip."""
+
+    preferred = [
+        site.name
+        for site in manifest.morphology.sites
+        if site.name in effector.site_names
+        and site.semantic.value == "grasp_center"
+    ]
+    if preferred:
+        return preferred[0]
+    fallback = [
+        site.name
+        for site in manifest.morphology.sites
+        if site.name in effector.site_names and site.semantic.value == "tip"
+    ]
+    return fallback[0] if fallback else next(iter(effector.site_names))
 
 
 def _arm_schedule(

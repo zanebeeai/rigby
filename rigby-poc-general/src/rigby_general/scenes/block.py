@@ -48,6 +48,16 @@ class GraspScene:
     block_position_m: np.ndarray
     support_height_m: float
     approach_height_m: float
+    lift_fraction: float = 2.5
+    """Commanded lift, as a multiple of the object's height.
+
+    A property of the scene, not a constant, because the two scenes have
+    different headroom. The derived block is placed at 0.55 of reach and has
+    little room above it; an authored object sits where its world puts it,
+    usually low, with the envelope to spare. Swept on the authored worlds,
+    raising this from 2.5 to 5.0 took held grasps from 1 of 13 to 3 of 13 -- and
+    applying the same number to the derived scene cost it its only working
+    grasp."""
 
     @property
     def block_body(self) -> str:

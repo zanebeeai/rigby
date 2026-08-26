@@ -27,6 +27,12 @@ function sceneSource(robotId, ref) {
       ? { scene: entry.probe.scene, rest: entry.probe.rest_qpos }
       : null;
   }
+  if (ref && ref.indexOf('env|') === 0) {
+    // An authored world: the robot standing in it, with its fixtures and every
+    // object, not just the one being attempted.
+    const world = (VIEWER.envs || {})[ref.slice(4)];
+    return world ? { scene: world.scene, rest: world.rest_qpos } : null;
+  }
   return { scene: entry.scene, rest: entry.rest_qpos };
 }
 
@@ -37,6 +43,12 @@ function trackFor(reference) {
   if (parts[0] === 'probe') {
     const robot = VIEWER.robots[parts[1]];
     return robot && robot.probe ? robot.probe.track : null;
+  }
+  if (parts[0] === 'envtrial') {
+    const world = (VIEWER.envs || {})[parts[1]];
+    if (!world) return null;
+    const found = (world.attempts || []).find(a => a.trace_id === parts[2]);
+    return found ? found.track : null;
   }
   if (parts[0] === 'prim') {
     const robot = VIEWER.robots[parts[1]];
@@ -142,6 +154,14 @@ function highlightPhase(bars, time) {
 // ran, in the scene it ran in. Returns '' when there is nothing exported, and
 // the caller falls back to the rendered clip.
 function playerForTrace(t) {
+  if (t.kind === 'environment_trial') {
+    if (!t.trial) return '';
+    const key = t.trial.environment + '.' + t.robot_id;
+    const world = (VIEWER.envs || {})[key];
+    if (!world) return '';
+    return playerMarkup(
+      t.robot_id, 'envtrial|' + key + '|' + t.trace_id, 'env|' + key);
+  }
   if (t.kind === 'contact_probe') {
     const entry = VIEWER.robots[t.robot_id];
     if (!entry || !entry.probe) return '';
@@ -437,5 +457,113 @@ function wireSeeks() {
   if (!handle) return;
   document.querySelectorAll('[data-seek]').forEach((node) => {
     node.onclick = () => handle.seek(Number(node.dataset.seek));
+  });
+}
+
+// -- worlds: the authored environments, and who could do what in them --------
+
+const REFUSAL_LABEL = {
+  object_too_wide: 'too wide for the jaw',
+  object_out_of_reach: 'out of reach',
+  object_inside_reach_hole: 'inside the reach hole',
+  scene_not_buildable: 'scene would not compile',
+};
+
+function renderWorlds() {
+  const trials = DATA.traces.filter(t => t.kind === 'environment_trial' && t.trial);
+  if (!trials.length) {
+    return `<section><div class="card">No environment trials recorded. Run
+      <code>uv run python scripts/run_trials.py</code>.</div></section>`;
+  }
+
+  const worlds = new Map();
+  trials.forEach((t) => {
+    const id = t.trial.environment;
+    if (!worlds.has(id)) {
+      worlds.set(id, { description: t.trial.description, rows: [] });
+    }
+    worlds.get(id).rows.push(t);
+  });
+
+  const attempted = trials.filter(t => (t.trial.admission || {}).admitted);
+  const held = trials.filter(t => t.accepted);
+
+  const sections = [...worlds.entries()].sort().map((pair) => {
+    const [id, world] = pair;
+    const rows = world.rows.slice().sort((a, b) =>
+      (a.robot_id + a.trial.object).localeCompare(b.robot_id + b.trial.object));
+    const objects = [...new Set(rows.map(r => r.trial.object))];
+    return `<section>
+      <h2>${vesc(id)}</h2>
+      <div class="card">
+        ${vesc(world.description)}
+        <div class="slots">
+          <div class="slot"><div class="k">objects</div><div class="v">${
+            objects.map(vesc).join(', ')}</div></div>
+          <div class="slot"><div class="k">attempted</div><div class="v">${
+            rows.filter(r => (r.trial.admission||{}).admitted).length}/${rows.length}</div></div>
+          <div class="slot"><div class="k">held</div><div class="v">${
+            rows.filter(r => r.accepted).length}</div></div>
+        </div>
+      </div>
+      <table><thead><tr><th>robot</th><th>object</th><th class="num">span</th>
+        <th class="num">distance</th><th class="num">reach</th><th>outcome</th></tr></thead>
+      <tbody>${rows.map((r) => {
+        const a = r.trial.admission || {};
+        const outcome = r.accepted
+          ? '<span class="pass">HELD</span>'
+          : (a.admitted
+              ? '<span class="bad">' + vesc((r.failure||{}).code || 'failed') + '</span>'
+              : '<span class="na">' + vesc(
+                  REFUSAL_LABEL[a.code] || a.code || 'refused') + '</span>');
+        const nudged = (r.trial.bystanders || []).filter(b => b.disturbed);
+        const idx = DATA.traces.indexOf(r);
+        return `<tr>
+          <td class="mono"><a href="#" data-open="${idx}">${vesc(r.robot_id)}</a></td>
+          <td class="mono">${vesc(r.trial.object)}</td>
+          <td class="num">${(r.trial.object_span_m*1000).toFixed(0)} mm</td>
+          <td class="num">${(a.distance_m*1000||0).toFixed(0)} mm</td>
+          <td class="num">${(a.reach_limit_m*1000||0).toFixed(0)} mm</td>
+          <td>${outcome}${nudged.length
+            ? '<div class="note bad">disturbed ' +
+              nudged.map(b => vesc(b.name)).join(', ') + '</div>' : ''}</td>
+        </tr>`;
+      }).join('')}</tbody></table>
+    </section>`;
+  }).join('');
+
+  return `
+  <section>
+    <h2>Worlds</h2>
+    <div class="card">
+      Four environments authored in absolute metres, before any robot and with no
+      knowledge of what would be asked. The robot is mounted where the world says
+      and the object stays where the file put it.
+      <div class="note">That is what makes the refusals possible. A scene derived
+        from the arm places its object inside the reach envelope by construction,
+        so it can never report that something is too far away, too wide to hold,
+        or too close to fold onto. Admission decides all three from ingest
+        measurements alone, before anything is simulated.</div>
+      <div class="slots">
+        <div class="slot"><div class="k">pairings</div><div class="v">${trials.length}</div></div>
+        <div class="slot"><div class="k">admitted</div><div class="v">${attempted.length}</div></div>
+        <div class="slot"><div class="k">held</div><div class="v">${held.length}</div></div>
+        <div class="slot"><div class="k">refused</div><div class="v">${
+          trials.length - attempted.length}</div></div>
+      </div>
+    </div>
+  </section>
+  ${sections}`;
+}
+
+function wireWorlds() {
+  document.querySelectorAll('[data-open]').forEach((node) => {
+    node.onclick = (e) => {
+      e.preventDefault();
+      view = 'runs';
+      document.querySelectorAll('button.tab').forEach(x =>
+        x.setAttribute('aria-selected', String(x.dataset.view === 'runs')));
+      select(Number(node.dataset.open));
+    };
   });
 }
