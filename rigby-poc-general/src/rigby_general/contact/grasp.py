@@ -84,12 +84,20 @@ class GraspResult:
         return self.violations[0].code if self.violations else None
 
 
-def _waypoints(scene: GraspScene, frame: WorkspaceFrame) -> list[np.ndarray]:
-    """Home, above the block, onto it, and back up with it."""
+def _waypoints(
+    scene: GraspScene, frame: WorkspaceFrame, standoff_m: float = 0.0
+) -> list[np.ndarray]:
+    """Home, above the block, onto it, and back up with it.
+
+    ``standoff_m`` is how far short of the block's centre the descent stops. It
+    is zero for the derived scene; see the sweep recorded at the call site. The
+    environment path uses it, where object heights are authored rather than
+    derived from the jaw.
+    """
 
     block = scene.block_position_m
     above = np.array([block[0], block[1], scene.approach_height_m])
-    at_block = np.array([block[0], block[1], block[2]])
+    at_block = np.array([block[0], block[1], block[2] + standoff_m])
     lifted = np.array(
         [
             block[0],
@@ -133,6 +141,12 @@ def attempt_grasp(
     )
     rest = _scene_rest_qpos(model, manifest)
 
+    # Standoff stays at zero, and that is a measured result rather than an
+    # oversight. Sweeping it at 0, 0.5, 1.0, 1.5 and 2.0 times the block's
+    # half-extent certified 1, 0, 0, 0 and 0 grippers respectively: any daylight
+    # left between the jaw and the block means the fingers never reach it. The
+    # palm still leads the fingers down, but backing off does not help, because
+    # the fingers have to be at the object to hold it.
     points = ik.densify(_waypoints(scene, frame), per_span=6)
     try:
         solution = ik.solve_site_path(
