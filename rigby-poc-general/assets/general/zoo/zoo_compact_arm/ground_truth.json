@@ -1,0 +1,44 @@
+{
+  "actuated_joint_count": 6,
+  "description": "Desktop-scale four-axis arm with a small jaw. Roughly one sixth the reach of the longest arm in the zoo.",
+  "expected_effectors": [
+    {
+      "grip_joints": [
+        "grip_left",
+        "grip_right"
+      ],
+      "kind": "parallel_jaw",
+      "member_bodies": [
+        "finger_left",
+        "finger_right"
+      ]
+    }
+  ],
+  "expected_sites": [
+    {
+      "body": "base",
+      "semantic": "base"
+    },
+    {
+      "body": "finger_left",
+      "semantic": "contact"
+    },
+    {
+      "body": "finger_right",
+      "semantic": "contact"
+    },
+    {
+      "body": "palm",
+      "semantic": "grasp_center"
+    },
+    {
+      "body": "finger_left",
+      "semantic": "tip"
+    }
+  ],
+  "link_count": 8,
+  "morphology_class": "fixed_base_arm",
+  "robot_id": "zoo_compact_arm",
+  "source_sha256": "67461be18b9f49b7af8547ddb7599a7b0815d1f1bef7aeff8ef6056f3db153bd",
+  "split": "holdout"
+}

@@ -1,0 +1,53 @@
+{
+  "actuated_joint_count": 8,
+  "description": "Long-reach six-axis arm with a jaw and a wrist camera. Mounted with a rotated base frame so the front direction cannot be assumed from the world axes.",
+  "expected_effectors": [
+    {
+      "grip_joints": [
+        "grip_left",
+        "grip_right"
+      ],
+      "kind": "parallel_jaw",
+      "member_bodies": [
+        "finger_left",
+        "finger_right"
+      ]
+    },
+    {
+      "grip_joints": [],
+      "kind": "sensor",
+      "member_bodies": []
+    }
+  ],
+  "expected_sites": [
+    {
+      "body": "base",
+      "semantic": "base"
+    },
+    {
+      "body": "finger_left",
+      "semantic": "contact"
+    },
+    {
+      "body": "finger_right",
+      "semantic": "contact"
+    },
+    {
+      "body": "wrist_camera",
+      "semantic": "gaze"
+    },
+    {
+      "body": "palm",
+      "semantic": "grasp_center"
+    },
+    {
+      "body": "finger_left",
+      "semantic": "tip"
+    }
+  ],
+  "link_count": 11,
+  "morphology_class": "fixed_base_arm",
+  "robot_id": "zoo_long_arm",
+  "source_sha256": "126c4beb1379d7a3e92f03e85109f892b90e25d633715f8a8f2a26a79ba74ecc",
+  "split": "holdout"
+}
