@@ -42,7 +42,6 @@ UNMIGRATED: dict[str, str] = {
     "anatomy.shoulder_origin_m": "src/rigby_poc/primitives.py shoulder_position -- 08d",
     "anatomy.upper_arm_length_m": "src/rigby_poc/primitives.py UPPER_ARM_LENGTH_M -- 08d",
     "anatomy.lower_arm_length_m": "src/rigby_poc/primitives.py LOWER_ARM_LENGTH_M -- 08d",
-    "physics.foot_drift_max_m": "acceptance_criteria.yaml -- the gate is vacuous until 08c measures it",
     "physics.min_lift_m": "acceptance_criteria.yaml physical_proof",
     "physics.min_hold_s": "acceptance_criteria.yaml physical_proof",
     "physics.max_vertical_drift_m": "acceptance_criteria.yaml physical_proof",
@@ -50,7 +49,6 @@ UNMIGRATED: dict[str, str] = {
     "physics.max_coordinate_roundtrip_error_m": "acceptance_criteria.yaml structural_physics",
     "safety.joint_limit_violations_max": "acceptance_criteria.yaml safety",
     "safety.nan_count_max": "acceptance_criteria.yaml safety",
-    "safety.penetration_max_m": "acceptance_criteria.yaml safety",
     "safety.unresolved_non_hand_collisions_max": "acceptance_criteria.yaml safety",
     "signal.discontinuity_count_max": "acceptance_criteria.yaml safety",
     "semantic.reach_tolerance_m": "acceptance_criteria.yaml semantic_forward_space",
@@ -59,7 +57,13 @@ UNMIGRATED: dict[str, str] = {
 }
 
 #: The ledger length when it was recorded. Never raise this.
-LEDGER_HIGH_WATER_MARK = 24
+#:
+#: 24 -> 22 in 10b. `physics.foot_drift_max_m` and `safety.penetration_max_m` both
+#: acquired production readers in the physics layer -- `physics.contact.foot_skate`
+#: and `physics.ground.penetration` respectively. The foot-drift entry is the more
+#: pointed of the two: its ledger note said "the gate is vacuous until 08c measures
+#: it", and it was retired by being measured rather than by 08c.
+LEDGER_HIGH_WATER_MARK = 22
 
 
 def _keys() -> set[str]:
@@ -78,7 +82,9 @@ def _production_readers() -> dict[str, list[str]]:
     for key in _keys():
         for path, text in texts:
             if f'"{key}"' in text or f"'{key}'" in text:
-                readers.setdefault(key, []).append(path.relative_to(PROJECT_ROOT).as_posix())
+                readers.setdefault(key, []).append(
+                    path.relative_to(PROJECT_ROOT).as_posix()
+                )
     return readers
 
 
@@ -91,7 +97,9 @@ def test_no_threshold_is_read_by_nothing_at_all() -> None:
     orphans = [
         key
         for key in sorted(_keys())
-        if not readers.get(key) and f'"{key}"' not in test_text and f"'{key}'" not in test_text
+        if not readers.get(key)
+        and f'"{key}"' not in test_text
+        and f"'{key}'" not in test_text
     ]
     assert not orphans, f"thresholds nothing reads at all: {orphans}"
 

@@ -503,6 +503,53 @@ Two rules follow:
    Python 3.12's `sys.monitoring` backend instead of the `settrace` one and
    removes most of the multiplier. The nightly CI job sets it.
 
+## Three ways a claim about the code outlives the code
+
+All three were hit on 2026-08-25 by lanes `analysis` and `groundtruth`, within hours
+of each other, in different tools. They are the same defect wearing three coats: a
+statement that was true when written, is checked by nobody, and reads as reassurance.
+
+**A commit message describes intent; only the code describes behaviour.** `bee9444`'s
+message says its `--rebless-compiler` fix "updates the VALUES of keys the baseline
+already holds and leaves the KEY SET alone". It does not: the key-set-preserving
+assignment is the `else` branch, the *verification* path, which `--rebless-compiler`
+never takes. The claim survived review and a merge. **Byte-identical to the commit that
+claims a fix is not the same as containing the fix** — and that exact inference was made
+here, out loud, and reported as settled two hours before the tool was run and absorbed
+three declared keys into 25 of 34 fixtures. What caught it was
+`test_the_declared_additions_are_still_additions` going red, not any amount of reading.
+
+**A false claim survives longest when it is false in the safe-sounding direction.** The
+`analysis` handoff repeated that same sentence — "values only, never the key set" — and
+it is exactly backwards. It was not missed because nobody read it. It was missed because
+it says the thing you want to be true, so it terminates the question instead of raising
+one. When auditing a claim, notice whether disbelieving it would have been *work*.
+
+**An anti-tautology check is itself a measurement, and it can fail vacuously.** A
+mutation that silently fails to apply produces a green run that looks like the test
+passing against the broken code — a false *negative* about your own guard. Two scratch
+mutations no-opped this way in one session because a `str.replace` target had been
+reformatted since it was written, and both reported the test as green against the
+defect. **Assert the mutation landed before believing the red:**
+
+```python
+assert old in source, "MUTATION TARGET NOT FOUND - this would be a silent no-op"
+```
+
+The corpus-side form of the same rule is `assert moved`, and the backup-side form is
+`[ -s bak ]` two sections down. Three instances of one shape is not a coincidence:
+**every step of a verification procedure is itself unverified until something asserts
+it ran.**
+
+**Corollary — after any rebase, verify the files that merged cleanly, not only the ones
+that conflicted.** A conflict announces itself and stops the rebase; an auto-merge is
+silent, so the silent one is where a dropped line survives to a commit. Reasoning about
+which file has the *bigger* change predicts conflict **size**, not conflict
+**existence** — overlapping hunks is a different question and it is the one that
+matters. Measured: two lanes both predicted `test_detection_curve.py` would conflict and
+it auto-merged clean, while the four-lane `test_corpus_compile_budget.py`, which nobody
+predicted, is the one that conflicted.
+
 ## Guards fail in more directions than they are written for
 
 A guard can be unable to fire, or it can fire correctly except when it matters.

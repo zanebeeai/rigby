@@ -571,6 +571,25 @@
         "rationale": "The nlerp subdivision target: frame_count is raised so no inter-frame delta exceeds this. 0.4 of the 0.35 rad validator discontinuity limit, deliberately stricter so acceleration stays inside the human-reference envelope on very short phases. Stated as a VALUE, not as a product. IEEE754 does not reproduce these literals exactly from limit x factor in every case -- 0.35 * 0.4 is 0.13999999999999999, not 0.14 -- and the subdivision target divides a frame count, so a sub-ulp difference can move ceil() by one frame and change the clip. Plan 08 SS3.4 item 7 asks for the margin to be a cited derivation rather than a magic number; `derived_as` records the derivation while `value` stays bit-identical to the constant it replaces."
       },
       "resolves": "08 SS1.1 item 6 (recorded here; compiler.py repointed in 08b)"
+    },
+    "physics.foot_contact_band_m": {
+      "value": 0.01,
+      "unit": "m",
+      "applies_to": [
+        "*"
+      ],
+      "source": {
+        "kind": "measured",
+        "n": 46,
+        "derived_from": "config/corpus cases compiled on d58b389; foot contact decided on toe clearance above the neutral-toe ground plane",
+        "date": "2026-08-25",
+        "reference_frame": "world, metres above the rig's neutral lowest toe (0.015201 m)",
+        "cites": [
+          "src/rigby_poc/analysis/physics.py:foot_contacts",
+          "docs/plans/10-eval-redesign.md#31-new-physics-l2"
+        ],
+        "rationale": "Swept 5, 10, 20 and 40 mm over all 46 compiling corpus cases. Mean duty factor moves only 0.916 -> 0.937 across an eightfold change in the band, and no case loses its support phase at any band, so the layer's output is insensitive to this value and it is not carrying a hidden decision. 10 mm is the middle of the measured-flat region. A band is required rather than an equality: testing for exact ground height reports contact on no frame at all, which foot_contacts refuses at construction."
+      }
     }
   }
 }

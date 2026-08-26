@@ -59,6 +59,8 @@ EMITTED_BY_CASES: Mapping[str, int] = {
     "contract.clip.non_finite_transforms": 47,
     "contract.clip.root_drift": 47,
     "contract.clip.rotational_discontinuities": 47,
+    "physics.contact.foot_skate": 47,
+    "physics.ground.penetration": 47,
     "signal.angular.acceleration": 14,
     "signal.angular.jerk": 14,
     "signal.angular.velocity": 14,
@@ -167,7 +169,8 @@ def require_known_targets(specs: Iterable[MutationSpec]) -> None:
     missing = unknown_targets(collected)
     if missing:
         detail = "; ".join(
-            f"{spec_id} -> {', '.join(targets)}" for spec_id, targets in sorted(missing.items())
+            f"{spec_id} -> {', '.join(targets)}"
+            for spec_id, targets in sorted(missing.items())
         )
         raise ValueError(
             f"mutation targets name checks nothing emits: {detail}. A target no check "

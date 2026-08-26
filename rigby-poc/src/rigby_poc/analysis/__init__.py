@@ -43,34 +43,34 @@ from .contract import (
     skipped,
     upper_bound_check,
 )
-from .score import (
-    CompositeScore,
-    FamilyScore,
-    LayerScore,
-    check_family,
-    clip_composite,
-    composite_score,
+from .forearm import (
+    parallel_forearm_checks,
+    parallel_forearm_failures,
+    parallel_forearm_metrics,
 )
 from .full_body import (
     BODY_ENTRIES,
     commanded_root_yaw_rad,
     full_body_metrics,
 )
-from .forearm import (
-    parallel_forearm_checks,
-    parallel_forearm_failures,
-    parallel_forearm_metrics,
-)
-from .hand import assertion_frame_for, final_hand_shape, hand_metrics
-from .objects import carried_object_id, handoff_metrics
 from .gesture import (
+    _angular_kinematics,
     arm_landmarks,
     evaluate_gesture_structure,
     gesture_structure_checks,
     quality_reference,
     shake_joint_oscillation_metrics,
     swing_twist_angles,
-    _angular_kinematics,
+)
+from .hand import assertion_frame_for, final_hand_shape, hand_metrics
+from .objects import carried_object_id, handoff_metrics
+from .physics import (
+    FootContacts,
+    center_of_mass,
+    center_of_mass_series,
+    foot_contacts,
+    ground_height,
+    physics_checks,
 )
 from .registry import (
     BODY_ANALYZERS,
@@ -84,13 +84,20 @@ from .registry import (
 )
 from .rig import RIG_PROFILE, identity_bones, identity_pose, rig_profile
 from .safety import clip_contract_violations, safety_checks, safety_metrics
+from .score import (
+    CompositeScore,
+    FamilyScore,
+    LayerScore,
+    check_family,
+    clip_composite,
+    composite_score,
+)
 from .semantic import (
     semantic_cycle_assertion,
     semantic_cycle_checks,
     semantic_cycle_failures,
     semantic_cycle_metrics,
 )
-
 
 # Bone sets each compile path feeds to the angular-kinematics pass. Keyed by
 # intent because the path, not the action, chooses them. The whole-body list
@@ -185,9 +192,7 @@ def analyze_context(ctx: AnalysisContext) -> dict[str, Any]:
         # branch stay with the compiler by design -- see analysis.hand.
         return hand_metrics(ctx)
 
-    metrics.update(
-        safety_metrics(ctx.frames, allow_root_motion=ctx.allow_root_motion)
-    )
+    metrics.update(safety_metrics(ctx.frames, allow_root_motion=ctx.allow_root_motion))
 
     if not _is_handoff(ctx):
         metrics.update(_angular_metrics(ctx))
@@ -250,6 +255,7 @@ def validate(
         safety_checks(metrics, allow_root_motion=root_motion_allowed(program))
     )
     checks.extend(rom_checks(frames, fps=fps))
+    checks.extend(physics_checks(frames, fps=fps))
     return checks
 
 
@@ -267,9 +273,7 @@ def validate_clip(clip: ClipResult, program: MotionProgram) -> list[CheckResult]
     return validate(clip.metrics, program, clip.frames, fps=float(clip.fps))
 
 
-def structural_failures(
-    metrics: dict[str, Any], program: MotionProgram
-) -> list[str]:
+def structural_failures(metrics: dict[str, Any], program: MotionProgram) -> list[str]:
     """The moved failure strings, in the order the compiler appends them."""
 
     failures = list(parallel_forearm_failures(metrics))
@@ -280,22 +284,23 @@ def structural_failures(
 
 __all__ = [
     "ANATOMY",
-    "AnalysisContext",
-    "Analyzer",
-    "AnalyzerEntry",
     "BODY_ANALYZERS",
     "BODY_ENTRIES",
     "CONTRACT",
-    "CheckResult",
-    "CheckStatus",
-    "CompositeScore",
-    "FamilyScore",
     "LAYERS",
-    "LayerScore",
     "OBJECT_ANALYZERS",
     "PHYSICS",
     "RIG_PROFILE",
     "SIGNAL",
+    "AnalysisContext",
+    "Analyzer",
+    "AnalyzerEntry",
+    "CheckResult",
+    "CheckStatus",
+    "CompositeScore",
+    "FamilyScore",
+    "FootContacts",
+    "LayerScore",
     "analyze",
     "analyze_context",
     "arm_landmarks",
@@ -303,6 +308,8 @@ __all__ = [
     "binary_check",
     "body_analyzer",
     "carried_object_id",
+    "center_of_mass",
+    "center_of_mass_series",
     "check_family",
     "clip_composite",
     "clip_contract_violations",
@@ -313,8 +320,10 @@ __all__ = [
     "deferred_actions",
     "evaluate_gesture_structure",
     "final_hand_shape",
+    "foot_contacts",
     "full_body_metrics",
     "gesture_structure_checks",
+    "ground_height",
     "hand_metrics",
     "handoff_metrics",
     "identity_bones",
@@ -328,6 +337,7 @@ __all__ = [
     "parallel_forearm_checks",
     "parallel_forearm_failures",
     "parallel_forearm_metrics",
+    "physics_checks",
     "quality_reference",
     "rig_profile",
     "rom_checks",

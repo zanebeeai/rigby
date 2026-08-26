@@ -320,7 +320,9 @@ def test_an_unbounded_threshold_reports_infinity_not_the_top_level() -> None:
     assert interval.upper_bound_95 == float("inf")
 
 
-def test_a_sweep_with_no_threshold_points_refuses_rather_than_scoring_capability() -> None:
+def test_a_sweep_with_no_threshold_points_refuses_rather_than_scoring_capability() -> (
+    None
+):
     outcomes = [_outcome(0.16, detected=True, static=True)]
     with pytest.raises(DetectionError, match="capability and not a threshold"):
         detection_threshold(detection_curve(outcomes))
@@ -334,8 +336,20 @@ def test_an_empty_sweep_refuses() -> None:
 def test_the_skip_ledger_makes_a_mostly_skipped_sweep_visible() -> None:
     outcomes = [
         _outcome(0.04, detected=True, case_id="a"),
-        _outcome(0.04, detected=None, applicable=False, reason="already beyond_typical", case_id="b"),
-        _outcome(0.48, detected=None, applicable=False, reason="already beyond_typical", case_id="b"),
+        _outcome(
+            0.04,
+            detected=None,
+            applicable=False,
+            reason="already beyond_typical",
+            case_id="b",
+        ),
+        _outcome(
+            0.48,
+            detected=None,
+            applicable=False,
+            reason="already beyond_typical",
+            case_id="b",
+        ),
     ]
     assert skip_ledger(detection_curve(outcomes)) == {"already beyond_typical": 2}
 
@@ -399,7 +413,11 @@ def test_the_router_handles_every_member_of_checkstatus() -> None:
             headroom={"fail": -0.4, "pass": 1.0, "skip": None}[status],
         )
         try:
-            handled[status] = "detected" if target_detected({STATUS_TARGET: result}, spec) else "clean"
+            handled[status] = (
+                "detected"
+                if target_detected({STATUS_TARGET: result}, spec)
+                else "clean"
+            )
         except DetectionError:
             handled[status] = "raised"
 
@@ -435,11 +453,20 @@ def test_a_new_check_family_forces_a_routing_decision() -> None:
     assert families == {
         "anatomy.arm",
         "anatomy.forearm",
-        "anatomy.rom",          # reads `measured["band"]` -- see BAND_READ_PREFIX
+        "anatomy.rom",  # reads `measured["band"]` -- see BAND_READ_PREFIX
         "anatomy.travel_wheel",
         "anatomy.wrist",
         "contract.camera",
         "contract.clip",
+        # 10b's physics layer. The routing decision this guard demands, answered:
+        # through `status`. Both are ordinary `CheckResult`s with pass/fail/skip and
+        # a plain float `measured`, so they take the default branch -- not
+        # `measured["band"]` like anatomy.rom.*, whose band exists only because 04c
+        # enforces 82 of 156 DOFs and an unenforced excursion must still say
+        # `status="pass"`. Physics has no per-DOF enforcement, so `status` means what
+        # it says. No new channel and no `target_detected` change.
+        "physics.contact",
+        "physics.ground",
         "signal.angular",
         "signal.semantic_cycle",
         "signal.travel_wheel",
@@ -510,8 +537,10 @@ def test_a_structural_target_without_metrics_raises_rather_than_scoring_clean() 
         target_detected({}, _structural_spec())
 
 
-def test_a_path_that_evaluates_no_structural_gate_raises_rather_than_scoring_clean() -> None:
-    """"No detector on this path" and "the detectors ran and found nothing".
+def test_a_path_that_evaluates_no_structural_gate_raises_rather_than_scoring_clean() -> (
+    None
+):
+    """ "No detector on this path" and "the detectors ran and found nothing".
 
     A metrics dict with no `structural_failures` key at all means the clip took a
     compile path that evaluates none of these gates. That is a gap to report, not
