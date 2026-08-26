@@ -91,6 +91,9 @@ COMPILE_BUDGET: dict[str, int] = {
     # module fixture, plus the mutation-liveness test's own compile of
     # fullbody-walk-forward and the floor-definition guard's single case.
     "test_physics_layer.py": 62,
+    # Plan 10 §3.2's signal layer. One corpus-wide pass in a module fixture; the
+    # mutation-liveness test reuses that clip rather than recompiling.
+    "test_signal_layer.py": 60,
     # One corpus-wide pass in a module fixture, to find the full-body cases that
     # evaluate structural gates at all. Measured at 55, same shape as the registry
     # file above and budgeted for the same reason: it is a corpus-wide loop, which is
