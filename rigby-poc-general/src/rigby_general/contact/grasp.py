@@ -151,6 +151,20 @@ def attempt_grasp(
     )
     rest = _scene_rest_qpos(model, manifest)
 
+    # KNOWN DEFECT, and the cause of most of the remaining failures. This solves
+    # the approach for the grasp site's *position* only. Nothing constrains the
+    # wrist, so the hand arrives at the right point in whatever orientation the
+    # solver reached it in -- measured on the authored worlds, the jaw shows up
+    # 166 degrees from straight down, which is to say very nearly upside-down,
+    # with the grasp centre 91 to 200 mm off the block. A jaw pointing at the
+    # ceiling cannot close on something under it, and no amount of closure or
+    # lift tuning repairs that.
+    #
+    # The fix is an orientation objective on the approach axis -- v2's refinement
+    # layer already has SiteOrientationObjective -- so the hand is required to
+    # point along the approach direction as well as arrive at the point. Not done
+    # here; it changes every grasp trajectory and wants its own change.
+    #
     # Standoff stays at zero, and that is a measured result rather than an
     # oversight. Sweeping it at 0, 0.5, 1.0, 1.5 and 2.0 times the block's
     # half-extent certified 1, 0, 0, 0 and 0 grippers respectively: any daylight
