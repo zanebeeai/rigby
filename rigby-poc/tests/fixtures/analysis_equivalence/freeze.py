@@ -247,6 +247,9 @@ def main() -> None:
     written: list[tuple[str, str, int, str]] = []
     drifted: list[str] = []
     added: set[str] = set()
+    #: Every key-value a re-bless moved, listed individually. "148 key-values" is
+    #: reviewable; "34 files changed" is not.
+    reblessed: list[str] = []
     for case_id, prompt in CASES:
         path = FIXTURE_DIR / f"{case_id}.json"
         previous = (
@@ -254,9 +257,40 @@ def main() -> None:
         )
         case, compiler_metrics = build_case(case_id, prompt)
         baseline = previous.get("compiler_metrics")
-        if baseline is None or args.rebless_compiler:
+        if baseline is None:
             case["compiler_metrics"] = compiler_metrics
-            state = "blessed" if baseline is None else "REBLESSED"
+            state = "blessed"
+        elif args.rebless_compiler:
+            # A re-bless updates the VALUES of keys the baseline already holds and
+            # leaves the KEY SET alone. Assigning `compiler_metrics` wholesale --
+            # which this branch used to do -- rebuilds the baseline from scratch and
+            # absorbs every key declared in ADDED_COMPILER_KEYS: the per-frame IK
+            # targets 02b persists, which are deliberately OUTSIDE the frozen set.
+            # That makes the declaration vestigial, makes the index note below
+            # ("predates 02b") false, and buries ~19.5k lines of unrelated authoring
+            # intent in a diff nobody can review.
+            #
+            # `test_the_declared_additions_are_still_additions` is the guard, and it
+            # caught this on a real 08d re-bless: 25 of 34 fixtures absorbed
+            # `support_constraints`, `climb_support_constraints` or
+            # `presentation_ranges_s`.
+            vanished = sorted(key for key in baseline if key not in compiler_metrics)
+            if vanished:
+                raise SystemExit(
+                    f"{case_id}: the compiler stopped emitting {vanished}. A re-bless "
+                    "preserves the key set; a missing frozen key is a regression, not "
+                    "a value to update."
+                )
+            moved = [
+                key
+                for key in baseline
+                if _compact(compiler_metrics[key]) != _compact(baseline[key])
+            ]
+            case["compiler_metrics"] = {key: compiler_metrics[key] for key in baseline}
+            added |= set(compiler_metrics) - set(baseline)
+            for key in moved:
+                reblessed.append(f"{case_id}.{key}")
+            state = f"REBLESSED {len(moved)} value(s)" if moved else "REBLESSED (no move)"
         else:
             # A key may be *added* — 02b persists the commanded IK support
             # targets, which no post-hoc pass can invert out of a clip. What may
@@ -302,6 +336,13 @@ def main() -> None:
         print(f"{case_id:32s} {intent:20s} {count:3d} owned keys  {state}")
     if added:
         print("\nkeys added since the baseline: " + ", ".join(sorted(added)))
+        print(
+            "  (held OUTSIDE the frozen baseline by design -- see ADDED_COMPILER_KEYS)"
+        )
+    if reblessed:
+        print(f"\n{len(reblessed)} key-value(s) re-blessed:")
+        for entry in reblessed:
+            print(f"  {entry}")
     if drifted:
         raise SystemExit(
             "compiler metrics drifted from the frozen baseline for: "
