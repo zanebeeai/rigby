@@ -1,0 +1,50 @@
+{
+  "actuated_joint_count": 10,
+  "description": "Seven-axis redundant arm with a three-finger hand. The extra axis must be recognised as redundant rather than as another positioning joint.",
+  "expected_effectors": [
+    {
+      "grip_joints": [
+        "digit_0_flex",
+        "digit_1_flex",
+        "digit_2_flex"
+      ],
+      "kind": "multifinger",
+      "member_bodies": [
+        "digit_0",
+        "digit_1",
+        "digit_2"
+      ]
+    }
+  ],
+  "expected_sites": [
+    {
+      "body": "base",
+      "semantic": "base"
+    },
+    {
+      "body": "digit_0",
+      "semantic": "contact"
+    },
+    {
+      "body": "digit_1",
+      "semantic": "contact"
+    },
+    {
+      "body": "digit_2",
+      "semantic": "contact"
+    },
+    {
+      "body": "palm",
+      "semantic": "grasp_center"
+    },
+    {
+      "body": "digit_0",
+      "semantic": "tip"
+    }
+  ],
+  "link_count": 12,
+  "morphology_class": "fixed_base_arm",
+  "robot_id": "zoo_hand_arm",
+  "source_sha256": "44222086fe981a572136e3d0508ab1c5e08ab3de730c615ed37362d3258945d6",
+  "split": "development"
+}

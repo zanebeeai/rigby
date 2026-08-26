@@ -1,0 +1,44 @@
+{
+  "actuated_joint_count": 8,
+  "description": "Six-axis industrial arm with a two-finger parallel jaw.",
+  "expected_effectors": [
+    {
+      "grip_joints": [
+        "grip_left",
+        "grip_right"
+      ],
+      "kind": "parallel_jaw",
+      "member_bodies": [
+        "finger_left",
+        "finger_right"
+      ]
+    }
+  ],
+  "expected_sites": [
+    {
+      "body": "base",
+      "semantic": "base"
+    },
+    {
+      "body": "finger_left",
+      "semantic": "contact"
+    },
+    {
+      "body": "finger_right",
+      "semantic": "contact"
+    },
+    {
+      "body": "palm",
+      "semantic": "grasp_center"
+    },
+    {
+      "body": "finger_left",
+      "semantic": "tip"
+    }
+  ],
+  "link_count": 10,
+  "morphology_class": "fixed_base_arm",
+  "robot_id": "zoo_jaw_arm",
+  "source_sha256": "e471721a99f33a062ff4f96fef38d7523b1e8196bd7c95406ddb2ebe4778cd3d",
+  "split": "development"
+}
