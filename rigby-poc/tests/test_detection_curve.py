@@ -467,6 +467,10 @@ def test_a_new_check_family_forces_a_routing_decision() -> None:
         # it says. No new channel and no `target_detected` change.
         "physics.contact",
         "physics.ground",
+        # 10c's signal-quality layer. Same routing answer as physics: through
+        # `status`. Ordinary CheckResults, plain float `measured`, no band.
+        "signal.activity",
+        "signal.smoothness",
         "signal.angular",
         "signal.semantic_cycle",
         "signal.travel_wheel",

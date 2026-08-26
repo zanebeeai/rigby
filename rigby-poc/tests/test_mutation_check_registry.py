@@ -124,17 +124,20 @@ def test_only_the_clip_contract_checks_reach_every_case(
     are universal. The anatomy and signal axes still reach 14, which stays the
     denominator for any rate quoted against them.
 
-    There are **six** since 10b, and the name of this test is now narrower than what
-    it asserts: the four clip-level contract checks, plus `physics.ground.penetration`
-    and `physics.contact.foot_skate`. The physics layer emits on every case for
-    exactly the reason ROM does -- an inapplicable clip yields an explicit `skip`
-    rather than silence -- so "only the clip contract checks are universal" stopped
-    being true when a second frames-derived layer landed.
+    **Eight since 10c, and the name of this test has been wrong since 10b.** It is
+    retained rather than renamed because three other files reference it, but what it
+    asserts is not "only the clip contract checks are universal" -- that stopped being
+    true when the physics and signal layers began emitting an explicit `skip` on an
+    inapplicable clip rather than staying silent, which is the right behaviour and the
+    same reason every ROM id is universal. What it asserts now is **which** ids are
+    universal. Two PRs running is the point at which a reader stops trusting a name,
+    so the name is now documented as wrong rather than merely narrow.
 
-    **Universality here means emission, never coverage.** Penetration is 43 pass /
-    3 fail / 1 skip and skate 38 / 8 / 1; both reach 47 because the skip is emitted,
-    not because every case was measured. Reading a universal id as a measured
-    denominator is the guard-denominator mistake one level up.
+    **Universality here means emission, never coverage.** `dead_limb` is 38 fail /
+    7 pass / 2 skip, `sparc` 1 / 45 / 1, penetration 43 / 3 / 1 and skate 38 / 8 / 1.
+    All four reach 47 because the skip is emitted, not because every case was
+    measured. Reading a universal id as a measured denominator is the
+    guard-denominator mistake one level up.
 
     The four clip ids are four rather than three because lane `analysis` deleted the
     legacy joint-limit check: `contract.clip.root_drift` used to be folded into
@@ -151,6 +154,8 @@ def test_only_the_clip_contract_checks_reach_every_case(
         "contract.clip.rotational_discontinuities",
         "physics.contact.foot_skate",
         "physics.ground.penetration",
+        "signal.activity.dead_limb",
+        "signal.smoothness.sparc",
     }
     # A `skip` is not a measurement, so universality here is emission, not coverage.
     assert rom_check_ids() <= universal

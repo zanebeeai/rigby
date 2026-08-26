@@ -61,6 +61,8 @@ EMITTED_BY_CASES: Mapping[str, int] = {
     "contract.clip.rotational_discontinuities": 47,
     "physics.contact.foot_skate": 47,
     "physics.ground.penetration": 47,
+    "signal.activity.dead_limb": 47,
+    "signal.smoothness.sparc": 47,
     "signal.angular.acceleration": 14,
     "signal.angular.jerk": 14,
     "signal.angular.velocity": 14,

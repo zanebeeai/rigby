@@ -98,6 +98,12 @@ from .semantic import (
     semantic_cycle_failures,
     semantic_cycle_metrics,
 )
+from .signal_quality import (
+    LIMB_CHAINS,
+    bone_activity,
+    signal_checks,
+    spectral_arc_length,
+)
 
 # Bone sets each compile path feeds to the angular-kinematics pass. Keyed by
 # intent because the path, not the action, chooses them. The whole-body list
@@ -256,6 +262,7 @@ def validate(
     )
     checks.extend(rom_checks(frames, fps=fps))
     checks.extend(physics_checks(frames, fps=fps))
+    checks.extend(signal_checks(frames, fps=fps))
     return checks
 
 
@@ -288,6 +295,7 @@ __all__ = [
     "BODY_ENTRIES",
     "CONTRACT",
     "LAYERS",
+    "LIMB_CHAINS",
     "OBJECT_ANALYZERS",
     "PHYSICS",
     "RIG_PROFILE",
@@ -307,6 +315,7 @@ __all__ = [
     "assertion_frame_for",
     "binary_check",
     "body_analyzer",
+    "bone_activity",
     "carried_object_id",
     "center_of_mass",
     "center_of_mass_series",
@@ -351,7 +360,9 @@ __all__ = [
     "semantic_cycle_failures",
     "semantic_cycle_metrics",
     "shake_joint_oscillation_metrics",
+    "signal_checks",
     "skipped",
+    "spectral_arc_length",
     "structural_failures",
     "swing_twist_angles",
     "unregistered_actions",

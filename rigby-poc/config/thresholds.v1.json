@@ -590,6 +590,36 @@
         ],
         "rationale": "Swept 5, 10, 20 and 40 mm over all 46 compiling corpus cases. Mean duty factor moves only 0.916 -> 0.937 across an eightfold change in the band, and no case loses its support phase at any band, so the layer's output is insensitive to this value and it is not carrying a hidden decision. 10 mm is the middle of the measured-flat region. A band is required rather than an equality: testing for exact ground height reports contact on no frame at all, which foot_contacts refuses at construction."
       }
+    },
+    "signal.dead_limb_min_rotation_rad": {
+      "value": 0.01,
+      "unit": "rad",
+      "applies_to": [
+        "*"
+      ],
+      "source": {
+        "kind": "measured",
+        "n": 46,
+        "derived_from": "every compiling corpus case on e71a6f5; total geodesic rotation summed per limb chain",
+        "date": "2026-08-25",
+        "reference_frame": "radians of accumulated per-frame rotation, relative to nothing -- a total, not an offset",
+        "rationale": "The distribution is not close to this bound in either direction. 39 of 46 cases have a limb chain below 1e-5 rad -- the legs at literally their rest rotation for the whole clip -- and the next value up is 1.284 rad. Any bound in that five-order-of-magnitude gap gives the same 39 of 46, so this is a margin guard rather than a fitted threshold. The failures are always BOTH LEGS and never an arm."
+      }
+    },
+    "signal.sparc_floor": {
+      "value": -10.5,
+      "unit": "dimensionless",
+      "applies_to": [
+        "*"
+      ],
+      "source": {
+        "kind": "measured",
+        "n": 46,
+        "derived_from": "spectral arc length of the active end effector's speed profile over every compiling corpus case on e71a6f5",
+        "date": "2026-08-25",
+        "reference_frame": "none -- SPARC is normalised by its own DC magnitude and is dimensionless",
+        "rationale": "An OUTLIER bound, not a naturalness gate. SPARC itself is validated against the literature (a minimum-jerk bell scores -1.97 against ~-1.5, and it degrades monotonically with jitter and with added submovements), but no value of it is validated as meaning 'unnatural': against the only labels this corpus carries it separates valid from known-bad at AUC 0.546, n = 205 pairs, baseline 0.500 -- chance. So the bound is the corpus's own Tukey lower fence (q1 -6.093, q3 -3.139, IQR 2.954, fence -10.523) rounded to -10.5, which fires on exactly one case today. Same intent as the 90 s CI rot ceiling: not the budget, there to catch something far outside anything measured."
+      }
     }
   }
 }
