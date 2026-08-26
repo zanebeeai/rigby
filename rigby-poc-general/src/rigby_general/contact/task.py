@@ -206,3 +206,47 @@ def bystander_motion(
 
 def object_geom_names(item: SceneObjectV1) -> frozenset[str]:
     return frozenset({f"{OBJECT_PREFIX}{item.name}_geom"})
+
+
+def build_task_scene(
+    manifest: RobotAssetManifestV1,
+    mjcf_xml: str,
+    environment: EnvironmentV1,
+    target_name: str,
+):
+    """An authored world, presented to the existing grasp runner.
+
+    The runner already knows how to approach, close and gate. What it assumes is
+    that the thing being picked up carries the derived scene's canonical names,
+    so the target object is emitted under those names and every other object
+    keeps its own. Nothing about the world changes -- the same file produces the
+    same geometry whichever object is named -- but the runner needs no knowledge
+    of environments at all.
+    """
+
+    from ..scenes.block import GraspScene
+    from ..scenes.environment import build_environment_model
+
+    target = environment.object_by_name(target_name)
+    model, xml = build_environment_model(manifest, mjcf_xml, environment)
+
+    # Re-emit with the target renamed to what the runner looks for.
+    xml = (
+        xml.replace(f'"{OBJECT_PREFIX}{target_name}_free"', '"scene_block_free"')
+        .replace(f'"{OBJECT_PREFIX}{target_name}_geom"', '"scene_block_geom"')
+        .replace(f'"{OBJECT_PREFIX}{target_name}"', '"scene_block"')
+        .replace(f'"{OBJECT_PREFIX}{target_name}_site"', '"scene_block_center"')
+    )
+    model = mujoco.MjSpec.from_string(xml).compile()
+
+    half = float(target.size_m[2])
+    support = float(target.position_m[2]) - half
+    return GraspScene(
+        model=model,
+        xml=xml,
+        block_half_extent_m=half,
+        block_mass_kg=target.mass_kg,
+        block_position_m=np.asarray(target.position_m, dtype=float),
+        support_height_m=support,
+        approach_height_m=support + half * 2.0 + HOVER_FACTION * half * 2.0,
+    )
