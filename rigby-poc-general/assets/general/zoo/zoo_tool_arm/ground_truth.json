@@ -1,0 +1,26 @@
+{
+  "actuated_joint_count": 5,
+  "description": "Five-axis arm terminating in a rigid tool tip. No closure degree of freedom anywhere, so nothing on it may be classified as a gripper.",
+  "expected_effectors": [
+    {
+      "grip_joints": [],
+      "kind": "tool_tip",
+      "member_bodies": []
+    }
+  ],
+  "expected_sites": [
+    {
+      "body": "base",
+      "semantic": "base"
+    },
+    {
+      "body": "tool",
+      "semantic": "tip"
+    }
+  ],
+  "link_count": 7,
+  "morphology_class": "fixed_base_arm",
+  "robot_id": "zoo_tool_arm",
+  "source_sha256": "676027304f6be91e6af3083e3b17e7a9b23572dec99dd3d8f8fcb1690e45eda3",
+  "split": "development"
+}
