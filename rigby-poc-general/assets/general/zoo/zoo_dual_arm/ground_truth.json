@@ -1,0 +1,71 @@
+{
+  "actuated_joint_count": 14,
+  "description": "Bimanual platform: two mirrored five-axis arms with parallel jaws on a shared torso. The mirror plane has to be measured, not assumed.",
+  "expected_effectors": [
+    {
+      "grip_joints": [
+        "left_grip_left",
+        "left_grip_right"
+      ],
+      "kind": "parallel_jaw",
+      "member_bodies": [
+        "left_finger_left",
+        "left_finger_right"
+      ]
+    },
+    {
+      "grip_joints": [
+        "right_grip_left",
+        "right_grip_right"
+      ],
+      "kind": "parallel_jaw",
+      "member_bodies": [
+        "right_finger_left",
+        "right_finger_right"
+      ]
+    }
+  ],
+  "expected_sites": [
+    {
+      "body": "base",
+      "semantic": "base"
+    },
+    {
+      "body": "left_finger_left",
+      "semantic": "contact"
+    },
+    {
+      "body": "left_finger_right",
+      "semantic": "contact"
+    },
+    {
+      "body": "right_finger_left",
+      "semantic": "contact"
+    },
+    {
+      "body": "right_finger_right",
+      "semantic": "contact"
+    },
+    {
+      "body": "left_palm",
+      "semantic": "grasp_center"
+    },
+    {
+      "body": "right_palm",
+      "semantic": "grasp_center"
+    },
+    {
+      "body": "left_finger_left",
+      "semantic": "tip"
+    },
+    {
+      "body": "right_finger_left",
+      "semantic": "tip"
+    }
+  ],
+  "link_count": 18,
+  "morphology_class": "fixed_base_bimanual",
+  "robot_id": "zoo_dual_arm",
+  "source_sha256": "628edbed60eb5732d38f1542a1411ea76518bc8c0f78c43f5910f6e9a0868d71",
+  "split": "development"
+}
