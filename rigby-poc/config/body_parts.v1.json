@@ -1,0 +1,4278 @@
+{
+  "schema_version": "1.0",
+  "$comment": "Per-part movement vocabulary, expressed in the units of config/rom.v1.json. A move value is a SIGNED FRACTION of that DOF's typical range: +1.0 is the typical positive limit, -1.0 the typical negative one. A move therefore cannot name an out-of-range pose, and the constraint layer and the vocabulary cannot disagree. Generated from rom.v1.json; tests/test_body_part_moves.py fails if the two drift apart.",
+  "generated_from": "config/rom.v1.json",
+  "value_convention": {
+    "units": "fraction of the DOF's typical_deg range",
+    "positive": "value * typical_deg[1]",
+    "negative": "abs(value) * typical_deg[0]",
+    "range": [
+      -1.0,
+      1.0
+    ]
+  },
+  "parts": {
+    "root": {
+      "parent": null,
+      "joint_class": "spine",
+      "bones": [
+        "hips"
+      ],
+      "dof_envelope": {
+        "hips": {
+          "flexion": {
+            "typical_deg": [
+              -15.0,
+              15.0
+            ],
+            "max_deg": [
+              -30.0,
+              30.0
+            ],
+            "enforced": false
+          },
+          "abduction": {
+            "typical_deg": [
+              -15.0,
+              15.0
+            ],
+            "max_deg": [
+              -30.0,
+              30.0
+            ],
+            "enforced": false
+          },
+          "twist": {
+            "typical_deg": [
+              -180.0,
+              180.0
+            ],
+            "max_deg": [
+              -180.0,
+              180.0
+            ],
+            "enforced": false
+          }
+        }
+      }
+    },
+    "spine": {
+      "parent": "root",
+      "joint_class": "spine",
+      "bones": [
+        "spine",
+        "chest",
+        "upperChest"
+      ],
+      "dof_envelope": {
+        "spine": {
+          "flexion": {
+            "typical_deg": [
+              -8.0,
+              27.0
+            ],
+            "max_deg": [
+              -12.0,
+              35.0
+            ],
+            "enforced": false
+          },
+          "abduction": {
+            "typical_deg": [
+              -12.0,
+              12.0
+            ],
+            "max_deg": [
+              -16.0,
+              16.0
+            ],
+            "enforced": false
+          },
+          "twist": {
+            "typical_deg": [
+              -15.0,
+              15.0
+            ],
+            "max_deg": [
+              -20.0,
+              20.0
+            ],
+            "enforced": false
+          }
+        },
+        "chest": {
+          "flexion": {
+            "typical_deg": [
+              -8.0,
+              27.0
+            ],
+            "max_deg": [
+              -12.0,
+              35.0
+            ],
+            "enforced": false
+          },
+          "abduction": {
+            "typical_deg": [
+              -12.0,
+              12.0
+            ],
+            "max_deg": [
+              -16.0,
+              16.0
+            ],
+            "enforced": false
+          },
+          "twist": {
+            "typical_deg": [
+              -15.0,
+              15.0
+            ],
+            "max_deg": [
+              -20.0,
+              20.0
+            ],
+            "enforced": false
+          }
+        },
+        "upperChest": {
+          "flexion": {
+            "typical_deg": [
+              -8.0,
+              27.0
+            ],
+            "max_deg": [
+              -12.0,
+              35.0
+            ],
+            "enforced": false
+          },
+          "abduction": {
+            "typical_deg": [
+              -12.0,
+              12.0
+            ],
+            "max_deg": [
+              -16.0,
+              16.0
+            ],
+            "enforced": false
+          },
+          "twist": {
+            "typical_deg": [
+              -15.0,
+              15.0
+            ],
+            "max_deg": [
+              -20.0,
+              20.0
+            ],
+            "enforced": false
+          }
+        }
+      }
+    },
+    "neck": {
+      "parent": "spine",
+      "joint_class": "spine",
+      "bones": [
+        "neck"
+      ],
+      "dof_envelope": {
+        "neck": {
+          "flexion": {
+            "typical_deg": [
+              -30.0,
+              25.0
+            ],
+            "max_deg": [
+              -40.0,
+              32.0
+            ],
+            "enforced": false
+          },
+          "abduction": {
+            "typical_deg": [
+              -22.0,
+              22.0
+            ],
+            "max_deg": [
+              -30.0,
+              30.0
+            ],
+            "enforced": false
+          },
+          "twist": {
+            "typical_deg": [
+              -40.0,
+              40.0
+            ],
+            "max_deg": [
+              -50.0,
+              50.0
+            ],
+            "enforced": false
+          }
+        }
+      }
+    },
+    "head": {
+      "parent": "neck",
+      "joint_class": "spine",
+      "bones": [
+        "head"
+      ],
+      "dof_envelope": {
+        "head": {
+          "flexion": {
+            "typical_deg": [
+              -30.0,
+              25.0
+            ],
+            "max_deg": [
+              -40.0,
+              32.0
+            ],
+            "enforced": false
+          },
+          "abduction": {
+            "typical_deg": [
+              -22.0,
+              22.0
+            ],
+            "max_deg": [
+              -30.0,
+              30.0
+            ],
+            "enforced": false
+          },
+          "twist": {
+            "typical_deg": [
+              -40.0,
+              40.0
+            ],
+            "max_deg": [
+              -50.0,
+              50.0
+            ],
+            "enforced": false
+          }
+        }
+      }
+    },
+    "left_clavicle": {
+      "parent": "spine",
+      "joint_class": "clavicle",
+      "bones": [
+        "leftShoulder"
+      ],
+      "dof_envelope": {
+        "leftShoulder": {
+          "flexion": {
+            "typical_deg": [
+              -10.0,
+              40.0
+            ],
+            "max_deg": [
+              -15.0,
+              50.0
+            ],
+            "enforced": false
+          },
+          "abduction": {
+            "typical_deg": [
+              -25.0,
+              25.0
+            ],
+            "max_deg": [
+              -35.0,
+              35.0
+            ],
+            "enforced": false
+          },
+          "twist": {
+            "typical_deg": [
+              -15.0,
+              15.0
+            ],
+            "max_deg": [
+              -25.0,
+              25.0
+            ],
+            "enforced": false
+          }
+        }
+      }
+    },
+    "left_shoulder": {
+      "parent": "left_clavicle",
+      "joint_class": "shoulder",
+      "bones": [
+        "leftUpperArm"
+      ],
+      "dof_envelope": {
+        "leftUpperArm": {
+          "flexion": {
+            "typical_deg": [
+              -60.0,
+              180.0
+            ],
+            "max_deg": [
+              -70.0,
+              185.0
+            ],
+            "enforced": true
+          },
+          "abduction": {
+            "typical_deg": [
+              -50.0,
+              180.0
+            ],
+            "max_deg": [
+              -60.0,
+              185.0
+            ],
+            "enforced": true
+          },
+          "twist": {
+            "typical_deg": [
+              -90.0,
+              90.0
+            ],
+            "max_deg": [
+              -95.0,
+              95.0
+            ],
+            "enforced": true
+          }
+        }
+      }
+    },
+    "left_elbow": {
+      "parent": "left_shoulder",
+      "joint_class": "elbow",
+      "bones": [
+        "leftLowerArm"
+      ],
+      "dof_envelope": {
+        "leftLowerArm": {
+          "flexion": {
+            "typical_deg": [
+              0.0,
+              145.0
+            ],
+            "max_deg": [
+              -10.0,
+              150.0
+            ],
+            "enforced": true
+          },
+          "abduction": {
+            "typical_deg": [
+              -5.0,
+              5.0
+            ],
+            "max_deg": [
+              -5.0,
+              5.0
+            ],
+            "enforced": true
+          },
+          "twist": {
+            "typical_deg": [
+              -80.0,
+              80.0
+            ],
+            "max_deg": [
+              -85.0,
+              85.0
+            ],
+            "enforced": true
+          }
+        }
+      }
+    },
+    "left_wrist": {
+      "parent": "left_elbow",
+      "joint_class": "wrist",
+      "bones": [
+        "leftHand"
+      ],
+      "dof_envelope": {
+        "leftHand": {
+          "flexion": {
+            "typical_deg": [
+              -70.0,
+              80.0
+            ],
+            "max_deg": [
+              -80.0,
+              90.0
+            ],
+            "enforced": true
+          },
+          "abduction": {
+            "typical_deg": [
+              -30.0,
+              20.0
+            ],
+            "max_deg": [
+              -35.0,
+              25.0
+            ],
+            "enforced": true
+          },
+          "twist": {
+            "typical_deg": [
+              -10.0,
+              10.0
+            ],
+            "max_deg": [
+              -15.0,
+              15.0
+            ],
+            "enforced": true
+          }
+        }
+      }
+    },
+    "left_thumb": {
+      "parent": "left_wrist",
+      "joint_class": "thumb",
+      "bones": [
+        "leftThumbMetacarpal",
+        "leftThumbProximal",
+        "leftThumbDistal"
+      ],
+      "dof_envelope": {
+        "leftThumbMetacarpal": {
+          "flexion": {
+            "typical_deg": [
+              -60.0,
+              60.0
+            ],
+            "max_deg": [
+              -75.0,
+              75.0
+            ],
+            "enforced": false
+          },
+          "abduction": {
+            "typical_deg": [
+              -60.0,
+              60.0
+            ],
+            "max_deg": [
+              -75.0,
+              75.0
+            ],
+            "enforced": false
+          },
+          "twist": {
+            "typical_deg": [
+              -60.0,
+              60.0
+            ],
+            "max_deg": [
+              -75.0,
+              75.0
+            ],
+            "enforced": false
+          }
+        },
+        "leftThumbProximal": {
+          "flexion": {
+            "typical_deg": [
+              -60.0,
+              60.0
+            ],
+            "max_deg": [
+              -75.0,
+              75.0
+            ],
+            "enforced": false
+          },
+          "abduction": {
+            "typical_deg": [
+              -60.0,
+              60.0
+            ],
+            "max_deg": [
+              -75.0,
+              75.0
+            ],
+            "enforced": false
+          },
+          "twist": {
+            "typical_deg": [
+              -60.0,
+              60.0
+            ],
+            "max_deg": [
+              -75.0,
+              75.0
+            ],
+            "enforced": false
+          }
+        },
+        "leftThumbDistal": {
+          "flexion": {
+            "typical_deg": [
+              -60.0,
+              60.0
+            ],
+            "max_deg": [
+              -75.0,
+              75.0
+            ],
+            "enforced": false
+          },
+          "abduction": {
+            "typical_deg": [
+              -60.0,
+              60.0
+            ],
+            "max_deg": [
+              -75.0,
+              75.0
+            ],
+            "enforced": false
+          },
+          "twist": {
+            "typical_deg": [
+              -60.0,
+              60.0
+            ],
+            "max_deg": [
+              -75.0,
+              75.0
+            ],
+            "enforced": false
+          }
+        }
+      }
+    },
+    "left_index": {
+      "parent": "left_wrist",
+      "joint_class": "digit",
+      "bones": [
+        "leftIndexProximal",
+        "leftIndexIntermediate",
+        "leftIndexDistal"
+      ],
+      "dof_envelope": {
+        "leftIndexProximal": {
+          "flexion": {
+            "typical_deg": [
+              -20.0,
+              90.0
+            ],
+            "max_deg": [
+              -30.0,
+              100.0
+            ],
+            "enforced": true
+          },
+          "abduction": {
+            "typical_deg": [
+              -20.0,
+              20.0
+            ],
+            "max_deg": [
+              -25.0,
+              25.0
+            ],
+            "enforced": true
+          },
+          "twist": {
+            "typical_deg": [
+              -5.0,
+              5.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": false
+          }
+        },
+        "leftIndexIntermediate": {
+          "flexion": {
+            "typical_deg": [
+              -5.0,
+              110.0
+            ],
+            "max_deg": [
+              -10.0,
+              120.0
+            ],
+            "enforced": true
+          },
+          "abduction": {
+            "typical_deg": [
+              -10.0,
+              10.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": true
+          },
+          "twist": {
+            "typical_deg": [
+              -5.0,
+              5.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": false
+          }
+        },
+        "leftIndexDistal": {
+          "flexion": {
+            "typical_deg": [
+              -10.0,
+              80.0
+            ],
+            "max_deg": [
+              -15.0,
+              90.0
+            ],
+            "enforced": true
+          },
+          "abduction": {
+            "typical_deg": [
+              -10.0,
+              10.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": true
+          },
+          "twist": {
+            "typical_deg": [
+              -5.0,
+              5.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": false
+          }
+        }
+      }
+    },
+    "left_middle": {
+      "parent": "left_wrist",
+      "joint_class": "digit",
+      "bones": [
+        "leftMiddleProximal",
+        "leftMiddleIntermediate",
+        "leftMiddleDistal"
+      ],
+      "dof_envelope": {
+        "leftMiddleProximal": {
+          "flexion": {
+            "typical_deg": [
+              -20.0,
+              90.0
+            ],
+            "max_deg": [
+              -30.0,
+              100.0
+            ],
+            "enforced": true
+          },
+          "abduction": {
+            "typical_deg": [
+              -20.0,
+              20.0
+            ],
+            "max_deg": [
+              -25.0,
+              25.0
+            ],
+            "enforced": true
+          },
+          "twist": {
+            "typical_deg": [
+              -5.0,
+              5.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": false
+          }
+        },
+        "leftMiddleIntermediate": {
+          "flexion": {
+            "typical_deg": [
+              -5.0,
+              110.0
+            ],
+            "max_deg": [
+              -10.0,
+              120.0
+            ],
+            "enforced": true
+          },
+          "abduction": {
+            "typical_deg": [
+              -10.0,
+              10.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": true
+          },
+          "twist": {
+            "typical_deg": [
+              -5.0,
+              5.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": false
+          }
+        },
+        "leftMiddleDistal": {
+          "flexion": {
+            "typical_deg": [
+              -10.0,
+              80.0
+            ],
+            "max_deg": [
+              -15.0,
+              90.0
+            ],
+            "enforced": true
+          },
+          "abduction": {
+            "typical_deg": [
+              -10.0,
+              10.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": true
+          },
+          "twist": {
+            "typical_deg": [
+              -5.0,
+              5.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": false
+          }
+        }
+      }
+    },
+    "left_ring": {
+      "parent": "left_wrist",
+      "joint_class": "digit",
+      "bones": [
+        "leftRingProximal",
+        "leftRingIntermediate",
+        "leftRingDistal"
+      ],
+      "dof_envelope": {
+        "leftRingProximal": {
+          "flexion": {
+            "typical_deg": [
+              -20.0,
+              90.0
+            ],
+            "max_deg": [
+              -30.0,
+              100.0
+            ],
+            "enforced": true
+          },
+          "abduction": {
+            "typical_deg": [
+              -20.0,
+              20.0
+            ],
+            "max_deg": [
+              -25.0,
+              25.0
+            ],
+            "enforced": true
+          },
+          "twist": {
+            "typical_deg": [
+              -5.0,
+              5.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": false
+          }
+        },
+        "leftRingIntermediate": {
+          "flexion": {
+            "typical_deg": [
+              -5.0,
+              110.0
+            ],
+            "max_deg": [
+              -10.0,
+              120.0
+            ],
+            "enforced": true
+          },
+          "abduction": {
+            "typical_deg": [
+              -10.0,
+              10.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": true
+          },
+          "twist": {
+            "typical_deg": [
+              -5.0,
+              5.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": false
+          }
+        },
+        "leftRingDistal": {
+          "flexion": {
+            "typical_deg": [
+              -10.0,
+              80.0
+            ],
+            "max_deg": [
+              -15.0,
+              90.0
+            ],
+            "enforced": true
+          },
+          "abduction": {
+            "typical_deg": [
+              -10.0,
+              10.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": true
+          },
+          "twist": {
+            "typical_deg": [
+              -5.0,
+              5.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": false
+          }
+        }
+      }
+    },
+    "left_little": {
+      "parent": "left_wrist",
+      "joint_class": "digit",
+      "bones": [
+        "leftLittleProximal",
+        "leftLittleIntermediate",
+        "leftLittleDistal"
+      ],
+      "dof_envelope": {
+        "leftLittleProximal": {
+          "flexion": {
+            "typical_deg": [
+              -20.0,
+              90.0
+            ],
+            "max_deg": [
+              -30.0,
+              100.0
+            ],
+            "enforced": true
+          },
+          "abduction": {
+            "typical_deg": [
+              -20.0,
+              20.0
+            ],
+            "max_deg": [
+              -25.0,
+              25.0
+            ],
+            "enforced": true
+          },
+          "twist": {
+            "typical_deg": [
+              -5.0,
+              5.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": false
+          }
+        },
+        "leftLittleIntermediate": {
+          "flexion": {
+            "typical_deg": [
+              -5.0,
+              110.0
+            ],
+            "max_deg": [
+              -10.0,
+              120.0
+            ],
+            "enforced": true
+          },
+          "abduction": {
+            "typical_deg": [
+              -10.0,
+              10.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": true
+          },
+          "twist": {
+            "typical_deg": [
+              -5.0,
+              5.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": false
+          }
+        },
+        "leftLittleDistal": {
+          "flexion": {
+            "typical_deg": [
+              -10.0,
+              80.0
+            ],
+            "max_deg": [
+              -15.0,
+              90.0
+            ],
+            "enforced": true
+          },
+          "abduction": {
+            "typical_deg": [
+              -10.0,
+              10.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": true
+          },
+          "twist": {
+            "typical_deg": [
+              -5.0,
+              5.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": false
+          }
+        }
+      }
+    },
+    "left_hip": {
+      "parent": "root",
+      "joint_class": "hip",
+      "bones": [
+        "leftUpperLeg"
+      ],
+      "dof_envelope": {
+        "leftUpperLeg": {
+          "flexion": {
+            "typical_deg": [
+              -30.0,
+              120.0
+            ],
+            "max_deg": [
+              -40.0,
+              130.0
+            ],
+            "enforced": true
+          },
+          "abduction": {
+            "typical_deg": [
+              -30.0,
+              45.0
+            ],
+            "max_deg": [
+              -35.0,
+              50.0
+            ],
+            "enforced": true
+          },
+          "twist": {
+            "typical_deg": [
+              -45.0,
+              45.0
+            ],
+            "max_deg": [
+              -50.0,
+              50.0
+            ],
+            "enforced": true
+          }
+        }
+      }
+    },
+    "left_knee": {
+      "parent": "left_hip",
+      "joint_class": "knee",
+      "bones": [
+        "leftLowerLeg"
+      ],
+      "dof_envelope": {
+        "leftLowerLeg": {
+          "flexion": {
+            "typical_deg": [
+              0.0,
+              135.0
+            ],
+            "max_deg": [
+              -5.0,
+              145.0
+            ],
+            "enforced": true
+          },
+          "abduction": {
+            "typical_deg": [
+              -5.0,
+              5.0
+            ],
+            "max_deg": [
+              -5.0,
+              5.0
+            ],
+            "enforced": true
+          },
+          "twist": {
+            "typical_deg": [
+              -10.0,
+              30.0
+            ],
+            "max_deg": [
+              -15.0,
+              35.0
+            ],
+            "enforced": true
+          }
+        }
+      }
+    },
+    "left_ankle": {
+      "parent": "left_knee",
+      "joint_class": "ankle",
+      "bones": [
+        "leftFoot"
+      ],
+      "dof_envelope": {
+        "leftFoot": {
+          "flexion": {
+            "typical_deg": [
+              -20.0,
+              50.0
+            ],
+            "max_deg": [
+              -25.0,
+              55.0
+            ],
+            "enforced": true
+          },
+          "abduction": {
+            "typical_deg": [
+              -15.0,
+              35.0
+            ],
+            "max_deg": [
+              -20.0,
+              40.0
+            ],
+            "enforced": true
+          },
+          "twist": {
+            "typical_deg": [
+              -10.0,
+              10.0
+            ],
+            "max_deg": [
+              -15.0,
+              15.0
+            ],
+            "enforced": false
+          }
+        }
+      }
+    },
+    "left_toes": {
+      "parent": "left_ankle",
+      "joint_class": "toes",
+      "bones": [
+        "leftToes"
+      ],
+      "dof_envelope": {
+        "leftToes": {
+          "flexion": {
+            "typical_deg": [
+              -70.0,
+              40.0
+            ],
+            "max_deg": [
+              -80.0,
+              45.0
+            ],
+            "enforced": false
+          },
+          "abduction": {
+            "typical_deg": [
+              -10.0,
+              10.0
+            ],
+            "max_deg": [
+              -15.0,
+              15.0
+            ],
+            "enforced": false
+          },
+          "twist": {
+            "typical_deg": [
+              -5.0,
+              5.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": false
+          }
+        }
+      }
+    },
+    "right_clavicle": {
+      "parent": "spine",
+      "joint_class": "clavicle",
+      "bones": [
+        "rightShoulder"
+      ],
+      "dof_envelope": {
+        "rightShoulder": {
+          "flexion": {
+            "typical_deg": [
+              -10.0,
+              40.0
+            ],
+            "max_deg": [
+              -15.0,
+              50.0
+            ],
+            "enforced": false
+          },
+          "abduction": {
+            "typical_deg": [
+              -25.0,
+              25.0
+            ],
+            "max_deg": [
+              -35.0,
+              35.0
+            ],
+            "enforced": false
+          },
+          "twist": {
+            "typical_deg": [
+              -15.0,
+              15.0
+            ],
+            "max_deg": [
+              -25.0,
+              25.0
+            ],
+            "enforced": false
+          }
+        }
+      }
+    },
+    "right_shoulder": {
+      "parent": "right_clavicle",
+      "joint_class": "shoulder",
+      "bones": [
+        "rightUpperArm"
+      ],
+      "dof_envelope": {
+        "rightUpperArm": {
+          "flexion": {
+            "typical_deg": [
+              -60.0,
+              180.0
+            ],
+            "max_deg": [
+              -70.0,
+              185.0
+            ],
+            "enforced": true
+          },
+          "abduction": {
+            "typical_deg": [
+              -50.0,
+              180.0
+            ],
+            "max_deg": [
+              -60.0,
+              185.0
+            ],
+            "enforced": true
+          },
+          "twist": {
+            "typical_deg": [
+              -90.0,
+              90.0
+            ],
+            "max_deg": [
+              -95.0,
+              95.0
+            ],
+            "enforced": true
+          }
+        }
+      }
+    },
+    "right_elbow": {
+      "parent": "right_shoulder",
+      "joint_class": "elbow",
+      "bones": [
+        "rightLowerArm"
+      ],
+      "dof_envelope": {
+        "rightLowerArm": {
+          "flexion": {
+            "typical_deg": [
+              0.0,
+              145.0
+            ],
+            "max_deg": [
+              -10.0,
+              150.0
+            ],
+            "enforced": true
+          },
+          "abduction": {
+            "typical_deg": [
+              -5.0,
+              5.0
+            ],
+            "max_deg": [
+              -5.0,
+              5.0
+            ],
+            "enforced": true
+          },
+          "twist": {
+            "typical_deg": [
+              -80.0,
+              80.0
+            ],
+            "max_deg": [
+              -85.0,
+              85.0
+            ],
+            "enforced": true
+          }
+        }
+      }
+    },
+    "right_wrist": {
+      "parent": "right_elbow",
+      "joint_class": "wrist",
+      "bones": [
+        "rightHand"
+      ],
+      "dof_envelope": {
+        "rightHand": {
+          "flexion": {
+            "typical_deg": [
+              -70.0,
+              80.0
+            ],
+            "max_deg": [
+              -80.0,
+              90.0
+            ],
+            "enforced": true
+          },
+          "abduction": {
+            "typical_deg": [
+              -30.0,
+              20.0
+            ],
+            "max_deg": [
+              -35.0,
+              25.0
+            ],
+            "enforced": true
+          },
+          "twist": {
+            "typical_deg": [
+              -10.0,
+              10.0
+            ],
+            "max_deg": [
+              -15.0,
+              15.0
+            ],
+            "enforced": true
+          }
+        }
+      }
+    },
+    "right_thumb": {
+      "parent": "right_wrist",
+      "joint_class": "thumb",
+      "bones": [
+        "rightThumbMetacarpal",
+        "rightThumbProximal",
+        "rightThumbDistal"
+      ],
+      "dof_envelope": {
+        "rightThumbMetacarpal": {
+          "flexion": {
+            "typical_deg": [
+              -60.0,
+              60.0
+            ],
+            "max_deg": [
+              -75.0,
+              75.0
+            ],
+            "enforced": false
+          },
+          "abduction": {
+            "typical_deg": [
+              -60.0,
+              60.0
+            ],
+            "max_deg": [
+              -75.0,
+              75.0
+            ],
+            "enforced": false
+          },
+          "twist": {
+            "typical_deg": [
+              -60.0,
+              60.0
+            ],
+            "max_deg": [
+              -75.0,
+              75.0
+            ],
+            "enforced": false
+          }
+        },
+        "rightThumbProximal": {
+          "flexion": {
+            "typical_deg": [
+              -60.0,
+              60.0
+            ],
+            "max_deg": [
+              -75.0,
+              75.0
+            ],
+            "enforced": false
+          },
+          "abduction": {
+            "typical_deg": [
+              -60.0,
+              60.0
+            ],
+            "max_deg": [
+              -75.0,
+              75.0
+            ],
+            "enforced": false
+          },
+          "twist": {
+            "typical_deg": [
+              -60.0,
+              60.0
+            ],
+            "max_deg": [
+              -75.0,
+              75.0
+            ],
+            "enforced": false
+          }
+        },
+        "rightThumbDistal": {
+          "flexion": {
+            "typical_deg": [
+              -60.0,
+              60.0
+            ],
+            "max_deg": [
+              -75.0,
+              75.0
+            ],
+            "enforced": false
+          },
+          "abduction": {
+            "typical_deg": [
+              -60.0,
+              60.0
+            ],
+            "max_deg": [
+              -75.0,
+              75.0
+            ],
+            "enforced": false
+          },
+          "twist": {
+            "typical_deg": [
+              -60.0,
+              60.0
+            ],
+            "max_deg": [
+              -75.0,
+              75.0
+            ],
+            "enforced": false
+          }
+        }
+      }
+    },
+    "right_index": {
+      "parent": "right_wrist",
+      "joint_class": "digit",
+      "bones": [
+        "rightIndexProximal",
+        "rightIndexIntermediate",
+        "rightIndexDistal"
+      ],
+      "dof_envelope": {
+        "rightIndexProximal": {
+          "flexion": {
+            "typical_deg": [
+              -20.0,
+              90.0
+            ],
+            "max_deg": [
+              -30.0,
+              100.0
+            ],
+            "enforced": true
+          },
+          "abduction": {
+            "typical_deg": [
+              -20.0,
+              20.0
+            ],
+            "max_deg": [
+              -25.0,
+              25.0
+            ],
+            "enforced": true
+          },
+          "twist": {
+            "typical_deg": [
+              -5.0,
+              5.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": false
+          }
+        },
+        "rightIndexIntermediate": {
+          "flexion": {
+            "typical_deg": [
+              -5.0,
+              110.0
+            ],
+            "max_deg": [
+              -10.0,
+              120.0
+            ],
+            "enforced": true
+          },
+          "abduction": {
+            "typical_deg": [
+              -10.0,
+              10.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": true
+          },
+          "twist": {
+            "typical_deg": [
+              -5.0,
+              5.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": false
+          }
+        },
+        "rightIndexDistal": {
+          "flexion": {
+            "typical_deg": [
+              -10.0,
+              80.0
+            ],
+            "max_deg": [
+              -15.0,
+              90.0
+            ],
+            "enforced": true
+          },
+          "abduction": {
+            "typical_deg": [
+              -10.0,
+              10.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": true
+          },
+          "twist": {
+            "typical_deg": [
+              -5.0,
+              5.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": false
+          }
+        }
+      }
+    },
+    "right_middle": {
+      "parent": "right_wrist",
+      "joint_class": "digit",
+      "bones": [
+        "rightMiddleProximal",
+        "rightMiddleIntermediate",
+        "rightMiddleDistal"
+      ],
+      "dof_envelope": {
+        "rightMiddleProximal": {
+          "flexion": {
+            "typical_deg": [
+              -20.0,
+              90.0
+            ],
+            "max_deg": [
+              -30.0,
+              100.0
+            ],
+            "enforced": true
+          },
+          "abduction": {
+            "typical_deg": [
+              -20.0,
+              20.0
+            ],
+            "max_deg": [
+              -25.0,
+              25.0
+            ],
+            "enforced": true
+          },
+          "twist": {
+            "typical_deg": [
+              -5.0,
+              5.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": false
+          }
+        },
+        "rightMiddleIntermediate": {
+          "flexion": {
+            "typical_deg": [
+              -5.0,
+              110.0
+            ],
+            "max_deg": [
+              -10.0,
+              120.0
+            ],
+            "enforced": true
+          },
+          "abduction": {
+            "typical_deg": [
+              -10.0,
+              10.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": true
+          },
+          "twist": {
+            "typical_deg": [
+              -5.0,
+              5.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": false
+          }
+        },
+        "rightMiddleDistal": {
+          "flexion": {
+            "typical_deg": [
+              -10.0,
+              80.0
+            ],
+            "max_deg": [
+              -15.0,
+              90.0
+            ],
+            "enforced": true
+          },
+          "abduction": {
+            "typical_deg": [
+              -10.0,
+              10.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": true
+          },
+          "twist": {
+            "typical_deg": [
+              -5.0,
+              5.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": false
+          }
+        }
+      }
+    },
+    "right_ring": {
+      "parent": "right_wrist",
+      "joint_class": "digit",
+      "bones": [
+        "rightRingProximal",
+        "rightRingIntermediate",
+        "rightRingDistal"
+      ],
+      "dof_envelope": {
+        "rightRingProximal": {
+          "flexion": {
+            "typical_deg": [
+              -20.0,
+              90.0
+            ],
+            "max_deg": [
+              -30.0,
+              100.0
+            ],
+            "enforced": true
+          },
+          "abduction": {
+            "typical_deg": [
+              -20.0,
+              20.0
+            ],
+            "max_deg": [
+              -25.0,
+              25.0
+            ],
+            "enforced": true
+          },
+          "twist": {
+            "typical_deg": [
+              -5.0,
+              5.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": false
+          }
+        },
+        "rightRingIntermediate": {
+          "flexion": {
+            "typical_deg": [
+              -5.0,
+              110.0
+            ],
+            "max_deg": [
+              -10.0,
+              120.0
+            ],
+            "enforced": true
+          },
+          "abduction": {
+            "typical_deg": [
+              -10.0,
+              10.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": true
+          },
+          "twist": {
+            "typical_deg": [
+              -5.0,
+              5.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": false
+          }
+        },
+        "rightRingDistal": {
+          "flexion": {
+            "typical_deg": [
+              -10.0,
+              80.0
+            ],
+            "max_deg": [
+              -15.0,
+              90.0
+            ],
+            "enforced": true
+          },
+          "abduction": {
+            "typical_deg": [
+              -10.0,
+              10.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": true
+          },
+          "twist": {
+            "typical_deg": [
+              -5.0,
+              5.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": false
+          }
+        }
+      }
+    },
+    "right_little": {
+      "parent": "right_wrist",
+      "joint_class": "digit",
+      "bones": [
+        "rightLittleProximal",
+        "rightLittleIntermediate",
+        "rightLittleDistal"
+      ],
+      "dof_envelope": {
+        "rightLittleProximal": {
+          "flexion": {
+            "typical_deg": [
+              -20.0,
+              90.0
+            ],
+            "max_deg": [
+              -30.0,
+              100.0
+            ],
+            "enforced": true
+          },
+          "abduction": {
+            "typical_deg": [
+              -20.0,
+              20.0
+            ],
+            "max_deg": [
+              -25.0,
+              25.0
+            ],
+            "enforced": true
+          },
+          "twist": {
+            "typical_deg": [
+              -5.0,
+              5.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": false
+          }
+        },
+        "rightLittleIntermediate": {
+          "flexion": {
+            "typical_deg": [
+              -5.0,
+              110.0
+            ],
+            "max_deg": [
+              -10.0,
+              120.0
+            ],
+            "enforced": true
+          },
+          "abduction": {
+            "typical_deg": [
+              -10.0,
+              10.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": true
+          },
+          "twist": {
+            "typical_deg": [
+              -5.0,
+              5.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": false
+          }
+        },
+        "rightLittleDistal": {
+          "flexion": {
+            "typical_deg": [
+              -10.0,
+              80.0
+            ],
+            "max_deg": [
+              -15.0,
+              90.0
+            ],
+            "enforced": true
+          },
+          "abduction": {
+            "typical_deg": [
+              -10.0,
+              10.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": true
+          },
+          "twist": {
+            "typical_deg": [
+              -5.0,
+              5.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": false
+          }
+        }
+      }
+    },
+    "right_hip": {
+      "parent": "root",
+      "joint_class": "hip",
+      "bones": [
+        "rightUpperLeg"
+      ],
+      "dof_envelope": {
+        "rightUpperLeg": {
+          "flexion": {
+            "typical_deg": [
+              -30.0,
+              120.0
+            ],
+            "max_deg": [
+              -40.0,
+              130.0
+            ],
+            "enforced": true
+          },
+          "abduction": {
+            "typical_deg": [
+              -30.0,
+              45.0
+            ],
+            "max_deg": [
+              -35.0,
+              50.0
+            ],
+            "enforced": true
+          },
+          "twist": {
+            "typical_deg": [
+              -45.0,
+              45.0
+            ],
+            "max_deg": [
+              -50.0,
+              50.0
+            ],
+            "enforced": true
+          }
+        }
+      }
+    },
+    "right_knee": {
+      "parent": "right_hip",
+      "joint_class": "knee",
+      "bones": [
+        "rightLowerLeg"
+      ],
+      "dof_envelope": {
+        "rightLowerLeg": {
+          "flexion": {
+            "typical_deg": [
+              0.0,
+              135.0
+            ],
+            "max_deg": [
+              -5.0,
+              145.0
+            ],
+            "enforced": true
+          },
+          "abduction": {
+            "typical_deg": [
+              -5.0,
+              5.0
+            ],
+            "max_deg": [
+              -5.0,
+              5.0
+            ],
+            "enforced": true
+          },
+          "twist": {
+            "typical_deg": [
+              -30.0,
+              10.0
+            ],
+            "max_deg": [
+              -35.0,
+              15.0
+            ],
+            "enforced": true
+          }
+        }
+      }
+    },
+    "right_ankle": {
+      "parent": "right_knee",
+      "joint_class": "ankle",
+      "bones": [
+        "rightFoot"
+      ],
+      "dof_envelope": {
+        "rightFoot": {
+          "flexion": {
+            "typical_deg": [
+              -20.0,
+              50.0
+            ],
+            "max_deg": [
+              -25.0,
+              55.0
+            ],
+            "enforced": true
+          },
+          "abduction": {
+            "typical_deg": [
+              -15.0,
+              35.0
+            ],
+            "max_deg": [
+              -20.0,
+              40.0
+            ],
+            "enforced": true
+          },
+          "twist": {
+            "typical_deg": [
+              -10.0,
+              10.0
+            ],
+            "max_deg": [
+              -15.0,
+              15.0
+            ],
+            "enforced": false
+          }
+        }
+      }
+    },
+    "right_toes": {
+      "parent": "right_ankle",
+      "joint_class": "toes",
+      "bones": [
+        "rightToes"
+      ],
+      "dof_envelope": {
+        "rightToes": {
+          "flexion": {
+            "typical_deg": [
+              -70.0,
+              40.0
+            ],
+            "max_deg": [
+              -80.0,
+              45.0
+            ],
+            "enforced": false
+          },
+          "abduction": {
+            "typical_deg": [
+              -10.0,
+              10.0
+            ],
+            "max_deg": [
+              -15.0,
+              15.0
+            ],
+            "enforced": false
+          },
+          "twist": {
+            "typical_deg": [
+              -5.0,
+              5.0
+            ],
+            "max_deg": [
+              -10.0,
+              10.0
+            ],
+            "enforced": false
+          }
+        }
+      }
+    }
+  },
+  "move_sets": {
+    "root": {
+      "hold": {},
+      "neutral": {
+        "hips": {
+          "flexion": 0.0,
+          "abduction": 0.0,
+          "twist": 0.0
+        }
+      },
+      "lean_forward": {
+        "hips": {
+          "flexion": 0.7
+        }
+      },
+      "lean_back": {
+        "hips": {
+          "flexion": -0.8
+        }
+      },
+      "lean_left": {
+        "hips": {
+          "abduction": 0.8
+        }
+      },
+      "lean_right": {
+        "hips": {
+          "abduction": -0.8
+        }
+      },
+      "rotate_left": {
+        "hips": {
+          "twist": 0.8
+        }
+      },
+      "rotate_right": {
+        "hips": {
+          "twist": -0.8
+        }
+      },
+      "brace": {
+        "hips": {
+          "flexion": 0.15
+        }
+      }
+    },
+    "spine": {
+      "hold": {},
+      "neutral": {
+        "spine": {
+          "flexion": 0.0,
+          "abduction": 0.0,
+          "twist": 0.0
+        },
+        "chest": {
+          "flexion": 0.0,
+          "abduction": 0.0,
+          "twist": 0.0
+        },
+        "upperChest": {
+          "flexion": 0.0,
+          "abduction": 0.0,
+          "twist": 0.0
+        }
+      },
+      "lean_forward": {
+        "spine": {
+          "flexion": 0.7
+        },
+        "chest": {
+          "flexion": 0.7
+        },
+        "upperChest": {
+          "flexion": 0.7
+        }
+      },
+      "lean_back": {
+        "spine": {
+          "flexion": -0.8
+        },
+        "chest": {
+          "flexion": -0.8
+        },
+        "upperChest": {
+          "flexion": -0.8
+        }
+      },
+      "lean_left": {
+        "spine": {
+          "abduction": 0.8
+        },
+        "chest": {
+          "abduction": 0.8
+        },
+        "upperChest": {
+          "abduction": 0.8
+        }
+      },
+      "lean_right": {
+        "spine": {
+          "abduction": -0.8
+        },
+        "chest": {
+          "abduction": -0.8
+        },
+        "upperChest": {
+          "abduction": -0.8
+        }
+      },
+      "rotate_left": {
+        "spine": {
+          "twist": 0.8
+        },
+        "chest": {
+          "twist": 0.8
+        },
+        "upperChest": {
+          "twist": 0.8
+        }
+      },
+      "rotate_right": {
+        "spine": {
+          "twist": -0.8
+        },
+        "chest": {
+          "twist": -0.8
+        },
+        "upperChest": {
+          "twist": -0.8
+        }
+      },
+      "brace": {
+        "spine": {
+          "flexion": 0.15
+        },
+        "chest": {
+          "flexion": 0.15
+        },
+        "upperChest": {
+          "flexion": 0.15
+        }
+      }
+    },
+    "neck": {
+      "hold": {},
+      "neutral": {
+        "neck": {
+          "flexion": 0.0,
+          "abduction": 0.0,
+          "twist": 0.0
+        }
+      },
+      "lean_forward": {
+        "neck": {
+          "flexion": 0.7
+        }
+      },
+      "lean_back": {
+        "neck": {
+          "flexion": -0.8
+        }
+      },
+      "lean_left": {
+        "neck": {
+          "abduction": 0.8
+        }
+      },
+      "lean_right": {
+        "neck": {
+          "abduction": -0.8
+        }
+      },
+      "rotate_left": {
+        "neck": {
+          "twist": 0.8
+        }
+      },
+      "rotate_right": {
+        "neck": {
+          "twist": -0.8
+        }
+      },
+      "brace": {
+        "neck": {
+          "flexion": 0.15
+        }
+      },
+      "look_down": {
+        "neck": {
+          "flexion": 0.8
+        }
+      },
+      "look_up": {
+        "neck": {
+          "flexion": -0.8
+        }
+      },
+      "tilt_left": {
+        "neck": {
+          "abduction": 0.8
+        }
+      },
+      "tilt_right": {
+        "neck": {
+          "abduction": -0.8
+        }
+      },
+      "look_left": {
+        "neck": {
+          "twist": 0.8
+        }
+      },
+      "look_right": {
+        "neck": {
+          "twist": -0.8
+        }
+      }
+    },
+    "head": {
+      "hold": {},
+      "neutral": {
+        "head": {
+          "flexion": 0.0,
+          "abduction": 0.0,
+          "twist": 0.0
+        }
+      },
+      "lean_forward": {
+        "head": {
+          "flexion": 0.7
+        }
+      },
+      "lean_back": {
+        "head": {
+          "flexion": -0.8
+        }
+      },
+      "lean_left": {
+        "head": {
+          "abduction": 0.8
+        }
+      },
+      "lean_right": {
+        "head": {
+          "abduction": -0.8
+        }
+      },
+      "rotate_left": {
+        "head": {
+          "twist": 0.8
+        }
+      },
+      "rotate_right": {
+        "head": {
+          "twist": -0.8
+        }
+      },
+      "brace": {
+        "head": {
+          "flexion": 0.15
+        }
+      },
+      "look_down": {
+        "head": {
+          "flexion": 0.8
+        }
+      },
+      "look_up": {
+        "head": {
+          "flexion": -0.8
+        }
+      },
+      "tilt_left": {
+        "head": {
+          "abduction": 0.8
+        }
+      },
+      "tilt_right": {
+        "head": {
+          "abduction": -0.8
+        }
+      },
+      "look_left": {
+        "head": {
+          "twist": 0.8
+        }
+      },
+      "look_right": {
+        "head": {
+          "twist": -0.8
+        }
+      }
+    },
+    "left_clavicle": {
+      "hold": {},
+      "neutral": {
+        "leftShoulder": {
+          "flexion": 0.0,
+          "abduction": 0.0
+        }
+      },
+      "shrug": {
+        "leftShoulder": {
+          "abduction": 0.9
+        }
+      },
+      "depress": {
+        "leftShoulder": {
+          "abduction": -0.9
+        }
+      },
+      "protract": {
+        "leftShoulder": {
+          "flexion": 0.9
+        }
+      },
+      "retract": {
+        "leftShoulder": {
+          "flexion": -0.9
+        }
+      },
+      "rotate_up": {
+        "leftShoulder": {
+          "twist": 0.9
+        }
+      },
+      "rotate_down": {
+        "leftShoulder": {
+          "twist": -0.9
+        }
+      }
+    },
+    "left_shoulder": {
+      "hold": {},
+      "flex_forward": {
+        "leftUpperArm": {
+          "flexion": 0.55
+        }
+      },
+      "raise_overhead": {
+        "leftUpperArm": {
+          "flexion": 1.0
+        }
+      },
+      "extend_back": {
+        "leftUpperArm": {
+          "flexion": -1.0
+        }
+      },
+      "abduct": {
+        "leftUpperArm": {
+          "abduction": 0.6
+        }
+      },
+      "abduct_full": {
+        "leftUpperArm": {
+          "abduction": 1.0
+        }
+      },
+      "adduct": {
+        "leftUpperArm": {
+          "abduction": -1.0
+        }
+      },
+      "rotate_in": {
+        "leftUpperArm": {
+          "twist": 1.0
+        }
+      },
+      "rotate_out": {
+        "leftUpperArm": {
+          "twist": -1.0
+        }
+      },
+      "reach_forward_across": {
+        "leftUpperArm": {
+          "flexion": 0.6,
+          "abduction": -0.7
+        }
+      },
+      "reach_out_and_up": {
+        "leftUpperArm": {
+          "flexion": 0.5,
+          "abduction": 0.8
+        }
+      }
+    },
+    "left_elbow": {
+      "hold": {},
+      "extend": {
+        "leftLowerArm": {
+          "flexion": 0.0
+        }
+      },
+      "flex": {
+        "leftLowerArm": {
+          "flexion": 0.55
+        }
+      },
+      "flex_full": {
+        "leftLowerArm": {
+          "flexion": 1.0
+        }
+      },
+      "pronate": {
+        "leftLowerArm": {
+          "twist": 1.0
+        }
+      },
+      "supinate": {
+        "leftLowerArm": {
+          "twist": -1.0
+        }
+      },
+      "neutral_rotation": {
+        "leftLowerArm": {
+          "twist": 0.0
+        }
+      },
+      "carry": {
+        "leftLowerArm": {
+          "flexion": 0.62,
+          "twist": 0.25
+        }
+      },
+      "valgus": {
+        "leftLowerArm": {
+          "abduction": 1.0
+        }
+      },
+      "varus": {
+        "leftLowerArm": {
+          "abduction": -1.0
+        }
+      }
+    },
+    "left_wrist": {
+      "hold": {},
+      "neutral": {
+        "leftHand": {
+          "flexion": 0.0,
+          "abduction": 0.0,
+          "twist": 0.0
+        }
+      },
+      "flex": {
+        "leftHand": {
+          "flexion": 0.8
+        }
+      },
+      "extend": {
+        "leftHand": {
+          "flexion": -0.8
+        }
+      },
+      "deviate_radial": {
+        "leftHand": {
+          "abduction": 0.9
+        }
+      },
+      "deviate_ulnar": {
+        "leftHand": {
+          "abduction": -0.9
+        }
+      },
+      "rotate_in": {
+        "leftHand": {
+          "twist": 1.0
+        }
+      },
+      "rotate_out": {
+        "leftHand": {
+          "twist": -1.0
+        }
+      },
+      "cock_back": {
+        "leftHand": {
+          "flexion": -0.55,
+          "abduction": 0.4
+        }
+      }
+    },
+    "left_thumb": {
+      "hold": {},
+      "extend": {
+        "leftThumbMetacarpal": {
+          "flexion": 0.0
+        },
+        "leftThumbProximal": {
+          "flexion": 0.0
+        },
+        "leftThumbDistal": {
+          "flexion": 0.0
+        }
+      },
+      "flex_light": {
+        "leftThumbMetacarpal": {
+          "flexion": 0.35
+        },
+        "leftThumbProximal": {
+          "flexion": 0.3
+        },
+        "leftThumbDistal": {
+          "flexion": 0.25
+        }
+      },
+      "flex": {
+        "leftThumbMetacarpal": {
+          "flexion": 0.7
+        },
+        "leftThumbProximal": {
+          "flexion": 0.65
+        },
+        "leftThumbDistal": {
+          "flexion": 0.55
+        }
+      },
+      "flex_full": {
+        "leftThumbMetacarpal": {
+          "flexion": 1.0
+        },
+        "leftThumbProximal": {
+          "flexion": 1.0
+        },
+        "leftThumbDistal": {
+          "flexion": 0.95
+        }
+      },
+      "hook": {
+        "leftThumbMetacarpal": {
+          "flexion": 0.3
+        },
+        "leftThumbProximal": {
+          "flexion": 1.0
+        },
+        "leftThumbDistal": {
+          "flexion": 1.0
+        }
+      },
+      "hyperextend": {
+        "leftThumbMetacarpal": {
+          "flexion": -1.0
+        },
+        "leftThumbProximal": {
+          "flexion": 0.0
+        },
+        "leftThumbDistal": {
+          "flexion": 0.0
+        }
+      },
+      "abduct": {
+        "leftThumbMetacarpal": {
+          "abduction": 0.85
+        }
+      },
+      "adduct": {
+        "leftThumbMetacarpal": {
+          "abduction": -0.85
+        }
+      },
+      "rotate_in": {
+        "leftThumbMetacarpal": {
+          "twist": 0.8
+        }
+      },
+      "rotate_out": {
+        "leftThumbMetacarpal": {
+          "twist": -0.8
+        }
+      },
+      "oppose": {
+        "leftThumbMetacarpal": {
+          "flexion": 0.45,
+          "abduction": -0.9,
+          "twist": 0.85
+        },
+        "leftThumbProximal": {
+          "flexion": 0.35
+        }
+      },
+      "reposition": {
+        "leftThumbMetacarpal": {
+          "flexion": 0.0,
+          "abduction": 0.9,
+          "twist": -0.6
+        }
+      }
+    },
+    "left_index": {
+      "hold": {},
+      "extend": {
+        "leftIndexProximal": {
+          "flexion": 0.0
+        },
+        "leftIndexIntermediate": {
+          "flexion": 0.0
+        },
+        "leftIndexDistal": {
+          "flexion": 0.0
+        }
+      },
+      "flex_light": {
+        "leftIndexProximal": {
+          "flexion": 0.35
+        },
+        "leftIndexIntermediate": {
+          "flexion": 0.3
+        },
+        "leftIndexDistal": {
+          "flexion": 0.25
+        }
+      },
+      "flex": {
+        "leftIndexProximal": {
+          "flexion": 0.7
+        },
+        "leftIndexIntermediate": {
+          "flexion": 0.65
+        },
+        "leftIndexDistal": {
+          "flexion": 0.55
+        }
+      },
+      "flex_full": {
+        "leftIndexProximal": {
+          "flexion": 1.0
+        },
+        "leftIndexIntermediate": {
+          "flexion": 1.0
+        },
+        "leftIndexDistal": {
+          "flexion": 0.95
+        }
+      },
+      "hook": {
+        "leftIndexProximal": {
+          "flexion": 0.3
+        },
+        "leftIndexIntermediate": {
+          "flexion": 1.0
+        },
+        "leftIndexDistal": {
+          "flexion": 1.0
+        }
+      },
+      "hyperextend": {
+        "leftIndexProximal": {
+          "flexion": -1.0
+        },
+        "leftIndexIntermediate": {
+          "flexion": 0.0
+        },
+        "leftIndexDistal": {
+          "flexion": 0.0
+        }
+      },
+      "abduct": {
+        "leftIndexProximal": {
+          "abduction": 0.85
+        }
+      },
+      "adduct": {
+        "leftIndexProximal": {
+          "abduction": -0.85
+        }
+      },
+      "rotate_in": {
+        "leftIndexProximal": {
+          "twist": 0.8
+        }
+      },
+      "rotate_out": {
+        "leftIndexProximal": {
+          "twist": -0.8
+        }
+      }
+    },
+    "left_middle": {
+      "hold": {},
+      "extend": {
+        "leftMiddleProximal": {
+          "flexion": 0.0
+        },
+        "leftMiddleIntermediate": {
+          "flexion": 0.0
+        },
+        "leftMiddleDistal": {
+          "flexion": 0.0
+        }
+      },
+      "flex_light": {
+        "leftMiddleProximal": {
+          "flexion": 0.35
+        },
+        "leftMiddleIntermediate": {
+          "flexion": 0.3
+        },
+        "leftMiddleDistal": {
+          "flexion": 0.25
+        }
+      },
+      "flex": {
+        "leftMiddleProximal": {
+          "flexion": 0.7
+        },
+        "leftMiddleIntermediate": {
+          "flexion": 0.65
+        },
+        "leftMiddleDistal": {
+          "flexion": 0.55
+        }
+      },
+      "flex_full": {
+        "leftMiddleProximal": {
+          "flexion": 1.0
+        },
+        "leftMiddleIntermediate": {
+          "flexion": 1.0
+        },
+        "leftMiddleDistal": {
+          "flexion": 0.95
+        }
+      },
+      "hook": {
+        "leftMiddleProximal": {
+          "flexion": 0.3
+        },
+        "leftMiddleIntermediate": {
+          "flexion": 1.0
+        },
+        "leftMiddleDistal": {
+          "flexion": 1.0
+        }
+      },
+      "hyperextend": {
+        "leftMiddleProximal": {
+          "flexion": -1.0
+        },
+        "leftMiddleIntermediate": {
+          "flexion": 0.0
+        },
+        "leftMiddleDistal": {
+          "flexion": 0.0
+        }
+      },
+      "abduct": {
+        "leftMiddleProximal": {
+          "abduction": 0.85
+        }
+      },
+      "adduct": {
+        "leftMiddleProximal": {
+          "abduction": -0.85
+        }
+      },
+      "rotate_in": {
+        "leftMiddleProximal": {
+          "twist": 0.8
+        }
+      },
+      "rotate_out": {
+        "leftMiddleProximal": {
+          "twist": -0.8
+        }
+      }
+    },
+    "left_ring": {
+      "hold": {},
+      "extend": {
+        "leftRingProximal": {
+          "flexion": 0.0
+        },
+        "leftRingIntermediate": {
+          "flexion": 0.0
+        },
+        "leftRingDistal": {
+          "flexion": 0.0
+        }
+      },
+      "flex_light": {
+        "leftRingProximal": {
+          "flexion": 0.35
+        },
+        "leftRingIntermediate": {
+          "flexion": 0.3
+        },
+        "leftRingDistal": {
+          "flexion": 0.25
+        }
+      },
+      "flex": {
+        "leftRingProximal": {
+          "flexion": 0.7
+        },
+        "leftRingIntermediate": {
+          "flexion": 0.65
+        },
+        "leftRingDistal": {
+          "flexion": 0.55
+        }
+      },
+      "flex_full": {
+        "leftRingProximal": {
+          "flexion": 1.0
+        },
+        "leftRingIntermediate": {
+          "flexion": 1.0
+        },
+        "leftRingDistal": {
+          "flexion": 0.95
+        }
+      },
+      "hook": {
+        "leftRingProximal": {
+          "flexion": 0.3
+        },
+        "leftRingIntermediate": {
+          "flexion": 1.0
+        },
+        "leftRingDistal": {
+          "flexion": 1.0
+        }
+      },
+      "hyperextend": {
+        "leftRingProximal": {
+          "flexion": -1.0
+        },
+        "leftRingIntermediate": {
+          "flexion": 0.0
+        },
+        "leftRingDistal": {
+          "flexion": 0.0
+        }
+      },
+      "abduct": {
+        "leftRingProximal": {
+          "abduction": 0.85
+        }
+      },
+      "adduct": {
+        "leftRingProximal": {
+          "abduction": -0.85
+        }
+      },
+      "rotate_in": {
+        "leftRingProximal": {
+          "twist": 0.8
+        }
+      },
+      "rotate_out": {
+        "leftRingProximal": {
+          "twist": -0.8
+        }
+      }
+    },
+    "left_little": {
+      "hold": {},
+      "extend": {
+        "leftLittleProximal": {
+          "flexion": 0.0
+        },
+        "leftLittleIntermediate": {
+          "flexion": 0.0
+        },
+        "leftLittleDistal": {
+          "flexion": 0.0
+        }
+      },
+      "flex_light": {
+        "leftLittleProximal": {
+          "flexion": 0.35
+        },
+        "leftLittleIntermediate": {
+          "flexion": 0.3
+        },
+        "leftLittleDistal": {
+          "flexion": 0.25
+        }
+      },
+      "flex": {
+        "leftLittleProximal": {
+          "flexion": 0.7
+        },
+        "leftLittleIntermediate": {
+          "flexion": 0.65
+        },
+        "leftLittleDistal": {
+          "flexion": 0.55
+        }
+      },
+      "flex_full": {
+        "leftLittleProximal": {
+          "flexion": 1.0
+        },
+        "leftLittleIntermediate": {
+          "flexion": 1.0
+        },
+        "leftLittleDistal": {
+          "flexion": 0.95
+        }
+      },
+      "hook": {
+        "leftLittleProximal": {
+          "flexion": 0.3
+        },
+        "leftLittleIntermediate": {
+          "flexion": 1.0
+        },
+        "leftLittleDistal": {
+          "flexion": 1.0
+        }
+      },
+      "hyperextend": {
+        "leftLittleProximal": {
+          "flexion": -1.0
+        },
+        "leftLittleIntermediate": {
+          "flexion": 0.0
+        },
+        "leftLittleDistal": {
+          "flexion": 0.0
+        }
+      },
+      "abduct": {
+        "leftLittleProximal": {
+          "abduction": 0.85
+        }
+      },
+      "adduct": {
+        "leftLittleProximal": {
+          "abduction": -0.85
+        }
+      },
+      "rotate_in": {
+        "leftLittleProximal": {
+          "twist": 0.8
+        }
+      },
+      "rotate_out": {
+        "leftLittleProximal": {
+          "twist": -0.8
+        }
+      }
+    },
+    "left_hip": {
+      "hold": {},
+      "neutral": {
+        "leftUpperLeg": {
+          "flexion": 0.0,
+          "abduction": 0.0,
+          "twist": 0.0
+        }
+      },
+      "flex": {
+        "leftUpperLeg": {
+          "flexion": 0.5
+        }
+      },
+      "flex_high": {
+        "leftUpperLeg": {
+          "flexion": 1.0
+        }
+      },
+      "extend": {
+        "leftUpperLeg": {
+          "flexion": -1.0
+        }
+      },
+      "abduct": {
+        "leftUpperLeg": {
+          "abduction": 1.0
+        }
+      },
+      "adduct": {
+        "leftUpperLeg": {
+          "abduction": -1.0
+        }
+      },
+      "rotate_in": {
+        "leftUpperLeg": {
+          "twist": 1.0
+        }
+      },
+      "rotate_out": {
+        "leftUpperLeg": {
+          "twist": -1.0
+        }
+      }
+    },
+    "left_knee": {
+      "hold": {},
+      "extend": {
+        "leftLowerLeg": {
+          "flexion": 0.0
+        }
+      },
+      "flex": {
+        "leftLowerLeg": {
+          "flexion": 0.5
+        }
+      },
+      "flex_full": {
+        "leftLowerLeg": {
+          "flexion": 1.0
+        }
+      },
+      "rotate_in": {
+        "leftLowerLeg": {
+          "twist": 1.0
+        }
+      },
+      "rotate_out": {
+        "leftLowerLeg": {
+          "twist": -1.0
+        }
+      },
+      "valgus": {
+        "leftLowerLeg": {
+          "abduction": 1.0
+        }
+      },
+      "varus": {
+        "leftLowerLeg": {
+          "abduction": -1.0
+        }
+      }
+    },
+    "left_ankle": {
+      "hold": {},
+      "neutral": {
+        "leftFoot": {
+          "flexion": 0.0,
+          "abduction": 0.0
+        }
+      },
+      "dorsiflex": {
+        "leftFoot": {
+          "flexion": -1.0
+        }
+      },
+      "plantarflex": {
+        "leftFoot": {
+          "flexion": 1.0
+        }
+      },
+      "invert": {
+        "leftFoot": {
+          "abduction": -1.0
+        }
+      },
+      "evert": {
+        "leftFoot": {
+          "abduction": 1.0
+        }
+      },
+      "rotate_in": {
+        "leftFoot": {
+          "twist": 1.0
+        }
+      },
+      "rotate_out": {
+        "leftFoot": {
+          "twist": -1.0
+        }
+      }
+    },
+    "left_toes": {
+      "hold": {},
+      "neutral": {
+        "leftToes": {
+          "flexion": 0.0
+        }
+      },
+      "curl": {
+        "leftToes": {
+          "flexion": 1.0
+        }
+      },
+      "lift": {
+        "leftToes": {
+          "flexion": -1.0
+        }
+      },
+      "push_off": {
+        "leftToes": {
+          "flexion": 0.7
+        }
+      },
+      "splay": {
+        "leftToes": {
+          "abduction": 1.0
+        }
+      },
+      "rotate_in": {
+        "leftToes": {
+          "twist": 1.0
+        }
+      },
+      "rotate_out": {
+        "leftToes": {
+          "twist": -1.0
+        }
+      }
+    },
+    "right_clavicle": {
+      "hold": {},
+      "neutral": {
+        "rightShoulder": {
+          "flexion": 0.0,
+          "abduction": 0.0
+        }
+      },
+      "shrug": {
+        "rightShoulder": {
+          "abduction": 0.9
+        }
+      },
+      "depress": {
+        "rightShoulder": {
+          "abduction": -0.9
+        }
+      },
+      "protract": {
+        "rightShoulder": {
+          "flexion": 0.9
+        }
+      },
+      "retract": {
+        "rightShoulder": {
+          "flexion": -0.9
+        }
+      },
+      "rotate_up": {
+        "rightShoulder": {
+          "twist": 0.9
+        }
+      },
+      "rotate_down": {
+        "rightShoulder": {
+          "twist": -0.9
+        }
+      }
+    },
+    "right_shoulder": {
+      "hold": {},
+      "flex_forward": {
+        "rightUpperArm": {
+          "flexion": 0.55
+        }
+      },
+      "raise_overhead": {
+        "rightUpperArm": {
+          "flexion": 1.0
+        }
+      },
+      "extend_back": {
+        "rightUpperArm": {
+          "flexion": -1.0
+        }
+      },
+      "abduct": {
+        "rightUpperArm": {
+          "abduction": 0.6
+        }
+      },
+      "abduct_full": {
+        "rightUpperArm": {
+          "abduction": 1.0
+        }
+      },
+      "adduct": {
+        "rightUpperArm": {
+          "abduction": -1.0
+        }
+      },
+      "rotate_in": {
+        "rightUpperArm": {
+          "twist": 1.0
+        }
+      },
+      "rotate_out": {
+        "rightUpperArm": {
+          "twist": -1.0
+        }
+      },
+      "reach_forward_across": {
+        "rightUpperArm": {
+          "flexion": 0.6,
+          "abduction": -0.7
+        }
+      },
+      "reach_out_and_up": {
+        "rightUpperArm": {
+          "flexion": 0.5,
+          "abduction": 0.8
+        }
+      }
+    },
+    "right_elbow": {
+      "hold": {},
+      "extend": {
+        "rightLowerArm": {
+          "flexion": 0.0
+        }
+      },
+      "flex": {
+        "rightLowerArm": {
+          "flexion": 0.55
+        }
+      },
+      "flex_full": {
+        "rightLowerArm": {
+          "flexion": 1.0
+        }
+      },
+      "pronate": {
+        "rightLowerArm": {
+          "twist": 1.0
+        }
+      },
+      "supinate": {
+        "rightLowerArm": {
+          "twist": -1.0
+        }
+      },
+      "neutral_rotation": {
+        "rightLowerArm": {
+          "twist": 0.0
+        }
+      },
+      "carry": {
+        "rightLowerArm": {
+          "flexion": 0.62,
+          "twist": 0.25
+        }
+      },
+      "valgus": {
+        "rightLowerArm": {
+          "abduction": 1.0
+        }
+      },
+      "varus": {
+        "rightLowerArm": {
+          "abduction": -1.0
+        }
+      }
+    },
+    "right_wrist": {
+      "hold": {},
+      "neutral": {
+        "rightHand": {
+          "flexion": 0.0,
+          "abduction": 0.0,
+          "twist": 0.0
+        }
+      },
+      "flex": {
+        "rightHand": {
+          "flexion": 0.8
+        }
+      },
+      "extend": {
+        "rightHand": {
+          "flexion": -0.8
+        }
+      },
+      "deviate_radial": {
+        "rightHand": {
+          "abduction": 0.9
+        }
+      },
+      "deviate_ulnar": {
+        "rightHand": {
+          "abduction": -0.9
+        }
+      },
+      "rotate_in": {
+        "rightHand": {
+          "twist": 1.0
+        }
+      },
+      "rotate_out": {
+        "rightHand": {
+          "twist": -1.0
+        }
+      },
+      "cock_back": {
+        "rightHand": {
+          "flexion": -0.55,
+          "abduction": 0.4
+        }
+      }
+    },
+    "right_thumb": {
+      "hold": {},
+      "extend": {
+        "rightThumbMetacarpal": {
+          "flexion": 0.0
+        },
+        "rightThumbProximal": {
+          "flexion": 0.0
+        },
+        "rightThumbDistal": {
+          "flexion": 0.0
+        }
+      },
+      "flex_light": {
+        "rightThumbMetacarpal": {
+          "flexion": 0.35
+        },
+        "rightThumbProximal": {
+          "flexion": 0.3
+        },
+        "rightThumbDistal": {
+          "flexion": 0.25
+        }
+      },
+      "flex": {
+        "rightThumbMetacarpal": {
+          "flexion": 0.7
+        },
+        "rightThumbProximal": {
+          "flexion": 0.65
+        },
+        "rightThumbDistal": {
+          "flexion": 0.55
+        }
+      },
+      "flex_full": {
+        "rightThumbMetacarpal": {
+          "flexion": 1.0
+        },
+        "rightThumbProximal": {
+          "flexion": 1.0
+        },
+        "rightThumbDistal": {
+          "flexion": 0.95
+        }
+      },
+      "hook": {
+        "rightThumbMetacarpal": {
+          "flexion": 0.3
+        },
+        "rightThumbProximal": {
+          "flexion": 1.0
+        },
+        "rightThumbDistal": {
+          "flexion": 1.0
+        }
+      },
+      "hyperextend": {
+        "rightThumbMetacarpal": {
+          "flexion": -1.0
+        },
+        "rightThumbProximal": {
+          "flexion": 0.0
+        },
+        "rightThumbDistal": {
+          "flexion": 0.0
+        }
+      },
+      "abduct": {
+        "rightThumbMetacarpal": {
+          "abduction": 0.85
+        }
+      },
+      "adduct": {
+        "rightThumbMetacarpal": {
+          "abduction": -0.85
+        }
+      },
+      "rotate_in": {
+        "rightThumbMetacarpal": {
+          "twist": 0.8
+        }
+      },
+      "rotate_out": {
+        "rightThumbMetacarpal": {
+          "twist": -0.8
+        }
+      },
+      "oppose": {
+        "rightThumbMetacarpal": {
+          "flexion": 0.45,
+          "abduction": -0.9,
+          "twist": 0.85
+        },
+        "rightThumbProximal": {
+          "flexion": 0.35
+        }
+      },
+      "reposition": {
+        "rightThumbMetacarpal": {
+          "flexion": 0.0,
+          "abduction": 0.9,
+          "twist": -0.6
+        }
+      }
+    },
+    "right_index": {
+      "hold": {},
+      "extend": {
+        "rightIndexProximal": {
+          "flexion": 0.0
+        },
+        "rightIndexIntermediate": {
+          "flexion": 0.0
+        },
+        "rightIndexDistal": {
+          "flexion": 0.0
+        }
+      },
+      "flex_light": {
+        "rightIndexProximal": {
+          "flexion": 0.35
+        },
+        "rightIndexIntermediate": {
+          "flexion": 0.3
+        },
+        "rightIndexDistal": {
+          "flexion": 0.25
+        }
+      },
+      "flex": {
+        "rightIndexProximal": {
+          "flexion": 0.7
+        },
+        "rightIndexIntermediate": {
+          "flexion": 0.65
+        },
+        "rightIndexDistal": {
+          "flexion": 0.55
+        }
+      },
+      "flex_full": {
+        "rightIndexProximal": {
+          "flexion": 1.0
+        },
+        "rightIndexIntermediate": {
+          "flexion": 1.0
+        },
+        "rightIndexDistal": {
+          "flexion": 0.95
+        }
+      },
+      "hook": {
+        "rightIndexProximal": {
+          "flexion": 0.3
+        },
+        "rightIndexIntermediate": {
+          "flexion": 1.0
+        },
+        "rightIndexDistal": {
+          "flexion": 1.0
+        }
+      },
+      "hyperextend": {
+        "rightIndexProximal": {
+          "flexion": -1.0
+        },
+        "rightIndexIntermediate": {
+          "flexion": 0.0
+        },
+        "rightIndexDistal": {
+          "flexion": 0.0
+        }
+      },
+      "abduct": {
+        "rightIndexProximal": {
+          "abduction": 0.85
+        }
+      },
+      "adduct": {
+        "rightIndexProximal": {
+          "abduction": -0.85
+        }
+      },
+      "rotate_in": {
+        "rightIndexProximal": {
+          "twist": 0.8
+        }
+      },
+      "rotate_out": {
+        "rightIndexProximal": {
+          "twist": -0.8
+        }
+      }
+    },
+    "right_middle": {
+      "hold": {},
+      "extend": {
+        "rightMiddleProximal": {
+          "flexion": 0.0
+        },
+        "rightMiddleIntermediate": {
+          "flexion": 0.0
+        },
+        "rightMiddleDistal": {
+          "flexion": 0.0
+        }
+      },
+      "flex_light": {
+        "rightMiddleProximal": {
+          "flexion": 0.35
+        },
+        "rightMiddleIntermediate": {
+          "flexion": 0.3
+        },
+        "rightMiddleDistal": {
+          "flexion": 0.25
+        }
+      },
+      "flex": {
+        "rightMiddleProximal": {
+          "flexion": 0.7
+        },
+        "rightMiddleIntermediate": {
+          "flexion": 0.65
+        },
+        "rightMiddleDistal": {
+          "flexion": 0.55
+        }
+      },
+      "flex_full": {
+        "rightMiddleProximal": {
+          "flexion": 1.0
+        },
+        "rightMiddleIntermediate": {
+          "flexion": 1.0
+        },
+        "rightMiddleDistal": {
+          "flexion": 0.95
+        }
+      },
+      "hook": {
+        "rightMiddleProximal": {
+          "flexion": 0.3
+        },
+        "rightMiddleIntermediate": {
+          "flexion": 1.0
+        },
+        "rightMiddleDistal": {
+          "flexion": 1.0
+        }
+      },
+      "hyperextend": {
+        "rightMiddleProximal": {
+          "flexion": -1.0
+        },
+        "rightMiddleIntermediate": {
+          "flexion": 0.0
+        },
+        "rightMiddleDistal": {
+          "flexion": 0.0
+        }
+      },
+      "abduct": {
+        "rightMiddleProximal": {
+          "abduction": 0.85
+        }
+      },
+      "adduct": {
+        "rightMiddleProximal": {
+          "abduction": -0.85
+        }
+      },
+      "rotate_in": {
+        "rightMiddleProximal": {
+          "twist": 0.8
+        }
+      },
+      "rotate_out": {
+        "rightMiddleProximal": {
+          "twist": -0.8
+        }
+      }
+    },
+    "right_ring": {
+      "hold": {},
+      "extend": {
+        "rightRingProximal": {
+          "flexion": 0.0
+        },
+        "rightRingIntermediate": {
+          "flexion": 0.0
+        },
+        "rightRingDistal": {
+          "flexion": 0.0
+        }
+      },
+      "flex_light": {
+        "rightRingProximal": {
+          "flexion": 0.35
+        },
+        "rightRingIntermediate": {
+          "flexion": 0.3
+        },
+        "rightRingDistal": {
+          "flexion": 0.25
+        }
+      },
+      "flex": {
+        "rightRingProximal": {
+          "flexion": 0.7
+        },
+        "rightRingIntermediate": {
+          "flexion": 0.65
+        },
+        "rightRingDistal": {
+          "flexion": 0.55
+        }
+      },
+      "flex_full": {
+        "rightRingProximal": {
+          "flexion": 1.0
+        },
+        "rightRingIntermediate": {
+          "flexion": 1.0
+        },
+        "rightRingDistal": {
+          "flexion": 0.95
+        }
+      },
+      "hook": {
+        "rightRingProximal": {
+          "flexion": 0.3
+        },
+        "rightRingIntermediate": {
+          "flexion": 1.0
+        },
+        "rightRingDistal": {
+          "flexion": 1.0
+        }
+      },
+      "hyperextend": {
+        "rightRingProximal": {
+          "flexion": -1.0
+        },
+        "rightRingIntermediate": {
+          "flexion": 0.0
+        },
+        "rightRingDistal": {
+          "flexion": 0.0
+        }
+      },
+      "abduct": {
+        "rightRingProximal": {
+          "abduction": 0.85
+        }
+      },
+      "adduct": {
+        "rightRingProximal": {
+          "abduction": -0.85
+        }
+      },
+      "rotate_in": {
+        "rightRingProximal": {
+          "twist": 0.8
+        }
+      },
+      "rotate_out": {
+        "rightRingProximal": {
+          "twist": -0.8
+        }
+      }
+    },
+    "right_little": {
+      "hold": {},
+      "extend": {
+        "rightLittleProximal": {
+          "flexion": 0.0
+        },
+        "rightLittleIntermediate": {
+          "flexion": 0.0
+        },
+        "rightLittleDistal": {
+          "flexion": 0.0
+        }
+      },
+      "flex_light": {
+        "rightLittleProximal": {
+          "flexion": 0.35
+        },
+        "rightLittleIntermediate": {
+          "flexion": 0.3
+        },
+        "rightLittleDistal": {
+          "flexion": 0.25
+        }
+      },
+      "flex": {
+        "rightLittleProximal": {
+          "flexion": 0.7
+        },
+        "rightLittleIntermediate": {
+          "flexion": 0.65
+        },
+        "rightLittleDistal": {
+          "flexion": 0.55
+        }
+      },
+      "flex_full": {
+        "rightLittleProximal": {
+          "flexion": 1.0
+        },
+        "rightLittleIntermediate": {
+          "flexion": 1.0
+        },
+        "rightLittleDistal": {
+          "flexion": 0.95
+        }
+      },
+      "hook": {
+        "rightLittleProximal": {
+          "flexion": 0.3
+        },
+        "rightLittleIntermediate": {
+          "flexion": 1.0
+        },
+        "rightLittleDistal": {
+          "flexion": 1.0
+        }
+      },
+      "hyperextend": {
+        "rightLittleProximal": {
+          "flexion": -1.0
+        },
+        "rightLittleIntermediate": {
+          "flexion": 0.0
+        },
+        "rightLittleDistal": {
+          "flexion": 0.0
+        }
+      },
+      "abduct": {
+        "rightLittleProximal": {
+          "abduction": 0.85
+        }
+      },
+      "adduct": {
+        "rightLittleProximal": {
+          "abduction": -0.85
+        }
+      },
+      "rotate_in": {
+        "rightLittleProximal": {
+          "twist": 0.8
+        }
+      },
+      "rotate_out": {
+        "rightLittleProximal": {
+          "twist": -0.8
+        }
+      }
+    },
+    "right_hip": {
+      "hold": {},
+      "neutral": {
+        "rightUpperLeg": {
+          "flexion": 0.0,
+          "abduction": 0.0,
+          "twist": 0.0
+        }
+      },
+      "flex": {
+        "rightUpperLeg": {
+          "flexion": 0.5
+        }
+      },
+      "flex_high": {
+        "rightUpperLeg": {
+          "flexion": 1.0
+        }
+      },
+      "extend": {
+        "rightUpperLeg": {
+          "flexion": -1.0
+        }
+      },
+      "abduct": {
+        "rightUpperLeg": {
+          "abduction": 1.0
+        }
+      },
+      "adduct": {
+        "rightUpperLeg": {
+          "abduction": -1.0
+        }
+      },
+      "rotate_in": {
+        "rightUpperLeg": {
+          "twist": 1.0
+        }
+      },
+      "rotate_out": {
+        "rightUpperLeg": {
+          "twist": -1.0
+        }
+      }
+    },
+    "right_knee": {
+      "hold": {},
+      "extend": {
+        "rightLowerLeg": {
+          "flexion": 0.0
+        }
+      },
+      "flex": {
+        "rightLowerLeg": {
+          "flexion": 0.5
+        }
+      },
+      "flex_full": {
+        "rightLowerLeg": {
+          "flexion": 1.0
+        }
+      },
+      "rotate_in": {
+        "rightLowerLeg": {
+          "twist": 1.0
+        }
+      },
+      "rotate_out": {
+        "rightLowerLeg": {
+          "twist": -1.0
+        }
+      },
+      "valgus": {
+        "rightLowerLeg": {
+          "abduction": 1.0
+        }
+      },
+      "varus": {
+        "rightLowerLeg": {
+          "abduction": -1.0
+        }
+      }
+    },
+    "right_ankle": {
+      "hold": {},
+      "neutral": {
+        "rightFoot": {
+          "flexion": 0.0,
+          "abduction": 0.0
+        }
+      },
+      "dorsiflex": {
+        "rightFoot": {
+          "flexion": -1.0
+        }
+      },
+      "plantarflex": {
+        "rightFoot": {
+          "flexion": 1.0
+        }
+      },
+      "invert": {
+        "rightFoot": {
+          "abduction": -1.0
+        }
+      },
+      "evert": {
+        "rightFoot": {
+          "abduction": 1.0
+        }
+      },
+      "rotate_in": {
+        "rightFoot": {
+          "twist": 1.0
+        }
+      },
+      "rotate_out": {
+        "rightFoot": {
+          "twist": -1.0
+        }
+      }
+    },
+    "right_toes": {
+      "hold": {},
+      "neutral": {
+        "rightToes": {
+          "flexion": 0.0
+        }
+      },
+      "curl": {
+        "rightToes": {
+          "flexion": 1.0
+        }
+      },
+      "lift": {
+        "rightToes": {
+          "flexion": -1.0
+        }
+      },
+      "push_off": {
+        "rightToes": {
+          "flexion": 0.7
+        }
+      },
+      "splay": {
+        "rightToes": {
+          "abduction": 1.0
+        }
+      },
+      "rotate_in": {
+        "rightToes": {
+          "twist": 1.0
+        }
+      },
+      "rotate_out": {
+        "rightToes": {
+          "twist": -1.0
+        }
+      }
+    }
+  },
+  "sequences": {
+    "left_grip_power": {
+      "description": "Acquire a free object. The thumb reaches opposition before the fingers close, because index and middle reaching the object first push it out of the hand.",
+      "steps": [
+        {
+          "at": 0.0,
+          "label": "open",
+          "moves": {
+            "left_thumb": "reposition",
+            "left_index": "extend",
+            "left_middle": "extend",
+            "left_ring": "extend",
+            "left_little": "extend"
+          }
+        },
+        {
+          "at": 0.25,
+          "label": "preshape",
+          "moves": {
+            "left_thumb": "oppose",
+            "left_index": "flex_light",
+            "left_middle": "flex_light",
+            "left_ring": "flex_light",
+            "left_little": "flex_light"
+          }
+        },
+        {
+          "at": 0.45,
+          "label": "thumb_anchor",
+          "moves": {
+            "left_thumb": "oppose"
+          }
+        },
+        {
+          "at": 0.7,
+          "label": "close_fingers",
+          "moves": {
+            "left_thumb": "oppose",
+            "left_index": "flex",
+            "left_middle": "flex",
+            "left_ring": "flex",
+            "left_little": "flex"
+          }
+        },
+        {
+          "at": 1.0,
+          "label": "secure",
+          "moves": {
+            "left_thumb": "oppose",
+            "left_index": "flex",
+            "left_middle": "flex",
+            "left_ring": "flex_full",
+            "left_little": "flex_full"
+          }
+        }
+      ]
+    },
+    "left_release": {
+      "description": "Open every digit together; nothing to sequence.",
+      "steps": [
+        {
+          "at": 1.0,
+          "label": "open",
+          "moves": {
+            "left_thumb": "reposition",
+            "left_index": "extend",
+            "left_middle": "extend",
+            "left_ring": "extend",
+            "left_little": "extend"
+          }
+        }
+      ]
+    },
+    "left_point": {
+      "description": "Index extended, the rest closed.",
+      "steps": [
+        {
+          "at": 1.0,
+          "label": "point",
+          "moves": {
+            "left_thumb": "adduct",
+            "left_index": "extend",
+            "left_middle": "flex_full",
+            "left_ring": "flex_full",
+            "left_little": "flex_full"
+          }
+        }
+      ]
+    },
+    "left_wave": {
+      "description": "Arm up, forearm supinated, wrist alternating.",
+      "steps": [
+        {
+          "at": 0.0,
+          "label": "raise",
+          "moves": {
+            "left_shoulder": "reach_out_and_up",
+            "left_elbow": "flex",
+            "left_wrist": "neutral"
+          }
+        },
+        {
+          "at": 0.5,
+          "label": "swing_out",
+          "moves": {
+            "left_wrist": "deviate_radial"
+          }
+        },
+        {
+          "at": 1.0,
+          "label": "swing_back",
+          "moves": {
+            "left_wrist": "deviate_ulnar"
+          }
+        }
+      ]
+    },
+    "right_grip_power": {
+      "description": "Acquire a free object. The thumb reaches opposition before the fingers close, because index and middle reaching the object first push it out of the hand.",
+      "steps": [
+        {
+          "at": 0.0,
+          "label": "open",
+          "moves": {
+            "right_thumb": "reposition",
+            "right_index": "extend",
+            "right_middle": "extend",
+            "right_ring": "extend",
+            "right_little": "extend"
+          }
+        },
+        {
+          "at": 0.25,
+          "label": "preshape",
+          "moves": {
+            "right_thumb": "oppose",
+            "right_index": "flex_light",
+            "right_middle": "flex_light",
+            "right_ring": "flex_light",
+            "right_little": "flex_light"
+          }
+        },
+        {
+          "at": 0.45,
+          "label": "thumb_anchor",
+          "moves": {
+            "right_thumb": "oppose"
+          }
+        },
+        {
+          "at": 0.7,
+          "label": "close_fingers",
+          "moves": {
+            "right_thumb": "oppose",
+            "right_index": "flex",
+            "right_middle": "flex",
+            "right_ring": "flex",
+            "right_little": "flex"
+          }
+        },
+        {
+          "at": 1.0,
+          "label": "secure",
+          "moves": {
+            "right_thumb": "oppose",
+            "right_index": "flex",
+            "right_middle": "flex",
+            "right_ring": "flex_full",
+            "right_little": "flex_full"
+          }
+        }
+      ]
+    },
+    "right_release": {
+      "description": "Open every digit together; nothing to sequence.",
+      "steps": [
+        {
+          "at": 1.0,
+          "label": "open",
+          "moves": {
+            "right_thumb": "reposition",
+            "right_index": "extend",
+            "right_middle": "extend",
+            "right_ring": "extend",
+            "right_little": "extend"
+          }
+        }
+      ]
+    },
+    "right_point": {
+      "description": "Index extended, the rest closed.",
+      "steps": [
+        {
+          "at": 1.0,
+          "label": "point",
+          "moves": {
+            "right_thumb": "adduct",
+            "right_index": "extend",
+            "right_middle": "flex_full",
+            "right_ring": "flex_full",
+            "right_little": "flex_full"
+          }
+        }
+      ]
+    },
+    "right_wave": {
+      "description": "Arm up, forearm supinated, wrist alternating.",
+      "steps": [
+        {
+          "at": 0.0,
+          "label": "raise",
+          "moves": {
+            "right_shoulder": "reach_out_and_up",
+            "right_elbow": "flex",
+            "right_wrist": "neutral"
+          }
+        },
+        {
+          "at": 0.5,
+          "label": "swing_out",
+          "moves": {
+            "right_wrist": "deviate_radial"
+          }
+        },
+        {
+          "at": 1.0,
+          "label": "swing_back",
+          "moves": {
+            "right_wrist": "deviate_ulnar"
+          }
+        }
+      ]
+    }
+  }
+}
