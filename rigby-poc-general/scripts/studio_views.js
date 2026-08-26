@@ -83,7 +83,8 @@ function playerMarkup(robotId, trackRef, sceneRef) {
         <option value="4">4&times;</option>
       </select>
       <label class="tlab"><input type="checkbox" class="loop" checked> loop</label>
-      <button class="tbtn" data-act="frame" title="Recentre the camera">&#9678;</button>
+      <button class="tbtn" data-act="frame"
+        title="Recentre and refit the camera">&#9678;</button>
     </div>
   </div>`;
 }
@@ -367,6 +368,7 @@ function renderExplorer() {
       primitive to watch it, or drive the joints yourself &mdash; the viewer runs
       the same forward kinematics MuJoCo does, checked against it to under a
       picometre, so a pose dialled in by hand is a pose the robot would hold.
+      Drag to orbit, right-drag or shift-drag to pan, scroll to zoom.
       <div class="note">Moving a joint detaches playback; pick a primitive again
         to reattach it.</div>
     </div>
