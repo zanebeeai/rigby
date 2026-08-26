@@ -45,21 +45,63 @@ class GripState(StrEnum):
 
 @dataclass(frozen=True, slots=True)
 class ClosureConfig:
-    """Forces as fractions of what the gripper can actually produce.
+    """How hard to squeeze, derived from the object rather than the gripper.
 
-    Absolute newtons would be as body-dependent as absolute metres: a desktop
-    jaw's firm grip is a rounding error to an industrial one.
+    The previous policy commanded a fraction of the *actuator's* force limit, on
+    the reasoning that absolute newtons would be as body-dependent as absolute
+    metres. That instinct is right and was applied to the wrong quantity. How
+    hard you must hold something is a fact about the something: its weight, the
+    friction at the contact, and how many fingers oppose. A gripper with strong
+    actuators does not need to squeeze harder to hold the same block -- it just
+    can.
+
+    Measured across the zoo, a fraction of the actuator limit commanded 77x to
+    283x the force physics asks for. The one robot that certified was the least
+    over-squeezed of the five, at 77x; the others crushed through the block
+    (19 mm of penetration on a 40 mm block) or failed for want of a grip.
     """
 
-    contact_force_fraction: float = 0.02
-    """Of the weakest closure actuator's force limit -- enough to register."""
+    closure_rate_per_s: float = 0.55
+    """Fraction of the joint's span the finger advances per second while closing.
 
-    squeeze_force_fraction: float = 0.30
-    """The closing force commanded, as a fraction of the actuator's own limit.
+    Closing is rate-limited *position* control, and holding is force control.
+    Driving a force through the approach was what crushed the block: the fingers
+    accumulated depth during the travel, and switching to a gentle hold force
+    afterwards did not retract them, because force control has nothing pulling
+    back. Measured across the zoo, penetration ran 10-22 mm on blocks 18-48 mm
+    across. Advancing by position means the finger stops where the object is."""
 
-    Firm enough to hold the block against gravity through a lift, gentle enough
-    that the jaws rest on its surface rather than sinking into it."""
+    closing_force_fraction: float = 0.12
+    """Of the weakest closure actuator's limit -- what it takes to *move* the
+    finger.
 
+    This one is legitimately gripper-derived, and it is a different quantity from
+    the one below. Advancing a finger against its own damping, armature and
+    weight is a fact about the mechanism; holding an object once the finger has
+    arrived is a fact about the object. Commanding the holding force from the
+    start means a light object never gets gripped at all, because 0.6 N will not
+    move a jaw that needs 5 N to travel."""
+
+    grip_safety_factor: float = 8.0
+    """Multiplier on the statically required force.
+
+    Static equilibrium is the floor, not the answer. The lift accelerates the
+    object, MuJoCo's friction cone is a limit rather than a promise, and the
+    contact normal is rarely exactly perpendicular to gravity. Eight covers all
+    three with room to spare and still lands two orders of magnitude below what
+    the old policy asked for."""
+
+    actuator_ceiling_fraction: float = 0.5
+    """Never command more than half of what the joint can produce, whatever the
+    object asks for. A grip that needs more than this is a grip this gripper
+    should be reporting it cannot make."""
+
+    contact_detection_fraction: float = 0.05
+    """Of the required grip force -- the threshold at which a member counts as
+    touching. Scaled to the grip rather than the actuator, for the same reason
+    the grip is."""
+
+    min_contact_force_n: float = 0.005
     release_force_fraction: float = 0.25
     hold_duration_s: float = 0.15
     max_penetration_m: float = 0.004
@@ -73,6 +115,8 @@ class ClosureReport:
     peak_force_n: float
     max_penetration_m: float
     closure_fraction: float
+    required_force_n: float = 0.0
+    commanded_force_n: float = 0.0
 
     @property
     def holding(self) -> bool:
@@ -128,17 +172,63 @@ class ClosureController:
         ]
         self._limits = np.array(forces, dtype=float)
         weakest = max(min(forces), 1e-6)
-        self.contact_force_n = self.config.contact_force_fraction * weakest
 
-        # Which end of each joint's range closes the gripper. Measured during
-        # morphology analysis, so a jaw that closes by extending and one that
-        # closes by retracting are both handled without a convention.
-        self._closed_end = self._ranges[:, 1]
-        self._open_end = self._ranges[:, 0]
+        # What this particular object needs held. Read off the scene, so it is a
+        # fact about the thing being grasped and not about the hand.
+        self.object_mass_kg, self.object_friction = _object_properties(
+            model, self._object_geoms
+        )
+        opposing = max(len(effector.opposition_groups), 2)
+        required = (
+            self.config.grip_safety_factor
+            * self.object_mass_kg
+            * 9.81
+            / max(self.object_friction * opposing, 1e-6)
+        )
+        self.required_force_n = float(required)
+        self.squeeze_force_n = float(
+            min(required, self.config.actuator_ceiling_fraction * weakest)
+        )
+        self.force_saturated = bool(required > self.squeeze_force_n)
+        self.contact_force_n = max(
+            self.config.min_contact_force_n,
+            self.config.contact_detection_fraction * self.squeeze_force_n,
+        )
+        self.closing_force_n = float(
+            self.config.closing_force_fraction * weakest
+        )
+
+        # Which end of each joint's range closes the gripper -- measured during
+        # the closure sweep, not assumed. The Franka hand closes toward its lower
+        # limit, and hardcoding the upper one opens the jaw when it means to grip.
+        if effector.closes_toward_upper:
+            self._closed_end = self._ranges[:, 1]
+            self._open_end = self._ranges[:, 0]
+        else:
+            self._closed_end = self._ranges[:, 0]
+            self._open_end = self._ranges[:, 1]
+        self._closing_sign = np.sign(self._closed_end - self._open_end)
 
         self._closure = 0.0
         self._held_for = 0.0
         self.state = GripState.OPEN
+        # Where the fingers have been *told* to be. Advances while closing,
+        # freezes the moment opposition is found, and is what the tracking loop
+        # follows until the grip takes over.
+        self._commanded = np.array(self._open_end, dtype=float)
+
+
+    def commanded_qpos(self) -> dict[str, float]:
+        """Where the closure joints are being told to go while they travel.
+
+        Only meaningful in OPEN, CLOSING and RELEASING. Once holding, the
+        object decides where the fingers are and the force command takes over.
+        """
+
+        return {
+            name: float(self._commanded[index])
+            for index, name in enumerate(self._effector.grip_joints)
+        }
 
     def force_commands(self) -> dict[str, float]:
         """Torque per closure joint: a squeeze, a release, or a gentle opening.
@@ -152,15 +242,20 @@ class ClosureController:
         itself decides where the fingers stop, which is what a grasp actually is.
         """
 
-        direction = np.sign(self._closed_end - self._open_end)
+        direction = self._closing_sign
         if self.state is GripState.RELEASING:
-            magnitude = -self.config.release_force_fraction * self._limits
+            magnitude = -self.config.release_force_fraction * self.closing_force_n
         elif self.state is GripState.OPEN:
-            magnitude = -self.config.release_force_fraction * self._limits * 0.5
+            magnitude = -self.config.release_force_fraction * self.closing_force_n * 0.5
+        elif self.state is GripState.HOLDING:
+            # Arrived. From here the object decides, so squeeze only as hard as
+            # the object needs.
+            magnitude = self.squeeze_force_n
         else:
-            magnitude = self.config.squeeze_force_fraction * self._limits
+            # Still travelling. Drive the finger, not the object.
+            magnitude = self.closing_force_n
         return {
-            name: float(direction[index] * magnitude[index])
+            name: float(direction[index] * magnitude)
             for index, name in enumerate(self._effector.grip_joints)
         }
 
@@ -201,12 +296,22 @@ class ClosureController:
         if not closing:
             self.state = GripState.RELEASING
             self._held_for = 0.0
+            self._commanded = np.array(self._open_end, dtype=float)
         elif opposition:
             self.state = GripState.HOLDING
             self._held_for += dt
+            # Frozen: the object is where the fingers stopped, and commanding
+            # them further in is how a grasp becomes a crush.
         else:
             self.state = GripState.CLOSING
             self._held_for = 0.0
+            span = self._closed_end - self._open_end
+            step = self.config.closure_rate_per_s * dt * span
+            self._commanded = self._commanded + step
+            beyond = (self._commanded - self._closed_end) * np.sign(span)
+            self._commanded = np.where(
+                beyond > 0.0, self._closed_end, self._commanded
+            )
 
         # Reported rather than commanded: with force control the fingers sit
         # wherever the object stopped them, and that is the measurement.
@@ -221,6 +326,8 @@ class ClosureController:
             contacted_members=contacted,
             opposition_satisfied=opposition,
             peak_force_n=peak,
+            required_force_n=self.required_force_n,
+            commanded_force_n=self.squeeze_force_n,
             max_penetration_m=penetration,
             closure_fraction=closed,
         )
@@ -236,6 +343,25 @@ class ClosureController:
     @property
     def settled(self) -> bool:
         return self._held_for >= self.config.hold_duration_s
+
+
+def _object_properties(
+    model: mujoco.MjModel, object_geoms: frozenset[int]
+) -> tuple[float, float]:
+    """The grasped object's mass and sliding friction, read from the scene.
+
+    Mass is summed over the bodies that own the object's geoms, so a multi-part
+    object is weighed whole. Friction is the smallest of its geoms' sliding
+    coefficients -- the slipperiest surface is the one that decides whether a
+    grip holds.
+    """
+
+    if not object_geoms:
+        return 0.0, 1.0
+    bodies = {int(model.geom_bodyid[geom]) for geom in object_geoms}
+    mass = sum(float(model.body_mass[body]) for body in bodies)
+    friction = min(float(model.geom_friction[geom][0]) for geom in object_geoms)
+    return mass, max(friction, 1e-6)
 
 
 def _body_geoms(model: mujoco.MjModel, body_name: str) -> tuple[int, ...]:
