@@ -176,7 +176,28 @@ def bind(
         rewritten.append(segment)
 
     bound_program = schema_program.model_copy(update={"segments": tuple(rewritten)})
-    grounded = ground(bound_program, manifest, model, inventory, seed=seed)
+    # Ground at the pace the library actually certified at. A primitive that only
+    # passed after the bake slowed it down is a primitive whose certificate is
+    # *about* the slower version, and re-grounding it at the nominal pace answers
+    # with a motion nothing ever certified -- it fails the same velocity gate the
+    # bake already worked around, which is how a certified gesture came back
+    # refused. One scale covers the program because grounding applies one.
+    pace = max(
+        (
+            float(binding.record.measurements.get("duration_scale", 1.0))
+            for binding in bindings
+            if binding.record is not None
+        ),
+        default=1.0,
+    )
+    grounded = ground(
+        bound_program,
+        manifest,
+        model,
+        inventory,
+        seed=seed,
+        duration_scale=max(pace, 1.0),
+    )
     return BoundMotion(
         grounded=grounded,
         bindings=tuple(bindings),

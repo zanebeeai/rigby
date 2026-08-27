@@ -38,6 +38,14 @@ INVENTORY_PATH = (
 
 
 class Requirement(StrEnum):
+    ARTICULATED_EFFECTOR = "articulated_effector"
+    """An effector whose members oppose one another and move independently.
+
+    Distinct from ``grasping_effector``, which asks whether the members converge
+    hard enough to hold something. A posture does not hold anything -- it only
+    needs the members to be separately drivable, which is a weaker claim and true
+    of strictly more bodies."""
+
     POSITIONING = "positioning"
     """At least two independent axes that place the effector somewhere.
 
@@ -60,6 +68,16 @@ class SchemaEntry:
     ground_role: BindingRole
     gloss: str
     requires: frozenset[Requirement]
+
+    @property
+    def takes_posture(self) -> bool:
+        """Whether this entry is one that carries a posture.
+
+        Asked of the entry rather than hardcoded in the planner, so a second
+        posture-bearing schema later does not mean finding every place that
+        assumed there was only one."""
+
+        return self.schema.stative is Stative.CONFIGURE
 
     @property
     def canonical_key(self) -> str:
@@ -125,6 +143,14 @@ def capabilities_of(
     capabilities: set[Requirement] = set()
     if max((chain.positioning_dof for chain in morphology.chains), default=0) >= 2:
         capabilities.add(Requirement.POSITIONING)
+    # Two opposing sides and a joint per member is all a posture needs. The
+    # count of members it can actually distinguish is checked when the posture
+    # is grounded, because that depends on the posture and not on the body.
+    if any(
+        len(effector.opposition_groups) >= 2 and len(effector.grip_joints) >= 2
+        for effector in morphology.effectors
+    ):
+        capabilities.add(Requirement.ARTICULATED_EFFECTOR)
     grasping = morphology.grasping_effectors
     if grasping:
         capabilities.add(Requirement.GRASPING_EFFECTOR)

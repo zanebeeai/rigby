@@ -259,6 +259,19 @@ class EffectorV1(Contract):
 
     grip_joints: tuple[str, ...] = ()
     opposition_groups: tuple[tuple[str, ...], ...] = ()
+    member_joints: tuple[tuple[str, ...], ...] = ()
+    member_extends_toward_upper: tuple[bool, ...] = ()
+    """Which end of its own travel puts each member furthest from the effector.
+
+    Measured, one member at a time, because it is not derivable from the grip.
+    ``closes_toward_upper`` describes the aperture closing; this describes a
+    member straightening, and a hand can have them point opposite ways."""
+    """The joints that drive each member of ``member_bodies``, in that order.
+
+    Taken from the kinematic path between the effector's attachment and the
+    member, so it holds for a finger with three phalanges and a jaw with one
+    slide. A posture names members by measured position; this is what turns that
+    into joints something can actually command."""
     """Member groups that must oppose one another for a stable grasp."""
 
     max_aperture_m: float | None = Field(default=None, gt=0.0)

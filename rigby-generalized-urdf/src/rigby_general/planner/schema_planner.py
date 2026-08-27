@@ -47,6 +47,9 @@ from ..schema.program import (
     RoleBindingV1,
     SegmentLinkV1,
     SegmentV1,
+    Flexion,
+    PostureV1,
+    POSTURE_REMOVE,
 )
 
 
@@ -55,6 +58,14 @@ from ..schema.program import (
 # Ordered most specific first. "wave" must beat "move", or every gesture becomes
 # a reach.
 _PATH_CUES: tuple[tuple[str, str], ...] = (
+    # Postures first. "point at" is a posture on a hand and a reach on an
+    # arm, and the generic verbs below would swallow it before the hand ever
+    # got the chance. Which body can actually answer is settled by the
+    # affordance check downstream, not by the order of these lines.
+    (r"\b(peace sign|peace|victory|v sign|two fingers up|deuce|three fingers up)\b", "configure_effector"),
+    (r"\b(thumbs?[ -]?up|fist|make a fist|clench|ball up)\b", "configure_effector"),
+    (r"\b(open (your |the )?(hand|fingers)|flat hand|splay|spread (your )?fingers|high five)\b", "configure_effector"),
+    (r"\b(one finger up|index up|point(ing)? (with )?(one )?finger)\b", "configure_effector"),
     (r"\b(beckon|come here|call (it|them) (over|in)|draw (it )?(in|closer))\b", "draw_hither"),
     (r"\b(shoo|wave (it|them) (away|off)|push (it )?away)\b", "push_thither"),
     (r"\b(wave|waving|oscillat\w*|shake|shaking|wag|wiggle|jiggle)\b", "oscillate_about_point"),
@@ -83,6 +94,81 @@ _PATH_CUES: tuple[tuple[str, str], ...] = (
     (r"\b(hand (it )?(over|across)|pass (it )?(over|across|to the other))\b", "hand_across"),
     (r"\b(reach|extend|stretch|move|go|point|put|place)\b", "reach_to_point"),
 )
+
+
+# -- Posture: how many members, and at which end of their own travel -------
+#
+# Every entry here is a count and a pair of poles. None of them names a digit,
+# because the phrase does not know which body it will land on: "two fingers up"
+# is two of the opposed members in measured order, which is the index and middle
+# of a five-digit hand, two of three on a tripod, and more members than a
+# two-jaw gripper has -- an honest refusal rather than an approximation.
+_POSTURE_CUES: tuple[tuple[str, "PostureV1"], ...] = (
+    (
+        r"\b(peace sign|peace|victory|v sign|two fingers up|deuce)\b",
+        PostureV1(
+            selected_count=2,
+            selected=Flexion.EXTENDED,
+            remainder=Flexion.FLEXED,
+            opposing=Flexion.FLEXED,
+        ),
+    ),
+    (
+        r"\b(point(ing)?( with)?( one)? finger|one finger up|index up|point at)\b",
+        PostureV1(
+            selected_count=1,
+            selected=Flexion.EXTENDED,
+            remainder=Flexion.FLEXED,
+            opposing=Flexion.FLEXED,
+        ),
+    ),
+    (
+        r"\b(thumbs?[ -]?up|approve|nice one)\b",
+        PostureV1(
+            selected_count=0,
+            remainder=Flexion.FLEXED,
+            opposing=Flexion.EXTENDED,
+        ),
+    ),
+    (
+        r"\b(fist|make a fist|close (your |the )?(hand|fingers)|clench|ball up)\b",
+        PostureV1(
+            selected_count=0,
+            remainder=Flexion.FLEXED,
+            opposing=Flexion.FLEXED,
+        ),
+    ),
+    (
+        r"\b(open (your |the )?(hand|fingers)|flat hand|splay|spread (your )?fingers|high five)\b",
+        PostureV1(
+            # Every member extended, said without knowing how many there are:
+            # select none and let the remainder carry it.
+            selected_count=0,
+            selected=Flexion.EXTENDED,
+            remainder=Flexion.EXTENDED,
+            opposing=Flexion.EXTENDED,
+        ),
+    ),
+    (
+        r"\b(three fingers up|trio)\b",
+        PostureV1(
+            selected_count=3,
+            selected=Flexion.EXTENDED,
+            remainder=Flexion.FLEXED,
+            opposing=Flexion.FLEXED,
+        ),
+    ),
+)
+
+
+def _match_posture(clause: str) -> "PostureV1 | None":
+    """The posture this clause names, if it names one."""
+
+    for pattern, posture in _POSTURE_CUES:
+        if re.search(pattern, clause, re.IGNORECASE):
+            return posture
+    return None
+
 
 # -- Region: how far, in terms the body resolves ---------------------------
 _REGION_CUES: tuple[tuple[str, Remove], ...] = (
@@ -204,6 +290,11 @@ class OfflineSchemaPlanner:
                 )
             remove = _match_region(clause)
             manner = _match_manner(clause)
+            posture = _match_posture(clause) if entry.takes_posture else None
+            if posture is not None:
+                # A posture is shaped, not placed. Whatever the sentence implied
+                # about distance is about a motion this segment is not making.
+                remove = POSTURE_REMOVE
             segments.append(
                 SegmentV1(
                     segment_id=f"s{index}",
@@ -215,6 +306,7 @@ class OfflineSchemaPlanner:
                     ),
                     frame=_frame_for(entry),
                     manner=manner,
+                    posture=posture,
                     boundary=_boundary_for(entry),
                 )
             )
