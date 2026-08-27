@@ -5815,7 +5815,12 @@ def compile_motion(request: CompileRequest) -> ClipResult:
     metrics["angular_rate"] = rate_report.to_dict()
     if physics is not None:
         if closure is not None:
-            metrics["force_closure"] = closure.to_dict()
+            # Labelled for the simulation it came from. These are NOT the forces
+            # in the clip: close_until_contact runs a separate model, and the two
+            # disagree completely -- 0.0 N on every digit here against a palm at
+            # 50.48 N in the run that positions the block. The drawn run's own
+            # numbers are physics.metrics["contact_peak_force_n"].
+            metrics["force_closure_separate_sim"] = closure.to_dict()
         metrics.update(physics.metrics)
     # The measurement pass lives in ``analysis.hand`` from 02c onwards. What
     # stays here is the part that cannot: ``physics.metrics`` above comes from a

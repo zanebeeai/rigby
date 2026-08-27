@@ -60,6 +60,12 @@ _SAMPLES = 24
 #: by less than this is already touching.
 _APPROACH_MARGIN_M = 0.010
 
+#: Intrusion beyond this into scenery is as bad as it needs to get.
+_OBSTACLE_TOLERANCE_M = 0.020
+
+#: How far back along its own approach the hand is judged for clearance.
+_APPROACH_STANDOFF_M = 0.060
+
 
 @dataclass(frozen=True)
 class ApertureQuad:
@@ -153,6 +159,7 @@ def _obstructed(
     support_height_m: float,
     obstacles: tuple[SceneObject, ...],
 ) -> float:
+    """(see below) Returned as a mean fraction of the tolerance, not a raw depth."""
     """Total depth by which these points intrude into anything not being grasped.
 
     Stated as one rule over the whole scene rather than a test for the table,
@@ -167,12 +174,33 @@ def _obstructed(
     so both are expressed as depths and summed. A rule that named the table
     would break on the first object placed on a shelf, a rung or the floor.
     """
-    total = 0.0
+    # Normalised by a tolerance so the result is dimensionless. Summing raw
+    # metres made this term reach ~1.0 while coverage tops out at 1 and
+    # containment at 4, so at the weights it was given the search stopped
+    # optimising the grasp at all and minimised clearance alone: coverage
+    # 0.009, no opposition pair, the apertures skimming above the block.
+    depths = []
     if support_height_m:
-        total += float(np.sum(np.maximum(0.0, support_height_m - _height(points))))
+        depths.append(np.maximum(0.0, support_height_m - _height(points)))
     for obstacle in obstacles:
-        total += float(np.sum(np.maximum(0.0, -_box_distance(points, obstacle))))
-    return total
+        depths.append(np.maximum(0.0, -_box_distance(points, obstacle)))
+    if not depths:
+        return 0.0
+    worst = np.max(np.vstack(depths), axis=0)
+    return float(np.mean(np.minimum(1.0, worst / _OBSTACLE_TOLERANCE_M)))
+
+
+def _palm_normal(pose: dict[str, BonePose], side: str) -> np.ndarray:
+    """The palm's outward normal in world space."""
+    from .models import ClipFrame, Hand
+    from .physics import _frame_hand_landmarks, _palm_transform
+
+    hand = Hand.LEFT if side == "left" else Hand.RIGHT
+    landmarks = _frame_hand_landmarks(
+        ClipFrame(time_s=0.0, bones=pose, objects={}), hand
+    )
+    _centre, rotation = _palm_transform(landmarks, hand)
+    return np.asarray(rotation[:, 2], dtype=float)
 
 
 def _palm_samples(pose: dict[str, BonePose], side: str) -> np.ndarray:
@@ -213,6 +241,68 @@ def _palm_samples(pose: dict[str, BonePose], side: str) -> np.ndarray:
     axis = np.linspace(-1.0, 1.0, 3)
     grid = np.array([[x, y, z] for x in axis for y in axis for z in axis])
     return (grid * half) @ rotation.T + centre
+
+
+#: Thumb poses considered when squaring the apertures, as (curl, opposition).
+#:
+#: Opposition is floored rather than swept to zero. Squareness alone picks
+#: opposition 0.0 -- the thumb straight out alongside the fingers, which is the
+#: squarest aperture and also directly in the corridor the hand travels down.
+#: Measured, that placement batted the block 172 cm across the room. The
+#: approach sweep put the thumb's clearest opposition near 0.9, so the choice is
+#: made among poses that keep the corridor open rather than over all of them.
+_THUMB_CANDIDATES = tuple(
+    (curl, oppose)
+    for curl in (0.15, 0.30, 0.45, 0.60)
+    for oppose in (0.6, 0.75, 0.9, 1.05)
+)
+
+
+def square_thumb_pose(base_pose: dict[str, BonePose], hand: Any) -> tuple[float, float]:
+    """The thumb pose that stands the apertures most squarely to the palm.
+
+    Chosen once, and separately from the placement, because the two are
+    independent: the quads and the palm are both built from the hand, so moving
+    the wrist rotates both together and the angle between them does not change.
+    Measured directly -- adding an aperture-squareness term to the placement
+    score left the winner byte-identical, because no placement in the search
+    could affect it.
+
+    The thumb can. Swept over its own curl and opposition the apertures range
+    from 16 degrees to the palm to 82, and the authored FIST sits near the
+    bottom of that: at its opposition of 0.86 and curl of 0.72 the four
+    apertures stand at 19, 19, 25 and 63 degrees. An aperture lying flat in the
+    palm is not an opening, and an object "inside" it is really just resting
+    against the palm -- which is what the coverage number had been reporting as
+    a grasp.
+    """
+    from .force_closure import digit_rotations
+    from .models import HandShape
+    from .primitives import HAND_SHAPES
+
+    side = hand.value
+    fist = HAND_SHAPES[HandShape.FIST]
+    curls = {d: float(fist.curls[d.title()]) for d in ("index", "middle", "ring", "little")}
+    best = (-1.0, _THUMB_CANDIDATES[0])
+    for curl, oppose in _THUMB_CANDIDATES:
+        pose = dict(base_pose)
+        for name, rotation in digit_rotations(
+            hand, {"thumb": curl, **curls}, oppose
+        ).items():
+            pose[name] = BonePose(rotation=rotation)
+        normal = _palm_normal(pose, side)
+        scores = []
+        for quad in aperture_quads(pose, side).values():
+            corners = quad.corners
+            face = np.cross(corners[1] - corners[0], corners[3] - corners[0])
+            size = float(np.linalg.norm(face))
+            if size < 1e-12:
+                continue
+            scores.append(1.0 - abs(float(np.dot(face / size, normal))))
+        value = float(np.mean(scores)) if scores else 0.0
+        if value > best[0]:
+            best = (value, (curl, oppose))
+    return best[1]
 
 
 def aperture_quads(bones: dict[str, BonePose], hand: str) -> dict[str, ApertureQuad]:
@@ -488,15 +578,15 @@ def _plan_grasp_pose(
     from scipy.spatial.transform import Rotation
 
     from .models import HandShape, PrimitiveParameters, Vec3
-    from .primitives import arm_pose_from_target, hand_pose
+    from .primitives import HAND_SHAPES, arm_pose_from_target, hand_pose
 
     kinematics = rig_kinematics()
     side = hand.value
     centre = np.asarray(item.transform.translation.as_list(), dtype=float)
     neutral = PrimitiveParameters()
-    shapes = (HandShape.OPEN, HandShape.FIST)
 
-    def arm_pose(target: np.ndarray, shape) -> dict[str, BonePose]:
+
+    def arm_pose(target: np.ndarray, shape, hand_key=None) -> dict[str, BonePose]:
         arm, _ = arm_pose_from_target(
             hand,
             shoulder,
@@ -506,9 +596,23 @@ def _plan_grasp_pose(
         )
         pose = dict(base_pose)
         pose.update({k: BonePose(rotation=v) for k, v in arm.items()})
-        pose.update(
-            {k: BonePose(rotation=v) for k, v in hand_pose(hand, shape, neutral).items()}
+        shape_params = (
+            grip_params[hand_key[1]]
+            if hand_key is not None and hand_key[0] == "grip"
+            else neutral
         )
+        pose.update(
+            {
+                k: BonePose(rotation=v)
+                for k, v in hand_pose(hand, shape, shape_params).items()
+            }
+        )
+        # The closed reference hand stays hand_pose(FIST). Rebuilding it from
+        # digit_rotations with the same nominal curls is NOT the same hand --
+        # hand_pose applies a 0.75 scale and blends opposition, digit_rotations
+        # does neither -- and swapping them moved the chosen placement enough to
+        # put the palm back through the table and the block back to being
+        # shoved 7.5 cm instead of 0.35.
         if shape is HandShape.OPEN:
             # The approach must be cleared in the pose the hand actually flies,
             # which is the closure's, not ``hand_pose(OPEN)``. Those differ in
@@ -534,18 +638,75 @@ def _plan_grasp_pose(
     # Each shape's four quads, in the hand bone's frame, measured once. The
     # hand is rigid in that frame, so a candidate costs a rotation of sixteen
     # points rather than a fresh forward-kinematics pass.
+    # NOT APPLIED, and the reason is the thing to fix next.
+    #
+    # square_thumb_pose picks a thumb that stands the apertures up off the palm,
+    # and that part works: swept over its own DOFs the apertures move between 16
+    # and 82 degrees to the palm, against the authored FIST's 19/19/25/63. But
+    # the compiler hands the frames to close_until_contact, which replaces every
+    # digit with its own closure state, so a thumb chosen here never reaches the
+    # rendered clip -- measured, the aperture angles came back byte-identical
+    # after the plan chose a different thumb entirely.
+    #
+    # Applying it anyway only destabilised the search: chosen for squareness
+    # alone it picks opposition 0.0, the thumb straight out in the approach
+    # corridor, and the block was batted 172 cm. Flooring opposition kept the
+    # corridor clear but still left the closure overwriting the choice.
+    #
+    # The fix is to make the closure start from the plan's hand rather than from
+    # its own, which is a change to the closure and not to this search.
+    thumb_pose = (
+        float(HAND_SHAPES[HandShape.FIST].curls["Thumb"]),
+        float(HAND_SHAPES[HandShape.FIST].thumb_opposition),
+    )
     reference_target = centre + np.asarray([-0.10, 0.0, -0.10])
+    # Grip candidates, as per-digit curl displacements. Negative opens a digit
+    # relative to the preset, positive closes it. A loose cage suits a block
+    # wider than the fist's tip span; a tight one suits something small.
+    GRIP_CANDIDATES = (
+        ("fist", PrimitiveParameters()),
+        ("loose", PrimitiveParameters(
+            index_curl=-0.45, middle_curl=-0.45, ring_curl=-0.45, little_curl=-0.45)),
+        ("wide", PrimitiveParameters(
+            index_curl=-0.7, middle_curl=-0.7, ring_curl=-0.7, little_curl=-0.7,
+            finger_splay=0.4)),
+        ("deep", PrimitiveParameters(
+            index_curl=-0.25, middle_curl=-0.25, ring_curl=-0.35, little_curl=-0.35,
+            thumb_curl=0.25)),
+    )
+    shape_keys = [(HandShape.OPEN, ("open", None))] + [
+        (HandShape.FIST, ("grip", name)) for name, _p in GRIP_CANDIDATES
+    ]
+    grip_params = {name: params for name, params in GRIP_CANDIDATES}
+    grip_keys = [("grip", name) for name, _p in GRIP_CANDIDATES]
+    open_key = ("open", None)
+
     local: dict[Any, dict[str, np.ndarray]] = {}
     palm_local: dict[Any, np.ndarray] = {}
-    for shape in shapes:
-        pose = arm_pose(reference_target, shape)
+    palm_normal_local: dict[Any, np.ndarray] = {}
+    # The closed hand is SEARCHED, not assumed.
+    #
+    # Every version of this planner has scored placements against exactly one
+    # closed hand -- hand_pose(FIST) -- and asked only where to put it. But the
+    # aperture's whole geometry comes from the hand shape: at FIST the four tip
+    # spans are 8.6/7.2/5.9/5.9 cm against a 6 cm block, so some fingers cannot
+    # reach it and others are driven through it, and no placement fixes that
+    # because placement cannot change a span. Searching one shape's placements
+    # very thoroughly was answering a question that had no good answer.
+    #
+    # Now that hand_pose gives the per-digit parameters full authority, the
+    # planner can ask for a hand that fits this object instead of the nearest
+    # named one.
+    for shape, hand_key in shape_keys:
+        pose = arm_pose(reference_target, shape, hand_key)
         rotation = kinematics.canonical_world_rotation(pose, f"{side}Hand")
         origin = kinematics.canonical_positions(pose)[f"{side}Hand"]
-        local[shape] = {
+        local[hand_key] = {
             name: (quad.corners - origin) @ rotation
             for name, quad in aperture_quads(pose, side).items()
         }
-        palm_local[shape] = (_palm_samples(pose, side) - origin) @ rotation
+        palm_local[hand_key] = (_palm_samples(pose, side) - origin) @ rotation
+        palm_normal_local[hand_key] = _palm_normal(pose, side) @ rotation
 
     # Two resolutions. The coarse pass only has to find the right region, and
     # spending the full 75-angle set on every one of 180 positions was most of a
@@ -610,7 +771,13 @@ def _plan_grasp_pose(
             # margin, so raising the penalty from 0.5 to 3.0 changed the winner
             # not at all, because it was multiplying a constant.
             pierced += float(
-                np.sum(np.maximum(0.0, _APPROACH_MARGIN_M - clearance))
+                np.mean(
+                    np.minimum(
+                        1.0,
+                        np.maximum(0.0, _APPROACH_MARGIN_M - clearance)
+                        / _APPROACH_MARGIN_M,
+                    )
+                )
             )
             seating.append(
                 (
@@ -619,6 +786,21 @@ def _plan_grasp_pose(
                 )
             )
             quads[name] = quad
+        # The convergence point: where the five tips are trying to meet. If it
+        # lands inside the object then the object is in the grasp, and if it
+        # does not then no amount of closing will find it. Measured on the
+        # placement chosen without it, the point never got inside the block at
+        # any moment of the clip -- closest +0.10 cm, and that during the LIFT,
+        # after closing was over. At the end of the close it was +1.08 cm out.
+        #
+        # Unlike the aperture's angle to the palm, this one the placement CAN
+        # move: the tips are rigid in the hand frame, so the point travels with
+        # the wrist.
+        tips = np.vstack([quads[next(iter(quads))].thumb_tip] +
+                         [q.finger_tip for q in quads.values()]) if quads else None
+        convergence = (
+            float(_box_distance(tips.mean(axis=0), item)) if tips is not None else 1.0
+        )
         palm = palm_local[shape] @ world.T + origin
         # The table was invisible to this search. Measured on the placement it
         # chose, every finger was driven through the tabletop -- the little and
@@ -628,9 +810,11 @@ def _plan_grasp_pose(
         # block. Clearance against the object was checked from the beginning;
         # clearance against the thing the object is sitting on never was.
         below = _obstructed(palm, support_height_m, obstacles)
+        below_samples = 1
         for _name, corners in local[shape].items():
             placed_line = corners @ world.T + origin
             span_t = np.linspace(0.0, 1.0, 9)[:, None]
+            below_samples += 1
             below += _obstructed(
                 np.vstack([
                     placed_line[0] * (1 - span_t) + placed_line[1] * span_t,
@@ -640,8 +824,34 @@ def _plan_grasp_pose(
                 obstacles,
             )
         palm_pierced = float(
-            np.sum(np.maximum(0.0, _APPROACH_MARGIN_M - _box_distance(palm, item)))
+            np.mean(
+                np.minimum(
+                    1.0,
+                    np.maximum(0.0, _APPROACH_MARGIN_M - _box_distance(palm, item))
+                    / _APPROACH_MARGIN_M,
+                )
+            )
         )
+        below /= max(below_samples, 1)
+        # How square the aperture stands to the palm. An aperture lying flat in
+        # the palm is not an opening at all: the object it "contains" is sitting
+        # against the palm rather than between the digits, which is what the
+        # coverage number was quietly reporting as a grasp. Measured on the
+        # placement chosen without this, the four apertures stood at 19, 19, 25
+        # and 63 degrees to the palm -- essentially coplanar with it.
+        palm_normal = world @ palm_normal_local[shape]
+        squareness = []
+        for quad in quads.values():
+            corners = quad.corners
+            normal = np.cross(corners[1] - corners[0], corners[3] - corners[0])
+            size = float(np.linalg.norm(normal))
+            if size < 1e-12:
+                continue
+            # 1.0 when the aperture plane is perpendicular to the palm.
+            squareness.append(
+                1.0 - abs(float(np.dot(normal / size, palm_normal)))
+            )
+        square = float(np.mean(squareness)) if squareness else 0.0
         thumb_seat = float(np.mean([t for t, _f in seating])) if seating else 0.0
         finger_seat = float(np.mean([f for _t, f in seating])) if seating else 0.0
         return (
@@ -652,6 +862,8 @@ def _plan_grasp_pose(
             (thumb_seat, finger_seat),
             palm_pierced,
             below,
+            square,
+            convergence,
         )
 
     def best_at(offset: np.ndarray, angles=None, samples: int | None = None):
@@ -660,28 +872,57 @@ def _plan_grasp_pose(
         samples = samples if samples is not None else resolution
         target = centre + offset
         frames = {}
-        for shape in shapes:
-            pose = arm_pose(target, shape)
-            frames[shape] = (
+        for shape, hand_key in shape_keys:
+            pose = arm_pose(target, shape, hand_key)
+            frames[hand_key] = (
                 kinematics.canonical_world_rotation(pose, f"{side}Hand"),
                 kinematics.canonical_positions(pose)[f"{side}Hand"],
             )
+        # Clearance is a property of the CORRIDOR, not of the destination. At
+        # the destination the hand is supposed to be wrapped around the object,
+        # so charging it for being near one is charging it for grasping: the
+        # winning placement held the palm 9.93 cm away and the nearest fingertip
+        # 4.20 cm away, never reaching the block at all, because standing off
+        # scored better than closing on it. The open hand is therefore measured
+        # backed away along its own approach, at the pose it actually passes
+        # through, while coverage and seating stay measured where the hand ends.
+        approach = offset / max(float(np.linalg.norm(offset)), 1e-9)
+        standoff_pose = arm_pose(target + approach * _APPROACH_STANDOFF_M, HandShape.OPEN)
+        approach_frame = (
+            kinematics.canonical_world_rotation(standoff_pose, f"{side}Hand"),
+            kinematics.canonical_positions(standoff_pose)[f"{side}Hand"],
+        )
         found = (-1.0, None, None, (0, 0.0))
         for wrist in angles:
             delta = deltas[wrist]
             evaluations += 1
-            open_rotation, open_origin = frames[HandShape.OPEN]
-            closed_rotation, closed_origin = frames[HandShape.FIST]
+            open_rotation, open_origin = frames[open_key]
+            # Reward the open hand where it ends, but judge its clearance
+            # where it travels.
             (
-                _open_held, open_covered, _open_quads, open_pierced,
-                _open_seat, open_palm, open_below,
-            ) = measure(
-                HandShape.OPEN, open_rotation @ delta, open_origin, samples
-            )
+                _open_held, open_covered, _open_quads, _end_pierced,
+                _open_seat, _end_palm, _end_below, _end_square, _end_conv,
+            ) = measure(open_key, open_rotation @ delta, open_origin, samples)
+            approach_rotation, approach_origin = approach_frame
+            (
+                _a_held, _a_covered, _a_quads, open_pierced,
+                _a_seat, open_palm, open_below, _a_square, _a_conv,
+            ) = measure(open_key, approach_rotation @ delta, approach_origin, samples)
+            grip_best = None
+            for grip_key in grip_keys:
+                closed_rotation, closed_origin = frames[grip_key]
+                candidate = measure(
+                    grip_key, closed_rotation @ delta, closed_origin, samples
+                )
+                # Rank grips the way placements are ranked, so the pair is
+                # chosen together rather than the grip being fixed first.
+                rank = candidate[0] + candidate[1] - 40.0 * max(0.0, candidate[8])
+                if grip_best is None or rank > grip_best[0]:
+                    grip_best = (rank, grip_key, candidate)
             (
                 held, covered, quads, _closed_pierced,
-                (thumb_seat, finger_seat), closed_palm, closed_below,
-            ) = measure(HandShape.FIST, closed_rotation @ delta, closed_origin, samples)
+                (thumb_seat, finger_seat), closed_palm, closed_below, closed_square, convergence,
+            ) = grip_best[2]
             # The open hand is the approach pose, so it must be clear. The
             # closed hand is allowed to be inside the object -- that is what
             # gripping it means.
@@ -710,24 +951,92 @@ def _plan_grasp_pose(
             # the thumb on the far side at all is ``held`` -- containment is
             # measured tip to tip, so a placement with the thumb on the fingers'
             # side scores no pairs.
+            # Arriving is the PATH; clearing the scenery is MANNER. Talmy's
+            # distinction, and a real one here rather than a flourish: a reach
+            # is FIGURE=hand, GROUND=object, PATH=TO, and a TO path is defined
+            # by terminating at its Ground. Scored as one weighted sum against
+            # the clearance terms, not arriving could win -- and it did. The
+            # chosen placement held the palm 9.93 cm from the block and the
+            # nearest fingertip 4.20 cm away, never reaching it at all, because
+            # standing off cost nothing while closing in cost margin.
+            #
+            # Containment is therefore lexicographic over everything else. A
+            # placement that puts the object between no thumb-finger pair is not
+            # a worse grasp, it is not a grasp, and no amount of clearance
+            # redeems it. Manner ranks only the placements that satisfy the path.
+            # The gate is CONVERGENCE, not containment.
+            #
+            # Both express "the object is in the grasp", but they are not equally
+            # strong and the weaker one was rejecting the right answer. ``held``
+            # asks whether the object lies between some thumb-finger pair, which
+            # a hand can satisfy while its tips are still spread wide around
+            # nothing. Convergence asks where the five tips are actually trying
+            # to meet, and requires that point to be inside the object.
+            #
+            # Measured, that difference decided everything: searched for
+            # convergence alone the hand reaches 2.91 cm INSIDE the block, but
+            # that placement scores ``held == 0`` and was being discarded at
+            # -1000 before any of the clearance terms saw it. The best the
+            # surviving placements ever managed was +0.08 cm -- outside, and
+            # only during the lift, after closing had finished.
+            #
+            # So convergence gates and containment becomes one term among the
+            # rest. A placement whose tips converge outside the object is not a
+            # worse grasp, it is a grasp aimed at the wrong place.
+            # REVERTED to containment as the gate. Convergence-inside sounds
+            # like the stronger test and measured worse: gating on it rejected
+            # every candidate the real search produces, and the fallback ranking
+            # took the block from 7.63 cm displaced to 13.89.
+            #
+            # The reason is in the placement the isolated search found. It puts
+            # the convergence point 2.91 cm inside the block by putting ALL FIVE
+            # FINGERTIPS inside it -- -0.51, -0.64, -0.61, -1.64 and -1.93 cm --
+            # with the palm 2.9 cm below the tabletop. That satisfies "the point
+            # where the tips meet is within the object" exactly, and it is not a
+            # grasp, it is a hand pushed through a box.
+            #
+            # The criterion needs the tips ON the surface while their meeting
+            # point is inside, which is a different statement from either test
+            # alone. Left as containment until that is written properly.
+            if held == 0:
+                score = -1000.0 + covered + 0.25 * open_covered
+                if score > found[0]:
+                    found = (score, wrist, quads, (held, covered))
+                continue
             score = (
                 held
                 + covered
                 + 0.25 * thumb_seat
                 + 1.0 * finger_seat
+                - 40.0 * max(0.0, convergence)
+                # Squareness is MEASURED (see square_thumb_pose) but not scored
+                # here. No placement can change it -- the quads and the palm are
+                # both built from the hand, so moving the wrist turns both
+                # together -- so as a term in the placement score it is close to
+                # a constant, and the small variation it does have pulled the
+                # winner off a placement that kept the hand out of the table.
+                # It belongs on the thumb pose, not on the wrist.
                 + 0.25 * open_covered
                 # Weighted to dominate, not to trade. At 0.5 a placement could
                 # buy an extra tenth of coverage by giving up the corridor, and
                 # it did: the winner left the thumb 1.6 mm of margin against a
                 # 2 mm mean tracking error, so the shaft struck the block on the
                 # way in and the grasp was decided before it began.
-                - 120.0 * open_pierced
+                - 3.0 * open_pierced
                 # The palm is checked on both shapes and weighted to dominate.
                 # A grasp whose palm is inside the object is not a grasp that
                 # squeezes it, it is a shove, and the object is gone before the
                 # fingers arrive. No amount of coverage compensates.
-                - 200.0 * (open_palm + closed_palm)
-                - 200.0 * (open_below + closed_below)
+                - 4.0 * open_palm
+                # Scenery clearance is required of the APPROACH, not of the
+                # grasp -- the same distinction already made about the object
+                # itself, and for the same reason. A hand closing on a block
+                # that is standing on a table brings its fingertips down to
+                # table level, because that is where the bottom of the block is.
+                # Charging the closed hand for that pushed the placement up and
+                # off the object: coverage 0.009, the thumb 4.04 cm clear, the
+                # apertures skimming above a block they never enclosed.
+                - 4.0 * open_below
             )
             if score > found[0]:
                 found = (score, wrist, quads, (held, covered))

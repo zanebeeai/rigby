@@ -166,6 +166,21 @@ _SEGMENT_GAINS = (0.92, 1.12, 0.82)
 _THUMB_MAX_RAD = 0.95
 _FINGER_MAX_RAD = 1.25
 _OPPOSITION_MAX_RAD = 0.75
+
+#: Which digits swing across the palm, and how far relative to the thumb.
+#:
+#: The little finger's carpometacarpal joint carries roughly a quarter of the
+#: thumb's range, in the opposite sense because the two travel toward each
+#: other. The ring finger has a trace of the same mobility. The index and middle
+#: metacarpals are effectively fixed to the palm and have none, which is why
+#: they are absent here rather than present with a zero.
+_OPPOSING = {"thumb": 1.0, "little": -0.25, "ring": -0.10}
+
+#: The thumb opposition a closed grip reaches. Named so that the prediction used
+#: to decide when to start closing and the closure it predicts cannot drift
+#: apart -- a trigger that models a different hand from the one that then closes
+#: is worse than no trigger.
+_GRIP_OPPOSITION = 0.86
 _SPLAY_MAX_RAD = 0.30
 
 
@@ -210,12 +225,45 @@ def digit_rotations(
             maximum = _THUMB_MAX_RAD if digit == "thumb" else _FINGER_MAX_RAD
             splay_angle = splay * _SPLAY_MAX_RAD * side if index == 0 else 0.0
             oppose = 0.0
-            if digit == "thumb" and index == 0:
-                oppose = opposition * _OPPOSITION_MAX_RAD * side
+            if index == 0 and digit in _OPPOSING:
+                # The little finger opposes as well as the thumb. Its
+                # carpometacarpal joint is mobile in a way the index and middle
+                # ones are not, and that mobility is what lets a hand cup: the
+                # ulnar side rolls toward the thumb and the palm becomes a
+                # curved surface instead of a flat one. Modelling only the thumb
+                # left the far side of every aperture rigid, so a quad could
+                # only ever be as deep as the thumb's own swing made it.
+                oppose = opposition * _OPPOSITION_MAX_RAD * side * _OPPOSING[digit]
             out[f"{hand.value}{stem}{segment}"] = quat_euler(
                 curl * _SEGMENT_GAINS[index] * maximum, oppose, splay_angle
             )
     return out
+
+
+def _object_between_digits(frame: ClipFrame, hand: Hand, block: SceneObject) -> bool:
+    """Is the object inside the hand's aperture yet?
+
+    Asked of the hand's CLOSED configuration at the wrist pose it currently
+    holds, not of the pose it is currently in. The distinction is the difference
+    between a working trigger and a deadlock: a hand waiting to be told to close
+    is by definition still open, an open hand's tips are spread wider than the
+    object, and so containment measured live is never satisfied and the hand
+    never closes. Measured that way it never did -- every curl stayed at 0.02
+    for the whole clip while the plan itself reported four opposition pairs.
+
+    The question a closing hand actually needs answered is whether the object
+    lies inside the volume its fingers are about to sweep, which is a prediction
+    about the closed pose and is answerable while still open.
+    """
+    from .grasp_aperture import aperture_report
+
+    closed = dict(frame.bones)
+    for name, rotation in digit_rotations(
+        hand, {digit: 1.0 for digit in DIGITS}, _GRIP_OPPOSITION
+    ).items():
+        closed[name] = BonePose(rotation=rotation)
+    report = aperture_report(closed, hand.value, block)
+    return bool(report["opposition_pair_count"] >= 1)
 
 
 def close_until_contact(
@@ -329,6 +377,8 @@ def close_until_contact(
     peak_z = start_z
     max_penetration = 0.0
     fingers_released = False
+    contained = False
+    contained_at_s: float | None = None
     obstructed: set[str] = set()
     released_at_s: float | None = None
     order: list[str] = []
@@ -352,7 +402,26 @@ def close_until_contact(
         # So the wrist places the cage, the thumb travels in to meet it, and the
         # fingers shut on what the thumb has pressed against them. Each digit
         # still stops on its own measured load; nothing is commanded to a pose.
-        if close_window_s[0] <= now <= close_window_s[1]:
+        # Closing is triggered by seeing the object inside the aperture, not by
+        # the clock reaching the closure phase. Those came apart badly: on a
+        # fixed schedule the hand shut at 1.0 s whether or not anything was
+        # between its digits, and measured, it was shutting on empty air with a
+        # coverage of 0.009 while the block sat behind the palm.
+        #
+        # It also dissolves a tension the schedule could not resolve. Clearance
+        # and coverage pull against each other -- a placement open enough to
+        # approach without striking is not yet closed around anything -- so on a
+        # clock one of them always had to lose. Triggered on containment, the
+        # hand may approach as openly as it likes and closes at the moment that
+        # stops being a compromise.
+        #
+        # The window is a deadline, not a schedule: outside it nothing closes,
+        # and if containment never happens the hand never grips and says so.
+        if not contained:
+            contained = _object_between_digits(posed(frame), hand, block)
+            if contained:
+                contained_at_s = now
+        if contained and close_window_s[0] <= now <= close_window_s[1]:
             if not fingers_released:
                 # Release on a finger feeling the object, on the thumb seating,
                 # or on the thumb running out of travel -- the last so a thumb
@@ -424,6 +493,10 @@ def close_until_contact(
         if seated
         else "no digit ever reported contact force"
     )
+    if not contained:
+        detail += (
+            "; the object never entered the aperture, so the hand never closed"
+        )
     if seated and not opposed:
         detail += "; loaded digits are not in opposition"
     if obstructed:

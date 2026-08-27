@@ -547,6 +547,7 @@ def simulate_embodied_grasp(
     trajectory: list[tuple[float, list[float], list[float]]] = []
     events: list[ContactEvent] = []
     max_penetration = 0.0
+    drawn_peak: dict[str, float] = {}
     hold_z: list[float] = []
     hold_relative: list[np.ndarray] = []
     hold_contact_sets: list[set[str]] = []
@@ -571,6 +572,19 @@ def simulate_embodied_grasp(
         maximum_z = max(maximum_z, float(data.xpos[block_body, 2]))
         names, penetration, details = _contact_snapshot(model, data)
         max_penetration = max(max_penetration, penetration)
+        # Recorded HERE, in the simulation that positions the block, because
+        # this is the run the clip draws. The per-digit forces published before
+        # this came from close_until_contact, which builds its own model: two
+        # simulations, quoted interchangeably. Measured on one clip, this one
+        # reported the palm at 50.48 N and the thumb at 38.70 N while the other
+        # reported 0.0 N on every digit, and the render agreed with this one --
+        # the same four segments, a centimetre into the block. A force number
+        # that does not come from the run being drawn cannot be used to say
+        # whether what you are watching touched anything.
+        for geom_name, _position, force, _normal in details:
+            if geom_name in ("table", "floor"):
+                continue
+            drawn_peak[geom_name] = max(drawn_peak.get(geom_name, 0.0), float(force))
         if hold_range is not None and hold_range[0] <= now <= hold_range[1]:
             hold_z.append(float(data.xpos[block_body, 2]))
             hold_relative.append(
@@ -680,6 +694,20 @@ def simulate_embodied_grasp(
             "they carry velocity; the object is free and moved only by contact"
         ),
         "max_penetration_m": max_penetration,
+        # What the drawn run actually recorded, per collision body.
+        "contact_peak_force_n": {
+            name: round(value, 3) for name, value in sorted(drawn_peak.items())
+        },
+        "contact_peak_force_by_digit_n": {
+            digit: round(
+                max(
+                    (v for k, v in drawn_peak.items() if _contact_digit(k) == digit),
+                    default=0.0,
+                ),
+                3,
+            )
+            for digit in ("thumb", "index", "middle", "ring", "little")
+        },
         "physics_engine": "MuJoCo",
         "physics_version": version("mujoco"),
         "physics_phase_ranges_s": [dict(item) for item in phase_ranges],

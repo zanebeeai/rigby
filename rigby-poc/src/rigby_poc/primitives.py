@@ -29,7 +29,13 @@ class HandShapeDefinition:
 
 HAND_SHAPES: dict[HandShape, HandShapeDefinition] = {
     HandShape.OPEN: HandShapeDefinition(
-        curls={name: 0.04 for name in FINGERS},
+        # A relaxed hand rests in a curve, not flat. At 0.04 the fingers were
+        # held out straight, which is a deliberate posture needing extensor
+        # effort, and it made every approach a flat paddle: the digits arrived
+        # coplanar with the palm and swept the object rather than surrounding
+        # it. Resting flexion in a human hand is roughly a fifth of the way to a
+        # fist, and starting there means the aperture is already a cup.
+        curls={name: 0.18 for name in FINGERS},
         splay={"Thumb": 0.65, "Index": 0.18, "Middle": 0.0, "Ring": -0.08, "Little": -0.18},
         thumb_opposition=0.18,
     ),
@@ -203,6 +209,23 @@ def _bone_key(hand: Hand, finger: str, segment: str) -> str:
     return f"{hand.value}{finger}{segment}"
 
 
+#: The default value of ``PrimitiveParameters.thumb_opposition``. A caller that
+#: leaves it here is expressing no opinion, so the shape's own value stands.
+_NEUTRAL_THUMB_OPPOSITION = 0.75
+
+
+def _thumb_opposition(preset: float, requested: float) -> float:
+    """The thumb's opposition, with the request given full authority.
+
+    Returns the preset untouched when the caller left the parameter at its
+    default, and the request itself otherwise. The former 70/30 blend split the
+    difference in every case, which meant no caller could ever actually choose.
+    """
+    if abs(requested - _NEUTRAL_THUMB_OPPOSITION) < 1e-9:
+        return float(preset)
+    return float(np.clip(requested, 0.0, 1.0))
+
+
 def hand_pose(
     hand: Hand,
     shape: HandShape,
@@ -221,9 +244,25 @@ def hand_pose(
             "Ring": parameters.ring_curl,
             "Little": parameters.little_curl,
         }[finger]
-        curl = float(
-            np.clip(base_curl + parameters.finger_curl * 0.2 + digit_adjustment * 0.25, 0.0, 1.0)
-        ) * blend
+        # FULL authority, not a nudge around a preset.
+        #
+        # This used to be ``base_curl + finger_curl * 0.2 + adjustment * 0.25``,
+        # which gave each finger about +-0.45 of travel around whichever of the
+        # seven named shapes had been chosen. The shapes were not presets in that
+        # arrangement, they were a cage: "put up the number 4" needs the thumb
+        # +0.82 from ``open`` or the fingers -0.94 from ``fist``, and neither is
+        # reachable inside +-0.45, so the request came back as an unsupported
+        # motion. The hand could not make a shape nobody had named in advance.
+        #
+        # A nonzero per-digit parameter now displaces the finger across its whole
+        # range, so the seven shapes are starting points and any pose between and
+        # beyond them is reachable. Zero still means "leave the preset alone", so
+        # every existing clip that passes no digit parameters is unchanged.
+        if digit_adjustment >= 0.0:
+            curl = base_curl + (1.0 - base_curl) * digit_adjustment
+        else:
+            curl = base_curl * (1.0 + digit_adjustment)
+        curl = float(np.clip(curl + parameters.finger_curl * 0.2, 0.0, 1.0)) * blend
         base_splay = definition.splay[finger]
         # Positive finger_splay expands the authored silhouette away from its
         # center for every digit.  The old additive rule widened one side of a
@@ -237,7 +276,15 @@ def hand_pose(
             splay_angle = splay * 0.30 * side if index == 0 else 0.0
             opposition = 0.0
             if finger == "Thumb" and index == 0:
-                opposition = (definition.thumb_opposition * 0.7 + parameters.thumb_opposition * 0.3) * 0.75 * side
+                # Same change, for the one DOF the fingers do not have. The
+                # 70/30 blend meant the parameter could never move the thumb
+                # more than three tenths of the way anywhere, so a thumb the
+                # planner asked to oppose stayed roughly where its preset put
+                # it. ``thumb_opposition`` defaults to 0.75, so the preset is
+                # honoured only when the caller leaves it there.
+                opposition = _thumb_opposition(
+                    definition.thumb_opposition, parameters.thumb_opposition
+                ) * 0.75 * side
             result[_bone_key(hand, finger, segment)] = quat_euler(curl_angle, opposition, splay_angle)
     return result
 
