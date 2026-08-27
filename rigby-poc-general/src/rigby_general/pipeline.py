@@ -102,7 +102,16 @@ def _measure(loaded) -> IngestedRobot:
     # measured reach is fifteen metres -- every number technically correct and
     # the whole description meaningless.
     best = max((chain.positioning_dof for chain in morphology.chains), default=0)
-    if best < MINIMUM_POSITIONING_DOF:
+    # A hand is exempt, and the exemption is narrow: it must have been *measured*
+    # to close, with opposing groups. That is the difference between the two
+    # things this check used to conflate -- a cart on a rail positions nothing and
+    # holds nothing, while a five-fingered hand positions nothing and holds
+    # everything. What it affords is limited downstream rather than here.
+    holds = any(
+        effector.can_grasp and len(effector.opposition_groups) >= 2
+        for effector in morphology.effectors
+    )
+    if best < MINIMUM_POSITIONING_DOF and not holds:
         raise MorphologyError(
             GeneralFailureCode.UNSUPPORTED_MORPHOLOGY,
             f"{loaded.robot_id}: the best chain has {best} positioning "

@@ -130,6 +130,14 @@ def _measure_chains(
     measured: list[ChainMeasurement] = []
     for cluster in graph.clusters:
         bodies = graph.chain_bodies(cluster)
+        # A leaf reached without passing a single actuated joint is a coordinate
+        # frame, not a chain. ROS-Industrial descriptions are full of them -- the
+        # KUKA package hangs `base`, `flange` and `tool0` off fixed joints purely
+        # so other tools have something to attach to -- and treating one as a
+        # chain produces a chain with no joints, which is not a thing that can be
+        # measured or moved.
+        if not graph.joints_on_path(bodies):
+            continue
         closure = measure.measure_closure(
             graph,
             cluster.member_bodies,
@@ -620,11 +628,14 @@ def analyze(loaded: LoadedModel, *, velocity_limits: dict[str, float] | None = N
     )
 
     grasping = [effector for effector in effectors if effector.can_grasp]
-    morphology_class = (
-        MorphologyClass.FIXED_BASE_BIMANUAL
-        if len(grasping) >= 2
-        else MorphologyClass.FIXED_BASE_ARM
-    )
+    positioning = max((chain.positioning_dof for chain in kinematic_chains), default=0)
+    if len(grasping) >= 2:
+        morphology_class = MorphologyClass.FIXED_BASE_BIMANUAL
+    elif positioning < 2 and grasping:
+        # Nothing to position with, but something to hold with.
+        morphology_class = MorphologyClass.DEXTEROUS_EFFECTOR
+    else:
+        morphology_class = MorphologyClass.FIXED_BASE_ARM
 
     return RobotMorphologyV1(
         robot_id=loaded.robot_id,

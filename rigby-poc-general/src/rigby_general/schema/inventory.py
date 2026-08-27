@@ -38,6 +38,13 @@ INVENTORY_PATH = (
 
 
 class Requirement(StrEnum):
+    POSITIONING = "positioning"
+    """At least two independent axes that place the effector somewhere.
+
+    Every path schema needs this and no stative does, which is what lets a hand
+    with no arm be admitted and then honestly told which half of the inventory it
+    cannot be asked for."""
+
     GRASPING_EFFECTOR = "grasping_effector"
     TWO_GRASPING_EFFECTORS = "two_grasping_effectors"
     SENSOR = "sensor"
@@ -116,6 +123,8 @@ def capabilities_of(
     """What this robot was *measured* to be able to do."""
 
     capabilities: set[Requirement] = set()
+    if max((chain.positioning_dof for chain in morphology.chains), default=0) >= 2:
+        capabilities.add(Requirement.POSITIONING)
     grasping = morphology.grasping_effectors
     if grasping:
         capabilities.add(Requirement.GRASPING_EFFECTOR)

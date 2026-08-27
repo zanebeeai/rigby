@@ -477,12 +477,29 @@ class MorphologyClass(StrEnum):
 
     FIXED_BASE_ARM = "fixed_base_arm"
     FIXED_BASE_BIMANUAL = "fixed_base_bimanual"
+    DEXTEROUS_EFFECTOR = "dexterous_effector"
+    """A hand with no arm: it closes, but it cannot place itself.
+
+    Refusing these conflated two different things. The two-axis minimum exists to
+    turn away a cart on a rail -- a mechanism that moves without positioning
+    anything -- and a five-fingered hand tripped it for the opposite reason: it
+    positions nothing because it has nothing to position *with*, while being
+    exactly the part of a robot that does the holding.
+
+    Admitted, and then honestly limited. Every path schema requires positioning,
+    so a hand affords none of them; what it affords is the statives and the
+    contact schemas, which is what a hand can actually be asked for."""
+
     UNSUPPORTED_FLOATING_BASE = "unsupported_floating_base"
     UNSUPPORTED_TOPOLOGY = "unsupported_topology"
 
 
 SUPPORTED_MORPHOLOGY_CLASSES = frozenset(
-    {MorphologyClass.FIXED_BASE_ARM, MorphologyClass.FIXED_BASE_BIMANUAL}
+    {
+        MorphologyClass.FIXED_BASE_ARM,
+        MorphologyClass.FIXED_BASE_BIMANUAL,
+        MorphologyClass.DEXTEROUS_EFFECTOR,
+    }
 )
 
 

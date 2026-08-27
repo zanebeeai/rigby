@@ -391,27 +391,69 @@ def measure_closure(
             for second in solid[position + 1 :]
         ]
         positions = [np.array(data.xpos[body], dtype=float) for body in member_bodies]
-        return float(np.mean(distances)), positions
+        return distances, positions
 
-    samples = [evaluate(step / (SWEEP_STEPS - 1)) for step in range(SWEEP_STEPS)]
+    # Closure is measured on the pair that actually converges, and finding that
+    # pair took three attempts because two plausible reductions are both wrong.
+    #
+    # The mean over every pair hides the grip: on a thumb-opposed hand the index
+    # and little finger curl in parallel and never approach each other, so
+    # averaging them in turned a real 44 mm to 2 mm closure into a mean that
+    # barely moved, and the hand read as not closing at all.
+    #
+    # The minimum is worse. Two adjacent fingers sit 4 mm apart and stay there
+    # for the whole sweep, so the minimum locks onto a pair that never moves and
+    # reports zero travel.
+    #
+    # What defines a grip is the surfaces that come *together*. So every pair is
+    # tracked across the sweep and the one that converges most is the one the
+    # measurement is taken from. A two-jaw gripper has exactly one pair, so this
+    # is the number it always was.
+    pairs = [
+        (first, second)
+        for position, first in enumerate(solid)
+        for second in solid[position + 1 :]
+    ]
+    raw = [evaluate(step / (SWEEP_STEPS - 1)) for step in range(SWEEP_STEPS)]
+    series = np.array([values for values, _ in raw], dtype=float)
+    convergence = series[0] - series[-1]
+    pair = int(np.argmax(np.abs(convergence))) if convergence.size else 0
+    samples = [(float(values[pair]), positions) for values, positions in raw]
     distances = [value for value, _ in samples]
 
     at_lower, at_upper = distances[0], distances[-1]
     drive_to_upper = at_upper < at_lower
     ordered = distances if drive_to_upper else list(reversed(distances))
-    open_distance, closed_distance = ordered[0], ordered[-1]
+
+    # Closure is judged up to the point of closest approach, not to the end of
+    # the sweep. A digit driven to its limit can travel *past* the one opposing
+    # it -- the uHand's thumb reaches the index finger at -1 mm and is 6 mm the
+    # other side of it one sample later -- and requiring monotonicity over the
+    # whole range calls that "does not close". It plainly does; it then keeps
+    # going. What happens after two surfaces meet is not evidence about whether
+    # they met.
+    meeting = int(np.argmin(ordered))
+    approach = ordered[: meeting + 1] if meeting > 0 else ordered
+    open_distance, closed_distance = approach[0], approach[-1]
 
     travel = open_distance - closed_distance
     monotone = all(
         later <= earlier * CLOSURE_MONOTONE_TOLERANCE + 1e-9
-        for earlier, later in zip(ordered, ordered[1:])
+        for earlier, later in zip(approach, approach[1:])
     )
     closes = travel > CLOSURE_MIN_TRAVEL_M and monotone
 
-    open_positions = samples[0 if not drive_to_upper else 0][1]
-    closed_positions = samples[-1][1]
-    if not drive_to_upper:
-        open_positions, closed_positions = samples[-1][1], samples[0][1]
+    # Travel is read over the same span the closure was judged on: from open to
+    # the point of closest approach. Reading it to the end of the sweep instead
+    # measures a digit that has already passed its partner and is on its way out
+    # again, which points the wrong way and puts every digit in one group.
+    ordered_positions = (
+        [positions for _, positions in samples]
+        if drive_to_upper
+        else [positions for _, positions in reversed(samples)]
+    )
+    open_positions = ordered_positions[0]
+    closed_positions = ordered_positions[meeting if meeting > 0 else -1]
 
     directions: list[tuple[float, float, float]] = []
     for opened, closed in zip(open_positions, closed_positions):
@@ -428,24 +470,55 @@ def measure_closure(
         monotone=monotone,
         drive_to_upper=drive_to_upper,
         member_directions=tuple(directions),
-        opposition_groups=_opposition_groups(tuple(directions)) if closes else (),
+        opposition_groups=(
+            _opposition_groups(tuple(directions), open_positions, pairs[pair])
+            if closes
+            else ()
+        ),
     )
 
 
 def _opposition_groups(
     directions: tuple[tuple[float, float, float], ...],
+    positions: "list[np.ndarray] | None" = None,
+    axis_pair: "tuple[int, int] | None" = None,
 ) -> tuple[tuple[int, ...], ...]:
     """Split members into the two sides that face one another.
 
-    Members travelling in broadly the same direction during closure are on the
-    same side of the object; members travelling against each other are what
-    actually pinches it. Two groups is the definition of opposition, so this
-    always produces two -- a tripod hand comes out as one digit against two,
-    which is exactly the grip it makes.
+    Opposition is moving *toward each other*, which is not the same as moving
+    differently. Comparing raw travel directions gets a two-jaw gripper right and
+    a hand wrong: the uHand's thumb and index finger both rise as they curl, so
+    their travel vectors sit only 79 degrees apart and the dot product comes out
+    positive -- every digit lands in one group and a hand that visibly closes is
+    reported as having nothing to close against.
+
+    What separates the sides is the axis between the two digits that actually
+    meet. Project each member's travel onto that axis and the sign says which
+    side it closes from, whatever else its motion is doing.
+
+    Falls back to the direction comparison when the caller has no positions,
+    which keeps the older callers working.
     """
 
     if len(directions) < 2:
         return ()
+
+    if positions is not None and axis_pair is not None:
+        first, second = axis_pair
+        axis = np.asarray(positions[second], dtype=float) - np.asarray(
+            positions[first], dtype=float
+        )
+        norm = float(np.linalg.norm(axis))
+        if norm > 1e-9:
+            axis = axis / norm
+            toward: list[int] = []
+            away: list[int] = []
+            for index, direction in enumerate(directions):
+                projection = float(np.asarray(direction, dtype=float) @ axis)
+                (toward if projection >= 0.0 else away).append(index)
+            if toward and away:
+                return (tuple(toward), tuple(away))
+
     reference = np.array(directions[0], dtype=float)
     same: list[int] = [0]
     against: list[int] = []
