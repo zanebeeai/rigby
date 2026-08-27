@@ -56,7 +56,7 @@ The model-backed planner and judge require an explicitly selected compatible mod
 
 ## Legacy POC
 
-The previous app still runs with `rigby-poc`, and its own setup and verification
+The previous app still runs with `rigby-humanoid`, and its own setup and verification
 steps are below, unchanged. Import its archive as quarantined records with:
 
 ```powershell
@@ -75,7 +75,7 @@ Push-Location frontend
 npm ci
 npm run build
 Pop-Location
-uv run rigby-poc
+uv run rigby-humanoid
 ```
 
 Open [http://127.0.0.1:8000](http://127.0.0.1:8000), enter a prompt, and choose **Generate 5 & choose**. The studio displays planning, candidate compilation, deterministic checks, full-FOV capture, VLM judging, bounded repair, and final selection as they happen.

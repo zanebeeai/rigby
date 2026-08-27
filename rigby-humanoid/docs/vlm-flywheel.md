@@ -48,7 +48,7 @@ Planner calls are recorded separately in clip provenance. Use `provider: "offlin
 Push-Location frontend
 npm run build
 Pop-Location
-uv run rigby-poc
+uv run rigby-humanoid
 ```
 
 Open `http://127.0.0.1:8000`, enter a prompt, and choose **Generate 5 & choose**. The live trace shows planning, proposals, structural decisions, capture, VLM scores, any repair, and final selection as they arrive.

@@ -18,7 +18,7 @@ dependencies = [
   "pydantic==2.13.4",
   "python-multipart==0.0.20",
   "python-dotenv==1.2.2",
-  "rigby-poc",
+  "rigby-humanoid",
   "scipy==1.18.0",
   "uvicorn[standard]==0.52.1",
 ]
@@ -35,7 +35,7 @@ rigby-general = "rigby_general.app:run"
 rigby-general-worker = "rigby_general.worker:run"
 
 [tool.uv.sources]
-rigby-poc = { path = "../rigby-poc", editable = true }
+rigby-humanoid = { path = "../rigby-humanoid", editable = true }
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/rigby_general"]

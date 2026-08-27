@@ -8,12 +8,12 @@ dist/
 *.egg-info/
 .coverage
 .playwright-mcp/
-rigby-poc/results/
-rigby-poc/tmp/
-rigby-poc/.ruff_cache/
-rigby-poc/docs/plans/
-rigby-poc/artifacts-v2/
-rigby-poc/frontend/.vite/
+rigby-humanoid/results/
+rigby-humanoid/tmp/
+rigby-humanoid/.ruff_cache/
+rigby-humanoid/docs/plans/
+rigby-humanoid/artifacts-v2/
+rigby-humanoid/frontend/.vite/
 
 # rigby-poc-general: everything a script can regenerate, plus the one thing
 # licence terms forbid committing.
@@ -28,4 +28,4 @@ rigby-poc-general/MUJOCO_LOG.TXT
 # Reference-only, per rigby_v2/rigging/references.py -- never vendored here.
 rigby-poc-general/assets/general/exotic/
 _build/
-rigby-poc/frontend/.vite/
+rigby-humanoid/frontend/.vite/

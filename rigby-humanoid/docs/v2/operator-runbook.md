@@ -1,6 +1,6 @@
 # Rigby v2 local operator runbook
 
-This runbook operates the local-first MuJoCo service on Windows. Commands are run from `rigby-poc`. Never put production credentials in `.env`, console output, evidence files, or support bundles.
+This runbook operates the local-first MuJoCo service on Windows. Commands are run from `rigby-humanoid`. Never put production credentials in `.env`, console output, evidence files, or support bundles.
 
 ## 1. Reference machine and prerequisites
 

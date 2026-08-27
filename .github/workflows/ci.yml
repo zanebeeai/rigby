@@ -7,7 +7,7 @@ name: CI
 # The suite is hermetic: it needs no server, no browser, no API key and no
 # network. Verified by running it in full with OPENAI_API_KEY unset and every
 # AF_INET/AF_INET6 socket raising on construction. Do not add secrets to this
-# workflow -- see rigby-poc/docs/testing.md.
+# workflow -- see rigby-humanoid/docs/testing.md.
 
 on:
   push:
@@ -54,7 +54,7 @@ jobs:
             '${{ github.event.pull_request.base.sha }}' \
             '${{ github.event.pull_request.head.sha }}')
           printf 'changed files:\n%s\n' "$changed"
-          if printf '%s\n' "$changed" | grep -qE '^(rigby-poc/(src|evals|config|tests|frontend)/|rigby-poc/(pyproject\.toml|uv\.lock|acceptance_criteria\.yaml)$|\.github/)'; then
+          if printf '%s\n' "$changed" | grep -qE '^(rigby-humanoid/(src|evals|config|tests|frontend)/|rigby-humanoid/(pyproject\.toml|uv\.lock|acceptance_criteria\.yaml)$|\.github/)'; then
             echo 'os=["macos-latest","windows-latest"]' >> "$GITHUB_OUTPUT"
             echo "code changed -- Windows included"
           else
@@ -72,13 +72,13 @@ jobs:
     timeout-minutes: 30
     defaults:
       run:
-        working-directory: rigby-poc
+        working-directory: rigby-humanoid
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
-          cache-dependency-glob: rigby-poc/uv.lock
+          cache-dependency-glob: rigby-humanoid/uv.lock
       - run: uv sync --extra dev
 
       # The fast tier is the eval-iteration loop. This step REPORTS its duration
@@ -95,7 +95,7 @@ jobs:
       # rot -- a compile or a corpus load entering the tier costs minutes, not
       # seconds -- without tripping on runner variance. Tighten it to the real
       # budget once a few runs have established the baseline. Recorded in
-      # rigby-poc/docs/testing.md as provisional.
+      # rigby-humanoid/docs/testing.md as provisional.
       #
       # macOS only: a wall-clock budget on the Windows runner, which is roughly
       # 4x slower for reasons unrelated to what the tier contains, is a platform
@@ -111,7 +111,7 @@ jobs:
             echo "::error::fast tier took ${elapsed}s, over the 90s rot ceiling."
             echo "Something expensive entered the tier -- a compile, a corpus load"
             echo "or a subprocess. Classify by input, not by duration, and do not"
-            echo "demote a file to medium to fit. See rigby-poc/docs/testing.md."
+            echo "demote a file to medium to fit. See rigby-humanoid/docs/testing.md."
             exit 1
           fi
         shell: bash
@@ -126,14 +126,14 @@ jobs:
     timeout-minutes: 15
     defaults:
       run:
-        working-directory: rigby-poc/frontend
+        working-directory: rigby-humanoid/frontend
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: npm
-          cache-dependency-path: rigby-poc/frontend/package-lock.json
+          cache-dependency-path: rigby-humanoid/frontend/package-lock.json
       - run: npm ci
       - run: npm test
       - run: npm run build
@@ -147,13 +147,13 @@ jobs:
     timeout-minutes: 10
     defaults:
       run:
-        working-directory: rigby-poc
+        working-directory: rigby-humanoid
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
-          cache-dependency-glob: rigby-poc/uv.lock
+          cache-dependency-glob: rigby-humanoid/uv.lock
       - run: uv sync --extra dev
       - name: frontend/src/generated/camera.ts is not stale
         run: uv run python -m evals.generate_camera_ts --check
@@ -175,13 +175,13 @@ jobs:
     timeout-minutes: 30
     defaults:
       run:
-        working-directory: rigby-poc
+        working-directory: rigby-humanoid
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
-          cache-dependency-glob: rigby-poc/uv.lock
+          cache-dependency-glob: rigby-humanoid/uv.lock
       - run: uv sync --extra dev
 
       - name: bless the corpus for this platform
@@ -202,5 +202,5 @@ jobs:
         if: always()
         with:
           name: corpus-hashes-win32-amd64
-          path: rigby-poc/evals/corpus/cases/**/expected.json
+          path: rigby-humanoid/evals/corpus/cases/**/expected.json
           if-no-files-found: warn

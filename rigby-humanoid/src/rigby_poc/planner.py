@@ -1387,7 +1387,7 @@ def provider_status() -> dict[str, object]:
     return {
         "openai_available": bool(os.getenv("OPENAI_API_KEY")),
         "dotenv_loaded": loaded_from is not None,
-        "dotenv_scope": "poc" if loaded_from and loaded_from.parent.name == "rigby-poc" else "workspace",
+        "dotenv_scope": "poc" if loaded_from and loaded_from.parent.name == "rigby-humanoid" else "workspace",
         "primary_model": os.getenv("OPENAI_PLANNER_MODEL", DEFAULT_PRIMARY_MODEL),
         "repair_model": os.getenv("OPENAI_REPAIR_MODEL", DEFAULT_REPAIR_MODEL),
     }

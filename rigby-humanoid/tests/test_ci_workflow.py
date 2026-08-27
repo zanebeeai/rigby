@@ -72,7 +72,7 @@ def test_no_workflow_uses_a_secret() -> None:
                 offenders.append(f"{path.name}:{number}: {line.strip()}")
     assert not offenders, (
         f"a workflow references a secret at {offenders}. The suite is hermetic and CI "
-        f"must stay that way -- see rigby-poc/docs/testing.md."
+        f"must stay that way -- see rigby-humanoid/docs/testing.md."
     )
 
 

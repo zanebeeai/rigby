@@ -189,7 +189,7 @@ def test_the_known_entry_point_scripts_are_recognised_as_scripts(
 
 
 def test_console_entry_points_are_recognised() -> None:
-    """`rigby-poc = "rigby_poc.app:run"` makes `app` reachable from a shell."""
+    """`rigby-humanoid = "rigby_poc.app:run"` makes `app` reachable from a shell."""
 
     assert "app" in _console_script_modules()
 

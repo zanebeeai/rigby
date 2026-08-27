@@ -29,7 +29,7 @@ Checking it needs **two** lines, not one:
 
 ```bash
 grep -o 'EXIT=[0-9]*' "$LOG" | tail -1        # the result, if the run finished
-pgrep -f "rigby-wt/$LANE/rigby-poc/.venv/bin/pytest" >/dev/null && echo RUNNING || echo NOT-RUNNING
+pgrep -f "rigby-wt/$LANE/rigby-humanoid/.venv/bin/pytest" >/dev/null && echo RUNNING || echo NOT-RUNNING
 ```
 
 **Scope the second line to your own worktree, and note which direction the

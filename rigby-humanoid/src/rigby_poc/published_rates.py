@@ -214,7 +214,7 @@ class Finding:
 #: recorded count is asserted exactly, so a waived file cannot quietly acquire a
 #: new bare rate.
 WAIVERS: dict[str, dict[str, Any]] = {
-    "rigby-poc/docs/evidence/frozen-judge-calibration.json": {
+    "rigby-humanoid/docs/evidence/frozen-judge-calibration.json": {
         "findings": 6,
         "reason": (
             "schema_version 1.0, frozen 2026-08-09. Publishes six rates that each state "
@@ -225,7 +225,7 @@ WAIVERS: dict[str, dict[str, Any]] = {
         "owner": "plan 10 PR 10f (conductor -- the only PR with model spend)",
         "retires_in": "eval-report.v2.json, plan 10 §9.7",
     },
-    "rigby-poc/docs/research-and-roadmap.md": {
+    "rigby-humanoid/docs/research-and-roadmap.md": {
         "findings": 1,
         "reason": (
             "One externally cited result (MoVer, 95.1% on a 5,600-prompt synthetic "
