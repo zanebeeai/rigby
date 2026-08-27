@@ -15,21 +15,21 @@ rigby-humanoid/docs/plans/
 rigby-humanoid/artifacts-v2/
 rigby-humanoid/frontend/.vite/
 
-# rigby-poc-general: everything a script can regenerate, plus the one thing
+# rigby-generalized-urdf: everything a script can regenerate, plus the one thing
 # licence terms forbid committing.
-rigby-poc-general/results/
-rigby-poc-general/robots/
-rigby-poc-general/docs/media/
-rigby-poc-general/.ruff_cache/
-rigby-poc-general/frontend/.vite/
-rigby-poc-general/*.log
-rigby-poc-general/MUJOCO_LOG.TXT
+rigby-generalized-urdf/results/
+rigby-generalized-urdf/robots/
+rigby-generalized-urdf/docs/media/
+rigby-generalized-urdf/.ruff_cache/
+rigby-generalized-urdf/frontend/.vite/
+rigby-generalized-urdf/*.log
+rigby-generalized-urdf/MUJOCO_LOG.TXT
 # Third-party robot descriptions are fetched at setup time and pinned by commit.
 # Reference-only, per rigby_v2/rigging/references.py -- never vendored here.
-rigby-poc-general/assets/general/exotic/
+rigby-generalized-urdf/assets/general/exotic/
 # Same policy for the operator's own hardware: the KUKA meshes belong to
 # ROS-Industrial and the uHand model is regenerated deterministically by
 # scripts/build_irl.py, so neither needs to live in the history.
-rigby-poc-general/assets/general/irl/
+rigby-generalized-urdf/assets/general/irl/
 _build/
 rigby-humanoid/frontend/.vite/

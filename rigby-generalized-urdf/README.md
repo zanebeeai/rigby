@@ -1,4 +1,4 @@
-# rigby-poc-general
+# rigby-generalized-urdf
 
 Hand it an arbitrary robot as a URDF. It measures what the robot is, bakes a
 library of certified motion primitives for that particular body, and then drives
