@@ -1,0 +1,6 @@
+# The three tiers are one uv workspace so they resolve against a single lock.
+# Before the split each package carried its own uv.lock and any-robot reached
+# humanoid through a path dependency, which let the two locks drift apart
+# silently. One lock at the root makes that impossible.
+[tool.uv.workspace]
+members = ["core", "humanoid", "any-robot"]

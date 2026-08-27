@@ -22,7 +22,7 @@ jobs:
     timeout-minutes: 60
     defaults:
       run:
-        working-directory: rigby-humanoid
+        working-directory: humanoid
     env:
       COVERAGE_CORE: sysmon
     steps:
@@ -30,7 +30,7 @@ jobs:
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
-          cache-dependency-glob: rigby-humanoid/uv.lock
+          cache-dependency-glob: uv.lock
       - run: uv sync --extra dev
       - name: pytest with coverage
         run: uv run pytest --cov=rigby_poc --cov=evals --cov-report=term --cov-report=xml
@@ -38,5 +38,5 @@ jobs:
         if: always()
         with:
           name: coverage-xml
-          path: rigby-humanoid/coverage.xml
+          path: humanoid/coverage.xml
           if-no-files-found: error
