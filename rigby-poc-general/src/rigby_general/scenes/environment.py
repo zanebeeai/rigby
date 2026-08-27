@@ -121,12 +121,21 @@ def build_environment_model(
     manifest: RobotAssetManifestV1,
     mjcf_xml: str,
     environment: EnvironmentV1,
+    asset_root: "Path | None" = None,
 ) -> tuple[mujoco.MjModel, str]:
     """Compile the robot into the world, with the world unchanged.
 
     The robot is translated to the environment's mount pose rather than the
     world being translated to the robot, because the world was authored first and
     is the thing that must not move.
+
+    ``asset_root`` is where the robot's meshes live. A URDF names them relatively
+    -- ``meshes/kr6_agilus/link_1.stl`` -- and relative to a string being compiled
+    in memory means relative to whatever directory the process happens to be in.
+    Ingest gets away with that because it runs beside the file; a world does not,
+    and every mesh-bearing robot failed to enter one with a compile error naming
+    the first mesh it could not open. Passing the root turns the reference back
+    into something resolvable from anywhere.
     """
 
     root = ET.fromstring(mjcf_xml)
@@ -186,6 +195,16 @@ def build_environment_model(
         ET.SubElement(
             node, "site", name=f"{OBJECT_PREFIX}{item.name}_site", pos="0 0 0", size="0.002"
         )
+
+    if asset_root is not None:
+        compiler = root.find("compiler")
+        if compiler is None:
+            compiler = ET.Element("compiler")
+            root.insert(0, compiler)
+        if not compiler.get("meshdir"):
+            compiler.set("meshdir", str(Path(asset_root).resolve()))
+        if not compiler.get("texturedir"):
+            compiler.set("texturedir", str(Path(asset_root).resolve()))
 
     xml = ET.tostring(root, encoding="unicode")
     try:

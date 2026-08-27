@@ -77,7 +77,8 @@ def main() -> int:
     exported: dict[str, dict] = {}
 
     prepared = {}
-    for robot_id, source in discover().items():
+    sources = discover()
+    for robot_id, source in sources.items():
         try:
             robot = ingest_robot(source, robot_id=robot_id)
         except Exception as error:  # noqa: BLE001 - a refused robot has no trials
@@ -158,7 +159,11 @@ def main() -> int:
                 started = time.perf_counter()
                 try:
                     scene = build_task_scene(
-                        robot.manifest, robot.mjcf_xml, environment, item.name
+                        robot.manifest,
+                        robot.mjcf_xml,
+                        environment,
+                        item.name,
+                        asset_root=sources[robot_id].parent,
                     )
                     result = attempt_grasp(robot.manifest, scene, effector, frame)
                 except Exception as error:  # noqa: BLE001 - report, do not hide
