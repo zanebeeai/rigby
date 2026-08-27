@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import math
+
+import numpy as np
 import pytest
 
 from evals.capture import phase_sampling_points
@@ -14,6 +17,7 @@ from evals.flywheel import (
     single_sample_baseline_index,
 )
 from rigby_poc.compiler import compile_motion
+from rigby_poc.kinematics import rig_kinematics
 from rigby_poc.models import CompileRequest, Hand, Intent, PlanRequest, PrimitiveKind, default_scene
 from rigby_poc.planner import plan_motion
 
@@ -68,11 +72,44 @@ def test_left_hook_compiles_as_visible_curved_bent_elbow_motion() -> None:
     assert clip.metrics["structural_valid"] is True
     assert clip.metrics["active_hand_visibility_fraction"] == 1.0
     assert clip.metrics["self_collision_frames"] == 0
-    assert clip.metrics["strike_wrist_path_length_m"] > 0.25
-    assert clip.metrics["strike_lateral_excursion_m"] > 0.20
-    assert clip.metrics["strike_forward_excursion_m"] > 0.08
+    # The `strike_*_excursion` metrics are computed from `arm_landmarks`,
+    # which reconstructs the arm from a fixed rest shoulder and cannot see the
+    # trunk, so since the trunk began carrying part of the swing they describe
+    # the arm's motion relative to the chest, not through the world. The
+    # world-path claim in this test's name is asserted below via full FK; the
+    # trunk-frame arc is still pinned as non-degenerate.
+    assert clip.metrics["strike_wrist_path_length_m"] > 0.20
+    assert clip.metrics["strike_lateral_excursion_m"] > 0.08
     assert 70.0 <= clip.metrics["impact_elbow_angle_deg"] <= 120.0
     assert min(clip.metrics["normalized_finger_curls"].values()) > 0.65
+
+    strike_range = next(
+        (float(item["start_s"]), float(item["end_s"]))
+        for item in clip.metrics["phase_ranges_s"]
+        if item["kind"] == "strike"
+    )
+    kinematics = rig_kinematics()
+    node_of = {name: index for index, name in kinematics.canonical_by_node.items()}
+    wrist_index = node_of["leftHand"]
+    chest_index = node_of["chest"]
+    wrists = []
+    chest_yaws = []
+    for frame in clip.frames:
+        matrices = kinematics.world_matrices(frame.bones)
+        forward = matrices[chest_index][:3, :3] @ np.array([0.0, 0.0, 1.0])
+        chest_yaws.append(math.degrees(math.atan2(forward[0], forward[2])))
+        if strike_range[0] - 1e-8 <= frame.time_s <= strike_range[1] + 1e-8:
+            wrists.append(matrices[wrist_index][:3, 3].copy())
+    world_path_m = float(
+        sum(np.linalg.norm(second - first) for first, second in zip(wrists, wrists[1:]))
+    )
+    world_lateral_m = float(max(w[0] for w in wrists) - min(w[0] for w in wrists))
+    assert world_path_m > 0.25
+    assert world_lateral_m > 0.20
+    # The trunk throws the hook with the arm: the chest visibly rotates
+    # through the swing. This is the vocabulary this change adds; losing it
+    # regresses the hook back to an arm-only punch.
+    assert max(chest_yaws) - min(chest_yaws) > 20.0
 
     descriptor = motion_perceptual_descriptor(clip, Hand.LEFT)
     assert descriptor["recovery_endpoint_wrist_error_m"] < 1e-6

@@ -1326,11 +1326,14 @@ def _strike_primitives(
     elbow_side = 1.0 if hand == Hand.LEFT else -1.0
     strike_family_scale = 1.30 if strike_type == StrikeType.CROSS else 1.0
     if strike_type == StrikeType.HOOK:
+        # A hook is thrown with the trunk: the torso column leads the family so
+        # the body coils through load and whips through the arc.
+        hook_torso = min(0.92, power + 0.18)
         specs = (
             (PrimitiveKind.GUARD, 0.65, 0.08, -0.08, 0.02, 0.26, 0.18, 0.0),
-            (PrimitiveKind.LOAD, 0.60, 0.02, 0.00, 0.35, 0.54, 0.38, 0.45),
-            (PrimitiveKind.STRIKE, 0.80, 0.08, 0.25, 0.00, 0.66, power, 0.82),
-            (PrimitiveKind.FOLLOW_THROUGH, 0.50, -0.02, 0.22, 0.20, 0.62, power * 0.88, 0.52),
+            (PrimitiveKind.LOAD, 0.60, 0.02, 0.00, 0.35, 0.54, 0.45, 0.45),
+            (PrimitiveKind.STRIKE, 0.80, 0.08, 0.25, 0.00, 0.66, hook_torso, 0.82),
+            (PrimitiveKind.FOLLOW_THROUGH, 0.50, -0.02, 0.22, 0.20, 0.62, hook_torso * 0.85, 0.52),
             (PrimitiveKind.RECOVER, 0.85, 0.0, 0.0, 0.0, 0.10, 0.0, 0.0),
         )
     elif strike_type == StrikeType.UPPERCUT:
@@ -1343,11 +1346,15 @@ def _strike_primitives(
         )
     else:
         cross_power = min(0.88, power + (0.10 if strike_type == StrikeType.CROSS else 0.0))
+        # A jab stays quick and economical -- a small torso snap -- while a
+        # cross is the rear-hand power punch and drives the full rotation.
+        torso_load = 0.35 if strike_type == StrikeType.CROSS else 0.22
+        torso_strike = cross_power if strike_type == StrikeType.CROSS else 0.40
         specs = (
             (PrimitiveKind.GUARD, 0.65, 0.08, -0.08, 0.02, 0.26, 0.18, 0.0),
-            (PrimitiveKind.LOAD, 0.52, 0.04, 0.02, 0.10, 0.32, 0.30, 0.14),
-            (PrimitiveKind.STRIKE, 0.76, 0.06, 0.64, -0.04, 0.24, cross_power, 0.18),
-            (PrimitiveKind.FOLLOW_THROUGH, 0.42, 0.02, 0.52, -0.06, 0.22, cross_power * 0.82, 0.10),
+            (PrimitiveKind.LOAD, 0.52, 0.04, 0.02, 0.10, 0.32, torso_load, 0.14),
+            (PrimitiveKind.STRIKE, 0.76, 0.06, 0.64, -0.04, 0.24, torso_strike, 0.18),
+            (PrimitiveKind.FOLLOW_THROUGH, 0.42, 0.02, 0.52, -0.06, 0.22, torso_strike * 0.82, 0.10),
             (PrimitiveKind.RECOVER, 0.82, 0.0, 0.0, 0.0, 0.10, 0.0, 0.0),
         )
     return [

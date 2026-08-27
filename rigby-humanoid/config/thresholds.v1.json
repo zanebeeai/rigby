@@ -629,6 +629,21 @@
           "docs/plans/10-eval-redesign.md#32-new-signal-quality-l3"
         ]
       }
+    },
+    "anatomy.torso_yaw_generator_max_rad": {
+      "value": 0.63,
+      "unit": "rad",
+      "applies_to": [
+        "generator"
+      ],
+      "source": {
+        "kind": "invariant",
+        "cites": [
+          "config/rom.v1.json -- spine/chest/upperChest twist typical band [-15, 15] deg",
+          "src/rigby_poc/primitives.py -- TRUNK_YAW_DISTRIBUTION"
+        ],
+        "rationale": "Total trunk yaw the strike generator may request at torso_participation = 1.0, distributed over spine/chest/upperChest by TRUNK_YAW_DISTRIBUTION. Bounded by the trunk ROM typical band: the largest distribution weight is 0.40, and 0.40 x 0.63 rad = 14.4 deg, inside every trunk segment's 15-deg typical twist band (all three are provisional, report-only bounds). An authored generator ceiling in the wrist_twist_generator_max_rad family, not a measured quantity."
+      }
     }
   }
 }

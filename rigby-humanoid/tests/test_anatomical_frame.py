@@ -734,12 +734,13 @@ def test_the_frame_is_exercised_by_shipped_motion_or_declared_untested(corpus_an
         < 1e-6
     )
 
+    # `spine` and `upperChest` left this list when the strike trunk-yaw work
+    # started rotating them: their 04b limits are now exercised by shipped
+    # motion rather than by synthetic tests alone.
     assert unexercised == [
         "leftToes",
         "neck",
         "rightToes",
-        "spine",
-        "upperChest",
     ]
 
 
