@@ -16,6 +16,7 @@ import os
 from typing import Any, Mapping
 
 from fastapi import Body, FastAPI, HTTPException, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from rigby_v2.hashing import content_hash
@@ -73,10 +74,60 @@ def health_payload(settings: GeneralSettings) -> dict[str, Any]:
     }
 
 
+def _register_bundled_robots(registry: RobotRegistry, settings: GeneralSettings) -> None:
+    """Make the robots already on disk addressable without re-uploading them.
+
+    The registry starts empty, so every asset robot -- the zoo, the third-party
+    set, the operator's own hardware -- was invisible to the API even though the
+    studio listed all of them. A home page offering eleven robots and an endpoint
+    that knows none of them is worse than either alone.
+
+    A model that will not ingest is skipped rather than raised: three of these
+    are *meant* to be refused, and the refusal is recorded in the studio's intake
+    view, not here.
+    """
+
+    roots = (
+        settings.project_root / "assets" / "general" / "zoo",
+        settings.project_root / "assets" / "general" / "exotic",
+        settings.project_root / "assets" / "general" / "irl",
+    )
+    known = set(registry.list_ids())
+    for root in roots:
+        if not root.is_dir():
+            continue
+        for directory in sorted(root.iterdir()):
+            source = directory / "robot.urdf"
+            if not source.is_file() or directory.name in known:
+                continue
+            try:
+                registry.register_bytes(
+                    source.read_bytes(),
+                    filename=source.name,
+                    robot_id=directory.name,
+                )
+            except Exception:  # noqa: BLE001 - a refused model simply is not offered
+                continue
+
+
 def create_app(settings: GeneralSettings | None = None) -> FastAPI:
     resolved = settings or GeneralSettings.from_env()
     app = FastAPI(title="Rigby General", version=__version__)
+
+    # The trace studio is a static file, usually opened from a small local
+    # server on another port, and its home page posts prompts here. Without this
+    # the browser blocks that call and the page reports the pipeline down while
+    # it is plainly running. Loopback only -- this is a local tool, and the
+    # allowance should not outlive the machine it is on.
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origin_regex=r"^http://(127\.0\.0\.1|localhost)(:\d+)?$",
+        allow_methods=["GET", "POST"],
+        allow_headers=["*"],
+    )
+
     registry = RobotRegistry(resolved.robot_root)
+    _register_bundled_robots(registry, resolved)
 
     @app.get("/api/v3/health")
     def health() -> dict[str, Any]:
@@ -175,6 +226,90 @@ def create_app(settings: GeneralSettings | None = None) -> FastAPI:
 
     results_root = resolved.project_root / "results"
     traces = TraceStore(results_root)
+
+    @app.get("/api/v3/environments")
+    def list_environments() -> dict[str, Any]:
+        """The authored worlds, for a caller choosing where to run something."""
+
+        from .scenes import available_environments, load_environment
+
+        rows = []
+        for name in available_environments():
+            environment = load_environment(name)
+            rows.append(
+                {
+                    "environment_id": environment.environment_id,
+                    "description": environment.description,
+                    "objects": [
+                        {
+                            "name": item.name,
+                            "span_m": round(item.span_m, 4),
+                            "mass_kg": round(item.mass_kg, 4),
+                            "position_m": [round(v, 4) for v in item.position_m],
+                        }
+                        for item in environment.objects
+                    ],
+                }
+            )
+        return {"environments": rows}
+
+    @app.post("/api/v3/runs", status_code=201)
+    def submit_run(payload: dict[str, Any] = Body(...)) -> dict[str, Any]:
+        """Answer one prompt on one robot, and record the trace either way.
+
+        A refusal is a 201 with ``accepted: false``, not an error status. The
+        stage that refused and the measurement it refused on are the result --
+        turning them into a 4xx would throw away the part worth reading.
+        """
+
+        from .run import answer
+        from .schema.inventory import load_inventory
+        from .primitives import PrimitiveLibrary
+
+        prompt = str(payload.get("prompt") or "").strip()
+        robot_id = str(payload.get("robot_id") or "").strip()
+        if not prompt or not robot_id:
+            raise HTTPException(
+                status_code=422,
+                detail="both `prompt` and `robot_id` are required",
+            )
+
+        record = _load(robot_id)
+        library = PrimitiveLibrary(resolved.robot_root)
+        # The record keeps the compiled MJCF on disk rather than in memory, so
+        # the model is loaded per run. That also means a run always uses the file
+        # the registry actually holds, not a copy that drifted from it.
+        import mujoco
+
+        model = mujoco.MjModel.from_xml_path(str(record.model_path))
+        try:
+            result = answer(
+                prompt,
+                record.manifest,
+                model,
+                load_inventory(),
+                library.load(robot_id),
+                library.load_failures(robot_id),
+            )
+        except RigbyGeneralError as error:
+            raise HTTPException(
+                status_code=422,
+                detail={
+                    "failure_code": error.code.value,
+                    "message": error.message,
+                    **error.details,
+                },
+            ) from error
+
+        traces.write(result.trace)
+        return {
+            "trace_id": result.trace.trace_id,
+            "accepted": bool(result.accepted),
+            "failure_stage": result.failure_stage,
+            "prompt": prompt,
+            "robot_id": robot_id,
+            "trace": result.trace.to_json(),
+        }
 
     @app.get("/api/v3/results")
     def list_results() -> dict[str, Any]:
