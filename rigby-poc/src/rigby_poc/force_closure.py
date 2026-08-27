@@ -95,6 +95,18 @@ class ClosureConfig:
     opposition_force_n: float = 2.0
 
 
+#: How much of the closure window the thumb gets to itself before the fingers
+#: start, as a fraction.
+#:
+#: A lead, not a handover. Waiting for the thumb to finish before releasing the
+#: fingers sounds like the same thing and is not: the thumb travels its full
+#: range now, which takes the whole window, so the fingers were released with
+#: nothing left and reached a curl of 0.092. On screen that is a hand whose
+#: thumb closes correctly and whose four fingers never close at all -- the
+#: previous bug wearing the opposite face.
+_THUMB_LEAD_FRACTION = 0.3
+
+
 #: A digit must travel this far before a load counts as having seated it.
 #:
 #: Without it, "reports force" and "has grasped something" are the same test,
@@ -349,7 +361,15 @@ def close_until_contact(
                     state[d].peak_force_n >= config.opposition_force_n
                     for d in DIGITS[1:]
                 )
-                if touched or state["thumb"].seated or state["thumb"].curl >= ceilings["thumb"] - 1e-6:
+                lead_over = now >= close_window_s[0] + _THUMB_LEAD_FRACTION * max(
+                    close_window_s[1] - close_window_s[0], 1e-6
+                )
+                if (
+                    touched
+                    or state["thumb"].seated
+                    or state["thumb"].curl >= ceilings["thumb"] - 1e-6
+                    or lead_over
+                ):
                     fingers_released = True
                     released_at_s = now
             advancing = DIGITS if fingers_released else ("thumb",)

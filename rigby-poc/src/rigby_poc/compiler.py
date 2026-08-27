@@ -5492,6 +5492,10 @@ def compile_motion(request: CompileRequest) -> ClipResult:
             program.hand,
             target_object,
             shoulder_position(program.hand),
+            support_height_m=scene.support_height_m,
+            # Everything in the scene the hand is NOT reaching for is something
+            # it must not be driven through.
+            obstacles=tuple(o for o in scene.objects if o.id != target_object.id),
         )
 
     for primitive_index, primitive in enumerate(program.primitives):

@@ -142,6 +142,39 @@ def _seating(distance: float | np.ndarray) -> float:
     return float(max(0.0, 1.0 - error / _SEATING_TOLERANCE_M))
 
 
+def _height(points: np.ndarray) -> np.ndarray:
+    """World height of each point. The rig's up axis is y."""
+    array = np.atleast_2d(np.asarray(points, dtype=float))
+    return array[:, 1]
+
+
+def _obstructed(
+    points: np.ndarray,
+    support_height_m: float,
+    obstacles: tuple[SceneObject, ...],
+) -> float:
+    """Total depth by which these points intrude into anything not being grasped.
+
+    Stated as one rule over the whole scene rather than a test for the table,
+    because the table was never the point. The planner checked clearance against
+    the object it was reaching for and against nothing else, so it happily chose
+    a placement that drove every finger through whatever the object was standing
+    on -- measured, the little and ring fingertips reached 9.7 cm below the
+    tabletop and stayed in contact for over 400 steps. A hand buried in the
+    scenery fights it for the entire approach.
+
+    The support surface is a half-space and the other scene objects are boxes,
+    so both are expressed as depths and summed. A rule that named the table
+    would break on the first object placed on a shelf, a rung or the floor.
+    """
+    total = 0.0
+    if support_height_m:
+        total += float(np.sum(np.maximum(0.0, support_height_m - _height(points))))
+    for obstacle in obstacles:
+        total += float(np.sum(np.maximum(0.0, -_box_distance(points, obstacle))))
+    return total
+
+
 def _palm_samples(pose: dict[str, BonePose], side: str) -> np.ndarray:
     """Points filling the palm box, in world space.
 
@@ -368,8 +401,11 @@ def _cached_plan(signature: tuple, hand: Any, shoulder_key: tuple) -> "GraspPlan
     it per compile put a 17 s search inside every grab in the corpus, which took
     the suite from minutes to over an hour.
     """
-    item, base_pose, shoulder = _PLAN_INPUTS[signature]
-    return _plan_grasp_pose(base_pose, hand, item, shoulder)
+    item, base_pose, shoulder, support, obstacles = _PLAN_INPUTS[signature]
+    return _plan_grasp_pose(
+        base_pose, hand, item, shoulder,
+        support_height_m=support, obstacles=obstacles,
+    )
 
 
 #: Non-hashable arguments, held by the signature the cache is keyed on.
@@ -381,11 +417,16 @@ def plan_grasp_pose(
     hand: Any,
     item: SceneObject,
     shoulder: Any,
+    support_height_m: float = 0.0,
+    obstacles: tuple[SceneObject, ...] = (),
     **kwargs: Any,
 ) -> "GraspPlan":
     """Cached entry point. See :func:`_plan_grasp_pose` for the search itself."""
     if kwargs:
-        return _plan_grasp_pose(base_pose, hand, item, shoulder, **kwargs)
+        return _plan_grasp_pose(
+            base_pose, hand, item, shoulder,
+            support_height_m=support_height_m, obstacles=obstacles, **kwargs
+        )
     translation = item.transform.translation
     rotation = item.transform.rotation
     # The base pose is part of the key: it is the posture the arm solution is
@@ -404,8 +445,12 @@ def plan_grasp_pose(
         (item.dimensions_m.x, item.dimensions_m.y, item.dimensions_m.z),
         hand.value,
         (shoulder.x, shoulder.y, shoulder.z),
+        round(float(support_height_m), 5),
+        tuple(o.id for o in obstacles),
     )
-    _PLAN_INPUTS[signature] = (item, base_pose, shoulder)
+    _PLAN_INPUTS[signature] = (
+        item, base_pose, shoulder, float(support_height_m), tuple(obstacles)
+    )
     return _cached_plan(signature, hand, (shoulder.x, shoulder.y, shoulder.z))
 
 
@@ -415,6 +460,8 @@ def _plan_grasp_pose(
     item: SceneObject,
     shoulder: Any,
     *,
+    support_height_m: float = 0.0,
+    obstacles: tuple[SceneObject, ...] = (),
     coarse_step_m: float = 0.045,
     refine_step_m: float = 0.018,
     resolution: int = 8,
@@ -528,7 +575,7 @@ def _plan_grasp_pose(
 
     def measure(shape, world, origin, samples: int):
         held, covered, quads = 0, [], {}
-        pierced = 0
+        pierced = 0.0
         seating: list[tuple[float, float]] = []
         for name, corners in local[shape].items():
             placed = corners @ world.T + origin
@@ -555,7 +602,16 @@ def _plan_grasp_pose(
             clearance = _box_distance(
                 np.vstack([thumb_line, finger_line]), item
             )
-            pierced += int(np.count_nonzero(clearance < _APPROACH_MARGIN_M))
+            # A DEPTH, not a count. Counting samples below the margin saturates:
+            # once every candidate has some sample inside it the term is a
+            # constant and the search cannot tell a corridor with 0.91 cm of
+            # room from one with 0.5 cm. Measured, that is exactly what
+            # happened -- no placement anywhere in the search cleared the
+            # margin, so raising the penalty from 0.5 to 3.0 changed the winner
+            # not at all, because it was multiplying a constant.
+            pierced += float(
+                np.sum(np.maximum(0.0, _APPROACH_MARGIN_M - clearance))
+            )
             seating.append(
                 (
                     _seating(_box_distance(quad.thumb_tip, item)),
@@ -564,8 +620,27 @@ def _plan_grasp_pose(
             )
             quads[name] = quad
         palm = palm_local[shape] @ world.T + origin
-        palm_pierced = int(
-            np.count_nonzero(_box_distance(palm, item) < _APPROACH_MARGIN_M)
+        # The table was invisible to this search. Measured on the placement it
+        # chose, every finger was driven through the tabletop -- the little and
+        # ring fingertips reached 9.7 cm BELOW it and stayed in contact for over
+        # 400 steps. A hand buried in the surface is fighting it for the whole
+        # approach, and those contact forces are a large part of what threw the
+        # block. Clearance against the object was checked from the beginning;
+        # clearance against the thing the object is sitting on never was.
+        below = _obstructed(palm, support_height_m, obstacles)
+        for _name, corners in local[shape].items():
+            placed_line = corners @ world.T + origin
+            span_t = np.linspace(0.0, 1.0, 9)[:, None]
+            below += _obstructed(
+                np.vstack([
+                    placed_line[0] * (1 - span_t) + placed_line[1] * span_t,
+                    placed_line[3] * (1 - span_t) + placed_line[2] * span_t,
+                ]),
+                support_height_m,
+                obstacles,
+            )
+        palm_pierced = float(
+            np.sum(np.maximum(0.0, _APPROACH_MARGIN_M - _box_distance(palm, item)))
         )
         thumb_seat = float(np.mean([t for t, _f in seating])) if seating else 0.0
         finger_seat = float(np.mean([f for _t, f in seating])) if seating else 0.0
@@ -576,6 +651,7 @@ def _plan_grasp_pose(
             pierced,
             (thumb_seat, finger_seat),
             palm_pierced,
+            below,
         )
 
     def best_at(offset: np.ndarray, angles=None, samples: int | None = None):
@@ -598,13 +674,13 @@ def _plan_grasp_pose(
             closed_rotation, closed_origin = frames[HandShape.FIST]
             (
                 _open_held, open_covered, _open_quads, open_pierced,
-                _open_seat, open_palm,
+                _open_seat, open_palm, open_below,
             ) = measure(
                 HandShape.OPEN, open_rotation @ delta, open_origin, samples
             )
             (
                 held, covered, quads, _closed_pierced,
-                (thumb_seat, finger_seat), closed_palm,
+                (thumb_seat, finger_seat), closed_palm, closed_below,
             ) = measure(HandShape.FIST, closed_rotation @ delta, closed_origin, samples)
             # The open hand is the approach pose, so it must be clear. The
             # closed hand is allowed to be inside the object -- that is what
@@ -645,21 +721,27 @@ def _plan_grasp_pose(
                 # it did: the winner left the thumb 1.6 mm of margin against a
                 # 2 mm mean tracking error, so the shaft struck the block on the
                 # way in and the grasp was decided before it began.
-                - 3.0 * open_pierced
+                - 120.0 * open_pierced
                 # The palm is checked on both shapes and weighted to dominate.
                 # A grasp whose palm is inside the object is not a grasp that
                 # squeezes it, it is a shove, and the object is gone before the
                 # fingers arrive. No amount of coverage compensates.
-                - 2.0 * (open_palm + closed_palm)
+                - 200.0 * (open_palm + closed_palm)
+                - 200.0 * (open_below + closed_below)
             )
             if score > found[0]:
                 found = (score, wrist, quads, (held, covered))
         return found
 
     best = (-1.0, np.zeros(3), (0.0, 0.0, 0.0), None, (0, 0.0))
-    for dx in np.arange(-0.16, 0.081, coarse_step_m):
-        for dy in np.arange(-0.06, 0.121, coarse_step_m):
-            for dz in np.arange(-0.18, 0.041, coarse_step_m):
+    # Symmetric about the object. The old box reached from -0.18 to +0.04 in z
+    # and -0.16 to +0.08 in x, which only ever offered placements in front of
+    # and inboard of the block -- the one family of approaches whose corridor
+    # the thumb crosses. A search that cannot propose coming at it from the far
+    # side or from above cannot find the clearance that is missing.
+    for dx in np.arange(-0.17, 0.171, coarse_step_m):
+        for dy in np.arange(-0.08, 0.161, coarse_step_m):
+            for dz in np.arange(-0.18, 0.181, coarse_step_m):
                 offset = np.asarray([dx, dy, dz])
                 score, wrist, quads, detail = best_at(offset, coarse_wrist, 6)
                 if score > best[0]:
