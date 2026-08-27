@@ -95,6 +95,25 @@ class ClosureConfig:
     opposition_force_n: float = 2.0
 
 
+#: A digit must travel this far before a load counts as having seated it.
+#:
+#: Without it, "reports force" and "has grasped something" are the same test,
+#: and they are not the same thing. The thumb arrives at the close window
+#: already touching the block, so it met the seat force at its opening curl of
+#: 0.02 and froze there -- for the whole clip. Measured on the compiled
+#: armature, the thumb's three bones were byte-identical from t=0.00 to t=3.38
+#: while the index travelled from 3 to 62 degrees. On screen that is a hand that
+#: closes four fingers around an object its thumb never reaches.
+#:
+#: A digit loaded before it has travelled is obstructed, not seated. That is an
+#: approach failure and it is reported as one rather than being absorbed into a
+#: grip that does not exist.
+_MIN_TRAVEL_BEFORE_SEAT = 0.15
+
+#: Opening curl. Named because the seating rule is stated relative to it.
+_START_CURL = 0.02
+
+
 @dataclass
 class DigitState:
     curl: float
@@ -231,7 +250,7 @@ def close_until_contact(
     grip_opposition = float(fist.thumb_opposition)
 
     segment_pairs = _hand_segment_pairs(hand)
-    state = {d: DigitState(curl=0.02) for d in DIGITS}
+    state = {d: DigitState(curl=_START_CURL) for d in DIGITS}
 
     from .primitives import HAND_SHAPES
 
@@ -298,6 +317,7 @@ def close_until_contact(
     peak_z = start_z
     max_penetration = 0.0
     fingers_released = False
+    obstructed: set[str] = set()
     released_at_s: float | None = None
     order: list[str] = []
     out_frames: list[ClipFrame] = []
@@ -358,9 +378,15 @@ def close_until_contact(
             digit_state.peak_force_n = max(digit_state.peak_force_n, force)
             # Seat on measured load. Nothing commands a final position.
             if not digit_state.seated and force >= config.seat_force_n:
-                digit_state.seated = True
-                digit_state.seated_at_s = now
-                order.append(digit)
+                if digit_state.curl - _START_CURL < _MIN_TRAVEL_BEFORE_SEAT:
+                    # Loaded before it moved: the approach put this digit
+                    # against the object, and freezing it here is what produced
+                    # a thumb that never closed.
+                    obstructed.add(digit)
+                else:
+                    digit_state.seated = True
+                    digit_state.seated_at_s = now
+                    order.append(digit)
 
         while next_frame < len(frames) and frames[next_frame].time_s <= now + dt * 0.5:
             out_frames.append(posed(frames[next_frame]))
@@ -380,6 +406,11 @@ def close_until_contact(
     )
     if seated and not opposed:
         detail += "; loaded digits are not in opposition"
+    if obstructed:
+        detail += (
+            f"; {'/'.join(sorted(obstructed))} loaded before travelling "
+            "-- the approach put them against the object"
+        )
 
     return ClosureResult(
         seated_curls={d: s.curl for d, s in state.items()},
