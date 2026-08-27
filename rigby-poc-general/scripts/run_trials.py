@@ -32,7 +32,11 @@ from rigby_general.viewer import build_scene, sample_track
 
 
 ROOT = Path(__file__).resolve().parents[1]
-ROOTS = (ROOT / "assets" / "general" / "zoo", ROOT / "assets" / "general" / "exotic")
+ROOTS = (
+    ROOT / "assets" / "general" / "zoo",
+    ROOT / "assets" / "general" / "exotic",
+    ROOT / "assets" / "general" / "irl",
+)
 
 
 def discover() -> dict[str, Path]:

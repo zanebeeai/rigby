@@ -41,6 +41,7 @@ ROOT = Path(__file__).resolve().parents[1]
 ROOTS = (
     ROOT / "assets" / "general" / "zoo",
     ROOT / "assets" / "general" / "exotic",
+    ROOT / "assets" / "general" / "irl",
 )
 SAMPLE_HZ = 240
 

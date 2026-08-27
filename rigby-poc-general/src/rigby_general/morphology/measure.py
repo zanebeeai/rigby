@@ -68,8 +68,19 @@ REST_DESCENT_PASSES = 3
 REST_DESCENT_SAMPLES = 9
 
 
+LIMIT_STANDOFF_FRACTION = 0.02
+"""How far inside its range a resting joint is held, as a fraction of that range.
+
+A joint parked exactly on a limit is pushed past it by the first disturbance,
+and the position gate then reports a violation for a robot that never moved. The
+KUKA's gripper rests fully open, which is its lower limit, and 32 of its 72
+bake attempts failed on that alone -- not because anything went wrong, but
+because "open" and "as far open as it goes" were the same number.
+"""
+
+
 def _clamped_qpos(model: mujoco.MjModel) -> np.ndarray:
-    """The zero pose, pushed inside every joint limit."""
+    """The zero pose, pushed inside every joint limit and off the limits."""
 
     qpos = np.array(model.qpos0, dtype=float)
     for joint in range(model.njnt):
@@ -81,7 +92,10 @@ def _clamped_qpos(model: mujoco.MjModel) -> np.ndarray:
         address = int(model.jnt_qposadr[joint])
         if model.jnt_limited[joint]:
             low, high = (float(value) for value in model.jnt_range[joint])
-            qpos[address] = min(max(qpos[address], low), high)
+            standoff = LIMIT_STANDOFF_FRACTION * (high - low)
+            qpos[address] = min(
+                max(qpos[address], low + standoff), high - standoff
+            )
     return qpos
 
 
