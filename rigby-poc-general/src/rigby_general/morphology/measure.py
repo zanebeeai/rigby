@@ -601,6 +601,145 @@ def sample_reach(
     return {key: np.asarray(values, dtype=float) for key, values in collected.items()}
 
 
+EFFORT_RAMP_SECONDS = 0.25
+"""How long a joint is allowed to take to reach its own top speed from rest.
+
+Turns a declared speed limit into the acceleration a limit has to support. A
+quarter second is brisk without being a step change, and it is stated here
+rather than derived because nothing in a URDF says how hard a robot is meant to
+be driven -- only how fast it may end up going.
+"""
+
+DEFAULT_JOINT_SPEED_RAD_S = 1.0
+"""Reference speed for a joint whose source declares none.
+
+Used only to size an *undeclared* torque limit, so it never overrides anything
+the installer actually said.
+"""
+
+
+EFFORT_SAMPLE_POSES = 192
+"""How many configurations the gravity-torque sweep visits.
+
+Enough to catch the coupling between joints -- an elbow's torque about the
+shoulder depends on where the elbow is -- without making ingest slow. The
+sequence is deterministic, so the number a robot is admitted with does not
+change between runs.
+"""
+
+EFFORT_DYNAMIC_MARGIN = 2.5
+"""Headroom over the worst static hold, for the accelerations of actually moving.
+
+A joint sized exactly to hold its own weight can hold it and do nothing else:
+every newton-metre is spent on gravity and none is left to accelerate. The
+margin is what separates a limit that can support the arm from one that can move
+it. It is a stated engineering choice rather than a measurement, which is why it
+is a named constant and not a literal buried in a formula.
+"""
+
+
+def _halton(index: int, base: int) -> float:
+    """One term of a Halton sequence: deterministic, and spread better than a grid.
+
+    A grid over eight joints is either too coarse to see the coupling or far too
+    large to evaluate. A low-discrepancy sequence covers the box evenly at any
+    sample count, and unlike a random sample it gives the same answer every run.
+    """
+
+    fraction = 1.0
+    value = 0.0
+    while index > 0:
+        fraction /= base
+        value += fraction * (index % base)
+        index //= base
+    return value
+
+
+_HALTON_BASES = (2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53)
+
+
+def effort_floor(
+    model: mujoco.MjModel,
+    velocity_limits: "dict[int, float] | None" = None,
+    moment_arms: "dict[int, float] | None" = None,
+    position_tolerance_m: float = 0.0,
+) -> np.ndarray:
+    """The worst torque each joint must produce, over its own workspace.
+
+    Two terms, because a joint that can only hold is a joint that cannot move:
+
+        tau = |g(q)|  +  M(q)[i,i] * qacc_ref
+
+    Gravity alone is not enough, and the KUKA shows exactly why. Its first axis
+    is a base yaw about the vertical, so gravity exerts *no* torque about it in
+    any pose whatsoever -- sizing from gravity gives it a limit of zero and an
+    arm that cannot turn. What that axis actually has to do is accelerate
+    everything above it, which is the mass matrix, not gravity.
+
+    A URDF that declares ``effort="0"`` has not given a small limit; it has
+    declined to give one. Substituting a fixed number for that absence is the
+    same mistake a single controller gain would be: the KUKA's second axis needs
+    145 N*m to hold its own arm up, a default of 100 said it could not, and every
+    one of its 72 primitives failed tracking because the simulated arm sagged
+    under gravity exactly as the model said it must.
+
+    So measure it instead. Both terms are properties of the body and the pose,
+    and both are known -- ``mj_rne`` with acceleration zeroed reports gravity
+    directly, and ``mj_fullM`` reports the inertia the joint sees right now.
+    Sweeping the joint box and taking the worst case per joint gives a floor that
+    is a statement about *this* robot rather than about robots in general.
+
+    ``qacc_ref`` comes from the joint's own declared speed, reached from rest
+    within ``EFFORT_RAMP_SECONDS``.
+
+    What this is *not* is a substitute for a limit the source declined to give.
+    It is a lower bound -- below it the joint cannot hold its own arm up, let
+    alone move it -- and a lower bound is not a limit. Sizing an actual limit
+    would mean sizing it to what the controller demands, and computed torque
+    commands ``omega**2 * e`` with omega at 88 rad/s: for the KUKA's base yaw,
+    at the tolerance this system certifies to, that is 23 kN*m. A number that
+    large is evidence the question has no sound answer, not an answer. So the
+    floor is reported for what it is worth, and the limit is left unknown --
+    see ``RobotJointV1.effort_declared``.
+
+    Returns one value per degree of freedom, in the model's dof order.
+    """
+
+    data = mujoco.MjData(model)
+    rest = neutral_qpos(model)
+    movable = _movable_joints(model)
+    worst = np.zeros(model.nv, dtype=float)
+    torque = np.zeros(model.nv, dtype=float)
+    inertia = np.zeros((model.nv, model.nv), dtype=float)
+
+    reference_acceleration = np.full(
+        model.nv, DEFAULT_JOINT_SPEED_RAD_S / EFFORT_RAMP_SECONDS, dtype=float
+    )
+    for joint in movable:
+        dof = int(model.jnt_dofadr[joint])
+        speed = abs((velocity_limits or {}).get(int(joint), DEFAULT_JOINT_SPEED_RAD_S))
+        reference_acceleration[dof] = speed / EFFORT_RAMP_SECONDS
+
+    for sample in range(EFFORT_SAMPLE_POSES):
+        qpos = np.array(rest, dtype=float)
+        for slot, joint in enumerate(movable):
+            low, high = joint_range(model, joint)
+            base = _HALTON_BASES[slot % len(_HALTON_BASES)]
+            qpos[int(model.jnt_qposadr[joint])] = low + (high - low) * _halton(
+                sample + 1, base
+            )
+        data.qpos[:] = qpos
+        data.qvel[:] = 0.0
+        data.qacc[:] = 0.0
+        mujoco.mj_forward(model, data)
+        mujoco.mj_rne(model, data, 0, torque)
+        mujoco.mj_fullM(model, data, inertia)
+        demand = np.abs(torque) + np.abs(np.diag(inertia)) * reference_acceleration
+        np.maximum(worst, demand, out=worst)
+
+    return worst
+
+
 def pose_jacobian(
     graph: KinematicGraph,
     tip_body: int,

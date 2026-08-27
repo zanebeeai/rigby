@@ -113,6 +113,13 @@ class RolloutTrace:
     qpos: np.ndarray
     qvel: np.ndarray
     ctrl: np.ndarray
+    demand: np.ndarray
+    """Torque the controller asked for, before the actuator limit clamped it.
+
+    Separate from ``ctrl`` on purpose. ``ctrl`` is what the actuator delivered,
+    which by construction never exceeds its own limit -- comparing it against
+    that limit is a test that cannot fail, and for a long time did not.
+    """
     tracking_error_m: np.ndarray
     base_drift_m: float
     unexpected_contacts: tuple[tuple[str, str], ...]
@@ -189,6 +196,7 @@ def simulate(
     qpos = np.zeros((steps + 1, model.nq), dtype=float)
     qvel = np.zeros((steps + 1, model.nv), dtype=float)
     ctrl = np.zeros((steps + 1, model.nu), dtype=float)
+    demand = np.zeros((steps + 1, model.nu), dtype=float)
     tracking = np.zeros(steps + 1, dtype=float)
     base_drift = 0.0
     contacts: set[tuple[str, str]] = set()
@@ -204,6 +212,7 @@ def simulate(
         qpos[step] = data.qpos
         qvel[step] = data.qvel
         ctrl[step] = command
+        demand[step] = controller.last_demand
 
         if site_id >= 0:
             # Where the plan wanted the effector, versus where it actually is.
@@ -247,6 +256,7 @@ def simulate(
         qpos=qpos,
         qvel=qvel,
         ctrl=ctrl,
+        demand=demand,
         tracking_error_m=tracking,
         base_drift_m=base_drift,
         unexpected_contacts=tuple(sorted(contacts)),
@@ -265,6 +275,7 @@ def evaluate_gates(
         ("qpos", trace.qpos),
         ("qvel", trace.qvel),
         ("ctrl", trace.ctrl),
+        ("demand", trace.demand),
     ):
         if not np.all(np.isfinite(array)):
             violations.append(
@@ -323,13 +334,20 @@ def evaluate_gates(
 
     for index in range(model.nu):
         name = mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_ACTUATOR, index) or f"u{index}"
-        peak = float(np.abs(trace.ctrl[:, index]).max())
+        # An unlimited actuator is one whose source declared no torque limit.
+        # There is nothing to test it against, and inventing a threshold here
+        # would quietly turn "unknown" into "passed".
+        if not model.actuator_forcelimited[index]:
+            continue
+        peak = float(np.abs(trace.demand[:, index]).max())
         limit = float(model.actuator_forcerange[index][1])
         if limit > 0.0 and peak > limit * (1.0 + policy.effort_margin_fraction):
+            share = float((np.abs(trace.demand[:, index]) > limit).mean())
             violations.append(
                 GateViolation(
                     GateCode.ACTUATOR_EFFORT_LIMIT,
-                    f"{name} demanded more force than it has",
+                    f"{name} demanded more force than it has, for "
+                    f"{share * 100.0:.0f}% of the motion",
                     measured=peak,
                     limit=limit,
                     subject=name,

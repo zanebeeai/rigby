@@ -98,10 +98,17 @@ def finalize(
         actuator.trntype = mujoco.mjtTrn.mjTRN_JOINT
         actuator.set_to_motor()
         actuator.gear[0] = 1.0
-        actuator.forcerange = [-joint.effort_limit, joint.effort_limit]
-        actuator.forcelimited = 1
-        actuator.ctrlrange = [-joint.effort_limit, joint.effort_limit]
-        actuator.ctrllimited = 1
+        # A joint whose source declared no torque limit is left unlimited rather
+        # than clamped to a guess. Clamping to a guess produces an arm that sags
+        # under its own weight, and a tracking failure that blames the motion.
+        if joint.effort_declared:
+            actuator.forcerange = [-joint.effort_limit, joint.effort_limit]
+            actuator.forcelimited = 1
+            actuator.ctrlrange = [-joint.effort_limit, joint.effort_limit]
+            actuator.ctrllimited = 1
+        else:
+            actuator.forcelimited = 0
+            actuator.ctrllimited = 0
 
     try:
         model = spec.compile()

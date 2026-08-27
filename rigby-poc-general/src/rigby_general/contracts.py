@@ -123,6 +123,15 @@ class RobotJointV1(Contract):
     maximum: float
     velocity_limit: float = Field(gt=0.0)
     effort_limit: float = Field(gt=0.0)
+    effort_declared: bool = True
+    """Whether the source model actually stated this joint's torque limit.
+
+    A URDF that says ``effort="0"`` has not stated a small limit, it has declined
+    to state one, and the two must not be confused. When this is false,
+    ``effort_limit`` holds the *measured lower bound* -- the torque the joint
+    demonstrably needs to hold and move its own subtree -- which is worth knowing
+    and is not a limit. Torque feasibility is then not gated, and the certificate
+    says so rather than passing a test against a number nobody supplied."""
     role: JointRole
     tip_translation_m: float = Field(ge=0.0)
     """Tip displacement across the joint's full range, holding others at rest."""

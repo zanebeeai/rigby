@@ -499,6 +499,8 @@ def _self_collision_pairs(
     return tuple(sorted(set(pairs)))
 
 
+
+
 def analyze(loaded: LoadedModel, *, velocity_limits: dict[str, float] | None = None) -> RobotMorphologyV1:
     """Measure a compiled model and describe what kind of robot it is."""
 
@@ -585,6 +587,9 @@ def analyze(loaded: LoadedModel, *, velocity_limits: dict[str, float] | None = N
     for site in sites:
         sites_by_body.setdefault(site.body, []).append(site)
 
+    effort_floor = measure.effort_floor(
+        model, {joint: _velocity_limit(model, joint) for joint in graph.actuated_joints}
+    )
     joints = tuple(
         RobotJointV1(
             name=graph.joint_names[joint],
@@ -594,12 +599,8 @@ def analyze(loaded: LoadedModel, *, velocity_limits: dict[str, float] | None = N
             minimum=measure.joint_range(model, joint)[0],
             maximum=measure.joint_range(model, joint)[1],
             velocity_limit=_velocity_limit(model, joint),
-            effort_limit=max(
-                1e-3,
-                float(abs(model.jnt_actfrcrange[joint][1]))
-                if model.jnt_actfrclimited[joint]
-                else 100.0,
-            ),
+            effort_limit=_effort_limit(model, joint, effort_floor),
+            effort_declared=_effort_declared(model, joint),
             role=roles[joint][0],
             tip_translation_m=round(roles[joint][1].translation_m, 6),
             tip_rotation_rad=round(roles[joint][1].rotation_rad, 6),
@@ -744,6 +745,32 @@ def _build_chain(
         ),
     )
 
+
+
+def _effort_limit(
+    model: mujoco.MjModel, joint: int, floor: np.ndarray
+) -> float:
+    """The joint's torque limit: what it declares, or what it must be able to hold.
+
+    A declared limit is taken as given -- it is the installer's statement about
+    the hardware and outranks anything derivable. When the source declares none,
+    this returns the measured lower bound instead, and ``effort_declared`` is
+    false so that nothing downstream mistakes it for a limit.
+    """
+
+    if _effort_declared(model, joint):
+        return max(1e-3, float(abs(model.jnt_actfrcrange[joint][1])))
+
+    dof = int(model.jnt_dofadr[joint])
+    return max(1e-3, float(floor[dof]) * measure.EFFORT_DYNAMIC_MARGIN)
+
+
+def _effort_declared(model: mujoco.MjModel, joint: int) -> bool:
+    """Whether the source actually stated a torque limit for this joint."""
+
+    return bool(model.jnt_actfrclimited[joint]) and (
+        float(abs(model.jnt_actfrcrange[joint][1])) > 0.0
+    )
 
 def _axis_direction(model: mujoco.MjModel, joint: int) -> DirectionV1:
     axis = np.array(model.jnt_axis[joint], dtype=float)
