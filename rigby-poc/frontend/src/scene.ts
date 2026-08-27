@@ -1,4 +1,7 @@
 import * as THREE from "three";
+
+//: One aperture per finger: thumb-index, thumb-middle, thumb-ring, thumb-little.
+const APERTURE_QUADS = 4;
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import {
@@ -259,22 +262,44 @@ export class RigbyScene {
     this.table.receiveShadow = true;
     this.taskEnvironment.add(this.table);
 
-    // The opposition aperture: the thumb reduced to one vector, the four
-    // fingers averaged into a second, and the quad they span. A grasp works
-    // when the object is inside this, which is a different question from
-    // whether any single digit is near it.
+    // Four opposition apertures, one per finger: the thumb against the index,
+    // the middle, the ring and the little, each spanning its own quad.
+    //
+    // This used to draw one quad against the four fingers averaged into a
+    // virtual finger, and that average is not a hand. It reports a middling
+    // number for a hand gripping firmly with two fingers and missing with two,
+    // and it hides the thing that actually decides the grasp: at a closed fist
+    // the four tip spans are 8.6, 7.2, 5.9 and 5.9 cm, so against a 6 cm block
+    // some fingers cannot reach it while others are driven straight through it.
+    // Averaged into one shape that is invisible. Drawn separately it is the
+    // first thing you see.
+    const APERTURE_COLORS = [0x4ea1ff, 0x5ce6a8, 0xffc25c, 0xff7ba6];
     const apertureGeometry = new THREE.BufferGeometry();
     apertureGeometry.setAttribute(
       "position",
-      new THREE.BufferAttribute(new Float32Array(4 * 3), 3),
+      new THREE.BufferAttribute(new Float32Array(APERTURE_QUADS * 4 * 3), 3),
     );
-    apertureGeometry.setIndex([0, 1, 2, 0, 2, 3]);
+    const apertureColors = new Float32Array(APERTURE_QUADS * 4 * 3);
+    const apertureIndex: number[] = [];
+    for (let q = 0; q < APERTURE_QUADS; q += 1) {
+      const c = new THREE.Color(APERTURE_COLORS[q]);
+      for (let v = 0; v < 4; v += 1) {
+        apertureColors.set([c.r, c.g, c.b], (q * 4 + v) * 3);
+      }
+      const o = q * 4;
+      apertureIndex.push(o, o + 1, o + 2, o, o + 2, o + 3);
+    }
+    apertureGeometry.setAttribute(
+      "color",
+      new THREE.BufferAttribute(apertureColors, 3),
+    );
+    apertureGeometry.setIndex(apertureIndex);
     this.apertureFill = new THREE.Mesh(
       apertureGeometry,
       new THREE.MeshBasicMaterial({
-        color: 0x4ea1ff,
+        vertexColors: true,
         transparent: true,
-        opacity: 0.28,
+        opacity: 0.24,
         side: THREE.DoubleSide,
         depthWrite: false,
       }),
@@ -285,11 +310,19 @@ export class RigbyScene {
     const edgeGeometry = new THREE.BufferGeometry();
     edgeGeometry.setAttribute(
       "position",
-      new THREE.BufferAttribute(new Float32Array(4 * 2 * 3), 3),
+      new THREE.BufferAttribute(new Float32Array(APERTURE_QUADS * 4 * 2 * 3), 3),
     );
+    const edgeColors = new Float32Array(APERTURE_QUADS * 4 * 2 * 3);
+    for (let q = 0; q < APERTURE_QUADS; q += 1) {
+      const c = new THREE.Color(APERTURE_COLORS[q]);
+      for (let v = 0; v < 8; v += 1) {
+        edgeColors.set([c.r, c.g, c.b], (q * 8 + v) * 3);
+      }
+    }
+    edgeGeometry.setAttribute("color", new THREE.BufferAttribute(edgeColors, 3));
     this.apertureEdges = new THREE.LineSegments(
       edgeGeometry,
-      new THREE.LineBasicMaterial({ color: 0x9ad0ff, transparent: true, opacity: 0.9 }),
+      new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.95 }),
     );
     this.apertureEdges.renderOrder = 4;
     this.scene.add(this.apertureEdges);
@@ -555,30 +588,28 @@ export class RigbyScene {
     this.apertureEdges.visible = visible;
     if (!visible || !thumbBase || !thumbTip) return;
 
-    const mean = (points: THREE.Vector3[]) =>
-      points
-        .reduce((acc, p) => acc.add(p), new THREE.Vector3())
-        .multiplyScalar(1 / points.length);
-    // The four fingers as one virtual finger.
-    const fingerBase = mean(bases);
-    const fingerTip = mean(tips);
-
-    const corners = [thumbBase, thumbTip, fingerTip, fingerBase];
     const fill = this.apertureFill.geometry.getAttribute("position") as THREE.BufferAttribute;
-    corners.forEach((c, i) => fill.setXYZ(i, c.x, c.y, c.z));
-    fill.needsUpdate = true;
-    this.apertureFill.geometry.computeBoundingSphere();
-
-    // Outline: the two member vectors, plus base-to-base and tip-to-tip.
-    const segments = [
-      thumbBase, thumbTip,
-      fingerBase, fingerTip,
-      thumbBase, fingerBase,
-      thumbTip, fingerTip,
-    ];
     const edge = this.apertureEdges.geometry.getAttribute("position") as THREE.BufferAttribute;
-    segments.forEach((c, i) => edge.setXYZ(i, c.x, c.y, c.z));
+    // One quad per finger, each sharing the thumb's vector. A quad collapses to
+    // its thumb edge when that finger has no tip, which reads as "this finger
+    // is not part of the grasp" rather than silently shifting an average.
+    for (let q = 0; q < APERTURE_QUADS; q += 1) {
+      const base = bases[q] ?? thumbBase;
+      const tip = tips[q] ?? thumbTip;
+      const corners = [thumbBase, thumbTip, tip, base];
+      corners.forEach((c, i) => fill.setXYZ(q * 4 + i, c.x, c.y, c.z));
+      // The two member vectors, plus base-to-base and tip-to-tip.
+      const segments = [
+        thumbBase, thumbTip,
+        base, tip,
+        thumbBase, base,
+        thumbTip, tip,
+      ];
+      segments.forEach((c, i) => edge.setXYZ(q * 8 + i, c.x, c.y, c.z));
+    }
+    fill.needsUpdate = true;
     edge.needsUpdate = true;
+    this.apertureFill.geometry.computeBoundingSphere();
     this.apertureEdges.geometry.computeBoundingSphere();
   }
 

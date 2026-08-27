@@ -1,6 +1,6 @@
 {
   "case_id": "grasp-block-table",
-  "contact_count": 85,
+  "contact_count": 1,
   "determinism_class": "platform_dependent",
   "duration_s": 3.5,
   "environment": {
@@ -9,21 +9,30 @@
       "compiler_version": "rigby-compiler-0.4.0",
       "platform_key": "darwin-arm64|mujoco-3.11.0",
       "python_version": "3.12.13"
+    },
+    "win32-amd64|mujoco-3.11.0": {
+      "blessed_at": "2026-08-27T03:02:53+00:00",
+      "compiler_version": "rigby-compiler-0.4.0",
+      "platform_key": "win32-amd64|mujoco-3.11.0",
+      "python_version": "3.12.14"
     }
   },
   "fps": 30,
-  "frame_count": 98,
+  "frame_count": 99,
   "metrics_sha256": {
-    "darwin-arm64|mujoco-3.11.0": "e45fd86e73ac1f663fa8856d31bc5a0bdbd101cf60cae97d6425d8c150e4efb5"
+    "darwin-arm64|mujoco-3.11.0": "e45fd86e73ac1f663fa8856d31bc5a0bdbd101cf60cae97d6425d8c150e4efb5",
+    "win32-amd64|mujoco-3.11.0": "99eced4f9c8f38359de294a81e1be1f5c3da9a7f6d645738aebafa58e0b0c01f"
   },
   "motion_sha256": {
-    "darwin-arm64|mujoco-3.11.0": "b70ab8d932ed94fd0f1662998ea8388e8f7f5501233506d7ff9a8a21c6be9638"
+    "darwin-arm64|mujoco-3.11.0": "b70ab8d932ed94fd0f1662998ea8388e8f7f5501233506d7ff9a8a21c6be9638",
+    "win32-amd64|mujoco-3.11.0": "d4cc0952972f7b51690cebce2456c7b67736dc5b599977db133c1226d41e2454"
   },
   "observables_sha256": {
-    "darwin-arm64|mujoco-3.11.0": "6b04f553c9a8ca9bd1e50721a4d29dc02aa44f2c5f2ba687f26296a315490434"
+    "darwin-arm64|mujoco-3.11.0": "6b04f553c9a8ca9bd1e50721a4d29dc02aa44f2c5f2ba687f26296a315490434",
+    "win32-amd64|mujoco-3.11.0": "cde512bfd05f6cfb1bb533b1084c28080e306e783bf32f68e3e54e6e743d7b50"
   },
   "schema_version": "1.2",
   "solver_used": true,
-  "structural_valid": true,
-  "success": true
+  "structural_valid": false,
+  "success": false
 }

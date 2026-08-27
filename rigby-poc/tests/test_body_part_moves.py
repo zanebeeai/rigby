@@ -204,3 +204,68 @@ def test_moves_are_fractions_and_never_raw_degrees() -> None:
                         f"{part}.{move}.{bone}.{dof} is {value}; "
                         "moves are fractions of the ROM range, not degrees"
                     )
+
+
+def test_the_thumb_opposition_ladder_reaches_the_finger_it_names() -> None:
+    """A move called ``oppose_little`` must put the thumb near the little finger.
+
+    Written from a sign convention rather than measured, the ladder ran exactly
+    backwards: every opposition move carried the thumb further from the fingers
+    than a plain ``extend`` did, 17.0 cm at ``oppose_little`` against 10.4 cm.
+    The rig has no anatomical-position reference for the thumb -- ``rom.v1.json``
+    marks its bounds provisional and says so -- so nothing but a measurement can
+    establish which way opposition goes. This is that measurement, kept as a
+    test so the ladder cannot silently invert again.
+    """
+    import numpy as np
+
+    from rigby_poc.body_parts import move_rotations
+    from rigby_poc.kinematics import rig_kinematics
+    from rigby_poc.models import BonePose
+
+    kinematics = rig_kinematics()
+
+    def tip_distances(move: str) -> dict[str, float]:
+        pose = {
+            name: BonePose(rotation=rotation)
+            for name, rotation in move_rotations("right_thumb", move).items()
+        }
+        positions = kinematics.canonical_positions(pose)
+        thumb = positions["rightThumbDistal"]
+        return {
+            finger: float(np.linalg.norm(thumb - positions[f"right{finger}Distal"]))
+            for finger in ("Index", "Middle", "Ring", "Little")
+        }
+
+    extend = tip_distances("extend")
+    for finger in ("Index", "Middle", "Ring", "Little"):
+        opposed = tip_distances(f"oppose_{finger.lower()}")
+        assert opposed[finger] < extend[finger], (
+            f"oppose_{finger.lower()} moves the thumb AWAY from the {finger}"
+        )
+
+    # Abduction is the axis that chooses the finger, so reaching further round
+    # the hand must be a monotonic progression, not four unrelated poses.
+    reach = [tip_distances(f"oppose_{f}")["Little"] for f in ("index", "middle", "ring", "little")]
+    assert reach == sorted(reach, reverse=True), (
+        "the ladder does not close on the little finger in order"
+    )
+    assert tip_distances("oppose_little")["Little"] < tip_distances("oppose_index")["Little"]
+
+
+def test_every_super_primitive_move_exists_in_the_vocabulary() -> None:
+    """The schedule and the movement vocabulary must not drift apart.
+
+    A step that demands thumb load while naming a move that does not exist is a
+    disagreement that surfaces only as an unexplained failed grasp.
+    """
+    from rigby_poc.body_parts import moves_for
+    from rigby_poc.super_primitives import catalog
+
+    for name, spec in catalog()["super_primitives"].items():
+        for step in spec["steps"]:
+            for part, move in (step.get("moves") or {}).items():
+                for side in ("left", "right"):
+                    assert move in moves_for(f"{side}_{part}"), (
+                        f"{name}.{step['label']} names {side}_{part}.{move}"
+                    )

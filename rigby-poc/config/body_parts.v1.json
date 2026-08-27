@@ -2711,6 +2711,44 @@
           "abduction": 0.9,
           "twist": -0.6
         }
+      },
+      "oppose_index": {
+        "leftThumbMetacarpal": {
+          "flexion": -0.67,
+          "abduction": -0.33,
+          "twist": 0.67
+        }
+      },
+      "oppose_middle": {
+        "leftThumbMetacarpal": {
+          "flexion": -0.67,
+          "abduction": -0.5,
+          "twist": -0.33
+        }
+      },
+      "oppose_ring": {
+        "leftThumbMetacarpal": {
+          "flexion": -0.67,
+          "abduction": -0.67,
+          "twist": -0.33
+        }
+      },
+      "oppose_little": {
+        "leftThumbMetacarpal": {
+          "flexion": -0.67,
+          "abduction": -1.0,
+          "twist": -1.0
+        }
+      },
+      "palmar_adduct": {
+        "leftThumbMetacarpal": {
+          "flexion": -0.83,
+          "abduction": -1.0,
+          "twist": -1.0
+        },
+        "leftThumbProximal": {
+          "flexion": 0.33
+        }
       }
     },
     "left_index": {
@@ -3521,6 +3559,44 @@
           "flexion": 0.0,
           "abduction": 0.9,
           "twist": -0.6
+        }
+      },
+      "oppose_index": {
+        "rightThumbMetacarpal": {
+          "flexion": -0.67,
+          "abduction": -0.33,
+          "twist": 0.67
+        }
+      },
+      "oppose_middle": {
+        "rightThumbMetacarpal": {
+          "flexion": -0.67,
+          "abduction": -0.5,
+          "twist": -0.33
+        }
+      },
+      "oppose_ring": {
+        "rightThumbMetacarpal": {
+          "flexion": -0.67,
+          "abduction": -0.67,
+          "twist": -0.33
+        }
+      },
+      "oppose_little": {
+        "rightThumbMetacarpal": {
+          "flexion": -0.67,
+          "abduction": -1.0,
+          "twist": -1.0
+        }
+      },
+      "palmar_adduct": {
+        "rightThumbMetacarpal": {
+          "flexion": -0.83,
+          "abduction": -1.0,
+          "twist": -1.0
+        },
+        "rightThumbProximal": {
+          "flexion": 0.33
         }
       }
     },
@@ -4372,5 +4448,8 @@
         }
       ]
     }
+  },
+  "$notes": {
+    "thumb_opposition_ladder": "Fitted by search, not authored. The rig has no anatomical-position reference for the thumb -- rom.v1.json says so and marks its thumb bounds provisional -- so the direction of opposition cannot be read off a sign convention. Written from convention first, the ladder ran backwards: every 'oppose' move carried the thumb AWAY from the fingers, 17.0 cm at oppose_little against 10.4 cm for a plain extend. Measured, flexion and abduction are both negative toward the palm, and abduction is the axis that chooses the finger: -0.33 reaches the index, -1.00 the little. Each entry minimises thumb-tip to fingertip distance for the finger it names, over the metacarpal's three DOFs. palmar_adduct targets the little finger's knuckle instead of any fingertip -- the shape a hand makes holding up four fingers."
   }
 }

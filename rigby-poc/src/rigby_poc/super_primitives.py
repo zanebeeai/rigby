@@ -112,6 +112,20 @@ def catalog() -> dict[str, Any]:
                 raise SuperPrimitiveError(
                     f"{name}.{step['label']} names unknown digits {sorted(unknown)}"
                 )
+            # A step may name the body-part move it commands. Validated here so
+            # the schedule and the movement vocabulary cannot drift apart: a
+            # step demanding thumb load while naming a move that does not exist
+            # (or that carries the thumb away from the object) is the kind of
+            # disagreement that only shows up as an unexplained failed grasp.
+            for part_suffix, move in (step.get("moves") or {}).items():
+                from .body_parts import moves_for
+
+                available = moves_for(f"right_{part_suffix}")
+                if move not in available:
+                    raise SuperPrimitiveError(
+                        f"{name}.{step['label']} commands unknown move "
+                        f"{part_suffix}.{move!r}"
+                    )
             if not step.get("note"):
                 raise SuperPrimitiveError(
                     f"{name}.{step['label']} has no note; a step whose acceptance "

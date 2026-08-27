@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "rigby-api",
+      "runtimeExecutable": "C:/Users/angel/Rigby/rigby-poc/.venv/Scripts/python.exe",
+      "runtimeArgs": ["-m", "uvicorn", "rigby_poc.app:app", "--host", "127.0.0.1", "--port", "8011"],
+      "port": 8011
+    }
+  ]
+}

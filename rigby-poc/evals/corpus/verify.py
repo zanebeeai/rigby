@@ -229,7 +229,24 @@ def compare_case(case: CorpusCase, clip: ClipResult | None = None) -> CaseCompar
         # No hash to assert against here, but the committed clip still says whether
         # this platform produced the same motion to within solver drift.  Skipping
         # instead would give this platform zero coverage of the whole MuJoCo path.
-        tolerance = compare_slim_clip(case, clip)
+        try:
+            tolerance = compare_slim_clip(case, clip)
+        except SlimClipShapeError as error:
+            # A shape change is a mismatch, not a crash. It was raising out of
+            # compare_case, so `bless --write` -- the command whose whole job is
+            # to re-record a motion that legitimately changed -- could not
+            # re-record the one kind of change it most needed to.
+            return CaseComparison(
+                case_id=case.id,
+                verdict=Verdict.MISMATCH,
+                differences=[
+                    FieldDifference("slim clip shape", "same structure", str(error))
+                ],
+                recorded=case.expected,
+                observed=observed,
+                platform=key,
+                tolerance=None,
+            )
         verdict = Verdict.TOLERANCE_MATCH if tolerance.within else Verdict.MISMATCH
         if not tolerance.within:
             differences = [

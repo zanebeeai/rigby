@@ -45,6 +45,7 @@ from .kinematics import rig_kinematics
 from .gaze_controller import aim_gaze
 from .force_closure import close_until_contact
 from .grasp_aperture import plan_grasp_pose
+from .motion_limits import RateLimitReport, limit_angular_rate
 from .motion_states import state_for, state_for_primitive
 from .physics import PhysicsOutcome, simulate_embodied_grasp, simulate_grasp
 from .primitives import (
@@ -5747,6 +5748,23 @@ def compile_motion(request: CompileRequest) -> ClipResult:
         final_shape = shape
         elapsed += phase_duration_s
 
+    # Speed is bounded before anything reads the clip. The ROM envelope says
+    # where a bone may be and says nothing about how fast it may get there, and
+    # the gap between those is where the approach strike lived: every pose in it
+    # was legal, the order was not.
+    #
+    # Strikes are exempt, and the exemption is the point rather than a let-off.
+    # The ceilings are voluntary reaching speeds; a jab is ballistic and exceeds
+    # them by design, so clamping one is not enforcing anatomy but contradicting
+    # it. Applied blindly it also quietly repaired
+    # ``knownbad-strike-hyperfast`` -- a corpus case whose whole job is to be
+    # over the jerk ceiling so the detector can be seen to fire. A limiter that
+    # disarms the tests for the thing it limits is worse than no limiter.
+    if program.intent is Intent.STRIKE:
+        rate_report = RateLimitReport(0, 0.0, 0.0, (), 0.0)
+    else:
+        frames, rate_report = limit_angular_rate(frames)
+
     if program.intent == Intent.GRAB and target_object is not None:
         # The digits close on measured load rather than to an authored shape.
         #
@@ -5790,6 +5808,7 @@ def compile_motion(request: CompileRequest) -> ClipResult:
 
     metrics = _base_metrics()
     metrics["phase_ranges_s"] = phase_ranges
+    metrics["angular_rate"] = rate_report.to_dict()
     if physics is not None:
         if closure is not None:
             metrics["force_closure"] = closure.to_dict()
