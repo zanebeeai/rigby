@@ -30,3 +30,7 @@ any-robot/MUJOCO_LOG.TXT
 # Third-party robot descriptions are fetched at setup time and pinned by commit.
 # Reference-only, per rigby_v2/rigging/references.py -- never vendored here.
 any-robot/assets/general/exotic/
+# Same policy for the operator's own hardware: the KUKA meshes belong to
+# ROS-Industrial and the uHand model is regenerated deterministically by
+# scripts/build_irl.py, so neither needs to live in the history.
+any-robot/assets/general/irl/

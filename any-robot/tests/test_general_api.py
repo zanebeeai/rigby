@@ -28,6 +28,7 @@ def test_health_declares_only_the_supported_morphology_classes() -> None:
     body = health_payload(GeneralSettings())
 
     assert body["supported_morphology_classes"] == [
+        "dexterous_effector",
         "fixed_base_arm",
         "fixed_base_bimanual",
     ]

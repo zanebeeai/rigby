@@ -104,6 +104,8 @@ class ComputedTorqueController:
         self._force_low = np.asarray(model.actuator_forcerange[:, 0], dtype=float)
         self._force_high = np.asarray(model.actuator_forcerange[:, 1], dtype=float)
         self._limited = np.asarray(model.actuator_forcelimited, dtype=bool)
+        self.last_demand = np.zeros(model.nu, dtype=float)
+        """Torque asked for on the last ``compute``, before clamping."""
 
     def compute(self, data: mujoco.MjData, target: ControlTarget) -> np.ndarray:
         model = self._model
@@ -137,6 +139,11 @@ class ComputedTorqueController:
         mujoco.mj_inverse(model, scratch)
 
         command = np.asarray(scratch.qfrc_inverse, dtype=float)[self._dofs]
+        # Kept before the clamp, because the clamp is exactly the information
+        # worth having. A caller that only ever sees the clipped value cannot
+        # tell a joint comfortably inside its limit from one pinned against it
+        # for the whole motion, and those are opposite situations.
+        self.last_demand = command.copy()
         return np.where(
             self._limited,
             np.clip(command, self._force_low, self._force_high),

@@ -68,8 +68,19 @@ REST_DESCENT_PASSES = 3
 REST_DESCENT_SAMPLES = 9
 
 
+LIMIT_STANDOFF_FRACTION = 0.02
+"""How far inside its range a resting joint is held, as a fraction of that range.
+
+A joint parked exactly on a limit is pushed past it by the first disturbance,
+and the position gate then reports a violation for a robot that never moved. The
+KUKA's gripper rests fully open, which is its lower limit, and 32 of its 72
+bake attempts failed on that alone -- not because anything went wrong, but
+because "open" and "as far open as it goes" were the same number.
+"""
+
+
 def _clamped_qpos(model: mujoco.MjModel) -> np.ndarray:
-    """The zero pose, pushed inside every joint limit."""
+    """The zero pose, pushed inside every joint limit and off the limits."""
 
     qpos = np.array(model.qpos0, dtype=float)
     for joint in range(model.njnt):
@@ -81,7 +92,10 @@ def _clamped_qpos(model: mujoco.MjModel) -> np.ndarray:
         address = int(model.jnt_qposadr[joint])
         if model.jnt_limited[joint]:
             low, high = (float(value) for value in model.jnt_range[joint])
-            qpos[address] = min(max(qpos[address], low), high)
+            standoff = LIMIT_STANDOFF_FRACTION * (high - low)
+            qpos[address] = min(
+                max(qpos[address], low + standoff), high - standoff
+            )
     return qpos
 
 
@@ -391,27 +405,69 @@ def measure_closure(
             for second in solid[position + 1 :]
         ]
         positions = [np.array(data.xpos[body], dtype=float) for body in member_bodies]
-        return float(np.mean(distances)), positions
+        return distances, positions
 
-    samples = [evaluate(step / (SWEEP_STEPS - 1)) for step in range(SWEEP_STEPS)]
+    # Closure is measured on the pair that actually converges, and finding that
+    # pair took three attempts because two plausible reductions are both wrong.
+    #
+    # The mean over every pair hides the grip: on a thumb-opposed hand the index
+    # and little finger curl in parallel and never approach each other, so
+    # averaging them in turned a real 44 mm to 2 mm closure into a mean that
+    # barely moved, and the hand read as not closing at all.
+    #
+    # The minimum is worse. Two adjacent fingers sit 4 mm apart and stay there
+    # for the whole sweep, so the minimum locks onto a pair that never moves and
+    # reports zero travel.
+    #
+    # What defines a grip is the surfaces that come *together*. So every pair is
+    # tracked across the sweep and the one that converges most is the one the
+    # measurement is taken from. A two-jaw gripper has exactly one pair, so this
+    # is the number it always was.
+    pairs = [
+        (first, second)
+        for position, first in enumerate(solid)
+        for second in solid[position + 1 :]
+    ]
+    raw = [evaluate(step / (SWEEP_STEPS - 1)) for step in range(SWEEP_STEPS)]
+    series = np.array([values for values, _ in raw], dtype=float)
+    convergence = series[0] - series[-1]
+    pair = int(np.argmax(np.abs(convergence))) if convergence.size else 0
+    samples = [(float(values[pair]), positions) for values, positions in raw]
     distances = [value for value, _ in samples]
 
     at_lower, at_upper = distances[0], distances[-1]
     drive_to_upper = at_upper < at_lower
     ordered = distances if drive_to_upper else list(reversed(distances))
-    open_distance, closed_distance = ordered[0], ordered[-1]
+
+    # Closure is judged up to the point of closest approach, not to the end of
+    # the sweep. A digit driven to its limit can travel *past* the one opposing
+    # it -- the uHand's thumb reaches the index finger at -1 mm and is 6 mm the
+    # other side of it one sample later -- and requiring monotonicity over the
+    # whole range calls that "does not close". It plainly does; it then keeps
+    # going. What happens after two surfaces meet is not evidence about whether
+    # they met.
+    meeting = int(np.argmin(ordered))
+    approach = ordered[: meeting + 1] if meeting > 0 else ordered
+    open_distance, closed_distance = approach[0], approach[-1]
 
     travel = open_distance - closed_distance
     monotone = all(
         later <= earlier * CLOSURE_MONOTONE_TOLERANCE + 1e-9
-        for earlier, later in zip(ordered, ordered[1:])
+        for earlier, later in zip(approach, approach[1:])
     )
     closes = travel > CLOSURE_MIN_TRAVEL_M and monotone
 
-    open_positions = samples[0 if not drive_to_upper else 0][1]
-    closed_positions = samples[-1][1]
-    if not drive_to_upper:
-        open_positions, closed_positions = samples[-1][1], samples[0][1]
+    # Travel is read over the same span the closure was judged on: from open to
+    # the point of closest approach. Reading it to the end of the sweep instead
+    # measures a digit that has already passed its partner and is on its way out
+    # again, which points the wrong way and puts every digit in one group.
+    ordered_positions = (
+        [positions for _, positions in samples]
+        if drive_to_upper
+        else [positions for _, positions in reversed(samples)]
+    )
+    open_positions = ordered_positions[0]
+    closed_positions = ordered_positions[meeting if meeting > 0 else -1]
 
     directions: list[tuple[float, float, float]] = []
     for opened, closed in zip(open_positions, closed_positions):
@@ -428,24 +484,55 @@ def measure_closure(
         monotone=monotone,
         drive_to_upper=drive_to_upper,
         member_directions=tuple(directions),
-        opposition_groups=_opposition_groups(tuple(directions)) if closes else (),
+        opposition_groups=(
+            _opposition_groups(tuple(directions), open_positions, pairs[pair])
+            if closes
+            else ()
+        ),
     )
 
 
 def _opposition_groups(
     directions: tuple[tuple[float, float, float], ...],
+    positions: "list[np.ndarray] | None" = None,
+    axis_pair: "tuple[int, int] | None" = None,
 ) -> tuple[tuple[int, ...], ...]:
     """Split members into the two sides that face one another.
 
-    Members travelling in broadly the same direction during closure are on the
-    same side of the object; members travelling against each other are what
-    actually pinches it. Two groups is the definition of opposition, so this
-    always produces two -- a tripod hand comes out as one digit against two,
-    which is exactly the grip it makes.
+    Opposition is moving *toward each other*, which is not the same as moving
+    differently. Comparing raw travel directions gets a two-jaw gripper right and
+    a hand wrong: the uHand's thumb and index finger both rise as they curl, so
+    their travel vectors sit only 79 degrees apart and the dot product comes out
+    positive -- every digit lands in one group and a hand that visibly closes is
+    reported as having nothing to close against.
+
+    What separates the sides is the axis between the two digits that actually
+    meet. Project each member's travel onto that axis and the sign says which
+    side it closes from, whatever else its motion is doing.
+
+    Falls back to the direction comparison when the caller has no positions,
+    which keeps the older callers working.
     """
 
     if len(directions) < 2:
         return ()
+
+    if positions is not None and axis_pair is not None:
+        first, second = axis_pair
+        axis = np.asarray(positions[second], dtype=float) - np.asarray(
+            positions[first], dtype=float
+        )
+        norm = float(np.linalg.norm(axis))
+        if norm > 1e-9:
+            axis = axis / norm
+            toward: list[int] = []
+            away: list[int] = []
+            for index, direction in enumerate(directions):
+                projection = float(np.asarray(direction, dtype=float) @ axis)
+                (toward if projection >= 0.0 else away).append(index)
+            if toward and away:
+                return (tuple(toward), tuple(away))
+
     reference = np.array(directions[0], dtype=float)
     same: list[int] = [0]
     against: list[int] = []
@@ -512,6 +599,145 @@ def sample_reach(
         record()
 
     return {key: np.asarray(values, dtype=float) for key, values in collected.items()}
+
+
+EFFORT_RAMP_SECONDS = 0.25
+"""How long a joint is allowed to take to reach its own top speed from rest.
+
+Turns a declared speed limit into the acceleration a limit has to support. A
+quarter second is brisk without being a step change, and it is stated here
+rather than derived because nothing in a URDF says how hard a robot is meant to
+be driven -- only how fast it may end up going.
+"""
+
+DEFAULT_JOINT_SPEED_RAD_S = 1.0
+"""Reference speed for a joint whose source declares none.
+
+Used only to size an *undeclared* torque limit, so it never overrides anything
+the installer actually said.
+"""
+
+
+EFFORT_SAMPLE_POSES = 192
+"""How many configurations the gravity-torque sweep visits.
+
+Enough to catch the coupling between joints -- an elbow's torque about the
+shoulder depends on where the elbow is -- without making ingest slow. The
+sequence is deterministic, so the number a robot is admitted with does not
+change between runs.
+"""
+
+EFFORT_DYNAMIC_MARGIN = 2.5
+"""Headroom over the worst static hold, for the accelerations of actually moving.
+
+A joint sized exactly to hold its own weight can hold it and do nothing else:
+every newton-metre is spent on gravity and none is left to accelerate. The
+margin is what separates a limit that can support the arm from one that can move
+it. It is a stated engineering choice rather than a measurement, which is why it
+is a named constant and not a literal buried in a formula.
+"""
+
+
+def _halton(index: int, base: int) -> float:
+    """One term of a Halton sequence: deterministic, and spread better than a grid.
+
+    A grid over eight joints is either too coarse to see the coupling or far too
+    large to evaluate. A low-discrepancy sequence covers the box evenly at any
+    sample count, and unlike a random sample it gives the same answer every run.
+    """
+
+    fraction = 1.0
+    value = 0.0
+    while index > 0:
+        fraction /= base
+        value += fraction * (index % base)
+        index //= base
+    return value
+
+
+_HALTON_BASES = (2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53)
+
+
+def effort_floor(
+    model: mujoco.MjModel,
+    velocity_limits: "dict[int, float] | None" = None,
+    moment_arms: "dict[int, float] | None" = None,
+    position_tolerance_m: float = 0.0,
+) -> np.ndarray:
+    """The worst torque each joint must produce, over its own workspace.
+
+    Two terms, because a joint that can only hold is a joint that cannot move:
+
+        tau = |g(q)|  +  M(q)[i,i] * qacc_ref
+
+    Gravity alone is not enough, and the KUKA shows exactly why. Its first axis
+    is a base yaw about the vertical, so gravity exerts *no* torque about it in
+    any pose whatsoever -- sizing from gravity gives it a limit of zero and an
+    arm that cannot turn. What that axis actually has to do is accelerate
+    everything above it, which is the mass matrix, not gravity.
+
+    A URDF that declares ``effort="0"`` has not given a small limit; it has
+    declined to give one. Substituting a fixed number for that absence is the
+    same mistake a single controller gain would be: the KUKA's second axis needs
+    145 N*m to hold its own arm up, a default of 100 said it could not, and every
+    one of its 72 primitives failed tracking because the simulated arm sagged
+    under gravity exactly as the model said it must.
+
+    So measure it instead. Both terms are properties of the body and the pose,
+    and both are known -- ``mj_rne`` with acceleration zeroed reports gravity
+    directly, and ``mj_fullM`` reports the inertia the joint sees right now.
+    Sweeping the joint box and taking the worst case per joint gives a floor that
+    is a statement about *this* robot rather than about robots in general.
+
+    ``qacc_ref`` comes from the joint's own declared speed, reached from rest
+    within ``EFFORT_RAMP_SECONDS``.
+
+    What this is *not* is a substitute for a limit the source declined to give.
+    It is a lower bound -- below it the joint cannot hold its own arm up, let
+    alone move it -- and a lower bound is not a limit. Sizing an actual limit
+    would mean sizing it to what the controller demands, and computed torque
+    commands ``omega**2 * e`` with omega at 88 rad/s: for the KUKA's base yaw,
+    at the tolerance this system certifies to, that is 23 kN*m. A number that
+    large is evidence the question has no sound answer, not an answer. So the
+    floor is reported for what it is worth, and the limit is left unknown --
+    see ``RobotJointV1.effort_declared``.
+
+    Returns one value per degree of freedom, in the model's dof order.
+    """
+
+    data = mujoco.MjData(model)
+    rest = neutral_qpos(model)
+    movable = _movable_joints(model)
+    worst = np.zeros(model.nv, dtype=float)
+    torque = np.zeros(model.nv, dtype=float)
+    inertia = np.zeros((model.nv, model.nv), dtype=float)
+
+    reference_acceleration = np.full(
+        model.nv, DEFAULT_JOINT_SPEED_RAD_S / EFFORT_RAMP_SECONDS, dtype=float
+    )
+    for joint in movable:
+        dof = int(model.jnt_dofadr[joint])
+        speed = abs((velocity_limits or {}).get(int(joint), DEFAULT_JOINT_SPEED_RAD_S))
+        reference_acceleration[dof] = speed / EFFORT_RAMP_SECONDS
+
+    for sample in range(EFFORT_SAMPLE_POSES):
+        qpos = np.array(rest, dtype=float)
+        for slot, joint in enumerate(movable):
+            low, high = joint_range(model, joint)
+            base = _HALTON_BASES[slot % len(_HALTON_BASES)]
+            qpos[int(model.jnt_qposadr[joint])] = low + (high - low) * _halton(
+                sample + 1, base
+            )
+        data.qpos[:] = qpos
+        data.qvel[:] = 0.0
+        data.qacc[:] = 0.0
+        mujoco.mj_forward(model, data)
+        mujoco.mj_rne(model, data, 0, torque)
+        mujoco.mj_fullM(model, data, inertia)
+        demand = np.abs(torque) + np.abs(np.diag(inertia)) * reference_acceleration
+        np.maximum(worst, demand, out=worst)
+
+    return worst
 
 
 def pose_jacobian(

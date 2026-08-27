@@ -17,6 +17,8 @@ them.
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from dataclasses import dataclass, field
 
 import mujoco
@@ -192,6 +194,12 @@ def bystander_motion(
     not done the task, and no gate on the target alone can notice.
     """
 
+    # An attempt that never produced a sample -- refused before the first step,
+    # or aborted -- moved nothing, and has no rows to compare. Reporting no
+    # bystander motion is the truthful answer; indexing an empty trace is not.
+    if qpos.size == 0 or qpos.shape[0] == 0:
+        return ()
+
     reports = []
     for item in environment.objects:
         if item.name == target_name:
@@ -218,6 +226,7 @@ def build_task_scene(
     mjcf_xml: str,
     environment: EnvironmentV1,
     target_name: str,
+    asset_root: "Path | None" = None,
 ):
     """An authored world, presented to the existing grasp runner.
 
@@ -233,7 +242,9 @@ def build_task_scene(
     from ..scenes.environment import build_environment_model
 
     target = environment.object_by_name(target_name)
-    model, xml = build_environment_model(manifest, mjcf_xml, environment)
+    model, xml = build_environment_model(
+        manifest, mjcf_xml, environment, asset_root=asset_root
+    )
 
     # Re-emit with the target renamed to what the runner looks for.
     xml = (

@@ -41,6 +41,7 @@ ROOT = Path(__file__).resolve().parents[1]
 ROOTS = (
     ROOT / "assets" / "general" / "zoo",
     ROOT / "assets" / "general" / "exotic",
+    ROOT / "assets" / "general" / "irl",
 )
 SAMPLE_HZ = 240
 
@@ -112,7 +113,7 @@ def main() -> int:
             # at all, which is backwards: a failed grasp is the more informative
             # clip, because you can watch the block get knocked away instead of
             # reading a gate code and guessing.
-            probe = _probe_track(robot, arguments.max_frames)
+            probe = _probe_track(robot, arguments.max_frames, source.parent)
             if probe is not None:
                 payload["probe"] = probe
 
@@ -167,12 +168,15 @@ def _primitive_tracks(
 
 
 
-def _probe_track(robot, max_frames: int) -> dict | None:
+def _probe_track(robot, max_frames: int, asset_root: Path | None = None) -> dict | None:
     """The grasp probe's own scene and rollout, block included."""
 
     try:
         outcome = probe_grasp(
-            robot.manifest, robot.mjcf_xml, robot.finalized.model
+            robot.manifest,
+            robot.mjcf_xml,
+            robot.finalized.model,
+            asset_root=asset_root,
         )
     except Exception as error:  # noqa: BLE001 - a robot with no gripper has none
         print(f"{'':18} .. no grasp probe: {type(error).__name__}: {error}")

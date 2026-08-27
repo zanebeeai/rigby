@@ -123,6 +123,15 @@ class RobotJointV1(Contract):
     maximum: float
     velocity_limit: float = Field(gt=0.0)
     effort_limit: float = Field(gt=0.0)
+    effort_declared: bool = True
+    """Whether the source model actually stated this joint's torque limit.
+
+    A URDF that says ``effort="0"`` has not stated a small limit, it has declined
+    to state one, and the two must not be confused. When this is false,
+    ``effort_limit`` holds the *measured lower bound* -- the torque the joint
+    demonstrably needs to hold and move its own subtree -- which is worth knowing
+    and is not a limit. Torque feasibility is then not gated, and the certificate
+    says so rather than passing a test against a number nobody supplied."""
     role: JointRole
     tip_translation_m: float = Field(ge=0.0)
     """Tip displacement across the joint's full range, holding others at rest."""
@@ -477,12 +486,29 @@ class MorphologyClass(StrEnum):
 
     FIXED_BASE_ARM = "fixed_base_arm"
     FIXED_BASE_BIMANUAL = "fixed_base_bimanual"
+    DEXTEROUS_EFFECTOR = "dexterous_effector"
+    """A hand with no arm: it closes, but it cannot place itself.
+
+    Refusing these conflated two different things. The two-axis minimum exists to
+    turn away a cart on a rail -- a mechanism that moves without positioning
+    anything -- and a five-fingered hand tripped it for the opposite reason: it
+    positions nothing because it has nothing to position *with*, while being
+    exactly the part of a robot that does the holding.
+
+    Admitted, and then honestly limited. Every path schema requires positioning,
+    so a hand affords none of them; what it affords is the statives and the
+    contact schemas, which is what a hand can actually be asked for."""
+
     UNSUPPORTED_FLOATING_BASE = "unsupported_floating_base"
     UNSUPPORTED_TOPOLOGY = "unsupported_topology"
 
 
 SUPPORTED_MORPHOLOGY_CLASSES = frozenset(
-    {MorphologyClass.FIXED_BASE_ARM, MorphologyClass.FIXED_BASE_BIMANUAL}
+    {
+        MorphologyClass.FIXED_BASE_ARM,
+        MorphologyClass.FIXED_BASE_BIMANUAL,
+        MorphologyClass.DEXTEROUS_EFFECTOR,
+    }
 )
 
 
