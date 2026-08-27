@@ -169,6 +169,82 @@ MAX_WRIST_YAW_RAD = 0.28
 MAX_WRIST_TWIST_RAD = value_of("anatomy.wrist_twist_generator_max_rad")
 MAX_FOREARM_SHAKE_RAD = 0.28
 
+# A strike rotates the trunk, not just the arm. `torso_participation` scales
+# this authored ceiling, and the resulting yaw is distributed up the trunk
+# chain so no single segment absorbs the whole rotation. The weights sum to
+# 1.0 and the largest one times the ceiling stays inside every trunk segment's
+# typical twist band (see the threshold entry's rationale).
+MAX_TORSO_YAW_RAD = value_of("anatomy.torso_yaw_generator_max_rad")
+TRUNK_YAW_DISTRIBUTION = (("spine", 0.30), ("chest", 0.40), ("upperChest", 0.30))
+# The trunk's vertical axis in the body-relative target frame: the arm chain
+# hangs off `upperChest`, so a trunk yaw carries the shoulder around this
+# line and an IK target authored for the un-yawed body must be counter-rotated
+# about it before the arm solve.
+TRUNK_YAW_PIVOT_X_M = 0.0
+TRUNK_YAW_PIVOT_Z_M = -0.065
+
+
+def strike_trunk_yaw(hand: Hand, phase: PrimitiveKind, parameters: PrimitiveParameters) -> float:
+    """Signed trunk yaw in radians for one strike phase.
+
+    Strike phases drive the punching shoulder forward -- for a left-hand
+    strike the trunk rotates clockwise seen from above (negative yaw) -- and
+    the load phase winds up the other way, pulling that shoulder back, so the
+    visible rotation across load -> strike spans both magnitudes. Measured on
+    this rig: a local +Y trunk quat is a positive world yaw, and the sign was
+    wrong-way-first: `direction = side` turned the punching shoulder backward,
+    which read as nothing at the old 9-degree ceiling and at this one drove
+    the impact target out of reach (elbow 178 deg, IK clamp spiking angular
+    acceleration to 248 rad/s^2, 34 self-collision frames).
+    """
+
+    side = 1.0 if hand == Hand.LEFT else -1.0
+    direction = side if phase == PrimitiveKind.LOAD else -side
+    return direction * parameters.torso_participation * MAX_TORSO_YAW_RAD
+
+
+def trunk_yaw_poses(yaw_rad: float) -> dict[str, Quat]:
+    """Distribute one trunk yaw over the spine chain as local Y rotations.
+
+    The head gets the full counter-rotation: a fighter's gaze stays on the
+    target while the trunk coils, and the egocentric camera rides the head,
+    so without the counter-yaw the trunk rotation sweeps the camera off the
+    strike and the visibility gate fails (measured 0.892 against a 1.0 gate).
+    """
+
+    poses: dict[str, Quat] = {}
+    for bone, weight in TRUNK_YAW_DISTRIBUTION:
+        half = 0.5 * weight * yaw_rad
+        poses[bone] = Quat(y=math.sin(half), w=math.cos(half))
+    counter_half = -0.5 * yaw_rad
+    poses["head"] = Quat(y=math.sin(counter_half), w=math.cos(counter_half))
+    return poses
+
+
+def counter_rotate_about_trunk(target: Vec3, yaw_rad: float) -> Vec3:
+    """Rotate a body-relative target about the trunk axis by ``-yaw_rad``.
+
+    Solving the arm for this counter-rotated target and then yawing the trunk
+    by ``yaw_rad`` puts the hand back on the authored target, because the arm
+    chain rides the trunk rigidly.
+
+    Exact zero returns the target object untouched: ``pivot + (target - pivot)``
+    is not bit-identical to ``target`` in floats, and the non-strike paths that
+    pass 0.0 are pinned byte-identical by the equivalence fixtures.
+    """
+
+    if yaw_rad == 0.0:
+        return target
+    cos = math.cos(-yaw_rad)
+    sin = math.sin(-yaw_rad)
+    x = target.x - TRUNK_YAW_PIVOT_X_M
+    z = target.z - TRUNK_YAW_PIVOT_Z_M
+    return Vec3(
+        x=TRUNK_YAW_PIVOT_X_M + cos * x + sin * z,
+        y=target.y,
+        z=TRUNK_YAW_PIVOT_Z_M - sin * x + cos * z,
+    )
+
 
 def _rotation_between(source: np.ndarray, target: np.ndarray) -> Rotation:
     source = source / max(float(np.linalg.norm(source)), 1e-8)
@@ -538,10 +614,21 @@ def strike_target(
         }.get(phase, (side * 0.15, 1.33, 0.29))
     else:
         lateral = side * (0.13 if strike_type == StrikeType.JAB else 0.10)
+        # Keep the impact frame near but never at full extension. The old
+        # 0.46 m target solved the elbow to 177.9 deg -- a locked joint about
+        # 2 deg off the IK singularity -- and the cross's peak angular
+        # acceleration sat at 79.6 against the 82 rad/s^2 ceiling. The trunk
+        # drives the punching shoulder forward, so reach couples to the torso
+        # column: the cross (torso 0.72) carries its target at 0.52 m and the
+        # jab (torso 0.40, less shoulder travel) at 0.50 m. Both measured
+        # under the authored trunk yaw; one centimetre past either value is
+        # back over the reach cliff, where the IK clamp spikes acceleration
+        # past the 82 rad/s^2 ceiling.
+        depth = 0.50 if strike_type == StrikeType.JAB else 0.52
         base = {
             PrimitiveKind.LOAD: (side * 0.16, 1.34, 0.29),
-            PrimitiveKind.STRIKE: (lateral, 1.40, 0.46),
-            PrimitiveKind.FOLLOW_THROUGH: (lateral, 1.39, 0.43),
+            PrimitiveKind.STRIKE: (lateral, 1.40, depth),
+            PrimitiveKind.FOLLOW_THROUGH: (lateral, 1.39, depth - 0.03),
         }.get(phase, (side * 0.15, 1.33, 0.29))
     return Vec3(
         x=base[0] + side * parameters.lateral_offset * 0.055,

@@ -135,9 +135,10 @@ def test_a_deferral_needs_a_reason() -> None:
 
 #: Bones no corpus case moves, and no prompt can move: nothing in ``compiler.py``
 #: ever assigns a rotation to any of them.  See the test below.
-IMMOBILE_BONES = frozenset(
-    {"leftToes", "rightToes", "neck", "spine", "upperChest"}
-)
+# Was five until the strike trunk-yaw work: strikes now rotate `spine` and
+# `upperChest` (and `chest`, which always moved), so those two joined the
+# covered set exactly as this test's docstring hoped.
+IMMOBILE_BONES = frozenset({"leftToes", "rightToes", "neck"})
 
 #: Quaternion component difference below which a bone counts as unmoved.
 BONE_MOTION_EPSILON = 1e-6
@@ -172,17 +173,19 @@ def _bones_moved(case_id: str) -> frozenset[str]:
     return frozenset(moved)
 
 
-def test_five_bones_are_immobile_in_every_case_and_in_the_compiler() -> None:
-    """Five of the 52 canonical bones can never move, whatever the prompt.
+def test_three_bones_are_immobile_in_every_case_and_in_the_compiler() -> None:
+    """Three of the 52 canonical bones can never move, whatever the prompt.
 
     This is a **compiler** gap, not a corpus gap, and no corpus case can close it:
-    ``compiler.py`` never assigns a rotation to ``leftToes``, ``rightToes``,
-    ``neck``, ``spine`` or ``upperChest`` on any path.  It matters downstream --
-    a ROM limit on those bones can never fire, and an anatomy grader can never be
-    calibrated on them from generated motion, only from mutation.
+    ``compiler.py`` never assigns a rotation to ``leftToes``, ``rightToes`` or
+    ``neck`` on any path.  It matters downstream -- a ROM limit on those bones
+    can never fire, and an anatomy grader can never be calibrated on them from
+    generated motion, only from mutation.
 
-    If this test goes red because a bone started moving, that is good news: delete
-    it from the set and the corpus has gained a joint class.
+    The set was five until the strike trunk-yaw work started rotating ``spine``
+    and ``upperChest``. If this test goes red because a bone started moving,
+    that is good news: delete it from the set and the corpus has gained a joint
+    class.
     """
     still = set(IMMOBILE_BONES)
     for case in CASES:

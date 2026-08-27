@@ -47,7 +47,9 @@ from .physics import PhysicsOutcome, simulate_grasp
 from .primitives import (
     MAX_WRIST_TWIST_RAD,
     ARM_REACH_M,
+    TRUNK_YAW_DISTRIBUTION,
     arm_pose_from_target,
+    counter_rotate_about_trunk,
     forearm_shake_amplitude_rad,
     finger_assertions,
     gesture_target,
@@ -57,7 +59,9 @@ from .primitives import (
     smoothstep,
     strike_path_target,
     strike_target,
+    strike_trunk_yaw,
     thumb_to_fingertip_pose,
+    trunk_yaw_poses,
     wrist_flourish_amplitude_rad,
 )
 from .analysis import _angular_kinematics, arm_landmarks
@@ -5599,10 +5603,19 @@ def compile_motion(request: CompileRequest) -> ClipResult:
             target_pose = base.copy()
             shape = HandShape.OPEN
         else:
+            # A strike yaws the whole trunk, and the arm chain rides it: the
+            # authored target describes where the fist should land in the body
+            # frame, so the arm is solved against the target counter-rotated
+            # about the trunk axis and the trunk rotation carries it back.
+            keyframe_trunk_yaw = (
+                strike_trunk_yaw(program.hand, primitive.kind, primitive.parameters)
+                if program.intent == Intent.STRIKE
+                else 0.0
+            )
             arm, _ = arm_pose_from_target(
                 program.hand,
                 shoulder_position(program.hand),
-                target,
+                counter_rotate_about_trunk(target, keyframe_trunk_yaw),
                 primitive.parameters,
                 present_hand=program.intent == Intent.GESTURE,
                 forearm_twist_reserve_rad=(
@@ -5617,11 +5630,12 @@ def compile_motion(request: CompileRequest) -> ClipResult:
             target_pose.update(fingers)
             if program.intent == Intent.STRIKE:
                 target_pose.update(_inactive_guard_pose(program.hand))
-            torso_direction = side if program.intent == Intent.STRIKE else 1.0
-            target_pose["chest"] = Quat(
-                y=math.sin(torso_direction * primitive.parameters.torso_participation * 0.08),
-                w=math.cos(primitive.parameters.torso_participation * 0.08),
-            )
+                target_pose.update(trunk_yaw_poses(keyframe_trunk_yaw))
+            else:
+                target_pose["chest"] = Quat(
+                    y=math.sin(primitive.parameters.torso_participation * 0.08),
+                    w=math.cos(primitive.parameters.torso_participation * 0.08),
+                )
         frame_count = max(2, int(round(primitive.parameters.duration_s * fps)))
         # Retime only when a short model-authored phase would otherwise step
         # more than 0.30 rad in a single 30 Hz frame. This preserves the
@@ -5684,10 +5698,17 @@ def compile_motion(request: CompileRequest) -> ClipResult:
                     alpha,
                     primitive.parameters,
                 )
+                # The interpolated trunk yaw at this frame, read from the pose
+                # actually being rendered: the trunk quats are pure local-Y
+                # rotations and nlerp keeps them pure, so the yaw sum is exact.
+                frame_trunk_yaw = sum(
+                    2.0 * math.atan2(pose[bone].rotation.y, pose[bone].rotation.w)
+                    for bone, _ in TRUNK_YAW_DISTRIBUTION
+                )
                 path_arm, _ = arm_pose_from_target(
                     program.hand,
                     shoulder_position(program.hand),
-                    path_target,
+                    counter_rotate_about_trunk(path_target, frame_trunk_yaw),
                     primitive.parameters,
                     present_hand=False,
                 )
