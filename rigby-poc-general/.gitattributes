@@ -1,0 +1,6 @@
+# The schema inventory is sealed by a sha256 sidecar taken over its exact bytes.
+# Never let checkout rewrite its line endings, or the seal breaks on one
+# platform while holding on another (it shipped broken exactly that way:
+# the sidecar was hashed over a CRLF working copy).
+assets/general/schema_inventory.v1.json -text
+assets/general/schema_inventory.v1.json.sha256 -text
