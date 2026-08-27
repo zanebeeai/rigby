@@ -14,6 +14,8 @@ import pytest
 from rigby_v2.errors import FailureCode
 from rigby_v2.scenes import SceneAssetError, compile_scene, load_object_pack
 
+pytestmark = pytest.mark.medium
+
 
 # A closed cube with an inward top-center vertex. It is intentionally concave
 # and is valid render topology, but is not an authored convex collision piece.

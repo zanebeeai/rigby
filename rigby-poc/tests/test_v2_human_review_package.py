@@ -15,6 +15,8 @@ from rigby_v2.calibration import (
 from rigby_v2.flywheel.schemas import DefectKind
 from rigby_v2.hashing import content_hash, hash_file
 
+pytestmark = pytest.mark.fast
+
 
 def _sources(tmp_path):  # type: ignore[no-untyped-def]
     first = tmp_path / "first.mp4"

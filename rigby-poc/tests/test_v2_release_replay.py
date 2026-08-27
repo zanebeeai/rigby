@@ -26,6 +26,8 @@ from rigby_v2.simulation import (
     SimulationRequest,
 )
 
+pytestmark = pytest.mark.medium
+
 
 HASH_C = "c" * 64
 

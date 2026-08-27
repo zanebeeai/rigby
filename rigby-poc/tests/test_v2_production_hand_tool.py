@@ -12,6 +12,8 @@ from rigby_v2.acceptance.production_hand_tool import (
 from rigby_v2.artifacts import ContentAddressedArtifactStore
 from rigby_v2.motion import MotionCompilationError, MotionFailureReason
 
+pytestmark = pytest.mark.medium
+
 
 @pytest.mark.parametrize("authored_attempt", (1, 2))
 def test_two_bounded_production_hand_tool_attempts_fail_as_typed_ik_rejections(

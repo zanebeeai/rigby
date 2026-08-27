@@ -15,6 +15,9 @@ from rigby_v2.contracts import (
     SubmitSimulationJobRequestV1,
 )
 from rigby_v2.jobs import SQLiteJobStore
+import pytest
+
+pytestmark = pytest.mark.fast
 
 
 HASH_A = "a" * 64

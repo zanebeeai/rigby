@@ -21,6 +21,9 @@ from rigby_v2.contracts import (
 )
 from rigby_v2.jobs import SQLiteJobStore
 from rigby_v2.observability import JsonLogFormatter, configure_json_logging, log_event
+import pytest
+
+pytestmark = pytest.mark.fast
 
 
 def _context(tmp_path: Path) -> ApiContext:

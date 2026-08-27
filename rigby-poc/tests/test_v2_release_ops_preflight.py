@@ -12,6 +12,9 @@ from rigby_v2.release_ops import (
     diagnose_startup_readiness,
     run_fresh_machine_preflight,
 )
+import pytest
+
+pytestmark = pytest.mark.fast
 
 
 ROOT = Path(__file__).resolve().parents[1]

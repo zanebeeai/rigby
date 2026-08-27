@@ -10,6 +10,9 @@ from rigby_v2.acceptance import (
     run_button_press_once,
 )
 from rigby_v2.certification import CertificationOutcome
+import pytest
+
+pytestmark = pytest.mark.medium
 
 
 def test_repaired_articulated_packs_have_no_neutral_false_success() -> None:

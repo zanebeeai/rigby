@@ -17,6 +17,8 @@ from rigby_v2.rigging import stage_canonical_rig
 from rigby_v2.scenes import stage_object_pack_scene
 from rigby_v2.selection import generate_candidate_set
 
+pytestmark = pytest.mark.medium
+
 
 def test_concrete_executor_runs_real_certification_and_evidence(tmp_path: Path) -> None:
     artifacts = ContentAddressedArtifactStore(tmp_path / "artifacts")

@@ -32,6 +32,9 @@ from rigby_v2.worker import (
     _map_generalized_state,
     _project_qpos_to_rig,
 )
+import pytest
+
+pytestmark = pytest.mark.medium
 
 
 def test_program_to_mjz_scene_to_three_run_certification_vertical(tmp_path: Path) -> None:

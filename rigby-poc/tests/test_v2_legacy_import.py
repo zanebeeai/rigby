@@ -22,6 +22,8 @@ from rigby_v2.library import (
 )
 from rigby_v2.hashing import content_hash, hash_file
 
+pytestmark = pytest.mark.medium
+
 
 class Passthrough:
     def embed(self, payload):  # type: ignore[no-untyped-def]

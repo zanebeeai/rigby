@@ -21,6 +21,8 @@ from rigby_v2.planner import OpenAISemanticPlanner, PlannedMotionV1, PlannerErro
 from rigby_v2.rigging import stage_canonical_rig
 from rigby_v2.scenes import stage_object_pack_scene
 
+pytestmark = pytest.mark.medium
+
 
 def _program(joint: str = "spine_flex") -> MotionProgramV2:
     return MotionProgramV2(

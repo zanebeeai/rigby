@@ -12,6 +12,8 @@ from rigby_v2.calibration import (
     load_dataset_registry,
 )
 
+pytestmark = pytest.mark.fast
+
 
 def _request(
     dataset_id: str,

@@ -15,6 +15,8 @@ from rigby_v2.motion import (
     refine_joint_window,
 )
 
+pytestmark = pytest.mark.medium
+
 
 HAND_XML = r"""
 <mujoco model="joint_window_refinement">

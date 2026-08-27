@@ -15,6 +15,8 @@ from rigby_v2.guardrails import (
 )
 from rigby_v2.planner import OpenAISemanticPlanner
 
+pytestmark = pytest.mark.fast
+
 
 class _ForbiddenResponses:
     def __init__(self) -> None:

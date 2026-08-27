@@ -5,8 +5,9 @@ is the other config file the compiler reads, it is larger, and nothing has ever
 checked it -- so a block can be added, described, and never consumed, which is
 the dead-config defect one file over from where anyone looks.
 
-**A ledger, not a gate.** Six blocks are already dead, and a strict guard red on
-six at once acquires an allowlist within a week -- the shape this repository
+**A ledger, not a gate.** Six blocks were dead when this ledger was written
+(`required_bones` has since gained a reader and come off), and a strict guard
+red on six at once acquires an allowlist within a week -- the shape this repository
 learned from the hardcoded-threshold guard, which was red on 79 sites. So the
 known-dead set is written down and may only ever SHRINK: a new dead block fails
 the suite, and deleting one requires lowering the count in the same commit.
@@ -52,11 +53,10 @@ KNOWN_DEAD: dict[str, str] = {
     "canonical_standard": "names the rig convention; no consumer",
     "clip_rotation_contract": "describes clip rotation order; no consumer",
     "end_effectors": "hand/foot terminal bones; no consumer",
-    "required_bones": "bones the profile asserts must exist; nothing asserts it",
     "rest_pose": "rest-pose reference; the four textual hits are test NAMES",
     "root_motion_source": "declares where root motion comes from; no consumer",
 }
-LEDGER_HIGH_WATER_MARK = 6
+LEDGER_HIGH_WATER_MARK = 5  # == len(KNOWN_DEAD); required_bones gained a reader (test_v2_canonical_human.py) and came off
 
 
 def _corpus() -> str:

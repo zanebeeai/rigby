@@ -18,6 +18,9 @@ from rigby_v2.rigging.canonical_human import xml_for_profile
 from rigby_v2.worker import SimulationWorker, WorkerDependencies
 
 from test_v2_worker_vertical import _stage_job
+import pytest
+
+pytestmark = pytest.mark.medium
 
 
 def test_native_runtime_stops_at_a_bounded_cancellation_poll() -> None:

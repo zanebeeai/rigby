@@ -10,6 +10,8 @@ from rigby_v2.calibration import (
     evaluate_inbetweening_admission,
 )
 
+pytestmark = pytest.mark.fast
+
 
 def _trial(index: int, outcome: HumanOutcome) -> InbetweeningTrial:
     return InbetweeningTrial(

@@ -4,6 +4,9 @@ import numpy as np
 from rigby_v2.certification import ManifestStatePredicate, ObjectStateContext
 from rigby_v2.certification.predicates import KinematicTrace
 from rigby_v2.contracts import SceneStatePredicateV1
+import pytest
+
+pytestmark = pytest.mark.medium
 
 
 def _context() -> ObjectStateContext:

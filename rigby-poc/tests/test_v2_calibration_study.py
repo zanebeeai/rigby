@@ -15,6 +15,8 @@ from rigby_v2.calibration import (
 )
 from rigby_v2.flywheel.schemas import CalibrationRatingV1, DefectKind, HumanComparisonPairV1
 
+pytestmark = pytest.mark.fast
+
 
 def test_blueprint_is_deterministic_blinded_and_seeded() -> None:
     first = construct_calibration_blueprint(seed=73)

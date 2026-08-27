@@ -19,6 +19,8 @@ from rigby_v2.calibration.motion_exit_study import (
 )
 from rigby_v2.hashing import canonical_json_bytes, hash_file, sha256_bytes
 
+pytestmark = pytest.mark.fast
+
 
 def _png(color: tuple[int, int, int]) -> bytes:
     output = io.BytesIO()

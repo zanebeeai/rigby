@@ -6,6 +6,9 @@ import mujoco
 
 from rigby_v2.artifacts import ContentAddressedArtifactStore
 from rigby_v2.rigging.manifest_builder import stage_canonical_rig
+import pytest
+
+pytestmark = pytest.mark.medium
 
 
 def test_staged_rig_manifest_binds_physics_visual_and_mapping(tmp_path: Path) -> None:

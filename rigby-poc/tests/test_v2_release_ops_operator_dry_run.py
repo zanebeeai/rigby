@@ -17,6 +17,8 @@ from rigby_v2.release_ops.operator_dry_run import (
     run_operator_dry_run,
 )
 
+pytestmark = pytest.mark.fast
+
 
 class _Handle:
     def __init__(self, label: str) -> None:

@@ -26,6 +26,9 @@ from rigby_v2.rigging.manifest_builder import stage_canonical_rig
 from rigby_v2.scenes import stage_object_pack_scene
 from rigby_v2.simulation import NativeMujocoRuntime
 from rigby_v2.worker import SimulationWorker, WorkerDependencies
+import pytest
+
+pytestmark = pytest.mark.medium
 
 
 def test_staged_scene_binds_pack_rig_mjcf_and_self_contained_mjz(

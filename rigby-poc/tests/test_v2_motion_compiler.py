@@ -30,6 +30,8 @@ from rigby_v2.motion import (
     compile_motion_program,
 )
 
+pytestmark = pytest.mark.medium
+
 
 MODEL_XML = r"""
 <mujoco model="motion_compiler_test">

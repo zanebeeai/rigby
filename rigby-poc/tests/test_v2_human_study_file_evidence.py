@@ -20,6 +20,8 @@ from rigby_v2.calibration.study import (
     RaterAssignment,
 )
 
+pytestmark = pytest.mark.fast
+
 
 def _write_json(path: Path, value: object) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)

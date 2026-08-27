@@ -23,10 +23,13 @@ from rigby_v2.library import (
 from rigby_v2.release import apply_rigby_v2_postgres_migrations
 
 
-pytestmark = pytest.mark.skipif(
-    os.getenv("RIGBY_TEST_POSTGRES") != "1",
-    reason="set RIGBY_TEST_POSTGRES=1 with the local v2 database running",
-)
+pytestmark = [
+    pytest.mark.slow,
+    pytest.mark.skipif(
+        os.getenv("RIGBY_TEST_POSTGRES") != "1",
+        reason="set RIGBY_TEST_POSTGRES=1 with the local v2 database running",
+    ),
+]
 
 DATABASE_URL = os.getenv(
     "RIGBY_V2_DATABASE_URL",

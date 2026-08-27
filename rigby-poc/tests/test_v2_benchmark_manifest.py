@@ -14,6 +14,8 @@ from rigby_v2.benchmark import (
 )
 from rigby_v2.errors import ArtifactIntegrityError
 
+pytestmark = pytest.mark.fast
+
 
 def test_sealed_manifest_expands_to_exact_release_matrix_with_stable_hashes() -> None:
     first = load_benchmark_manifest()

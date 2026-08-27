@@ -19,6 +19,8 @@ from rigby_v2.release import (
     SQLiteMigrationAdapter,
 )
 
+pytestmark = pytest.mark.fast
+
 
 MIGRATIONS = (
     Migration(

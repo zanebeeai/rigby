@@ -15,6 +15,8 @@ from rigby_v2.rigging import (
     VisualSkeletonPose,
 )
 
+pytestmark = pytest.mark.medium
+
 
 def _representative_pose(adapter: VisualPhysicalPoseAdapter, variant: int = 0) -> np.ndarray:
     model = adapter.model

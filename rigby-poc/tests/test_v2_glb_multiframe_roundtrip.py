@@ -10,6 +10,8 @@ from rigby_v2.artifacts import ContentAddressedArtifactStore
 from rigby_v2.rigging.export_validation import audit_simulated_glb_round_trip
 from rigby_v2.rigging.manifest_builder import stage_canonical_rig
 
+pytestmark = pytest.mark.medium
+
 
 EXPECTED_FIXED_HIERARCHY = {
     "upperChest": ("chest", ("leftShoulder", "rightShoulder")),

@@ -21,6 +21,8 @@ from rigby_v2.library import (
 )
 from rigby_v2.library.model_cache import MANIFEST_NAME, _build_manifest
 
+pytestmark = pytest.mark.fast
+
 
 def _sealed_fake_snapshot(tmp_path):
     root = snapshot_directory(SIGLIP2_SPEC, tmp_path)

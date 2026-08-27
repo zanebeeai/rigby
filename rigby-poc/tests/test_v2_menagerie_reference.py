@@ -6,6 +6,8 @@ import pytest
 
 from rigby_v2.rigging.references import load_menagerie_reference
 
+pytestmark = pytest.mark.fast
+
 
 def test_menagerie_is_sealed_reference_only_with_per_asset_license_policy() -> None:
     record = load_menagerie_reference()

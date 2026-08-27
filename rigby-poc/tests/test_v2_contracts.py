@@ -30,6 +30,8 @@ from rigby_v2.hashing import canonical_json, content_hash
 from rigby_v2.records import AnimationRecordV1, CertificationStatus, DatasetSplit, FailureRecordV1
 from rigby_v2.errors import FailureCode
 
+pytestmark = pytest.mark.fast
+
 
 HASH_A = "a" * 64
 HASH_B = "b" * 64

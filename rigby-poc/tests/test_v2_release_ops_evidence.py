@@ -11,6 +11,8 @@ from rigby_v2.release_ops import (
     write_release_evidence_manifest,
 )
 
+pytestmark = pytest.mark.fast
+
 
 def test_sealed_evidence_is_canonical_hash_verified_and_still_partial(
     tmp_path: Path,

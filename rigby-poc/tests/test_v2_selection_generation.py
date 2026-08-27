@@ -19,6 +19,8 @@ from rigby_v2.selection import (
     structural_fingerprint,
 )
 
+pytestmark = pytest.mark.fast
+
 
 def semantic_plan() -> SemanticPlanV1:
     program = MotionProgramV2(

@@ -30,6 +30,9 @@ from rigby_v2.selection import (
     generate_candidate_set,
     variation_for_attempt,
 )
+import pytest
+
+pytestmark = pytest.mark.medium
 
 
 _CONVENTION = QuaternionConvention(

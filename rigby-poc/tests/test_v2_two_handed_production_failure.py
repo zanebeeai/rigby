@@ -8,6 +8,8 @@ import pytest
 from rigby_v2.hashing import hash_file
 from rigby_v2.scenes import load_object_pack
 
+pytestmark = pytest.mark.fast
+
 
 ROOT = Path(__file__).resolve().parents[1]
 EVIDENCE = ROOT / "assets" / "v2" / "acceptance" / "two_handed_object_failure_attempts.v1.json"

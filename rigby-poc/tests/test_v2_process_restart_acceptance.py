@@ -37,10 +37,13 @@ from rigby_v2.hashing import hash_file
 from rigby_v2.release_ops import seal_release_evidence
 
 
-pytestmark = pytest.mark.skipif(
-    os.getenv("RIGBY_TEST_PROCESS_RESTART") != "1",
-    reason="set RIGBY_TEST_PROCESS_RESTART=1 with the local PostgreSQL service running",
-)
+pytestmark = [
+    pytest.mark.slow,
+    pytest.mark.skipif(
+        os.getenv("RIGBY_TEST_PROCESS_RESTART") != "1",
+        reason="set RIGBY_TEST_PROCESS_RESTART=1 with the local PostgreSQL service running",
+    ),
+]
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 BASE_DATABASE_URL = os.getenv(

@@ -10,6 +10,9 @@ from rigby_v2.acceptance.production_grasp_place import (
 )
 from rigby_v2.artifacts import ContentAddressedArtifactStore
 from rigby_v2.simulation import SimulationStatus
+import pytest
+
+pytestmark = pytest.mark.medium
 
 
 def test_production_grasp_program_compiles_but_failed_trace_is_not_certified(

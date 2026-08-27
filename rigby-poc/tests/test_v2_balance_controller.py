@@ -16,6 +16,9 @@ from rigby_v2.simulation import (
 )
 
 from test_v2_simulation_runtime import ARTICULATED_BIPED_XML, _request
+import pytest
+
+pytestmark = pytest.mark.medium
 
 
 SUPPORT_CONFIG = StandingControlConfig(

@@ -23,6 +23,8 @@ from rigby_v2.benchmark import (
 )
 from rigby_v2.hashing import hash_file
 
+pytestmark = pytest.mark.fast
+
 
 def _evidence(root: Path, name: str) -> BenchmarkEvidenceArtifact:
     path = root / f"{name}.json"

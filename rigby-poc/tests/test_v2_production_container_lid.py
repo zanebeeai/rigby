@@ -10,6 +10,8 @@ from rigby_v2.acceptance.production_container_lid import (
 )
 from rigby_v2.motion.errors import MotionCompilationError, MotionFailureReason
 
+pytestmark = pytest.mark.medium
+
 
 def test_calibrated_container_lid_is_passive_and_authors_contact_lifecycle(
     tmp_path,

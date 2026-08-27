@@ -16,6 +16,8 @@ from rigby_v2.acceptance.grasp_tool import (
 )
 from rigby_v2.simulation import NativeMujocoRuntime
 
+pytestmark = pytest.mark.medium
+
 
 @pytest.mark.parametrize("task", tuple(PackTask))
 def test_attempt_models_keep_the_free_root_and_have_no_shortcuts(task: PackTask) -> None:

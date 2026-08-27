@@ -21,6 +21,9 @@ from rigby_v2.certification import (
 from rigby_v2.simulation import NativeMujocoRuntime
 
 from test_v2_balance_controller import standing_request
+import pytest
+
+pytestmark = pytest.mark.medium
 
 
 SUPPORT_FEET = (

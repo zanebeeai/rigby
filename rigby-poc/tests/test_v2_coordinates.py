@@ -22,6 +22,9 @@ from rigby_v2.rigging.coordinates import (
     mujoco_quaternion_to_gltf,
     mujoco_transform_to_gltf,
 )
+import pytest
+
+pytestmark = pytest.mark.fast
 
 
 def _gltf_rotation_matrix(value: GltfQuaternionXYZW) -> np.ndarray:

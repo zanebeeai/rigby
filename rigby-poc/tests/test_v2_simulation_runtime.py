@@ -20,6 +20,9 @@ from rigby_v2.simulation import (
     SimulationStatus,
     repeat_replay,
 )
+import pytest
+
+pytestmark = pytest.mark.medium
 
 
 # A deliberately small articulated biped used only as a runtime smoke model.

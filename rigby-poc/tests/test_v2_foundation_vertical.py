@@ -11,6 +11,9 @@ from rigby_v2.simulation import (
     SimulationRequest,
     SimulationStatus,
 )
+import pytest
+
+pytestmark = pytest.mark.medium
 
 
 def test_canonical_human_executes_in_authoritative_runtime() -> None:

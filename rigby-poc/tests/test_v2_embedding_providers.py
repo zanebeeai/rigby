@@ -19,6 +19,8 @@ from rigby_v2.library import (
     snapshot_tree_sha256,
 )
 
+pytestmark = pytest.mark.fast
+
 
 MODEL_HASH = "a" * 64
 REVISION = "b" * 40

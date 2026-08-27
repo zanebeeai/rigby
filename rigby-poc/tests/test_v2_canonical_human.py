@@ -10,6 +10,8 @@ import pytest
 from rigby_v2.rigging.canonical_human import load_canonical_human
 from rigby_v2.rigging.mapping import load_rig_manifest
 
+pytestmark = pytest.mark.medium
+
 
 def _names(model: mujoco.MjModel, object_type: mujoco.mjtObj, count: int) -> set[str]:
     return {

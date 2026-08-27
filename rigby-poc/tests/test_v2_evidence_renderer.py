@@ -21,6 +21,8 @@ from rigby_v2.flywheel.schemas import EvidenceCameraRole
 from rigby_v2.simulation.metrics import ContactFrame
 from rigby_v2.simulation.runtime import SimulationTrace
 
+pytestmark = pytest.mark.slow
+
 
 MODEL_XML = r"""
 <mujoco model="evidence_test">

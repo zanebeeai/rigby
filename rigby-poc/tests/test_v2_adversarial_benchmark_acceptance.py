@@ -9,6 +9,9 @@ from rigby_v2.benchmark import (
     load_benchmark_manifest,
     run_adversarial_benchmark_100,
 )
+import pytest
+
+pytestmark = pytest.mark.fast
 
 
 def test_adversarial_benchmark_100_seals_content_addressed_evidence(tmp_path) -> None:

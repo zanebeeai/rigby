@@ -9,6 +9,9 @@ from rigby_v2.release_ops import (
     evaluate_release_checklist,
     load_release_checklist,
 )
+import pytest
+
+pytestmark = pytest.mark.fast
 
 
 ROOT = Path(__file__).resolve().parents[1]

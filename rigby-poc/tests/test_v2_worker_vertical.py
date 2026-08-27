@@ -29,6 +29,9 @@ from rigby_v2.records import JobState
 from rigby_v2.rigging.canonical_human import xml_for_profile
 from rigby_v2.simulation import NativeMujocoRuntime
 from rigby_v2.worker import SimulationWorker, WorkerDependencies
+import pytest
+
+pytestmark = pytest.mark.medium
 
 
 def _stage_job(

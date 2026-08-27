@@ -25,6 +25,8 @@ from rigby_v2.benchmark.manifest import load_benchmark_manifest
 from rigby_v2.benchmark.models import BenchmarkFamily
 from rigby_v2.contracts import ArtifactRefV1
 
+pytestmark = pytest.mark.medium
+
 
 class _ResumePipeline:
     pipeline_id = "test-resume-pipeline.v1"

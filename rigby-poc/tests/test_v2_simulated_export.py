@@ -14,6 +14,9 @@ from rigby_v2.simulation import (
     SimulationConfig,
     SimulationRequest,
 )
+import pytest
+
+pytestmark = pytest.mark.medium
 
 
 def _accessor(document: dict, binary: bytearray, accessor_id: int) -> np.ndarray:

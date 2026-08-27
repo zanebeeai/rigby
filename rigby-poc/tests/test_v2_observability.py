@@ -5,6 +5,9 @@ import json
 import logging
 
 from rigby_v2.observability import JsonLogFormatter, log_event
+import pytest
+
+pytestmark = pytest.mark.fast
 
 
 def test_structured_log_event_is_machine_readable_and_contextual() -> None:

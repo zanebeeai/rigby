@@ -27,6 +27,8 @@ from rigby_v2.simulation import (
     model_source_hash,
 )
 
+pytestmark = pytest.mark.medium
+
 
 def _request(tmp_path: Path) -> tuple[SimulationRequest, mujoco.MjModel]:
     artifacts = ContentAddressedArtifactStore(tmp_path / "artifacts")

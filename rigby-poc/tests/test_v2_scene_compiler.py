@@ -13,6 +13,8 @@ import pytest
 from rigby_v2.errors import ArtifactIntegrityError
 from rigby_v2.scenes import compile_scene, load_compiled_scene, load_object_pack
 
+pytestmark = pytest.mark.medium
+
 
 PACKS = (
     "grasp_place_block",

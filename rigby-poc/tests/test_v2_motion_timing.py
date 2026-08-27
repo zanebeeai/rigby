@@ -24,6 +24,8 @@ from rigby_v2.motion import (
 )
 from rigby_v2.motion.timing import validate_phase_schedule
 
+pytestmark = pytest.mark.fast
+
 
 def _quaternion(
     values: tuple[float, float, float, float],

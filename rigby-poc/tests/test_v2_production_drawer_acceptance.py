@@ -14,6 +14,8 @@ from rigby_v2.acceptance.production_drawer import (
 from rigby_v2.certification import CertificationOutcome
 from rigby_v2.hashing import hash_file
 
+pytestmark = pytest.mark.medium
+
 
 ROOT = Path(__file__).resolve().parents[1]
 FAILURE_EVIDENCE = ROOT / "assets" / "v2" / "acceptance" / "drawer_failure_attempts.v1.json"

@@ -16,6 +16,8 @@ from rigby_v2.benchmark import (
     load_benchmark_manifest,
 )
 
+pytestmark = pytest.mark.fast
+
 
 ENVIRONMENT_HASH = "e" * 64
 

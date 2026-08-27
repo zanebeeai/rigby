@@ -3,6 +3,9 @@ from __future__ import annotations
 from pathlib import Path
 
 from rigby_v2.release_ops import verify_wheel_smoke
+import pytest
+
+pytestmark = pytest.mark.medium
 
 
 ROOT = Path(__file__).resolve().parents[1]

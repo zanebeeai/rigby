@@ -21,6 +21,8 @@ from rigby_v2.library import (
     standard_namespace_configs,
 )
 
+pytestmark = pytest.mark.fast
+
 
 HASH_A = "a" * 64
 HASH_B = "b" * 64

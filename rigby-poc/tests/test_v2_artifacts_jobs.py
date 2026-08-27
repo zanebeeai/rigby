@@ -17,6 +17,8 @@ from rigby_v2.errors import ArtifactIntegrityError, FailureCode, InvalidJobTrans
 from rigby_v2.jobs import JobStore, SQLiteJobStore
 from rigby_v2.records import FailureRecordV1, JobState
 
+pytestmark = pytest.mark.fast
+
 
 HASH_A = "a" * 64
 HASH_B = "b" * 64

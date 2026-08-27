@@ -14,6 +14,9 @@ from rigby_v2.flywheel.schemas import (
 from rigby_v2.selection import BestOfFiveOrchestrator, generate_candidate_set
 
 from test_v2_selection_generation import semantic_plan
+import pytest
+
+pytestmark = pytest.mark.fast
 
 
 IDENTITY = tuple(float(value) for value in (1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1))

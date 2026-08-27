@@ -6,6 +6,8 @@ import pytest
 
 from rigby_v2.config import RuntimeSettings
 
+pytestmark = pytest.mark.fast
+
 
 def test_settings_are_local_and_reproducible(tmp_path: Path) -> None:
     settings = RuntimeSettings.from_env(

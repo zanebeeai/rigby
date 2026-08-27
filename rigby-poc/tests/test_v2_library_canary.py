@@ -26,6 +26,8 @@ from rigby_v2.library import (
 )
 from rigby_v2.library.models import staged_copy
 
+pytestmark = pytest.mark.fast
+
 
 def _record(status: AnimationStatus = AnimationStatus.CANDIDATE) -> AnimationRecord:
     source = AnimationRecordInput(

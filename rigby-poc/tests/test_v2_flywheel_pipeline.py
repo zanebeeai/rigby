@@ -16,6 +16,10 @@ from rigby_v2.selection import BestOfFiveOrchestrator, generate_candidate_set
 from test_v2_selection_generation import semantic_plan
 from test_v2_selection_orchestrator import ScriptedJudge, _scores, _script, evidence_set
 
+import pytest
+
+pytestmark = pytest.mark.medium
+
 
 class Passthrough:
     def embed(self, payload):  # type: ignore[no-untyped-def]

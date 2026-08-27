@@ -19,6 +19,8 @@ from rigby_v2.scenes import (
 )
 from rigby_v2.scenes.models import ObjectPackSpec
 
+pytestmark = pytest.mark.medium
+
 
 def _valid_pack() -> dict:
     return {

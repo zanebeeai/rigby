@@ -17,6 +17,9 @@ from rigby_v2.flywheel.schemas import (
 )
 from rigby_v2.selection import OpenAIAnonymousJudge, build_timeline_sheet
 from rigby_v2.selection.orchestrator import AnonymousEvidenceView
+import pytest
+
+pytestmark = pytest.mark.fast
 
 
 IDENTITY = tuple(float(value) for value in (1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1))

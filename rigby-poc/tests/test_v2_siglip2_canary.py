@@ -13,6 +13,8 @@ from rigby_v2.hashing import canonical_json_bytes, hash_file
 from rigby_v2.library import SIGLIP2_SPEC
 from scripts.v2.run_siglip2_canary import _load_verified_frame, _write_new
 
+pytestmark = pytest.mark.fast
+
 
 PNG = b"\x89PNG\r\n\x1a\nverified-canary-frame"
 ROOT = Path(__file__).resolve().parents[1]

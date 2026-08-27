@@ -15,6 +15,8 @@ from rigby_v2.simulation import (
     repeat_replay,
 )
 
+pytestmark = pytest.mark.medium
+
 
 PROFILES = ("small", "medium", "large")
 FOOT_GEOMS = frozenset({"left_foot_collision", "right_foot_collision"})

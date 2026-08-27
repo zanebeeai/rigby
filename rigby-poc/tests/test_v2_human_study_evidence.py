@@ -15,6 +15,8 @@ from rigby_v2.calibration import (
 from rigby_v2.flywheel.schemas import RubricScoresV1
 from rigby_v2.hashing import content_hash
 
+pytestmark = pytest.mark.fast
+
 
 def _export(tmp_path):
     blueprint = construct_calibration_blueprint(seed=431)

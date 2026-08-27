@@ -18,6 +18,8 @@ from rigby_v2.rigging import stage_canonical_rig
 from rigby_v2.scenes import compile_scene, load_object_pack, stage_object_pack_scene
 from rigby_v2.simulation import NativeMujocoRuntime
 
+pytestmark = pytest.mark.medium
+
 
 def _name(model: mujoco.MjModel, kind: mujoco.mjtObj, index: int) -> str:
     return mujoco.mj_id2name(model, kind, index) or ""

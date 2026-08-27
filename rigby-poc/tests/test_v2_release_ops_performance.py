@@ -13,6 +13,8 @@ from rigby_v2.release_ops import (
     run_performance_harness,
 )
 
+pytestmark = pytest.mark.fast
+
 
 class ManualClock:
     def __init__(self) -> None:

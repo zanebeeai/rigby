@@ -19,6 +19,8 @@ from rigby_v2.release import (
 
 from test_v2_artifacts_jobs import simulation_job
 
+pytestmark = pytest.mark.fast
+
 
 def _source(tmp_path):
     artifacts = ContentAddressedArtifactStore(tmp_path / "source-artifacts")
