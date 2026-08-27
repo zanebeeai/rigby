@@ -105,6 +105,43 @@ class Stative(StrEnum):
     ORIENT = "orient"
     HOLD = "hold"
     APPLY_FORCE = "apply_force"
+    CONFIGURE = "configure"
+    """Set the effector's own members, without carrying it anywhere.
+
+    Talmy's BELOC covers where the Figure is; this covers what it is shaped like
+    while it is there. Both are stative in the same sense -- no translation --
+    which is why it belongs here rather than among the paths."""
+
+
+
+class Flexion(StrEnum):
+    """How far a member sits along its own travel, as a pole rather than an angle.
+
+    Magnitude-neutral in exactly the sense Talmy means. ``extended`` is the open
+    end of whatever range that member turns out to have, so one posture serves a
+    90-degree finger and a 12 mm jaw without either number appearing here.
+    """
+
+    EXTENDED = "extended"
+    FLEXED = "flexed"
+    FREE = "free"
+    """Left wherever it already is -- an unmentioned member, not a commanded one."""
+
+
+class MemberGroup(StrEnum):
+    """Which side of the effector's measured opposition a selection counts from.
+
+    Never a member's name. The morphology measures which members converge on
+    which during closure, and that is the only division of a gripper this system
+    is willing to trust: naming an ``index`` would mean believing a URDF string,
+    which nothing else here does.
+    """
+
+    OPPOSED = "opposed"
+    """The larger side -- the fingers of a hand, one jaw of a two-jaw gripper."""
+
+    OPPOSING = "opposing"
+    """The smaller side that meets it: a thumb, or the other jaw."""
 
 
 class SchemaKind(StrEnum):
@@ -124,6 +161,17 @@ class Remove(StrEnum):
     PROXIMAL = "proximal"
     MEDIAL = "medial"
     DISTAL = "distal"
+
+
+
+POSTURE_REMOVE = Remove.ADJACENT
+"""The one degree of remove a posture is ever stated at.
+
+A posture says what the effector is shaped like, not where it is, so remove
+carries no meaning for it -- but the key includes a region, and two sides that
+each pick their own produce keys that never meet. Fixed here so the bake and the
+planner cannot drift apart, rather than agreed by convention in two files.
+"""
 
 
 class Dimensionality(StrEnum):
@@ -308,6 +356,48 @@ MANNER_AXES: tuple[str, ...] = (
 NEUTRAL_MANNER = MannerV1()
 
 
+
+class PostureV1(Contract):
+    """A configuration of an articulated effector's members, in poles and counts.
+
+    This is the stative counterpart to a Path. A Path says where the effector
+    travels; a posture says what its members are doing when it gets there, and
+    both stay magnitude-neutral for the same reason.
+
+    Members are addressed two ways and neither is by name. ``group`` picks a side
+    of the measured opposition, and ``selected_count`` takes that many members
+    from one end of the measured ordering across the effector. Both are geometry.
+    A posture is therefore a claim about *any* body with enough members to satisfy
+    it, and an honest refusal on one without -- a two-jaw gripper asked for two
+    extended fingers and one flexed has nowhere to put the third, and says so
+    rather than approximating.
+
+    ``selected_count`` is cardinality, not magnitude, and is admissible here for
+    the same reason ``MannerV1.repetition_count`` is: "two fingers up" is exact in
+    any language and on any body, and leaks no knowledge of how long a finger is.
+    """
+
+    group: MemberGroup = MemberGroup.OPPOSED
+    selected_count: int | None = Field(default=None, ge=0, le=16)
+    """How many members of ``group`` take ``selected``, from one end of the
+    measured ordering. ``None`` means all of them."""
+
+    selected: Flexion = Flexion.EXTENDED
+    remainder: Flexion = Flexion.FLEXED
+    """What the rest of ``group`` does."""
+
+    opposing: Flexion = Flexion.FREE
+    """What the other side of the opposition does."""
+
+    @property
+    def canonical_key(self) -> str:
+        count = "all" if self.selected_count is None else str(self.selected_count)
+        return (
+            f"{self.group.value}:{count}"
+            f".{self.selected.value}.{self.remainder.value}.{self.opposing.value}"
+        )
+
+
 class RegionV1(Contract):
     """Where the Figure ends up relative to the Ground, topologically."""
 
@@ -359,6 +449,7 @@ class SegmentV1(Contract):
     region: RegionV1
     frame: ReferenceFrame
     manner: MannerV1 = NEUTRAL_MANNER
+    posture: PostureV1 | None = None
     boundary: BoundaryCondition
 
     @model_validator(mode="after")
@@ -377,6 +468,14 @@ class SegmentV1(Contract):
                 )
         elif self.boundary is BoundaryCondition.DIRECTION_REVERSED:
             raise ValueError("A stative segment has no direction to reverse")
+        configuring = self.motion_schema.stative is Stative.CONFIGURE
+        if configuring and self.posture is None:
+            raise ValueError("A configure segment must say what posture to take")
+        if self.posture is not None and not configuring:
+            raise ValueError(
+                "Only a configure segment carries a posture; every other schema "
+                "leaves the effector's members alone"
+            )
         return self
 
     @property
@@ -388,11 +487,15 @@ class SegmentV1(Contract):
         in its own slot.
         """
 
+        # A posture is part of the key, unlike manner: two postures are two
+        # different primitives, not one primitive modulated at bind time. There
+        # is no continuum between a fist and two fingers up to interpolate along.
+        posture = f"|{self.posture.canonical_key}" if self.posture else ""
         return (
             f"{self.motion_schema.canonical_key}"
             f"|{self.figure.role.value}->{self.ground.role.value}"
             f"|{self.region.remove.value}.{self.region.dimensionality.value}"
-            f"|{self.frame.value}"
+            f"|{self.frame.value}{posture}"
         )
 
     def role_normalized(self) -> dict[str, Any]:
@@ -406,6 +509,9 @@ class SegmentV1(Contract):
             },
             "frame": self.frame.value,
             "manner": self.manner.model_dump(mode="python"),
+            "posture": (
+                self.posture.model_dump(mode="python") if self.posture else None
+            ),
             "boundary": self.boundary.value,
         }
 

@@ -792,6 +792,56 @@ def _build_effector(
     )
     attach_name = graph.body_names[chain.cluster.attach_body]
 
+    # Which joints move each member, read off the tree. Everything below the
+    # attachment point and on the way to that member -- so a multi-phalange
+    # finger contributes all of its joints and a single-slide jaw contributes
+    # one, without either case being special-cased.
+    interior = set(chain.cluster.interior_joints)
+    member_joints: list[tuple[str, ...]] = []
+    for body in chain.cluster.member_bodies:
+        driving = [
+            graph.joint_names[joint]
+            for ancestor in graph.path_from_base(body)
+            for joint in graph.joints_of_body(ancestor)
+            if joint in interior
+        ]
+        seen: set[str] = set()
+        ordered = tuple(
+            name for name in driving if not (name in seen or seen.add(name))
+        )
+        member_joints.append(ordered)
+    member_joint_names = tuple(member_joints)
+
+    # Which end of each member's travel extends it. Swept one member at a time
+    # against the body it hangs off, so a finger that straightens and a jaw that
+    # slides open are the same measurement rather than two special cases.
+    extends_upper: list[bool] = []
+    probe = mujoco.MjData(graph.model)
+    attach_body = chain.cluster.attach_body
+    for body, joint_names in zip(chain.cluster.member_bodies, member_joint_names):
+        joints = [
+            mujoco.mj_name2id(graph.model, mujoco.mjtObj.mjOBJ_JOINT, name)
+            for name in joint_names
+        ]
+        reach: list[float] = []
+        for end in (0, 1):
+            probe.qpos[:] = graph.model.qpos0
+            for joint in joints:
+                if joint < 0:
+                    continue
+                limits = measure.joint_range(graph.model, joint)
+                probe.qpos[graph.model.jnt_qposadr[joint]] = limits[end]
+            mujoco.mj_kinematics(graph.model, probe)
+            reach.append(
+                float(
+                    np.linalg.norm(
+                        np.asarray(probe.xpos[body]) - np.asarray(probe.xpos[attach_body])
+                    )
+                )
+            )
+        extends_upper.append(reach[1] > reach[0])
+    member_extension = tuple(extends_upper)
+
     relevant = set(member_names) | {attach_name}
     site_names = tuple(
         sorted(
@@ -819,6 +869,8 @@ def _build_effector(
                 graph.joint_names[joint] for joint in chain.cluster.interior_joints
             ),
             opposition_groups=groups,
+            member_joints=member_joint_names,
+            member_extends_toward_upper=member_extension,
             max_aperture_m=round(aperture, 6),
             closes_toward_upper=bool(chain.closure.drive_to_upper),
             site_names=site_names,

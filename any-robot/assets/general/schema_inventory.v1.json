@@ -344,6 +344,7 @@
     "proximal": 0.32
   },
   "requirements": {
+    "articulated_effector": "An effector whose members were measured to oppose one another and can be driven independently. Two members is enough to shape; how many postures it affords depends on how many it has, which the posture states and the grounder checks.",
     "confirmed_frame": "A person has confirmed which way the robot faces. Deixis is meaningless without it, and a guessed front renders a confidently backwards motion.",
     "contact_scene": "A scene object the effector can act on.",
     "grasping_effector": "At least one effector whose members were measured to converge.",
@@ -378,6 +379,16 @@
         "contact_scene"
       ],
       "stative": "apply_force"
+    },
+    {
+      "figure": "primary_effector",
+      "gloss": "set the effector's own members without carrying it anywhere: how many are extended, how many flexed, and what the opposing side does",
+      "ground": "base",
+      "id": "configure_effector",
+      "requires": [
+        "articulated_effector"
+      ],
+      "stative": "configure"
     }
   ]
 }

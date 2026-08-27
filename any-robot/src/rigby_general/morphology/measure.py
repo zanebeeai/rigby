@@ -531,7 +531,7 @@ def _opposition_groups(
                 projection = float(np.asarray(direction, dtype=float) @ axis)
                 (toward if projection >= 0.0 else away).append(index)
             if toward and away:
-                return (tuple(toward), tuple(away))
+                return _ordered_groups(toward, away, positions, axis)
 
     reference = np.array(directions[0], dtype=float)
     same: list[int] = [0]
@@ -541,7 +541,77 @@ def _opposition_groups(
         (same if float(reference @ candidate) > 0.0 else against).append(index)
     if not against:
         return ()
+    if len(against) > len(same):
+        same, against = against, same
     return (tuple(same), tuple(against))
+
+
+
+def _ordered_groups(
+    toward: "list[int]",
+    away: "list[int]",
+    positions: "list[np.ndarray]",
+    axis: "np.ndarray",
+) -> tuple[tuple[int, ...], ...]:
+    """The two sides, larger first, each ordered across the effector.
+
+    Two orderings, both measured, both needed by a posture:
+
+    The *groups* are ordered by size, so the larger side comes first. On a hand
+    that is the fingers and then the thumb; on a two-jaw gripper the sides tie and
+    the order is settled by position, which is arbitrary but stable. A posture
+    naming ``opposed`` therefore means the same kind of thing on both.
+
+    The *members within a group* are ordered along the axis across the effector --
+    perpendicular to the direction they close along. That is what makes "two
+    fingers" mean two neighbours rather than two arbitrary ones: on the uHand the
+    members arrive index, little, middle, ring in alphabetical order and index,
+    middle, ring, little in this one, and only the second is a hand.
+    """
+
+    lateral = _lateral_axis(positions, axis)
+
+    def across(index: int) -> float:
+        return float(np.asarray(positions[index], dtype=float) @ lateral)
+
+    first, second = (toward, away) if len(toward) >= len(away) else (away, toward)
+    if len(first) == len(second):
+        # A tie has no larger side to pick, so settle it on position rather than
+        # on whichever way the closure sweep happened to run.
+        first, second = sorted((first, second), key=lambda group: across(group[0]))
+    return (
+        tuple(sorted(first, key=across)),
+        tuple(sorted(second, key=across)),
+    )
+
+
+def _lateral_axis(positions: "list[np.ndarray]", closing: "np.ndarray") -> "np.ndarray":
+    """The direction across the effector, perpendicular to how it closes.
+
+    Taken from the spread of the members themselves rather than from any body
+    frame: the widest direction they occupy, with the closing direction removed.
+    A gripper whose members are collinear with its closing direction has no such
+    spread, and any consistent axis will do -- there is nothing to order.
+    """
+
+    cloud = np.asarray(positions, dtype=float)
+    centred = cloud - cloud.mean(axis=0)
+    # Remove the closing direction so members that merely close at different
+    # times do not read as being at different places across the hand.
+    centred = centred - np.outer(centred @ closing, closing)
+
+    if centred.shape[0] < 2 or float(np.abs(centred).max()) < 1e-9:
+        fallback = np.array([1.0, 0.0, 0.0])
+        fallback = fallback - float(fallback @ closing) * closing
+        norm = float(np.linalg.norm(fallback))
+        return fallback / norm if norm > 1e-9 else np.array([0.0, 1.0, 0.0])
+
+    # The widest remaining direction, which for any ordinary hand is the line the
+    # digits are planted along.
+    _, _, right = np.linalg.svd(centred, full_matrices=False)
+    axis = np.asarray(right[0], dtype=float)
+    norm = float(np.linalg.norm(axis))
+    return axis / norm if norm > 1e-9 else np.array([0.0, 1.0, 0.0])
 
 
 def sample_reach(

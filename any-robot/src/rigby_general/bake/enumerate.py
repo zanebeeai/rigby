@@ -30,6 +30,9 @@ from ..schema.program import (
     SegmentV1,
     Deixis,
     ReferenceFrame,
+    Flexion,
+    PostureV1,
+    POSTURE_REMOVE,
 )
 
 
@@ -77,7 +80,46 @@ def _boundary_for(entry: SchemaEntry) -> BoundaryCondition:
     return BoundaryCondition.TERMINUS
 
 
-def build_candidate(entry: SchemaEntry, remove: Remove) -> BindingCandidate:
+
+def _postures_for(morphology: RobotMorphologyV1) -> tuple[PostureV1, ...]:
+    """Every shape the largest articulated effector on this body can hold.
+
+    Two axes, both bounded by measurement. How many of the opposed members are
+    extended runs 0 to however many there are, and the opposing side is either
+    with them or against them -- which is the difference between a thumbs-up and
+    a fist, and between an open hand and a hook.
+
+    The count comes from the body, so this is 10 postures on a four-fingered hand
+    and 4 on a two-jaw gripper, without either number appearing here.
+    """
+
+    widest = 0
+    for effector in morphology.effectors:
+        if len(effector.opposition_groups) >= 2 and len(effector.grip_joints) >= 2:
+            widest = max(widest, len(effector.opposition_groups[0]))
+    if widest == 0:
+        return ()
+
+    # Both poles on both of the two sides, across every count. The remainder
+    # has to vary as well as the opposing member, or an open hand -- no members
+    # picked out and every one of them extended -- is a shape the body can hold
+    # and the library cannot name.
+    return tuple(
+        PostureV1(
+            selected_count=count,
+            selected=Flexion.EXTENDED,
+            remainder=remainder,
+            opposing=opposing,
+        )
+        for count in range(widest + 1)
+        for remainder in (Flexion.FLEXED, Flexion.EXTENDED)
+        for opposing in (Flexion.FLEXED, Flexion.EXTENDED)
+    )
+
+
+def build_candidate(
+    entry: SchemaEntry, remove: Remove, posture: "PostureV1 | None" = None
+) -> BindingCandidate:
     segment = SegmentV1(
         segment_id="primitive",
         motion_schema=entry.schema,
@@ -86,11 +128,13 @@ def build_candidate(entry: SchemaEntry, remove: Remove) -> BindingCandidate:
         region=RegionV1(remove=remove, dimensionality=Dimensionality.POINT),
         frame=_frame_for(entry),
         manner=MannerV1(),
+        posture=posture,
         boundary=_boundary_for(entry),
     )
+    suffix = f"-{posture.canonical_key}" if posture is not None else ""
     program = MotionSchemaProgramV1(
-        program_id=f"primitive-{entry.entry_id}-{remove.value}",
-        source_text=f"{entry.gloss}, {remove.value}",
+        program_id=f"primitive-{entry.entry_id}-{remove.value}{suffix}",
+        source_text=f"{entry.gloss}, {remove.value}{suffix}",
         segments=(segment,),
     )
     return BindingCandidate(
@@ -117,11 +161,18 @@ def enumerate_bindings(
     """
 
     entries = afforded_entries(inventory, morphology, contact_scene=contact_scene)
-    candidates = [
-        build_candidate(entry, remove)
-        for entry in sorted(entries, key=lambda item: item.entry_id)
-        for remove in removes
-    ]
+    postures = _postures_for(morphology)
+    candidates: list[BindingCandidate] = []
+    for entry in sorted(entries, key=lambda item: item.entry_id):
+        if entry.takes_posture:
+            # A posture does not vary with degree of remove -- the effector is
+            # not going anywhere -- so it is baked once per shape rather than
+            # once per shape per distance.
+            candidates.extend(
+                build_candidate(entry, POSTURE_REMOVE, posture) for posture in postures
+            )
+            continue
+        candidates.extend(build_candidate(entry, remove) for remove in removes)
     return tuple(candidates)
 
 

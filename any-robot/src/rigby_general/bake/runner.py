@@ -28,6 +28,7 @@ from ..config import base_tree_fingerprint
 from ..contracts import RobotAssetManifestV1
 from ..errors import GeneralFailureCode, GroundingError, RigbyGeneralError
 from ..gates import GatePolicy, certify
+from ..gates.certify import GateCode
 from ..grounding import ground
 from ..primitives.library import (
     BakeStage,
@@ -211,7 +212,25 @@ def _attempt_once(
             grounded.program, model, manifest, sample_hz=SAMPLE_HZ
         )
     except MotionCompilationError as error:
-        return failed(BakeStage.COMPILATION, error.reason.value, str(error))
+        # A compile-time velocity refusal is the same statement the certification
+        # gate makes, only earlier: this motion was asked to run faster than the
+        # joint can. It carries the measured rate and the limit, so it can be
+        # retried at a corrected pace like any other -- which it could not be
+        # while only certification failures were treated as pace failures.
+        details = getattr(error, "details", None) or {}
+        measurements = {}
+        if "velocity" in details and "limit" in details:
+            measurements = {
+                "measured": abs(float(details["velocity"])),
+                "limit": abs(float(details["limit"])),
+            }
+        return failed(
+            BakeStage.COMPILATION,
+            error.reason.value,
+            str(error),
+            gate=GateCode.VELOCITY_LIMIT.value if measurements else None,
+            measurements=measurements,
+        )
     except (ValueError, KeyError) as error:
         return failed(BakeStage.COMPILATION, "invalid_contract", str(error))
 

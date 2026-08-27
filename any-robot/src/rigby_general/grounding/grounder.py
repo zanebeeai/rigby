@@ -42,6 +42,7 @@ from ..contracts import (
 )
 from ..errors import GeneralFailureCode, GroundingError, RigbyGeneralError
 from ..schema.inventory import Requirement, SchemaInventory, capabilities_of
+from ..morphology import measure
 from ..schema.program import (
     BindingRole,
     BoundaryCondition,
@@ -54,6 +55,9 @@ from ..schema.program import (
     SchemaKind,
     SegmentV1,
     Stative,
+    Flexion,
+    MemberGroup,
+    PostureV1,
 )
 from . import ik, magnitudes
 from .workspace import WorkspaceFrame, build_workspace_frame
@@ -452,7 +456,181 @@ def _stative_waypoints(
     if stative is Stative.ORIENT:
         # Turning in place: the site stays put and the joints below it rotate.
         return [frame.home, frame.home]
+    if stative is Stative.CONFIGURE:
+        # The effector stays where it is and its own members move, which is
+        # carried on the keyframes rather than in the site path.
+        return [frame.home, frame.home]
     return [frame.home, frame.home]
+
+
+
+def _posture_targets(
+    posture: PostureV1,
+    manifest: RobotAssetManifestV1,
+    model: mujoco.MjModel,
+    chain_id: str,
+) -> dict[str, float]:
+    """The joint angles this posture means on this body.
+
+    Two resolutions happen here and both are measurements.
+
+    *Which members.* ``group`` picks a side of the opposition the morphology
+    measured, and ``selected_count`` takes that many from one end of the ordering
+    across the effector. Asking for more members than that side has is not
+    approximated -- a two-jaw gripper cannot put two fingers up and one down, and
+    saying so is the honest answer.
+
+    *How far.* ``extended`` and ``flexed`` are the ends of each member's own
+    measured range, so the same posture means 90 degrees on a knuckle and twelve
+    millimetres on a slide. Which end is which comes from the measured closure
+    direction, not from the sign convention of whoever wrote the URDF.
+    """
+
+    effector = next(
+        (item for item in manifest.morphology.effectors if item.chain_id == chain_id),
+        None,
+    )
+    if effector is None or len(effector.opposition_groups) < 2:
+        raise GroundingError(
+            f"{manifest.rig_id}: no effector on chain {chain_id!r} whose members "
+            f"were measured to oppose, so it has no posture to take",
+            schema_key="stative:configure",
+            measurement="morphology.opposition_groups",
+        )
+
+    opposed, opposing = effector.opposition_groups[0], effector.opposition_groups[1]
+    chosen = opposed if posture.group is MemberGroup.OPPOSED else opposing
+    others = opposing if posture.group is MemberGroup.OPPOSED else opposed
+
+    count = len(chosen) if posture.selected_count is None else posture.selected_count
+    if count > len(chosen):
+        raise GroundingError(
+            f"{manifest.rig_id}: the posture selects {count} of the "
+            f"{posture.group.value} members and this effector has {len(chosen)}",
+            schema_key="stative:configure",
+            measurement="posture.selected_count",
+        )
+
+    joints_by_member = dict(zip(effector.member_bodies, effector.member_joints))
+    extends_by_member = dict(
+        zip(effector.member_bodies, effector.member_extends_toward_upper)
+    )
+    assignment: list[tuple[str, tuple[str, ...], Flexion]] = []
+    for position, member in enumerate(chosen):
+        level = posture.selected if position < count else posture.remainder
+        assignment.append((member, joints_by_member.get(member, ()), level))
+    for member in others:
+        assignment.append((member, joints_by_member.get(member, ()), posture.opposing))
+
+    targets: dict[str, float] = {}
+    for member, joint_names, level in assignment:
+        if level is Flexion.FREE:
+            continue
+        # Which end extends *this* member, measured against the body it hangs
+        # off. Not the grip's closing direction: on the uHand those point
+        # opposite ways, and borrowing one for the other inverts the gesture.
+        extends_upper = extends_by_member.get(member, True)
+        for name in joint_names:
+            joint = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, name)
+            if joint < 0:  # pragma: no cover - the manifest names this model
+                continue
+            low, high = measure.joint_range(model, joint)
+            extended, flexed = (high, low) if extends_upper else (low, high)
+            standoff = measure.LIMIT_STANDOFF_FRACTION * abs(high - low)
+            edge = extended if level is Flexion.EXTENDED else flexed
+            inward = 1.0 if edge <= low else -1.0
+            targets[name] = float(edge + inward * standoff)
+    return targets
+
+
+
+
+def _posture_duration(
+    targets: dict[str, float],
+    rest_qpos: "np.ndarray",
+    model: mujoco.MjModel,
+    manifest: RobotAssetManifestV1,
+    speed_mps: float,
+    neutral_speed_mps: float,
+) -> float:
+    """How long the slowest member needs to get where the posture puts it.
+
+    A posture has no path length, so the usual duration is the floor -- and the
+    floor is far too short to cross a digit's whole range, which the compiler
+    correctly refuses as a velocity violation. The pace has to come from the
+    members instead: the largest excursion any joint is asked to make, divided by
+    the speed that joint is declared to have.
+
+    Manner still applies. A fast gesture and a slow one differ by the same ratio
+    they would on a path, because the ratio is what manner means; what changes is
+    only that the thing being scaled is a joint excursion rather than a distance.
+    """
+
+    limits = {joint.name: joint.velocity_limit for joint in manifest.morphology.joints}
+    needed = 0.0
+    for name, target in targets.items():
+        joint = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, name)
+        if joint < 0:  # pragma: no cover - the manifest names this model
+            continue
+        start = float(rest_qpos[int(model.jnt_qposadr[joint])])
+        speed = max(float(limits.get(name, 1.0)), 1e-6)
+        needed = max(needed, abs(target - start) / speed)
+
+    # The same fraction of the limit a path keeps, so a posture is no more
+    # aggressive than any other motion this system certifies.
+    pace = max(speed_mps, 1e-6) / max(neutral_speed_mps, 1e-6)
+    return float(needed / max(pace, 1e-6) / _POSTURE_VELOCITY_MARGIN)
+
+
+_POSTURE_VELOCITY_MARGIN = 0.22
+"""How much of a member's declared speed a posture is allowed to use on average.
+
+Two effects stack between the average and the peak, and only the first is
+obvious. The trajectory is smooth rather than constant-velocity, so a quintic
+already peaks at 1.875x its mean. The retimer then compresses parts of the
+segment again, and its derivative multiplies whatever the sampler found.
+
+Measured rather than derived, because the second factor depends on the phase
+structure and no formula here predicts it: on the uHand, a posture paced at a
+third of the limit peaked at 4.07 rad/s against a limit of 4.0 -- refused by
+under two percent, which is the most annoying way to be wrong. At 0.22 the same
+gesture peaks at 3.1 and every posture the hand can hold certifies on the first
+attempt, with the bake's pace retry left as a backstop rather than a crutch.
+"""
+
+
+def _apply_posture(
+    keyframes: "list[MotionKeyframeV2]",
+    targets: dict[str, float],
+    rest_qpos: "np.ndarray",
+    model: mujoco.MjModel,
+) -> "list[MotionKeyframeV2]":
+    """Carry the effector's members from where they are to where the posture says.
+
+    Only the two endpoints mention these joints. The compiler interpolates a
+    joint it sees at two keyframes and leaves alone one it never sees, so naming
+    them at the ends states the posture without also asserting a shape for the
+    middle that nothing measured.
+    """
+
+    if not targets or len(keyframes) < 2:
+        return keyframes
+
+    start: dict[str, float] = {}
+    for name in targets:
+        joint = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, name)
+        if joint >= 0:
+            start[name] = float(rest_qpos[int(model.jnt_qposadr[joint])])
+
+    first = keyframes[0]
+    last = keyframes[-1]
+    keyframes[0] = first.model_copy(
+        update={"joint_values": {**first.joint_values, **start}}
+    )
+    keyframes[-1] = last.model_copy(
+        update={"joint_values": {**last.joint_values, **targets}, "hard": True}
+    )
+    return keyframes
 
 
 def ground(
@@ -586,6 +764,15 @@ def ground(
         length = magnitudes.path_length([tuple(point) for point in dense])
         duration = magnitudes.duration_for_path(length, speed_mps=resolved.speed_mps)
 
+        # A posture travels nowhere, so the line above always hands it the floor.
+        # What it actually costs is whatever its slowest member needs.
+        posture_targets: dict[str, float] = {}
+        if segment.posture is not None:
+            posture_targets = _posture_targets(
+                segment.posture, manifest, model, binding.frame.chain_id
+            )
+
+
         keyframes, duration = _joint_keyframes(
             model,
             manifest,
@@ -596,6 +783,41 @@ def ground(
             resolved,
         )
         chain_id = binding.frame.chain_id
+        if segment.posture is not None:
+            keyframes = _apply_posture(
+                list(keyframes),
+                posture_targets,
+                np.asarray(manifest.rest_qpos, dtype=float),
+                model,
+            )
+            # Re-timed after the fact, because _joint_keyframes paces the segment
+            # from the joints it solved for -- and on a stative those barely move,
+            # so it hands back a duration far too short for the members that do.
+            # Scaled like every other duration, or the bake's pace retry has
+            # nothing to pull on: overriding the segment's duration with an
+            # unscaled one makes a posture the single motion that cannot be
+            # slowed down, which is exactly the one that most needs to be.
+            wanted = duration_scale * _posture_duration(
+                posture_targets,
+                np.asarray(manifest.rest_qpos, dtype=float),
+                model,
+                manifest,
+                resolved.speed_mps,
+                manifest.morphology.scale.neutral_speed_mps,
+            )
+            if wanted > duration > 0.0:
+                stretch = wanted / duration
+                keyframes = [
+                    frame.model_copy(
+                        update={
+                            "time_s": round(
+                                cursor + (frame.time_s - cursor) * stretch, 6
+                            )
+                        }
+                    )
+                    for frame in keyframes
+                ]
+                duration = wanted
         existing = keyframes_by_chain.setdefault(chain_id, [])
         owner_by_chain[chain_id] = binding.owner
         site_by_chain[chain_id] = binding.frame.figure_site
@@ -625,6 +847,7 @@ def ground(
         np.asarray(manifest.rest_qpos, dtype=float),
         model,
         manifest,
+        duration_scale,
     )
     if recovery is not None:
         phase, chain_id, extra = recovery
@@ -938,6 +1161,7 @@ def _recovery_keyframes(
     rest_qpos: np.ndarray,
     model,
     manifest: RobotAssetManifestV1,
+    duration_scale: float = 1.0,
 ) -> tuple[MotionPhaseV2, str, list[MotionKeyframeV2]] | None:
     """Retrace the outbound path back to rest.
 
@@ -978,22 +1202,37 @@ def _recovery_keyframes(
 
     limits = {dof.name: dof.velocity_limit for dof in manifest.dofs}
     spans: list[float] = []
-    previous = dict(frames[-1].joint_values)
+    # A joint a keyframe does not mention is unchanged, not zero. Reading the
+    # absence as a value of 0.0 made the return trip of anything that appears on
+    # only some keyframes invisible to the pacing -- which is every posture, since
+    # a posture states its members at the endpoints and nowhere between. The
+    # recovery was then timed for the joints that had barely moved and yanked the
+    # digits back across their whole range inside it.
+    state = dict(frames[-1].joint_values)
     for values in returning:
+        merged = {**state, **values}
         spans.append(
             max(
-                (abs(values.get(name, 0.0) - previous.get(name, 0.0)) for name in values),
+                (abs(merged[name] - state.get(name, merged[name])) for name in merged),
                 default=0.0,
             )
         )
-        previous = values
+        state = merged
     if sum(spans) < 1e-6:
         return None
 
     duration = 0.0
-    for span, values in zip(spans, returning):
-        slowest = min((limits.get(name, 1.0) for name in values), default=1.0)
+    moving = set(frames[-1].joint_values) | {name for values in returning for name in values}
+    for span in spans:
+        # Paced by the slowest joint that actually moves anywhere on this track,
+        # for the same reason: the per-keyframe subset understates who is moving.
+        slowest = min((limits.get(name, 1.0) for name in moving), default=1.0)
         duration += max(0.05, _VELOCITY_PEAK_FACTOR * span / max(slowest, 1e-3))
+    # Scaled with everything else. The return trip is as capable of being too
+    # fast as the outbound one, and while it alone ignored the scale a pace
+    # retry could not reach it -- every attempt re-measured the identical
+    # overshoot and the binding failed for a margin of under one percent.
+    duration *= max(duration_scale, 1e-6)
 
     total = sum(spans)
     extra: list[MotionKeyframeV2] = []

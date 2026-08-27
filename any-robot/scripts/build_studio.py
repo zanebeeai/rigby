@@ -82,6 +82,21 @@ PER_ROBOT_PROMPTS: dict[str, tuple[str, ...]] = {
     "uhand2": (
         "hold still",
         "turn your fingers to point up and hold there",
+        # Postures, which are the whole reason a hand is interesting. None of
+        # these names a digit: the planner reads a count and two poles, and the
+        # measured ordering across this hand decides which fingers that is.
+        "throw up a peace sign",
+        "make a fist",
+        "open your hand",
+        "thumbs up",
+    ),
+    # A 21 cm printed arm on four 9 g hobby servos -- half the reach of the
+    # smallest robot in the zoo. It gets the compact arm's own prompt verbatim,
+    # so the schema programs can be compared across a 10x span of body.
+    "eezybotarm_mk1": (
+        "trace a big circle",
+        "sweep slowly across in front of you",
+        "reach out quickly, just a little",
     ),
 }
 
@@ -95,6 +110,10 @@ REFUSAL_PROMPTS: tuple[tuple[str, str], ...] = (
     # asked for a path -- every path schema requires positioning and a hand has
     # none. The refusal names that rather than blaming the words.
     ("uhand2", "trace a big circle"),
+    # The same gesture on a body with one member a side. It is not unafforded --
+    # a two-jaw gripper has postures -- it simply cannot make this one, and the
+    # refusal says so with the count it measured rather than a shrug.
+    ("zoo_jaw_arm", "throw up a peace sign"),
 )
 
 
