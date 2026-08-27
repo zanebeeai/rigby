@@ -39,7 +39,6 @@ UNMIGRATED: dict[str, str] = {
     "signal.angular_acceleration_max_rad_s2": "config/motion_quality_reference.json hard_limits",
     "signal.angular_jerk_max_rad_s3": "config/motion_quality_reference.json hard_limits",
     "signal.min_active_hand_visibility_fraction": "config/motion_quality_reference.json hard_limits",
-    "anatomy.shoulder_origin_m": "src/rigby_poc/primitives.py shoulder_position -- 08d",
     "anatomy.upper_arm_length_m": "src/rigby_poc/primitives.py UPPER_ARM_LENGTH_M -- 08d",
     "anatomy.lower_arm_length_m": "src/rigby_poc/primitives.py LOWER_ARM_LENGTH_M -- 08d",
     "physics.min_lift_m": "acceptance_criteria.yaml physical_proof",
@@ -63,7 +62,14 @@ UNMIGRATED: dict[str, str] = {
 #: and `physics.ground.penetration` respectively. The foot-drift entry is the more
 #: pointed of the two: its ledger note said "the gate is vacuous until 08c measures
 #: it", and it was retired by being measured rather than by 08c.
-LEDGER_HIGH_WATER_MARK = 22
+#:
+#: 22 -> 21 in 08d. `anatomy.shoulder_origin_m` gains a production reader in
+#: `primitives.py shoulder_position`. Counted from the real module rather than by
+#: arithmetic on either branch's old constant: 10b and 08d were both written
+#: against a ledger of 24 and lowered it to 22 and 23, so neither figure survives
+#: both landing, and a ceiling above the real length is a ledger that cannot catch
+#: the next entry.
+LEDGER_HIGH_WATER_MARK = 21
 
 
 def _keys() -> set[str]:
