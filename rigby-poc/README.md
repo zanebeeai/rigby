@@ -1,5 +1,7 @@
 # Rigby
 
+The complete architecture, demos, pipeline contracts, setup, APIs, persistence model, verification strategy, limitations, and research links are documented in the [repository README](../README.md).
+
 Rigby v2 is the local-first MuJoCo implementation. It keeps the original GLB as the visual identity while executing and certifying motion on a separate articulated, free-root physical human. The previous POC remains available for migration and comparison; it is not positive context for v2 unless its result is re-simulated and independently certified.
 
 ## Local v2 setup
@@ -54,10 +56,44 @@ The model-backed planner and judge require an explicitly selected compatible mod
 
 ## Legacy POC
 
-The previous app still runs with `rigby-poc`. Import its archive as quarantined records with:
+The previous app still runs with `rigby-poc`, and its own setup and verification
+steps are below, unchanged. Import its archive as quarantined records with:
 
 ```powershell
 .\.venv\Scripts\python.exe scripts\v2\import_legacy_archive.py .\results --limit 10
 ```
 
 Remove `--limit` only after checking the canary import and available artifact storage.
+
+### Run the POC
+
+Requires Python 3.12, `uv`, Node.js 20.19+, npm, and Google Chrome.
+
+```powershell
+uv sync --extra dev
+Push-Location frontend
+npm ci
+npm run build
+Pop-Location
+uv run rigby-poc
+```
+
+Open [http://127.0.0.1:8000](http://127.0.0.1:8000), enter a prompt, and choose **Generate 5 & choose**. The studio displays planning, candidate compilation, deterministic checks, full-FOV capture, VLM judging, bounded repair, and final selection as they happen.
+
+Rigby reads `OPENAI_API_KEY` from this directory's `.env` or the repository-root `.env`. Neither file is committed. Use `provider: "offline"` for deterministic planner/compiler development without an OpenAI planning call.
+
+### Verify the POC
+
+```powershell
+uv run pytest -q
+Push-Location frontend
+npm test
+npm run build
+Pop-Location
+```
+
+The suite needs no server, no browser, no API key and no network. Every documented
+invocation, the tiering markers, and why coverage stays off the default run are in
+[docs/testing.md](docs/testing.md).
+
+See [docs/evaluation.md](docs/evaluation.md) for the model-backed autonomous release audit and [docs/vlm-flywheel.md](docs/vlm-flywheel.md) for the judge/repair contract.
