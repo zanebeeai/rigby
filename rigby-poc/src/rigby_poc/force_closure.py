@@ -138,6 +138,21 @@ _OPPOSITION_MAX_RAD = 0.75
 _SPLAY_MAX_RAD = 0.30
 
 
+#: Thumb opposition during the approach, measured rather than chosen.
+#:
+#: Swept over the whole approach against the block, the thumb's shafts clear it
+#: by 0.47 cm at -0.8 and 0.91 cm at +1.0, rising monotonically. That looks like
+#: clearance at every value until the capsules are accounted for: the thumb
+#: segments are 0.75 cm in radius, so a centre-line 0.69 cm out is already 0.6
+#: mm inside the surface. Guessing the retracted direction cost exactly that --
+#: the thumb's middle shaft struck the block at 11.7 N and it left at 0.68 m/s.
+#:
+#: Opposition is not what carries the thumb to the object anyway; curl is. Swept
+#: alone, curl moves the tip from 6.57 cm clear to 0.32 cm inside, so the thumb
+#: can sit at its clearest opposition throughout and still travel in.
+_APPROACH_OPPOSITION = 0.9
+
+
 def digit_rotations(
     hand: Hand, curls: dict[str, float], opposition: float
 ) -> dict[str, Quat]:
@@ -204,6 +219,15 @@ def close_until_contact(
         digit: float(np.clip(fist.curls[_STEM[digit]], 0.0, config.max_curl))
         for digit in DIGITS
     }
+    # The thumb is the exception, and it has to be. Swept over its own curl and
+    # opposition from a fixed wrist, the thumb tip travels from 6.57 cm clear of
+    # the block to 0.32 cm inside it -- but the authored FIST curl of 0.72 lands
+    # it at about 0.78 cm out, permanently short of touching. Held to that
+    # ceiling the thumb cannot oppose anything, whatever the fingers do, and the
+    # measured result was exactly that: fingers loaded, thumb at 0.0 N. It stops
+    # on contact like every other digit; what changes is that it is now allowed
+    # to travel far enough to find one.
+    ceilings["thumb"] = float(config.max_curl)
     grip_opposition = float(fist.thumb_opposition)
 
     segment_pairs = _hand_segment_pairs(hand)
@@ -217,19 +241,18 @@ def close_until_contact(
         bones = dict(frame.bones)
         # Opposition arrives with the closure, not before it. The thumb swings
         # across the palm as the hand shuts; starting there is what collided.
+        # Tied to the THUMB's travel, not the hand's mean. Opposition is the
+        # thumb swinging across the palm; averaging it over five digits meant
+        # the thumb's own position depended on how far the fingers had shut,
+        # which is backwards when the thumb is the one leading.
         progress = float(
-            np.clip(
-                np.mean(
-                    [s.curl / max(ceilings[d], 1e-6) for d, s in state.items()]
-                ),
-                0.0,
-                1.0,
-            )
+            np.clip(state["thumb"].curl / max(ceilings["thumb"], 1e-6), 0.0, 1.0)
         )
         rotations = digit_rotations(
             hand,
             {d: s.curl for d, s in state.items()},
-            open_opposition + (grip_opposition - open_opposition) * progress,
+            _APPROACH_OPPOSITION
+            + (grip_opposition - _APPROACH_OPPOSITION) * progress,
         )
         for name, rotation in rotations.items():
             bones[name] = BonePose(rotation=rotation)
@@ -274,6 +297,8 @@ def close_until_contact(
     start_z = float(data.xpos[block_body, 2])
     peak_z = start_z
     max_penetration = 0.0
+    fingers_released = False
+    released_at_s: float | None = None
     order: list[str] = []
     out_frames: list[ClipFrame] = []
     next_frame = 0
@@ -283,9 +308,33 @@ def close_until_contact(
         index = int(np.clip(np.searchsorted(times, now), 0, len(frames) - 1))
         frame = frames[index]
 
-        # Advance every unseated digit while inside the closure window.
+        # The thumb leads; the fingers follow once one of them feels the
+        # object. The hand does not close as a unit because the wrist cannot
+        # place it to: at FIST the four tip spans are 8.6/7.2/5.9/5.9 cm on a
+        # 6 cm block, so any single placement leaves some fingers short and
+        # drives others through the far face. Closing them together commanded
+        # the ring finger 1.57 cm inside the block, and MuJoCo resolved that
+        # interpenetration the only way it can -- it threw the block 10.85 cm
+        # across the table before a grip existed.
+        #
+        # So the wrist places the cage, the thumb travels in to meet it, and the
+        # fingers shut on what the thumb has pressed against them. Each digit
+        # still stops on its own measured load; nothing is commanded to a pose.
         if close_window_s[0] <= now <= close_window_s[1]:
-            for digit, digit_state in state.items():
+            if not fingers_released:
+                # Release on a finger feeling the object, on the thumb seating,
+                # or on the thumb running out of travel -- the last so a thumb
+                # that finds nothing cannot freeze the whole hand open.
+                touched = any(
+                    state[d].peak_force_n >= config.opposition_force_n
+                    for d in DIGITS[1:]
+                )
+                if touched or state["thumb"].seated or state["thumb"].curl >= ceilings["thumb"] - 1e-6:
+                    fingers_released = True
+                    released_at_s = now
+            advancing = DIGITS if fingers_released else ("thumb",)
+            for digit in advancing:
+                digit_state = state[digit]
                 if not digit_state.seated:
                     digit_state.curl = min(
                         ceilings[digit], digit_state.curl + config.curl_rate_per_s * dt

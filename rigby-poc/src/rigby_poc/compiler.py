@@ -437,6 +437,21 @@ def _app_quaternion_from_mj(wxyz: list[float]) -> Quat:
     return Quat(x=float(xyzw[0]), y=float(xyzw[1]), z=float(xyzw[2]), w=float(xyzw[3]))
 
 
+def _phase_window(
+    phase_ranges: list[dict[str, float | str]], kind: str
+) -> tuple[float, float]:
+    """Start and end of a named phase, or the whole clip if it has none."""
+    for entry in phase_ranges:
+        if entry.get("kind") == kind:
+            return float(entry["start_s"]), float(entry["end_s"])
+    if not phase_ranges:
+        return (0.0, 0.0)
+    return (
+        float(phase_ranges[0]["start_s"]),
+        float(phase_ranges[-1]["end_s"]),
+    )
+
+
 def _embodied_physics_for(
     program: MotionProgram,
     scene: SceneManifest,
@@ -5733,15 +5748,31 @@ def compile_motion(request: CompileRequest) -> ClipResult:
         elapsed += phase_duration_s
 
     if program.intent == Intent.GRAB and target_object is not None:
-        # Force-controlled closure is NOT wired in. It is implemented in
-        # rigby_poc.force_closure and measurably worse here than the authored
-        # shape, for a reason worth recording: it seats a digit on first contact
-        # and holds it there, and the approach places the thumb already touching
-        # the block, so the thumb froze at its opening curl carrying 72 N while
-        # all four fingers closed past it and reported 0.0 N. Seating cannot be
-        # reconciled with the aperture plan until the approach is genuinely
-        # clear; the clearance margin added to the planner reduced the collision
-        # (163 N -> 72 N) without removing it.
+        # The digits close on measured load rather than to an authored shape.
+        #
+        # This was previously disabled because it made grasping worse, and the
+        # reason was upstream of the closure: the approach drove the palm into
+        # the block, and the hand knocked it 9.07 cm across the table during the
+        # contact phase, before a single finger had moved. Everything after that
+        # was a hand closing on empty space -- including the aperture's own
+        # report of four opposition pairs, which was measured against the
+        # block's authored pose rather than the one the simulation had put it
+        # in. With the palm now checked by the plan, the same closure seats all
+        # five digits on contact and reports opposition.
+        #
+        # Authoring the curls cannot replace this. At FIST the four tip spans
+        # are 8.6/7.2/5.9/5.9 cm on a 6 cm block, so one shape necessarily
+        # leaves some digits short of the object and commands others through it,
+        # and MuJoCo answers a commanded interpenetration by ejecting the block.
+        closure = close_until_contact(
+            target_object,
+            program.hand,
+            frames,
+            close_window_s=_phase_window(phase_ranges, "close"),
+            support_height_m=scene.support_height_m,
+        )
+        if closure.frames:
+            frames = closure.frames
         physics = _embodied_physics_for(program, scene, frames, phase_ranges)
         frames = [
             frame.model_copy(

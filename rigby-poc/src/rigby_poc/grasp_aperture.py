@@ -34,6 +34,7 @@ because improving one digit routinely made another worse.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from functools import lru_cache
 from typing import Any
 
 import numpy as np
@@ -119,6 +120,66 @@ class ApertureQuad:
             "base_span_m": self.base_span_m,
             "area_m2": self.area_m2,
         }
+
+
+#: A digit centre-line rests this far outside the surface when the digit touches
+#: it: the physics capsules are 6.5-7.5 mm in radius, so a tip *at* the surface
+#: is already pressed into it by its own thickness.
+_CONTACT_STANDOFF_M = 0.005
+
+#: Beyond this from the contact standoff a tip is neither touching nor about to.
+_SEATING_TOLERANCE_M = 0.018
+
+
+def _seating(distance: float | np.ndarray) -> float:
+    """1.0 when a tip rests on the surface, falling to 0 as it hovers or buries.
+
+    Symmetric on purpose. Hovering means no force and burying means the digit
+    was already inside before it closed, and both produce the same failure --
+    nothing to press against.
+    """
+    error = abs(float(distance) - _CONTACT_STANDOFF_M)
+    return float(max(0.0, 1.0 - error / _SEATING_TOLERANCE_M))
+
+
+def _palm_samples(pose: dict[str, BonePose], side: str) -> np.ndarray:
+    """Points filling the palm box, in world space.
+
+    The palm was the one part of the hand the plan never looked at, and it is
+    the largest: 8.9 x 12.7 x 2.4 cm against a 6 cm block. Unchecked, the chosen
+    placement buried it in the object, and the simulation duly knocked the block
+    9.07 cm across the table during the approach -- before a single finger had
+    closed. Every grasp measured after that moment was measured against a block
+    that was no longer there.
+
+    Geometry is taken from ``physics`` rather than restated here. The two
+    disagreeing is the entire failure mode this guards against, so they read
+    from one definition. The import is deferred because ``physics`` pulls in
+    MuJoCo and planning must stay importable without it.
+    """
+    from .models import Hand
+    from .physics import _frame_hand_landmarks, _palm_transform
+    from .models import ClipFrame
+
+    hand = Hand.LEFT if side == "left" else Hand.RIGHT
+    landmarks = _frame_hand_landmarks(
+        ClipFrame(time_s=0.0, bones=pose, objects={}), hand
+    )
+    centre, rotation = _palm_transform(landmarks, hand)
+    across = float(
+        np.linalg.norm(
+            landmarks[f"{side}IndexProximal"] - landmarks[f"{side}LittleProximal"]
+        )
+    )
+    along = float(
+        np.linalg.norm(landmarks[f"{side}MiddleProximal"] - landmarks[f"{side}Hand"])
+    )
+    half = np.asarray(
+        [max(0.025, across * 0.55), max(0.028, along * 0.58), 0.012], dtype=float
+    )
+    axis = np.linspace(-1.0, 1.0, 3)
+    grid = np.array([[x, y, z] for x in axis for y in axis for z in axis])
+    return (grid * half) @ rotation.T + centre
 
 
 def aperture_quads(bones: dict[str, BonePose], hand: str) -> dict[str, ApertureQuad]:
@@ -298,7 +359,57 @@ class GraspPlan:
         }
 
 
+@lru_cache(maxsize=64)
+def _cached_plan(signature: tuple, hand: Any, shoulder_key: tuple) -> "GraspPlan":
+    """Memoised by the only things the search actually depends on.
+
+    The plan is a function of the object's pose and size, the hand, and the
+    shoulder it hangs from -- not of the primitive being compiled. Recomputing
+    it per compile put a 17 s search inside every grab in the corpus, which took
+    the suite from minutes to over an hour.
+    """
+    item, base_pose, shoulder = _PLAN_INPUTS[signature]
+    return _plan_grasp_pose(base_pose, hand, item, shoulder)
+
+
+#: Non-hashable arguments, held by the signature the cache is keyed on.
+_PLAN_INPUTS: dict[tuple, Any] = {}
+
+
 def plan_grasp_pose(
+    base_pose: dict[str, BonePose],
+    hand: Any,
+    item: SceneObject,
+    shoulder: Any,
+    **kwargs: Any,
+) -> "GraspPlan":
+    """Cached entry point. See :func:`_plan_grasp_pose` for the search itself."""
+    if kwargs:
+        return _plan_grasp_pose(base_pose, hand, item, shoulder, **kwargs)
+    translation = item.transform.translation
+    rotation = item.transform.rotation
+    # The base pose is part of the key: it is the posture the arm solution is
+    # measured against, so two rigs (or two rest postures) must not share a plan.
+    posture = tuple(
+        sorted(
+            (name, pose.rotation.x, pose.rotation.y, pose.rotation.z, pose.rotation.w)
+            for name, pose in base_pose.items()
+        )
+    )
+    signature = (
+        item.id,
+        hash(posture),
+        (translation.x, translation.y, translation.z),
+        (rotation.x, rotation.y, rotation.z, rotation.w),
+        (item.dimensions_m.x, item.dimensions_m.y, item.dimensions_m.z),
+        hand.value,
+        (shoulder.x, shoulder.y, shoulder.z),
+    )
+    _PLAN_INPUTS[signature] = (item, base_pose, shoulder)
+    return _cached_plan(signature, hand, (shoulder.x, shoulder.y, shoulder.z))
+
+
+def _plan_grasp_pose(
     base_pose: dict[str, BonePose],
     hand: Any,
     item: SceneObject,
@@ -351,6 +462,26 @@ def plan_grasp_pose(
         pose.update(
             {k: BonePose(rotation=v) for k, v in hand_pose(hand, shape, neutral).items()}
         )
+        if shape is HandShape.OPEN:
+            # The approach must be cleared in the pose the hand actually flies,
+            # which is the closure's, not ``hand_pose(OPEN)``. Those differ in
+            # the thumb -- 0.18 opposition against 0.9 -- and the difference is
+            # the whole width of the thumb's swing. Clearing a pose the hand
+            # never adopts is not clearing anything: the plan reported the
+            # corridor free while the thumb's shafts struck the block.
+            from .force_closure import _APPROACH_OPPOSITION, digit_rotations
+
+            pose.update(
+                {
+                    k: BonePose(rotation=v)
+                    for k, v in digit_rotations(
+                        hand,
+                        {d: 0.02 for d in ("thumb", "index", "middle", "ring", "little")},
+                        _APPROACH_OPPOSITION,
+                    ).items()
+                    if "Thumb" in k
+                }
+            )
         return pose
 
     # Each shape's four quads, in the hand bone's frame, measured once. The
@@ -358,6 +489,7 @@ def plan_grasp_pose(
     # points rather than a fresh forward-kinematics pass.
     reference_target = centre + np.asarray([-0.10, 0.0, -0.10])
     local: dict[Any, dict[str, np.ndarray]] = {}
+    palm_local: dict[Any, np.ndarray] = {}
     for shape in shapes:
         pose = arm_pose(reference_target, shape)
         rotation = kinematics.canonical_world_rotation(pose, f"{side}Hand")
@@ -366,6 +498,7 @@ def plan_grasp_pose(
             name: (quad.corners - origin) @ rotation
             for name, quad in aperture_quads(pose, side).items()
         }
+        palm_local[shape] = (_palm_samples(pose, side) - origin) @ rotation
 
     # Two resolutions. The coarse pass only has to find the right region, and
     # spending the full 75-angle set on every one of 180 positions was most of a
@@ -396,6 +529,7 @@ def plan_grasp_pose(
     def measure(shape, world, origin, samples: int):
         held, covered, quads = 0, [], {}
         pierced = 0
+        seating: list[tuple[float, float]] = []
         for name, corners in local[shape].items():
             placed = corners @ world.T + origin
             quad = ApertureQuad(*[placed[i] for i in range(4)])
@@ -422,8 +556,27 @@ def plan_grasp_pose(
                 np.vstack([thumb_line, finger_line]), item
             )
             pierced += int(np.count_nonzero(clearance < _APPROACH_MARGIN_M))
+            seating.append(
+                (
+                    _seating(_box_distance(quad.thumb_tip, item)),
+                    _seating(_box_distance(quad.finger_tip, item)),
+                )
+            )
             quads[name] = quad
-        return held, float(np.mean(covered)), quads, pierced
+        palm = palm_local[shape] @ world.T + origin
+        palm_pierced = int(
+            np.count_nonzero(_box_distance(palm, item) < _APPROACH_MARGIN_M)
+        )
+        thumb_seat = float(np.mean([t for t, _f in seating])) if seating else 0.0
+        finger_seat = float(np.mean([f for _t, f in seating])) if seating else 0.0
+        return (
+            held,
+            float(np.mean(covered)),
+            quads,
+            pierced,
+            (thumb_seat, finger_seat),
+            palm_pierced,
+        )
 
     def best_at(offset: np.ndarray, angles=None, samples: int | None = None):
         nonlocal evaluations
@@ -443,16 +596,62 @@ def plan_grasp_pose(
             evaluations += 1
             open_rotation, open_origin = frames[HandShape.OPEN]
             closed_rotation, closed_origin = frames[HandShape.FIST]
-            _open_held, open_covered, _open_quads, open_pierced = measure(
+            (
+                _open_held, open_covered, _open_quads, open_pierced,
+                _open_seat, open_palm,
+            ) = measure(
                 HandShape.OPEN, open_rotation @ delta, open_origin, samples
             )
-            held, covered, quads, _closed_pierced = measure(
-                HandShape.FIST, closed_rotation @ delta, closed_origin, samples
-            )
+            (
+                held, covered, quads, _closed_pierced,
+                (thumb_seat, finger_seat), closed_palm,
+            ) = measure(HandShape.FIST, closed_rotation @ delta, closed_origin, samples)
             # The open hand is the approach pose, so it must be clear. The
             # closed hand is allowed to be inside the object -- that is what
             # gripping it means.
-            score = held + covered + 0.25 * open_covered - 0.5 * open_pierced
+            #
+            # Seating is weighted separately from containment because the two
+            # come apart, and measurably did: the placement chosen without it
+            # reported four opposition pairs while the thumb tip hovered 1.19 cm
+            # off the block on every one of them and the ring and little fingers
+            # were driven 1.6-2.0 cm through the far face. Every pair was
+            # one-sided. Containment asks whether the object lies between the
+            # tips; only seating asks whether the tips are on it, which is the
+            # difference between a cage and a grip.
+            #
+            # The FINGERS decide the placement, not the thumb. One wrist cannot
+            # seat both: at FIST the four tip spans are 8.6/7.2/5.9/5.9 cm on a
+            # 6 cm block, so a wrist moved to bring the thumb in drives the ring
+            # and little fingers through the far face, and one moved to spare
+            # them leaves the thumb in free air. The thumb does not need the
+            # wrist's help -- swept over its own curl and opposition from a
+            # fixed wrist it travels from 6.57 cm clear to 0.32 cm buried, which
+            # is the whole block and then some. So the wrist places the cage and
+            # the thumb travels to it, which is also how a hand does it.
+            #
+            # The thumb's own seating stays in the score at a low weight as a
+            # tiebreak, to prefer placements it reaches comfortably. What keeps
+            # the thumb on the far side at all is ``held`` -- containment is
+            # measured tip to tip, so a placement with the thumb on the fingers'
+            # side scores no pairs.
+            score = (
+                held
+                + covered
+                + 0.25 * thumb_seat
+                + 1.0 * finger_seat
+                + 0.25 * open_covered
+                # Weighted to dominate, not to trade. At 0.5 a placement could
+                # buy an extra tenth of coverage by giving up the corridor, and
+                # it did: the winner left the thumb 1.6 mm of margin against a
+                # 2 mm mean tracking error, so the shaft struck the block on the
+                # way in and the grasp was decided before it began.
+                - 3.0 * open_pierced
+                # The palm is checked on both shapes and weighted to dominate.
+                # A grasp whose palm is inside the object is not a grasp that
+                # squeezes it, it is a shove, and the object is gone before the
+                # fingers arrive. No amount of coverage compensates.
+                - 2.0 * (open_palm + closed_palm)
+            )
             if score > found[0]:
                 found = (score, wrist, quads, (held, covered))
         return found
