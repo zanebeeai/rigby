@@ -42,7 +42,12 @@ def main() -> int:
             failures += 0 if status == "ok" else 1
             print(f"{status:<8} {path.name}")
         else:
-            sidecar.write_text(f"{digest}  {path.name}\n", encoding="ascii")
+            # Bytes, not text. ``write_text`` translates the newline on
+            # Windows, so re-sealing there writes a CRLF sidecar and puts back
+            # the exact platform split this seal was just fixed for. The file
+            # is pinned -text in .gitattributes, so whatever is written here is
+            # what gets committed.
+            sidecar.write_bytes(f"{digest}  {path.name}\n".encode("ascii"))
             print(f"sealed {path.name}  {digest[:16]}...")
     return 1 if failures else 0
 
