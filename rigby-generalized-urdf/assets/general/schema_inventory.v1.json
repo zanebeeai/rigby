@@ -1,0 +1,383 @@
+{
+  "binding_note": "Each entry names its Figure and Ground roles. A path schema alone does not identify a motion: 'reach to a point' and 'hand it across' share the very same Path and differ only in what the Figure is located against. That is Talmy's decomposition taken literally, and it is why the retrieval key is schema plus roles rather than schema alone.",
+  "boundary_conditions": [
+    "contact_made",
+    "contact_broken",
+    "direction_reversed",
+    "orientation_set",
+    "dwell",
+    "terminus"
+  ],
+  "inventory_id": "rigby-general-schema-inventory-v1",
+  "manner_axes": [
+    {
+      "gloss": "how fast, relative to this robot's own comfortable pace",
+      "name": "speed"
+    },
+    {
+      "gloss": "how forcefully",
+      "name": "effort"
+    },
+    {
+      "gloss": "how evenly the motion is paced",
+      "name": "smoothness"
+    },
+    {
+      "gloss": "steady, accelerating, or pulsed",
+      "name": "rhythm"
+    },
+    {
+      "gloss": "how large, relative to this robot's own reach",
+      "name": "amplitude"
+    },
+    {
+      "gloss": "how many times over, as an ordinal",
+      "name": "repetition"
+    },
+    {
+      "gloss": "how exactly the endpoints must be hit",
+      "name": "precision"
+    }
+  ],
+  "note": "The closed class. Nothing here names a robot, a joint, a link, or a unit. A robot is admitted to a schema by the capability it was measured to have, never by what it is called.",
+  "path_schemas": [
+    {
+      "conformation": "point",
+      "contour": "straight",
+      "deixis": "neutral",
+      "figure": "primary_effector",
+      "gloss": "move the effector to a point",
+      "ground": "base",
+      "id": "reach_to_point",
+      "requires": [
+        "positioning"
+      ],
+      "vector": "to"
+    },
+    {
+      "conformation": "point",
+      "contour": "arced",
+      "deixis": "neutral",
+      "figure": "primary_effector",
+      "gloss": "move to a point over an arc rather than straight through",
+      "ground": "base",
+      "id": "swing_to_point",
+      "requires": [
+        "positioning"
+      ],
+      "vector": "to"
+    },
+    {
+      "conformation": "surface",
+      "contour": "straight",
+      "deixis": "neutral",
+      "figure": "primary_effector",
+      "gloss": "come down onto a work surface",
+      "ground": "world_ground",
+      "id": "descend_to_surface",
+      "requires": [
+        "positioning"
+      ],
+      "vector": "to"
+    },
+    {
+      "conformation": "surface",
+      "contour": "arced",
+      "deixis": "neutral",
+      "figure": "primary_effector",
+      "gloss": "come down onto a work surface over an arc",
+      "ground": "world_ground",
+      "id": "arc_to_surface",
+      "requires": [
+        "positioning"
+      ],
+      "vector": "to"
+    },
+    {
+      "conformation": "volume",
+      "contour": "straight",
+      "deixis": "neutral",
+      "figure": "primary_effector",
+      "gloss": "move into a region of the workspace",
+      "ground": "base",
+      "id": "enter_volume",
+      "requires": [
+        "positioning"
+      ],
+      "vector": "to"
+    },
+    {
+      "conformation": "boundary",
+      "contour": "straight",
+      "deixis": "neutral",
+      "figure": "primary_effector",
+      "gloss": "extend to the edge of what the robot can reach",
+      "ground": "base",
+      "id": "reach_to_edge",
+      "requires": [
+        "positioning"
+      ],
+      "vector": "to"
+    },
+    {
+      "conformation": "point",
+      "contour": "straight",
+      "deixis": "neutral",
+      "figure": "primary_effector",
+      "gloss": "withdraw from a point",
+      "ground": "base",
+      "id": "retract_from_point",
+      "requires": [
+        "positioning"
+      ],
+      "vector": "from"
+    },
+    {
+      "conformation": "surface",
+      "contour": "straight",
+      "deixis": "neutral",
+      "figure": "primary_effector",
+      "gloss": "lift off a work surface",
+      "ground": "world_ground",
+      "id": "retract_from_surface",
+      "requires": [
+        "positioning"
+      ],
+      "vector": "from"
+    },
+    {
+      "conformation": "point",
+      "contour": "straight",
+      "deixis": "neutral",
+      "figure": "primary_effector",
+      "gloss": "increase separation from a reference without a destination",
+      "ground": "base",
+      "id": "move_away",
+      "requires": [
+        "positioning"
+      ],
+      "vector": "away"
+    },
+    {
+      "conformation": "point",
+      "contour": "straight",
+      "deixis": "neutral",
+      "figure": "primary_effector",
+      "gloss": "close on a reference without arriving",
+      "ground": "base",
+      "id": "move_toward",
+      "requires": [
+        "positioning"
+      ],
+      "vector": "toward"
+    },
+    {
+      "conformation": "line",
+      "contour": "straight",
+      "deixis": "neutral",
+      "figure": "primary_effector",
+      "gloss": "sweep along a straight line across the workspace",
+      "ground": "base",
+      "id": "traverse_line",
+      "requires": [
+        "positioning"
+      ],
+      "vector": "via"
+    },
+    {
+      "conformation": "line",
+      "contour": "arced",
+      "deixis": "neutral",
+      "figure": "primary_effector",
+      "gloss": "sweep across the workspace over an arc",
+      "ground": "base",
+      "id": "traverse_line_arced",
+      "requires": [
+        "positioning"
+      ],
+      "vector": "via"
+    },
+    {
+      "conformation": "axis",
+      "contour": "circular",
+      "deixis": "neutral",
+      "figure": "primary_effector",
+      "gloss": "trace a circle about an axis",
+      "ground": "gravity_axis",
+      "id": "circle_axis",
+      "requires": [
+        "positioning"
+      ],
+      "vector": "via"
+    },
+    {
+      "conformation": "point",
+      "contour": "oscillating",
+      "deixis": "neutral",
+      "figure": "primary_effector",
+      "gloss": "swing back and forth about a point, with explicit reversals",
+      "ground": "base",
+      "id": "oscillate_about_point",
+      "requires": [
+        "positioning"
+      ],
+      "vector": "via"
+    },
+    {
+      "conformation": "line",
+      "contour": "oscillating",
+      "deixis": "neutral",
+      "figure": "primary_effector",
+      "gloss": "shuttle back and forth along a line",
+      "ground": "base",
+      "id": "oscillate_along_line",
+      "requires": [
+        "positioning"
+      ],
+      "vector": "via"
+    },
+    {
+      "conformation": "point",
+      "contour": "arced",
+      "deixis": "neutral",
+      "figure": "primary_effector",
+      "gloss": "route through a waypoint on the way somewhere",
+      "ground": "base",
+      "id": "pass_through_point",
+      "requires": [
+        "positioning"
+      ],
+      "vector": "via"
+    },
+    {
+      "conformation": "point",
+      "contour": "arced",
+      "deixis": "hither",
+      "figure": "primary_effector",
+      "gloss": "bring something toward the robot's own front, as in beckoning",
+      "ground": "front_axis",
+      "id": "draw_hither",
+      "requires": [
+        "positioning",
+        "confirmed_frame"
+      ],
+      "vector": "toward"
+    },
+    {
+      "conformation": "point",
+      "contour": "straight",
+      "deixis": "thither",
+      "figure": "primary_effector",
+      "gloss": "send something away from the robot's own front",
+      "ground": "front_axis",
+      "id": "push_thither",
+      "requires": [
+        "positioning",
+        "confirmed_frame"
+      ],
+      "vector": "away"
+    },
+    {
+      "conformation": "surface",
+      "contour": "arced",
+      "deixis": "neutral",
+      "figure": "primary_effector",
+      "gloss": "close on an object until the effector touches it",
+      "ground": "target_object",
+      "id": "approach_to_contact",
+      "requires": [
+        "positioning",
+        "contact_scene"
+      ],
+      "vector": "to"
+    },
+    {
+      "conformation": "point",
+      "contour": "arced",
+      "deixis": "neutral",
+      "figure": "primary_effector",
+      "gloss": "carry a held object to a destination",
+      "ground": "target_object",
+      "id": "transport_object",
+      "requires": [
+        "positioning",
+        "grasping_effector",
+        "contact_scene"
+      ],
+      "vector": "to"
+    },
+    {
+      "conformation": "point",
+      "contour": "straight",
+      "deixis": "neutral",
+      "figure": "primary_effector",
+      "gloss": "bring one effector to meet the other, as in a handover",
+      "ground": "secondary_effector",
+      "id": "hand_across",
+      "requires": [
+        "positioning",
+        "two_grasping_effectors"
+      ],
+      "vector": "to"
+    },
+    {
+      "conformation": "point",
+      "contour": "straight",
+      "deixis": "neutral",
+      "figure": "sensor",
+      "gloss": "aim a sensor at a place",
+      "ground": "base",
+      "id": "track_with_gaze",
+      "requires": [
+        "positioning",
+        "sensor"
+      ],
+      "vector": "toward"
+    }
+  ],
+  "remove_fraction_note": "Fractions of this robot's measured reach radius. This single table is what makes one program serve a 0.39 m desktop arm and a 2.0 m long-reach arm: 'distal' is far for whichever body is asked.",
+  "remove_fractions": {
+    "adjacent": 0.1,
+    "coincident": 0.0,
+    "distal": 0.84,
+    "medial": 0.58,
+    "proximal": 0.32
+  },
+  "requirements": {
+    "confirmed_frame": "A person has confirmed which way the robot faces. Deixis is meaningless without it, and a guessed front renders a confidently backwards motion.",
+    "contact_scene": "A scene object the effector can act on.",
+    "grasping_effector": "At least one effector whose members were measured to converge.",
+    "positioning": "At least two independent axes that place the effector. Every path schema needs it; no stative does.",
+    "sensor": "A gaze source.",
+    "two_grasping_effectors": "Two such effectors, so one can act relative to the other."
+  },
+  "schema_version": "1.0",
+  "statives": [
+    {
+      "figure": "primary_effector",
+      "gloss": "turn the effector to an attitude without carrying it anywhere",
+      "ground": "base",
+      "id": "orient_effector",
+      "requires": [],
+      "stative": "orient"
+    },
+    {
+      "figure": "primary_effector",
+      "gloss": "stay where it is; Talmy's located-ness rather than motion",
+      "ground": "base",
+      "id": "hold_still",
+      "requires": [],
+      "stative": "hold"
+    },
+    {
+      "figure": "primary_effector",
+      "gloss": "bear on something already in contact",
+      "ground": "target_object",
+      "id": "press",
+      "requires": [
+        "contact_scene"
+      ],
+      "stative": "apply_force"
+    }
+  ]
+}
