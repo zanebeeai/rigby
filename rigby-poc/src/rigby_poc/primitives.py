@@ -6,9 +6,29 @@ from dataclasses import dataclass
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from .models import Digit, Hand, HandShape, PrimitiveKind, PrimitiveParameters, Quat, StrikeType, Vec3
+from .arm_plane import (
+    ELBOW_FLEXION_AXIS_LOCAL,
+    UPPER_ARM_TWIST_BAND_RAD,
+    bend_plane_normal,
+    forearm_roll_compensation,
+    humeral_roll,
+    roll_rotation,
+    twist_about_local_y,
+)
+from .arm_plane import (
+    signed_angle_about_axis as _signed_angle_about_axis,
+)
+from .models import (
+    Digit,
+    Hand,
+    HandShape,
+    PrimitiveKind,
+    PrimitiveParameters,
+    Quat,
+    StrikeType,
+    Vec3,
+)
 from .thresholds import value_of
-
 
 FINGERS = ("Thumb", "Index", "Middle", "Ring", "Little")
 SEGMENTS = {
@@ -166,22 +186,6 @@ def _rotation_between(source: np.ndarray, target: np.ndarray) -> Rotation:
     return Rotation.from_rotvec(cross / cross_norm * math.acos(dot))
 
 
-def _signed_angle_about_axis(source: np.ndarray, target: np.ndarray, axis: np.ndarray) -> float:
-    """Return the signed projected angle from source to target about axis."""
-    axis = axis / max(float(np.linalg.norm(axis)), 1e-8)
-    source = source - axis * float(np.dot(source, axis))
-    target = target - axis * float(np.dot(target, axis))
-    source_norm = float(np.linalg.norm(source))
-    target_norm = float(np.linalg.norm(target))
-    if source_norm < 1e-8 or target_norm < 1e-8:
-        return 0.0
-    source /= source_norm
-    target /= target_norm
-    sine = float(np.dot(axis, np.cross(source, target)))
-    cosine = float(np.clip(np.dot(source, target), -1.0, 1.0))
-    return math.atan2(sine, cosine)
-
-
 def _quat_from_rotation(rotation: Rotation) -> Quat:
     xyzw = rotation.as_quat()
     return Quat(x=float(xyzw[0]), y=float(xyzw[1]), z=float(xyzw[2]), w=float(xyzw[3]))
@@ -270,6 +274,24 @@ def thumb_to_fingertip_pose(
     return result
 
 
+@dataclass(frozen=True)
+class _ArmSolution:
+    """One hinge-in-plane arm solution plus the measurables that select it."""
+
+    upper_delta: Rotation
+    lower_delta: Rotation
+    hand_delta: Rotation
+    presented_twist_rad: float
+    pronation_overflow_rad: float
+
+    @property
+    def violates(self) -> bool:
+        return (
+            abs(self.presented_twist_rad) > UPPER_ARM_TWIST_BAND_RAD
+            or self.pronation_overflow_rad > 1e-9
+        )
+
+
 def arm_pose_from_target(
     hand: Hand,
     shoulder: Vec3,
@@ -279,8 +301,17 @@ def arm_pose_from_target(
     present_hand: bool = False,
     forearm_twist_reserve_rad: float = 0.0,
     elbow_hint: Vec3 | None = None,
+    elbow_hint_weight: float = 1.0,
+    elbow_pole: Vec3 | None = None,
 ) -> tuple[dict[str, Quat], float]:
-    """Calibrated analytic two-link IK returned as rest-relative local deltas."""
+    """Calibrated analytic two-link IK returned as rest-relative local deltas.
+
+    ``elbow_hint`` pins the elbow near a world position; ``elbow_hint_weight``
+    lets a caller blending a target toward that hint carry the *bend plane*
+    across the same blend window, so the plane never has to reorient faster
+    than the target it follows.  ``elbow_pole`` replaces the default pole
+    vector for callers whose motion family has a known better elbow side.
+    """
     shoulder_v = np.asarray(shoulder.as_list(), dtype=float)
     target_v = np.asarray(target.as_list(), dtype=float)
     delta = target_v - shoulder_v
@@ -291,93 +322,185 @@ def arm_pose_from_target(
     along = (upper**2 - lower**2 + clamped**2) / (2 * clamped)
     bend_height = math.sqrt(max(upper**2 - along**2, 0.0))
     side = 1.0 if hand == Hand.LEFT else -1.0
-    if elbow_hint is None:
-        pole = np.asarray([side, -0.55, 0.25], dtype=float)
+    hint_weight = float(np.clip(elbow_hint_weight, 0.0, 1.0))
+    use_hint = elbow_hint is not None and hint_weight > 0.0
+    if elbow_hint is None or hint_weight < 1.0:
+        pole = (
+            np.asarray(elbow_pole.as_list(), dtype=float)
+            if elbow_pole is not None
+            else np.asarray([side, -0.55, 0.25], dtype=float)
+        )
         bend = pole - direction * float(np.dot(pole, direction))
-    else:
-        line_point = shoulder_v + direction * along
-        hinted = np.asarray(elbow_hint.as_list(), dtype=float) - line_point
-        bend = hinted - direction * float(np.dot(hinted, direction))
-    if np.linalg.norm(bend) < 1e-8:
-        bend = np.cross(direction, np.asarray([0.0, 1.0, 0.0]))
-    bend /= np.linalg.norm(bend)
-    if elbow_hint is None:
+        if np.linalg.norm(bend) < 1e-8:
+            bend = np.cross(direction, np.asarray([0.0, 1.0, 0.0]))
+        bend /= np.linalg.norm(bend)
         bend = Rotation.from_rotvec(
             direction * parameters.elbow_swivel * 0.75
         ).apply(bend)
-    elbow = shoulder_v + direction * along + bend * bend_height
+    if elbow_hint is not None:
+        line_point = shoulder_v + direction * along
+        hinted = np.asarray(elbow_hint.as_list(), dtype=float) - line_point
+        hinted_bend = hinted - direction * float(np.dot(hinted, direction))
+        if np.linalg.norm(hinted_bend) < 1e-8:
+            hinted_bend = np.cross(direction, np.asarray([0.0, 1.0, 0.0]))
+        hinted_bend /= np.linalg.norm(hinted_bend)
+        if hint_weight >= 1.0:
+            bend = hinted_bend
+        elif use_hint:
+            # Rotate the pole's bend toward the hinted bend by the caller's
+            # blend fraction, about the reach axis both are perpendicular to.
+            bend = Rotation.from_rotvec(
+                direction
+                * (
+                    hint_weight
+                    * _signed_angle_about_axis(bend, hinted_bend, direction)
+                )
+            ).apply(bend)
 
-    upper_direction = (elbow - shoulder_v) / upper
-    lower_direction = (target_v - elbow) / lower
     rest_upper = Rotation.from_quat(_UPPER_ARM_REST_WORLD_XYZW[hand])
-    upper_alignment = _rotation_between(rest_upper.apply([0.0, 1.0, 0.0]), upper_direction)
-    desired_upper = upper_alignment * rest_upper
-    upper_delta = rest_upper.inv() * desired_upper
-
     lower_local_rest = Rotation.from_quat(_LOWER_ARM_REST_LOCAL_XYZW[hand])
-    lower_base_world = desired_upper * lower_local_rest
-    lower_alignment = _rotation_between(lower_base_world.apply([0.0, 1.0, 0.0]), lower_direction)
-    desired_lower = lower_alignment * lower_base_world
-    if present_hand:
-        # Rotate the whole forearm around its longitudinal axis so the palm is
-        # readable from the egocentric +Z view.  Wrist roll in natural human
-        # motion is primarily forearm pronation/supination; placing it here
-        # avoids the 90-176 degree hand-joint deltas produced by the old solve.
-        hand_rest = Rotation.from_quat(_HAND_REST_LOCAL_XYZW[hand])
-        neutral_hand_world = desired_lower * hand_rest
-        palm_back_world = neutral_hand_world.apply([0.0, 0.0, 1.0])
-        camera_facing_palm_back = np.asarray([0.0, 0.0, -1.0])
-        alignment_twist = _signed_angle_about_axis(
-            palm_back_world,
-            camera_facing_palm_back,
-            lower_direction,
-        )
-        authored_twist = parameters.wrist_roll * 0.40
-        # A later shake adds longitudinal rotation to this same joint. Reserve
-        # its full amplitude during every presentation phase so the combined
-        # pose remains physically safe by construction instead of clipping one
-        # half of the oscillation after the fact.
-        static_twist_limit = max(
-            0.0,
-            MAX_FOREARM_TWIST_RAD - max(0.0, float(forearm_twist_reserve_rad)),
-        )
-        forearm_twist = float(
-            np.clip(
-                alignment_twist + authored_twist,
-                -static_twist_limit,
-                static_twist_limit,
-            )
-        )
-        desired_lower = Rotation.from_rotvec(lower_direction * forearm_twist) * desired_lower
+    hand_rest = Rotation.from_quat(_HAND_REST_LOCAL_XYZW[hand])
+    pronation_budget = max(
+        0.0, MAX_FOREARM_TWIST_RAD - max(0.0, float(forearm_twist_reserve_rad))
+    )
 
-        # The remaining hand delta contains only bounded flexion/deviation.
-        # A very small longitudinal allowance absorbs Euler composition error;
-        # it is checked independently by the structural gate.
-        wrist_adjustment = Rotation.from_euler(
-            "xyz",
-            [
-                parameters.wrist_pitch * MAX_WRIST_PITCH_RAD,
-                parameters.wrist_roll * MAX_WRIST_TWIST_RAD,
-                parameters.wrist_yaw * MAX_WRIST_YAW_RAD,
-            ],
+    def solve(bend_choice: np.ndarray) -> _ArmSolution:
+        elbow = shoulder_v + direction * along + bend_choice * bend_height
+        upper_direction = (elbow - shoulder_v) / upper
+        lower_direction = (target_v - elbow) / lower
+        upper_alignment = _rotation_between(
+            rest_upper.apply([0.0, 1.0, 0.0]), upper_direction
         )
-        hand_delta = wrist_adjustment
-    else:
-        hand_delta = Rotation.from_euler(
-            "xyz",
-            [
-                parameters.wrist_pitch * MAX_WRIST_PITCH_RAD,
-                parameters.wrist_roll * MAX_WRIST_TWIST_RAD,
-                parameters.wrist_yaw * MAX_WRIST_YAW_RAD,
-            ],
+        desired_upper = upper_alignment * rest_upper
+        # The shortest-arc aim above carries zero twist about the humerus long
+        # axis, which would leave the whole bend-plane orientation to be
+        # absorbed by the elbow as abduction.  Roll the humerus about its own
+        # long axis so the elbow hinge it presents lies in the plane the
+        # pole/hint chose; the elbow and hand pivots sit on the axes this
+        # rotation preserves, so their positions do not move.
+        plane_normal = bend_plane_normal(bend_choice, direction)
+        hinge_world = (desired_upper * lower_local_rest).apply(
+            ELBOW_FLEXION_AXIS_LOCAL
         )
-    lower_delta = lower_base_world.inv() * desired_lower
+        roll = humeral_roll(hinge_world, plane_normal, upper_direction)
+        # The pre-roll branch is carried alongside so the roll can be
+        # compensated downstream: the roll changes the hand's world orientation
+        # by a pure twist about the elbow->wrist axis, and restoring the
+        # pre-roll hand orientation keeps silhouette projection (and the
+        # visibility gate) byte-equivalent to the pre-roll solve at every
+        # keyframe.
+        desired_upper_preroll = desired_upper
+        desired_upper = roll_rotation(upper_direction, roll) * desired_upper
+        upper_delta = rest_upper.inv() * desired_upper
+
+        lower_base_world_preroll = desired_upper_preroll * lower_local_rest
+        lower_alignment_preroll = _rotation_between(
+            lower_base_world_preroll.apply([0.0, 1.0, 0.0]), lower_direction
+        )
+        desired_lower_preroll = lower_alignment_preroll * lower_base_world_preroll
+
+        lower_base_world = desired_upper * lower_local_rest
+        lower_alignment = _rotation_between(
+            lower_base_world.apply([0.0, 1.0, 0.0]), lower_direction
+        )
+        desired_lower = lower_alignment * lower_base_world
+        if present_hand:
+            # Rotate the whole forearm around its longitudinal axis so the
+            # palm is readable from the egocentric +Z view.  Wrist roll in
+            # natural human motion is primarily forearm pronation/supination;
+            # placing it here avoids the 90-176 degree hand-joint deltas
+            # produced by the old solve.  The twist is authored on the
+            # pre-roll branch because that branch's hand world orientation is
+            # the calibrated one the camera contract was tuned against; the
+            # roll compensation below carries it across.
+            neutral_hand_world = desired_lower_preroll * hand_rest
+            palm_back_world = neutral_hand_world.apply([0.0, 0.0, 1.0])
+            camera_facing_palm_back = np.asarray([0.0, 0.0, -1.0])
+            alignment_twist = _signed_angle_about_axis(
+                palm_back_world,
+                camera_facing_palm_back,
+                lower_direction,
+            )
+            authored_twist = parameters.wrist_roll * 0.40
+            # A later shake adds longitudinal rotation to this same joint.
+            # Reserve its full amplitude during every presentation phase so
+            # the combined pose remains physically safe by construction
+            # instead of clipping one half of the oscillation after the fact.
+            forearm_twist = float(
+                np.clip(
+                    alignment_twist + authored_twist,
+                    -pronation_budget,
+                    pronation_budget,
+                )
+            )
+            desired_lower_preroll = (
+                Rotation.from_rotvec(lower_direction * forearm_twist)
+                * desired_lower_preroll
+            )
+
+            # The remaining hand delta contains only bounded flexion and
+            # deviation.  A very small longitudinal allowance absorbs Euler
+            # composition error; it is checked independently by the
+            # structural gate.
+            hand_delta = Rotation.from_euler(
+                "xyz",
+                [
+                    parameters.wrist_pitch * MAX_WRIST_PITCH_RAD,
+                    parameters.wrist_roll * MAX_WRIST_TWIST_RAD,
+                    parameters.wrist_yaw * MAX_WRIST_YAW_RAD,
+                ],
+            )
+        else:
+            hand_delta = Rotation.from_euler(
+                "xyz",
+                [
+                    parameters.wrist_pitch * MAX_WRIST_PITCH_RAD,
+                    parameters.wrist_roll * MAX_WRIST_TWIST_RAD,
+                    parameters.wrist_yaw * MAX_WRIST_YAW_RAD,
+                ],
+            )
+
+        desired_lower, _, overflow = forearm_roll_compensation(
+            desired_lower,
+            desired_lower_preroll,
+            lower_base_world,
+            pronation_budget,
+        )
+        # When the pronation budget absorbed the whole compensation this
+        # residual is the identity; composing it anyway would smear ~1e-16 of
+        # rotation junk into an otherwise exact hand delta, and cyclical
+        # composites assert their first and last hand poses are *equal*.
+        hand_residual = (desired_lower * hand_rest).inv() * desired_lower_preroll * hand_rest
+        if float(hand_residual.magnitude()) > 1e-12:
+            hand_delta = hand_residual * hand_delta
+        lower_delta = lower_base_world.inv() * desired_lower
+        return _ArmSolution(
+            upper_delta=upper_delta,
+            lower_delta=lower_delta,
+            hand_delta=hand_delta,
+            presented_twist_rad=twist_about_local_y(upper_delta),
+            pronation_overflow_rad=overflow,
+        )
+
+    solution = solve(bend)
+    if solution.violates:
+        # The equivalent bend-plane branch: the elbow mirrored through the
+        # shoulder->target line.  The hinge stays aligned with that branch's
+        # plane normal, so elbow flexion stays the non-negative interior bend;
+        # what changes is the twist the humerus must present and the pronation
+        # the compensation demands, both of which move by roughly a half turn.
+        # Selected only when it removes every violation the primary branch
+        # has: the band and the budget are gates to satisfy, never to clamp.
+        mirrored = solve(-bend)
+        if not mirrored.violates:
+            solution = mirrored
+
     prefix = hand.value
     poses = {
         f"{prefix}Shoulder": Quat(),
-        f"{prefix}UpperArm": _quat_from_rotation(upper_delta),
-        f"{prefix}LowerArm": _quat_from_rotation(lower_delta),
-        f"{prefix}Hand": _quat_from_rotation(hand_delta),
+        f"{prefix}UpperArm": _quat_from_rotation(solution.upper_delta),
+        f"{prefix}LowerArm": _quat_from_rotation(solution.lower_delta),
+        f"{prefix}Hand": _quat_from_rotation(solution.hand_delta),
     }
     return poses, distance
 

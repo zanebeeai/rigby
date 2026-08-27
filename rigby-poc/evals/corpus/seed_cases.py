@@ -408,7 +408,10 @@ SEED_CASES_03B: tuple[SeedCase, ...] = (
         family=Family.KNOWN_BAD,
         prompt=TRAVEL_PROMPT,
         tags=["angular-velocity", "angular-acceleration", "angular-jerk", "overrides", "both-hands"],
-        notes="The only case over all three kinematic ceilings, and the only one failing them on both arms at once.",
+        notes="The only case over all three kinematic ceilings, and the only one failing them on both arms at once. "
+        "Re-authored 2026-08-27 so the cycle itself breaches the velocity ceiling: the committed case files "
+        "(scene fps 60, setup 4.0 s, cycle 0.05 s) supersede this row, which freeze_from_seed cannot express — "
+        "regenerate from evals/corpus/cases/knownbad-travel-hyperfast/, not from these overrides.",
         overrides={"duration_s": 0.05, "trajectory_cycles": 8.0, "axial_rotation_amplitude": 1.0},
         must_fail=(
             StructuralGate.ANGULAR_VELOCITY,

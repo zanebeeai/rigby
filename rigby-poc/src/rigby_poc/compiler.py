@@ -41,6 +41,7 @@ from .models import (
     Transform,
     Vec3,
 )
+from .arm_plane import twist_about_local_y
 from .kinematics import rig_kinematics
 from .physics import PhysicsOutcome, simulate_grasp
 from .primitives import (
@@ -187,6 +188,62 @@ def _nlerp(first: Quat, second: Quat, alpha: float) -> Quat:
     value = a * (1.0 - alpha) + b * alpha
     value /= max(float(np.linalg.norm(value)), 1e-12)
     return Quat(x=float(value[0]), y=float(value[1]), z=float(value[2]), w=float(value[3]))
+
+
+def _slerp(first: Quat, second: Quat, alpha: float) -> Quat:
+    """Constant-rate geodesic blend between two local rotations.
+
+    ``_nlerp`` traverses the same geodesic but speeds up mid-path by a factor
+    that grows with the endpoint angle (tan(theta/2)/(theta/2) at the
+    midpoint).  For the large reorientations the humeral-roll solver produces
+    between an arms-down and an arms-overhead solution (2.4-2.6 rad), that
+    warp alone pushes per-frame deltas past the discontinuity gate even when
+    the constant-rate path fits with margin, so blends covering such spans
+    must advance at constant angular rate.
+    """
+    a = Rotation.from_quat(first.as_list())
+    b = Rotation.from_quat(second.as_list())
+    relative = a.inv() * b
+    value = a * Rotation.from_rotvec(relative.as_rotvec() * float(alpha))
+    xyzw = value.as_quat()
+    return Quat(x=float(xyzw[0]), y=float(xyzw[1]), z=float(xyzw[2]), w=float(xyzw[3]))
+
+
+#: The bones whose local deltas carry the humeral roll and its forearm
+#: pronation compensation.  Their longitudinal twists are authored as a
+#: cancelling pair, so interpolation must keep them synchronized.
+_ARM_TWIST_BLEND_BONES = frozenset(
+    {"leftUpperArm", "leftLowerArm", "rightUpperArm", "rightLowerArm"}
+)
+
+
+def _swing_twist_blend(first: Quat, second: Quat, alpha: float) -> Quat:
+    """Blend an arm bone's local delta with its longitudinal twist unmixed.
+
+    The hinge-in-plane solver pairs every humeral roll with a forearm
+    pronation that restores the pre-roll hand world orientation -- but only
+    at solved keyframes.  A quaternion geodesic between two solutions whose
+    rolls differ mixes each bone's twist into its swing on its own schedule,
+    so mid-blend the pair no longer cancels: the hand world orientation
+    transiently swings by up to the roll difference, which a carried object
+    amplifies by its grip lever arm.  Decomposing each endpoint into swing
+    and twist about the bone's long axis and interpolating the twist angles
+    linearly keeps the upper-arm roll and its forearm compensation advancing
+    in lockstep, so the blended hand tracks the calibrated pre-roll path the
+    endpoints were compensated toward.
+    """
+    a = Rotation.from_quat(first.as_list())
+    b = Rotation.from_quat(second.as_list())
+    twist_a = twist_about_local_y(a)
+    twist_b = twist_about_local_y(b)
+    swing_a = a * Rotation.from_rotvec([0.0, -twist_a, 0.0])
+    swing_b = b * Rotation.from_rotvec([0.0, -twist_b, 0.0])
+    relative = swing_a.inv() * swing_b
+    swing = swing_a * Rotation.from_rotvec(relative.as_rotvec() * float(alpha))
+    twist = twist_a + float(alpha) * math.remainder(twist_b - twist_a, math.tau)
+    value = swing * Rotation.from_rotvec([0.0, twist, 0.0])
+    xyzw = value.as_quat()
+    return Quat(x=float(xyzw[0]), y=float(xyzw[1]), z=float(xyzw[2]), w=float(xyzw[3]))
 
 
 def _local_rotation_offset(value: Quat, rotation_vector: list[float]) -> Quat:
@@ -696,8 +753,16 @@ def _body_action_pose(
     progress: float,
     alpha: float,
     root_yaw_rad: float,
+    ingress: float = 1.0,
 ) -> dict[str, Quat]:
-    """Evaluate one procedural whole-body skill in local joint space."""
+    """Evaluate one procedural whole-body skill in local joint space.
+
+    ``ingress`` is the caller's phase entry blend.  Since the caller composes
+    this articulation on top of its start-pose ease rather than attenuating
+    it, any articulation term that is non-zero at ``progress == 0`` (a
+    constant lean, a guard arm pose, a support-chain reset) must scale itself
+    by ``ingress`` so the skill still enters from the base pose.
+    """
 
     pose = base.copy()
     intensity = target.intensity
@@ -747,8 +812,19 @@ def _body_action_pose(
                     wrist_target,
                     arm_parameters,
                     present_hand=False,
+                    # A runner's elbow points down-back-out through the whole
+                    # stride.  The default pole puts it forward, which at the
+                    # back-swing extreme demands more humeral twist than the
+                    # (-95, 95) shoulder band allows and saturates the forearm
+                    # pronation budget; this pole keeps every stride sample
+                    # inside both with margin.
+                    elbow_pole=Vec3(x=side * 0.6, y=-0.55, z=-0.5),
                 )
-                pose.update(arm_pose)
+                # The guard is a full arm pose from the first stride sample,
+                # so it owns its entry ramp now that the caller no longer
+                # attenuates articulation with the phase ingress.
+                for bone_name, rotation in arm_pose.items():
+                    pose[bone_name] = _nlerp(pose[bone_name], rotation, ingress)
         else:
             pose["leftUpperArm"] = _local_rotation_offset(
                 pose["leftUpperArm"], [-swing * 0.58, 0.0, 0.0]
@@ -759,7 +835,7 @@ def _body_action_pose(
         pelvis_roll = math.sin(phase) * 0.045 * intensity
         pelvis_pitch = -0.05 * intensity * run_scale
         pose["chest"] = _local_rotation_offset(
-            pose["chest"], [0.04 * intensity * run_scale, 0.0, -pelvis_roll]
+            pose["chest"], [0.04 * intensity * run_scale * ingress, 0.0, -pelvis_roll]
         )
     elif target.action == BodyAction.STEP:
         envelope = math.sin(math.pi * progress)
@@ -811,8 +887,15 @@ def _body_action_pose(
             > 1e-8
         )
         if jumping_jack or target.raise_arms_overhead:
-            jack_envelope = abs(
-                math.sin(math.pi * target.cycles * progress)
+            # Squared rather than |sin|: the overhead arm pose sits a large
+            # rotation (including a near-half-turn of humeral roll) away from
+            # the arms-down pose, and |sin| pushes its steepest slope into the
+            # phase's first frames, on top of the whole-pose ingress blend.
+            # sin**2 starts the raise at zero rate, so the reorientation
+            # spreads over the blend window instead of the first three frames
+            # deciding the clip's rotational-discontinuity peak.
+            jack_envelope = (
+                math.sin(math.pi * target.cycles * progress) ** 2
             )
             for hand in (Hand.LEFT, Hand.RIGHT):
                 side = 1.0 if hand == Hand.LEFT else -1.0
@@ -824,7 +907,12 @@ def _body_action_pose(
                     present_hand=False,
                 )
                 for bone_name, rotation in overhead_pose.items():
-                    pose[bone_name] = _nlerp(
+                    # Constant-rate on purpose: the down->overhead span is
+                    # 2.4-2.6 rad per arm bone (the humeral roll and its
+                    # forearm compensation dominate), and nlerp's mid-path
+                    # speed-up at that angle is what pushed each raise's
+                    # fastest frames past the discontinuity gate.
+                    pose[bone_name] = _slerp(
                         pose[bone_name],
                         rotation,
                         jack_envelope,
@@ -951,11 +1039,11 @@ def _body_action_pose(
         pelvis_roll = 0.045 * stride * intensity
         pose["chest"] = _local_rotation_offset(
             pose["chest"],
-            [-0.18 * intensity, -0.05 * stride * intensity, 0.0],
+            [-0.18 * intensity * ingress, -0.05 * stride * intensity, 0.0],
         )
         pose["head"] = _local_rotation_offset(
             pose["head"],
-            [0.08 * intensity, 0.0, -0.025 * stride * intensity],
+            [0.08 * intensity * ingress, 0.0, -0.025 * stride * intensity],
         )
     elif target.action == BodyAction.KICK:
         envelope = math.sin(math.pi * progress)
@@ -995,7 +1083,7 @@ def _body_action_pose(
                 "rightLowerLeg",
                 "rightFoot",
             ):
-                pose[bone_name] = Quat()
+                pose[bone_name] = _nlerp(pose[bone_name], Quat(), ingress)
         degrees = math.pi / 180.0
         quadruped_swing = 0.0
         if (
@@ -1770,13 +1858,6 @@ def _compile_full_body(scene: SceneManifest, program: MotionProgram) -> ClipResu
                     and previous_target is not None
                     and previous_target.action == BodyAction.POSE
                 )
-                generated_pose = _body_action_pose(
-                    base,
-                    target,
-                    articulation_progress,
-                    1.0 if chained_pose else action_alpha,
-                    yaw,
-                )
                 # A chained pose carries the actual prior endpoint. Driving
                 # its next target through the standing base creates a hidden
                 # extra motion (for example supine -> upright -> curl).
@@ -1786,10 +1867,51 @@ def _compile_full_body(scene: SceneManifest, program: MotionProgram) -> ClipResu
                     if chained_pose
                     else smoothstep(min(1.0, progress / 0.18), 0.78)
                 )
-                pose = {
-                    key: _nlerp(start_pose[key], generated_pose[key], ingress)
-                    for key in base
-                }
+                generated_pose = _body_action_pose(
+                    base,
+                    target,
+                    articulation_progress,
+                    1.0 if chained_pose else action_alpha,
+                    yaw,
+                    ingress=1.0 if chained_pose else ingress,
+                )
+                if chained_pose or ingress >= 1.0:
+                    pose = {
+                        key: _nlerp(start_pose[key], generated_pose[key], ingress)
+                        for key in base
+                    }
+                else:
+                    # The entry blend eases only the start-pose mismatch onto
+                    # the base; the skill's own articulation rides on top at
+                    # full rate.  Blending the whole generated pose from the
+                    # start pose multiplied the ingress ramp into the skill's
+                    # articulation rate, and for an articulation covering a
+                    # large rotation inside the ingress window (a jumping
+                    # jack's first overhead raise) the compounded rate alone
+                    # crossed the discontinuity gate.  The hips stay on the
+                    # absolute blend: their generated value is authored in
+                    # world terms (start yaw included), not as a base offset.
+                    pose = {}
+                    for key in base:
+                        if key == "hips":
+                            pose[key] = _nlerp(
+                                start_pose[key], generated_pose[key], ingress
+                            )
+                            continue
+                        eased = Rotation.from_quat(
+                            _nlerp(start_pose[key], base[key], ingress).as_list()
+                        )
+                        offset = (
+                            Rotation.from_quat(base[key].as_list()).inv()
+                            * Rotation.from_quat(generated_pose[key].as_list())
+                        )
+                        xyzw = (eased * offset).as_quat()
+                        pose[key] = Quat(
+                            x=float(xyzw[0]),
+                            y=float(xyzw[1]),
+                            z=float(xyzw[2]),
+                            w=float(xyzw[3]),
+                        )
                 root = start_root.copy()
                 if target.action in {BodyAction.WALK, BodyAction.RUN, BodyAction.STEP}:
                     gait_target = (
@@ -3094,6 +3216,14 @@ def _compile_composite(scene: SceneManifest, program: MotionProgram) -> ClipResu
                             if travel_shared_center is not None
                             else None
                         ),
+                        # The setup phase carries the hand from idle to the
+                        # wheel along this alpha; applied at full strength
+                        # from frame zero, the wheel's elbow hint demands a
+                        # bend plane the idle-adjacent targets can only reach
+                        # through out-of-band humeral twist.  Carrying the
+                        # hint in on the same blend keeps the plane with the
+                        # hand it belongs to.
+                        elbow_hint_weight=alpha if travel_setup else 1.0,
                     )
                     axial_amplitude = primitive.parameters.axial_rotation_amplitude * 0.72
                     if axial_amplitude > 1e-8 and trajectory in {
@@ -3970,7 +4100,21 @@ def _compile_object_interaction(scene: SceneManifest, program: MotionProgram) ->
             progress = local_index / (frame_count - 1)
             alpha = smoothstep(progress, primitive.parameters.easing)
             bones = {
-                key: BonePose(rotation=_nlerp(start[key], target_pose[key], alpha))
+                key: BonePose(
+                    rotation=(
+                        # Keep the humeral roll and its forearm pronation
+                        # compensation advancing as a synchronized twist pair,
+                        # so the hand world orientation between solver
+                        # keyframes tracks the compensated (pre-roll) path.
+                        # An object carried on that hand follows the grip
+                        # lever arm, so an unsynchronized blend turns the
+                        # transient hand swing directly into carried-object
+                        # position steps.
+                        _swing_twist_blend(start[key], target_pose[key], alpha)
+                        if key in _ARM_TWIST_BLEND_BONES
+                        else _nlerp(start[key], target_pose[key], alpha)
+                    )
+                )
                 for key in base
             }
             now = elapsed + progress * phase_duration_s

@@ -16,10 +16,12 @@ would not close it.
 The load-bearing measurement is in
 :func:`test_the_layer_rejects_clips_the_legacy_counter_passes`: over all 47
 corpus cases the legacy ``joint_limit_violations`` counter is **0 of 47** while
-the per-DOF layer fails on **46 of 47**, on the same clips and the same bones.
-That is the evidence the legacy check may be deleted -- it is inert, not
-permissive -- and it is why this PR must land before that deletion rather than
-after it.
+the per-DOF layer fails on **18 of 47**, on the same clips and the same bones.
+(It was 46 of 47 before the humeral-roll fix; the fix removed the spurious
+elbow abduction that made nearly every case fail, and the remaining 18 are the
+cases with genuine excursions.) That is the evidence the legacy check may be
+deleted -- it is inert, not permissive -- and it is why this PR must land
+before that deletion rather than after it.
 """
 
 from __future__ import annotations
@@ -96,7 +98,7 @@ def test_the_layer_rejects_clips_the_legacy_counter_passes(
 
     ``joint_limit_violations`` is not permissive, it is **inert**: zero on every
     corpus case, including the root-drift term ``analysis/safety.py`` folds into
-    the same counter. The per-DOF layer fails on all but one case over the same
+    the same counter. The per-DOF layer fails on 16 of 47 cases over the same
     clips and the same bones. Tightening the legacy check would therefore move
     nothing, and deleting it removes a counter that has never once been
     non-zero -- but only once these verdicts exist, which is why the assertion
@@ -117,9 +119,13 @@ def test_the_layer_rejects_clips_the_legacy_counter_passes(
         f"{total} cases when this was measured. If it has become live, the "
         "deletion this measurement licenses needs re-deciding."
     )
-    assert len(rom_failing) >= total - 1, (
+    assert len(rom_failing) == 16, (
         f"the per-DOF layer failed on {len(rom_failing)} of {total} cases; it "
-        "failed on all but one when this was measured"
+        "failed on 16 of 47 when this was measured after the humeral-roll fix "
+        "plus the swing-twist-coordinated arm interpolation (18 of 47 with "
+        "the roll fix alone, 46 of 47 before it). A moved count means the ROM "
+        "landscape changed: re-measure and re-pin rather than widening this "
+        "to a floor."
     )
 
 

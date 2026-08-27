@@ -518,7 +518,35 @@ def test_compose_and_decompose_round_trip() -> None:
 
 
 @pytest.fixture(scope="module")
-def corpus_angles() -> dict[str, list[DofAngles]]:
+def corpus_angles_by_case() -> dict[str, dict[str, list[DofAngles]]]:
+    """Corpus frames resolved onto each bone's frame, grouped by case id.
+
+    Grouping by case is what lets a residual excursion be *attributed*: a peak
+    with a named source (a blend transient, an object-path spline) is evidence
+    of a benign authoring artifact, while the same magnitude smeared across the
+    corpus would be evidence of a solver defect.
+    """
+
+    from evals.corpus import load_corpus
+    from evals.corpus.loader import compile_case
+
+    frames = all_frames()
+    measured: dict[str, dict[str, list[DofAngles]]] = {}
+    for case in load_corpus():
+        for clip_frame in compile_case(case).frames:
+            for bone, pose in clip_frame.bones.items():
+                if bone not in frames:
+                    continue
+                measured.setdefault(bone, {}).setdefault(case.id, []).append(
+                    decompose(pose.rotation.as_list(), frames[bone])
+                )
+    return measured
+
+
+@pytest.fixture(scope="module")
+def corpus_angles(
+    corpus_angles_by_case: dict[str, dict[str, list[DofAngles]]],
+) -> dict[str, list[DofAngles]]:
     """Every frame of every golden-corpus case, resolved onto its bone's frame.
 
     This is the arbiter the plan's §6.1 risk actually needs. A mislabelled axis
@@ -527,20 +555,10 @@ def corpus_angles() -> dict[str, list[DofAngles]]:
     exists: human elbows flex and barely hyperextend, and human knees are hinges.
     """
 
-    from evals.corpus import load_corpus
-    from evals.corpus.loader import compile_case
-
-    frames = all_frames()
-    measured: dict[str, list[DofAngles]] = {}
-    for case in load_corpus():
-        for clip_frame in compile_case(case).frames:
-            for bone, pose in clip_frame.bones.items():
-                if bone not in frames:
-                    continue
-                measured.setdefault(bone, []).append(
-                    decompose(pose.rotation.as_list(), frames[bone])
-                )
-    return measured
+    return {
+        bone: [angle for case_angles in by_case.values() for angle in case_angles]
+        for bone, by_case in corpus_angles_by_case.items()
+    }
 
 
 def _degrees(angles: list[DofAngles], dof: str) -> np.ndarray:
@@ -587,25 +605,66 @@ def test_shipped_motion_flexes_the_elbow_far_more_than_it_extends_it(bone, corpu
     assert flexion.max() > abs(flexion.min()) * 2.0
 
 
-@pytest.mark.parametrize("bone", ["leftLowerArm", "rightLowerArm"])
-def test_shipped_motion_drives_the_elbow_far_off_its_hinge_axis(bone, corpus_angles) -> None:
-    """Plan §6.4, measured, before any limit exists to argue about.
+@pytest.mark.parametrize(
+    ("bone", "transient_sources", "transient_band_deg"),
+    [
+        ("leftLowerArm", {"fullbody-burpee-cycle"}, (15.0, 20.0)),
+        ("rightLowerArm", {"fullbody-burpee-cycle"}, (15.0, 20.0)),
+    ],
+)
+def test_shipped_motion_keeps_the_elbow_on_its_hinge_axis(
+    bone: str,
+    transient_sources: set[str],
+    transient_band_deg: tuple[float, float],
+    corpus_angles_by_case: dict[str, dict[str, list[DofAngles]]],
+) -> None:
+    """Plan §6.4's number, re-measured after the humeral-roll fix.
 
-    The elbow is a hinge, so plan §3.3 makes its abduction a ``hard_assert``.
-    Shipped motion peaks at 91-96 degrees of elbow abduction and hyperextends to
-    -60, both across n = 1606 frames of the 12 golden cases. Turning that assert
-    on will reject currently-shipping motion, and the plan says that is the
-    intended outcome rather than a reason to widen the limit.
+    This test used to *document the defect*: the shortest-arc upper-arm aim
+    carried no roll about the humerus long axis, so the whole orientation of
+    the bend plane landed in the LowerArm joint as elbow abduction — peaks of
+    91-96 degrees and hyperextension to -60 on shipped motion.
+    :mod:`rigby_poc.arm_plane` now rolls the humerus so the elbow hinge lies
+    in the chosen bend plane, and this test pins the fixed landscape instead,
+    measured fresh across all 5277 frames of the 47-case corpus:
 
-    Recorded here so 04b's distribution review starts from a number and 04c's
-    rejection rate can be compared against it.
+    * corpus-wide ``|abduction|`` peaks at 17.8 deg on both sides. The 45.0
+      ceiling is set by the hypothesis, not the corpus maximum: it carries
+      well over 2x headroom over the worst measurement while sitting at half
+      the defect's 85+ signature, so it goes red if the roll is ever lost and
+      stays green through benign corpus growth.
+    * The residual peaks have *named, non-solver* sources, pinned per side:
+      both maxima are ``fullbody-burpee-cycle``'s setup-blend transient. The
+      right side used to peak at 32.6 deg on ``object-throw-far``'s throw arm
+      (``knownbad-sequence-throw-then-catch`` embeds the same throw), but
+      that excursion was an interpolation transient between roll-bearing
+      keyframes, and the swing-twist-coordinated arm blend removed it. No
+      other case exceeds 15.6 deg (``fullbody-cartwheel``, another
+      blend-heavy clip).
+    * Hyperextension is gone: corpus flexion bottoms out at -1.8 deg
+      (was -60), so the -5.0 floor has ~3 deg of headroom and fails loudly on
+      any return of the off-hinge decomposition.
     """
 
-    abduction = _degrees(corpus_angles[bone], "abduction")
-    flexion = _degrees(corpus_angles[bone], "flexion")
+    by_case = corpus_angles_by_case[bone]
+    peak_by_case = {
+        case_id: float(np.abs(_degrees(angles, "abduction")).max())
+        for case_id, angles in by_case.items()
+    }
+    corpus_peak = max(peak_by_case.values())
 
-    assert np.abs(abduction).max() > 85.0
-    assert flexion.min() < -35.0
+    # The regression ceiling: half the defect's signature, with headroom.
+    assert corpus_peak < 45.0
+    # The worst case is one of the named transients, not an arbitrary clip.
+    worst_sources = {case_id for case_id, peak in peak_by_case.items() if peak == corpus_peak}
+    assert worst_sources <= transient_sources, sorted(worst_sources)
+    # The transient's magnitude is pinned in a band: a drifting blend or
+    # spline surfaces here before it reaches the ceiling above.
+    low, high = transient_band_deg
+    assert low < corpus_peak < high
+    # And the defect's other face — -60 deg hyperextension — stays gone.
+    flexion_floor = min(float(_degrees(angles, "flexion").min()) for angles in by_case.values())
+    assert flexion_floor > -5.0
 
 
 @pytest.mark.parametrize("bone", ["leftUpperArm", "rightUpperArm", "leftUpperLeg", "rightUpperLeg"])

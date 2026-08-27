@@ -12,7 +12,17 @@ from pathlib import Path
 import numpy as np
 from scipy.spatial.transform import Rotation
 
+from .arm_plane import (
+    ELBOW_FLEXION_AXIS_LOCAL,
+    UPPER_ARM_TWIST_BAND_RAD,
+    bend_plane_normal,
+    forearm_roll_compensation,
+    humeral_roll,
+    roll_rotation,
+    twist_about_local_y,
+)
 from .models import BonePose, Quat
+from .thresholds import value_of
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
@@ -367,35 +377,99 @@ class RigKinematics:
             bend_direction = np.asarray([0.0, -1.0, 0.0], dtype=float)
             bend_direction -= direction * float(np.dot(bend_direction, direction))
         bend_direction /= max(float(np.linalg.norm(bend_direction)), 1e-12)
-        elbow = shoulder + direction * along + bend_direction * bend_height
 
         upper_rest_direction = self.rest[lower_index].translation.copy()
         upper_rest_direction /= max(
             float(np.linalg.norm(upper_rest_direction)),
             1e-12,
         )
-        upper_base_world = parent_world[:3, :3] @ self.rest[upper_index].rotation
-        upper_alignment = self._minimal_alignment(
-            upper_base_world @ upper_rest_direction,
-            elbow - shoulder,
-        )
-        upper_world_rotation = upper_alignment @ upper_base_world
-        upper_local_rotation = parent_world[:3, :3].T @ upper_world_rotation
-        upper_delta = self.rest[upper_index].rotation.T @ upper_local_rotation
-
         lower_rest_direction = self.rest[hand_index].translation.copy()
         lower_rest_direction /= max(
             float(np.linalg.norm(lower_rest_direction)),
             1e-12,
         )
-        lower_base_world = upper_world_rotation @ self.rest[lower_index].rotation
-        lower_alignment = self._minimal_alignment(
-            lower_base_world @ lower_rest_direction,
-            reachable_target - elbow,
-        )
-        lower_world_rotation = lower_alignment @ lower_base_world
+        upper_base_world = parent_world[:3, :3] @ self.rest[upper_index].rotation
+        lower_rest_rotation = self.rest[lower_index].rotation
+        pronation_budget = value_of("anatomy.forearm_twist_generator_max_rad")
+
+        def solve(
+            bend_choice: np.ndarray,
+        ) -> tuple[np.ndarray, np.ndarray, np.ndarray, float, float]:
+            elbow = shoulder + direction * along + bend_choice * bend_height
+            upper_alignment = self._minimal_alignment(
+                upper_base_world @ upper_rest_direction,
+                elbow - shoulder,
+            )
+            upper_world_preroll = upper_alignment @ upper_base_world
+            # The shortest-arc alignment above carries zero twist about the
+            # humerus long axis, leaving the bend-plane orientation to be
+            # absorbed by the elbow as abduction.  Roll the humerus about the
+            # exact shoulder->elbow axis (which the aim maps the carried rest
+            # child direction onto, so the elbow does not move) until the
+            # elbow hinge it presents lies in the plane the pole/hint chose.
+            long_axis = (elbow - shoulder) / max(
+                float(np.linalg.norm(elbow - shoulder)), 1e-12
+            )
+            plane_normal = bend_plane_normal(bend_choice, direction)
+            hinge_world = (
+                upper_world_preroll @ lower_rest_rotation
+            ) @ ELBOW_FLEXION_AXIS_LOCAL
+            roll = humeral_roll(hinge_world, plane_normal, long_axis)
+            upper_world_rotation = (
+                roll_rotation(long_axis, roll).as_matrix() @ upper_world_preroll
+            )
+
+            lower_base_world = upper_world_rotation @ lower_rest_rotation
+            lower_alignment = self._minimal_alignment(
+                lower_base_world @ lower_rest_direction,
+                reachable_target - elbow,
+            )
+            lower_world_rotation = lower_alignment @ lower_base_world
+            # The un-rolled branch's forearm solve, so the roll can be
+            # compensated downstream as pronation: with the budget honoured
+            # the forearm returns to the exact world orientation the pre-roll
+            # solve produced, and the hand delta that follows is the pre-roll
+            # one -- the roll then changes nothing below the elbow.
+            preroll_lower_base = upper_world_preroll @ lower_rest_rotation
+            preroll_alignment = self._minimal_alignment(
+                preroll_lower_base @ lower_rest_direction,
+                reachable_target - elbow,
+            )
+            preroll_lower_world = preroll_alignment @ preroll_lower_base
+            pronated, _, overflow = forearm_roll_compensation(
+                Rotation.from_matrix(lower_world_rotation),
+                Rotation.from_matrix(preroll_lower_world),
+                Rotation.from_matrix(lower_base_world),
+                pronation_budget,
+            )
+            lower_world_rotation = pronated.as_matrix()
+
+            upper_local_rotation = parent_world[:3, :3].T @ upper_world_rotation
+            upper_delta = self.rest[upper_index].rotation.T @ upper_local_rotation
+            presented_twist = twist_about_local_y(Rotation.from_matrix(upper_delta))
+            return (
+                upper_world_rotation,
+                lower_world_rotation,
+                upper_delta,
+                presented_twist,
+                overflow,
+            )
+
+        chosen = solve(bend_direction)
+        if abs(chosen[3]) > UPPER_ARM_TWIST_BAND_RAD or chosen[4] > 1e-9:
+            # The equivalent bend-plane branch: elbow mirrored through the
+            # shoulder->target line, hinge still aligned with that branch's
+            # plane normal (flexion stays the non-negative interior bend).
+            # Selected only when it removes every violation the primary
+            # branch has: band and budget are satisfied by choosing the
+            # branch, never by clamping the roll.
+            mirrored = solve(-bend_direction)
+            if abs(mirrored[3]) <= UPPER_ARM_TWIST_BAND_RAD and mirrored[4] <= 1e-9:
+                chosen = mirrored
+        upper_world_rotation, lower_world_rotation, upper_delta, _, _ = chosen
+
         lower_local_rotation = upper_world_rotation.T @ lower_world_rotation
-        lower_delta = self.rest[lower_index].rotation.T @ lower_local_rotation
+        lower_delta = lower_rest_rotation.T @ lower_local_rotation
 
         desired_hand_world = (
             hand_world_rotation

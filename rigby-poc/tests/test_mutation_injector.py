@@ -30,9 +30,15 @@ pytestmark = pytest.mark.medium
 #: The elbow carries flexion as well as abduction here, which is what makes it the
 #: case that distinguishes adding in DOF coordinates from post-multiplying.
 MOVING_CASE = "fullbody-dance"
-#: The same bone, in a case where it never moves: 42.23 degrees in every frame.
+#: The same bone, in a case where it never moves: 0.609 degrees in every frame.
+#: (42.23 degrees before the humeral-roll fix; the constant was the roll artifact.)
 STATIC_CASE = "fullbody-walk-forward"
 ELBOW = "rightLowerArm"
+#: The signing test needs a DOF whose largest-magnitude excursion is *negative*.
+#: The elbow's abduction lost that property with the humeral-roll fix (its extremum
+#: is now +9.69 deg on the dance clip), so the shoulder carries the fixture:
+#: leftUpperArm.abduction swings to -55.65 deg at peak, measured on this clip.
+SHOULDER = "leftUpperArm"
 
 
 @pytest.fixture(scope="module")
@@ -97,20 +103,31 @@ def test_signing_against_the_excursion_increases_the_peak_rather_than_cancelling
     moving_clip,
 ):
     """The end-to-end version of the rule above, on a real clip."""
-    before = peak_dof(moving_clip, ELBOW, "abduction")
+    before = peak_dof(moving_clip, SHOULDER, "abduction")
     signed = add_dof(
-        moving_clip.model_copy(deep=True), ELBOW, "abduction", math.radians(20.0)
+        moving_clip.model_copy(deep=True), SHOULDER, "abduction", math.radians(20.0)
     )
     unsigned = add_dof(
         moving_clip.model_copy(deep=True),
-        ELBOW,
+        SHOULDER,
         "abduction",
         math.radians(20.0),
         sign_from_clip=False,
     )
-    assert peak_dof(signed, ELBOW, "abduction") > before
-    # The clip's elbow abduction is negative at peak, so an unsigned +20 cancels.
-    assert peak_dof(unsigned, ELBOW, "abduction") < before
+    assert peak_dof(signed, SHOULDER, "abduction") > before
+    # The clip's shoulder abduction is negative at peak, so an unsigned +20 cancels.
+    assert peak_dof(unsigned, SHOULDER, "abduction") < before
+
+
+def test_the_signing_fixture_really_swings_negative(moving_clip):
+    """Pins the *fixture* for the test above: the signing test only distinguishes
+    signed from unsigned on a DOF whose largest-magnitude excursion is negative.
+    The elbow held that role until the humeral-roll fix moved its extremum to
+    +9.69 degrees, which silently made signed and unsigned agree there."""
+    series = bone_dof_series(moving_clip, SHOULDER, "abduction")
+    extremum = max(series, key=abs)
+    assert extremum < 0.0, math.degrees(extremum)
+    assert abs(extremum) > math.radians(20.0), math.degrees(extremum)
 
 
 def test_a_static_bone_is_detected_as_static(static_clip, moving_clip):
@@ -128,7 +145,7 @@ def test_the_static_case_really_is_static_to_the_last_decimal(static_clip):
     series = bone_dof_series(static_clip, ELBOW, "abduction")
     assert len(series) > 50
     assert len({round(value, 9) for value in series}) == 1
-    assert math.degrees(abs(series[0])) == pytest.approx(42.23, abs=0.01)
+    assert math.degrees(abs(series[0])) == pytest.approx(0.609, abs=0.01)
 
 
 def test_injection_is_deterministic(moving_clip):

@@ -27,8 +27,20 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 # compiler. Its whole import closure is itself -- stdlib only, no numpy, no
 # scipy, no rig, no I/O beyond one lru_cached JSON read -- which makes it a
 # strictly cleaner dependency than ``primitives``, already allowed here.
+# ``arm_plane`` is exempt for the same structural reason as ``thresholds``: it
+# is pure numpy/scipy bend-plane math whose entire import closure is itself --
+# no rig asset, no I/O, and by its own docstring it "must not import either"
+# ``primitives`` or ``kinematics`` because it sits *below* both. Nothing in
+# ``analysis`` imports it directly; it arrives transitively because the two
+# already-allowed, load-bearing siblings (``kinematics`` for ``rig_kinematics``,
+# ``primitives``) import its solver helpers at load time. Allowing it keeps
+# this guard about its stated intent -- analysis must run without the
+# compiler, physics, planner or store -- which a leaf math module does not
+# threaten. Its constants are pinned against the analysis-derived frames by
+# ``tests/test_arm_plane.py``, so the two layers cannot silently diverge.
 ALLOWED_SIBLINGS = {
     "rigby_poc",
+    "rigby_poc.arm_plane",
     "rigby_poc.models",
     "rigby_poc.kinematics",
     "rigby_poc.primitives",

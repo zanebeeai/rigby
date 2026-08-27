@@ -9,10 +9,13 @@ It earns its cost immediately. The first sweep this module was pointed at —
 `rom_sweep("rightLowerArm", "abduction")`, chosen because the elbow is the bone
 04c's bound is about — produced **zero** threshold points on every case, because
 `rom_guard` correctly refuses a clip whose target DOF is already `beyond_max`
-before the mutation. That is pinned below rather than worked around: the same
-authored bound that rejects 41 of 41 expected-good corpus cases also removes its
-own mutation arm, and a successor picking that DOF deserves to meet the fact as a
-test rather than as an empty curve.
+before the mutation. Before the humeral-roll fix that removed the arm entirely:
+46 of 47 cases were beyond_max unmutated. After the fix the arm has a corpus-wide
+denominator again (37 of 47 cases are within_typical on rightLowerArm.abduction),
+but on this file's four-case sample the one admitted case has a *static* elbow,
+so the sweep still yields no threshold points here — pinned below rather than
+worked around, so a successor picking that DOF meets the fact as a test rather
+than as an empty curve.
 """
 
 from __future__ import annotations
@@ -77,10 +80,24 @@ def test_a_moving_in_band_dof_produces_a_real_curve_and_a_threshold(compiled) ->
     measured = [level for level in curve if level.threshold_points.n > 0]
     assert measured, "no level carried a single threshold point"
 
-    # Detection is monotone in severity for a deterministic band check: an
-    # excursion that leaves the band at severity s leaves it at every s' > s.
-    rates = [level.threshold_points.estimate for level in measured]
+    # Detection is monotone in severity for a deterministic band check -- an
+    # excursion that leaves the band at severity s leaves it at every s' > s --
+    # *until the injection wraps*. rightUpperArm.flexion's typical width is 240
+    # degrees, so the severity-1.0 level injects a full 240: measured after the
+    # humeral-roll fix, fullbody-run-forward's base extremum is -28.28 degrees,
+    # the signed -240 lands at -268, wraps past -180 to +92, re-enters the band
+    # and scores undetected (2/3 at 1.0 against 3/3 at 0.68). So monotonicity is
+    # asserted over the non-wrapping levels, and the wrap itself is pinned.
+    no_wrap = [level for level in measured if level.severity <= 0.68]
+    rates = [level.threshold_points.estimate for level in no_wrap]
     assert rates == sorted(rates), f"detection fell as severity rose: {rates}"
+    assert rates[-1] == 1.0, rates
+    top = measured[-1]
+    assert top.severity == 1.0
+    assert top.threshold_points.estimate < 1.0, (
+        "the severity-1.0 level no longer wraps; re-measure and restore the "
+        "whole-curve monotonicity assertion"
+    )
 
     # The bottom of the sweep must be plausibly sub-perceptual (plan 06 §3.2). A
     # sweep detecting everything at its mildest level measures nothing.
@@ -104,23 +121,29 @@ def test_static_targets_never_enter_the_threshold_population(compiled) -> None:
         ), "a pair went missing between the three populations"
 
 
-def test_the_elbow_bound_removes_its_own_mutation_arm(compiled) -> None:
-    # The finding this file exists to carry. left/rightLowerArm.abduction is
-    # `beyond_max` on 46 of the 47 corpus cases before any mutation, so rom_guard
-    # refuses every pair and the arm has no denominator at any severity.
+def test_the_elbow_arm_still_has_no_threshold_points_on_this_sample(compiled) -> None:
+    # The finding this file was written to carry has moved. Before the
+    # humeral-roll fix, left/rightLowerArm.abduction was `beyond_max` on 46 of
+    # the 47 corpus cases unmutated, so rom_guard refused every pair and the arm
+    # vanished. After the fix the arm is un-vanished corpus-wide -- 37 of 47
+    # cases sit within_typical on rightLowerArm.abduction -- but on this file's
+    # four cases the measured split is: burpee, dance and run-forward are still
+    # beyond_max (refused), and kick-right is admitted with a *static* elbow.
+    # So every admitted pair lands in the static-target population and the
+    # threshold population is still empty here.
     outcomes = sweep_outcomes(rom_sweep("rightLowerArm", "abduction"), compiled)
     curve = detection_curve(outcomes)
 
     assert outcomes, "the sweep produced no outcomes at all"
     assert all(level.threshold_points.n == 0 for level in curve)
-    assert all(level.static_target.n == 0 for level in curve)
-    assert all(level.skipped == len(CASE_IDS) for level in curve)
+    assert all(level.static_target.n == 1 for level in curve)
+    assert all(level.skipped == len(CASE_IDS) - 1 for level in curve)
 
     ledger = skip_ledger(curve)
-    assert ledger, "every pair was skipped but no reason was recorded"
+    assert ledger, "pairs were skipped but no reason was recorded"
     assert any("beyond_max" in reason for reason in ledger)
 
-    # And it refuses rather than reporting a threshold over nothing.
+    # And it refuses rather than reporting a threshold over statics alone.
     with pytest.raises(DetectionError, match="capability and not a threshold"):
         detection_threshold(curve)
 
@@ -164,10 +187,13 @@ def test_a_permissive_guard_shows_the_baseline_really_measures(compiled) -> None
     # `unmutated_baseline` that simply returned zero would pass every other
     # assertion in this file.
     #
-    # Same target, guard removed. left/rightLowerArm.abduction is `beyond_max` on
-    # 46 of the 47 corpus cases before any mutation, so with nothing excluding
-    # them the unmutated detection rate must be 1.0 -- and a hardcoded zero, or a
-    # function reading the mutated clip, cannot produce that.
+    # Same target, guard removed. After the humeral-roll fix,
+    # rightLowerArm.abduction is `beyond_max` unmutated on three of this file's
+    # four cases (burpee, dance, run-forward) and clean on kick-right, so with
+    # nothing excluding them the unmutated detection rate must be exactly 3/4
+    # -- and a hardcoded zero, or a function reading the mutated clip, cannot
+    # produce that. (Before the fix it was 4/4; the un-vanishing of the clean
+    # case is the fix showing up in this baseline.)
     from dataclasses import replace
 
     template = rom_sweep("rightLowerArm", "abduction")[0]
@@ -175,13 +201,16 @@ def test_a_permissive_guard_shows_the_baseline_really_measures(compiled) -> None
     baseline = unmutated_baseline([permissive], compiled)
 
     assert baseline.n == len(CASE_IDS), "the permissive guard should admit every case"
-    assert baseline.successes == baseline.n
-    assert baseline.estimate == 1.0
+    assert baseline.successes == 3
+    assert baseline.estimate == pytest.approx(0.75)
 
     # And this is exactly what rom_guard exists to keep out of a curve: with the
-    # real guard the same sweep admits nothing at all rather than scoring a
-    # perfect detection of the bound.
-    assert unmutated_baseline(rom_sweep("rightLowerArm", "abduction"), compiled).n == 0
+    # real guard the same sweep admits only the clean case (kick-right, whose
+    # static elbow contributes no detection), so the baseline over admitted
+    # cases stays zero rather than scoring a perfect detection of the bound.
+    guarded = unmutated_baseline(rom_sweep("rightLowerArm", "abduction"), compiled)
+    assert guarded.n == 1
+    assert guarded.successes == 0
 
 
 def test_the_structural_channel_reads_the_analysed_clip_not_the_compilers_metrics(

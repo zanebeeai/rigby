@@ -1,11 +1,21 @@
 """Per-DOF range-of-motion enforcement. Plan 04c.
 
-04b measured; this gates. The decision it encodes is that **the elbow bound is
+04b measured; this gates. The decision it encoded was that **the elbow bound is
 right and the compiler is wrong on every clip**, reported as a 100% rejection
 rate with its n rather than softened until the number looks survivable. Plan 04
-§6.1l records the measurement that settles it: the humerus rolls under a third
-of a degree while the forearm departs its plane by up to 96, so there is nothing
-upstream to justify the excursion.
+§6.1l records the measurement that settled it: the humerus rolls under a third
+of a degree while the forearm departs its plane by up to 96, so there was
+nothing upstream to justify the excursion.
+
+The humeral-roll fix then repaired the compiler, and the landscape this file
+pins moved with it: 16 of 46 cases with frames are now rejected (was 46 of 46),
+9 of those on elbow abduction alone, and the corpus-wide peak lowerArm
+abduction is 17.8 degrees (was 96). The bound itself did not move -- the same
+enforcement now accepts the majority of the corpus because the motion improved.
+The follow-up swing-twist-coordinated interpolation of the arm chain then
+removed the throwing-arm excursions that were interpolation transients rather
+than authored motion, which is what moved 18 to 16 and 32.6 to 17.8.
+Every count below is a fresh measurement over the re-blessed corpus.
 """
 
 from __future__ import annotations
@@ -112,20 +122,23 @@ def test_both_hinges_enforce_abduction_and_neither_enforces_twist() -> None:
 # --------------------------------------------------------------------------
 
 
-def test_enforcement_rejects_every_corpus_case(corpus_failures) -> None:
-    """Plan §6.4's intended outcome, pinned with its n rather than softened.
+def test_enforcement_rejects_the_measured_minority_of_cases(corpus_failures) -> None:
+    """The rejection rate, pinned with its n rather than softened.
 
-    46 of 46 cases with frames. This is not a regression and it must not be
-    fixed by widening the bound: §6.1l tested the one hypothesis that would have
-    exonerated the compiler -- that humeral roll justifies the off-plane forearm
-    -- and measured under a third of a degree of roll against up to 96 degrees
-    of departure.
+    16 of 46 cases with frames, measured after the humeral-roll fix plus the
+    swing-twist-coordinated arm interpolation. Before the roll fix this was 46
+    of 46 -- the elbow bound rejecting every clip because the compiler put the
+    roll in the wrong joint -- and the fixes, not any widening of the bound,
+    are what moved the number (the coordinated interpolation cleared the two
+    throwing-arm cases whose excursions were blend transients). A moved count
+    here means the motion or the bound changed: re-measure and re-pin, never
+    widen.
     """
 
     rejected = [case for case, failing in corpus_failures.items() if failing]
 
     assert len(corpus_failures) == 46
-    assert len(rejected) == 46
+    assert len(rejected) == 16, sorted(rejected)
 
 
 def test_the_elbow_is_the_whole_story_and_the_rest_is_the_variance(corpus_failures) -> None:
@@ -140,15 +153,28 @@ def test_the_elbow_is_the_whole_story_and_the_rest_is_the_variance(corpus_failur
         for case, failing in corpus_failures.items()
         if failing and all(dof.endswith("LowerArm.abduction") for dof in failing)
     ]
+    rejected = [case for case, failing in corpus_failures.items() if failing]
 
-    assert len(elbow_only) == 37
-    assert len(corpus_failures) - len(elbow_only) == 9
+    # Measured after the humeral-roll fix plus the swing-twist-coordinated
+    # arm interpolation: 16 rejections split 9 elbow-only and 7 on other DOFs
+    # (feet, hand twist, little-finger abduction, and the cartwheel's mixed
+    # set). Before the roll fix it was 37 elbow-only of 46.
+    assert len(elbow_only) == 9, sorted(elbow_only)
+    assert len(rejected) - len(elbow_only) == 7
 
 
-def test_every_case_fails_on_both_elbows(corpus_failures) -> None:
-    for case, failing in corpus_failures.items():
-        assert "leftLowerArm.abduction" in failing, case
-        assert "rightLowerArm.abduction" in failing, case
+def test_only_the_symmetric_fullbody_trio_fails_on_both_elbows(corpus_failures) -> None:
+    """Before the humeral-roll fix every case failed on both elbows; now the
+    excursion is real motion, so it follows the active arm. Only the three
+    symmetric full-body cases still breach on both sides, and each strike case
+    fails on exactly one elbow. Measured over the re-blessed corpus."""
+
+    both = sorted(
+        case
+        for case, failing in corpus_failures.items()
+        if "leftLowerArm.abduction" in failing and "rightLowerArm.abduction" in failing
+    )
+    assert both == ["fullbody-burpee-cycle", "fullbody-cartwheel", "fullbody-dance"]
 
 
 # --------------------------------------------------------------------------
@@ -159,9 +185,11 @@ def test_every_case_fails_on_both_elbows(corpus_failures) -> None:
 def test_no_duration_tolerance_is_applied_because_there_are_no_blips() -> None:
     """Plan §3.5 proposed gating on the integral to separate a blip from a
     sustained excursion. Measured over the corpus, there are no blips to
-    separate: the shortest violation runs 4 frames and the median occupies 99%
-    of its clip. A duration gate would filter nothing and would be an
-    unmotivated constant, so the band gates and the integral only ranks.
+    separate: the shortest violation runs 3 frames
+    (fullbody-run-forward, rightLowerArm.abduction, re-measured after the
+    humeral-roll fix; it was 4 frames before it). A duration gate would filter
+    nothing and would be an unmotivated constant, so the band gates and the
+    integral only ranks.
 
     If a future corpus does contain single-frame excursions, this test fails and
     the duration gate becomes justified -- which is the point of pinning it.
@@ -179,7 +207,7 @@ def test_no_duration_tolerance_is_applied_because_there_are_no_blips() -> None:
                 shortest = violation.frames
 
     assert shortest is not None
-    assert shortest >= 4
+    assert shortest >= 3
 
 
 def test_a_report_only_breach_does_not_fail(corpus_failures) -> None:

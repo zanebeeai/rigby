@@ -56,11 +56,11 @@ def rest_clip(clip):
     """A clip of the rig at its rest pose, borrowing a real clip's timing.
 
     The plan asks for the injection to go into a corpus clip. It cannot, for
-    the elbow, and the reason is 04b's headline measurement: **no corpus case is
-    clean on elbow abduction.** All twelve exceed the 5-degree hinge bound, the
-    quietest of them peaking at 42.2 degrees. There is no unmutated baseline to
-    inject into, so a size assertion against one would be measuring the sum of
-    the injection and a defect.
+    this file's absolute-size assertions: the chosen clip's left elbow still
+    exceeds the hinge bound (12 of 46 cases with frames do, post humeral-roll
+    fix; before the fix it was every case, the quietest peaking at 42.2
+    degrees), so a size assertion against it would be measuring the sum of the
+    injection and the residual excursion.
 
     So the control is synthetic and clean by construction, and
     :func:`test_a_corpus_clip_reports_the_injected_increase` covers the realism
@@ -134,7 +134,7 @@ def test_the_chosen_case_has_a_moving_elbow(clip) -> None:
     """Guards this file's own instrument against a silent regression.
 
     A corpus clip whose elbow never moves would make every assertion below pass
-    for the wrong reason. 42 of the corpus's cases would fail this.
+    for the wrong reason.
     """
 
     frame_obj = bone_anatomical_frame("leftLowerArm")
@@ -144,21 +144,29 @@ def test_the_chosen_case_has_a_moving_elbow(clip) -> None:
     ]
 
     assert len({round(value, 6) for value in values}) > 20
-    assert max(values) - min(values) > 20.0
+    # Measured 9.65 degrees of spread after the humeral-roll fix (the fix took
+    # the spurious 40+ degree excursion out of the elbow); the bound is half the
+    # measurement, the same margin the pre-fix 20.0 bound had against ~40.
+    assert max(values) - min(values) > 5.0
 
 
-def test_no_corpus_case_is_clean_on_elbow_abduction(clip) -> None:
-    """04b's headline measurement, pinned as the reason the control is synthetic.
+def test_the_elbow_landscape_after_the_humeral_roll_fix(clip) -> None:
+    """04b's headline measurement was "no corpus case is clean on elbow
+    abduction" -- every case with frames exceeded the hinge bound, the quietest
+    peaking at 42.2 degrees, because the compiler expressed humeral roll as
+    elbow abduction. The humeral-roll fix moved the landscape and this test
+    pins the new one.
 
-    Every case with frames in it exceeds the 5-degree hinge bound on at least one
-    elbow. Asserted as "all of them" rather than as a count, so growing the
-    corpus does not turn this red for the wrong reason -- and because the count
-    was never the claim. Lane `groundtruth` re-measured over 47 cases: still all
-    of them, the only exception being a known-bad case that compiles to zero
-    frames.
-
-    This is report-only, so nothing fails today. 04c is where it starts
-    rejecting, and plan §6.4 says that is the intended outcome.
+    Measured over the re-blessed corpus: 10 of 46 cases with frames still
+    breach beyond_max on at least one elbow -- and those excursions are now
+    real motion (peaking at 17.8 degrees corpus-wide, on the right elbow of
+    fullbody-burpee-cycle) rather than a uniform artifact. The two throwing
+    cases that used to top this list (knownbad-sequence-throw-then-catch and
+    object-throw-far at 32.6 degrees) left it when the arm chain's
+    interpolation became swing-twist coordinated: their excursions were blend
+    transients between roll-bearing keyframes, not authored motion. The exact
+    dirty set is pinned so a compiler change that re-introduces the artifact
+    turns this red as a set change, not as a silent rate shift.
     """
 
     clean, dirty = [], []
@@ -173,8 +181,20 @@ def test_no_corpus_case_is_clean_on_elbow_abduction(clip) -> None:
         ) else clean
         target.append(case.entry.id)
 
-    assert dirty, "no corpus case compiled any frames"
-    assert clean == [], f"cases with a clean elbow now exist: {clean}"
+    assert sorted(dirty) == [
+        "fullbody-burpee-cycle",
+        "fullbody-cartwheel",
+        "fullbody-dance",
+        "fullbody-run-forward",
+        "grasp-block-overhead",
+        "knownbad-strike-hyperfast",
+        "strike-cross-right",
+        "strike-hook-right",
+        "strike-jab-left",
+        "strike-uppercut-right",
+    ], sorted(dirty)
+    assert len(clean) == 36, sorted(clean)
+    assert CASE in dirty, "the chosen corpus clip must still carry a real excursion"
 
 
 @pytest.mark.parametrize("degrees", [30.0, 60.0])
