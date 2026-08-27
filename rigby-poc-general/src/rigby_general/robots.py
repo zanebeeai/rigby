@@ -98,6 +98,58 @@ class RobotRecord:
         }
 
 
+
+def _copy_referenced_assets(
+    mjcf_xml: str, source_root: Path, destination: Path
+) -> list[str]:
+    """Copy every mesh and texture the model names, keeping its own layout.
+
+    A stored model that names ``meshes/kr6_agilus/link_1.stl`` and does not carry
+    that file is a model that compiles nowhere. Registration used to keep only
+    the XML, so every mesh-bearing robot registered successfully and then failed
+    to load -- the API listed seven robots out of eleven and the four missing
+    ones were exactly the ones with geometry worth looking at.
+
+    The relative path is preserved rather than flattened, because it is what the
+    XML says. Anything resolving outside the source directory is skipped: the
+    loader's sandbox already refuses those, and a copy step is not the place to
+    quietly re-admit one.
+    """
+
+    from xml.etree import ElementTree as ET
+
+    try:
+        root = ET.fromstring(mjcf_xml)
+    except ET.ParseError:  # pragma: no cover - the model just compiled
+        return []
+
+    source_root = source_root.resolve()
+    copied: list[str] = []
+    seen: set[str] = set()
+    for element in root.iter():
+        if element.tag not in ("mesh", "texture", "hfield"):
+            continue
+        reference = element.get("file")
+        if not reference or reference in seen:
+            continue
+        seen.add(reference)
+
+        origin = (source_root / reference).resolve()
+        if not origin.is_file():
+            continue
+        try:
+            origin.relative_to(source_root)
+        except ValueError:
+            continue
+
+        target = destination / reference
+        target.parent.mkdir(parents=True, exist_ok=True)
+        _atomic_write(target, origin.read_bytes())
+        copied.append(reference)
+
+    return sorted(copied)
+
+
 def _atomic_write(path: Path, payload: bytes) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     handle, temporary = tempfile.mkstemp(dir=str(path.parent), suffix=".tmp")
@@ -173,6 +225,9 @@ class RobotRegistry:
         source_name = f"source{source_path.suffix or '.urdf'}"
         _atomic_write(directory / source_name, source_path.read_bytes())
         _atomic_write(directory / _MODEL, ingested.mjcf_xml.encode("utf-8"))
+        copied = _copy_referenced_assets(
+            ingested.mjcf_xml, source_path.parent, directory
+        )
         _atomic_write(
             directory / _MANIFEST, ingested.manifest.canonical_json().encode("utf-8")
         )
@@ -184,6 +239,7 @@ class RobotRegistry:
         provenance = {
             "robot_id": robot_id,
             "source_file": source_name,
+            "asset_files": copied,
             "source_sha256": ingested.manifest.source_asset.sha256,
             "mjcf_sha256": ingested.manifest.mjcf.sha256,
             "manifest_sha256": ingested.manifest.content_hash(),

@@ -71,6 +71,13 @@ def render_trace(
     centre: np.ndarray,
     reach: float,
 ) -> list[Image.Image]:
+    # A trace with no samples has nothing to render. That happens for real --
+    # a stative certified in zero steps, or an attempt refused before the first
+    # one -- and it is not an error, so return no frames rather than crashing
+    # the whole build on the last robot in the list.
+    if len(times) == 0 or len(qpos) == 0:
+        return []
+
     duration = float(times[-1]) or 1.0
     wanted = min(MAX_FRAMES, max(8, int(duration * TARGET_FPS)))
     indices = np.linspace(0, len(qpos) - 1, wanted).astype(int)
@@ -93,7 +100,16 @@ def render_trace(
     return frames
 
 
-def write_gif(frames: list[Image.Image], path: Path) -> None:
+def write_gif(frames: list[Image.Image], path: Path) -> bool:
+    """Write the clip, or report that there was nothing to write.
+
+    A trace with no samples produces no frames, which is a real outcome rather
+    than an error -- so say there is no clip instead of writing a broken one or
+    taking the whole build down on the last robot in the list.
+    """
+
+    if not frames:
+        return False
     path.parent.mkdir(parents=True, exist_ok=True)
     quantized = [
         frame.convert("P", palette=Image.ADAPTIVE, colors=96) for frame in frames
@@ -106,6 +122,7 @@ def write_gif(frames: list[Image.Image], path: Path) -> None:
         loop=0,
         optimize=True,
     )
+    return True
 
 
 def main() -> int:

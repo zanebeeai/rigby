@@ -14,6 +14,8 @@ working volume -- which is exactly the invariant the schema layer needs.
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from dataclasses import dataclass
 from xml.etree import ElementTree as ET
 
@@ -92,6 +94,7 @@ def build_grasp_scene(
     base_xml: str,
     effector: EffectorV1,
     frame: WorkspaceFrame,
+    asset_root: "Path | None" = None,
 ) -> GraspScene:
     """Add a support surface and a graspable block to a robot's model."""
 
@@ -167,6 +170,19 @@ def build_grasp_scene(
         solimp="0.95 0.99 0.001",
     )
     ET.SubElement(block, "site", name=OBJECT_SITE, pos="0 0 0", size="0.002")
+
+    # Mesh files are named relative to the robot's own directory, so a scene
+    # compiled from a string anywhere else cannot open them. Same reason the
+    # authored environments carry a root.
+    if asset_root is not None:
+        compiler = root.find("compiler")
+        if compiler is None:
+            compiler = ET.Element("compiler")
+            root.insert(0, compiler)
+        if not compiler.get("meshdir"):
+            compiler.set("meshdir", str(Path(asset_root).resolve()))
+        if not compiler.get("texturedir"):
+            compiler.set("texturedir", str(Path(asset_root).resolve()))
 
     xml = ET.tostring(root, encoding="unicode")
     try:

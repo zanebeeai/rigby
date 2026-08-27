@@ -101,9 +101,10 @@ def _register_bundled_robots(registry: RobotRegistry, settings: GeneralSettings)
             if not source.is_file() or directory.name in known:
                 continue
             try:
-                registry.register_bytes(
-                    source.read_bytes(),
-                    filename=source.name,
+                # From the path, not from the bytes: a URDF names its meshes
+                # relative to its own directory, and bytes have no directory.
+                registry.register_source(
+                    source,
                     robot_id=directory.name,
                 )
             except Exception:  # noqa: BLE001 - a refused model simply is not offered

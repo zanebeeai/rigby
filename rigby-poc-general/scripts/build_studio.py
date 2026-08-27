@@ -69,6 +69,20 @@ PER_ROBOT_PROMPTS: dict[str, tuple[str, ...]] = {
     "iiwa7": ("trace a big circle", "reach out slowly and hold there"),
     "kuka_lwr": ("sweep across in front of you", "wave twice"),
     "panda": ("reach out as far as you can, quickly", "trace a slow circle"),
+    # The two robots that exist on the bench, asked for the same kinds of thing.
+    # The KUKA is a metre-class industrial arm and gets metre-class motions; the
+    # uHand is a hand with no arm, so it gets what a hand can actually be asked
+    # for. Giving it a path prompt would not be a harder demo, it would be a
+    # refusal, and there is one of those below on purpose.
+    "kuka_kr6": (
+        "trace a big circle",
+        "lower the tool down toward the table",
+        "sweep across the workspace, then hold still",
+    ),
+    "uhand2": (
+        "hold still",
+        "turn your fingers to point up and hold there",
+    ),
 }
 
 # One of each refusal, so the studio shows what "no" looks like at every stage.
@@ -77,6 +91,10 @@ REFUSAL_PROMPTS: tuple[tuple[str, str], ...] = (
     ("zoo_jaw_arm", "make me a sandwich"),
     ("zoo_jaw_arm", "hand it over to your other arm"),
     ("zoo_tool_arm", "pick it up and hold it"),
+    # A hand asked to travel. It is admitted, it grasps, and it still cannot be
+    # asked for a path -- every path schema requires positioning and a hand has
+    # none. The refusal names that rather than blaming the words.
+    ("uhand2", "trace a big circle"),
 )
 
 
@@ -200,9 +218,9 @@ def main() -> int:
                 reach=robot.morphology.scale.reach_radius_m,
             )
             scratch = arguments.out / "_scratch.gif"
-            render_demo.write_gif(frames, scratch)
-            clip_bytes = scratch.read_bytes()
-            scratch.unlink(missing_ok=True)
+            if render_demo.write_gif(frames, scratch):
+                clip_bytes = scratch.read_bytes()
+                scratch.unlink(missing_ok=True)
 
         if result.accepted:
             # The simulated rollout, resampled for scrubbing. Same trace the
@@ -225,7 +243,10 @@ def main() -> int:
         robot = loaded.robot
 
         outcome = probe_grasp(
-            robot.manifest, robot.mjcf_xml, robot.finalized.model
+            robot.manifest,
+            robot.mjcf_xml,
+            robot.finalized.model,
+            asset_root=sources[robot_id].parent,
         )
         clip_bytes = None
         if outcome.result is not None and not arguments.no_render:
@@ -237,9 +258,9 @@ def main() -> int:
                 reach=robot.morphology.scale.reach_radius_m * 0.45,
             )
             scratch = arguments.out / "_scratch.gif"
-            render_demo.write_gif(frames, scratch)
-            clip_bytes = scratch.read_bytes()
-            scratch.unlink(missing_ok=True)
+            if render_demo.write_gif(frames, scratch):
+                clip_bytes = scratch.read_bytes()
+                scratch.unlink(missing_ok=True)
 
         store.write(outcome.trace, clip_bytes=clip_bytes)
         verdict = (

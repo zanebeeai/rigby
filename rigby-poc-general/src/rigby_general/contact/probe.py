@@ -15,6 +15,8 @@ record in two would mean the failed grasps quietly stop being visible.
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import time
 from dataclasses import dataclass
 
@@ -43,6 +45,7 @@ def probe_grasp(
     model,
     *,
     prompt: str = PROBE_PROMPT,
+    asset_root: "Path | None" = None,
 ) -> ProbeOutcome:
     """Build a scene for this robot, attempt a pick, and record every step."""
 
@@ -94,7 +97,9 @@ def probe_grasp(
 
     mark = time.perf_counter()
     try:
-        scene = build_grasp_scene(manifest, mjcf_xml, effector, frame)
+        scene = build_grasp_scene(
+            manifest, mjcf_xml, effector, frame, asset_root=asset_root
+        )
     except RigbyGeneralError as error:
         trace.record(
             "scene", "refused", (time.perf_counter() - mark) * 1000.0, str(error)
