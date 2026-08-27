@@ -677,7 +677,18 @@ def strike_path_target(
 
 
 def shoulder_position(hand: Hand) -> Vec3:
-    return Vec3(x=0.174 if hand == Hand.LEFT else -0.174, y=1.446, z=-0.065)
+    """The shoulder origin, read from the rig profile rather than rounded.
+
+    Plan 08 §1.1 item 4. This returned (±0.174, 1.446, -0.065) -- the profile's
+    (±0.1737, 1.4457, -0.0652) rounded to three decimals. Targets are generated
+    against this origin and then checked for reach against one computed from the
+    profile under a **zero** tolerance (`semantic_forward_space.reach_tolerance_m`
+    is 0.0), so the rounding was a source of spurious reach failures: the two
+    origins differ by 0.469 mm, which is the exact worst-case excess.
+    """
+
+    x, y, z = value_of("anatomy.shoulder_origin_m")
+    return Vec3(x=x if hand == Hand.LEFT else -x, y=y, z=z)
 
 
 def smoothstep(value: float, easing: float) -> float:
