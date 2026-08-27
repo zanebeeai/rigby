@@ -11,7 +11,7 @@ This revision is an end-to-end authoring system rather than a direct text-to-joi
 Install Python 3.12, [`uv`](https://docs.astral.sh/uv/), Node.js 20.19+, npm, and Google Chrome. From the repository root, run:
 
 ```powershell
-Set-Location rigby-humanoid
+Set-Location humanoid
 Copy-Item .env.example .env  # Add OPENAI_API_KEY to this file
 uv sync --extra dev --link-mode copy
 Set-Location frontend
@@ -31,41 +31,41 @@ Each recording below replays the same saved clip in the 94-degree egocentric cam
 
 Prompt: `throw a left hook`
 
-![A left hook shown from egocentric and orbit cameras](rigby-humanoid/docs/media/left-hook.gif)
+![A left hook shown from egocentric and orbit cameras](humanoid/docs/media/left-hook.gif)
 
 ### Right jab
 
 Prompt: `throw a right jab`
 
-![A right jab shown from egocentric and orbit cameras](rigby-humanoid/docs/media/right-jab.gif)
+![A right jab shown from egocentric and orbit cameras](humanoid/docs/media/right-jab.gif)
 
 ### Step over a hurdle
 
 Prompt: `step over the hurdle with your right foot`
 
-![A right-foot hurdle step shown from egocentric and orbit cameras](rigby-humanoid/docs/media/step-over-hurdle.gif)
+![A right-foot hurdle step shown from egocentric and orbit cameras](humanoid/docs/media/step-over-hurdle.gif)
 
 ### Multi-phase hang-ten
 
 Prompt: `Throw up a "hang-ten" sign with your right hand, there should be a swift motion up to the main position wherein the middle three fingers are as contracted as possible, the wrist should then shake rapidly back and forth a few times, before returning to default`
 
-![A multi-phase hang-ten gesture shown from egocentric and orbit cameras](rigby-humanoid/docs/media/hang-ten.gif)
+![A multi-phase hang-ten gesture shown from egocentric and orbit cameras](humanoid/docs/media/hang-ten.gif)
 
 ### Ordered fingertip counting
 
 Prompt: `use your right thumb to one by one count each of the fingers on your right hand (while looking at it)`
 
-![Ordered right-thumb fingertip counting shown from egocentric and orbit cameras](rigby-humanoid/docs/media/finger-count.gif)
+![Ordered right-thumb fingertip counting shown from egocentric and orbit cameras](humanoid/docs/media/finger-count.gif)
 
 ### Before and after: the humeral-roll fix
 
 Prompt: `throw the block far and high with your right hand` — the same program compiled by the pre-fix compiler (left) and by current main (right), phase-aligned.
 
-![The same throw before and after the humeral-roll fix, phase-aligned](rigby-humanoid/docs/media/arm-fix-throw-comparison.gif)
+![The same throw before and after the humeral-roll fix, phase-aligned](humanoid/docs/media/arm-fix-throw-comparison.gif)
 
 Before the fix the compiler reached hand targets by bending the elbow out of its hinge plane — in this wind-up the forearm folds sideways across the chest, peaking at 130.6 degrees of elbow abduction on a joint that has none. After the fix the humerus rolls instead, and elbow abduction stays under 4 degrees at solver keyframes corpus-wide.
 
-The exact result IDs, prompts, durations, and GIF settings are preserved in [the demo manifest](rigby-humanoid/docs/media/demo-manifest.json).
+The exact result IDs, prompts, durations, and GIF settings are preserved in [the demo manifest](humanoid/docs/media/demo-manifest.json).
 
 ## The pipeline
 
@@ -170,7 +170,7 @@ The calibrated VLM scores semantic match, recognizability, anatomy, temporal rea
 
 If no candidate passes, the judge may return one schema-constrained repair patch. Repairs can adjust bounded parameters such as staging, phase duration, easing, task-space offsets, wrist/forearm presentation, body scale, or object arc; they cannot change the intent, hand, phase order, primitive vocabulary, or safety limits. The normal product route allows at most two rounds and four judge/repair model calls. Exhaustion returns `no_acceptable_candidate` rather than selecting a known failure.
 
-Human ratings are not part of current generation. The final frozen 10-pair calibration achieved 9/10 VLM-human agreement and 10/10 A/B order consistency; the 28-case corruption suite produced zero false accepts. A compact immutable record is checked into [the calibration evidence](rigby-humanoid/docs/evidence/frozen-judge-calibration.json). This validates the judge as an automated POC proxy, not as a substitute for broader user research.
+Human ratings are not part of current generation. The final frozen 10-pair calibration achieved 9/10 VLM-human agreement and 10/10 A/B order consistency; the 28-case corruption suite produced zero false accepts. A compact immutable record is checked into [the calibration evidence](humanoid/docs/evidence/frozen-judge-calibration.json). This validates the judge as an automated POC proxy, not as a substitute for broader user research.
 
 ### 8. Edit, inspect, replay, and export
 
@@ -207,7 +207,7 @@ The selected clip opens directly in Motion Studio. The UI provides synchronized 
 | `POST /api/v1/pipeline-runs` | Start an asynchronous best-of-five run |
 | `GET /api/v1/pipeline-runs/{id}` | Poll its persistent event trace and terminal winner/failure |
 
-The Pydantic contracts reject unknown fields. See [models.py](rigby-humanoid/src/rigby_poc/models.py) for the canonical schema rather than treating README examples as an alternate definition.
+The Pydantic contracts reject unknown fields. See [models.py](humanoid/src/rigby_poc/models.py) for the canonical schema rather than treating README examples as an alternate definition.
 
 ## Persistence and reproducibility
 
@@ -235,7 +235,7 @@ Every clip records the rig, source asset, compiler and physics versions, planner
 Run the local regression suite:
 
 ```powershell
-Push-Location rigby-humanoid
+Push-Location humanoid
 uv run pytest -q
 Push-Location frontend
 npm test
@@ -251,14 +251,14 @@ The higher-cost release audit uses existing public pipeline runs and the frozen 
 uv run python -m evals.autonomous_goal_audit
 ```
 
-That audit is intentionally not a clean-checkout unit test: it expects the local result archive and model-backed smoke evidence described in [the evaluation guide](rigby-humanoid/docs/evaluation.md).
+That audit is intentionally not a clean-checkout unit test: it expects the local result archive and model-backed smoke evidence described in [the evaluation guide](humanoid/docs/evaluation.md).
 
 ## Regenerating the README GIFs
 
 Start the server with the corresponding saved results available, then run:
 
 ```powershell
-Push-Location rigby-humanoid
+Push-Location humanoid
 uv run python -m evals.render_demo_gif 006012-throw-a-left-hook docs/media/left-hook.gif
 uv run python -m evals.render_demo_gif 006260-throw-a-right-jab docs/media/right-jab.gif
 uv run python -m evals.render_demo_gif 006277-step-over-the-hurdle-with-your-right-foot docs/media/step-over-hurdle.gif
@@ -270,19 +270,38 @@ The renderer samples the whole clip at 8 FPS, reuses the production capture page
 
 ## Repository map
 
+Three tiers. The dependency arrow only ever points down.
+
 ```text
-rigby-humanoid/
+core/                       morphology-neutral foundation (5k lines)
+└── src/rigby_core/
+    ├── contracts.py        typed motion programs, rig specs, artifact refs
+    ├── hashing.py          content addressing
+    ├── errors.py           the shared FailureCode enum
+    ├── artifacts.py        content-addressed artifact store
+    ├── jobs.py             job store (SQLite) + postgres_jobs.py, records.py
+    ├── motion/             the motion compiler, timing, rotations, refinement
+    └── simulation/         the inverse-dynamics PD controller
+
+humanoid/                   the calibrated single-rig vertical
+├── src/rigby_poc/          v1: planner, primitives, compiler, physics, judge, API, export
+├── src/rigby_v2/           v2: rigging, scenes, selection, certification, release, flywheel
 ├── assets/                 calibrated humanoid GLB
 ├── config/                 rig profile and versioned quality thresholds
 ├── docs/                   research, evaluation, flywheel, evidence, and media
 ├── evals/                  capture, VLM flywheel, calibration, audits, and reports
 ├── frontend/               Vite + TypeScript + Three.js Motion Studio
-├── src/rigby_poc/          planner, primitives, compiler, physics, judge, API, export
-├── tests/                  deterministic backend regression suite
-├── acceptance_criteria.yaml
-├── pyproject.toml
-└── uv.lock
+└── tests/                  deterministic backend regression suite
+
+any-robot/                  arbitrary URDF in, certified primitive library out
+├── src/rigby_general/      ingest, morphology, binding, grounding, gates, bake
+├── robots/                 sample URDFs
+└── tests/
 ```
+
+`humanoid/` and `any-robot/` both depend on `core/`. Neither depends on the
+other, and nothing in `core/` imports either of them -- `tests/test_core_is_neutral.py`
+enforces that.
 
 ## Design boundaries and known limitations
 
@@ -298,6 +317,6 @@ The next justified investment is not unrestricted generation. It is expanding ve
 
 ## Research and evaluation
 
-The architectural rationale and staged investment gates are in [research-and-roadmap.md](rigby-humanoid/docs/research-and-roadmap.md). The current autonomous selection contract is in [vlm-flywheel.md](rigby-humanoid/docs/vlm-flywheel.md), and the release checks are in [evaluation.md](rigby-humanoid/docs/evaluation.md).
+The architectural rationale and staged investment gates are in [research-and-roadmap.md](humanoid/docs/research-and-roadmap.md). The current autonomous selection contract is in [vlm-flywheel.md](humanoid/docs/vlm-flywheel.md), and the release checks are in [evaluation.md](humanoid/docs/evaluation.md).
 
 The design draws most directly from smart-primitive authoring, object-relative constraints, egocentric task-space data, executable motion verification, multi-sample self-consistency, and a render/judge/repair flywheel. The research synthesis explains what was adopted, what was deliberately deferred, and why Rigby keeps physical and structural truth outside the language model.
