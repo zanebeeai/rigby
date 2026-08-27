@@ -179,6 +179,7 @@ def test_the_known_entry_point_scripts_are_recognised_as_scripts(
         "autonomous_goal_audit",
         "batch_flywheel",
         "complex_structural_sweep",
+        "render_comparison_gif",
         "render_demo_gif",
         "rerank_existing",
     ):
