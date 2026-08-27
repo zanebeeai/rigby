@@ -57,6 +57,14 @@ Prompt: `use your right thumb to one by one count each of the fingers on your ri
 
 ![Ordered right-thumb fingertip counting shown from egocentric and orbit cameras](rigby-humanoid/docs/media/finger-count.gif)
 
+### Before and after: the humeral-roll fix
+
+Prompt: `throw the block far and high with your right hand` — the same program compiled by the pre-fix compiler (left) and by current main (right), phase-aligned.
+
+![The same throw before and after the humeral-roll fix, phase-aligned](rigby-humanoid/docs/media/arm-fix-throw-comparison.gif)
+
+Before the fix the compiler reached hand targets by bending the elbow out of its hinge plane — in this wind-up the forearm folds sideways across the chest, peaking at 130.6 degrees of elbow abduction on a joint that has none. After the fix the humerus rolls instead, and elbow abduction stays under 4 degrees at solver keyframes corpus-wide.
+
 The exact result IDs, prompts, durations, and GIF settings are preserved in [the demo manifest](rigby-humanoid/docs/media/demo-manifest.json).
 
 ## The pipeline
