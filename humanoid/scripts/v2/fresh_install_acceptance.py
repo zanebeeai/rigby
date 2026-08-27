@@ -14,6 +14,7 @@ from pathlib import Path
 
 from rigby_v2.config import RuntimeSettings
 from rigby_core.hashing import hash_file
+from rigby_v2.config import resolve_lock_path
 from rigby_v2.release_ops import seal_release_evidence
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -181,7 +182,7 @@ def main() -> int:
             "source_tree_not_on_pythonpath": True,
             "wheel_name": wheels[0].name,
             "wheel_sha256": hash_file(wheels[0]),
-            "dependency_lock_sha256": hash_file(ROOT / "uv.lock"),
+            "dependency_lock_sha256": hash_file(resolve_lock_path(ROOT)),
             "installed_module": imported["module"],
             "versions": {
                 "mujoco": imported["mujoco"],

@@ -6,7 +6,7 @@ No new human ratings are required. Historical reviews are frozen calibration evi
 
 ## Local regression suite
 
-From `rigby-humanoid`:
+From `humanoid`:
 
 ```powershell
 uv run pytest -q

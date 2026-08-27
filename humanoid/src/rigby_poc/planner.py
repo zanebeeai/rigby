@@ -1391,10 +1391,16 @@ def load_environment() -> Path | None:
 
 def provider_status() -> dict[str, object]:
     loaded_from = load_environment()
+    # Compare against the path `load_environment` actually searches, not against
+    # the directory's name. The name form silently reported "workspace" for a
+    # package-local .env the moment this folder was renamed from rigby-humanoid
+    # to humanoid, and nothing failed -- a diagnostic that lies is worse than one
+    # that is absent, so the scope is derived structurally now.
+    package_root = Path(__file__).resolve().parents[2]
     return {
         "openai_available": bool(os.getenv("OPENAI_API_KEY")),
         "dotenv_loaded": loaded_from is not None,
-        "dotenv_scope": "poc" if loaded_from and loaded_from.parent.name == "rigby-humanoid" else "workspace",
+        "dotenv_scope": "poc" if loaded_from == package_root / ".env" else "workspace",
         "primary_model": os.getenv("OPENAI_PLANNER_MODEL", DEFAULT_PRIMARY_MODEL),
         "repair_model": os.getenv("OPENAI_REPAIR_MODEL", DEFAULT_REPAIR_MODEL),
     }

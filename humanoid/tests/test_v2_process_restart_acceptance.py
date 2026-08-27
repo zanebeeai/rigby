@@ -34,6 +34,7 @@ from rigby_core.contracts import (
 )
 from rigby_v2.rigging import stage_canonical_rig
 from rigby_core.hashing import hash_file
+from rigby_v2.config import resolve_lock_path
 from rigby_v2.release_ops import seal_release_evidence
 
 
@@ -349,7 +350,7 @@ def test_live_api_worker_process_restart_recovers_and_replays_exactly(
                     "authoritative_trace_sha256": first_trace,
                     "replay_trace_sha256": replayed["result"]["trace"]["sha256"],
                     "test_source_sha256": hash_file(Path(__file__)),
-                    "dependency_lock_sha256": hash_file(PROJECT_ROOT / "uv.lock"),
+                    "dependency_lock_sha256": hash_file(resolve_lock_path(PROJECT_ROOT)),
                 }
     finally:
         for process in reversed(processes):
