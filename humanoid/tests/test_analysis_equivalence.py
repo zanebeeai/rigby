@@ -331,18 +331,25 @@ def test_analysis_needs_no_network(monkeypatch: pytest.MonkeyPatch) -> None:
 #:   ``("windowed", n)``  the path samples a sub-range; expect exactly n.
 #:                        ``strike_left_hook`` is the strike window, 23 of 99.
 #:
+#: G6b raised six of these. The head-carried ego camera evaluates the hierarchy
+#: once per SAMPLED presentation frame, so the three gesture cases and
+#: ``strike_left_hook`` go from no forward kinematics to their presentation
+#: window, and the two composite cases gain the identity rest-head pose. Those
+#: are the real cost of carrying the camera on the head and they are declared
+#: here rather than absorbed: under the old upper bound all six were invisible.
+#:
 #: Equality is deliberate in both directions. Too many passes is a check that
 #: stopped reading ``AnalysisContext``; too few is coverage that quietly went
 #: away. Update these numbers when a change legitimately moves them, and say so.
 _FK_SHAPES: dict[str, tuple[str, int]] = {
-    "gesture_shaka_right": ("none", 0),
-    "gesture_open_palm": ("none", 0),
-    "gesture_point_right": ("none", 0),
-    "strike_left_hook": ("windowed", 23),
+    "gesture_shaka_right": ("windowed", 30),
+    "gesture_open_palm": ("windowed", 46),
+    "gesture_point_right": ("windowed", 46),
+    "strike_left_hook": ("windowed", 75),
     "grab_block_right": ("none", 0),
-    "composite_travel_foul": ("per_frame", 0),
+    "composite_travel_foul": ("per_frame", 1),
     "composite_finger_count_gaze": ("per_frame", 1),
-    "composite_wave": ("per_frame", 0),
+    "composite_wave": ("per_frame", 1),
     "full_body_walk": ("per_frame", 1),
     "full_body_wave_while_walking": ("per_frame", 1),
     "full_body_climb": ("per_frame", 1),

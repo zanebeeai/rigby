@@ -48,7 +48,11 @@
       }
     },
     "ego_neutral_gaze": {
-      "value": [0.0, -0.65, 1.0],
+      "value": [
+        0.0,
+        -0.65,
+        1.0
+      ],
       "unit": "unit vector, application frame (Y-up, forward +Z), normalised at use",
       "source": {
         "kind": "external",
@@ -66,8 +70,36 @@
       "unit": "m",
       "source": {
         "kind": "provisional",
-        "cites": ["config/motion_quality_reference.json camera_contract.hand_visibility_radius_m"],
+        "cites": [
+          "config/motion_quality_reference.json camera_contract.hand_visibility_radius_m"
+        ],
         "rationale": "Half-span used to decide whether the acting hand is fully inside the egocentric frame. Ported verbatim; no derivation is recorded anywhere in the repository."
+      }
+    },
+    "ego_eye_offset_m": {
+      "value": [
+        0.0,
+        0.04,
+        0.11
+      ],
+      "unit": "m, head-local (Y-up, forward +Z)",
+      "source": {
+        "kind": "external",
+        "cites": [
+          "frontend/src/camera.ts NEUTRAL_EYE_OFFSET",
+          "src/rigby_poc/analysis/gesture.py"
+        ],
+        "derived_from": "the ego camera the evidence renderer actually places, relative to the head it is parented to",
+        "rationale": "The eye offset the renderer uses to hang the ego camera off the head. It is the fifth camera value and the last to be migrated: the other four reached the frontend by generation while this one stayed hand-typed on BOTH sides, and the two copies diverged. The analysis side had folded it into a rest-head position rounded to four decimals, which put its implied offset 0.024 mm from this value -- 0.028 px of a 1600x900 capture, and enough to decide active_hand_visibility_fraction at frame 0 of every strike and gesture clip, because the compiler places the hand at the visibility limit by construction. The renderer is the authority: the check exists to predict what a grader sees in the rendered evidence, so the constant the renderer uses is the definition rather than one opinion of two."
+      },
+      "supersedes": {
+        "key": "src/rigby_poc/analysis/gesture.py _REST_EGO_CAMERA_POSITION",
+        "value": [
+          0.0,
+          1.6085,
+          0.12140000000000001
+        ],
+        "why": "A rest-head position rounded to four decimals with the offset already added, so the offset could not be read back out or compared against the renderer's."
       }
     }
   }

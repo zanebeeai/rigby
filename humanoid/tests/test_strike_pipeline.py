@@ -18,9 +18,13 @@ from evals.flywheel import (
     single_sample_baseline_index,
 )
 from rigby_poc.analysis.gesture import (
+    _full_hand_visible,
     arm_landmarks,
+    ego_camera,
+    quality_reference,
+    rest_ego_camera_position,
 )
-from rigby_poc.analysis.rig import identity_bones
+from rigby_poc.analysis.rig import EGO_EYE_OFFSET_M, EGO_NEUTRAL_GAZE, identity_bones
 from rigby_poc.compiler import compile_motion
 from rigby_poc.kinematics import rig_kinematics
 from rigby_poc.models import (
@@ -218,6 +222,68 @@ def test_strike_evidence_samples_guard_arc_impact_follow_through_and_recovery() 
         "follow_through_late",
         "recover_end",
     } <= labels
+
+
+def test_the_ego_camera_reproduces_the_renderer_at_the_rest_pose() -> None:
+    """At rest the camera must land exactly where the renderer puts it.
+
+    ``computeEgoCameraPose`` rotates the eye offset by the head *delta* -- the
+    current rotation against the rest one -- which is the identity at the rest
+    pose, so the offset composes in world axes there. Getting that wrong by
+    rotating with the rest head block instead moves the camera about 1 cm and
+    drops every strike below the visibility floor, so this pins the composition
+    rather than merely the arithmetic.
+    """
+
+    kinematics = rig_kinematics()
+    head = kinematics.world_matrices(identity_bones())[kinematics.node_by_canonical["head"]]
+
+    position, forward = ego_camera(head[:3, 3], np.eye(3), EGO_EYE_OFFSET_M)
+
+    assert np.allclose(position, head[:3, 3] + EGO_EYE_OFFSET_M, atol=1e-12, rtol=0.0)
+    assert np.allclose(position, rest_ego_camera_position(), atol=1e-12, rtol=0.0)
+    expected_forward = np.array([0.0, -0.65, 1.0])
+    expected_forward /= np.linalg.norm(expected_forward)
+    assert np.allclose(forward, expected_forward, atol=1e-12, rtol=0.0)
+
+
+def test_a_sub_pixel_margin_does_not_decide_the_visibility_verdict() -> None:
+    """The floor, asserted where it actually bites.
+
+    The compiler places the hand at the visibility limit by construction, so at
+    frame 0 of every strike the wrist sits a hundredth of a pixel from the
+    frustum edge. Before the floor, which side of the edge it landed on was
+    decided by whether the eye offset had been rounded -- a 0.024 mm difference,
+    0.028 px of a 1600x900 capture. This asserts the verdict is stable across a
+    perturbation an order of magnitude larger than that drift, and that a clip
+    which is genuinely out of view is still rejected.
+    """
+
+    scene = default_scene()
+    program = plan_motion(
+        PlanRequest(text="throw a left hook", scene=scene, provider="offline")
+    ).program
+    clip = compile_motion(CompileRequest(scene=scene, program=program, persist=False))
+
+    assert clip.metrics["active_hand_visibility_fraction"] == 1.0
+
+    contract = quality_reference()["camera_contract"]
+    _, _, wrist, hand_world = arm_landmarks(clip.frames[0], program.hand)
+    camera = rest_ego_camera_position()
+
+    # Half a pixel of nudge, straight down the vertical axis the margin is on.
+    # Well inside the floor, and an order of magnitude past the rounding drift.
+    depth = float(np.dot(wrist - camera, EGO_NEUTRAL_GAZE))
+    pixel = 2.0 * math.tan(math.radians(float(contract["vertical_fov_deg"])) / 2.0) * depth
+    pixel /= float(contract["height_px"])
+    for sign in (+1.0, -1.0):
+        nudged = wrist + np.array([0.0, sign * pixel * 0.5, 0.0])
+        assert _full_hand_visible(nudged, hand_world, contract), sign
+
+    # A metre out of frame is still out of frame.
+    assert not _full_hand_visible(
+        wrist + np.array([1.0, 0.0, 0.0]), hand_world, contract
+    )
 
 
 def test_the_rig_hand_block_carries_the_same_axes_the_visibility_check_reads() -> None:

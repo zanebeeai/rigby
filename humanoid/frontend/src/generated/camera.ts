@@ -20,3 +20,6 @@ export const egoNeutralGaze = [0.0, -0.65, 1.0] as const;
 
 /** m */
 export const handVisibilityRadiusM = 0.095;
+
+/** m, head-local (Y-up, forward +Z) */
+export const egoEyeOffsetM = [0.0, 0.04, 0.11] as const;
