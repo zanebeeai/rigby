@@ -18,8 +18,6 @@ from __future__ import annotations
 
 import pytest
 
-from evals.corpus import load_corpus
-from evals.corpus.loader import compile_case
 from rigby_poc.analysis import validate_clip
 from rigby_poc.analysis.contract import (
     ANATOMY,
@@ -48,14 +46,13 @@ NO_FRAMES_CASE = "knownbad-eigenvalues-unsupported"
 
 
 @pytest.fixture(scope="module")
-def scored() -> dict[str, tuple[list[CheckResult], object]]:
+def scored(compile_whole_corpus, corpus_by_id) -> dict[str, tuple[list[CheckResult], object]]:
     """``case id -> (checks, CompositeScore)`` over the whole corpus."""
 
     collected = {}
-    for case in load_corpus():
-        clip = compile_case(case)
-        checks = validate_clip(clip, case.program)
-        collected[case.entry.id] = (checks, composite_score(checks))
+    for case_id, clip in compile_whole_corpus().items():
+        checks = validate_clip(clip, corpus_by_id[case_id].program)
+        collected[case_id] = (checks, composite_score(checks))
     return collected
 
 

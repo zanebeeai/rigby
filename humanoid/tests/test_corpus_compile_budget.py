@@ -28,7 +28,18 @@ from pathlib import Path
 
 import pytest
 
-pytestmark = pytest.mark.medium
+#: `slow`, and the reason is this file's own subject.  Counting a file's compiles
+#: means running that file, so the 13 budgeted files execute a second time -- each
+#: in its own subprocess pytest session, paying its own interpreter start, mujoco
+#: import and corpus load.  Measured at 232s of a 1139s suite: 20% of every PR run
+#: spent re-running tests that already ran in the parent session.
+#:
+#: A compile count is a rot guard, not a per-change assertion.  Nightly runs
+#: `-m slow` and catches a new corpus-wide loop within a day, which is the latency
+#: this guard actually needs.  Do not demote it back to `medium` to "get it on PRs":
+#: what that buys is 20% of the suite, every time, to re-learn a number that moves
+#: about once a month.
+pytestmark = pytest.mark.slow
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
@@ -137,6 +148,7 @@ CORPUS_MARKERS = (
     "load_corpus",
     "compile_case",
     "compile_corpus_case",
+    "compile_whole_corpus",
     "evals.corpus",
 )
 

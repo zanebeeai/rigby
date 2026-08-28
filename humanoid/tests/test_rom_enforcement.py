@@ -22,8 +22,6 @@ from __future__ import annotations
 
 import pytest
 
-from evals.corpus import load_corpus
-from evals.corpus.loader import compile_case
 from rigby_poc.analysis.anatomy.authored_rom import ROOT, is_enforced
 from rigby_poc.analysis.anatomy.rom import (
     SEVERITY_SCALE_DEG,
@@ -38,7 +36,7 @@ pytestmark = pytest.mark.medium
 
 
 @pytest.fixture(scope="module")
-def corpus_failures() -> dict[str, list[str]]:
+def corpus_failures(compile_whole_corpus) -> dict[str, list[str]]:
     """Per case: the DOF ids that fail under enforcement. Empty means accepted.
 
     Cases that compile to zero frames are excluded rather than counted as
@@ -47,11 +45,10 @@ def corpus_failures() -> dict[str, list[str]]:
     """
 
     failures: dict[str, list[str]] = {}
-    for case in load_corpus():
-        clip = compile_case(case)
+    for case_id, clip in compile_whole_corpus().items():
         if not clip.frames:
             continue
-        failures[case.entry.id] = sorted(
+        failures[case_id] = sorted(
             result.id.removeprefix("anatomy.rom.")
             for result in rom_checks(clip.frames, fps=clip.fps)
             if result.status == "fail"
@@ -182,7 +179,7 @@ def test_only_the_symmetric_fullbody_trio_fails_on_both_elbows(corpus_failures) 
 # --------------------------------------------------------------------------
 
 
-def test_no_duration_tolerance_is_applied_because_there_are_no_blips() -> None:
+def test_no_duration_tolerance_is_applied_because_there_are_no_blips(compile_whole_corpus) -> None:
     """Plan §3.5 proposed gating on the integral to separate a blip from a
     sustained excursion. Measured over the corpus, there are no blips to
     separate: the shortest violation runs 3 frames
@@ -196,8 +193,7 @@ def test_no_duration_tolerance_is_applied_because_there_are_no_blips() -> None:
     """
 
     shortest = None
-    for case in load_corpus():
-        clip = compile_case(case)
+    for clip in compile_whole_corpus().values():
         if not clip.frames:
             continue
         for violation in rom_violations(clip.frames, fps=clip.fps):
@@ -210,7 +206,7 @@ def test_no_duration_tolerance_is_applied_because_there_are_no_blips() -> None:
     assert shortest >= 3
 
 
-def test_a_report_only_breach_does_not_fail(corpus_failures) -> None:
+def test_a_report_only_breach_does_not_fail(corpus_failures, compile_corpus_case) -> None:
     """The half of the split that makes the other half meaningful.
 
     `rightLittleProximal.abduction` is enforced and fails in three cases. The
@@ -219,8 +215,7 @@ def test_a_report_only_breach_does_not_fail(corpus_failures) -> None:
     recorded and does not gate.
     """
 
-    case = next(item for item in load_corpus() if item.entry.id == "fullbody-cartwheel")
-    clip = compile_case(case)
+    clip = compile_corpus_case("fullbody-cartwheel")
 
     results = {item.id: item for item in rom_checks(clip.frames, fps=clip.fps)}
     breached = {
@@ -239,13 +234,12 @@ def test_a_report_only_breach_does_not_fail(corpus_failures) -> None:
         assert results[key].measured["band"] == "beyond_max"
 
 
-def test_severity_ranks_failures_and_never_decides_one() -> None:
+def test_severity_ranks_failures_and_never_decides_one(compile_corpus_case) -> None:
     """`SEVERITY_SCALE_DEG` is arbitrary and that is safe only while it cannot
     gate. This pins that property: changing the scale must not change any
     status."""
 
-    case = next(item for item in load_corpus() if item.entry.id == "fullbody-dance")
-    clip = compile_case(case)
+    clip = compile_corpus_case("fullbody-dance")
 
     before = {item.id: (item.status, item.severity) for item in rom_checks(clip.frames, fps=clip.fps)}
     failing = {key: value for key, value in before.items() if value[0] == "fail"}

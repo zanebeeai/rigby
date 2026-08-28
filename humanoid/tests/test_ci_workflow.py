@@ -162,13 +162,39 @@ def test_main_pushes_are_never_cancelled_by_a_later_merge() -> None:
     )
 
 
-def test_ci_times_the_fast_tier_against_its_budget() -> None:
-    """Plan 09 §5: the tier fails if it exceeds 30s, so it cannot rot quietly."""
+def test_the_python_job_runs_pytest_exactly_once() -> None:
+    """The duplication this replaced, pinned so it cannot come back.
+
+    `addopts` is `-m 'fast or medium'`, so `pytest -m fast` is a strict subset of
+    a bare `pytest`. CI ran both, which re-ran all 703 fast tests on every macOS
+    job to produce one duration. Two invocations here is that mistake returning.
+    """
+
+    invocations = [
+        step for step in _steps(CI, "python")
+        if re.search(r"\bpytest\b", step.get("run", ""))
+    ]
+    assert len(invocations) == 1, (
+        f"the python job runs pytest {len(invocations)} times: "
+        f"{[step.get('name') or step['run'] for step in invocations]}. The tier "
+        f"duration comes from the conftest hook now, not from a second run."
+    )
+
+
+def test_ci_measures_the_fast_tier_from_that_one_run() -> None:
+    """The rot ceiling survives the de-duplication, and reports every run."""
 
     steps = _steps(CI, "python")
-    timed = [step for step in steps if "-m fast" in step.get("run", "")]
-    assert timed, "CI must time the fast tier"
-    command = timed[0]["run"]
+    producer = [step for step in steps if "RIGBY_TIER_REPORT" in str(step.get("env", {}))]
+    assert producer, (
+        "the pytest step must set RIGBY_TIER_REPORT so tests/conftest.py writes "
+        "the tier timing; without it the ceiling below has nothing to read"
+    )
+
+    checks = [step for step in steps if "fast_tier_seconds" in step.get("run", "")]
+    assert checks, "CI must still enforce a ceiling on the fast tier"
+    command = checks[0]["run"]
+
     # Match the number, not a prefix of it: `"-gt 30" in "-gt 300"` is true, and
     # that substring check passed a budget loosened tenfold.
     budgets = [int(value) for value in re.findall(r"-gt\s+(\d+)", command)]
@@ -182,28 +208,98 @@ def test_ci_times_the_fast_tier_against_its_budget() -> None:
         "trend is what shows rot"
     )
     assert "exit 1" in command, "exceeding the budget must fail the job"
-    assert timed[0].get("if"), (
+    assert checks[0].get("if"), (
         "the budget is a claim about a developer machine; it must not run on the "
         "Windows runner, which is roughly 4x slower for unrelated reasons"
     )
 
 
-def test_the_bless_job_compares_by_value_not_by_diff_stat() -> None:
-    """A diff stat cannot tell a pure addition from an overwrite.
+def test_the_tier_measurement_includes_collection() -> None:
+    """The regression that actually fired must stay inside the measurement.
 
-    Adding a second platform's digest to a map rewrites the first entry's line,
-    so the first Windows bless rendered as 423 insertions and 282 deletions with
-    zero digests changed. The job must run the value comparison, and it must run
-    it as a step that can fail rather than as printed output.
+    A module-level corpus compile is paid at import, so `-m fast` pays it and
+    then deselects every test in the file. That took the tier to 131s against
+    this ceiling. A metric summing only test durations would have read green
+    through it, so `fast_tier_seconds` is test time *plus* collection and the
+    collection number is printed on its own.
     """
 
-    steps = _steps(CI, "windows-corpus-hashes")
-    comparisons = [step for step in steps if "bless_diff" in step.get("run", "")]
-    assert comparisons, "the bless job must compare digests by value"
-    assert not comparisons[0].get("continue-on-error"), (
-        "the comparison must be able to fail; the job-level continue-on-error "
-        "covers the bless itself, not the check on its result"
+    conftest = (Path(__file__).parent / "conftest.py").read_text(encoding="utf-8")
+    assert "def pytest_collection(" in conftest, (
+        "conftest.py must time collection; the tier metric is built on it"
     )
+    assert '"fast_tier_seconds"' in conftest
+    assert "collect_seconds" in conftest
+
+    command = next(
+        step["run"]
+        for step in _steps(CI, "python")
+        if "fast_tier_seconds" in step.get("run", "")
+    )
+    assert "collect" in command, "CI must surface the collection number separately"
+
+
+def test_the_bless_job_is_manual_and_still_compares_by_value() -> None:
+    """It asks to be run; it does not run itself. And it never gated.
+
+    The previous version of this test asserted the `bless_diff` step was not
+    `continue-on-error` so that it "must be able to fail". That guarantee did not
+    exist: `continue-on-error: true` sits on the JOB, so the job's conclusion
+    cannot affect the workflow's however the step exits -- ci.yml's own comment
+    says "it never gates". A guard for a property nothing provides is worse than
+    no guard, because it reads as coverage.
+
+    What is worth pinning is the shape that survives: the job is opt-in, and when
+    someone does run it, the comparison is by value rather than by diff stat.
+    Adding a second platform's digest rewrites the first entry's line, so the
+    first Windows bless rendered as 423 insertions and 282 deletions with zero
+    digests changed.
+    """
+
+    job = _jobs(CI)["windows-corpus-hashes"]
+    assert job.get("if") == "github.event_name == 'workflow_dispatch'", (
+        "the bless job must be workflow_dispatch only. It asserts nothing and its "
+        "output is an artifact a human merges by hand; a 30-minute Windows runner "
+        "on every code PR buys a file nobody reads on that PR."
+    )
+    assert job.get("continue-on-error") is True, (
+        "if this job can ever fail the workflow, the comment saying it never "
+        "gates is wrong and the artifact-only contract needs revisiting"
+    )
+
+    comparisons = [step for step in job["steps"] if "bless_diff" in step.get("run", "")]
+    assert comparisons, "the bless job must compare digests by value, not by diff stat"
+
+
+def test_nightly_runs_the_slow_tier() -> None:
+    """The only place it runs. `-m slow` is never implied by a bare `pytest`.
+
+    It went unrun for months: nightly's bare `pytest` selects `fast or medium`
+    from addopts, so the job was a duplicate of every PR run plus coverage, and
+    the slow tier executed in no automated context at all.
+    """
+
+    commands = [step.get("run", "") for step in _steps(NIGHTLY, "coverage")]
+    assert any(re.search(r"pytest\b.*-m slow", command) for command in commands), (
+        "nightly must run `pytest -m slow`; nothing else does, and a tier that "
+        "runs nowhere is not a tier"
+    )
+
+
+def test_no_job_duplicates_a_check_the_suite_already_makes() -> None:
+    """`generated-sources` was a whole job for one assertion pytest already made.
+
+    A dedicated runner plus a full `uv sync` (mujoco, playwright, openai) to run
+    `evals.generate_camera_ts --check`, which tests/test_camera_config.py asserts
+    in-process on every run of the suite.
+    """
+
+    for job in _jobs(CI):
+        for step in _steps(CI, job):
+            assert "generate_camera_ts" not in step.get("run", ""), (
+                f"ci.yml job `{job}` re-runs the camera codegen check; "
+                f"tests/test_camera_config.py already covers it"
+            )
 
 
 def test_ci_runs_the_frontend_checks() -> None:

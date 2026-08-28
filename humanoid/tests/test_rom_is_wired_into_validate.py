@@ -28,8 +28,6 @@ from __future__ import annotations
 
 import pytest
 
-from evals.corpus import load_corpus
-from evals.corpus.loader import compile_case
 from rigby_poc.analysis import validate, validate_clip
 from rigby_poc.analysis.anatomy.rom import rom_limits
 from rigby_poc.analysis.contract import CheckResult
@@ -45,14 +43,13 @@ NO_FRAMES_CASE = "knownbad-eigenvalues-unsupported"
 
 
 @pytest.fixture(scope="module")
-def verdicts() -> dict[str, tuple[dict, list[CheckResult]]]:
+def verdicts(compile_whole_corpus, corpus_by_id) -> dict[str, tuple[dict, list[CheckResult]]]:
     """``case id -> (compiler metrics, every check validate emits)``."""
 
-    collected: dict[str, tuple[dict, list[CheckResult]]] = {}
-    for case in load_corpus():
-        clip = compile_case(case)
-        collected[case.entry.id] = (clip.metrics, validate_clip(clip, case.program))
-    return collected
+    return {
+        case_id: (clip.metrics, validate_clip(clip, corpus_by_id[case_id].program))
+        for case_id, clip in compile_whole_corpus().items()
+    }
 
 
 @pytest.fixture(scope="module")
@@ -164,7 +161,7 @@ def test_an_unmeasured_clip_skips_rather_than_passing(
     assert len(rom_verdicts[NO_FRAMES_CASE]) == 156
 
 
-def test_validate_cannot_silently_drop_the_anatomy_layer() -> None:
+def test_validate_cannot_silently_drop_the_anatomy_layer(corpus) -> None:
     """``frames`` is required, so no caller can lose ROM by omission.
 
     This is the whole reason the signature changed rather than gaining an
@@ -175,6 +172,6 @@ def test_validate_cannot_silently_drop_the_anatomy_layer() -> None:
     the assumption that produced the dark gate in the first place.
     """
 
-    case = next(iter(load_corpus()))
+    case = corpus[0]
     with pytest.raises(TypeError):
         validate({}, case.program)  # type: ignore[call-arg]

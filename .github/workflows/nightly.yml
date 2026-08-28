@@ -6,7 +6,10 @@ name: Nightly
 # sys.monitoring backend instead of settrace, which is what makes it affordable
 # at all.
 #
-# The slow tier lands with the markers in PR 09b; this job gains `-m slow` then.
+# The slow tier landed with the markers and this job never gained `-m slow`, so
+# for months a bare `pytest` here selected `fast or medium` -- byte-identical to
+# what every PR already ran, making this job "CI again, with coverage" while the
+# slow tier ran in no automated context at all. Both selections run below.
 
 on:
   schedule:
@@ -34,6 +37,16 @@ jobs:
       - run: uv sync --extra dev
       - name: pytest with coverage
         run: uv run pytest --cov=rigby_poc --cov=evals --cov-report=term --cov-report=xml
+
+      # The slow tier. Never implied by a bare `pytest`, so this is the only
+      # place it runs: render, real browser, model calls, calibration, and the
+      # corpus compile-budget guard, which re-runs 13 test files in their own
+      # pytest sessions and cost 20% of every PR run while it sat in `medium`.
+      #
+      # Separate step, and it is allowed to go red. A compile-count regression
+      # should be visible the next morning rather than at the next release.
+      - name: the slow tier
+        run: uv run pytest -m slow
       - uses: actions/upload-artifact@v4
         if: always()
         with:

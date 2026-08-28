@@ -20,8 +20,6 @@ import math
 
 import pytest
 
-from evals.corpus import load_corpus
-from evals.corpus.loader import compile_case
 from rigby_poc.analysis.anatomy.frame import (
     DofAngles,
     bone_anatomical_frame,
@@ -46,9 +44,8 @@ DEG = math.pi / 180.0
 
 
 @pytest.fixture(scope="module")
-def clip():
-    case = next(item for item in load_corpus() if item.entry.id == CASE)
-    return compile_case(case)
+def clip(compile_corpus_case):
+    return compile_corpus_case(CASE)
 
 
 @pytest.fixture(scope="module")
@@ -150,7 +147,7 @@ def test_the_chosen_case_has_a_moving_elbow(clip) -> None:
     assert max(values) - min(values) > 5.0
 
 
-def test_the_elbow_landscape_after_the_humeral_roll_fix(clip) -> None:
+def test_the_elbow_landscape_after_the_humeral_roll_fix(clip, compile_whole_corpus) -> None:
     """04b's headline measurement was "no corpus case is clean on elbow
     abduction" -- every case with frames exceeded the hinge bound, the quietest
     peaking at 42.2 degrees, because the compiler expressed humeral roll as
@@ -170,8 +167,7 @@ def test_the_elbow_landscape_after_the_humeral_roll_fix(clip) -> None:
     """
 
     clean, dirty = [], []
-    for case in load_corpus():
-        compiled = compile_case(case)
+    for case_id, compiled in compile_whole_corpus().items():
         if not compiled.frames:
             continue
         violations = rom_violations(compiled.frames, fps=compiled.fps)
@@ -179,7 +175,7 @@ def test_the_elbow_landscape_after_the_humeral_roll_fix(clip) -> None:
             v.dof == "abduction" and v.band == "beyond_max" and v.bone.endswith("LowerArm")
             for v in violations
         ) else clean
-        target.append(case.entry.id)
+        target.append(case_id)
 
     assert sorted(dirty) == [
         "fullbody-burpee-cycle",

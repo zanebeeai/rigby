@@ -9,13 +9,11 @@ against the contract for another.
 from __future__ import annotations
 
 import json
-import subprocess
-import sys
 from pathlib import Path
 
 import pytest
 
-from evals.generate_camera_ts import CAMERA_CONFIG, GENERATED_TS, render
+from evals.generate_camera_ts import CAMERA_CONFIG, GENERATED_TS, main, render
 
 #: no compile, no corpus, no pipeline, no subprocess -- see docs/testing.md
 pytestmark = pytest.mark.fast
@@ -43,15 +41,16 @@ def test_the_generated_frontend_file_is_not_stale() -> None:
 
 
 def test_the_check_flag_agrees_with_the_test() -> None:
-    """CI uses --check; it must not be able to disagree with the suite."""
+    """The ``--check`` flag must not be able to disagree with the suite.
 
-    completed = subprocess.run(
-        [sys.executable, "-m", "evals.generate_camera_ts", "--check"],
-        cwd=PROJECT_ROOT,
-        capture_output=True,
-        text=True,
-    )
-    assert completed.returncode == 0, completed.stderr
+    In-process, not a subprocess. This file is `fast`, and `fast` is defined as
+    "no compile, no pipeline, no corpus, no subprocess" -- a spawn here was the
+    one violation of that contract in the tier, and `test_markers_complete.py`
+    could not see it because it checks that a marker exists, not that it is
+    honest. ``main`` returns the exit code, so nothing is lost by calling it.
+    """
+
+    assert main(["--check"]) == 0
 
 
 def test_the_generated_file_says_it_is_generated() -> None:
