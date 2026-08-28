@@ -636,12 +636,23 @@ class VLMSelector:
         So the rate follows the precision required, which here is distance to
         the thing being worked on.
         """
-        reach = float(np.linalg.norm(sensing.convergence - sensing.object_position))
+        from .closed_loop import palm_to_object_m
+
+        # Measured to the PALM, not to the fingertip mean. The fingertip
+        # distance is the retired tips_to_object_m notion and it reads its
+        # smallest when the fingers are driven into the object, so cadence keyed
+        # to it speeds up for the wrong reason.
+        reach = palm_to_object_m(sensing, self.hand)
         if reach > 0.30:
-            return 1.0
+            # Crossing the room. Nothing changes between decisions here and the
+            # answer is the same, so a call spent is a call not available for
+            # the two seconds where a grasp is made or lost.
+            return 1.5
         if reach > 0.12:
-            return 0.5
-        return 0.25
+            return 0.6
+        # The window that decides the run. Every failure has ended here, with
+        # the object in the opening and the budget spent on approaching it.
+        return 0.3
 
     #: How close to the number counts as arrived. Metres are held tighter than
     #: unit-scale metrics because a centimetre matters and 0.05 of a dot
