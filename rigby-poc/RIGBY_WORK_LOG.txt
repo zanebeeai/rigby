@@ -437,4 +437,70 @@ DO NOT
 - Do not merge origin/main into angel/pick-up-box. That branch stays separate by
   explicit instruction.
 
+===============================================================================
+2026-08-28 -- IT PICKS THE BLOCK UP.  branch grasp/auto-lift
+===============================================================================
+
+19.99 cm of lift, held. Two opposing pairs through the carry, thumb at 10 N
+against index at 9.3, every fingertip measured outside the block by at least
+4.5 mm. Reproducible. src/rigby_poc/scripted_grasp.py is the controller, and it
+has no model in the loop on purpose -- it separates two questions this project
+confounded for months: whether the BODY can grasp, and whether the selector
+chooses well. If it stops lifting after a change, that change broke the body.
+
+Six things had to be true at once, each found by measuring rather than arguing:
+
+1. The thumb closes by ADDUCTION, not flexion. This manifest has recorded it
+   from the start -- the thumb is the one chain where the authored asset and the
+   anatomical frame disagree, and the rig's own crate_grip preset adducts.
+   Closed on its flexion axis the thumb curled without crossing to the fingers.
+2. Closure is an absolute, ROM-clamped target, not a delta composed per frame.
+   Composing wound up against the rate limiter: opening 8 cm to 19, digits
+   anti-parallel -- a hand turning itself inside out while nominally closing.
+3. A digit already carrying load stops; the others keep coming. What
+   underactuated hands do mechanically, and why they conform to objects they
+   were never sized for.
+4. Closing stops at the object's own width plus 12 mm. Force alone does not say
+   so: the digits read 1-2 N against a 6 N target, kept closing to 4.86 cm
+   around a 6.0 cm block, and squeezed it out sideways.
+5. The digit welds are springs (solref 0.012, solimp 0.88 0.97). Stiffer and
+   they drive through the object -- the thumb reached 13.8 mm INSIDE the block
+   and reported 13.85 N of "grip" that was the solver objecting to penetration.
+   Softer and the block's own weight levers them open mid-lift.
+6. The approach standoff is 1.5 cm, not 4. The palm pad sits at the knuckles
+   with the digits reaching most of a hand beyond it, so the standoff decides
+   how far INTO the opening the object lands. At 4 cm the block sat out by the
+   fingertips and closing pushed it away.
+
+THE PATTERN WORTH KEEPING
+
+Nearly every failure this project has had was a control or a goal that could not
+do what its name promised, and the cost was always the same shape: the selector
+picks it, correctly, because the situation looks like what the name describes,
+and the run is spent. orient_palm took 11 of 26 decisions in 000488 and moved
+nothing -- it had already been banned per stage for that, and walked back in the
+moment the menu stopped being restricted. thumb_oppose_index took 10 of 26 in
+000489 while the C measure sat pinned at its dead value. reach_to took 14 of 26
+in 000492 with the block 34 cm away and out of reach.
+
+evals/control_authority.py measures this directly: signed authority of every
+primitive over every metric. Run it after touching a primitive. A control that
+cannot move a number is worse than a missing one.
+
+WHAT IS NOT DONE
+
+- Generality. It lifts 1 of 7 configurations. Contact and opposing pairs form in
+  every one, but only the fitted position carries; the constants were fitted
+  against a 6 cm block in one place. A stability gate and a re-approach on
+  escape were tried and made it worse; both were reverted rather than compounded.
+- The model. The body can grasp; the selector still does not get there. In
+  000495 it wrote a correct five-step plan and then spent 19 of 22 calls among
+  place_thumb, thumb_home and sweep_thumb, never once calling close_grip. Seven
+  primitives and three metrics have since been retired for measured cause.
+
+DO NOT
+- Do not push this branch or merge it. It stays local by explicit instruction.
+- Do not tune scripted_grasp.py to make a configuration pass. It is the control,
+  not the product; if it needs tuning per scene it has stopped being a control.
+
 END OF LOG
