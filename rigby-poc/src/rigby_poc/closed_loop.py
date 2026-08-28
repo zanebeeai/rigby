@@ -2922,6 +2922,12 @@ UNTARGETABLE = frozenset({
     # What replaced it: grip_parallel, grip_tip_spread_m and grip_base_spread_m
     # say the same thing about the hand and can each be driven.
     "thumb_opposition",
+    # grip_closure has no movers left. It averages the old aimed-at-each-other
+    # C over four fingers, so it inherits that measure's dead zone: pinned at
+    # +1.000 at every pose reached in practice, with nothing in the vocabulary
+    # able to shift it. grip_parallel and the two spreads describe the same
+    # hand and each respond to something.
+    "grip_closure",
 })
 
 

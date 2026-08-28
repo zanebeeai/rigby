@@ -160,6 +160,10 @@ already loaded, so a firm close is safe: it settles rather than crushing.
 A grasp that carries needs roughly 5-10 N on the thumb against a finger. Two loaded pairs with
 the object still is a grasp; contact on fingers alone, with nothing on the thumb, is a push.
 
+CLOSING IS NOT A COMMITMENT. "close_grip" stops on its own at the object's width and at every digit that is already carrying load, so a close that is too early simply ARRIVES on the object and stops -- it cannot crush it, drive through it, or shut on nothing. There is no penalty for closing sooner and there is a large one for waiting: every run that failed did so by preparing until the clock ran out, with the object already inside the opening and the hand still being adjusted. If object_in_grasp_m is small, close.
+
+"level_wrist" is finished once digits_straddle is high, and near the object it moves almost nothing else. Re-levelling an already-level wrist is the single most common way these runs have been spent.
+
 Rules that matter more than they look:
 
 A grasp needs the THUMB loaded against at least one FINGER, on opposite faces of the object. \
