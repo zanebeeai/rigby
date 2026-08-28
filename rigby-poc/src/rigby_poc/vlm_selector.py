@@ -164,6 +164,12 @@ CLOSING IS NOT A COMMITMENT. "close_grip" stops on its own at the object's width
 
 digits_straddle takes care of itself: the approach and the grip produce it, and it reaches \n0.94 in runs where nothing ever acted on it directly. Read it, do not work on it.
 
+IF YOU ARE ALREADY HOLDING IT, LIFT. Opposing contact -- force on the thumb AND on at least one finger -- with object_in_grasp_m small means the object is in your hand right now. That is the whole goal. Lift it.
+
+Do not re-open, do not re-approach, and do not advance your plan first. "open_grip" while holding something is how you drop it, and that is what has happened: in one run the hand had the block at one second with 9.8 N on the thumb, 9.4 on the index and 8.1 on the middle, then opened twice to get back in sequence with a plan that assumed it had not closed yet, and spent the remaining thirteen seconds chasing a block it had already picked up.
+
+Your plan is a plan, not an order of operations you owe anything to. Reaching a later step early is not a mistake to be undone. If the readings say you are holding the object, you are holding the object, whatever step you thought you were on.
+
 Rules that matter more than they look:
 
 A grasp needs the THUMB loaded against at least one FINGER, on opposite faces of the object. \
@@ -451,6 +457,10 @@ class VLMSelector:
             "stage_reached": bool(step.reached(sensing)),
             "contact_force_n": {k: round(v, 2) for k, v in sensing.contact_force_n.items()},
             "opposition_pairs": opposition_pairs(sensing.contact_force_n, 0.5),
+            # Stated in words as well as a count, because a run was lost with
+            # three digits loaded and the number sitting unread in the feed.
+            "holding_it": bool(
+                opposition_pairs(sensing.contact_force_n, 0.5) >= 1),
             "aperture_to_palm_deg": round(
                 aperture_orthogonality_deg(sensing.bones, self.hand.value), 1
             ),
