@@ -275,6 +275,13 @@ Reply with JSON and nothing else:
 naming a metric and value where you can>"}], "why": "<one sentence>"}"""
 
 
+
+def _targetable_names() -> tuple[str, ...]:
+    from .closed_loop import targetable
+
+    return targetable()
+
+
 @lru_cache(maxsize=1)
 def _load_env() -> bool:
     """Load ``.env`` the way the planner does, so one key serves everything.
@@ -466,6 +473,8 @@ class VLMSelector:
             ),
             "scene": self.scene_context,
             "woke_because": self.last_wake,
+            **({"your_last_request_failed": self.rejected}
+               if self.rejected else {}),
             **self._history(),
             "your_plan": self.own_plan,
             "your_step": self.own_step,
@@ -579,6 +588,25 @@ class VLMSelector:
         parsed = json.loads(raw)
         # A target is a standing instruction, not one move.
         metric = parsed.get("target") or parsed.get("metric")
+        # A goal naming a metric nothing can steer used to be accepted in
+        # silence, and it does not fail quietly: with every term filtered out
+        # the goal has zero error, reports "reached" on the frame it is set, and
+        # wakes the model again immediately. One such goal in run 000502 cost
+        # eight further calls, every one of them a hold with no reasoning
+        # attached, because the model was answering a question that had already
+        # been answered before it could act.
+        if metric and str(metric) not in _targetable_names():
+            self.rejected = (
+                f"{metric} cannot be steered -- nothing in the vocabulary moves "
+                f"it, so it was ignored. Aim at one of: "
+                f"{', '.join(_targetable_names())}."
+            )
+            self.transcript.append({
+                "time_s": round(sensing.time_s, 2),
+                "rejected_target": str(metric),
+                "why": parsed.get("reason") or parsed.get("why"),
+            })
+            return "hold", 0.0
         if metric:
             # Which controls the search may touch while chasing the number.
             # Without it the search sweeps two thousand candidates a frame to
@@ -608,8 +636,15 @@ class VLMSelector:
         amount = float(parsed.get("magnitude", parsed.get("amount", 0.5)))
         names = {entry["action"] for entry in menu} | {"hold"}
         if action not in names:
-            # A named action that is not on the menu is a refusal to choose, not
-            # a choice. Held rather than guessed at.
+            # Held rather than guessed at -- but SAID, because a silent
+            # substitution spends the call and teaches nothing. Several controls
+            # have been retired from this menu and a model that names one gets a
+            # hold that looks, from its side, like a decision it made.
+            self.rejected = (
+                f"{action} is not on the menu -- it was retired for moving the "
+                f"wrong numbers, and the hold you saw was that, not a choice. "
+                f"Available: {', '.join(sorted(n for n in names if n != 'hold'))}."
+            )
             action, amount = "hold", 0.0
         self.transcript.append({
             "time_s": round(sensing.time_s, 2),
@@ -779,6 +814,9 @@ class VLMSelector:
     #: weight). Set by the model, because which numbers matter together
     #: is a judgement about the task.
     pending_also: tuple = ()
+    #: What the last reply asked for that could not be done, shown back to
+    #: the model so a rejected request is a correction rather than a silence.
+    rejected: str = ""
 
     #: Set by the loop each frame, so ``choose`` can stay the shared interface.
     pending_image: bytes | None = field(default=None, repr=False)
