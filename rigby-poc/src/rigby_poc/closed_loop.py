@@ -2595,9 +2595,46 @@ def _solve_level_wrist(sensing: Sensing, hand: Hand, amount: float) -> dict[str,
                        z=quaternion[2], w=quaternion[3])}
 
 
+#: Primitives kept in the code but off the menu. See the note in
+#: ``_all_super_primitives`` for what each was doing and what replaced it.
+RETIRED_PRIMITIVES = frozenset({
+    "reach_to", "stand_off", "grip", "close_hand", "open_hand",
+    "place_thumb", "thumb_home",
+})
+
+
 def super_primitives(hand: Hand) -> tuple[SuperPrimitive, ...]:
     """Everything the selector may call, this frame."""
+    return tuple(p for p in _all_super_primitives(hand)
+                 if p.name not in RETIRED_PRIMITIVES)
+
+
+def _all_super_primitives(hand: Hand) -> tuple[SuperPrimitive, ...]:
+    """Every primitive that exists, retired ones included."""
     return (
+        # RETIRED, and kept only as code the working primitives still call:
+        #
+        #   reach_to      aims the fingertips at the object's CENTRE, which is
+        #                 inside it, so contact is the approach succeeding.
+        #                 Superseded by move_to, which carries the palm to a
+        #                 face. Measured side by side: move_to closes 10.5 cm to
+        #                 5.1 monotonically and arrives square at 0.99 facing;
+        #                 reach_to goes further away below 0.7 amplitude and
+        #                 arrives edge-on at 0.51.
+        #   stand_off     the withdrawal half of the same idea.
+        #   grip,         close on the fingertips rather than on the grip, so
+        #   close_hand    they meet in mid-air with the object outside them.
+        #   open_hand     opens without shape; open_grip opens to the object.
+        #   place_thumb,  every one of these moved thumb_opposition, which is
+        #   thumb_home    contested six ways against ten, while doing nothing to
+        #                 the numbers a grasp is made of. In run 000495 the
+        #                 model spent nineteen of twenty-two calls among them
+        #                 and never once closed the hand.
+        #
+        # A control that cannot help is not neutral. It reads as available, it
+        # is chosen whenever the situation looks like what its name promises,
+        # and it spends the decision. That has cost this project more runs than
+        # any bug in the ones that work.
         SuperPrimitive("stand_off", _arm_parts(hand),
                        "bring the hand near the object without touching it",
                        _solve_stand_off),
