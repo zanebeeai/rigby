@@ -390,15 +390,22 @@ Every command below is written with its exit-code check, deliberately.
 | One file | `uv run pytest -q tests/test_full_body_motion.py > /tmp/t.log 2>&1; echo "EXIT=$?" >> /tmp/t.log` |
 | One test | `uv run pytest -q tests/test_x.py::test_y > /tmp/t.log 2>&1; echo "EXIT=$?" >> /tmp/t.log` |
 | The fast tier | `uv run pytest -q -m fast > /tmp/t.log 2>&1; echo "EXIT=$?" >> /tmp/t.log` |
-| The slow tier (opt-in) | `uv run pytest -q -m slow > /tmp/t.log 2>&1; echo "EXIT=$?" >> /tmp/t.log` |
+| The slow tier (nightly runs it) | `uv run pytest -q -m slow > /tmp/t.log 2>&1; echo "EXIT=$?" >> /tmp/t.log` |
 | Coverage (rarely — see below) | `COVERAGE_CORE=sysmon uv run pytest -q --cov=rigby_poc --cov=evals > /tmp/t.log 2>&1; echo "EXIT=$?" >> /tmp/t.log` |
 | Frontend | `npm --prefix frontend test` |
 | Frontend type-check | `npm --prefix frontend run build` |
 
 **`fast or medium` is the bar.** That is what `addopts` selects, and it is what
 CI runs. `slow` is excluded by design — it needs a real browser, real model calls
-or calibration. A green `uv run pytest` **is a pass**; do not reach for `-m ''`
-to chase a fuller suite, because that is not the suite this project runs.
+or calibration, or it is a rot guard whose latency is a day rather than a commit.
+A green `uv run pytest` **is a pass**; do not reach for `-m ''` to chase a fuller
+suite, because that is not the suite this project runs.
+
+`slow` is no longer a tier that runs nowhere. It went months without an
+invocation — nightly's bare `pytest` selects `fast or medium` from `addopts` like
+everything else, so the job was a duplicate of every PR run with coverage on top,
+and `-m slow` appeared in no workflow at all. `nightly.yml` runs it as its own
+step now, and that step is allowed to go red.
 
 ## Tiers
 
@@ -418,6 +425,26 @@ import pytest
 pytestmark = pytest.mark.medium
 ```
 
+**Do not compile the corpus yourself.** `tests/conftest.py` compiles each case
+once per session and hands out deep copies:
+
+| Fixture | Gives you |
+| --- | --- |
+| `compile_corpus_case(case_id)` | one clip, a private copy |
+| `compile_whole_corpus()` | `{case id: clip}` for all 47, private copies |
+| `corpus` / `corpus_by_id` | the loaded cases, no compile |
+
+Both are session-scoped factories, so a `scope="module"` fixture can request
+them, and both copy on every call — the sharing is of the *compile*, never of the
+object. `ClipResult` and its `metrics` dict are mutable and several callers do
+mutate them; `test_session_fixture_isolation.py` is what holds that line.
+
+This is worth insisting on because it was written, documented at length, and then
+used by exactly one file. Nine modules opened with
+`for case in load_corpus(): compile_case(case)` inside a module fixture — the same
+47 compiles, nine times, about 190 s. Five of them are still named
+`test_the_probe_saw_a_real_corpus`, which is how you can find the pattern.
+
 **If your test compiles the corpus, declare it too.** Add it to
 `tests/test_corpus_compile_budget.py` -- `COMPILE_BUDGET` with a measured
 ceiling, or `UNBUDGETED` with the reason. Measure it with that file's own
@@ -425,7 +452,15 @@ counter rather than guessing; a guessed ceiling is the next defect, where
 `groundtruth`'s 55 and `judge`'s `COMPILES=4 RAN=5` were exact.
 `test_every_corpus_touching_file_is_declared` fails the suite otherwise, and it
 has caught three lanes this way -- each costing a full cycle on a loaded
-machine.
+machine. That one is `fast`: it is a static scan and it stays on every run.
+
+**The measurement half is `slow` and runs nightly, not on your PR.** Counting a
+file's compiles means running that file, so the thirteen budgeted files each
+execute a second time in their own subprocess pytest session -- 232 s of a 1139 s
+suite (n = 13 files, baseline 1139 s measured on the same box in the same run),
+to re-learn numbers that move about once a month. `uv run pytest -m
+slow` when you have changed how a file reaches the corpus; otherwise let nightly
+find it.
 
 That requirement was already written down, in the tracker, correctly, before two
 of those three hit it. **A trap recorded in the record and not in the interface
@@ -448,10 +483,30 @@ marker.
 
 | Tier | Tests |
 | --- | --- |
-| `fast` | 291 |
-| `medium` | 1292 |
-| `slow` | 11 (opt-in only) |
-| default (`fast or medium`) | 1583 |
+| `fast` | 707 |
+| `medium` | 1779 |
+| `slow` | 32 (nightly, never implied) |
+| default (`fast or medium`) | 2486 |
+
+Timed three times on a developer box after the trim, the default selection took
+**694 s, 787 s and 827 s** -- the same spread this section warns about, on the
+same machine, in one afternoon. The figure before it was 1139 s, and that one was
+measured while a second full suite shared the box, so read the wall-clock delta as
+directional rather than as a number.
+
+**The structural half is not a measurement and does not have the same problem.**
+What came out was repeated work, and it can be counted:
+
+- One guard, `test_corpus_compile_budget.py`, re-ran thirteen other test files in
+  their own subprocess pytest sessions. Moved to `slow`; nightly runs it.
+- Nine modules each recompiled all 47 corpus cases in a `scope="module"` fixture.
+  They share one session compile now. Measured directly, per module: 20-23 s of
+  setup became 8.4 s, the residue being each module's own `validate` pass.
+- `test_corpus_known_bad.py` compiled the corpus at *module scope*, so every
+  invocation paid it during collection -- `-m fast` included, which then
+  deselected the entire file.
+
+None of those three is a timing claim, and none of them was load-dependent.
 
 **There is no validated wall-clock number for the `fast` tier, and plan 09 §5's
 30 s budget has never been measured on a controlled machine.** Timed five times
@@ -471,6 +526,29 @@ So the CI step **reports** the duration on every run and fails only above a loos
 something expensive entering the tier, and a compile or a corpus load costs
 minutes rather than seconds, so it is caught with room to spare. The real budget
 should be set from a few CI runs on a dedicated runner and not before.
+
+**The number no longer comes from a second run.** CI used to run `pytest -m fast`
+and then `pytest`, whose `addopts` are `-m 'fast or medium'` — so the fast tier,
+every test in it, ran twice on each macOS job to produce one duration. Hooks in
+`tests/conftest.py` record it as a by-product of the single full run instead, into
+`$RIGBY_TIER_REPORT` as JSON:
+
+    {"fast_seconds": 30.5, "collect_seconds": 1.2, "fast_tier_seconds": 31.8}
+
+**Collection is inside the measurement, and that is the load-bearing part.**
+Module-level work is paid at import, so `-m fast` pays it and then deselects the
+tests it was for. `test_corpus_known_bad.py` compiled all 47 corpus cases in a
+module-level dict comprehension; that was 12.9 s of the tier's 14.6 s collection,
+it took CI to **131 s against this 90 s ceiling**, and every test in the file was
+being deselected while it happened. A metric summing only test durations reads
+green straight through that.
+
+**One caveat, stated because it will matter when the budget is tightened.** The
+131 s figure was wall clock around a whole second `pytest` process; the 31.8 s
+figure is pytest's own accounting and excludes interpreter start, plugin load and
+`uv run`. They are not the same quantity, and the 90 s ceiling was calibrated
+against the first. It is therefore *looser* than it was, not tighter. Re-derive
+it from a few runs of the new metric before treating the headroom as real.
 
 Asserting 30 s today would have made `main` red for load rather than for rot,
 which is worse than having no budget: a gate that fires for reasons unrelated to

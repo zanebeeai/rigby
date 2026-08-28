@@ -72,25 +72,103 @@ def _compiled_cache() -> dict[str, ClipResult]:
     return {}
 
 
-@pytest.fixture
+def _shared_compile(case_id: str, cache: dict, by_id: dict) -> ClipResult:
+    """The one place a corpus case is compiled. Returns the shared instance."""
+
+    from evals.corpus import compile_case
+
+    if case_id not in by_id:
+        raise KeyError(
+            f"{case_id!r} is not a corpus case; known ids include "
+            f"{sorted(by_id)[:3]}..."
+        )
+    if case_id not in cache:
+        cache[case_id] = compile_case(by_id[case_id])
+    return cache[case_id]
+
+
+@pytest.fixture(scope="session")
 def compile_corpus_case(_compiled_cache, corpus_by_id):
     """Compile a corpus case once per session, handing back a private copy.
 
     The compile is shared -- that is the saving. The object is not, because
     ``ClipResult`` and its ``metrics`` dict are mutable and a shared instance
     would leak a mutation from one test into every later one.
+
+    Session-scoped so that a ``scope="module"`` fixture can request it. The
+    factory copies on every call, so the scope of the factory itself carries no
+    isolation meaning -- ``test_session_fixture_isolation.py`` is what proves
+    that, and it is why this may be widened without widening the sharing.
     """
 
-    from evals.corpus import compile_case
-
     def _compile(case_id: str) -> ClipResult:
-        if case_id not in corpus_by_id:
-            raise KeyError(
-                f"{case_id!r} is not a corpus case; known ids include "
-                f"{sorted(corpus_by_id)[:3]}..."
-            )
-        if case_id not in _compiled_cache:
-            _compiled_cache[case_id] = compile_case(corpus_by_id[case_id])
-        return _compiled_cache[case_id].model_copy(deep=True)
+        return _shared_compile(case_id, _compiled_cache, corpus_by_id).model_copy(deep=True)
 
     return _compile
+
+
+@pytest.fixture(scope="session")
+def compile_whole_corpus(_compiled_cache, corpus_by_id):
+    """``() -> {case id: ClipResult}`` for the whole corpus, as private copies.
+
+    Nine modules used to open with ``for case in load_corpus(): compile_case(case)``
+    in a ``scope="module"`` fixture -- the same 47 compiles, nine times over, for
+    about 190s of a 19-minute suite. They share one compile now and still each
+    get their own objects, because the callers store the clips alongside derived
+    verdicts and some of them mutate.
+    """
+
+    def _all() -> dict[str, ClipResult]:
+        return {
+            case_id: _shared_compile(case_id, _compiled_cache, corpus_by_id).model_copy(deep=True)
+            for case_id in corpus_by_id
+        }
+
+    return _all
+
+
+# ---------------------------------------------------------------------------
+# Tier timing, reported from the one full run rather than from a second one.
+#
+# CI used to run `pytest -m fast` and then `pytest`, whose addopts are
+# `-m 'fast or medium'` -- so the fast tier, 703 tests, ran twice on every macOS
+# job to produce a single duration. These hooks record the same number as a
+# by-product of the full run: the summed duration of every `fast`-marked test,
+# plus collection, which is what `pytest -m fast` wall-clock was measuring.
+#
+# Collection is counted deliberately. A module-level corpus compile is paid at
+# import time by every invocation, `-m fast` included, and that is exactly the
+# regression that took the tier to 131s against a 90s ceiling while every test
+# in the file was being deselected. A tier metric that skipped collection would
+# have reported all-clear through it.
+_TIER = {"fast_seconds": 0.0, "collect_seconds": 0.0}
+
+
+@pytest.hookimpl(hookwrapper=True)
+def pytest_collection(session):
+    import time
+
+    start = time.perf_counter()
+    yield
+    _TIER["collect_seconds"] = time.perf_counter() - start
+
+
+def pytest_runtest_logreport(report) -> None:
+    if "fast" in report.keywords:
+        _TIER["fast_seconds"] += report.duration
+
+
+def pytest_sessionfinish(session, exitstatus) -> None:
+    import json
+    import os
+    import pathlib
+
+    target = os.environ.get("RIGBY_TIER_REPORT")
+    if not target:
+        return
+    payload = {
+        "fast_seconds": round(_TIER["fast_seconds"], 1),
+        "collect_seconds": round(_TIER["collect_seconds"], 1),
+        "fast_tier_seconds": round(_TIER["fast_seconds"] + _TIER["collect_seconds"], 1),
+    }
+    pathlib.Path(target).write_text(json.dumps(payload), encoding="utf-8")

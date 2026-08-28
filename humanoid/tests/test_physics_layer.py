@@ -21,8 +21,6 @@ import dataclasses
 
 import pytest
 
-from evals.corpus import load_corpus
-from evals.corpus.loader import compile_case
 from rigby_poc.analysis import validate_clip
 from rigby_poc.analysis.contract import PHYSICS, CheckResult
 
@@ -54,12 +52,11 @@ SKATING_CASES = frozenset(
 
 
 @pytest.fixture(scope="module")
-def verdicts() -> dict[str, list[CheckResult]]:
-    collected: dict[str, list[CheckResult]] = {}
-    for case in load_corpus():
-        clip = compile_case(case)
-        collected[case.entry.id] = validate_clip(clip, case.program)
-    return collected
+def verdicts(compile_whole_corpus, corpus_by_id) -> dict[str, list[CheckResult]]:
+    return {
+        case_id: validate_clip(clip, corpus_by_id[case_id].program)
+        for case_id, clip in compile_whole_corpus().items()
+    }
 
 
 def test_the_probe_saw_a_real_corpus(verdicts) -> None:
@@ -167,7 +164,7 @@ def test_the_foot_skate_bound_sits_in_a_gap_rather_than_on_the_data(
     )
 
 
-def test_the_repository_has_exactly_one_definition_of_the_floor() -> None:
+def test_the_repository_has_exactly_one_definition_of_the_floor(corpus, compile_corpus_case) -> None:
     """``AnalysisContext.ground_height`` and the physics layer's must be one thing.
 
     They were briefly two implementations of the same derivation, held equal by
@@ -185,14 +182,16 @@ def test_the_repository_has_exactly_one_definition_of_the_floor() -> None:
     from rigby_poc.analysis.context import AnalysisContext
     from rigby_poc.analysis.physics import ground_height
 
-    case = next(iter(load_corpus()))
-    clip = compile_case(case)
+    case = corpus[0]
+    clip = compile_corpus_case(case.entry.id)
     context = AnalysisContext.from_clip(clip, case.program, case.scene)
     assert context.ground_height == ground_height()
     assert context.ground_height > 0.0, "the floor collapsed onto the origin"
 
 
-def test_the_physics_layer_is_live_under_a_frame_mutation(verdicts) -> None:
+def test_the_physics_layer_is_live_under_a_frame_mutation(
+    verdicts, corpus_by_id, compile_corpus_case
+) -> None:
     """The property that separates this layer from most of the check surface.
 
     ``MutationSpec.apply`` transforms **frames only**, so a mutated clip carries
@@ -207,12 +206,9 @@ def test_the_physics_layer_is_live_under_a_frame_mutation(verdicts) -> None:
     ground, and the check that decides contact from toe height must notice.
     """
 
-    case = next(
-        (case for case in load_corpus() if case.entry.id == "fullbody-walk-forward"),
-        None,
-    )
+    case = corpus_by_id.get("fullbody-walk-forward")
     assert case is not None, "fullbody-walk-forward left the corpus"
-    clip = compile_case(case)
+    clip = compile_corpus_case(case.entry.id)
     assert clip.frames, "the case compiled to no frames"
 
     def physics_of(target) -> dict[str, CheckResult]:

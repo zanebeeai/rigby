@@ -98,6 +98,16 @@ PER_ROBOT_PROMPTS: dict[str, tuple[str, ...]] = {
         "sweep slowly across in front of you",
         "reach out quickly, just a little",
     ),
+    # Six axes, 3D printed, real CAD inertias -- and the same body twice. The
+    # published URDF declares effort="10" velocity="10" on all six joints; the
+    # variant declares none and lets the floor be measured. Same prompt to both.
+    # Higher-DOF bodies that a hobby bench can actually produce. The 5-DOF SG90
+    # arm has one more axis than the MK1 and bakes nothing at all -- symmetric
+    # +/-90 limits on every joint, and a 4 mm tolerance on a 0.29 m arm.
+    "makerpro_5dof": ("trace a big circle", "reach out quickly, just a little"),
+    "beetlebot": ("trace a big circle", "sweep slowly across in front of you"),
+    "so101": ("trace a big circle", "sweep slowly across in front of you"),
+    "so101_undeclared": ("trace a big circle", "sweep slowly across in front of you"),
 }
 
 # One of each refusal, so the studio shows what "no" looks like at every stage.
