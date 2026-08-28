@@ -2910,6 +2910,18 @@ UNTARGETABLE = frozenset({
     # And the trap: nine controls move it, no control hurts it, and a hand
     # splayed perfectly flat scores full marks.
     "ray_dot",
+    # thumb_opposition reads well and steers badly. Measured at a mid-reach
+    # pose it is contested six ways against ten -- most of what moves it makes
+    # the grasp worse -- and it is satisfied by a thumb across the object
+    # whether or not anything is between them. It has now consumed three runs
+    # on its own: 000489 asked for 0.8 eight times while nothing could deliver
+    # it, 000495 spent nineteen of twenty-two calls chasing it, and 000496
+    # reached 5.9 cm from a grasp and then drifted back out to 14.6 doing the
+    # same. The shape it describes is real; steering by it is not.
+    #
+    # What replaced it: grip_parallel, grip_tip_spread_m and grip_base_spread_m
+    # say the same thing about the hand and can each be driven.
+    "thumb_opposition",
 })
 
 

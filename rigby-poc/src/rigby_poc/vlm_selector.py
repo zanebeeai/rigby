@@ -204,7 +204,10 @@ Metrics you may target:
                      above the other. Moved by the wrist and by nothing else. A grasp needs
                      this AND a C: this one puts the digits on opposite sides, the C closes
                      them. Getting it right is usually part of arriving, not a step after it
-  thumb_opposition   +1 when the thumb is across the object from the fingers
+  thumb_opposition   +1 when the thumb is across the object from the fingers. READABLE
+                     ONLY -- it is satisfied by a thumb across the object whether or
+                     not anything is between them, and most controls that move it make
+                     the grasp worse. Use grip_parallel and the two spreads instead
   aperture_deg       degrees the apertures stand off the palm
 
 Prefer a target when you want a SHAPE, and an action when you want a discrete move. "Form a C"
