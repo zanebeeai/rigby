@@ -31,7 +31,10 @@ from .forearm import (
     parallel_forearm_failures as _parallel_forearm_failures,
     parallel_forearm_metrics as _parallel_forearm_metrics,
 )
-from .gesture import evaluate_gesture_structure, shake_joint_oscillation_metrics
+from .gesture import (
+    evaluate_gesture_structure,
+    shake_joint_oscillation_metrics,
+)
 from .safety import clip_contract_violations, safety_metrics as _safety_metrics
 from .semantic import (
     semantic_cycle_failures as _semantic_cycle_failures,
@@ -64,9 +67,10 @@ def composite_metrics(ctx: AnalysisContext) -> dict[str, Any]:
         default=0.0,
     )
     metrics.update(
-        _intra_hand_contact_metrics(
-            frames, phase_ranges, program, world_positions=world_positions
-        )
+        # The whole context, not just the positions: the contact pass needs
+        # fingertip pivots and a head rotation as well, and those come out of
+        # the same per-frame world-matrix evaluation the positions do.
+        _intra_hand_contact_metrics(frames, phase_ranges, program, ctx=ctx)
     )
     metrics.update(
         _semantic_cycle_metrics(
@@ -94,6 +98,10 @@ def composite_metrics(ctx: AnalysisContext) -> dict[str, Any]:
             hand,
             presentation_ranges,
             travel_hand_shapes.get(hand),
+            # Deliberately included, not only the single-hand path: the
+            # chest-frame wrist and the rest-pose camera are two errors that
+            # partly cancel, so correcting one here and not the other would
+            # leave the composite cases measuring the cancelled pair.
         )
         for hand in program.hands
     }

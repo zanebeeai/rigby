@@ -1390,6 +1390,10 @@ def motion_perceptual_descriptor(
             start, end = ranges[phase]
             target_time = start + (end - start) * fraction
             frame = min(clip.frames, key=lambda item: abs(float(item.time_s) - target_time))
+            # Trunk-relative despite the `elbow_world_m` key below: `arm_landmarks`
+            # rebuilds the arm on a fixed rest shoulder. Left as-is deliberately --
+            # this is eval telemetry compared against itself, and moving it would
+            # invalidate every stored descriptor without changing any check.
             _, elbow, wrist, hand_world = arm_landmarks(frame, active_hand)
             samples.append(
                 {
