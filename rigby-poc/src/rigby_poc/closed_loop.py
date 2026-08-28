@@ -1543,6 +1543,12 @@ def _digit_sweep(digit: str):
     """
 
     def solve(sensing: Sensing, hand: Hand, amount: float) -> dict[str, Any]:
+        # Swinging a digit sideways out of a grasp is a release. In run 000507
+        # the hand had the block at 11.6 N on the thumb against two fingers, was
+        # lifting it correctly, and swept the thumb on the next decision -- the
+        # block was 10 cm away before the following one.
+        if holding_object(sensing):
+            return {}
         reach = float(np.clip(amount, -1.0, 1.0))
         base = _digit_bones(hand, digit)[0]
         rotation = _digit_rotation(base, 0.0, reach)
@@ -1628,6 +1634,21 @@ def grip_rays(bones: dict[str, BonePose], hand: Hand) -> dict[str, Any] | None:
     }
 
 
+def holding_object(sensing: Sensing, threshold_n: float = 0.5) -> bool:
+    """Is the hand carrying the object right now?
+
+    Opposing contact: the thumb loaded against at least one finger. This is the
+    goal state, and it is fragile -- any control that opens the hand while it is
+    true is a release, whatever it was chosen for.
+    """
+    if sensing.contact_force_n.get("thumb", 0.0) < threshold_n:
+        return False
+    return any(
+        sensing.contact_force_n.get(digit, 0.0) >= threshold_n
+        for digit in _FINGERS
+    )
+
+
 def grip_parallel(sensing: Sensing, hand: Hand) -> float:
     """+1 when the thumb and the finger group point the SAME way.
 
@@ -1678,6 +1699,11 @@ def _solve_open_grip(sensing: Sensing, hand: Hand, amount: float) -> dict[str, A
     guess at. Scored as parallelism plus both separations, which is exactly the
     shape the definition describes and nothing else.
     """
+    # Opening a hand that is holding something is how you put it down. Run
+    # 000503 opened twice while carrying the block and spent the rest of the run
+    # chasing it across the table.
+    if holding_object(sensing):
+        return {}
     reach = float(np.clip(amount, 0.0, 1.0))
     best: tuple[float, dict[str, Any]] | None = None
     for thumb_curl in (-1.0, -0.4, 0.2):
