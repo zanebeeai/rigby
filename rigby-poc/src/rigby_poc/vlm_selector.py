@@ -122,6 +122,16 @@ index fully in, at -1 straightens it fully out, at 0 leaves it straight. "sweep_
 it sideways across the hand, + one way and - the other. Five digits, two axes, ten controls, \
 the thumb included -- it is a digit like the others and takes the same two.
 
+You may name MORE THAN ONE number at a time, and usually should. Add "also": a list of \
+{"target": ..., "value": ..., "weight": ...}, and the search minimises all of them together, \
+finishing only when every one has arrived.
+
+This matters more here than it sounds. Almost every number on the list is contested -- controls \
+that improve one make another worse, and a search told to care about exactly one will pay any \
+price in the rest. A hand asked only to close will close somewhere useless; a hand asked only \
+to approach will arrive in a shape that cannot hold anything. Name the ones that have to be \
+true together.
+
 Rules that matter more than they look:
 
 A grasp needs the THUMB loaded against at least one FINGER, on opposite faces of the object. \
@@ -167,7 +177,6 @@ Metrics you may target:
                      this AND a C: this one puts the digits on opposite sides, the C closes
                      them. Getting it right is usually part of arriving, not a step after it
   thumb_opposition   +1 when the thumb is across the object from the fingers
-  thumb_to_fingers_m thumb tip to the middle of the finger group
   aperture_deg       degrees the apertures stand off the palm
 
 Prefer a target when you want a SHAPE, and an action when you want a discrete move. "Form a C"
@@ -202,8 +211,12 @@ Metrics you can read and target while executing:
   tips_to_object_m   fingertip mean to the object centre
   thumb_opposition   +1 when the thumb is across the object from the fingers
   thumb_to_fingers_m thumb tip to the middle of the finger group
-  aperture_deg       degrees the apertures stand off the palm
-  ray_dot            raw direction dot product of the thumb and index rays
+  aperture_deg       degrees the apertures stand off the palm. READABLE ONLY -- nothing
+                     in the vocabulary moves it, so it cannot be a goal
+  thumb_to_fingers_m thumb tip to the middle of the finger group. READABLE ONLY, same reason
+  ray_dot            raw direction dot product of the thumb and index rays. Beware: this is
+                     the easiest number on the list to move and a hand splayed FLAT satisfies
+                     it, which is why c_closure exists. Prefer c_closure
   rays_toward        +1 when each fingertip ray points at the other
 
 You will also read contact force per digit, the object speed, and where things are.
@@ -483,6 +496,14 @@ class VLMSelector:
             # rediscover that the little finger is not the answer.
             using = parsed.get("using") or parsed.get("with") or []
             self.pending_using = tuple(str(u) for u in using if isinstance(u, str))
+            # Further numbers to hold while chasing the first.
+            also = []
+            for entry in (parsed.get("also") or []):
+                if isinstance(entry, dict) and entry.get("target"):
+                    also.append((str(entry["target"]),
+                                 float(entry.get("value", 0.0)),
+                                 float(entry.get("weight", 1.0))))
+            self.pending_also = tuple(also)
             self.transcript.append({
                 "time_s": round(sensing.time_s, 2),
                 "saw_image": image is not None,
@@ -490,6 +511,7 @@ class VLMSelector:
                 "target": str(metric),
                 "value": float(parsed.get("value", 0.0)),
                 "using": list(self.pending_using),
+                "also": [list(a) for a in self.pending_also],
                 "why": parsed.get("reason") or parsed.get("why"),
             })
             return f"target:{metric}", float(parsed.get("value", 0.0))
@@ -554,7 +576,7 @@ class VLMSelector:
         from .closed_loop import NumericTarget  # noqa: F401
 
         error = target.error(sensing, self.hand)
-        if error <= self._tolerance(target.metric):
+        if target.reached(sensing, self.hand):
             return "reached"
         if error < self._best_error - 1e-3:
             self._best_error, self._since_gain = error, 0
@@ -615,7 +637,8 @@ class VLMSelector:
             from .closed_loop import NumericTarget, pursue_target
 
             target = NumericTarget(action.split(":", 1)[1], amount, sensing.time_s,
-                                   using=tuple(self.pending_using))
+                                   using=tuple(self.pending_using),
+                                   also=tuple(self.pending_also))
             if (self.active_target is None
                     or self.active_target.metric != target.metric
                     or self.active_target.value != target.value):
@@ -652,6 +675,10 @@ class VLMSelector:
     #: target, since a standing number is pursued between calls and the
     #: controls meant to reach it stand with it.
     pending_using: tuple = ()
+    #: Further numbers pursued alongside the first, as (metric, value,
+    #: weight). Set by the model, because which numbers matter together
+    #: is a judgement about the task.
+    pending_also: tuple = ()
 
     #: Set by the loop each frame, so ``choose`` can stay the shared interface.
     pending_image: bytes | None = field(default=None, repr=False)

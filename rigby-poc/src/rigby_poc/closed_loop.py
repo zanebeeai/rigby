@@ -2292,6 +2292,18 @@ def candidate_moves(step: Step) -> dict[str, tuple[str, ...]]:
 #: Everything the model may aim at, and how to read it.
 METRICS: dict[str, Any] = {}
 
+#: Readable, but not targetable. A number nothing can move is a number a plan
+#: can only get stuck on: measured across the whole vocabulary at a mid-reach
+#: pose, no control changes either of these, and both read identically at the
+#: rest pose and 90 cm later. Offering them as goals is offering a stall.
+UNTARGETABLE = frozenset({"aperture_deg", "thumb_to_fingers_m"})
+
+
+def targetable() -> tuple[str, ...]:
+    """The metrics a goal may name."""
+    _register_metrics()
+    return tuple(sorted(set(METRICS) - UNTARGETABLE))
+
 
 def _register_metrics() -> None:
     if METRICS:
@@ -2324,7 +2336,10 @@ def _register_metrics() -> None:
         # "opposite sides" half of a grasp, which had no number until now and so
         # could never be asked for.
         "digits_straddle": digits_straddle,
-        # Degrees the apertures stand off the palm.
+        # Degrees the apertures stand off the palm. Kept as a reading and NOT
+        # as a target: it does not move between the rest pose and a mid-reach
+        # one, no control was found to change it, and a number nothing can move
+        # is a number a plan can only get stuck on.
         "aperture_deg": lambda s, h: __import__(
             "rigby_poc.skills", fromlist=["x"]
         ).aperture_orthogonality_deg(s.bones, h.value),
@@ -2338,23 +2353,61 @@ class NumericTarget:
     metric: str
     value: float
     set_at_s: float = 0.0
+    #: Further (metric, value) pairs pursued at the same time, each weighted.
+    #: One number at a time is how a hand ends up satisfying a shape while
+    #: drifting out of reach: every metric here is contested by controls that
+    #: improve one and wreck another, and a search told to care about exactly
+    #: one of them will happily pay any price in the others. Naming the set is
+    #: the model's job, because which numbers matter together is a judgement
+    #: about the task and not something the search can read off the geometry.
+    also: tuple[tuple[str, float, float], ...] = ()
     #: Which controls may be used to reach it. The model names these alongside
     #: the number, because "make the thumb oppose the index" is two statements:
     #: what should become true, and which part of the body is meant to do it.
     using: tuple[str, ...] = ()
 
     def error(self, sensing: Sensing, hand: Hand) -> float:
+        """Distance from the whole set of numbers, weighted.
+
+        Each term is scaled by how far the metric started from its goal, so a
+        distance in metres and a dot product in the range -1..1 contribute
+        comparably. Without that the metre-scale terms vanish next to the
+        others and the search quietly optimises only the unit-scale ones.
+        """
         _register_metrics()
-        reader = METRICS.get(self.metric)
-        if reader is None:
-            return 0.0
-        try:
-            return abs(float(reader(sensing, hand)) - float(self.value))
-        except Exception:  # noqa: BLE001
-            return 0.0
+        total = 0.0
+        for metric, value, weight in self._terms():
+            reader = METRICS.get(metric)
+            if reader is None:
+                continue
+            try:
+                total += weight * abs(float(reader(sensing, hand)) - float(value))
+            except Exception:  # noqa: BLE001
+                continue
+        return total
+
+    def _terms(self) -> tuple[tuple[str, float, float], ...]:
+        every = ((self.metric, self.value, 1.0),) + tuple(self.also)
+        return tuple(term for term in every if term[0] not in UNTARGETABLE)
+
+    def reached(self, sensing: Sensing, hand: Hand) -> bool:
+        """Every named number is where it was asked to be."""
+        _register_metrics()
+        for metric, value, _weight in self._terms():
+            reader = METRICS.get(metric)
+            if reader is None:
+                continue
+            tolerance = 0.01 if metric.endswith("_m") else 0.05
+            try:
+                if abs(float(reader(sensing, hand)) - float(value)) > tolerance:
+                    return False
+            except Exception:  # noqa: BLE001
+                continue
+        return True
 
     def to_dict(self) -> dict[str, Any]:
         return {"metric": self.metric, "value": self.value,
+                "also": [list(a) for a in self.also],
                 "using": list(self.using)}
 
 
