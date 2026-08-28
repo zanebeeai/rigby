@@ -498,6 +498,46 @@ WHAT IS NOT DONE
   place_thumb, thumb_home and sweep_thumb, never once calling close_grip. Seven
   primitives and three metrics have since been retired for measured cause.
 
+-------------------------------------------------------------------------------
+2026-08-28, later -- WHAT THE SELECTOR STILL DOES NOT DO
+-------------------------------------------------------------------------------
+
+The body grasps and lifts. The selector does not, and six runs on the fixed body
+say the gap is not comprehension. Its plans have been correct for five runs
+running: 000498 restated the open-grip definition unprompted, blade failure mode
+included, with object_in_grasp_m <= 0.02 as its own done_when.
+
+  000495  19 of 22 calls on place_thumb, thumb_home, sweep_thumb. Never closed.
+  000496  Reached 5.9 cm from a grasp, turned to thumb_opposition, drifted to
+          14.6. Block moved 5.79 cm -- the best-behaved run recorded.
+  000497  close_grip never called. Six calls on level_wrist, which at that pose
+          is in the top-four movers of no metric at all, while object_in_grasp_m
+          read 0.016: the object was already inside the opening.
+  000499  close_grip called twice, the first time ever. Lift +1.83 cm. Closed at
+          object_in_grasp_m 0.044 and put 11.4 N on the thumb with NO finger
+          loaded -- the thumb caught the object, the fingers passed beside it.
+  000500  Told 0.025 was the threshold, it never closed at all: waited for a
+          number it could not reach and pushed the block 48 cm.
+
+The shape of it: the model prepares until the clock runs out with the object
+already in its hand. Prompt changes move which primitive absorbs the calls --
+orient_palm, then thumb_oppose_index, then reach_to, then level_wrist -- without
+changing that. Naming a hard threshold made it worse, not better; 871eaa4 states
+both failure modes with their costs instead.
+
+WHAT I WOULD TRY NEXT, IN ORDER
+
+1. Standing targets rather than actions. The model gets ~22 decisions in 14 s,
+   about one per 0.64 s; the scripted controller commits to closing within 1.5 s
+   of arriving and then needs closure every frame. The target machinery already
+   drives greedy at 30 Hz and the model has barely used it -- two of twenty-two
+   calls in 000496. A close held as a standing target is the shape that fits.
+2. Cadence tied to phase, not to distance. Approaching wants a decision a
+   second; the two seconds where a grasp forms want far more, and they get the
+   same.
+3. Only then, more prompt. Six rounds of it have not moved the outcome.
+
+
 DO NOT
 - Do not push this branch or merge it. It stays local by explicit instruction.
 - Do not tune scripted_grasp.py to make a configuration pass. It is the control,
