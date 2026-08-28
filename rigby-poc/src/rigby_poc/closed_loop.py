@@ -1234,6 +1234,11 @@ def palm_facing(sensing: Sensing, hand: Hand) -> float:
 #: the palm's centre to the knuckles. The distal transverse pad, not the middle.
 _PALM_PAD_FRACTION = 0.6
 
+#: Contact force at which the ARM stops advancing, newtons. Above the digits'
+#: settling force, so brushing the object while arriving does not halt the
+#: approach, but real contact does.
+_ARM_STOP_FORCE_N = 2.5
+
 #: How far off the face the palm pad is asked to stop, metres.
 #:
 #: Small on purpose. The pad is at the knuckles and the digits reach most of a
@@ -1271,6 +1276,20 @@ def _solve_move_to(sensing: Sensing, hand: Hand, amount: float) -> dict[str, Any
     from .analysis.anatomy.rom import rom_limit
     from .models import PrimitiveParameters, Quat, Vec3
     from .primitives import arm_pose_from_target, shoulder_position
+
+    # A guarded move, for the ARM. Once the hand is genuinely touching the
+    # object, driving the wrist further forward pushes the digits through it:
+    # the same mistake the digits made before closure was gated on force, one
+    # level up and with far more leverage behind it. Measured in run 000501,
+    # with the standoff at 1.5 cm and move_to chosen six times, the thumb ended
+    # 18.9 mm INSIDE a 60 mm block reporting 80 N while the index and ring sat
+    # 5-7 cm away -- the arm had carried the hand through what it was reaching
+    # for.
+    #
+    # The threshold sits above the digits' own settling force, so brushing the
+    # object while arriving does not stop the approach; only real contact does.
+    if max(sensing.contact_force_n.values(), default=0.0) >= _ARM_STOP_FORCE_N:
+        return {}
 
     face = chosen_face(sensing, hand)
     frame = _palm_frame(sensing, hand)
