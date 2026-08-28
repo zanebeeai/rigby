@@ -1,0 +1,246 @@
+{
+  "schema_version": "embodiment.v1",
+  "notes": {
+    "purpose": "What a body offers a controller, declared rather than compiled in. URDF says where a robot's links and joints are; this says what it can be ASKED to do and what it can be asked ABOUT, which is the layer a language model actually plans in. A different robot ships a different manifest and the same solvers, or the same manifest and different solvers, and the loop does not change.",
+    "amplitude": "Every primitive declares what its amplitude MEANS. Four separate failures in this project came from a caller assuming the wrong one: reach_to below 0.7 moved AWAY because its amplitude was a path fraction, close_grip's is a target force, open_grip's is a shape, and lift's is a rate -- at full amplitude it commanded 15 cm in one decision and tore the object out of the hand. A number between 0 and 1 is not self-describing.",
+    "sensor": "Every metric declares the real instrument that could supply it, so a metric nothing could measure cannot quietly become a goal. The body reads joint states by proprioception, contact by tactile sensing, and the object only while looking at it.",
+    "wants": "The value a grasp is trying to reach, where there is one. A metric with no want is readable but not targetable: measured across the whole vocabulary, nothing in it moves aperture_deg or thumb_to_fingers_m at all, and a goal nothing can move is a goal a plan can only stall on."
+  },
+  "part_groups": {
+    "arm": [
+      "{side}_shoulder",
+      "{side}_elbow",
+      "{side}_wrist"
+    ],
+    "digits": [
+      "{side}_thumb",
+      "{side}_index",
+      "{side}_middle",
+      "{side}_ring",
+      "{side}_little"
+    ],
+    "gaze": [
+      "neck",
+      "head"
+    ]
+  },
+  "primitives": [
+    {
+      "name": "move_to",
+      "solver": "move_to",
+      "parts": "arm",
+      "amplitude": "fraction of the way to the target",
+      "describes": "carry the PALM to a face of the object and arrive square to it, so the object ends up in front of the palm rather than under the fingertips",
+      "refuses_when": [
+        "any digit carries more than 2.5 N -- the hand is already touching, and the arm has more leverage than the fingers",
+        "the hand is holding the object -- the face being approached is under the fingers, so approaching drives the hand through what it carries",
+        "the object is moving faster than 0.02 m/s -- that is the approach pushing it, and force does not register it"
+      ]
+    },
+    {
+      "name": "open_grip",
+      "solver": "open_grip",
+      "parts": "digits",
+      "amplitude": "how far toward the open shape, not how wide",
+      "describes": "open the hand into a C -- thumb and fingers pointing the same way, tips and knuckles wide apart -- sized to the object rather than to the hand's maximum",
+      "refuses_when": [
+        "the hand is holding the object -- opening it is how you put it down"
+      ]
+    },
+    {
+      "name": "close_grip",
+      "solver": "close_grip",
+      "parts": "digits",
+      "amplitude": "the contact force to close TO, in newtons, low arriving and high carrying",
+      "describes": "close the opening with every finger's curl locked, so the tips come together by the grip closing rather than by fingertips curling to meet in mid-air",
+      "refuses_when": [
+        "the object is more than 0.038 m off the line between thumb and fingers -- closing could only push it",
+        "the opening is already at the object's own width -- solids do not compress"
+      ]
+    },
+    {
+      "name": "lift",
+      "solver": "lift",
+      "parts": "arm",
+      "amplitude": "a RATE of rise, re-run every frame, not a height",
+      "describes": "raise the arm, still gripping",
+      "refuses_when": [
+        "the thumb carries less than 8 N -- it squeezes instead, and becomes a lift once the hand can hold what it is carrying"
+      ]
+    },
+    {
+      "name": "curl_{digit}",
+      "solver": "digit_curl",
+      "per": "digits",
+      "parts": "one digit",
+      "amplitude": "signed: +1 fully curled, 0 straight, -1 fully extended",
+      "describes": "curl one digit in, or straighten it out"
+    },
+    {
+      "name": "sweep_{digit}",
+      "solver": "digit_sweep",
+      "per": "digits",
+      "parts": "one digit",
+      "amplitude": "signed: the two directions of one axis",
+      "describes": "swing one digit sideways across the hand, tracing a horizontal line",
+      "refuses_when": [
+        "the hand is holding the object -- swinging a digit out of a grasp is a release"
+      ]
+    },
+    {
+      "name": "look_at_object",
+      "solver": "look_at_object",
+      "parts": "gaze",
+      "amplitude": "fraction of the way round",
+      "describes": "turn the head until the object is in view"
+    },
+    {
+      "name": "look_at_hand",
+      "solver": "look_at_hand",
+      "parts": "gaze",
+      "amplitude": "fraction of the way round",
+      "describes": "turn the head to look at the hand"
+    }
+  ],
+  "metrics": [
+    {
+      "name": "palm_to_object_m",
+      "wants": 0.0,
+      "sensor": "range to the object along the palm normal; a depth camera or a rangefinder in the palm",
+      "describes": "metres from the palm's contact pad to the object's surface"
+    },
+    {
+      "name": "palm_facing",
+      "wants": 1.0,
+      "sensor": "the palm normal from proprioception against the surface normal from vision",
+      "describes": "+1 when the palm looks straight at the face it is approaching, 0 edge-on"
+    },
+    {
+      "name": "object_in_grasp_m",
+      "wants": 0.0,
+      "sensor": "object position from vision, digit positions from proprioception",
+      "describes": "metres from the object to the line between thumb and fingers; near zero means it is INSIDE the opening"
+    },
+    {
+      "name": "grip_parallel",
+      "wants": 1.0,
+      "sensor": "proprioception alone",
+      "describes": "+1 when the thumb and the four fingers point the SAME way, which is the open-grip shape"
+    },
+    {
+      "name": "grip_tip_spread_m",
+      "wants": null,
+      "sensor": "proprioception alone",
+      "describes": "the opening: thumb tip to the middle of the fingertips. Opened to the object's size, then closed"
+    },
+    {
+      "name": "grip_base_spread_m",
+      "wants": null,
+      "sensor": "proprioception alone",
+      "describes": "thumb knuckle to the middle of the finger knuckles. What stops a flat blade passing as a grip"
+    },
+    {
+      "name": "digits_straddle",
+      "wants": 1.0,
+      "sensor": "proprioception, plus the support plane from vision",
+      "describes": "+1 when thumb and fingers are level with each other so the object can sit BETWEEN them; 0 when stacked on one face"
+    },
+    {
+      "name": "tips_to_object_m",
+      "wants": 0.0,
+      "sensor": "object position from vision, fingertips from proprioception",
+      "describes": "fingertip mean to the object centre. Minimised by driving the fingers INTO the object; prefer palm_to_object_m"
+    },
+    {
+      "name": "aperture_deg",
+      "wants": null,
+      "targetable": false,
+      "sensor": "proprioception alone",
+      "describes": "degrees the apertures stand off the palm. READABLE ONLY: nothing in the vocabulary moves it"
+    },
+    {
+      "name": "thumb_to_fingers_m",
+      "wants": null,
+      "targetable": false,
+      "sensor": "proprioception alone",
+      "describes": "thumb tip to the middle of the finger group. READABLE ONLY, same reason"
+    },
+    {
+      "name": "thumb_opposition",
+      "wants": null,
+      "targetable": false,
+      "sensor": "proprioception, plus object position from vision",
+      "describes": "+1 when the thumb is across the object from the fingers. READABLE ONLY: satisfied whether or not anything is between them, and contested six ways against ten"
+    },
+    {
+      "name": "c_closure",
+      "wants": null,
+      "targetable": false,
+      "sensor": "proprioception alone",
+      "describes": "-1 when thumb and index point straight AT each other. READABLE ONLY: it describes a hand that has already closed, so it could not leave its pinned value above a 4.4 cm opening while the block needing to enter was 6.0 cm wide. Replaced by grip_parallel and the two spreads"
+    },
+    {
+      "name": "grip_closure",
+      "wants": null,
+      "targetable": false,
+      "sensor": "proprioception alone",
+      "describes": "the same averaged over four fingers. READABLE ONLY: it inherits that dead zone and has no movers at all"
+    },
+    {
+      "name": "rays_toward",
+      "wants": null,
+      "targetable": false,
+      "sensor": "proprioception alone",
+      "describes": "+1 when each fingertip ray points at the other. READABLE ONLY: one control improves it against eight that wreck it"
+    },
+    {
+      "name": "ray_gap_m",
+      "wants": null,
+      "targetable": false,
+      "sensor": "proprioception alone",
+      "describes": "metres by which the two fingertip rays miss each other. READABLE ONLY, same reason"
+    },
+    {
+      "name": "ray_dot",
+      "wants": null,
+      "targetable": false,
+      "sensor": "proprioception alone",
+      "describes": "raw direction dot product of the thumb and index rays. READABLE ONLY and the most dangerous of these: nine controls move it, none hurt it, and a hand splayed perfectly flat scores full marks"
+    }
+  ],
+  "senses": [
+    {
+      "name": "joint_states",
+      "sensor": "proprioception",
+      "always": true
+    },
+    {
+      "name": "contact_force_per_digit",
+      "sensor": "tactile pads",
+      "always": true
+    },
+    {
+      "name": "object_position",
+      "sensor": "vision",
+      "always": false,
+      "note": "only while the object is within the field of view; otherwise the last place it was SEEN"
+    },
+    {
+      "name": "object_size",
+      "sensor": "vision",
+      "always": false
+    },
+    {
+      "name": "object_velocity",
+      "sensor": "vision, between observations",
+      "always": false,
+      "note": "zero while out of view -- motion is read between observations, and there are none"
+    },
+    {
+      "name": "gaze_error_deg",
+      "sensor": "head pose against the BELIEVED object position",
+      "always": true,
+      "note": "the angle to where the object is believed to be, never to where it actually is; a head does not know the bearing of something it cannot see"
+    }
+  ]
+}
