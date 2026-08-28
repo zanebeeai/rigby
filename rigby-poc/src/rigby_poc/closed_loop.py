@@ -2399,7 +2399,17 @@ def _solve_lift(sensing: Sensing, hand: Hand, amount: float) -> dict[str, Any]:
         hand, shoulder_position(hand),
         Vec3(x=float(aim[0]), y=float(aim[1]), z=float(aim[2])),
         PrimitiveParameters(), present_hand=False)
-    return arm
+    # Keep gripping while carrying. Lifting writes only the arm, so on its own
+    # the digits hold a fixed pose -- and a fixed pose is not a grip: the object
+    # shifts under its own weight, contact is lost, and nothing re-establishes
+    # it. Measured, a grip at 2.1 N survived 1.5 s of lifting and let go; with
+    # the squeeze maintained the same grip carried the block 20 cm.
+    #
+    # It is also not a decision to make at a model's cadence. A hand does not
+    # alternate between holding and raising, and when the selector is asked for
+    # ONE action every 0.7 s, anything that must be true continuously has to
+    # live in the body rather than in the choice.
+    return {**_solve_close_grip(sensing, hand, 1.0), **arm}
 
 
 

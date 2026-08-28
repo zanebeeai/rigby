@@ -142,6 +142,24 @@ together only by the grip closing rather than by fingers curling inward to meet 
 the object outside them. You have gripped it when contact force appears on the thumb and at \
 least one finger and the object stops moving relative to the hand.
 
+What the four controls of a grasp actually do, measured on this body:
+
+"move_to" carries the PALM to a face of the object and arrives square to it. It stops close
+enough that the object ends up INSIDE the opening rather than out by the fingertips -- which is
+the difference between closing on it and pushing it away.
+
+"open_grip" opens to the object's own size, not as wide as the hand goes. An opening wider than
+it needs cannot reach the object by the time it has closed as far as it can.
+
+"close_grip" takes its AMPLITUDE as how hard to close. Low arrives on the object, high squeezes
+hard enough to carry it. Closing stops on its own at the object's width and at any digit that is
+already loaded, so a firm close is safe: it settles rather than crushing.
+
+"lift" raises the arm and keeps gripping while it does. You do not have to alternate.
+
+A grasp that carries needs roughly 5-10 N on the thumb against a finger. Two loaded pairs with
+the object still is a grasp; contact on fingers alone, with nothing on the thumb, is a push.
+
 Rules that matter more than they look:
 
 A grasp needs the THUMB loaded against at least one FINGER, on opposite faces of the object. \
