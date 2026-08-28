@@ -1575,6 +1575,12 @@ _SETTLED_FORCE_N = 0.8
 #: carry a graspable object against gravity with margin, not enough to crush it.
 _SQUEEZE_FORCE_N = 6.0
 
+#: Thumb force below which a lift becomes a squeeze instead, newtons.
+#: A 0.25 kg block needs about m*g / (2*mu) = 1.5 N per side to hold at
+#: rest; carrying it while the arm accelerates needs several times that,
+#: and 5.6 N was measured dropping it.
+_CARRY_FORCE_N = 8.0
+
 #: Slack left above the object's width when closing, metres.
 _GRIP_FLOOR_MARGIN_M = 0.012
 
@@ -2476,6 +2482,19 @@ def _solve_lift(sensing: Sensing, hand: Hand, amount: float) -> dict[str, Any]:
     #
     # The cap leaves the gentle end of the range untouched, so a caller asking
     # for 0.05 gets exactly what it asked for.
+    # TIGHTEN FIRST. A grip that is merely present is not a grip that carries:
+    # run 000509 closed to 1.1 cm of offset -- the best approach of any run --
+    # took a two-pair grasp at 5.6 N on the thumb, lifted, and lost the block
+    # inside four tenths of a second. The scripted baseline squeezes to about
+    # 10 N before it raises anything.
+    #
+    # So a lift that is asked for too early becomes a squeeze, and becomes a
+    # lift by itself once the hand can hold what it is carrying. That is what a
+    # person does without deciding to, and it is not a judgement worth spending
+    # a decision on at this cadence.
+    if sensing.contact_force_n.get("thumb", 0.0) < _CARRY_FORCE_N:
+        return _solve_close_grip(sensing, hand, 1.0)
+
     reach = min(float(amount), 0.3)
     aim = wrist + np.asarray([0.0, reach * 0.15, 0.0])
     arm, _ = arm_pose_from_target(
