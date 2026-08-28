@@ -1291,6 +1291,14 @@ def _solve_move_to(sensing: Sensing, hand: Hand, amount: float) -> dict[str, Any
     if max(sensing.contact_force_n.values(), default=0.0) >= _ARM_STOP_FORCE_N:
         return {}
 
+    # And approaching an object you are already holding drives the hand through
+    # the thing it is carrying: move_to aims the palm at a FACE, and while
+    # holding, that face is under the fingers. Run 000508 had a three-digit
+    # grasp, lifted it correctly, then chose move_to and tore the block out of
+    # its own hand.
+    if holding_object(sensing):
+        return {}
+
     face = chosen_face(sensing, hand)
     frame = _palm_frame(sensing, hand)
     if face is None or frame is None:
@@ -1572,7 +1580,7 @@ _GRIP_FLOOR_MARGIN_M = 0.012
 
 #: How far off the grasp line the object may be and still be worth closing
 #: on, metres. Beyond this the digits are beside it rather than around it.
-_CLOSE_MAX_OFFSET_M = 0.045
+_CLOSE_MAX_OFFSET_M = 0.038
 
 
 def _hold_force_n(amount: float) -> float:

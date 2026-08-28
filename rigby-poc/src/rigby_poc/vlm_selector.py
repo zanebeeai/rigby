@@ -829,14 +829,15 @@ class VLMSelector:
                             f"closing would push it rather than hold it. Bring it "
                             f"inside the opening first -- move_to."
                         )
-                    elif action in ("open_grip",) or action.startswith("sweep_"):
+                    elif action in ("open_grip", "move_to") or action.startswith("sweep_"):
                         from .closed_loop import holding_object
 
                         if holding_object(sensing):
                             self.rejected = (
                                 f"{action} did nothing because you are HOLDING "
-                                f"the object -- it would have opened your hand "
-                                f"and dropped it. Keep lifting."
+                                f"the object -- it would have dropped it. "
+                                f"Nothing needs approaching or reshaping now. "
+                                f"Keep lifting."
                             )
                         else:
                             self.rejected = (
