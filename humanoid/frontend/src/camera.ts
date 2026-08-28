@@ -1,10 +1,10 @@
 import * as THREE from "three";
-import { egoNeutralGaze } from "./generated/camera";
+import { egoEyeOffsetM, egoNeutralGaze } from "./generated/camera";
 
 // Rigby application space is glTF Y-up with the humanoid's anatomical front in +Z.
 // Three.js cameras look down local -Z, but lookAt() rotates that local axis toward
 // the world-space +Z gaze below.
-const NEUTRAL_EYE_OFFSET = new THREE.Vector3(0, 0.04, 0.11);
+const NEUTRAL_EYE_OFFSET = new THREE.Vector3(...egoEyeOffsetM);
 const NEUTRAL_GAZE = new THREE.Vector3(...egoNeutralGaze);
 
 export interface EgoCameraPose {

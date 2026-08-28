@@ -16,7 +16,6 @@ import numpy as np
 
 from ..models import BonePose, Quat
 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 RIG_PROFILE = PROJECT_ROOT / "config" / "rig_profiles" / "mesh2motion-human-vrm1.json"
 
@@ -24,6 +23,18 @@ RIG_PROFILE = PROJECT_ROOT / "config" / "rig_profiles" / "mesh2motion-human-vrm1
 # ``frontend/src/camera.ts``.
 EGO_NEUTRAL_GAZE = np.asarray([0.0, -0.65, 1.0], dtype=float)
 EGO_NEUTRAL_GAZE /= np.linalg.norm(EGO_NEUTRAL_GAZE)
+
+# Head-local offset the renderer hangs the ego camera off, matching
+# ``frontend/src/camera.ts`` NEUTRAL_EYE_OFFSET -- which now imports it from
+# ``config/camera.v1.json`` rather than retyping it, as this copy does.
+# ``test_camera_config.py`` pins both against the config so they cannot drift.
+#
+# This offset composes onto the rig's *measured* rest head position. The value it
+# replaced folded the offset into a rest head rounded to four decimals, which put
+# the implied offset 0.024 mm from the renderer's -- 0.028 px of a 1600x900
+# capture, and enough to flip ``active_hand_visibility_fraction`` at frame 0 of
+# every strike and gesture clip.
+EGO_EYE_OFFSET_M = np.asarray([0.0, 0.04, 0.11], dtype=float)
 
 
 def rig_profile() -> dict[str, Any]:

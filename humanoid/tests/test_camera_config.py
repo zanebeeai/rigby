@@ -92,6 +92,76 @@ def test_the_analysis_neutral_gaze_matches_the_config() -> None:
     assert np.allclose(EGO_NEUTRAL_GAZE, authored, atol=0.0, rtol=0.0)
 
 
+def test_the_analysis_eye_offset_matches_the_config() -> None:
+    """The fifth camera value, and the last one that was free to drift.
+
+    The other four reached the frontend by generation while this one stayed
+    hand-typed on BOTH sides, and the copies diverged: the analysis side had
+    folded it into a rest head position rounded to four decimals, putting its
+    implied offset 0.024 mm from the renderer's. That is 0.028 px of a 1600x900
+    capture, and it decided ``active_hand_visibility_fraction`` at frame 0 of
+    every strike and gesture clip, because the compiler places the hand at the
+    visibility limit by construction.
+    """
+
+    import numpy as np
+
+    from rigby_poc.analysis.rig import EGO_EYE_OFFSET_M
+
+    authored = np.asarray(_value("ego_eye_offset_m"), dtype=float)
+    assert np.allclose(EGO_EYE_OFFSET_M, authored, atol=0.0, rtol=0.0)
+
+
+def test_the_frontend_eye_offset_is_the_generated_one_not_a_retyped_copy() -> None:
+    """`camera.ts` must import the offset, not hand-type it again.
+
+    Pinning the two values equal is not enough on its own: a hand-typed literal
+    that happens to match today is exactly what the last four values looked like
+    before they drifted. The import is the mechanism; this asserts it exists.
+    """
+
+    source = (PROJECT_ROOT / "frontend" / "src" / "camera.ts").read_text(encoding="utf-8")
+
+    assert "egoEyeOffsetM" in source, (
+        "frontend/src/camera.ts no longer reads the generated eye offset. It must "
+        "import egoEyeOffsetM from ./generated/camera rather than retyping it."
+    )
+    assert "new THREE.Vector3(0, 0.04, 0.11)" not in source, (
+        "frontend/src/camera.ts has a retyped eye-offset literal again."
+    )
+
+
+def test_the_rest_ego_camera_is_derived_from_the_rig_not_a_rounded_literal() -> None:
+    """The derived rest camera must sit where the renderer puts it.
+
+    ``rest_ego_camera_position`` composes the config offset onto the rig's
+    measured rest head. The literal it replaced carried the same sum with the
+    head rounded to 4 dp; this asserts the derivation reproduces the renderer's
+    construction rather than that older rounding.
+    """
+
+    import numpy as np
+
+    from rigby_poc.analysis.gesture import rest_ego_camera_position
+    from rigby_poc.analysis.rig import EGO_EYE_OFFSET_M, identity_bones
+    from rigby_poc.kinematics import rig_kinematics
+
+    kinematics = rig_kinematics()
+    head = kinematics.world_matrices(identity_bones())[
+        kinematics.node_by_canonical["head"]
+    ]
+    # The renderer rotates the offset by the head delta, identity at rest.
+    expected = head[:3, 3] + EGO_EYE_OFFSET_M
+
+    assert np.allclose(rest_ego_camera_position(), expected, atol=0.0, rtol=0.0)
+
+    superseded = np.asarray([0.0, 1.5685 + 0.04, 0.0114 + 0.11], dtype=float)
+    assert not np.allclose(rest_ego_camera_position(), superseded, atol=1e-9, rtol=0.0), (
+        "the derived rest camera equals the rounded literal it superseded, which "
+        "means the derivation is not reading the rig's measured rest head"
+    )
+
+
 def test_the_quality_reference_camera_contract_matches_the_config() -> None:
     """`motion_quality_reference.json` still carries a copy; it must agree."""
 

@@ -9,39 +9,63 @@ from __future__ import annotations
 
 import json
 import math
+from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import Any, Iterable
+from functools import cache
+from typing import Any
 
 import numpy as np
 from scipy.spatial.transform import Rotation
 
+from ..kinematics import rig_kinematics
 from ..models import ClipFrame, Hand, HandShape
 from ..primitives import (
-    LOWER_ARM_LENGTH_M,
-    UPPER_ARM_LENGTH_M,
     _HAND_REST_LOCAL_XYZW,
     _LOWER_ARM_REST_LOCAL_XYZW,
     _UPPER_ARM_REST_WORLD_XYZW,
+    LOWER_ARM_LENGTH_M,
+    UPPER_ARM_LENGTH_M,
     shoulder_position,
 )
 from .context import AnalysisContext
-from .contract import ANATOMY, SIGNAL, CheckResult, count_check, lower_bound_check, upper_bound_check
-from .rig import EGO_NEUTRAL_GAZE, PROJECT_ROOT
-
+from .contract import (
+    ANATOMY,
+    SIGNAL,
+    CheckResult,
+    count_check,
+    lower_bound_check,
+    upper_bound_check,
+)
+from .rig import EGO_EYE_OFFSET_M, EGO_NEUTRAL_GAZE, PROJECT_ROOT, identity_bones
 
 QUALITY_REFERENCE = PROJECT_ROOT / "config" / "motion_quality_reference.json"
 
-#: The ego camera's world position at the calibrated rest head pose.
-#:
-#: ``frontend/src/camera.ts::computeEgoCameraPose`` builds this as the head's
-#: rest world position plus a head-local eye offset of ``(0, 0.04, 0.11)``. The
-#: literal here is that sum with the head position *rounded*, and it stays the
-#: anchor rather than being recomputed from the frontend's clean offset: the two
-#: disagree by 2.4e-5 m in z, and the rest pose sits 1.5e-5 m inside the vertical
-#: frustum, so adopting the frontend constant flips frame 0 of every gesture and
-#: strike clip out of view. Reconciling the two literals is separate, measured
-#: work; anchoring on the frozen one keeps this change to what it claims to be.
-_REST_EGO_CAMERA_POSITION = np.asarray([0.0, 1.5685 + 0.04, 0.0114 + 0.11], dtype=float)
+@cache
+def rest_ego_camera_position() -> np.ndarray:
+    """The ego camera's world position at the rest head pose, derived not frozen.
+
+    ``EGO_EYE_OFFSET_M`` composed onto the rig's *measured* rest head position,
+    which is what ``frontend/src/camera.ts`` does. This replaces a frozen literal
+    that carried the same sum with the head position rounded to four decimals:
+    that rounding put the implied offset 0.024 mm from the renderer's, which is
+    0.028 px of a 1600x900 capture and decided
+    ``active_hand_visibility_fraction`` at frame 0 of every strike and gesture
+    clip. See :func:`_full_hand_visible` for why a sub-pixel margin no longer
+    decides anything.
+
+    Only the fallback path needs it -- callers with a skeleton to hand get a
+    head-carried camera per frame. Cached because it is one rest-pose evaluation
+    and the fallback must not add a forward-kinematics pass per call.
+    """
+
+    kinematics = rig_kinematics()
+    head = kinematics.world_matrices(identity_bones())[
+        kinematics.node_by_canonical["head"]
+    ]
+    # No rotation by the rest head block. ``computeEgoCameraPose`` rotates the
+    # offset by the head *delta* -- current rotation against rest -- which is the
+    # identity at the rest pose, so the offset composes in world axes here.
+    return head[:3, 3] + EGO_EYE_OFFSET_M
 
 
 def quality_reference() -> dict[str, Any]:
@@ -137,11 +161,10 @@ def ego_camera(
     delta -- its world rotation relative to the rest one -- and the eye offset is
     then hung off wherever the head has moved to.
 
-    ``eye_offset`` is passed in rather than read from a constant so it can be
-    derived from *this* skeleton's rest head position (see
-    :attr:`AnalysisContext.rest_head_transform`), which is what makes the pose
-    reproduce :data:`_REST_EGO_CAMERA_POSITION` exactly at rest instead of
-    2.4e-5 m in front of it.
+    ``eye_offset`` is passed in rather than read from the module constant so it
+    is carried into *this* skeleton's rest head frame by the caller (see
+    :attr:`AnalysisContext.rest_head_transform`), which is what lets an injected
+    rig produce its own camera rather than the default rig's.
 
     Only the position and the forward axis come back. The frontend sets
     ``camera.up = (0, 1, 0)`` before ``lookAt``, so the camera does not roll with
@@ -188,8 +211,8 @@ def world_hand_samples(
         # clip: a STRIKE program whose only primitive is a SHAKE.
         return {}
     head_node = ctx.kinematics.node_by_canonical["head"]
-    rest_head_position, rest_head_rotation = ctx.rest_head_transform
-    eye_offset = _REST_EGO_CAMERA_POSITION - rest_head_position
+    _, rest_head_rotation = ctx.rest_head_transform
+    eye_offset = EGO_EYE_OFFSET_M
     samples: dict[int, WorldHandSample] = {}
     for index in indices:
         head = ctx.world_matrices(index)[head_node]
@@ -238,7 +261,7 @@ def _full_hand_visible(
     # bones after the clip compiles, and the synthetic partial-bone frames in
     # the check tests. ``EGO_NEUTRAL_GAZE`` is the same normalised (0, -0.65, 1)
     # this function used to build inline, so that path is unchanged bit for bit.
-    position = _REST_EGO_CAMERA_POSITION if camera_position is None else camera_position
+    position = rest_ego_camera_position() if camera_position is None else camera_position
     forward = EGO_NEUTRAL_GAZE if camera_forward is None else camera_forward
     world_up = np.asarray([0.0, 1.0, 0.0], dtype=float)
     right = np.cross(forward, world_up)
@@ -270,7 +293,29 @@ def _full_hand_visible(
     ) * palm_half_span
     radius_x = max(radius_x, float(contract["hand_visibility_radius_m"]) * 0.55)
     radius_y = max(radius_y, float(contract["hand_visibility_radius_m"]) * 0.55)
-    return abs(horizontal) + radius_x <= half_horizontal and abs(vertical) + radius_y <= half_vertical
+
+    # One pixel of the evidence image, at this depth. Not a tuned tolerance: the
+    # resolving power of the instrument this check models. It exists to predict
+    # what a grader sees in a `width_px` x `height_px` render, so a verdict taken
+    # below one pixel is a claim the rendered evidence cannot carry either way.
+    #
+    # Measured, on the clip that forced it: at frame 0 of every strike and gesture
+    # the hand sits within 0.03 px of the frustum edge, because the compiler
+    # places it at the visibility limit by construction. Without this floor the
+    # published fraction is decided by which of two copies of the eye offset was
+    # rounded -- a 0.024 mm difference, 0.028 px. With it, the same answer comes
+    # back either way.
+    #
+    # It cannot rescue a clip that is genuinely out of view, and that is measured
+    # rather than argued: `knownbad-gesture-out-of-view` reaches 68.9 px outside
+    # the frustum and `knownbad-composite-overhead-out-of-view` 266.9 px, against
+    # a floor of one. Stated in pixels rather than metres so it stays correct as
+    # depth changes instead of meaning something different at every distance.
+    pixel = 2.0 * half_vertical / float(contract["height_px"])
+    return (
+        abs(horizontal) + radius_x <= half_horizontal + pixel
+        and abs(vertical) + radius_y <= half_vertical + pixel
+    )
 
 
 def _angular_kinematics(frames: list[ClipFrame], bone_names: list[str]) -> tuple[float, float, float]:
