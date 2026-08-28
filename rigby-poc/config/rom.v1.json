@@ -12,7 +12,8 @@
     "frame": "typical_deg and max_deg are ANATOMICAL angles. The rest-relative bound is anatomical + the bone's rest offset, DERIVED at load time by rigby_poc.analysis.anatomy.neutral.rest_offset. It is deliberately not stored here: it is geometry rather than an authored value, and several offsets sit within 1e-5 deg of a rounding boundary, which made this file architecture-dependent. See plan 04 6.4.",
     "mirroring": "flexion and abduction are preserved across sides; only twist negates. Authored once, applied to both.",
     "enforceable": "'mutation_only' marks a bone compiler.py never assigns a rotation to on any path, so its limit can never fire from generated motion. Exercising it belongs to plan 06.",
-    "enforcement": "04b shipped every check report-only. 04c gates on `enforced`, set by rigby_poc.analysis.anatomy.authored_rom.is_enforced: the bound must be cited (external or invariant), the bone must be reachable from generation, and the bone must not be the root. Everything else stays report-only and reports its measurement."
+    "enforcement": "04b shipped every check report-only. 04c gates on `enforced`, set by rigby_poc.analysis.anatomy.authored_rom.is_enforced: the bound must be cited (external or invariant), the bone must be reachable from generation, and the bone must not be the root. Everything else stays report-only and reports its measurement.",
+    "thumb_range_widened": "Thumb typical ranges were widened to their max on 2026-08-28. The table already records that the thumb is the one chain where the authored asset and the anatomical frame disagree, that the rig crate_grip preset closes the thumb by adduction rather than flexion, and that these limits are the least trustworthy in the table. A conservative range on an axis that is already the wrong axis buys nothing and costs the reach a grasp needs."
   },
   "limits": {
     "hips": {
@@ -1477,8 +1478,8 @@
       "dofs": {
         "flexion": {
           "typical_deg": [
-            -60.0,
-            60.0
+            -75.0,
+            75.0
           ],
           "max_deg": [
             -75.0,
@@ -1498,8 +1499,8 @@
         },
         "abduction": {
           "typical_deg": [
-            -60.0,
-            60.0
+            -75.0,
+            75.0
           ],
           "max_deg": [
             -75.0,
@@ -1519,8 +1520,8 @@
         },
         "twist": {
           "typical_deg": [
-            -60.0,
-            60.0
+            -75.0,
+            75.0
           ],
           "max_deg": [
             -75.0,
@@ -1546,8 +1547,8 @@
       "dofs": {
         "flexion": {
           "typical_deg": [
-            -60.0,
-            60.0
+            -75.0,
+            75.0
           ],
           "max_deg": [
             -75.0,
@@ -1567,8 +1568,8 @@
         },
         "abduction": {
           "typical_deg": [
-            -60.0,
-            60.0
+            -75.0,
+            75.0
           ],
           "max_deg": [
             -75.0,
@@ -1588,8 +1589,8 @@
         },
         "twist": {
           "typical_deg": [
-            -60.0,
-            60.0
+            -75.0,
+            75.0
           ],
           "max_deg": [
             -75.0,
@@ -1615,8 +1616,8 @@
       "dofs": {
         "flexion": {
           "typical_deg": [
-            -60.0,
-            60.0
+            -75.0,
+            75.0
           ],
           "max_deg": [
             -75.0,
@@ -1636,8 +1637,8 @@
         },
         "abduction": {
           "typical_deg": [
-            -60.0,
-            60.0
+            -75.0,
+            75.0
           ],
           "max_deg": [
             -75.0,
@@ -1657,8 +1658,8 @@
         },
         "twist": {
           "typical_deg": [
-            -60.0,
-            60.0
+            -75.0,
+            75.0
           ],
           "max_deg": [
             -75.0,
@@ -2476,8 +2477,8 @@
       "dofs": {
         "flexion": {
           "typical_deg": [
-            -60.0,
-            60.0
+            -75.0,
+            75.0
           ],
           "max_deg": [
             -75.0,
@@ -2497,8 +2498,8 @@
         },
         "abduction": {
           "typical_deg": [
-            -60.0,
-            60.0
+            -75.0,
+            75.0
           ],
           "max_deg": [
             -75.0,
@@ -2518,8 +2519,8 @@
         },
         "twist": {
           "typical_deg": [
-            -60.0,
-            60.0
+            -75.0,
+            75.0
           ],
           "max_deg": [
             -75.0,
@@ -2545,8 +2546,8 @@
       "dofs": {
         "flexion": {
           "typical_deg": [
-            -60.0,
-            60.0
+            -75.0,
+            75.0
           ],
           "max_deg": [
             -75.0,
@@ -2566,8 +2567,8 @@
         },
         "abduction": {
           "typical_deg": [
-            -60.0,
-            60.0
+            -75.0,
+            75.0
           ],
           "max_deg": [
             -75.0,
@@ -2587,8 +2588,8 @@
         },
         "twist": {
           "typical_deg": [
-            -60.0,
-            60.0
+            -75.0,
+            75.0
           ],
           "max_deg": [
             -75.0,
@@ -2614,8 +2615,8 @@
       "dofs": {
         "flexion": {
           "typical_deg": [
-            -60.0,
-            60.0
+            -75.0,
+            75.0
           ],
           "max_deg": [
             -75.0,
@@ -2635,8 +2636,8 @@
         },
         "abduction": {
           "typical_deg": [
-            -60.0,
-            60.0
+            -75.0,
+            75.0
           ],
           "max_deg": [
             -75.0,
@@ -2656,8 +2657,8 @@
         },
         "twist": {
           "typical_deg": [
-            -60.0,
-            60.0
+            -75.0,
+            75.0
           ],
           "max_deg": [
             -75.0,

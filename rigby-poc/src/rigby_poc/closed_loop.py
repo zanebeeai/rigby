@@ -1774,6 +1774,150 @@ def _solve_look_at_hand(sensing: Sensing, hand: Hand, amount: float) -> dict[str
     return dict(result.bones)
 
 
+#: The thumb posture a grasp begins from, in degrees on each bone's anatomical
+#: frame: metacarpal flexion and abduction, then proximal flexion.
+#:
+#: Fitted, not guessed. Searched against the C measure with the index curled,
+#: because the two only work together -- the same search with a straight index
+#: cannot reach a C at any thumb angle, since the C measure takes the WORSE of
+#: the two rays and a straight index is always the worse one:
+#:
+#:     index curl   best thumb        toward    ray_dot   tips apart
+#:        0.0       +60 +30 +60       -0.921    -0.800     21.6 cm
+#:        0.4       +30 -30 -30       +0.012    +0.824      7.6 cm
+#:        0.7       +60 -30 -60       +0.537    +0.362      7.0 cm
+#:        1.0       +30 -30 -60       +0.806    -0.667      1.1 cm
+#:
+#: The rig's neutral thumb lies alongside the hand pointing the same way as the
+#: fingers, which is a hand about to karate-chop something. Every run has begun
+#: from there and spent itself trying to leave: run 000489 chose a thumb move
+#: twenty-two times out of twenty-six and never got the C measure off its pinned
+#: value, because from a flat start the thumb is doing all the work of an
+#: arrangement that takes two digits.
+_THUMB_HOME_DEG = ((30.0, -30.0), (-60.0, 0.0))
+
+
+def _thumb_home_rotations(hand: Hand, amount: float = 1.0) -> dict[str, Any]:
+    """The opposed thumb posture, at a fraction of the way from neutral."""
+    import math
+
+    from .analysis.anatomy.frame import DofAngles, all_frames, compose
+    from .models import Quat
+
+    frames = all_frames()
+    side = hand.value
+    reach = float(np.clip(amount, 0.0, 1.0))
+    (mc_flex, mc_abduct), (prox_flex, prox_abduct) = _THUMB_HOME_DEG
+    plan = {
+        f"{side}ThumbMetacarpal": (mc_flex, mc_abduct),
+        f"{side}ThumbProximal": (prox_flex, prox_abduct),
+    }
+    out: dict[str, Any] = {}
+    for bone, (flex, abduct) in plan.items():
+        frame = frames.get(bone)
+        if frame is None:
+            continue
+        quaternion = compose(
+            DofAngles(math.radians(flex * reach), math.radians(abduct * reach), 0.0),
+            frame,
+        )
+        out[bone] = Quat(x=quaternion[0], y=quaternion[1],
+                         z=quaternion[2], w=quaternion[3])
+    return out
+
+
+def _solve_thumb_home(sensing: Sensing, hand: Hand, amount: float) -> dict[str, Any]:
+    """Put the thumb where a grasp starts: across the palm, facing the fingers."""
+    return _thumb_home_rotations(hand, amount)
+
+
+def _solve_level_wrist(sensing: Sensing, hand: Hand, amount: float) -> dict[str, Any]:
+    """Turn the hand at the wrist until thumb and fingers straddle the object.
+
+    The waving motion, and until now the body could not make it. The wrist is
+    written by reach_to, stand_off and lift, but only as a by-product of putting
+    the wrist SOMEWHERE -- nothing turned it, and orient_palm drove the forearm
+    instead, which is a different joint and was removed for moving nothing.
+
+    What it fixes is a specific arrangement seen in every failed run: the thumb
+    riding 7.6 cm above the block while the index sits level with its middle, so
+    the two are stacked vertically on the same face rather than straddling it.
+    Swept through the wrist's own range from that pose, flexing -60 with -30 of
+    ulnar deviation brings both tips to the block's own height, with the line
+    between them parallel to the surface it is sitting on.
+
+    It cannot make the C, and it is worth being exact about that: the C measure
+    does not move by a thousandth at ANY wrist angle, because turning the wrist
+    carries the thumb and the fingers together and the C is about their
+    relationship to each other. This gets them onto opposite sides. Curling
+    closes them.
+    """
+    import math
+
+    from .analysis.anatomy.frame import DofAngles, all_frames, compose
+    from .analysis.anatomy.rom import rom_limit
+    from .models import Quat
+
+    side = hand.value
+    bone = f"{side}Hand"
+    frame = all_frames().get(bone)
+    if frame is None:
+        return {}
+    kinematics = rig_kinematics()
+    up = np.asarray([0.0, 1.0, 0.0])
+    target_height = float(sensing.object_position[1])
+
+    flex_low, flex_high = rom_limit(bone, "flexion").typical_deg
+    abduct_low, abduct_high = rom_limit(bone, "abduction").typical_deg
+
+    def cost(flex: float, abduct: float) -> float | None:
+        quaternion = compose(
+            DofAngles(math.radians(flex), math.radians(abduct), 0.0), frame)
+        trial = dict(sensing.bones)
+        trial[bone] = BonePose(rotation=Quat(
+            x=quaternion[0], y=quaternion[1], z=quaternion[2], w=quaternion[3]))
+        try:
+            positions = kinematics.canonical_positions(trial)
+        except Exception:  # noqa: BLE001
+            return None
+        thumb = positions.get(f"{side}ThumbDistal")
+        finger = positions.get(f"{side}IndexDistal")
+        if thumb is None or finger is None:
+            return None
+        span = np.asarray(finger, dtype=float) - np.asarray(thumb, dtype=float)
+        size = float(np.linalg.norm(span))
+        if size < 1e-9:
+            return None
+        # Parallel to the surface the object rests on: the two digits level with
+        # each other rather than stacked.
+        level = abs(float(np.dot(span / size, up)))
+        # And at the object's height, not lifted clear of it. Alignment alone is
+        # satisfied by a hand held 10 cm above the block with both tips level in
+        # mid-air, which is tidy and grasps nothing.
+        drift = (abs(float(thumb[1]) - target_height)
+                 + abs(float(finger[1]) - target_height))
+        return level + drift * 2.0
+
+    here = cost(0.0, 0.0)
+    best: tuple[float, float, float] | None = None
+    for flex in np.linspace(flex_low, flex_high, 16):
+        for abduct in np.linspace(abduct_low, abduct_high, 8):
+            value = cost(float(flex), float(abduct))
+            if value is None:
+                continue
+            if best is None or value < best[0]:
+                best = (value, float(flex), float(abduct))
+    if best is None or (here is not None and best[0] >= here):
+        return {}
+    reach = float(np.clip(amount, 0.0, 1.0))
+    quaternion = compose(
+        DofAngles(math.radians(best[1] * reach), math.radians(best[2] * reach), 0.0),
+        frame,
+    )
+    return {bone: Quat(x=quaternion[0], y=quaternion[1],
+                       z=quaternion[2], w=quaternion[3])}
+
+
 def super_primitives(hand: Hand) -> tuple[SuperPrimitive, ...]:
     """Everything the selector may call, this frame."""
     return (
@@ -1784,6 +1928,16 @@ def super_primitives(hand: Hand) -> tuple[SuperPrimitive, ...]:
                        "put the fingertips where the object is", _solve_reach),
         SuperPrimitive("open_hand", _digit_parts(hand),
                        "spread the digits wider than the object", _solve_open),
+        SuperPrimitive("level_wrist", (f"{hand.value}_wrist",),
+                       "turn the hand at the wrist until the thumb and the "
+                       "fingers are level with each other on opposite sides of "
+                       "the object, instead of stacked on the same face",
+                       _solve_level_wrist),
+        SuperPrimitive("thumb_home", (f"{hand.value}_thumb",),
+                       "bring the thumb across the palm to where a grasp "
+                       "starts, facing the fingers rather than lying alongside "
+                       "them",
+                       _solve_thumb_home),
         *[
             SuperPrimitive(
                 f"thumb_{move}", (f"{hand.value}_thumb",),
@@ -2118,6 +2272,48 @@ class Trace:
         }
 
 
+#: How far the fingers start curled. Fitted against the block: the C measure
+#: only comes alive at 0.6, where the opening has already narrowed to 4.4 cm and
+#: the block is 6.0 -- so a hand curled enough to register a C is a hand the
+#: block cannot enter. 0.4 is the closed-most posture that still admits it.
+#:
+#:     curl   toward   c_closure   opening
+#:      0.4   -0.266    +1.000      6.1 cm   <- block fits
+#:      0.6   +0.008    +0.076      4.4 cm   <- C live, block excluded
+#:      1.0   +0.806    -0.667      1.1 cm
+#:
+#: That gap is a real mismatch between the hand's aperture and the object, not a
+#: tuning choice, and it is why no run has produced a C on this block.
+_PRE_GRASP_CURL = 0.4
+
+
+def _pre_grasp_pose(hand: Hand) -> dict[str, BonePose]:
+    """The hand a grasp starts from: thumb across the palm, fingers part-curled.
+
+    The rig's neutral hand is flat with the thumb alongside the fingers pointing
+    the same way -- a karate chop, not a hand about to pick something up. Every
+    run has opened there and spent its first decisions leaving, and run 000489
+    spent all twenty-six of them: twenty-two thumb moves that could not raise
+    the C measure off its pinned value, because the C takes the WORSE of the two
+    rays and a straight index is always the worse one.
+    """
+    pose = {
+        bone: BonePose(rotation=rotation)
+        for bone, rotation in _thumb_home_rotations(hand).items()
+    }
+    empty = observe({}, hand, np.zeros(3), np.zeros(3), {}, False, 0.0)
+    for primitive in super_primitives(hand):
+        if not primitive.name.startswith("curl_"):
+            continue
+        try:
+            rotations = primitive.solve(empty, hand, _PRE_GRASP_CURL)
+        except Exception:  # noqa: BLE001
+            continue
+        for bone, rotation in rotations.items():
+            pose[bone] = BonePose(rotation=rotation)
+    return pose
+
+
 def generate(
     situation: MotionSituation,
     scene: SceneManifest,
@@ -2160,7 +2356,11 @@ def generate(
     trace = Trace(steps=[s.to_dict() for s in steps])
 
     kinematics = rig_kinematics()
-    pose: dict[str, BonePose] = {}
+    # The thumb starts where a grasp starts. The rig's neutral thumb lies
+    # alongside the fingers pointing the same way, which is not a hand about to
+    # pick something up, and every run so far has opened by spending its first
+    # decisions trying to leave that pose.
+    pose: dict[str, BonePose] = _pre_grasp_pose(hand)
     segment_pairs = _hand_segment_pairs(hand)
 
     # Sized from the open hand, as the embodied simulation does.

@@ -81,7 +81,12 @@ when it turns out to be wrong -- you wrote it without seeing the scene.
 
 The only thing required of you is the task itself. You will be asked again in a second.
 
-Setting a number: reply with "target" (a metric name), "value" (the number you want), and \
+PREFER SETTING A NUMBER over naming an action. A named action runs unchecked, exactly \
+as given. A target is searched, and the search REFUSES any control that would move the \
+number the wrong way -- which is the protection you want, because a control's name says \
+what it is for and not what it does here. "orient_palm" was named directly eleven times \
+in one run to bring the fingertips closer, and every magnitude of it moved them 0.4 to \
+1.2 cm further away; set as a target it would have been rejected on the first frame.\n\nSetting a number: reply with "target" (a metric name), "value" (the number you want), and \
 "using" -- the list of controls the search may touch to get there. You are not choosing the \
 control or the magnitude; the search tries each one you name, thirty times a second, and keeps \
 whichever moves the number closest. You are saying which part of the body the problem is in.
@@ -382,12 +387,34 @@ class VLMSelector:
             "active_target": (
                 self.active_target.to_dict() if self.active_target else None
             ),
-            "ray_dot": round(
-                __import__("rigby_poc.closed_loop", fromlist=["c"]).c_shape(
-                    sensing.bones, self.hand
-                )["ray_dot"], 3
-            ),
+            # EVERY metric the model can target, under the names it targets
+            # them by. It was being asked to plan in terms of ten numbers, given
+            # three of them, and one of those under a different name -- so the
+            # "done_when" conditions it wrote for its own plan named quantities
+            # it could not read, and no step could ever be concluded finished.
+            # Across runs 000488 and 000489 it never advanced its plan once in
+            # fifty-two decisions, which is not stubbornness: it had no way to
+            # tell that step one was over.
+            **self._readable(sensing),
         }
+
+    def _readable(self, sensing: Sensing) -> dict[str, Any]:
+        """Every targetable metric, read now.
+
+        Sourced from the same registry the targets resolve against, so the two
+        cannot drift apart again: a metric the model can aim at is by
+        construction a metric it can see.
+        """
+        from .closed_loop import METRICS, _register_metrics
+
+        _register_metrics()
+        readings: dict[str, Any] = {}
+        for name, read in METRICS.items():
+            try:
+                readings[name] = round(float(read(sensing, self.hand)), 4)
+            except Exception:  # noqa: BLE001
+                readings[name] = None
+        return readings
 
     def decide(
         self, sensing: Sensing, step: Step, image: bytes | None
