@@ -538,6 +538,65 @@ WHAT I WOULD TRY NEXT, IN ORDER
 3. Only then, more prompt. Six rounds of it have not moved the outcome.
 
 
+-------------------------------------------------------------------------------
+2026-08-28, later still -- THE MODEL PICKS IT UP.  run 000511
+-------------------------------------------------------------------------------
+
+31.64 cm of lift, carried for 2.8 seconds, by the VLM rather than the scripted
+controller. Sustained 13-19 N across three opposing digits, every fingertip
+outside the block by at least 3.6 mm. It grasps and it lifts.
+
+    t=4.8  lift@0.20   thumb 14.2  index  6.7  middle 6.2   y 1.0605
+    t=5.1  lift@0.20   thumb 19.6  index 10.1  middle 10.8  y 1.1206
+    t=6.5  lift@0.15   thumb 14.6  index 13.0               y 1.3664
+
+It puts the block down again by the end of the fourteen seconds, so this is a
+lift and a carry, not yet a completed place.
+
+WHAT CLOSED THE GAP, AND IT WAS NOT PROMPTING
+
+Six runs of prompt edits moved nothing. What moved it was making the BODY refuse
+motions whose only available outcome was to undo what had been achieved. Seven
+of them, each found by watching a completed grasp being destroyed:
+
+  move_to stops on contact             the arm drove the hand through the block,
+                                       thumb 18.9 mm inside, 80 N reported
+  move_to stops while holding          approaching what you hold drives the hand
+                                       through it (000508)
+  move_to stops when the object moves  force never crossed 2.5 N while the
+                                       approach shoved the block 9.5 cm (000510)
+  close_grip declines beyond 0.038 m   closing on an off-centre object can only
+                                       push it (000506, 12 cm in 0.3 s)
+  close_grip stops at the object width solids do not compress (4.86 cm around a
+                                       6.0 cm block, squeezed out sideways)
+  open_grip and sweeps decline while   opening a hand that holds something is
+  holding                              how you put it down (000503, 000507)
+  lift below 8 N squeezes instead      a grip that is present is not a grip that
+                                       carries (000509, dropped at 5.6 N)
+
+The through-line: at one decision every three tenths of a second the model
+cannot be responsible for what must be true continuously. Every one of these was
+a correct choice for a hand in a slightly different state, and nothing
+distinguished the states. A body that refuses the impossible needs no discipline
+from the thing deciding.
+
+Two sensing fixes belong with them. Force is the wrong sensor for 'am I pushing
+it' -- object_velocity had been in Sensing since the day a still frame could not
+tell a resting block from a sliding one, and the approach never read it. And a
+request that cannot be honoured is now answered rather than swallowed: a goal on
+a retired metric used to report 'reached' on the frame it was set and wake the
+model immediately, which cost eight consecutive wasted calls in 000502.
+
+STILL OPEN
+
+- The block is put down again before the run ends. Holding to the end, or
+  placing deliberately, is not done.
+- Generality is untested since the guards went in. The scripted baseline lifted
+  1 of 7 configurations before them; it is worth re-measuring now.
+- The scripted baseline is 16.54 cm, down from 19.99, because squeeze-before-
+  lift delays the raise. It is a real cost and probably worth tuning back.
+
+
 DO NOT
 - Do not push this branch or merge it. It stays local by explicit instruction.
 - Do not tune scripted_grasp.py to make a configuration pass. It is the control,
