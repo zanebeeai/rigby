@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import argparse
 import html
+import hashlib
 import json
 from dataclasses import dataclass
 from pathlib import Path
@@ -319,7 +320,27 @@ def build_page(
     intake: list[dict] | None = None,
     run_tracks: dict[str, dict] | None = None,
 ) -> str:
-    traces = [store.load(trace_id) for trace_id in store.list_ids()]
+    # Runs are listed in the order they entered the studio rather than
+    # alphabetically by directory name, which is what `list_ids` gives and which
+    # sorted a robot's whole history together no matter when any of it ran.
+    #
+    # Newest first, on `ran_at` -- when the result in the file was produced.
+    # `created_at` is when the id first appeared and is preserved across
+    # rewrites, which makes it the wrong key here: a row shows the latest result,
+    # so dating it by the first attempt puts a certified run an hour before the
+    # schema that certifies it. Falls back to `created_at` for traces written
+    # before `ran_at` existed. Ties break on `created_at` and then trace id,
+    # because one build writes tens of traces inside the same second and without
+    # a further key their order would come from the filesystem and wobble.
+    traces = sorted(
+        (store.load(trace_id) for trace_id in store.list_ids()),
+        key=lambda trace: (
+            trace.get("ran_at") or trace.get("created_at") or "",
+            trace.get("created_at") or "",
+            trace["trace_id"],
+        ),
+        reverse=True,
+    )
     library = PrimitiveLibrary(library_root)
 
     robots: dict[str, dict] = {}
@@ -381,11 +402,26 @@ def build_page(
         sort_keys=True,
     )
 
+    # One copy of each mesh table, not one per world.
+    #
+    # A scene carries its robot's meshes inline, and the same robot appears in
+    # every environment: the SO-ARM101's 10.55 MB of vertices was byte-identical
+    # across all ten of its worlds and written out ten times. The page reached
+    # 161 MB and then stopped building at all -- first `json.dumps` raised
+    # MemoryError assembling one string of it, and once that was shared, reading
+    # the files raised it too. Sharing therefore happens as each file is read,
+    # so the payload grows with the number of robots rather than with robots
+    # times worlds. 161 MB to 35 MB.
+    mesh_library: dict[str, object] = {}
+    robots = _viewer_robots(mesh_library)
+    envs = _viewer_environments(mesh_library)
+
     viewer = json.dumps(
         {
-            "robots": _viewer_robots(),
+            "robots": robots,
             "runs": run_tracks or {},
-            "envs": _viewer_environments(),
+            "envs": envs,
+            "meshes": mesh_library,
         },
         separators=(",", ":"),
         sort_keys=True,
@@ -428,7 +464,27 @@ def _environment_rows() -> list[dict]:
     return rows
 
 
-def _viewer_environments() -> dict[str, dict]:
+def _share_meshes(scene: object, library: dict) -> None:
+    """Replace a scene's mesh table with a key into a shared library.
+
+    Done as each file is *read*, not after they are all in hand: the tables are
+    identical across worlds and holding sixty-one copies of the SO-ARM101's
+    10.55 MB of vertices exhausted memory before deduplication ever ran.
+    """
+
+    if not isinstance(scene, dict):
+        return
+    meshes = scene.get("meshes")
+    if not isinstance(meshes, (dict, list)) or not meshes:
+        return
+    key = hashlib.sha256(
+        json.dumps(meshes, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()[:16]
+    library.setdefault(key, meshes)
+    scene["meshes"] = key
+
+
+def _viewer_environments(library: dict) -> dict[str, dict]:
     """Playable scenes for the environment trials, keyed environment.robot.
 
     Written by scripts/run_trials.py. Missing is not fatal: the Worlds view
@@ -441,13 +497,16 @@ def _viewer_environments() -> dict[str, dict]:
     out: dict[str, dict] = {}
     for path in sorted(directory.glob("*.json")):
         try:
-            out[path.stem] = json.loads(path.read_text(encoding="utf-8"))
+            entry = json.loads(path.read_text(encoding="utf-8"))
+            _share_meshes(entry.get("scene"), library)
+            _share_meshes(entry, library)
+            out[path.stem] = entry
         except (OSError, json.JSONDecodeError) as error:  # pragma: no cover
             print(f"{'':18} !! environment payload {path.name}: {error}")
     return out
 
 
-def _viewer_robots() -> dict[str, dict]:
+def _viewer_robots(library: dict) -> dict[str, dict]:
     """Geometry and primitive tracks, from whatever export_viewer.py left behind.
 
     Missing is not fatal and must not be: the studio still builds without them,
@@ -462,7 +521,10 @@ def _viewer_robots() -> dict[str, dict]:
     out: dict[str, dict] = {}
     for path in sorted(directory.glob("*.json")):
         try:
-            out[path.stem] = json.loads(path.read_text(encoding="utf-8"))
+            entry = json.loads(path.read_text(encoding="utf-8"))
+            _share_meshes(entry.get("scene"), library)
+            _share_meshes(entry, library)
+            out[path.stem] = entry
         except (OSError, json.JSONDecodeError) as error:  # pragma: no cover
             print(f"{'':18} !! viewer payload {path.name}: {error}")
     return out
@@ -516,6 +578,20 @@ main[data-view="explorer"] #detail{max-width:1720px}
   max-height:calc(100vh - 61px);overflow:auto;position:sticky;top:61px}
 .group{padding:9px 16px 4px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
   color:var(--muted);border-top:1px solid var(--line)}
+.group.fold{display:flex;align-items:center;gap:6px;width:100%;text-align:left;
+  background:none;border-left:none;border-right:none;border-bottom:none;cursor:pointer;
+  font:inherit;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+  padding:9px 16px 6px}
+.group.fold:hover{color:var(--fg)}
+.group.fold .caret{font-size:10px;line-height:1}
+.filter{display:flex;align-items:center;gap:8px;padding:10px 16px;
+  border-bottom:1px solid var(--line)}
+.filter label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--muted)}
+.filter select{flex:1;min-width:0;background:var(--chip);color:var(--fg);
+  border:1px solid var(--line);border-radius:6px;padding:5px 8px;font:inherit;
+  font-size:13px}
+.filter .count{font-size:11px;color:var(--muted);white-space:nowrap}
 .group:first-child{border-top:none}
 .item{padding:9px 16px;border-bottom:1px solid var(--line);cursor:pointer;display:block;
   width:100%;text-align:left;background:none;border-left:3px solid transparent;color:inherit;
@@ -696,9 +772,33 @@ __VIEWER_JS__
 <script>
 const DATA = JSON.parse(document.getElementById('data').textContent);
 const VIEWER = JSON.parse(document.getElementById('viewer-data').textContent);
+// Meshes are stored once and referenced by key; put the references back.
+(function () {
+  const library = VIEWER.meshes || {};
+  const attach = (scene) => {
+    if (scene && typeof scene.meshes === 'string') {
+      scene.meshes = library[scene.meshes] || {};
+    }
+  };
+  for (const holder of [VIEWER.robots || {}, VIEWER.envs || {}]) {
+    for (const entry of Object.values(holder)) {
+      if (entry && typeof entry === 'object') { attach(entry.scene); attach(entry); }
+    }
+  }
+})();
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => (
   {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const num = (v, d=3) => (v === null || v === undefined) ? '&mdash;' : Number(v).toFixed(d);
+/* The runs list is ordered by when each trace was written, so show that stamp
+   on the row -- an order the reader cannot see is indistinguishable from none. */
+const when = s => {
+  if (!s) return '';
+  const d = new Date(s);
+  return isNaN(d.getTime()) ? '' : d.toLocaleString([],
+    {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'});
+};
+let runsRobot = '*';
+const runsFolded = new Set();
 let view = 'home', current = DATA.traces.findIndex(t => t.accepted);
 if (current < 0) current = 0;
 
@@ -721,17 +821,20 @@ function renderList(){
   document.querySelector('main').dataset.view = view;
   if (view !== 'runs'){ el.innerHTML = ''; el.style.display = 'none'; return; }
   el.style.display = '';
-  const rows = DATA.traces.map((t,i)=>({t,i}));
+  const all = DATA.traces.map((t,i)=>({t,i}));
+  const rows = runsRobot === '*' ? all : all.filter(x => x.t.robot_id === runsRobot);
   const prompts = rows.filter(x => (x.t.kind || 'prompt') === 'prompt');
   const probes  = rows.filter(x => x.t.kind === 'contact_probe');
   const trials  = rows.filter(x => x.t.kind === 'environment_trial');
   const accepted = prompts.filter(x=>x.t.accepted);
   const refused  = prompts.filter(x=>!x.t.accepted);
+  const robots = [...new Set(all.map(x => x.t.robot_id))].sort();
   const row = ({t,i}) => `
     <button class="item" aria-current="${i===current}" onclick="select(${i})">
       <div class="p">${esc(t.prompt)}</div>
       <div class="m">
         <span>${esc(t.robot_id)}</span>
+        ${when(t.ran_at || t.created_at) ? `<span class="when">${esc(when(t.ran_at || t.created_at))}</span>` : ''}
         ${t.kind === 'environment_trial'
           ? (t.accepted
               ? `<span class="ok">held</span><span>${esc(t.trial?.environment)}</span>`
@@ -745,19 +848,47 @@ function renderList(){
               : `<span class="bad">refused @ ${esc(t.failure?.stage)}</span>`)}
       </div>
     </button>`;
+  // A group is folded by name, so the state survives re-rendering and the
+  // filter: collapsing "Environment trials" keeps it collapsed while you page
+  // through robots, which is the whole reason to collapse it.
+  const section = (name, items) => {
+    if (!items.length) return '';
+    const open = !runsFolded.has(name);
+    return `<button class="group fold" aria-expanded="${open}"
+        onclick="toggleGroup('${name}')">
+        <span class="caret">${open ? '&#9662;' : '&#9656;'}</span>
+        ${name} &middot; ${items.length}
+      </button>` + (open ? items.map(row).join('') : '');
+  };
+
+  const options = ['*', ...robots].map(id => `
+    <option value="${esc(id)}" ${id === runsRobot ? 'selected' : ''}>
+      ${id === '*' ? `All robots (${all.length})` : esc(id)}
+    </option>`).join('');
+
   el.innerHTML =
-    `<div class="group">Certified &middot; ${accepted.length}</div>` +
-    accepted.map(row).join('') +
-    `<div class="group">Refused &middot; ${refused.length}</div>` +
-    refused.map(row).join('') +
-    (probes.length
-      ? `<div class="group">Contact probes &middot; ${probes.length}</div>`
-        + probes.map(row).join('')
-      : '') +
-    (trials.length
-      ? `<div class="group">Environment trials &middot; ${trials.length}</div>`
-        + trials.map(row).join('')
-      : '');
+    `<div class="filter">
+       <label for="runs-robot">Robot</label>
+       <select id="runs-robot" onchange="pickRobot(this.value)">${options}</select>
+       ${runsRobot === '*' ? '' :
+         `<span class="count">${rows.length} of ${all.length}</span>`}
+     </div>` +
+    (rows.length
+      ? section('Certified', accepted)
+        + section('Refused', refused)
+        + section('Contact probes', probes)
+        + section('Environment trials', trials)
+      : `<div class="group">No runs for ${esc(runsRobot)}</div>`);
+}
+
+function toggleGroup(name){
+  if (runsFolded.has(name)) runsFolded.delete(name); else runsFolded.add(name);
+  renderList();
+}
+
+function pickRobot(value){
+  runsRobot = value;
+  renderList();
 }
 
 function slotGrid(seg){
