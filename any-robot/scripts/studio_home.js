@@ -160,6 +160,7 @@ function renderHome() {
         'pick it up and hold it',
       ].map(p => `<button class="chip" data-prompt="${vesc(p)}">${vesc(p)}</button>`).join('')}</div>
       ${status}
+      <div id="home-preview"></div>
     </div>
   </section>
 
@@ -177,6 +178,169 @@ function renderHome() {
         reaching outside its own folder &mdash; which is the sandbox working.</div>
     </div>
   </section>`;
+}
+
+// -- pipeline progress -------------------------------------------------------
+
+/* The stages in the order run.py executes them, with what each one is deciding.
+   Listing them up front means a run that stops early still shows the stages it
+   never reached, greyed -- which is the difference between "it failed" and "it
+   failed here, and these were never tried". */
+const PIPELINE = [
+  ['firewall',      'is this the kind of thing the system does?'],
+  ['planning',      'words to a body-neutral schema'],
+  ['binding',       'does this body have a certified primitive?'],
+  ['grounding',     'schema terms resolved against measured scale'],
+  ['compilation',   'waypoints to a time-sampled trajectory'],
+  ['certification', 'simulate three times and agree'],
+];
+
+/* A stage's own record, rendered as the reason rather than the code. The
+   detail is a bag of measurements whose keys differ per stage, so the useful
+   ones are named explicitly and the rest are shown as they come. */
+function stageDetail(name, detail, failure) {
+  if (!detail || typeof detail !== 'object') return '';
+  const bits = [];
+  if (name === 'planning') {
+    (detail.cues || []).forEach((c) => {
+      bits.push(`clause <b>&ldquo;${vesc(c.clause)}&rdquo;</b> &rarr; <code>${
+        vesc(c.entry_id || '?')}</code>${c.remove ? ' @' + vesc(c.remove) : ''}`);
+    });
+    if (detail.afforded_schemas !== undefined) {
+      bits.push(`${detail.afforded_schemas} schemas afforded by this body`);
+    }
+    if (failure && detail.clause) {
+      // The clause that stopped it, which for a multi-clause prompt is the
+      // whole question: the rest were never read.
+      bits.push(`stopped on clause <b>&ldquo;${vesc(detail.clause)}&rdquo;</b>`);
+    }
+    if (failure && detail.entry_id) {
+      bits.push(`needed <code>${vesc(detail.entry_id)}</code>, which this body has
+        no certified primitive for`);
+    }
+  } else if (name === 'binding') {
+    if (detail.library_size !== undefined) {
+      bits.push(`${detail.library_size} certified primitives in this library`);
+    }
+  } else if (name === 'grounding') {
+    if (detail.reach_radius_m) bits.push(`reach ${(detail.reach_radius_m*1000).toFixed(0)} mm`);
+    if (detail.neutral_speed_mps) bits.push(`neutral pace ${detail.neutral_speed_mps.toFixed(3)} m/s`);
+  } else if (name === 'compilation') {
+    if (detail.frames) bits.push(`${detail.frames} frames @ ${detail.sample_hz || 240} Hz`);
+  } else if (name === 'certification') {
+    if (detail.tracking_error_m !== undefined) {
+      bits.push(`tracking ${(detail.tracking_error_m*1000).toFixed(1)} mm`);
+    }
+    if (detail.base_drift_m !== undefined) {
+      bits.push(`base drift ${(detail.base_drift_m*1000).toFixed(2)} mm`);
+    }
+    if (detail.repeats) {
+      bits.push(`${detail.repeats} replays ${detail.replay_agreement ? 'agreed' : 'DISAGREED'}`);
+    }
+  }
+  if (detail.failure_code) bits.push(`<code>${vesc(detail.failure_code)}</code>`);
+  return bits.length ? `<div class="st-detail">${bits.join(' &middot; ')}</div>` : '';
+}
+
+function pipelineMarkup(body) {
+  const trace = body.trace || {};
+  const stages = trace.stages || [];
+  const byName = new Map(stages.map(s => [s.name, s]));
+  const failedAt = (trace.failure || {}).stage;
+  let reached = true;
+
+  // A stage that recorded nothing but is followed by one that did has plainly
+  // run -- a silent pass, not a skip. Only the stages after the failure were
+  // genuinely never reached, and conflating the two would misreport the run.
+  const lastRecorded = PIPELINE.reduce(
+    (acc, [name], i) => (byName.has(name) ? i : acc), -1);
+
+  const rows = PIPELINE.map(([name, what], i) => {
+    const s = byName.get(name);
+    let cls = 'skipped', mark = '&middot;';
+    if (s) {
+      cls = s.status === 'ok' ? 'ok' : 'bad';
+      mark = s.status === 'ok' ? '&#10003;' : '&#10005;';
+    } else if (i < lastRecorded) {
+      cls = 'ok'; mark = '&#10003;';
+    } else if (!reached) {
+      cls = 'never';
+    }
+    if (s && s.status !== 'ok') reached = false;
+    const detail = s ? stageDetail(name, s.detail, s.status !== 'ok') : '';
+    const note = !s && !reached
+      ? '<div class="st-detail">never reached &mdash; the run stopped earlier</div>'
+      : '';
+    return `<div class="st ${cls}">
+      <div class="st-mark">${mark}</div>
+      <div class="st-body">
+        <div class="st-name">${vesc(name)}<span class="st-what">${what}</span></div>
+        ${detail}${note}
+      </div>
+    </div>`;
+  }).join('');
+
+  const f = trace.failure;
+  const banner = f
+    ? `<div class="runbanner bad">
+         <b>Refused at ${vesc(f.stage)}</b>
+         <code>${vesc(f.code || '')}</code>
+         <div>${vesc(f.detail || '')}</div>
+       </div>`
+    : `<div class="runbanner ok"><b>Certified</b>
+         <div>simulated three times with agreeing state hashes</div></div>`;
+
+  return `<div class="pipeline">${banner}
+    <div class="stages">${rows}</div>
+    <div class="note">Trace <code>${vesc(body.trace_id || '')}</code> &mdash; stored,
+      and now listed under Runs.</div>
+  </div>`;
+}
+
+
+/* A run submitted here is a run like any other: it belongs in the list with the
+   rest. The page is built ahead of time, so the trace is pushed into the same
+   array the Runs view reads -- newest first, matching how the build sorts. */
+function adoptRun(body) {
+  if (!body || !body.trace) return;
+  const trace = body.trace;
+  const at = DATA.traces.findIndex(t => t.trace_id === trace.trace_id);
+  if (at >= 0) DATA.traces.splice(at, 1);
+  DATA.traces.unshift(trace);
+
+  // Geometry and rollout, so the Runs view can play it without a rebuild.
+  if (body.scene) {
+    VIEWER.robots[trace.robot_id] = VIEWER.robots[trace.robot_id] || {};
+    const entry = VIEWER.robots[trace.robot_id];
+    if (!entry.scene) entry.scene = body.scene;
+    if (!entry.rest_qpos && body.rest_qpos) entry.rest_qpos = body.rest_qpos;
+  }
+  if (body.track) VIEWER.runs[trace.trace_id] = { track: body.track };
+
+  const header = document.querySelector('.sub');
+  if (header) {
+    header.textContent = DATA.traces.length + ' runs \u00b7 every stage recorded';
+  }
+}
+
+/* The motion, where it was asked for. A refused run has no rollout, and the
+   absence is stated rather than shown as an empty player. */
+function mountRunPreview(body) {
+  const host = document.getElementById('home-preview');
+  if (!host) return;
+  if (!body.track || !body.scene) {
+    host.innerHTML = body.accepted
+      ? '<div class="note">No rollout came back for this run.</div>'
+      : '<div class="note">Nothing to play &mdash; the run refused before it was simulated.</div>';
+    return;
+  }
+  host.innerHTML = playerMarkup(body.robot_id, '', '');
+  mountPending();
+  const node = host.querySelector('[data-viewer]');
+  if (node && node._handle) {
+    node._handle.setTrack(body.track);
+    node._handle.frameCamera();
+  }
 }
 
 async function pingApi() {
@@ -220,15 +384,9 @@ async function submitPrompt() {
         ${vesc(detail.message || JSON.stringify(detail).slice(0, 200))}`);
       return;
     }
-    if (body.accepted) {
-      setStatus('pass', `Certified. Trace <code>${vesc(body.trace_id)}</code>.
-        Rebuild the studio to watch it:
-        <code>uv run python scripts/build_studio.py</code>`);
-    } else {
-      setStatus('warn', `Refused at <b>${vesc(body.failure_stage)}</b>. That is a
-        result: the stage and the measurement are in the trace
-        <code>${vesc(body.trace_id)}</code>.`);
-    }
+    adoptRun(body);
+    setStatus(body.accepted ? 'pass' : 'warn', pipelineMarkup(body));
+    mountRunPreview(body);
   } catch (error) {
     apiOnline = false;
     setStatus('bad', `Could not reach the pipeline at <code>${API_BASE}</code>.

@@ -303,7 +303,13 @@ def create_app(settings: GeneralSettings | None = None) -> FastAPI:
             ) from error
 
         traces.write(result.trace)
-        return {
+
+        # Everything needed to watch it, not merely to read about it. The
+        # rollout is already in hand -- certification simulated it -- so the
+        # only work here is resampling it to something a browser can play. A
+        # refused run has no rollout and says so by omitting the track rather
+        # than returning an empty one.
+        payload: dict[str, Any] = {
             "trace_id": result.trace.trace_id,
             "accepted": bool(result.accepted),
             "failure_stage": result.failure_stage,
@@ -311,6 +317,19 @@ def create_app(settings: GeneralSettings | None = None) -> FastAPI:
             "robot_id": robot_id,
             "trace": result.trace.to_json(),
         }
+        try:
+            from .viewer import build_scene, sample_track
+
+            payload["scene"] = build_scene(model)
+            payload["rest_qpos"] = [float(v) for v in model.qpos0]
+            if result.certification is not None:
+                rollout = result.certification.trace
+                payload["track"] = sample_track(rollout.times_s, rollout.qpos)
+        except Exception as error:  # noqa: BLE001 - a preview is not the result
+            # The verdict stands whether or not it can be drawn. Losing the
+            # picture must not lose the answer.
+            payload["preview_error"] = f"{type(error).__name__}: {error}"
+        return payload
 
     @app.get("/api/v3/results")
     def list_results() -> dict[str, Any]:

@@ -659,6 +659,57 @@ td.mono,th.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-siz
 .speed{background:var(--chip);color:var(--fg);border:1px solid var(--line);
   border-radius:5px;height:28px}
 .timeline{display:flex;gap:2px;margin:10px 0 6px;height:30px}
+/* Live degree-of-freedom readouts. Sized so a five-digit hand and a fourteen-DOF
+   bimanual arm both fit without the panel taking the viewer's space. */
+.dof-panel{margin:8px 0 0}
+/* Pipeline progress on the home console. Every stage is listed whether or not
+   the run reached it, so a stop shows both where it stopped and what was
+   consequently never tried. */
+.pipeline{margin-top:12px}
+.runbanner{border-radius:8px;padding:11px 13px;margin-bottom:12px;border:1px solid var(--line)}
+.runbanner b{font-size:14px}
+.runbanner code{margin-left:8px;font-size:12px;opacity:.85}
+.runbanner div{font-size:12.5px;color:var(--muted);margin-top:4px}
+.runbanner.ok{border-color:var(--accent);background:var(--chip)}
+.runbanner.ok b{color:var(--accent)}
+.runbanner.bad{border-color:var(--bad);background:var(--chip)}
+.runbanner.bad b{color:var(--bad)}
+.stages{border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.st{display:flex;gap:10px;padding:8px 12px;border-top:1px solid var(--line);align-items:flex-start}
+.st:first-child{border-top:none}
+.st-mark{width:16px;text-align:center;font-size:13px;line-height:1.5;flex:none}
+.st.ok .st-mark{color:var(--accent)}
+.st.bad .st-mark{color:var(--bad)}
+.st.never{opacity:.42}
+.st.never .st-mark,.st.skipped .st-mark{color:var(--muted)}
+.st-name{font-size:13px;font-weight:600}
+.st-what{font-weight:400;color:var(--muted);margin-left:9px;font-size:12px}
+.st-detail{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.5}
+.st-detail code{font-size:11.5px}
+.st.bad .st-detail code{color:var(--bad)}
+#home-preview{margin-top:14px}
+#home-preview .player{margin:0}
+.dofs{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--card)}
+.dof-head{display:flex;justify-content:space-between;gap:10px;padding:7px 11px;
+  font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);
+  border-bottom:1px solid var(--line)}
+.dof-hint{text-transform:none;letter-spacing:0;opacity:.75}
+.dof{display:grid;grid-template-columns:132px 1fr 76px 116px;gap:10px;align-items:center;
+  padding:4px 11px;font-size:11.5px;border-top:1px solid var(--line)}
+.dof:first-of-type{border-top:none}
+.dof-name{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dof.moving .dof-name{color:var(--fg)}
+.dof-track{position:relative;height:7px;border-radius:4px;background:var(--chip);overflow:hidden}
+.dof-fill{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--accent);
+  border-radius:4px;transition:width .04s linear}
+.dof-val{text-align:right;font-variant-numeric:tabular-nums;color:var(--fg)}
+.dof-lim{text-align:right;font-variant-numeric:tabular-nums;color:var(--muted);opacity:.7}
+/* The segment currently executing, marked in the motion tree. */
+.segs .seg.running{border-left:3px solid var(--accent);background:var(--chip)}
+@media (max-width:720px){
+  .dof{grid-template-columns:100px 1fr 66px;}
+  .dof-lim{display:none}
+}
 .phase{position:relative;border-radius:4px;background:var(--chip);cursor:pointer;
   display:flex;align-items:center;justify-content:center;overflow:hidden;
   border:1px solid transparent;transition:border-color .1s}
