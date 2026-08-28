@@ -811,9 +811,29 @@ class VLMSelector:
         for primitive in super_primitives(self.hand):
             if primitive.name == action:
                 try:
-                    return action, amount, primitive.solve(sensing, self.hand, amount)
+                    rotations = primitive.solve(sensing, self.hand, amount)
                 except Exception:  # noqa: BLE001
                     return "hold", 0.0, {}
+                if not rotations:
+                    # A primitive that declines produces nothing, and nothing
+                    # looks exactly like a decision that worked.
+                    from .closed_loop import (
+                        _CLOSE_MAX_OFFSET_M, object_in_grasp,
+                    )
+
+                    offset = object_in_grasp(sensing, self.hand)
+                    if action == "close_grip" and offset > _CLOSE_MAX_OFFSET_M:
+                        self.rejected = (
+                            f"close_grip did nothing: the object is {offset:.3f} m "
+                            f"off the line between your thumb and fingers, so "
+                            f"closing would push it rather than hold it. Bring it "
+                            f"inside the opening first -- move_to."
+                        )
+                    else:
+                        self.rejected = (
+                            f"{action} produced no movement from this pose."
+                        )
+                return action, amount, rotations
         return "hold", 0.0, {}
 
     #: Controls the last decision said the search may use. Held with the

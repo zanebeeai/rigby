@@ -1564,6 +1564,10 @@ _SQUEEZE_FORCE_N = 6.0
 #: Slack left above the object's width when closing, metres.
 _GRIP_FLOOR_MARGIN_M = 0.012
 
+#: How far off the grasp line the object may be and still be worth closing
+#: on, metres. Beyond this the digits are beside it rather than around it.
+_CLOSE_MAX_OFFSET_M = 0.045
+
 
 def _hold_force_n(amount: float) -> float:
     """What force this close is trying to reach, given how firmly it was asked."""
@@ -1772,6 +1776,20 @@ def _solve_close_grip(sensing: Sensing, hand: Hand, amount: float) -> dict[str, 
     # commanded pose runs ahead of the pose the body has actually reached -- so
     # by the time the hand catches up it is already inside where the object was.
     # Measured without the margin: 5.13 cm of opening around a 6.0 cm block.
+    # Closing on an object that is not between the digits can only push it, so
+    # the hand declines rather than doing it. This is the same refusal move_to
+    # makes on contact, and it is needed for the same reason: no actuator should
+    # be commanded a motion whose only possible effect is to make things worse.
+    #
+    # Told this as a threshold in the prompt instead, the model stopped closing
+    # altogether and pushed the block 48 cm without ever shutting its hand; told
+    # nothing, it closed at 5.3 cm of offset and shoved the block 12 cm in three
+    # tenths of a second. A rule the body keeps needs no discipline from the
+    # thing deciding, and the refusal is reported, so it reads as "move first",
+    # not as silence.
+    if object_in_grasp(sensing, hand) > _CLOSE_MAX_OFFSET_M:
+        return {}
+
     floor = float(np.min(sensing.object_half_m) * 2.0) + _GRIP_FLOOR_MARGIN_M
     if grip_tip_spread_m(sensing, hand) <= floor:
         return {}
