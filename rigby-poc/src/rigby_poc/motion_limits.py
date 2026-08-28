@@ -84,8 +84,31 @@ def _bone_classes() -> dict[str, str]:
     return out
 
 
-def limit_for(bone: str) -> float:
-    limits = rate_limits()
+@lru_cache(maxsize=1)
+def near_contact_limits() -> dict[str, float]:
+    """The lower ceilings that apply within reach of the object."""
+    document = json.loads(
+        (_CONFIG / "rom.v1.json").read_text(encoding="utf-8")
+    ).get("near_contact_rate_limits", {})
+    limits = {k: float(v) for k, v in document.get("classes", {}).items()}
+    limits["__default__"] = float(document.get("default_deg_per_s", 60.0))
+    limits["__distance_m__"] = float(document.get("near_contact_distance_m", 0.06))
+    return limits
+
+
+def near_contact_distance_m() -> float:
+    return near_contact_limits()["__distance_m__"]
+
+
+def limit_for(bone: str, near_contact: bool = False) -> float:
+    """The bone's ceiling, in degrees per second.
+
+    Two tables, because travelling and touching are different problems. The
+    ordinary ceilings are voluntary reaching speeds and are correct for crossing
+    a room; applied at the moment of contact they permit a strike. A thumb at
+    0.49 m/s is well inside every ordinary limit and it threw the block 56 cm.
+    """
+    limits = near_contact_limits() if near_contact else rate_limits()
     return limits.get(_bone_classes().get(bone, ""), limits["__default__"])
 
 

@@ -3492,5 +3492,19 @@
       "toes": 250.0
     },
     "default_deg_per_s": 180.0
+  },
+  "near_contact_rate_limits": {
+    "$comment": "Peak angular speed per joint class while the hand is within near_contact_distance_m of the object, deg/s. The ordinary ceilings govern travel and are far too fast for contact: measured in run 000493, a thumb tip moving 0.49 m/s -- inside every existing limit, and slower than an ordinary finger closing -- launched a 0.25 kg block to 1.99 m/s and 56 cm across the table in half a second. The digits are dynamic bodies welded to commanded poses, so away from contact they carry whatever speed the weld enforces; a hand that does not slow down as it arrives is a hammer. People slow their fingers over the last few centimetres, and this is that.",
+    "units": "degrees per second, applied to the anatomical DOF angle",
+    "near_contact_distance_m": 0.06,
+    "classes": {
+      "thumb": 45.0,
+      "digit": 45.0,
+      "wrist": 60.0,
+      "elbow": 40.0,
+      "shoulder": 30.0,
+      "clavicle": 30.0
+    },
+    "default_deg_per_s": 60.0
   }
 }

@@ -1155,7 +1155,22 @@ def _palm_frame(sensing: Sensing, hand: Hand):
         centre, rotation = _palm_transform(landmarks, hand)
     except Exception:  # noqa: BLE001
         return None
-    return np.asarray(centre, dtype=float), np.asarray(rotation[:, 2], dtype=float)
+    centre = np.asarray(centre, dtype=float)
+    # Not the middle of the palm: the pad across the top of it, at the base of
+    # the fingers, where the calluses are. That is the surface a held object
+    # actually rests against, and it is roughly a third of the palm's length
+    # further up than its geometric centre. Steering the middle parks the
+    # object level with the heel of the hand, below everything that closes on
+    # it, which is a grip that has to work uphill.
+    try:
+        knuckles = np.mean([
+            np.asarray(landmarks[f"{hand.value}{digit}Proximal"], dtype=float)
+            for digit in ("Index", "Middle", "Ring", "Little")
+        ], axis=0)
+        centre = centre + (knuckles - centre) * _PALM_PAD_FRACTION
+    except Exception:  # noqa: BLE001
+        pass
+    return centre, np.asarray(rotation[:, 2], dtype=float)
 
 
 def chosen_face(sensing: Sensing, hand: Hand):
@@ -1215,8 +1230,12 @@ def palm_facing(sensing: Sensing, hand: Hand) -> float:
     return float(np.dot(normal, -face_normal))
 
 
-#: How far off the face the palm is asked to stop, metres.
-_FACE_STANDOFF_M = 0.05
+#: How far up the palm the contact pad sits, as a fraction of the distance from
+#: the palm's centre to the knuckles. The distal transverse pad, not the middle.
+_PALM_PAD_FRACTION = 0.6
+
+#: How far off the face the palm pad is asked to stop, metres.
+_FACE_STANDOFF_M = 0.04
 
 
 def _solve_move_to(sensing: Sensing, hand: Hand, amount: float) -> dict[str, Any]:
@@ -2963,6 +2982,14 @@ def generate(
         # crossed 0.9 m in four frames and reached its standoff before the
         # second decision was taken, which is a teleport with sensing attached
         # rather than a loop.
+        # Slow down on arrival, measured to the object's surface.
+        from .motion_limits import near_contact_distance_m
+        near = bool(
+            palm_to_object_m(reading, hand) <= near_contact_distance_m()
+            or float(np.linalg.norm(
+                reading.convergence - reading.object_position))
+            <= near_contact_distance_m() * 2.0
+        )
         pose = _rate_limited(
             pose, _blend(pose, target, getattr(selector, "rate", 0.25)), 1.0 / fps
         )
@@ -3042,9 +3069,17 @@ def _aim_eye(model: Any, data: Any, pose: dict[str, BonePose], hand: Hand) -> No
 
 
 def _rate_limited(
-    current: dict[str, BonePose], target: dict[str, BonePose], dt: float
+    current: dict[str, BonePose], target: dict[str, BonePose], dt: float,
+    near_contact: bool = False,
 ) -> dict[str, BonePose]:
-    """Clamp each bone's per-frame rotation to its joint class's ceiling."""
+    """Clamp each bone's per-frame rotation to its joint class's ceiling.
+
+    Two ceilings: the ordinary one for travel, and a much lower one once the
+    hand is within a few centimetres of the object. See the manifest's
+    ``near_contact_rate_limits`` for why -- briefly, the digits are welded to
+    commanded poses and cannot be slowed by what they hit, so a speed that is
+    unremarkable in the air is a strike on arrival.
+    """
     from scipy.spatial.transform import Rotation, Slerp
 
     from .models import Quat
@@ -3064,7 +3099,7 @@ def _rate_limited(
         a, b = start.rotation, pose.rotation
         rotations = Rotation.from_quat([[a.x, a.y, a.z, a.w], [b.x, b.y, b.z, b.w]])
         delta = float(np.degrees((rotations[1] * rotations[0].inv()).magnitude()))
-        ceiling = limit_for(bone) * dt
+        ceiling = limit_for(bone, near_contact) * dt
         if delta <= ceiling or delta < 1e-9:
             out[bone] = pose
             continue

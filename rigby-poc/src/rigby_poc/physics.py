@@ -252,7 +252,7 @@ def _embodied_xml(
     bodies: list[str] = []
     welds: list[str] = []
 
-    def pair(name: str, geom: str, mass: float) -> None:
+    def pair(name: str, geom: str, mass: float, compliant: bool = False) -> None:
         targets.append(f'<body name="{name}_target" mocap="true"/>')
         # Spawned coincident with its target, and the weld's relative pose is
         # stated explicitly. MuJoCo otherwise captures the relative pose at
@@ -266,10 +266,31 @@ def _embodied_xml(
         )
         # Stiff enough to track the armature within a fraction of a millimetre,
         # soft enough that the first step does not solve as an impulse.
+        #
+        # The DIGITS are held softly instead, and that is what makes a grasp
+        # possible rather than a strike. At the stiff setting a finger tracks
+        # its commanded pose no matter what it is touching: the block cannot
+        # slow it, so every contact transfers momentum one way only and the
+        # hand behaves as a set of infinitely heavy paddles. Measured in run
+        # 000493, a thumb at 0.49 m/s -- an unremarkable speed for a finger --
+        # threw a 0.25 kg block to 1.99 m/s.
+        #
+        # A soft weld is a spring instead. The finger is pulled toward the pose
+        # it was told to hold, the object pushes back, and the two settle
+        # against each other with a real contact force. That settling IS the
+        # grip: fingers conform to what they are holding rather than passing
+        # through the place it happens to be.
+        #
+        # The palm and the arm stay stiff. They carry the hand and are not
+        # supposed to yield; only the digits close on things.
+        reference, impedance = (
+            ("0.02 1", "0.60 0.90 0.01") if compliant
+            else ("0.002 1", "0.99 0.999 0.001")
+        )
         welds.append(
             f'<weld name="{name}_track" body1="{name}" body2="{name}_target" '
-            'relpose="0 0 0 1 0 0 0" anchor="0 0 0" '
-            'solref="0.002 1" solimp="0.99 0.999 0.001"/>'
+            f'relpose="0 0 0 1 0 0 0" anchor="0 0 0" '
+            f'solref="{reference}" solimp="{impedance}"/>'
         )
 
     pair(
@@ -287,6 +308,7 @@ def _embodied_xml(
             f'<geom name="{name}" type="capsule" size="{radius} {half_length}" '
             'mass="0.02" rgba="0.2 0.8 0.35 0.22" contype="1" conaffinity="1"/>',
             0.02,
+            compliant=True,
         )
 
     return f"""
