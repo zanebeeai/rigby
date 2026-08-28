@@ -94,11 +94,6 @@ jobs:
       RIGBY_V2_DATABASE_URL: postgresql://rigby:rigby-local-only@127.0.0.1:5432/rigby
       RIGBY_TEST_POSTGRES: '1'
       RIGBY_TEST_PROCESS_RESTART: '1'
-      # Its skip reason asks for a "sealed local DB/artifact checkpoint". Whether
-      # a freshly migrated database plus an empty artifact root satisfies that is
-      # a question CI can answer and a comment cannot, so it is opened here and
-      # the answer is in the run.
-      RIGBY_OPERATOR_DRY_RUN_LIVE: '1'
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
@@ -121,25 +116,38 @@ jobs:
       # Named explicitly rather than by marker: these files are what the env
       # vars above unlock, and a bare `-m slow` here would re-run the render and
       # compile-budget work the macOS job already does.
+      # `-m ''` overrides the `-m 'fast or medium'` in addopts. These files are
+      # `slow`, so without it pytest DESELECTS all of them, runs nothing and
+      # exits 0 -- which is how run 33147680288 reported `...F [100%]` for what
+      # should have been the whole postgres surface. Deselection is silent in a
+      # way a skip is not, so the check below counts what ran.
       - name: the postgres-gated tests
         run: |
-          uv run pytest -q \
-            tests/test_v2_postgres_jobs.py \
-            tests/test_v2_postgres_library.py \
-            tests/test_v2_process_restart_acceptance.py \
-            tests/test_v2_release_ops_operator_dry_run.py
-
-      # A skip here means the gate did not open and the job proved nothing.
-      - name: they actually ran
-        run: |
           set -euo pipefail
-          uv run pytest -q --no-header -rs \
+          uv run pytest -q -rs -m '' \
             tests/test_v2_postgres_jobs.py \
             tests/test_v2_postgres_library.py \
-            tests/test_v2_process_restart_acceptance.py \
-            tests/test_v2_release_ops_operator_dry_run.py 2>&1 | tee /tmp/pg.txt
+            tests/test_v2_process_restart_acceptance.py 2>&1 | tee /tmp/pg.txt
+
+          # This job exists to prove these tests execute. A skip means the env
+          # gate did not open; a deselect means a marker filter ate them; either
+          # way the job proved nothing and must not report success.
           if grep -qE '^SKIPPED' /tmp/pg.txt; then
-            echo "::error::a postgres-gated test skipped; the env gate did not open"
+            echo "::error::a postgres-gated test skipped -- the env gate did not open"
             grep -E '^SKIPPED' /tmp/pg.txt
+            exit 1
+          fi
+          if grep -q 'deselected' /tmp/pg.txt; then
+            echo "::error::tests were deselected by a marker filter; -m '' is not taking effect"
+            exit 1
+          fi
+          passed=$(grep -oE '[0-9]+ passed' /tmp/pg.txt | head -1 | grep -oE '[0-9]+' || echo 0)
+          echo "::notice::postgres-gated tests executed: ${passed}"
+          # Four: one job-store test, two library tests, one process-restart
+          # test. Few but heavy -- 736 lines between them. This is a floor, so
+          # RAISE it when a test is added and never lower it to fit a filter.
+          if [ "${passed:-0}" -lt 4 ]; then
+            echo "::error::only ${passed} tests ran; these three files carry 4."
+            echo "Something is filtering them out again."
             exit 1
           fi

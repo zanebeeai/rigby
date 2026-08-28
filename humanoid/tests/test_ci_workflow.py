@@ -304,7 +304,17 @@ def test_every_env_gated_test_has_a_workflow_that_opens_the_gate() -> None:
     a fresh one, so it is opt-in on purpose.
     """
 
-    unrunnable_by_design = {"RIGBY_V2_CANARY_DATABASE_URL"}
+    unrunnable_by_design = {
+        # Asserts row counts from one populated database (6354 legacy_candidate
+        # rows, a named release_id). A fresh database cannot satisfy them and
+        # seeding one would assert only that the seed matches itself.
+        "RIGBY_V2_CANARY_DATABASE_URL",
+        # Needs sealed release-evidence artifacts on disk, not just a migrated
+        # database. Established by running it in CI rather than assumed: nightly
+        # 33147680288 got `OperatorDrillError: sealed database_backup_restore
+        # evidence is missing` against a freshly migrated database.
+        "RIGBY_OPERATOR_DRY_RUN_LIVE",
+    }
 
     gates: dict[str, str] = {}
     for path in sorted(Path(__file__).parent.glob("test_*.py")):
