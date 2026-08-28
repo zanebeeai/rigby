@@ -1820,10 +1820,21 @@ def super_primitives(hand: Hand) -> tuple[SuperPrimitive, ...]:
                        "move the thumb across the object, opposite the fingers, "
                        "so a pair can form",
                        _solve_place_thumb),
-        SuperPrimitive("orient_palm", (f"{hand.value}_elbow", f"{hand.value}_wrist"),
-                       "supinate the forearm so the palm faces the object, "
-                       "putting the thumb and fingers on opposite sides of it",
-                       _solve_orient_palm),
+        # orient_palm is deliberately absent. Audited against every stage goal it
+        # moved none of them by any amount -- turning the forearm carries the
+        # thumb and fingers together, and what these goals measure is the
+        # arrangement of the digits relative to EACH OTHER, which a rotation of
+        # the whole hand leaves unchanged. It was banned per stage for that
+        # reason, then walked straight back in the moment the menu stopped being
+        # restricted: eleven of twenty-six decisions in run 000488, each with
+        # the same sentence of reasoning, while the grasp measure oscillated
+        # between 3.6 and 11.4 cm and settled nowhere.
+        #
+        # A control that cannot move the numbers is worse than a missing one. It
+        # reads as available, it is chosen whenever the situation looks like it
+        # needs "better orientation", and it spends the decision. The solver is
+        # kept below because the forearm twist it found is real and place_thumb
+        # depends on the same anatomy; it is the offer that was wrong.
         SuperPrimitive("look_at_object", ("neck", "head"),
                        "turn the head until the object is in view",
                        _solve_look_at_figure),
