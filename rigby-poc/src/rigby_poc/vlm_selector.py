@@ -162,7 +162,7 @@ the object still is a grasp; contact on fingers alone, with nothing on the thumb
 
 CLOSING IS NOT A COMMITMENT. "close_grip" stops on its own at the object's width and at every digit that is already carrying load, so a close that is too early simply ARRIVES on the object and stops -- it cannot crush it, drive through it, or shut on nothing. There is no penalty for closing sooner and there is a large one for waiting: every run that failed did so by preparing until the clock ran out, with the object already inside the opening and the hand still being adjusted. object_in_grasp_m at or below 0.025 m is where the object sits centred between the thumb and \nthe fingers, so both sides arrive together -- aim for it. But do not wait for it indefinitely. \nClosing at 0.044 loaded the thumb to 11 N with no finger touching, because the thumb caught the \nobject and the fingers passed beside it; refusing to close at all, which is what happened next, \nended with the block pushed 48 cm and the hand never shut. If two approaches in a row have not \nreduced it, close anyway and read the forces: a close that misses tells you which way to move, \nand a close that never happens tells you nothing.
 
-"level_wrist" is finished once digits_straddle is high, and near the object it moves almost nothing else. Re-levelling an already-level wrist is the single most common way these runs have been spent.
+digits_straddle takes care of itself: the approach and the grip produce it, and it reaches \n0.94 in runs where nothing ever acted on it directly. Read it, do not work on it.
 
 Rules that matter more than they look:
 

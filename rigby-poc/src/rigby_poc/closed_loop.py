@@ -2600,6 +2600,15 @@ def _solve_level_wrist(sensing: Sensing, hand: Hand, amount: float) -> dict[str,
 RETIRED_PRIMITIVES = frozenset({
     "reach_to", "stand_off", "grip", "close_hand", "open_hand",
     "place_thumb", "thumb_home",
+    # level_wrist went the way of orient_palm, for the same reason and by the
+    # same route. Near the object it is in the top-four movers of no metric at
+    # all, and the scripted controller never calls it once yet reaches
+    # digits_straddle 0.944 anyway -- the approach and the grip produce the
+    # straddle on their own. Meanwhile it was the largest single consumer of
+    # decisions in the last three runs, six, three and six of twenty-two, and
+    # turning the hand mid-approach moves the opening off the object it was
+    # lining up on.
+    "level_wrist",
 })
 
 
