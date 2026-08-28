@@ -13,8 +13,6 @@ from __future__ import annotations
 
 import pytest
 
-from evals.corpus import load_corpus
-from evals.corpus.loader import compile_case
 from evals.mutations.anatomy import rom_sweep
 from evals.mutations.checks import (
     EMITTED_BY_CASES,
@@ -49,11 +47,11 @@ RETIRED_06A_TARGETS = (
 
 
 @pytest.fixture(scope="module")
-def emitted_over_corpus() -> dict[str, int]:
+def emitted_over_corpus(compile_whole_corpus, corpus_by_id) -> dict[str, int]:
     """Every check id ``validate`` emits, and how many cases emit it."""
     counts: dict[str, int] = {}
-    for case in load_corpus():
-        clip = compile_case(case)
+    for case_id, clip in compile_whole_corpus().items():
+        case = corpus_by_id[case_id]
         # `frames` and `fps` are required, not optional, since lane `analysis` wired
         # `rom_checks` into `validate()`. Optional would have meant this caller -- the
         # only real one -- kept not passing them, leaving ROM dark behind the
@@ -63,12 +61,12 @@ def emitted_over_corpus() -> dict[str, int]:
     return counts
 
 
-def test_the_probe_saw_a_real_corpus(emitted_over_corpus: dict[str, int]) -> None:
+def test_the_probe_saw_a_real_corpus(emitted_over_corpus: dict[str, int], corpus) -> None:
     # The instrument test for this file. Every assertion below is over a collection
     # this test did not construct, and all of them pass vacuously on an empty one --
     # the shape that made four judge guards green against nothing.
     assert emitted_over_corpus, "the corpus produced no checks at all"
-    assert len(load_corpus()) >= 47
+    assert len(corpus) >= 47
 
 
 def test_the_declared_registry_is_what_the_analyzer_emits(
@@ -115,7 +113,7 @@ def test_the_declared_per_check_case_counts_are_the_measured_ones(
 
 
 def test_only_the_clip_contract_checks_reach_every_case(
-    emitted_over_corpus: dict[str, int],
+    emitted_over_corpus: dict[str, int], corpus
 ) -> None:
     """The denominator fact, restated after ROM went live and root drift was split out.
 
@@ -145,7 +143,7 @@ def test_only_the_clip_contract_checks_reach_every_case(
     reported as exceeding a joint limit. It is a `skip` rather than a `pass` on a
     program that enables root motion.
     """
-    total = len(load_corpus())
+    total = len(corpus)
     universal = {cid for cid, n in emitted_over_corpus.items() if n == total}
     assert universal & FIXED_CHECK_IDS == {
         "contract.clip.joint_limit_violations",

@@ -12,8 +12,6 @@ from __future__ import annotations
 
 import pytest
 
-from evals.corpus import load_corpus
-from evals.corpus.loader import compile_case
 from rigby_poc.analysis import validate_clip
 from rigby_poc.analysis.contract import SIGNAL, CheckResult
 from rigby_poc.analysis.signal_quality import LIMB_CHAINS, bone_activity
@@ -46,12 +44,11 @@ LEG_MOVING_CASES = frozenset(
 
 
 @pytest.fixture(scope="module")
-def verdicts() -> dict[str, tuple[list[CheckResult], object]]:
-    collected = {}
-    for case in load_corpus():
-        clip = compile_case(case)
-        collected[case.entry.id] = (validate_clip(clip, case.program), clip)
-    return collected
+def verdicts(compile_whole_corpus, corpus_by_id) -> dict[str, tuple[list[CheckResult], object]]:
+    return {
+        case_id: (validate_clip(clip, corpus_by_id[case_id].program), clip)
+        for case_id, clip in compile_whole_corpus().items()
+    }
 
 
 def test_the_probe_saw_a_real_corpus(verdicts) -> None:
@@ -212,7 +209,7 @@ def test_sparc_is_an_outlier_bound_and_behaves_like_one(verdicts) -> None:
     )
 
 
-def test_the_signal_layer_is_live_under_a_frame_mutation(verdicts) -> None:
+def test_the_signal_layer_is_live_under_a_frame_mutation(verdicts, corpus_by_id) -> None:
     """Frames-derived, so a transformed clip moves it. Same property as physics.
 
     Freezing every bone to its first-frame rotation is the mutation ``dead_limb``
@@ -223,7 +220,7 @@ def test_the_signal_layer_is_live_under_a_frame_mutation(verdicts) -> None:
     before = next(c for c in checks if c.id == "signal.activity.dead_limb")
     assert before.status == "pass", "the control case stopped passing dead_limb"
 
-    case = next(c for c in load_corpus() if c.entry.id == "fullbody-walk-forward")
+    case = corpus_by_id["fullbody-walk-forward"]
     first = clip.frames[0].bones
     frozen = clip.model_copy(
         update={

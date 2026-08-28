@@ -13,8 +13,6 @@ import math
 
 import pytest
 
-from evals.corpus import load_corpus
-from evals.corpus.loader import compile_case
 from evals.mutations.checks import known_check_ids
 from evals.mutations.inject import add_dof
 from evals.mutations.structural import (
@@ -43,17 +41,13 @@ PROBE_DEGREES = (10, 40)
 
 
 @pytest.fixture(scope="module")
-def full_body_cases():
+def full_body_cases(compile_whole_corpus, corpus_by_id):
     """Corpus cases whose path evaluates structural gates at all."""
     found = []
-    for case in load_corpus():
-        try:
-            clip = compile_case(case)
-        except Exception:
-            continue
+    for case_id, clip in compile_whole_corpus().items():
         if not clip.frames or "support_constraints" not in clip.metrics:
             continue
-        found.append((case, clip))
+        found.append((corpus_by_id[case_id], clip))
     return found
 
 

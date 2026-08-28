@@ -28,7 +28,6 @@ from evals.corpus.gates import (
     evaluate_gates,
     failed_gates,
 )
-from evals.corpus.loader import compile_case
 from evals.corpus.models import Family
 from rigby_poc.models import Intent
 
@@ -36,7 +35,21 @@ from rigby_poc.models import Intent
 pytestmark = pytest.mark.medium
 
 CASES = {case.id: case for case in load_corpus()}
-METRICS = {case_id: compile_case(case).metrics for case_id, case in CASES.items()}
+
+
+@pytest.fixture(scope="module")
+def metrics_by_case(compile_whole_corpus) -> dict[str, dict]:
+    """``case id -> compiler metrics`` for the whole corpus.
+
+    This was a module-level dict comprehension, so pytest paid all 47 compiles at
+    *collection* -- on every invocation, including ``-m fast``, which then
+    deselected every test in this file. That was 12.9s of the fast tier's 14.6s
+    collection and it is what pushed CI's 90s ceiling to 131s. A fixture is only
+    built when something in this file actually runs.
+    """
+
+    return {case_id: clip.metrics for case_id, clip in compile_whole_corpus().items()}
+
 CASE_IDS = sorted(CASES)
 KNOWN_BAD_IDS = sorted(
     case_id for case_id, case in CASES.items() if case.entry.family is Family.KNOWN_BAD
@@ -49,9 +62,9 @@ def test_the_corpus_has_known_bad_cases_at_all() -> None:
 
 
 @pytest.mark.parametrize("case_id", KNOWN_BAD_IDS)
-def test_known_bad_case_fails_exactly_the_gates_it_names(case_id: str) -> None:
+def test_known_bad_case_fails_exactly_the_gates_it_names(case_id: str, metrics_by_case) -> None:
     case = CASES[case_id]
-    metrics = METRICS[case_id]
+    metrics = metrics_by_case[case_id]
     if case.entry.intent is Intent.UNSUPPORTED:
         pytest.skip("scored by test_an_unsupported_case_produces_no_motion instead")
     observed = failed_gates(metrics)
@@ -64,21 +77,21 @@ def test_known_bad_case_fails_exactly_the_gates_it_names(case_id: str) -> None:
 
 
 @pytest.mark.parametrize("case_id", KNOWN_BAD_IDS)
-def test_known_bad_case_is_actually_rejected(case_id: str) -> None:
+def test_known_bad_case_is_actually_rejected(case_id: str, metrics_by_case) -> None:
     """The gate has to reach the compiler's own verdict, not just this scorer."""
-    assert METRICS[case_id].get("structural_valid") is not True
+    assert metrics_by_case[case_id].get("structural_valid") is not True
     assert CASES[case_id].expected.structural_valid is False
 
 
 @pytest.mark.parametrize("case_id", KNOWN_BAD_IDS)
-def test_every_other_applicable_gate_still_passes(case_id: str) -> None:
+def test_every_other_applicable_gate_still_passes(case_id: str, metrics_by_case) -> None:
     """A known-bad case must isolate its defect.
 
     A case that trips five gates at once cannot tell you which check stopped
     firing, so it is not a regression test for any of them.
     """
     case = CASES[case_id]
-    outcomes = evaluate_gates(METRICS[case_id])
+    outcomes = evaluate_gates(metrics_by_case[case_id])
     declared = set(case.entry.must_fail)
     collateral = sorted(
         gate.value
@@ -89,14 +102,14 @@ def test_every_other_applicable_gate_still_passes(case_id: str) -> None:
 
 
 @pytest.mark.parametrize("case_id", GOOD_IDS)
-def test_no_gate_fails_a_clip_the_compiler_calls_valid(case_id: str) -> None:
+def test_no_gate_fails_a_clip_the_compiler_calls_valid(case_id: str, metrics_by_case) -> None:
     """``gates.py`` must never be a second, disagreeing definition of validity.
 
     One direction only: everything this module calls ``FAILED`` has to be something
     the compiler also rejected.  The converse is false and not claimed -- the
     compiler has many path-specific failures that are not a metric against a bound.
     """
-    metrics = METRICS[case_id]
+    metrics = metrics_by_case[case_id]
     observed = failed_gates(metrics)
     if metrics.get("structural_valid") is True:
         assert not observed, (
@@ -105,27 +118,27 @@ def test_no_gate_fails_a_clip_the_compiler_calls_valid(case_id: str) -> None:
         )
 
 
-def test_an_unsupported_case_produces_no_motion() -> None:
+def test_an_unsupported_case_produces_no_motion(metrics_by_case) -> None:
     """``Intent.UNSUPPORTED`` has no gate to trip -- the refusal is the check."""
     case = CASES["knownbad-eigenvalues-unsupported"]
     assert case.program.intent is Intent.UNSUPPORTED
     assert case.program.unsupported_reason
     assert case.expected.frame_count == 0
     assert case.expected.success is False
-    assert not failed_gates(METRICS[case.id])
+    assert not failed_gates(metrics_by_case[case.id])
 
 
 @pytest.mark.parametrize("case_id", CASE_IDS)
-def test_an_unenforced_gate_is_never_reported_as_passing(case_id: str) -> None:
+def test_an_unenforced_gate_is_never_reported_as_passing(case_id: str, metrics_by_case) -> None:
     """Full-body clips carry the kinematic metrics and no path compares them.
 
     Counting those as passes would report anatomical coverage the deterministic
     layer does not have, which is exactly plan 06 section 6.1's risk.
     """
-    outcomes = evaluate_gates(METRICS[case_id])
+    outcomes = evaluate_gates(metrics_by_case[case_id])
     for gate, outcome in outcomes.items():
         if outcome in ENFORCED_OUTCOMES:
-            assert gate in set(enforced_gates(METRICS[case_id]))
+            assert gate in set(enforced_gates(metrics_by_case[case_id]))
         else:
             assert outcome in {
                 GateOutcome.UNGATED,
@@ -134,7 +147,7 @@ def test_an_unenforced_gate_is_never_reported_as_passing(case_id: str) -> None:
             }
 
 
-def test_the_full_body_path_enforces_no_calibrated_ceiling() -> None:
+def test_the_full_body_path_enforces_no_calibrated_ceiling(metrics_by_case) -> None:
     """Pins the 03b finding, so a future change that adds the check is noticed.
 
     ``_compile_full_body`` computes ``max_angular_velocity_rad_s``,
@@ -165,7 +178,7 @@ def test_the_full_body_path_enforces_no_calibrated_ceiling() -> None:
     for case_id, case in CASES.items():
         if case.program.intent is not Intent.FULL_BODY:
             continue
-        metrics = METRICS[case_id]
+        metrics = metrics_by_case[case_id]
         assert not enforced_gates(metrics), (
             f"{case_id} now enforces {enforced_gates(metrics)}. If that is "
             f"intentional, this test and plan 06 section 6.1 both need updating."
@@ -216,7 +229,7 @@ def test_only_a_known_bad_case_may_declare_must_fail() -> None:
         )
 
 
-def test_every_gate_is_exercised_by_some_case() -> None:
+def test_every_gate_is_exercised_by_some_case(metrics_by_case) -> None:
     """A gate no case measures is a gate nobody knows is still wired up.
 
     Reported rather than asserted to zero: three gates are unreachable by any
@@ -225,7 +238,7 @@ def test_every_gate_is_exercised_by_some_case() -> None:
     """
     measured = {
         gate
-        for metrics in METRICS.values()
+        for metrics in metrics_by_case.values()
         for gate, outcome in evaluate_gates(metrics).items()
         if outcome is not GateOutcome.NOT_MEASURED
     }
@@ -245,7 +258,7 @@ UNREACHABLE_GATES = frozenset(
 )
 
 
-def test_three_gates_cannot_be_tripped_by_any_compiled_program() -> None:
+def test_three_gates_cannot_be_tripped_by_any_compiled_program(metrics_by_case) -> None:
     """Wrist swing, wrist twist and self-collision are unfalsifiable from generation.
 
     Measured over 517 compiles -- all 47 cases against 11 parameter-override
@@ -265,7 +278,7 @@ def test_three_gates_cannot_be_tripped_by_any_compiled_program() -> None:
     """
     tripped = {
         gate
-        for metrics in METRICS.values()
+        for metrics in metrics_by_case.values()
         for gate in breached_gates(metrics)
     }
     assert not (tripped & UNREACHABLE_GATES), sorted(

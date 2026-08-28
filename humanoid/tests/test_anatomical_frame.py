@@ -518,7 +518,7 @@ def test_compose_and_decompose_round_trip() -> None:
 
 
 @pytest.fixture(scope="module")
-def corpus_angles_by_case() -> dict[str, dict[str, list[DofAngles]]]:
+def corpus_angles_by_case(compile_whole_corpus) -> dict[str, dict[str, list[DofAngles]]]:
     """Corpus frames resolved onto each bone's frame, grouped by case id.
 
     Grouping by case is what lets a residual excursion be *attributed*: a peak
@@ -527,17 +527,14 @@ def corpus_angles_by_case() -> dict[str, dict[str, list[DofAngles]]]:
     corpus would be evidence of a solver defect.
     """
 
-    from evals.corpus import load_corpus
-    from evals.corpus.loader import compile_case
-
     frames = all_frames()
     measured: dict[str, dict[str, list[DofAngles]]] = {}
-    for case in load_corpus():
-        for clip_frame in compile_case(case).frames:
+    for case_id, clip in compile_whole_corpus().items():
+        for clip_frame in clip.frames:
             for bone, pose in clip_frame.bones.items():
                 if bone not in frames:
                     continue
-                measured.setdefault(bone, {}).setdefault(case.id, []).append(
+                measured.setdefault(bone, {}).setdefault(case_id, []).append(
                     decompose(pose.rotation.as_list(), frames[bone])
                 )
     return measured
