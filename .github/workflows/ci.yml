@@ -69,7 +69,7 @@ jobs:
       matrix:
         os: ${{ fromJSON(needs.select-platforms.outputs.os) }}
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 30
+    timeout-minutes: 60
     defaults:
       run:
         working-directory: humanoid
