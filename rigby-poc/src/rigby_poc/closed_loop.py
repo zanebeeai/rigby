@@ -151,6 +151,12 @@ class Sensing:
     object_velocity: np.ndarray = field(default_factory=lambda: np.zeros(3))
     hand_velocity: np.ndarray = field(default_factory=lambda: np.zeros(3))
     gaze_error_deg: float = 0.0
+    #: Half-extents of the object, metres. A point has no faces, and a hand
+    #: cannot present its palm to a point: every approach so far aimed at the
+    #: object's middle, which is inside it, so contact was the approach
+    #: succeeding rather than the approach failing.
+    object_half_m: np.ndarray = field(
+        default_factory=lambda: np.asarray([0.03, 0.04, 0.03]))
     #: False when the object is outside the field of view, in which case
     #: ``object_position`` is the last place it was SEEN, not where it is.
     in_view: bool = True
@@ -239,6 +245,7 @@ def sense(
     time_s: float,
     object_velocity: np.ndarray | None = None,
     hand_velocity: np.ndarray | None = None,
+    object_half_m: np.ndarray | None = None,
 ) -> Sensing:
     """Read the situation from the pose and the running simulation."""
     positions = rig_kinematics().canonical_positions(bones)
@@ -249,6 +256,10 @@ def sense(
     stack = np.vstack(list(tips.values()))
     return Sensing(
         bones=bones,
+        object_half_m=(
+            np.asarray([0.03, 0.04, 0.03]) if object_half_m is None
+            else np.asarray(object_half_m, dtype=float)
+        ),
         object_position=np.asarray(object_position, dtype=float),
         tip_positions=tips,
         convergence=stack.mean(axis=0),
@@ -308,6 +319,7 @@ def observe(
     time_s: float,
     object_velocity: np.ndarray | None = None,
     hand_velocity: np.ndarray | None = None,
+    object_half_m: np.ndarray | None = None,
 ) -> Sensing:
     """Sense the situation, seeing the object only when looking at it.
 
@@ -330,7 +342,8 @@ def observe(
         remembered if remembered is not None else true_position
     )
     reading = sense(bones, hand, position, contact_force_n, opposed, time_s,
-                    object_velocity, hand_velocity)
+                    object_velocity, hand_velocity,
+                    object_half_m=object_half_m)
     return Sensing(
         bones=reading.bones,
         object_position=reading.object_position,
@@ -1117,6 +1130,188 @@ _SURFACE_STANDOFF_M = 0.035
 #: body moves toward it.
 _STANDOFF_M = 0.12
 
+
+def object_faces(sensing: Sensing) -> list[tuple[np.ndarray, np.ndarray]]:
+    """The object's six faces, each as (centre, outward normal)."""
+    centre = np.asarray(sensing.object_position, dtype=float)
+    half = np.asarray(sensing.object_half_m, dtype=float)
+    faces: list[tuple[np.ndarray, np.ndarray]] = []
+    for axis in range(3):
+        for sign in (+1.0, -1.0):
+            normal = np.zeros(3)
+            normal[axis] = sign
+            faces.append((centre + normal * half[axis], normal))
+    return faces
+
+
+def _palm_frame(sensing: Sensing, hand: Hand):
+    """Where the palm is and which way it faces, or None if it cannot be read."""
+    from .models import ClipFrame
+    from .physics import _frame_hand_landmarks, _palm_transform
+
+    try:
+        landmarks = _frame_hand_landmarks(
+            ClipFrame(time_s=0.0, bones=sensing.bones, objects={}), hand)
+        centre, rotation = _palm_transform(landmarks, hand)
+    except Exception:  # noqa: BLE001
+        return None
+    return np.asarray(centre, dtype=float), np.asarray(rotation[:, 2], dtype=float)
+
+
+def chosen_face(sensing: Sensing, hand: Hand):
+    """The face the hand should present its palm to.
+
+    Whichever the palm is already most in front of. This is a default, not a
+    decision: the selector can name a different one, and which face a thing
+    should be picked up by is exactly the sort of judgement it is there to make.
+    """
+    frame = _palm_frame(sensing, hand)
+    if frame is None:
+        return None
+    palm, _normal = frame
+    best = None
+    for face_centre, face_normal in object_faces(sensing):
+        toward = palm - face_centre
+        size = float(np.linalg.norm(toward))
+        if size < 1e-9:
+            continue
+        score = float(np.dot(toward / size, face_normal))
+        if best is None or score > best[0]:
+            best = (score, face_centre, face_normal)
+    return None if best is None else (best[1], best[2])
+
+
+def palm_to_object_m(sensing: Sensing, hand: Hand) -> float:
+    """Metres from the palm's centre to the object's surface.
+
+    The quantity that actually decides whether a grasp is possible, and it was
+    not being measured. The plan steered on fingertip-to-CENTRE distance, which
+    is minimised by driving the fingers into the object, and which no control
+    could improve past 6.3 cm anyway because the fingertips trail the wrist by
+    most of a hand.
+    """
+    frame = _palm_frame(sensing, hand)
+    if frame is None:
+        return 1.0
+    palm, _normal = frame
+    offset = np.abs(palm - np.asarray(sensing.object_position, dtype=float))
+    outside = np.maximum(offset - np.asarray(sensing.object_half_m, dtype=float), 0.0)
+    return float(np.linalg.norm(outside))
+
+
+def palm_facing(sensing: Sensing, hand: Hand) -> float:
+    """+1 when the palm looks straight at its face, -1 when it looks away.
+
+    The palm's outward normal against the inward normal of the face being
+    approached. A hand can be 2 cm from a block and unable to hold it because it
+    arrived edge-on; this is the difference, and nothing measured it.
+    """
+    frame = _palm_frame(sensing, hand)
+    face = chosen_face(sensing, hand)
+    if frame is None or face is None:
+        return 0.0
+    _palm, normal = frame
+    _centre, face_normal = face
+    return float(np.dot(normal, -face_normal))
+
+
+#: How far off the face the palm is asked to stop, metres.
+_FACE_STANDOFF_M = 0.05
+
+
+def _solve_move_to(sensing: Sensing, hand: Hand, amount: float) -> dict[str, Any]:
+    """Carry the palm to a face of the object, arriving square to it.
+
+    The replacement for aiming at the object's middle. A face is chosen, a point
+    is taken a little way out along its normal, and the arm carries the PALM
+    there -- so the approach ends with the palm parked in front of a surface
+    rather than with the fingers buried in the object, which is what aiming at a
+    centre necessarily does.
+
+    Order matters here and cost a measured mistake. Squaring the wrist to the
+    face MOVES the palm, so doing it after the arm solve undoes the placement:
+    the first version left the palm further from the block than it started,
+    10.5 cm out to 11.4. The wrist is therefore chosen first and held fixed
+    while the arm converges onto the palm target.
+
+    The arm solver places the wrist, and the palm trails it by most of a hand
+    and swings as the arm turns, so one linear correction does not land. The
+    remaining error is fed back instead, which closes it in a few passes.
+    """
+    import math
+
+    from .analysis.anatomy.frame import DofAngles, all_frames, compose
+    from .analysis.anatomy.rom import rom_limit
+    from .models import PrimitiveParameters, Quat, Vec3
+    from .primitives import arm_pose_from_target, shoulder_position
+
+    face = chosen_face(sensing, hand)
+    frame = _palm_frame(sensing, hand)
+    if face is None or frame is None:
+        return {}
+    face_centre, face_normal = face
+    palm, _normal = frame
+    goal = face_centre + face_normal * _FACE_STANDOFF_M
+    reach = float(np.clip(amount, 0.0, 1.0))
+    want = palm + (goal - palm) * reach
+
+    bone = f"{hand.value}Hand"
+    wrist_frame = all_frames().get(bone)
+
+    def read(bones: dict[str, BonePose]):
+        return _palm_frame(
+            Sensing(bones=bones, object_position=sensing.object_position,
+                    tip_positions=sensing.tip_positions,
+                    convergence=sensing.convergence, contact_force_n={},
+                    opposed=False, time_s=sensing.time_s,
+                    object_half_m=sensing.object_half_m), hand)
+
+    # 1. Which way the wrist must be turned for the palm to face the surface.
+    wrist_rotation = None
+    if wrist_frame is not None:
+        flex_low, flex_high = rom_limit(bone, "flexion").typical_deg
+        abduct_low, abduct_high = rom_limit(bone, "abduction").typical_deg
+        best: tuple[float, Any] | None = None
+        for flex in np.linspace(flex_low, flex_high, 12):
+            for abduct in np.linspace(abduct_low, abduct_high, 6):
+                quaternion = compose(
+                    DofAngles(math.radians(float(flex)),
+                              math.radians(float(abduct)), 0.0), wrist_frame)
+                rotation = Quat(x=quaternion[0], y=quaternion[1],
+                                z=quaternion[2], w=quaternion[3])
+                trial = dict(sensing.bones)
+                trial[bone] = BonePose(rotation=rotation)
+                reading = read(trial)
+                if reading is None:
+                    continue
+                score = float(np.dot(reading[1], -face_normal))
+                if best is None or score > best[0]:
+                    best = (score, rotation)
+        if best is not None:
+            wrist_rotation = best[1]
+
+    # 2. With the hand held at that angle, walk the arm until the palm lands.
+    positions = rig_kinematics().canonical_positions(sensing.bones)
+    aim = np.asarray(positions[bone], dtype=float) + (want - palm)
+    arm: dict[str, Any] = {}
+    for _pass in range(6):
+        arm, _ = arm_pose_from_target(
+            hand, shoulder_position(hand),
+            Vec3(x=float(aim[0]), y=float(aim[1]), z=float(aim[2])),
+            PrimitiveParameters(), present_hand=False)
+        if wrist_rotation is not None:
+            arm[bone] = wrist_rotation
+        trial = dict(sensing.bones)
+        for name, rotation in arm.items():
+            trial[name] = BonePose(rotation=rotation)
+        reading = read(trial)
+        if reading is None:
+            break
+        remaining = want - reading[0]
+        if float(np.linalg.norm(remaining)) < 0.004:
+            break
+        aim = aim + remaining
+    return arm
 
 def _solve_stand_off(sensing: Sensing, hand: Hand, amount: float) -> dict[str, Any]:
     """Aim short of the object, leaving room to arrive without touching."""
@@ -2054,6 +2249,11 @@ def super_primitives(hand: Hand) -> tuple[SuperPrimitive, ...]:
         SuperPrimitive("stand_off", _arm_parts(hand),
                        "bring the hand near the object without touching it",
                        _solve_stand_off),
+        SuperPrimitive("move_to", _arm_parts(hand),
+                       "carry the PALM to a face of the object and arrive "
+                       "square to it, so the object ends up in front of the "
+                       "palm rather than under the fingertips",
+                       _solve_move_to),
         SuperPrimitive("reach_to", _arm_parts(hand),
                        "put the fingertips where the object is", _solve_reach),
         SuperPrimitive("open_hand", _digit_parts(hand),
@@ -2322,6 +2522,13 @@ def _register_metrics() -> None:
         "rays_toward": lambda s, h: c_shape(s.bones, h)["toward"],
         # Metres by which the two fingertip rays miss each other.
         "ray_gap_m": lambda s, h: c_shape(s.bones, h)["gap_m"],
+        # Palm centre to the object's SURFACE, metres. What decides whether a
+        # grasp is possible, where the fingertip-to-centre distance below is
+        # minimised by driving the fingers into the object.
+        "palm_to_object_m": palm_to_object_m,
+        # +1 when the palm looks straight at the face being approached. A hand
+        # 2 cm away and edge-on cannot grasp; nothing measured that.
+        "palm_facing": palm_facing,
         # Fingertip mean to the object, metres.
         "tips_to_object_m": lambda s, h: float(
             np.linalg.norm(s.convergence - s.object_position)
@@ -2586,6 +2793,12 @@ def generate(
     _seed_embodied_bodies(model, data, landmarks, hand, segment_pairs)
     mujoco.mj_forward(model, data)
 
+    # The object's actual shape, so the approach can aim at a FACE of it.
+    figure_half = np.asarray([
+        float(figure.dimensions_m.x) / 2.0,
+        float(figure.dimensions_m.y) / 2.0,
+        float(figure.dimensions_m.z) / 2.0,
+    ])
     dt = float(model.opt.timestep)
     steps_per_frame = max(1, int(round((1.0 / fps) / dt)))
     frames: list[ClipFrame] = []
@@ -2624,7 +2837,8 @@ def generate(
         if hand_now is not None:
             previous_hand = np.asarray(hand_now, dtype=float)
         reading = observe(pose, hand, truth, remembered, forces, opposed, now,
-                          object_velocity, hand_velocity)
+                          object_velocity, hand_velocity,
+                          object_half_m=figure_half)
         if reading.in_view:
             remembered = np.asarray(reading.object_position, dtype=float)
 

@@ -132,6 +132,8 @@ price in the rest. A hand asked only to close will close somewhere useless; a ha
 to approach will arrive in a shape that cannot hold anything. Name the ones that have to be \
 true together.
 
+"recent_decisions" is what you have already done, with the readings you did each of them at. You are answering from one frame with no memory, and every long failure here has been the same defensible choice repeated: eleven identical calls in one run, fourteen in another, while the number being steered did not move. If "repeating" appears, treat it as evidence that the approach is wrong rather than under-applied.
+
 Rules that matter more than they look:
 
 A grasp needs the THUMB loaded against at least one FINGER, on opposite faces of the object. \
@@ -208,7 +210,14 @@ Metrics you can read and target while executing:
   grip_closure       the same averaged over all four fingers: -1 is a whole hand closed on it
   object_in_grasp_m  metres from the object to the line between thumb and fingers; near 0 means
                      the object is INSIDE the opening rather than beside the hand
-  tips_to_object_m   fingertip mean to the object centre
+  palm_to_object_m   metres from the PALM's centre to the object's surface. This is the
+                     approach distance that matters -- a grasp happens in front of the palm,
+                     and "move_to" drives it
+  palm_facing        +1 when the palm looks straight at the face it is approaching, 0 when
+                     edge-on. A hand 2 cm away and edge-on cannot grasp anything
+  tips_to_object_m   fingertip mean to the object centre. Minimised by driving the fingers
+                     INTO the object, and no control improves it past about 6 cm; prefer
+                     palm_to_object_m
   thumb_opposition   +1 when the thumb is across the object from the fingers
   thumb_to_fingers_m thumb tip to the middle of the finger group
   aperture_deg       degrees the apertures stand off the palm. READABLE ONLY -- nothing
@@ -417,6 +426,7 @@ class VLMSelector:
             ),
             "scene": self.scene_context,
             "woke_because": self.last_wake,
+            **self._history(),
             "your_plan": self.own_plan,
             "your_step": self.own_step,
             "active_target": (
@@ -432,6 +442,45 @@ class VLMSelector:
             # tell that step one was over.
             **self._readable(sensing),
         }
+
+    def _history(self) -> dict[str, Any]:
+        """What has already been tried, and whether it is being repeated.
+
+        Each call has been answered from a single frame with no memory of the
+        last one, and it shows: run 000488 chose orient_palm eleven times with
+        the same sentence of reasoning, 000489 chose thumb_oppose_index ten
+        times, 000492 called reach_to fourteen times while the block sat 34 cm
+        away and the reading never moved. Every one of those decisions was
+        defensible on its own frame. What made them wrong was that they had all
+        been made already.
+
+        A model cannot notice a loop it cannot see, so the loop is given to it.
+        """
+        past = [entry for entry in self.transcript
+                if entry.get("chose") or entry.get("target")][-8:]
+        recent = [
+            {
+                "t": entry["time_s"],
+                "did": entry.get("chose") or f"target:{entry.get('target')}",
+                "amount": round(float(entry.get("magnitude", entry.get("value", 0.0))), 2),
+            }
+            for entry in past
+        ]
+        counts: dict[str, int] = {}
+        for entry in recent:
+            counts[entry["did"]] = counts.get(entry["did"], 0) + 1
+        worst = max(counts.items(), key=lambda item: item[1], default=("", 0))
+        stuck = worst[1] >= 3
+        out: dict[str, Any] = {"recent_decisions": recent}
+        if stuck:
+            out["repeating"] = (
+                f"{worst[0]} chosen {worst[1]} times in the last "
+                f"{len(recent)} decisions. If the readings have not moved, it "
+                f"is not working: something else is wrong, or the number you "
+                f"are steering is not the one that matters. Say so and change "
+                f"what you are doing."
+            )
+        return out
 
     def _readable(self, sensing: Sensing) -> dict[str, Any]:
         """Every targetable metric, read now.
