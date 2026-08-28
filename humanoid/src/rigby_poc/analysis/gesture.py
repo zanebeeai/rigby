@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import math
+from dataclasses import dataclass
 from typing import Any, Iterable
 
 import numpy as np
@@ -23,11 +24,24 @@ from ..primitives import (
     _UPPER_ARM_REST_WORLD_XYZW,
     shoulder_position,
 )
+from .context import AnalysisContext
 from .contract import ANATOMY, SIGNAL, CheckResult, count_check, lower_bound_check, upper_bound_check
-from .rig import PROJECT_ROOT
+from .rig import EGO_NEUTRAL_GAZE, PROJECT_ROOT
 
 
 QUALITY_REFERENCE = PROJECT_ROOT / "config" / "motion_quality_reference.json"
+
+#: The ego camera's world position at the calibrated rest head pose.
+#:
+#: ``frontend/src/camera.ts::computeEgoCameraPose`` builds this as the head's
+#: rest world position plus a head-local eye offset of ``(0, 0.04, 0.11)``. The
+#: literal here is that sum with the head position *rounded*, and it stays the
+#: anchor rather than being recomputed from the frontend's clean offset: the two
+#: disagree by 2.4e-5 m in z, and the rest pose sits 1.5e-5 m inside the vertical
+#: frustum, so adopting the frontend constant flips frame 0 of every gesture and
+#: strike clip out of view. Reconciling the two literals is separate, measured
+#: work; anchoring on the frozen one keeps this change to what it claims to be.
+_REST_EGO_CAMERA_POSITION = np.asarray([0.0, 1.5685 + 0.04, 0.0114 + 0.11], dtype=float)
 
 
 def quality_reference() -> dict[str, Any]:
@@ -77,6 +91,42 @@ def arm_landmarks(frame: ClipFrame, hand: Hand) -> tuple[np.ndarray, np.ndarray,
     return shoulder, elbow, wrist, hand_world
 
 
+def world_arm_landmarks(
+    ctx: AnalysisContext, index: int, hand: Hand
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, Rotation]:
+    """Shoulder, elbow, wrist and hand orientation in world, for one frame.
+
+    ``arm_landmarks`` rebuilds the arm from a fixed rest shoulder and five rest
+    constants, so it cannot see the trunk: what it returns is the arm measured
+    relative to the chest. Since strikes distribute their yaw over the spine,
+    chest and upperChest, that is the wrong frame for anything projected onto a
+    world axis -- a world lateral excursion read there is the arm's excursion
+    across a torso that is itself turning.
+
+    The rig already carries the answer: the ``*UpperArm``, ``*LowerArm`` and
+    ``*Hand`` pivots are the shoulder, elbow and wrist, so this reads them out
+    of the frame's world matrices instead of reconstructing them. Taking the
+    context and a frame index rather than a :class:`ClipFrame` is deliberate --
+    it makes the function unable to evaluate forward kinematics of its own, so
+    it costs nothing beyond the one pass per frame the context already memoises.
+
+    ``arm_landmarks`` stays as-is and stays the answer for generation (the
+    compiler places carried objects with it) and for hand-local attachment
+    offsets, neither of which wants a world frame.
+    """
+
+    prefix = hand.value
+    matrices = ctx.world_matrices(index)
+    node = ctx.kinematics.node_by_canonical
+    hand_matrix = matrices[node[f"{prefix}Hand"]]
+    return (
+        matrices[node[f"{prefix}UpperArm"]][:3, 3].copy(),
+        matrices[node[f"{prefix}LowerArm"]][:3, 3].copy(),
+        hand_matrix[:3, 3].copy(),
+        Rotation.from_matrix(hand_matrix[:3, :3]),
+    )
+
+
 def _inside_torso(point: np.ndarray) -> bool:
     if not 1.01 <= float(point[1]) <= 1.48:
         return False
@@ -106,10 +156,12 @@ def _full_hand_visible(
     contract: dict[str, Any],
     hand_shape: HandShape | None = None,
 ) -> bool:
-    # Match frontend/src/camera.ts at the calibrated rest head transform.
-    position = np.asarray([0.0, 1.5685 + 0.04, 0.0114 + 0.11], dtype=float)
-    forward = np.asarray([0.0, -0.65, 1.0], dtype=float)
-    forward /= np.linalg.norm(forward)
+    # The rest-pose ego camera. ``_REST_EGO_CAMERA_POSITION`` and
+    # ``EGO_NEUTRAL_GAZE`` are the same literals this function used to build
+    # inline, named rather than retyped, so this path is unchanged bit for bit.
+    # Carrying the camera on the head is a separate change -- see G6b.
+    position = _REST_EGO_CAMERA_POSITION
+    forward = EGO_NEUTRAL_GAZE
     world_up = np.asarray([0.0, 1.0, 0.0], dtype=float)
     right = np.cross(forward, world_up)
     right /= np.linalg.norm(right)
@@ -254,6 +306,15 @@ def evaluate_gesture_structure(
     presentation_ranges: list[tuple[float, float]],
     hand_shape: HandShape | None = None,
 ) -> dict[str, Any]:
+    """Structural quality for one hand over a finished clip.
+
+    Visibility is still judged against the reconstructed, chest-relative arm and
+    the rest-pose camera. Moving it onto the world-true wrist and a head-carried
+    camera is G6b, held separately: the two halves are only correct together,
+    and the camera's eye offset is 2.4e-5 m from the renderer's own constant,
+    which is the same size as the frustum margin that decides the verdict.
+    """
+
     reference = quality_reference()
     limits = reference["hard_limits"]
     contract = reference["camera_contract"]
@@ -271,17 +332,18 @@ def evaluate_gesture_structure(
             frame.bones[f"{prefix}LowerArm"].rotation.as_list(), [0.0, 1.0, 0.0]
         )
         forearm_twist_values.append(abs(forearm_twist))
+        # Self-collision stays on the reconstructed arm deliberately.
+        # ``_inside_torso`` pins a *fixed* world capsule over y in [1.01, 1.48]
+        # while the trunk yaw is graded across spine/chest/upperChest, so world
+        # points would be tested against a chest-frame torso -- half a fix, and
+        # the brief forbids moving self-collision silently. Measured either way
+        # the check stays latent: closest approach is 1.08-1.55 normalised radii
+        # against a gate at 1.0, and 0 of 407 strike frames fire. Carrying the
+        # capsule on the chest is the real fix and is its own change.
         shoulder, elbow, wrist, hand_world = arm_landmarks(frame, hand)
         collisions += int(_arm_self_collision(shoulder, elbow, wrist))
         if any(start - 1e-8 <= frame.time_s <= end + 1e-8 for start, end in presentation_ranges):
-            visible.append(
-                _full_hand_visible(
-                    wrist,
-                    hand_world,
-                    contract,
-                    hand_shape,
-                )
-            )
+            visible.append(_full_hand_visible(wrist, hand_world, contract, hand_shape))
 
     velocity, acceleration, jerk = _angular_kinematics(
         frames, [f"{prefix}UpperArm", f"{prefix}LowerArm", f"{prefix}Hand"]

@@ -26,6 +26,19 @@ from .thresholds import value_of
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
+#: Source-rig leaf node stems for the five fingertips, keyed by digit.
+#:
+#: Module-level so anything slicing fingertips out of an already-computed set of
+#: world matrices reads the same table rather than retyping it. Appending the
+#: hand suffix (``_l``/``_r``) gives the ``node_by_name`` key.
+FINGERTIP_SOURCE_STEMS: dict[str, str] = {
+    "thumb": "thumb_04_leaf",
+    "index": "index_04_leaf",
+    "middle": "middle_04_leaf",
+    "ring": "ring_04_leaf",
+    "little": "pinky_04_leaf",
+}
+
 
 def _glb_document(path: Path) -> tuple[dict, str]:
     """The parsed JSON chunk, and the sha256 of the bytes it was parsed from.
@@ -188,17 +201,10 @@ class RigKinematics:
         if hand not in {"left", "right"}:
             raise ValueError("hand must be left or right")
         suffix = "l" if hand == "left" else "r"
-        source_stems = {
-            "thumb": "thumb_04_leaf",
-            "index": "index_04_leaf",
-            "middle": "middle_04_leaf",
-            "ring": "ring_04_leaf",
-            "little": "pinky_04_leaf",
-        }
         world = self.world_matrices(bones)
         return {
             digit: world[self.node_by_name[f"{stem}_{suffix}"]][:3, 3].copy()
-            for digit, stem in source_stems.items()
+            for digit, stem in FINGERTIP_SOURCE_STEMS.items()
         }
 
     def canonical_world_rotation(self, bones: Mapping[str, BonePose], canonical: str) -> np.ndarray:

@@ -24,6 +24,7 @@ import json
 import socket
 import sys
 import time
+from collections.abc import Callable
 from pathlib import Path
 
 import pytest
@@ -308,60 +309,146 @@ def test_analysis_needs_no_network(monkeypatch: pytest.MonkeyPatch) -> None:
     assert analysis.analyze(clip, program, scene)
 
 
+#: Forward-kinematics evaluations a case may make beyond one per clip frame.
+#:
+#: The default is 2, and both are real non-clip poses rather than slack: the
+#: The forward-kinematics SHAPE of each case, measured, not bounded.
+#:
+#: An upper bound of ``len(frames) + slack`` cannot do this job. Paths that
+#: evaluate the hierarchy on a *subset* of frames carry slack equal to the frames
+#: they skip -- measured on this tree, ``sequence_catch_then_turn`` had 178 free
+#: passes, ``object_throw_forward`` 130, ``grab_block_right`` 100 -- so a literal
+#: doubling of those paths' per-frame work stayed green. The guard was in the
+#: right place and still unable to fire.
+#:
+#: So each case declares its shape and the assertion is an equality:
+#:   ``("none", n)``      the path evaluates no clip frames; expect exactly n.
+#:   ``("per_frame", n)`` one pass per clip frame plus n non-clip poses -- the
+#:                        ground-plane neutral pose and the identity rest-head
+#:                        pose. Written against ``len(clip.frames)`` rather than
+#:                        a literal so a platform that compiles a different frame
+#:                        count fails for a real reason, not an arithmetic one.
+#:   ``("windowed", n)``  the path samples a sub-range; expect exactly n.
+#:                        ``strike_left_hook`` is the strike window, 23 of 99.
+#:
+#: Equality is deliberate in both directions. Too many passes is a check that
+#: stopped reading ``AnalysisContext``; too few is coverage that quietly went
+#: away. Update these numbers when a change legitimately moves them, and say so.
+_FK_SHAPES: dict[str, tuple[str, int]] = {
+    "gesture_shaka_right": ("none", 0),
+    "gesture_open_palm": ("none", 0),
+    "gesture_point_right": ("none", 0),
+    "strike_left_hook": ("windowed", 23),
+    "grab_block_right": ("none", 0),
+    "composite_travel_foul": ("per_frame", 0),
+    "composite_finger_count_gaze": ("per_frame", 1),
+    "composite_wave": ("per_frame", 0),
+    "full_body_walk": ("per_frame", 1),
+    "full_body_wave_while_walking": ("per_frame", 1),
+    "full_body_climb": ("per_frame", 1),
+    "object_throw_forward": ("none", 0),
+    "object_handoff": ("none", 0),
+    "sequence_catch_then_turn": ("none", 0),
+    "full_body_jumping_jack": ("per_frame", 1),
+    "full_body_burpee": ("per_frame", 1),
+    "full_body_squat": ("per_frame", 1),
+    "full_body_lunge": ("per_frame", 1),
+    "full_body_single_leg_balance": ("per_frame", 1),
+    "full_body_sit_up": ("per_frame", 1),
+    "full_body_crawl": ("per_frame", 1),
+    "full_body_push_up": ("per_frame", 1),
+    "full_body_dance": ("per_frame", 1),
+    "full_body_cartwheel": ("per_frame", 1),
+    "full_body_floor_roll": ("per_frame", 1),
+    "full_body_obstacle_over": ("per_frame", 1),
+    "full_body_obstacle_around": ("per_frame", 1),
+    "full_body_plank": ("per_frame", 1),
+    "full_body_lie_supine": ("per_frame", 1),
+    "full_body_kick": ("per_frame", 1),
+    "full_body_turn": ("per_frame", 1),
+    "full_body_run": ("per_frame", 1),
+    "full_body_crouch": ("per_frame", 1),
+    "strike_shake_echo": ("none", 0),
+}
+
+
 @pytest.mark.parametrize("case_id", CASE_IDS)
 def test_forward_kinematics_is_evaluated_once_per_frame(case_id: str) -> None:
     """The invariant ``AnalysisContext`` exists to provide, asserted structurally.
 
-    Every check that needs world positions reads ``ctx.world_positions``, a
-    cached property, so the per-frame position pass runs once no matter how
-    many checks there are. A check that calls ``canonical_positions`` itself
-    instead adds a whole second pass, and that is the specific regression the
-    wall-clock bound below was really protecting against. Writing this test
-    found three checks already doing it — semantic cycle, parallel forearm and
-    intra-hand contact — worth ~40% of the whole-body path and ~70% of
-    composite travel.
+    Every check that needs world data reads it from the context, so the per-frame
+    hierarchy pass runs once no matter how many checks there are. A check that
+    evaluates the hierarchy itself instead adds a whole second pass, and that is
+    the specific regression the wall-clock bound below was really protecting
+    against. Writing this test found three checks already doing it — semantic
+    cycle, parallel forearm and intra-hand contact — worth ~40% of the whole-body
+    path and ~70% of composite travel.
 
-    Scoped to ``canonical_positions`` deliberately. ``fingertip_positions`` and
-    ``canonical_world_rotation`` also evaluate the hierarchy, but they return
-    data the position cache does not hold — leaf pivots and 3x3 rotations — and
-    their call count is bounded by contact events rather than by frames.
-    Folding all three onto one shared per-frame matrix evaluation is the
-    vectorisation plan 02 §5 already names, and it belongs there rather than
-    in a move.
+    Counted at ``RigKinematics.world_matrices``, which is the single funnel: it is
+    the only place the hierarchy is actually walked, and ``canonical_positions``,
+    ``fingertip_positions``, ``canonical_world_rotation``, ``solve_leg`` and
+    ``solve_arm`` all go through it. Counting a level up — at
+    ``canonical_positions``, as this test used to — leaves a hole: a check that
+    reaches for ``canonical_world_rotation`` or ``fingertip_positions`` per frame
+    doubles the forward-kinematics work while the guard stays green, because
+    those two call ``world_matrices`` directly. The other three accessors are
+    still counted, but only as diagnostics, so a failure can name the route that
+    caused the excess.
 
-    This says the same thing without a stopwatch. It has no platform exposure,
-    it fails for the right reason, and it names the function to fix. That
-    matters because the timing bound's headroom turns out to be thin: the
-    heaviest path is ~72 ms locally against a 300 ms bound, and the only
-    cross-platform anchor anyone has measured is a whole-suite 4.2x on Windows
-    CI, which would put it at ~305 ms. A guard whose usable band is under 3x
-    wide is a bet dressed as a test, so the bet is confined to the machine it
-    was measured on and the structural claim runs everywhere.
+    The assertion is an equality against :data:`_FK_SHAPES`, not an upper bound.
+    An upper bound of one pass per clip frame is vacuous on every path that
+    samples a subset of frames, and those are most of them: it left 178 free
+    passes on the sequence case and 130 on the object case, so a doubling there
+    was invisible. Equality catches a doubling on every path, and catches lost
+    coverage too.
+
+    This says the same thing without a stopwatch. It has no platform exposure, it
+    fails for the right reason, and it names the function to fix. That matters
+    because the timing bound's headroom turns out to be thin: the heaviest path is
+    ~72 ms locally against a 300 ms bound, and the only cross-platform anchor
+    anyone has measured is a whole-suite 4.2x on Windows CI, which would put it at
+    ~305 ms. A guard whose usable band is under 3x wide is a bet dressed as a
+    test, so the bet is confined to the machine it was measured on and the
+    structural claim runs everywhere.
     """
 
     case = _load_case(case_id)
     scene, program, clip = _compile_case(case)
 
-    evaluations = 0
-    original = RigKinematics.canonical_positions
+    counts = {
+        "world_matrices": 0,
+        "canonical_positions": 0,
+        "fingertip_positions": 0,
+        "canonical_world_rotation": 0,
+    }
+    originals = {name: getattr(RigKinematics, name) for name in counts}
 
-    def counting(self: RigKinematics, bones: object) -> object:
-        nonlocal evaluations
-        evaluations += 1
-        return original(self, bones)
+    def counter(name: str) -> Callable[..., object]:
+        original = originals[name]
 
-    RigKinematics.canonical_positions = counting  # type: ignore[method-assign]
+        def counting(self: RigKinematics, *args: object, **kwargs: object) -> object:
+            counts[name] += 1
+            return original(self, *args, **kwargs)
+
+        return counting
+
+    for name in counts:
+        setattr(RigKinematics, name, counter(name))
     try:
         analysis.analyze(clip, program, scene)
     finally:
-        RigKinematics.canonical_positions = original  # type: ignore[method-assign]
+        for name, original in originals.items():
+            setattr(RigKinematics, name, original)
 
-    # One per frame, plus one for the neutral pose the ground plane needs.
-    assert evaluations <= len(clip.frames) + 1, (
-        f"{case_id}: {evaluations} world-position passes for "
-        f"{len(clip.frames)} frames. A check is recomputing forward kinematics "
-        "instead of reading AnalysisContext.world_positions."
-    )
+    shape, count = _FK_SHAPES[case_id]
+    expected = count if shape in {"none", "windowed"} else len(clip.frames) + count
+    routes = ", ".join(f"{name}={counts[name]}" for name in sorted(counts))
+    assert counts["world_matrices"] == expected, (
+        f"{case_id}: {counts['world_matrices']} forward-kinematics passes for "
+        f"{len(clip.frames)} frames, expected {expected} ({shape}). More means a "
+        "check is evaluating the hierarchy instead of reading AnalysisContext; "
+        "fewer means coverage went away. Routes: {routes}."
+    ).replace("{routes}", routes)
 
 
 @exact_snapshot

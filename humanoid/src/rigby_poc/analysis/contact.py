@@ -13,6 +13,7 @@ import numpy as np
 
 from ..kinematics import rig_kinematics
 from ..models import ClipFrame, MotionProgram
+from .context import AnalysisContext
 from .contract import (
     ANATOMY,
     CONTRACT,
@@ -29,8 +30,22 @@ def intra_hand_contact_metrics(
     phase_ranges: list[dict[str, float | str]],
     program: MotionProgram,
     *,
-    world_positions: list[dict[str, np.ndarray]] | None = None,
+    ctx: AnalysisContext | None = None,
 ) -> dict[str, Any]:
+    """Fingertip-contact and gaze metrics for one clip.
+
+    Pass ``ctx`` — whose ``frames`` must be the ``frames`` argument — and every
+    world quantity is sliced out of that frame's single forward-kinematics
+    evaluation, shared with every other check. Without it the hierarchy is
+    walked here instead, once per contact-phase frame for the fingertips and
+    once per gaze frame for the head rotation: the same values, at roughly one
+    extra full pass each.
+
+    The rest-head rotation below is deliberately *not* served from the context.
+    It is taken at the identity pose, which is not a clip frame, so there is no
+    frame index to cache it under.
+    """
+
     contacts = [
         primitive
         for primitive in program.primitives
@@ -47,28 +62,34 @@ def intra_hand_contact_metrics(
         str(item.get("label")): (float(item["start_s"]), float(item["end_s"]))
         for item in phase_ranges
     }
-    kinematics = rig_kinematics()
+    kinematics = ctx.kinematics if ctx is not None else rig_kinematics()
     contact_records: list[dict[str, Any]] = []
     observed_order: list[str] = []
     release_separations: list[float] = []
+
+    def fingertips(index: int, hand: str) -> dict[str, np.ndarray]:
+        if ctx is not None:
+            return ctx.fingertip_positions(index, hand)
+        return kinematics.fingertip_positions(frames[index].bones, hand)
 
     for primitive in contacts:
         contact = primitive.intra_hand_contact
         assert contact is not None
         interval = ranges.get(primitive.label or "")
-        phase_frames = (
+        # Indices, not frames: the same interval predicate to the same
+        # tolerance, but the index is what addresses the shared per-frame cache.
+        phase_indices = (
             [
-                frame
-                for frame in frames
-                if interval is not None
-                and interval[0] - 1e-8 <= frame.time_s <= interval[1] + 1e-8
+                index
+                for index, frame in enumerate(frames)
+                if interval[0] - 1e-8 <= frame.time_s <= interval[1] + 1e-8
             ]
             if interval is not None
             else []
         )
-        closest: tuple[float, ClipFrame, dict[str, np.ndarray]] | None = None
-        for frame in phase_frames:
-            tips = kinematics.fingertip_positions(frame.bones, contact.hand.value)
+        closest: tuple[float, int, dict[str, np.ndarray]] | None = None
+        for index in phase_indices:
+            tips = fingertips(index, contact.hand.value)
             distance = float(
                 np.linalg.norm(
                     tips[contact.driver_digit.value]
@@ -76,7 +97,7 @@ def intra_hand_contact_metrics(
                 )
             )
             if closest is None or distance < closest[0]:
-                closest = (distance, frame, tips)
+                closest = (distance, index, tips)
         minimum_distance = closest[0] if closest is not None else float("inf")
         non_target_distance = (
             min(
@@ -109,7 +130,9 @@ def intra_hand_contact_metrics(
                 "minimum_distance_m": minimum_distance,
                 "maximum_distance_m": contact.maximum_distance_m,
                 "nearest_other_fingertip_m": non_target_distance,
-                "contact_time_s": closest[1].time_s if closest is not None else None,
+                "contact_time_s": (
+                    frames[closest[1]].time_s if closest is not None else None
+                ),
                 "passed": passed,
             }
         )
@@ -117,14 +140,11 @@ def intra_hand_contact_metrics(
         release_label = (primitive.label or "").replace("_touch_", "_release_", 1)
         release_interval = ranges.get(release_label)
         if release_interval is not None:
-            release_frame = min(
-                frames,
-                key=lambda frame: abs(frame.time_s - release_interval[1]),
+            release_index = min(
+                range(len(frames)),
+                key=lambda item: abs(frames[item].time_s - release_interval[1]),
             )
-            release_tips = kinematics.fingertip_positions(
-                release_frame.bones,
-                contact.hand.value,
-            )
+            release_tips = fingertips(release_index, contact.hand.value)
             release_separations.append(
                 float(
                     np.linalg.norm(
@@ -134,7 +154,14 @@ def intra_hand_contact_metrics(
                 )
             )
 
-    rest_head_rotation = kinematics.canonical_world_rotation(identity_bones(), "head")
+    # Shared with the visibility sampler's ego camera through the context: the
+    # identity pose has no frame index to memoise under, so without one owner
+    # the two would evaluate the same rest hierarchy twice per composite clip.
+    rest_head_rotation = (
+        ctx.rest_head_transform[1]
+        if ctx is not None
+        else kinematics.canonical_world_rotation(identity_bones(), "head")
+    )
     gaze_records: list[dict[str, Any]] = []
     for primitive in gaze_primitives:
         gaze = primitive.gaze_target
@@ -148,8 +175,8 @@ def intra_hand_contact_metrics(
         )
         frame = frames[index]
         positions = (
-            world_positions[index]
-            if world_positions is not None
+            ctx.world_positions[index]
+            if ctx is not None
             else kinematics.canonical_positions(frame.bones)
         )
         if gaze.hand is not None:
@@ -159,7 +186,11 @@ def intra_hand_contact_metrics(
             if transform is None:
                 continue
             target = np.asarray(transform.translation.as_list(), dtype=float)
-        head_rotation = kinematics.canonical_world_rotation(frame.bones, "head")
+        head_rotation = (
+            ctx.world_rotation(index, "head")
+            if ctx is not None
+            else kinematics.canonical_world_rotation(frame.bones, "head")
+        )
         head_delta = head_rotation @ rest_head_rotation.T
         forward = head_delta @ EGO_NEUTRAL_GAZE
         direction = target - positions["head"]

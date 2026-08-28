@@ -4,6 +4,7 @@ import math
 
 import numpy as np
 import pytest
+from scipy.spatial.transform import Rotation
 
 from evals.capture import phase_sampling_points
 from evals.flywheel import (
@@ -16,9 +17,21 @@ from evals.flywheel import (
     select_diverse_candidate_batch,
     single_sample_baseline_index,
 )
+from rigby_poc.analysis.gesture import (
+    arm_landmarks,
+)
+from rigby_poc.analysis.rig import identity_bones
 from rigby_poc.compiler import compile_motion
 from rigby_poc.kinematics import rig_kinematics
-from rigby_poc.models import CompileRequest, Hand, Intent, PlanRequest, PrimitiveKind, default_scene
+from rigby_poc.models import (
+    ClipFrame,
+    CompileRequest,
+    Hand,
+    Intent,
+    PlanRequest,
+    PrimitiveKind,
+    default_scene,
+)
 from rigby_poc.planner import plan_motion
 
 #: compiles, corpus, pipeline or subprocess -- see docs/testing.md
@@ -72,12 +85,11 @@ def test_left_hook_compiles_as_visible_curved_bent_elbow_motion() -> None:
     assert clip.metrics["structural_valid"] is True
     assert clip.metrics["active_hand_visibility_fraction"] == 1.0
     assert clip.metrics["self_collision_frames"] == 0
-    # The `strike_*_excursion` metrics are computed from `arm_landmarks`,
-    # which reconstructs the arm from a fixed rest shoulder and cannot see the
-    # trunk, so since the trunk began carrying part of the swing they describe
-    # the arm's motion relative to the chest, not through the world. The
-    # world-path claim in this test's name is asserted below via full FK; the
-    # trunk-frame arc is still pinned as non-degenerate.
+    # The `strike_*_excursion` metrics are read from the rig's own world
+    # shoulder/elbow/wrist pivots, so they describe the path the wrist travels
+    # through the world -- including the part of the swing the trunk carries.
+    # The independent full-FK block below pins that equivalence rather than
+    # merely restating it.
     assert clip.metrics["strike_wrist_path_length_m"] > 0.20
     assert clip.metrics["strike_lateral_excursion_m"] > 0.08
     assert 70.0 <= clip.metrics["impact_elbow_angle_deg"] <= 120.0
@@ -106,6 +118,12 @@ def test_left_hook_compiles_as_visible_curved_bent_elbow_motion() -> None:
     world_lateral_m = float(max(w[0] for w in wrists) - min(w[0] for w in wrists))
     assert world_path_m > 0.25
     assert world_lateral_m > 0.20
+    # The metrics ARE this world path: `hand_metrics` reads the same pivots out
+    # of the same forward kinematics. Pinning the equivalence here is what keeps
+    # the excursions from silently drifting back into the chest frame, where
+    # they measured the arm relative to a torso that is itself turning.
+    assert clip.metrics["strike_wrist_path_length_m"] == pytest.approx(world_path_m, rel=1e-12)
+    assert clip.metrics["strike_lateral_excursion_m"] == pytest.approx(world_lateral_m, rel=1e-12)
     # The trunk throws the hook with the arm: the chest visibly rotates
     # through the swing. This is the vocabulary this change adds; losing it
     # regresses the hook back to an arm-only punch.
@@ -200,3 +218,27 @@ def test_strike_evidence_samples_guard_arc_impact_follow_through_and_recovery() 
         "follow_through_late",
         "recover_end",
     } <= labels
+
+
+def test_the_rig_hand_block_carries_the_same_axes_the_visibility_check_reads() -> None:
+    """Licenses reading ``hand_world`` straight off the world matrix.
+
+    ``_full_hand_visible`` treats the hand rotation's local +Y as the finger
+    axis and +X as the palm axis. Those are the reconstruction's conventions, so
+    substituting the source rig's own hand block is only sound if the two agree.
+    They do, at the rest pose, to well under a microradian -- no re-basing onto
+    the rest quaternions is needed. If this ever fails, the world-true visibility
+    sampler is measuring a hand span about the wrong axes.
+    """
+
+    kinematics = rig_kinematics()
+    bones = identity_bones()
+    frame = ClipFrame(time_s=0.0, bones=bones)
+    matrices = kinematics.world_matrices(bones)
+
+    for hand in (Hand.LEFT, Hand.RIGHT):
+        _, _, _, reconstructed = arm_landmarks(frame, hand)
+        block = matrices[kinematics.node_by_canonical[f"{hand.value}Hand"]][:3, :3]
+        from_rig = Rotation.from_matrix(block)
+
+        assert (reconstructed.inv() * from_rig).magnitude() < 1e-6, hand

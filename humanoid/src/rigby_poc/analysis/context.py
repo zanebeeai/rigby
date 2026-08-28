@@ -13,7 +13,7 @@ from typing import Any
 
 import numpy as np
 
-from ..kinematics import RigKinematics, rig_kinematics
+from ..kinematics import FINGERTIP_SOURCE_STEMS, RigKinematics, rig_kinematics
 from ..models import (
     ClipFrame,
     ClipResult,
@@ -25,6 +25,7 @@ from ..models import (
     SceneManifest,
     Transform,
 )
+from .rig import identity_bones
 
 # Phase kinds whose interval counts as an active presentation, per intent.
 # ``compile_motion`` appends exactly these while it emits frames; reading them
@@ -88,6 +89,7 @@ class AnalysisContext:
         self.scene = scene
         self.carried_metrics: Mapping[str, Any] = carried_metrics or {}
         self.kinematics = kinematics or rig_kinematics()
+        self._world_matrices: dict[int, list[np.ndarray]] = {}
 
     @classmethod
     def from_clip(
@@ -200,10 +202,90 @@ class AnalysisContext:
             if item.get("kind") in kinds
         ]
 
+    def world_matrices(self, index: int) -> list[np.ndarray]:
+        """Every node's world matrix for one frame, evaluated at most once.
+
+        The single forward-kinematics evaluation for this frame. Positions,
+        rotations and fingertip pivots are all slices of it, so a check that
+        needs an orientation costs no pass of its own — before this, a check
+        wanting a world *rotation* had to call
+        :meth:`RigKinematics.canonical_world_rotation`, which walks the whole
+        hierarchy again for one 3x3 block.
+
+        Memoised lazily rather than filled eagerly for every frame: the strike,
+        gesture, grab, object and sequence paths evaluate no forward kinematics
+        at all today, and the checks that want orientations want them over a
+        phase window, not the whole clip. An eager list would charge every one
+        of those paths a full pass per frame whether or not anything reads it.
+
+        The memo lives here and not on :class:`RigKinematics` because this
+        object's lifetime is one clip and ``self.frames`` is already a snapshot.
+        ``rig_kinematics()`` is process-wide and its ``lru_cache`` carries a
+        load-bearing provenance contract, so it must not grow a per-pose memo.
+
+        Returned unowned: the list and its matrices are the cache itself, so a
+        caller keeping a slice copies it, exactly as ``kinematics`` does.
+        """
+
+        cached = self._world_matrices.get(index)
+        if cached is None:
+            cached = self.kinematics.world_matrices(self.frames[index].bones)
+            self._world_matrices[index] = cached
+        return cached
+
+    def world_rotation(self, index: int, canonical: str) -> np.ndarray:
+        """One canonical bone's world rotation, sliced from the frame's one pass."""
+
+        node = self.kinematics.node_by_canonical[canonical]
+        return self.world_matrices(index)[node][:3, :3].copy()
+
+    def fingertip_positions(self, index: int, hand: str) -> dict[str, np.ndarray]:
+        """The five fingertip pivots of one hand, sliced from the frame's one pass."""
+
+        if hand not in {"left", "right"}:
+            raise ValueError("hand must be left or right")
+        suffix = "l" if hand == "left" else "r"
+        matrices = self.world_matrices(index)
+        node_by_name = self.kinematics.node_by_name
+        return {
+            digit: matrices[node_by_name[f"{stem}_{suffix}"]][:3, 3].copy()
+            for digit, stem in FINGERTIP_SOURCE_STEMS.items()
+        }
+
+    @cached_property
+    def rest_head_transform(self) -> tuple[np.ndarray, np.ndarray]:
+        """The head's world position and rotation at the identity pose.
+
+        The datum every head-carried quantity is measured against: the ego
+        camera's eye offset is the rest camera position minus this position, and
+        a frame's head delta is its head rotation times this rotation's
+        transpose. Both the gaze check and the visibility sampler need it, so it
+        is derived once here rather than twice.
+
+        The identity pose is not a clip frame, so it has no index to memoise
+        under in :meth:`world_matrices`; it is one of the two non-frame
+        evaluations the forward-kinematics guard allows per clip.
+        """
+
+        matrix = self.kinematics.world_matrices(identity_bones())[
+            self.kinematics.node_by_canonical["head"]
+        ]
+        return matrix[:3, 3].copy(), matrix[:3, :3].copy()
+
     @cached_property
     def world_positions(self) -> list[dict[str, np.ndarray]]:
+        # The slice arithmetic is character-identical to
+        # ``RigKinematics.canonical_positions`` on purpose. These positions feed
+        # every full-body and composite metric, so a last-ulp drift here moves
+        # their corpus digests; taking the same slice of the same deterministic
+        # matrices keeps the values bit-identical, which recomputing them any
+        # other way would not.
         return [
-            self.kinematics.canonical_positions(frame.bones) for frame in self.frames
+            {
+                canonical: self.world_matrices(index)[node_index][:3, 3].copy()
+                for canonical, node_index in self.kinematics.node_by_canonical.items()
+            }
+            for index in range(len(self.frames))
         ]
 
     @cached_property

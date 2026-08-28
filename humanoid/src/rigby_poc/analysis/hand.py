@@ -33,9 +33,9 @@ from ..primitives import forearm_shake_amplitude_rad
 from .context import AnalysisContext
 from .fingers import curl_values_from_frame as _curl_values_from_frame
 from .gesture import (
-    arm_landmarks,
     evaluate_gesture_structure,
     shake_joint_oscillation_metrics,
+    world_arm_landmarks,
 )
 from .safety import safety_metrics as _safety_metrics
 
@@ -149,7 +149,14 @@ def hand_metrics(ctx: AnalysisContext) -> dict[str, Any]:
         metrics["shake_duration_s"] = shake_params.duration_s
     metrics.update(_safety_metrics(frames))
     if program.intent in {Intent.GESTURE, Intent.STRIKE}:
-        structure = evaluate_gesture_structure(frames, program.hand, presentation_ranges)
+        structure = evaluate_gesture_structure(
+            frames,
+            program.hand,
+            presentation_ranges,
+            # Not `final_shape`: this path has never passed a hand shape, and
+            # doing so now would widen the sampled finger/palm spans on every
+            # gesture and strike clip. Only the world data changes here.
+        )
         metrics.update(structure)
         if program.intent == Intent.GESTURE:
             shake_ranges = [
@@ -168,16 +175,16 @@ def hand_metrics(ctx: AnalysisContext) -> dict[str, Any]:
                 ),
                 None,
             )
-            strike_frames = (
-                [
-                    frame
-                    for frame in frames
-                    if strike_range[0] - 1e-8 <= frame.time_s <= strike_range[1] + 1e-8
-                ]
-                if strike_range is not None
-                else []
-            )
-            landmarks = [arm_landmarks(frame, program.hand) for frame in strike_frames]
+            # Measured in world, not in the chest frame: the trunk carries part
+            # of every punch now, so ``arm_landmarks`` -- which rebuilds the arm
+            # from a fixed rest shoulder -- would report the swing relative to a
+            # torso that is itself turning. ``ctx.indices_in`` applies the same
+            # 1e-8 interval predicate the frame filter used, so the frame set is
+            # unchanged.
+            strike_indices = ctx.indices_in([strike_range]) if strike_range is not None else []
+            landmarks = [
+                world_arm_landmarks(ctx, index, program.hand) for index in strike_indices
+            ]
             wrists = [item[2] for item in landmarks]
             metrics["strike_wrist_path_length_m"] = float(
                 sum(np.linalg.norm(second - first) for first, second in zip(wrists, wrists[1:]))
