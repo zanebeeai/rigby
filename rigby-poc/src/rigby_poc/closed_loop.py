@@ -341,6 +341,16 @@ def observe(
     position = true_position if seen else (
         remembered if remembered is not None else true_position
     )
+    # The angle to the BELIEVED position, not the true one. Reporting the true
+    # off-axis angle while the object is out of view hands the body a bearing to
+    # something it cannot see -- ground truth leaking in through the one field
+    # whose whole purpose is to say whether the truth is available. A head knows
+    # where it is pointing and where it last saw something; it does not know
+    # where an unseen thing has moved to.
+    believed_off_axis = (
+        off_axis if seen or not bones
+        else float(gaze_error_deg(bones, position))
+    )
     reading = sense(bones, hand, position, contact_force_n, opposed, time_s,
                     object_velocity, hand_velocity,
                     object_half_m=object_half_m)
@@ -352,9 +362,21 @@ def observe(
         contact_force_n=reading.contact_force_n,
         opposed=reading.opposed,
         time_s=reading.time_s,
-        object_velocity=reading.object_velocity,
+        # An unseen object has no measurable velocity. Motion is read BETWEEN
+        # observations, so when there are no observations there is no reading --
+        # only the memory of where it was, which is already object_position.
+        object_velocity=(
+            reading.object_velocity if seen else np.zeros(3)
+        ),
         hand_velocity=reading.hand_velocity,
-        gaze_error_deg=float(off_axis),
+        gaze_error_deg=believed_off_axis,
+        # Carried through. It was being dropped here, so every closed-loop
+        # reading fell back to the default half-extents of 3 x 4 x 3 cm --
+        # which happen to match the authored block exactly, so nothing looked
+        # wrong until the object was a different size. That is why the
+        # robustness sweep failed on the 4 cm and 8 cm blocks: the hand was
+        # sizing its grip to a block that was not there.
+        object_half_m=reading.object_half_m,
         in_view=bool(seen),
     )
 
