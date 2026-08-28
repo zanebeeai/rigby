@@ -1851,6 +1851,10 @@ class SuperPrimitiveSelector:
 
     hand: Hand
     magnitudes: tuple[float, ...] = (0.15, 0.3, 0.5, 0.7, 0.85, 1.0)
+    #: Controls the search may touch, empty meaning all of them plus the whole
+    #: atomic layer. Set by whatever is driving -- a model that has decided this
+    #: is a thumb problem, or a caller that wants an affordable run.
+    shortlist: tuple[str, ...] = ()
 
     def choose(self, sensing: Sensing, step: Step) -> tuple[str, float, dict[str, Any]]:
         """The best action available, at either granularity.
@@ -1894,30 +1898,85 @@ class SuperPrimitiveSelector:
             if value < best[0]:
                 best = (value, name, amount, rotations)
 
-        for primitive in super_primitives(self.hand):
-            if not (set(primitive.parts) & set(step.active_parts)):
-                continue
-            for amount in self.magnitudes:
+        names = tuple(self.shortlist) or tuple(step.allows)
+        for name, amount, rotations in _candidates(
+            sensing, self.hand, names, self.magnitudes, tuple(step.active_parts)
+        ):
+            consider(name, amount, rotations)
+
+        # The atomic layer is swept only when nothing has narrowed the search.
+        # It is 314 moves at six magnitudes, and scoring all of them is most of
+        # what a frame costs.
+        if not names:
+            for part in step.active_parts:
                 try:
-                    consider(primitive.name, amount,
-                             primitive.solve(sensing, self.hand, amount))
+                    available = moves_for(part)
                 except Exception:
                     continue
-
-        # The atomic layer, still on the menu.
-        for part in step.active_parts:
-            try:
-                available = moves_for(part)
-            except Exception:
-                continue
-            for move in available:
-                for amount in self.magnitudes:
-                    try:
-                        consider(f"{part}:{move}", amount,
-                                 move_rotations(part, move, amount))
-                    except Exception:
-                        continue
+                for move in available:
+                    for amount in self.magnitudes:
+                        try:
+                            consider(f"{part}:{move}", amount,
+                                     move_rotations(part, move, amount))
+                        except Exception:
+                            continue
         return best[1], best[2], best[3]
+
+
+def _candidates(
+    sensing: "Sensing",
+    hand: Hand,
+    names: tuple[str, ...],
+    magnitudes: tuple[float, ...],
+    parts: tuple[str, ...] = (),
+):
+    """Every (name, amount, rotations) the search is allowed to score.
+
+    ``names`` is the shortlist. Empty means the whole vocabulary, which is what
+    made the search cost what it does: 22 super primitives at six magnitudes is
+    132 trials, but the per-part layer under them is 314 moves, and sweeping
+    both is around two thousand full-body kinematics probes for every frame --
+    measured at 17 seconds per decision, 270 seconds of compute per second of
+    clip.
+
+    Almost all of that is wasted. At any given moment a handful of controls
+    could plausibly help and the rest are being scored to prove they do not:
+    the search rediscovers, thirty times a second, that curling the little
+    finger does not bring the hand closer to the block.
+
+    Naming the shortlist is the half a model is good at -- it knows a thumb
+    problem from a reach problem -- and driving the chosen number is the half
+    it is bad at and the search is good at. So the model narrows, and the
+    search still decides which of the survivors wins and by how much.
+
+    A name is either a super primitive or an atomic "part:move".
+    """
+    wanted = set(names)
+    for primitive in super_primitives(hand):
+        if wanted and primitive.name not in wanted:
+            continue
+        if parts and not (set(primitive.parts) & set(parts)):
+            continue
+        for amount in magnitudes:
+            try:
+                rotations = primitive.solve(sensing, hand, amount)
+            except Exception:  # noqa: BLE001
+                continue
+            if rotations:
+                yield primitive.name, amount, rotations
+    # The atomic layer is on the menu only when asked for by name. Sweeping it
+    # is what costs; a model that wants one joint moved can still say so.
+    for name in sorted(n for n in wanted if ":" in n):
+        part, _, move = name.partition(":")
+        if parts and part not in parts:
+            continue
+        for amount in magnitudes:
+            try:
+                rotations = move_rotations(part, move, amount)
+            except Exception:  # noqa: BLE001
+                continue
+            if rotations:
+                yield name, amount, rotations
 
 
 def candidate_moves(step: Step) -> dict[str, tuple[str, ...]]:
@@ -1982,6 +2041,10 @@ class NumericTarget:
     metric: str
     value: float
     set_at_s: float = 0.0
+    #: Which controls may be used to reach it. The model names these alongside
+    #: the number, because "make the thumb oppose the index" is two statements:
+    #: what should become true, and which part of the body is meant to do it.
+    using: tuple[str, ...] = ()
 
     def error(self, sensing: Sensing, hand: Hand) -> float:
         _register_metrics()
@@ -1994,7 +2057,8 @@ class NumericTarget:
             return 0.0
 
     def to_dict(self) -> dict[str, Any]:
-        return {"metric": self.metric, "value": self.value}
+        return {"metric": self.metric, "value": self.value,
+                "using": list(self.using)}
 
 
 def pursue_target(
@@ -2003,32 +2067,28 @@ def pursue_target(
     target: NumericTarget,
     magnitudes: tuple[float, ...] = (0.15, 0.3, 0.5, 0.7, 0.85, 1.0),
 ) -> tuple[str, float, dict[str, Any]]:
-    """The greedy half: whichever primitive moves the number closest to target.
+    """The greedy half: whichever control moves the number closest to target.
 
-    Every primitive at every magnitude, scored only by the named metric. This is
-    the search the model cannot do and does not need to: it has already said
-    what the number should be.
+    Scored only by the named metric, over whichever controls the target allows.
+    This is the search the model cannot do and does not need to: it has already
+    said what the number should be, and which controls are meant to get it
+    there.
     """
     here = target.error(sensing, hand)
     best: tuple[float, str, float, dict[str, Any]] = (here, "hold", 0.0, {})
-    for primitive in super_primitives(hand):
-        for amount in magnitudes:
-            try:
-                rotations = primitive.solve(sensing, hand, amount)
-            except Exception:  # noqa: BLE001
-                continue
-            if not rotations:
-                continue
-            trial = dict(sensing.bones)
-            for bone, rotation in rotations.items():
-                trial[bone] = BonePose(rotation=rotation)
-            probe = sense(
-                trial, hand, sensing.object_position, sensing.contact_force_n,
-                sensing.opposed, sensing.time_s,
-            )
-            value = target.error(probe, hand)
-            if value < best[0] - 1e-6:
-                best = (value, primitive.name, amount, rotations)
+    for name, amount, rotations in _candidates(
+        sensing, hand, tuple(target.using), magnitudes
+    ):
+        trial = dict(sensing.bones)
+        for bone, rotation in rotations.items():
+            trial[bone] = BonePose(rotation=rotation)
+        probe = sense(
+            trial, hand, sensing.object_position, sensing.contact_force_n,
+            sensing.opposed, sensing.time_s,
+        )
+        value = target.error(probe, hand)
+        if value < best[0] - 1e-6:
+            best = (value, name, amount, rotations)
     return best[1], best[2], best[3]
 
 

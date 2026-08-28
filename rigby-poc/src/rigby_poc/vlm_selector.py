@@ -81,6 +81,25 @@ when it turns out to be wrong -- you wrote it without seeing the scene.
 
 The only thing required of you is the task itself. You will be asked again in a second.
 
+Setting a number: reply with "target" (a metric name), "value" (the number you want), and \
+"using" -- the list of controls the search may touch to get there. You are not choosing the \
+control or the magnitude; the search tries each one you name, thirty times a second, and keeps \
+whichever moves the number closest. You are saying which part of the body the problem is in.
+
+Name three to six. "using" may hold any action on the menu, and also single joints written \
+"<part>:<move>" when one finger needs adjusting rather than a whole hand re-shaped.
+
+Leaving "using" out makes the search try every control it has, which takes seventeen seconds \
+per decision -- most of it spent confirming that the little finger does not help. A shortlist \
+that turns out to be the wrong part of the body costs you one decision; you will see the number \
+fail to move and can name different controls.
+
+You are not asked on a clock while a number is being driven. The search reports back when it \
+is finished with it, and that is when you are woken. "woke_because" says which happened: \
+"reached" -- the number arrived, so inspect the result and set the next one; "stuck" -- the \
+number stopped moving, so the controls you named are not the ones that move it, or the number \
+was the wrong thing to ask for. Say what you now think and set a different target.
+
 Rules that matter more than they look:
 
 A grasp needs the THUMB loaded against at least one FINGER, on opposite faces of the object. \
@@ -357,6 +376,7 @@ class VLMSelector:
                 float(np.linalg.norm(sensing.hand_velocity)), 3
             ),
             "scene": self.scene_context,
+            "woke_because": self.last_wake,
             "your_plan": self.own_plan,
             "your_step": self.own_step,
             "active_target": (
@@ -409,12 +429,18 @@ class VLMSelector:
         # A target is a standing instruction, not one move.
         metric = parsed.get("target") or parsed.get("metric")
         if metric:
+            # Which controls the search may touch while chasing the number.
+            # Without it the search sweeps two thousand candidates a frame to
+            # rediscover that the little finger is not the answer.
+            using = parsed.get("using") or parsed.get("with") or []
+            self.pending_using = tuple(str(u) for u in using if isinstance(u, str))
             self.transcript.append({
                 "time_s": round(sensing.time_s, 2),
                 "saw_image": image is not None,
                 "situation": situation,
                 "target": str(metric),
                 "value": float(parsed.get("value", 0.0)),
+                "using": list(self.pending_using),
                 "why": parsed.get("reason") or parsed.get("why"),
             })
             return f"target:{metric}", float(parsed.get("value", 0.0))
@@ -455,12 +481,72 @@ class VLMSelector:
             return 0.5
         return 0.25
 
+    #: How close to the number counts as arrived. Metres are held tighter than
+    #: unit-scale metrics because a centimetre matters and 0.05 of a dot
+    #: product does not.
+    def _tolerance(self, metric: str) -> float:
+        return 0.01 if metric.endswith("_m") else 0.05
+
+    def _target_settled(self, sensing: Sensing) -> str | None:
+        """Whether the search is done with the standing number, and why.
+
+        A clock is the wrong thing to ask the model on. Mid-pursuit the answer
+        is always "keep going", and the call is spent confirming it; the moment
+        that actually needs a decision is the one the clock cannot see -- the
+        number arrived, or stopped moving. So the search reports back instead.
+
+        Returns "reached", "stuck", or None to keep pursuing.
+        """
+        target = self.active_target
+        if target is None:
+            return None
+        from .closed_loop import NumericTarget  # noqa: F401
+
+        error = target.error(sensing, self.hand)
+        if error <= self._tolerance(target.metric):
+            return "reached"
+        if error < self._best_error - 1e-3:
+            self._best_error, self._since_gain = error, 0
+        else:
+            self._since_gain += 1
+        # About a second and a half at frame rate: long enough for a slow
+        # approach, short enough not to spend the run pushing a number that has
+        # stopped answering.
+        return "stuck" if self._since_gain >= 45 else None
+
+    #: Progress of the standing number, for deciding when to wake the model.
+    _best_error: float = field(default=float("inf"), repr=False)
+    _since_gain: int = field(default=0, repr=False)
+    #: Why the model was last woken, shown to it so it knows what happened.
+    last_wake: str = ""
+
     def choose(self, sensing: Sensing, step: Step) -> tuple[str, float, dict[str, Any]]:
         """The loop's interface. Asks the model when the moment warrants it."""
         if self.calls >= self.max_calls:
             return (self._held or ("hold", 0.0))[0], 0.0, {}
+        settled = self._target_settled(sensing)
         period = min(self.period_s, self.cadence_for(sensing))
-        if self._held is None or sensing.time_s - self._decided_at >= period:
+        elapsed = sensing.time_s - self._decided_at
+        if self.active_target is not None:
+            # While a number is being driven the model is not asked on a timer.
+            # It is asked when the search has finished with it -- arrived, or
+            # gone as far as it can -- which is the only moment its answer can
+            # differ from the one already standing. The long ceiling is a
+            # backstop for a metric that drifts without ever settling.
+            due = settled is not None or elapsed >= max(period, 6.0)
+        else:
+            due = self._held is None or elapsed >= period
+        if due:
+            self.last_wake = settled or ("first" if self._held is None else "timer")
+            if settled is not None:
+                self.transcript.append({
+                    "time_s": round(sensing.time_s, 2),
+                    "target_done": self.active_target.metric,
+                    "outcome": settled,
+                    "error": round(self._best_error, 4),
+                })
+                self.active_target = None
+                self._best_error, self._since_gain = float("inf"), 0
             try:
                 action, amount = self.decide(sensing, step, self.pending_image)
             except Exception as error:  # noqa: BLE001
@@ -477,7 +563,12 @@ class VLMSelector:
         if action.startswith("target:"):
             from .closed_loop import NumericTarget, pursue_target
 
-            target = NumericTarget(action.split(":", 1)[1], amount, sensing.time_s)
+            target = NumericTarget(action.split(":", 1)[1], amount, sensing.time_s,
+                                   using=tuple(self.pending_using))
+            if (self.active_target is None
+                    or self.active_target.metric != target.metric
+                    or self.active_target.value != target.value):
+                self._best_error, self._since_gain = float("inf"), 0
             self.active_target = target
             name, chosen, rotations = pursue_target(sensing, self.hand, target)
             return f"{action} via {name}", chosen, rotations
@@ -505,6 +596,11 @@ class VLMSelector:
                 except Exception:  # noqa: BLE001
                     return "hold", 0.0, {}
         return "hold", 0.0, {}
+
+    #: Controls the last decision said the search may use. Held with the
+    #: target, since a standing number is pursued between calls and the
+    #: controls meant to reach it stand with it.
+    pending_using: tuple = ()
 
     #: Set by the loop each frame, so ``choose`` can stay the shared interface.
     pending_image: bytes | None = field(default=None, repr=False)

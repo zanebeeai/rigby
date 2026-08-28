@@ -42,18 +42,61 @@ def _glb_document(path: Path) -> tuple[dict, str]:
     raise ValueError("rig asset does not contain a JSON chunk")
 
 
+def _quat_matrix(q) -> np.ndarray:
+    """A quaternion's rotation matrix, in xyzw order.
+
+    The same thing ``Rotation.from_quat(q).as_matrix()`` returns, without
+    constructing a scipy object to get it. That construction was 24 seconds of
+    a two-minute profile across 547,000 calls: the rig is evaluated for every
+    candidate the controller scores, and building an object per bone per
+    candidate is most of what evaluating it costs.
+    """
+    x, y, z, w = (float(q[0]), float(q[1]), float(q[2]), float(q[3]))
+    n = x * x + y * y + z * z + w * w
+    if n < 1e-12:
+        return np.eye(3, dtype=float)
+    s = 2.0 / n
+    xs, ys, zs = x * s, y * s, z * s
+    return np.array([
+        [1.0 - (y * ys + z * zs), x * ys - w * zs, x * zs + w * ys],
+        [x * ys + w * zs, 1.0 - (x * xs + z * zs), y * zs - w * xs],
+        [x * zs - w * ys, y * zs + w * xs, 1.0 - (x * xs + y * ys)],
+    ], dtype=float)
+
+
 @dataclass(frozen=True)
 class _NodeRest:
     translation: np.ndarray
     rotation: np.ndarray
     scale: np.ndarray
 
+    def __post_init__(self) -> None:
+        # The rest pose never changes, so the parts of the transform that do not
+        # depend on the delta are built once here rather than three million
+        # times during a run.
+        object.__setattr__(self, "_scaled", self.rotation * self.scale)
+        base = np.eye(4, dtype=float)
+        base[:3, :3] = self._scaled
+        base[:3, 3] = self.translation
+        object.__setattr__(self, "_base", base)
+
     def matrix(self, delta_rotation: np.ndarray | None = None, delta_translation: np.ndarray | None = None) -> np.ndarray:
-        matrix = np.eye(4, dtype=float)
-        rotation = self.rotation if delta_rotation is None else self.rotation @ delta_rotation
-        matrix[:3, :3] = rotation @ np.diag(self.scale)
-        matrix[:3, 3] = self.translation + (
-            delta_translation if delta_translation is not None else np.zeros(3, dtype=float)
+        if delta_rotation is None and delta_translation is None:
+            # Most nodes in any given frame are unposed -- a probe changes a
+            # finger, not the skeleton -- and for those the answer is a constant.
+            # Returned rather than rebuilt; every caller composes it into a new
+            # array and none writes through it.
+            return self._base
+        matrix = np.empty((4, 4), dtype=float)
+        matrix[3, :3] = 0.0
+        matrix[3, 3] = 1.0
+        matrix[:3, :3] = (
+            self._scaled if delta_rotation is None
+            else (self.rotation @ delta_rotation) * self.scale
+        )
+        matrix[:3, 3] = (
+            self.translation if delta_translation is None
+            else self.translation + delta_translation
         )
         return matrix
 
@@ -122,7 +165,7 @@ class RigKinematics:
             return _NodeRest(matrix[:3, 3], rotation, scale)
         return _NodeRest(
             np.asarray(node.get("translation", [0.0, 0.0, 0.0]), dtype=float),
-            Rotation.from_quat(node.get("rotation", [0.0, 0.0, 0.0, 1.0])).as_matrix(),
+            _quat_matrix(node.get("rotation", [0.0, 0.0, 0.0, 1.0])),
             np.asarray(node.get("scale", [1.0, 1.0, 1.0]), dtype=float),
         )
 
@@ -132,9 +175,7 @@ class RigKinematics:
             canonical = self.canonical_by_node.get(node_index)
             pose = bones.get(canonical) if canonical else None
             delta_rotation = (
-                Rotation.from_quat(pose.rotation.as_list()).as_matrix()
-                if pose is not None
-                else None
+                _quat_matrix(pose.rotation.as_list()) if pose is not None else None
             )
             delta_translation = None
             if pose is not None and pose.position is not None:
