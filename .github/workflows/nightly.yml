@@ -116,38 +116,40 @@ jobs:
       # Named explicitly rather than by marker: these files are what the env
       # vars above unlock, and a bare `-m slow` here would re-run the render and
       # compile-budget work the macOS job already does.
-      # `-m ''` overrides the `-m 'fast or medium'` in addopts. These files are
-      # `slow`, so without it pytest DESELECTS all of them, runs nothing and
-      # exits 0 -- which is how run 33147680288 reported `...F [100%]` for what
-      # should have been the whole postgres surface. Deselection is silent in a
-      # way a skip is not, so the check below counts what ran.
+      # Two things have to be true for this job to mean anything, and neither is
+      # visible in an exit code: the env gates above must open, and the marker
+      # filter must not eat the files.
+      #
+      #   - `-m ''` overrides the `-m 'fast or medium'` in addopts. These files
+      #     are `slow`, so without it pytest DESELECTS every one, runs nothing
+      #     and exits 0. Run 33147680288 reported `...F [100%]`.
+      #   - The counts come from `--junit-xml`, not from the terminal. addopts
+      #     already carries `-q`, so passing `-q` again makes it `-qq` and pytest
+      #     prints no summary line at all -- run 33149474598 read "0 tests" off a
+      #     green run that had just passed all four. docs/testing.md opens with
+      #     this exact trap. Structured output cannot be quieted.
       - name: the postgres-gated tests
         run: |
           set -euo pipefail
-          uv run pytest -q -rs -m '' \
+          uv run pytest -rs -m '' --junit-xml=/tmp/pg.xml \
             tests/test_v2_postgres_jobs.py \
             tests/test_v2_postgres_library.py \
-            tests/test_v2_process_restart_acceptance.py 2>&1 | tee /tmp/pg.txt
+            tests/test_v2_process_restart_acceptance.py
 
-          # This job exists to prove these tests execute. A skip means the env
-          # gate did not open; a deselect means a marker filter ate them; either
-          # way the job proved nothing and must not report success.
-          if grep -qE '^SKIPPED' /tmp/pg.txt; then
-            echo "::error::a postgres-gated test skipped -- the env gate did not open"
-            grep -E '^SKIPPED' /tmp/pg.txt
-            exit 1
-          fi
-          if grep -q 'deselected' /tmp/pg.txt; then
-            echo "::error::tests were deselected by a marker filter; -m '' is not taking effect"
-            exit 1
-          fi
-          passed=$(grep -oE '[0-9]+ passed' /tmp/pg.txt | head -1 | grep -oE '[0-9]+' || echo 0)
-          echo "::notice::postgres-gated tests executed: ${passed}"
-          # Four: one job-store test, two library tests, one process-restart
-          # test. Few but heavy -- 736 lines between them. This is a floor, so
-          # RAISE it when a test is added and never lower it to fit a filter.
-          if [ "${passed:-0}" -lt 4 ]; then
-            echo "::error::only ${passed} tests ran; these three files carry 4."
-            echo "Something is filtering them out again."
-            exit 1
-          fi
+          python3 - <<'PY'
+          import sys, xml.etree.ElementTree as ET
+
+          root = ET.parse("/tmp/pg.xml").getroot()
+          suite = root.find("testsuite") if root.tag == "testsuites" else root
+          ran = int(suite.get("tests", 0))
+          skipped = int(suite.get("skipped", 0))
+          print(f"::notice::postgres-gated tests executed: {ran} ({skipped} skipped)")
+
+          if skipped:
+              sys.exit(f"::error::{skipped} skipped -- an env gate did not open")
+          # One job-store test, two library tests, one process-restart test.
+          # Few but heavy: 736 lines between them. A FLOOR -- raise it when a
+          # test is added, never lower it to fit a filter.
+          if ran < 4:
+              sys.exit(f"::error::only {ran} ran; these three files carry 4")
+          PY
