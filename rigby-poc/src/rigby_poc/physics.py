@@ -283,8 +283,15 @@ def _embodied_xml(
         #
         # The palm and the arm stay stiff. They carry the hand and are not
         # supposed to yield; only the digits close on things.
+        #
+        # Compliant does not mean limp. Too soft and the object's own weight
+        # levers the fingers open as soon as the hand rises: measured at solimp
+        # 0.60, a grip holding at 2.1 N on the thumb and 2.7 on the index
+        # spread from 7.90 cm to 8.42 during the lift and dropped a 0.25 kg
+        # block after 2.4 cm. The spring has to yield to contact and still beat
+        # gravity.
         reference, impedance = (
-            ("0.02 1", "0.60 0.90 0.01") if compliant
+            ("0.012 1", "0.88 0.97 0.004") if compliant
             else ("0.002 1", "0.99 0.999 0.001")
         )
         welds.append(
@@ -306,7 +313,7 @@ def _embodied_xml(
         pair(
             f"{name}_collision",
             f'<geom name="{name}" type="capsule" size="{radius} {half_length}" '
-            'mass="0.02" rgba="0.2 0.8 0.35 0.22" contype="1" conaffinity="1"/>',
+            'mass="0.02" rgba="0.2 0.8 0.35 0.22" contype="1" conaffinity="1" solref="0.004 1" solimp="0.98 0.999 0.0005"/>',
             0.02,
             compliant=True,
         )

@@ -1235,7 +1235,15 @@ def palm_facing(sensing: Sensing, hand: Hand) -> float:
 _PALM_PAD_FRACTION = 0.6
 
 #: How far off the face the palm pad is asked to stop, metres.
-_FACE_STANDOFF_M = 0.04
+#:
+#: Small on purpose. The pad is at the knuckles and the digits reach most of a
+#: hand beyond it, so a standoff measured from the pad decides how far INTO the
+#: opening the object ends up. At 4 cm the block sat out by the fingertips: the
+#: grip formed, and closing then pushed it straight back out of the hand --
+#: object-to-grasp-line went 4.7 cm to 8.2 while the digits shut. The object has
+#: to be between the digits before anything closes, which means the pad comes
+#: almost to the face.
+_FACE_STANDOFF_M = 0.015
 
 
 def _solve_move_to(sensing: Sensing, hand: Hand, amount: float) -> dict[str, Any]:
@@ -1524,6 +1532,31 @@ def _digit_sweep(digit: str):
     return solve
 
 
+#: Contact force at which a digit has arrived and stops being driven inward,
+#: newtons. Low, because the job of closing is to MAKE contact, not to crush:
+#: the squeeze that holds the object is a separate act with a separate purpose,
+#: and conflating the two is how a finger ends up inside what it is holding.
+_SETTLED_FORCE_N = 0.8
+
+#: The firmest squeeze a full-amplitude close will hold, newtons. Enough to
+#: carry a graspable object against gravity with margin, not enough to crush it.
+_SQUEEZE_FORCE_N = 6.0
+
+#: Slack left above the object's width when closing, metres.
+_GRIP_FLOOR_MARGIN_M = 0.012
+
+
+def _hold_force_n(amount: float) -> float:
+    """What force this close is trying to reach, given how firmly it was asked."""
+    reach = float(np.clip(amount, 0.0, 1.0))
+    return _SETTLED_FORCE_N + (_SQUEEZE_FORCE_N - _SETTLED_FORCE_N) * reach
+
+#: How much wider than the object the open grip stands, metres. Room for the
+#: object to enter without the digits having to be driven through it, and no
+#: more: a hand opened wider than it needs is a hand that cannot reach what it
+#: is holding by the time it has closed as far as it can.
+_GRIP_CLEARANCE_M = 0.035
+
 #: The four fingers, in the order they sit across the hand.
 _FINGERS = ("index", "middle", "ring", "little")
 
@@ -1624,10 +1657,10 @@ def _solve_open_grip(sensing: Sensing, hand: Hand, amount: float) -> dict[str, A
     """
     reach = float(np.clip(amount, 0.0, 1.0))
     best: tuple[float, dict[str, Any]] | None = None
-    for thumb_curl in (-1.0, -0.5, 0.0, 0.5):
-        for thumb_sweep in (-1.0, -0.5, 0.0, 0.5, 1.0):
-            for finger_curl in (-0.5, 0.0, 0.35, 0.7):
-                for finger_sweep in (-0.5, 0.0, 0.5):
+    for thumb_curl in (-1.0, -0.4, 0.2):
+        for thumb_sweep in (-1.0, -0.4, 0.2, 0.8):
+            for finger_curl in (-0.4, 0.1, 0.6):
+                for finger_sweep in (-0.4, 0.2):
                     rotations: dict[str, Any] = {}
                     rotations.update(_digit_curl("thumb")(
                         sensing, hand, thumb_curl * reach))
@@ -1647,20 +1680,35 @@ def _solve_open_grip(sensing: Sensing, hand: Hand, amount: float) -> dict[str, A
                         convergence=sensing.convergence, contact_force_n={},
                         opposed=False, time_s=sensing.time_s,
                         object_half_m=sensing.object_half_m)
+                    # Sized to the OBJECT, not maximal. "As wide as possible"
+                    # gave a 16 cm opening with the fingers straight, around a
+                    # 6 cm block: the digits straddled far wider than the thing
+                    # they were meant to hold, their pads faced outward, and
+                    # closing bottomed out at 12.7 cm with the thumb never once
+                    # touching it. An opening is only useful at the object's
+                    # size, and the fingers have to be curled enough that their
+                    # PADS face the gap rather than the room.
+                    #
+                    # Base spread stays maximal: that is the depth of the C, and
+                    # it is what a blade cannot fake.
+                    span = float(np.max(sensing.object_half_m) * 2.0)
+                    wanted = span + _GRIP_CLEARANCE_M
                     score = (
-                        grip_parallel(probe, hand)
-                        + grip_tip_spread_m(probe, hand) * 6.0
-                        + grip_base_spread_m(probe, hand) * 6.0
+                        grip_parallel(probe, hand) * 2.0
+                        - abs(grip_tip_spread_m(probe, hand) - wanted) * 12.0
+                        + grip_base_spread_m(probe, hand) * 4.0
                     )
                     if best is None or score > best[0]:
                         best = (score, rotations)
     # Doing nothing is a candidate. Every pose above is built from the rest
     # pose, so without this the search cannot choose to KEEP a hand that is
     # already open wider than anything it can construct.
+    span = float(np.max(sensing.object_half_m) * 2.0)
+    wanted = span + _GRIP_CLEARANCE_M
     here = (
-        grip_parallel(sensing, hand)
-        + grip_tip_spread_m(sensing, hand) * 6.0
-        + grip_base_spread_m(sensing, hand) * 6.0
+        grip_parallel(sensing, hand) * 2.0
+        - abs(grip_tip_spread_m(sensing, hand) - wanted) * 12.0
+        + grip_base_spread_m(sensing, hand) * 4.0
     )
     if best is None or here >= best[0]:
         return {}
@@ -1671,41 +1719,133 @@ def _solve_close_grip(sensing: Sensing, hand: Hand, amount: float) -> dict[str, 
     """Close the opening with every finger's curl LOCKED.
 
     Only the base joint of each digit moves. Whatever shape the fingers were
-    opened into is the shape they keep, so the tips can only come together by
-    the grip itself closing -- which is what a grip is, as against curling the
-    fingertips inward until they meet somewhere in mid-air with the object
-    sitting outside them.
+    opened into is the shape they keep, so the tips come together by the grip
+    closing rather than by fingertips curling inward to meet in mid-air with the
+    object outside them.
 
-    Contact then stops it: with the digits held by springs rather than welded,
-    the object pushes back and the fingers settle against it.
+    The step is absolute and clamped to the joint's own range, not composed onto
+    whatever the digit is currently holding. Composing looked equivalent and was
+    not: with the rate limiter lagging behind, each frame added another delta to
+    a pose that had not finished applying the last one, and the wind-up rolled
+    the digits past their limits -- measured, the opening ballooned from 8 cm to
+    19 and the digits came out ANTI-parallel at -0.59, which is a hand turning
+    itself inside out while nominally closing.
+
+    A digit already carrying load is left alone, so the ones still in the air
+    keep coming. That is what lets a hand settle onto a shape rather than
+    driving its first contact through the object.
     """
-    from scipy.spatial.transform import Rotation
+    import math
 
+    from .analysis.anatomy.frame import DofAngles, all_frames, compose, decompose
+    from .analysis.anatomy.rom import rom_limit
     from .models import Quat
 
     reach = float(np.clip(amount, 0.0, 1.0))
+    frames = all_frames()
+    # A grip cannot be narrower than the thing it holds. Force alone does not
+    # say so: the digits were still reading 1-2 N against a 6 N target, so they
+    # kept closing, went to 4.86 cm around a 6.0 cm block, and squeezed it out
+    # sideways -- the object escapes rather than the force rising. Solids do not
+    # compress, and the geometry has to say what the force cannot.
+    # Plus a margin, for two reasons. Five digits each pass their own check
+    # while their COMBINED motion overshoots, and the rate limiter means the
+    # commanded pose runs ahead of the pose the body has actually reached -- so
+    # by the time the hand catches up it is already inside where the object was.
+    # Measured without the margin: 5.13 cm of opening around a 6.0 cm block.
+    floor = float(np.min(sensing.object_half_m) * 2.0) + _GRIP_FLOOR_MARGIN_M
+    if grip_tip_spread_m(sensing, hand) <= floor:
+        return {}
     out: dict[str, Any] = {}
     for digit in ("thumb",) + _FINGERS:
-        base = _digit_bones(hand, digit)[0]
-        delta = _digit_rotation(base, reach * 0.75, 0.0)
-        if delta is None:
+        # The force a digit stops at rises with the amplitude asked for, so one
+        # control covers both jobs: a light close ARRIVES on the object, and a
+        # firm one SQUEEZES it hard enough to carry.
+        #
+        # The distinction is not cosmetic. Arriving needs almost no force and
+        # too much of it drives a finger through what it is touching; carrying
+        # needs enough friction to beat the object's weight, which for a 0.25 kg
+        # block at mu 0.8 is about m*g / (2*mu) = 1.5 N per side before any
+        # margin. A grip settled at 0.8 N is a grip that lets go the moment the
+        # arm moves -- measured, exactly that: pairs formed at 1.4 s, the lift
+        # began, and the block stayed on the table.
+        if sensing.contact_force_n.get(digit, 0.0) >= _hold_force_n(amount):
             continue
-        # COMPOSED with whatever the digit is already holding, not written over
-        # it. Replacing the base rotation discards the shape open_grip just
-        # built -- measured, closing from an opened hand moved the tips 0.3 mm,
-        # because the close was undoing the open as fast as it applied.
+        base = _digit_bones(hand, digit)[0]
+        frame = frames.get(base)
+        if frame is None:
+            continue
         held = sensing.bones.get(base)
         if held is None:
-            out[base] = delta
-            continue
-        current = Rotation.from_quat(
-            [held.rotation.x, held.rotation.y, held.rotation.z, held.rotation.w])
-        step = Rotation.from_quat([delta.x, delta.y, delta.z, delta.w])
-        combined = (step * current).as_quat()
-        out[base] = Quat(x=float(combined[0]), y=float(combined[1]),
-                         z=float(combined[2]), w=float(combined[3]))
-    return out
+            angles = DofAngles(0.0, 0.0, 0.0)
+        else:
+            try:
+                angles = decompose(
+                    [held.rotation.x, held.rotation.y,
+                     held.rotation.z, held.rotation.w], frame)
+            except Exception:  # noqa: BLE001
+                angles = DofAngles(0.0, 0.0, 0.0)
+        # The thumb closes by ADDUCTION across the palm, not by flexion. The
+        # range-of-motion manifest has said so all along -- it records that the
+        # thumb is the one chain where the authored asset and the anatomical
+        # frame disagree, and that the rig's own crate_grip preset closes it by
+        # adduction. Closed on its flexion axis it curled without ever crossing
+        # toward the fingers: index and middle would settle at 1 N while the
+        # thumb sat 5 cm off the block and the opening stopped shrinking.
+        dof = "abduction" if digit == "thumb" else "flexion"
+        try:
+            low, high = rom_limit(base, dof).typical_deg
+        except Exception:  # noqa: BLE001
+            low, high = -60.0, 60.0
+        here = float(np.degrees(
+            angles.abduction_rad if dof == "abduction" else angles.flexion_rad))
 
+        def toward(edge: float) -> float:
+            step = reach * (edge - here) * 0.35
+            return float(np.clip(here + step, min(low, high), max(low, high)))
+
+        # Which way is "across the palm" is a fact about the rig, so it is
+        # measured rather than assumed: whichever end of the range brings the
+        # tips together is the closing direction.
+        best_target, best_spread = here, None
+        for edge in (high, low):
+            candidate = toward(edge)
+            angle_set = (
+                DofAngles(angles.flexion_rad, math.radians(candidate),
+                          angles.twist_rad)
+                if dof == "abduction" else
+                DofAngles(math.radians(candidate), angles.abduction_rad,
+                          angles.twist_rad)
+            )
+            probe_q = compose(angle_set, frame)
+            trial = dict(sensing.bones)
+            trial[base] = BonePose(rotation=Quat(
+                x=probe_q[0], y=probe_q[1], z=probe_q[2], w=probe_q[3]))
+            probe = Sensing(
+                bones=trial, object_position=sensing.object_position,
+                tip_positions=sensing.tip_positions,
+                convergence=sensing.convergence, contact_force_n={},
+                opposed=False, time_s=sensing.time_s,
+                object_half_m=sensing.object_half_m)
+            spread = grip_tip_spread_m(probe, hand)
+            # Never past the object's own width. Checking only before the step
+            # let a single frame jump the floor -- 7.90 cm to 5.55 around a
+            # 6.0 cm block -- and once the digits are inside where the object
+            # is, it has already been squeezed out.
+            if spread < floor:
+                continue
+            if best_spread is None or spread < best_spread:
+                best_spread, best_target = spread, candidate
+        target = best_target
+        quaternion = compose(
+            DofAngles(angles.flexion_rad, math.radians(target), angles.twist_rad)
+            if dof == "abduction" else
+            DofAngles(math.radians(target), angles.abduction_rad, angles.twist_rad),
+            frame,
+        )
+        out[base] = Quat(x=quaternion[0], y=quaternion[1],
+                         z=quaternion[2], w=quaternion[3])
+    return out
 
 def _solve_grip(sensing: Sensing, hand: Hand, amount: float) -> dict[str, Any]:
     """Close every finger's C on the object. This IS the grip.
