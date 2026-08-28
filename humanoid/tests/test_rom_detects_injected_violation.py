@@ -208,7 +208,12 @@ def test_an_injected_off_axis_elbow_rotation_is_reported_at_its_own_size(rest_cl
 
 
 def test_severity_is_ordered_by_size_not_merely_present(rest_clip, clip) -> None:
-    """A graded report, not a boolean. Plan §3.5."""
+    """A graded report, not a boolean.
+
+    Severity must rank violations by how far past the bound they reach, so a
+    2-degree excursion and a 40-degree one are not the same finding. Ordering is
+    the assertion; the absolute scale is deliberately arbitrary and cannot gate.
+    """
 
     small = _violation(
         rom_violations(_inject(rest_clip, "leftLowerArm", dof="abduction", degrees=15.0),

@@ -1,0 +1,24 @@
+# This repository hashes file bytes. Git must never rewrite a line ending here.
+#
+# `rigby_v2.rigging.canonical_human` does
+# `sha256(canonical_human.xml.read_bytes())` and compares it against
+# `explicit_canonical_source_sha256` committed in canonical_inertials.v1.json.
+# The same shape appears across the content-addressed asset stores, the corpus
+# `expected.json` digests and the sealed-response fixtures.
+#
+# GitHub's Windows runners check out with `core.autocrlf=true`, so without this
+# file every text asset arrives as CRLF and every one of those digests differs
+# from the value committed on a Unix machine. That was not hypothetical: it was
+# ~100 of the 104 failures on `python (windows-latest)`, all reported as
+# `ValueError: canonical MJCF does not match inertial audit provenance`, and it
+# stayed invisible for weeks because the job was cancelled at its timeout before
+# pytest could print a summary.
+#
+#   sha256(canonical_human.xml) as committed   93de68ee0925...
+#   sha256(the same file as CRLF)              430ef3597947...
+#
+# `-text` on everything: no normalization on checkin, no conversion on checkout.
+# Bytes in the working tree are the bytes in the object database, on every
+# platform. Do not narrow this to a file-type list -- the next hashed asset will
+# not be on it.
+* -text

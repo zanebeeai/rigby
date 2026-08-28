@@ -46,6 +46,12 @@ jobs:
       # Separate step, and it is allowed to go red. A compile-count regression
       # should be visible the next morning rather than at the next release.
       - name: the slow tier
+        env:
+          # Pure compute, no database. Measured at 97s locally, which is not a
+          # reason to leave it unrun -- it was gated behind an env var no
+          # workflow set, so the three-repeat drawer acceptance had never
+          # executed in CI at all.
+          RIGBY_TEST_LONG_ACCEPTANCE: '1'
         run: uv run pytest -m slow
       - uses: actions/upload-artifact@v4
         if: always()
@@ -53,3 +59,87 @@ jobs:
           name: coverage-xml
           path: humanoid/coverage.xml
           if-no-files-found: error
+
+  # RIGBY_TEST_POSTGRES and RIGBY_TEST_PROCESS_RESTART gated roughly 440 lines of
+  # tests that NO workflow set, so `rigby_core.postgres_jobs` and
+  # `rigby_v2.library.postgres` -- real production surface -- were untested in
+  # fact while appearing tested. This job sets them.
+  #
+  # Its own job, on ubuntu, because service containers do not exist on the macOS
+  # runner the coverage job needs. Same pgvector image as compose.v2.yaml, pinned
+  # by digest, so CI and a developer's local database cannot drift.
+  postgres:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: humanoid
+    services:
+      postgres:
+        image: pgvector/pgvector:0.8.2-pg18-trixie@sha256:b7337db8fe39d12fe8ecb0003c72680f24479813a744b43154eee6f2eab5a5f3
+        env:
+          POSTGRES_DB: rigby
+          POSTGRES_USER: rigby
+          POSTGRES_PASSWORD: rigby-local-only
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U rigby -d rigby"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 30
+    env:
+      # compose.v2.yaml publishes on 54329 to stay clear of a local postgres; a
+      # service container has the runner to itself, so 5432 is fine here.
+      RIGBY_V2_DATABASE_URL: postgresql://rigby:rigby-local-only@127.0.0.1:5432/rigby
+      RIGBY_TEST_POSTGRES: '1'
+      RIGBY_TEST_PROCESS_RESTART: '1'
+      # Its skip reason asks for a "sealed local DB/artifact checkpoint". Whether
+      # a freshly migrated database plus an empty artifact root satisfies that is
+      # a question CI can answer and a comment cannot, so it is opened here and
+      # the answer is in the run.
+      RIGBY_OPERATOR_DRY_RUN_LIVE: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      # compose mounts db/init into docker-entrypoint-initdb.d; a service
+      # container cannot, because the checkout happens after it starts. Same
+      # file, applied by hand, so there is still exactly one schema definition.
+      - name: apply db/init
+        run: |
+          set -euo pipefail
+          PGPASSWORD=rigby-local-only psql \
+            -h 127.0.0.1 -p 5432 -U rigby -d rigby \
+            -v ON_ERROR_STOP=1 -f db/init/001_rigby_v2.sql
+
+      - run: uv sync --extra dev
+
+      # Named explicitly rather than by marker: these files are what the env
+      # vars above unlock, and a bare `-m slow` here would re-run the render and
+      # compile-budget work the macOS job already does.
+      - name: the postgres-gated tests
+        run: |
+          uv run pytest -q \
+            tests/test_v2_postgres_jobs.py \
+            tests/test_v2_postgres_library.py \
+            tests/test_v2_process_restart_acceptance.py \
+            tests/test_v2_release_ops_operator_dry_run.py
+
+      # A skip here means the gate did not open and the job proved nothing.
+      - name: they actually ran
+        run: |
+          set -euo pipefail
+          uv run pytest -q --no-header -rs \
+            tests/test_v2_postgres_jobs.py \
+            tests/test_v2_postgres_library.py \
+            tests/test_v2_process_restart_acceptance.py \
+            tests/test_v2_release_ops_operator_dry_run.py 2>&1 | tee /tmp/pg.txt
+          if grep -qE '^SKIPPED' /tmp/pg.txt; then
+            echo "::error::a postgres-gated test skipped; the env gate did not open"
+            grep -E '^SKIPPED' /tmp/pg.txt
+            exit 1
+          fi

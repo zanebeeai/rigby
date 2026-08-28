@@ -380,6 +380,34 @@ And a stash entry is a **merge** commit, so `git show <sha>` emits a combined
 `diff --cc` that `git apply` refuses. Extract with `git diff <sha>^1 <sha>` and
 check it with `git apply --check` before relying on it.
 
+## Reading the citations: `Plan 09 §3.4`, `lane judge`, `PR 08d`
+
+**These point at internal working documents that are not published in this
+repository, and you are not missing a file.** Said here because this is a public
+repository and 66 of the 191 test files carry at least one such reference, 393 in
+total. Without this note a reader has no way to tell a private reference from a
+broken link.
+
+| Notation | What it is |
+| --- | --- |
+| `Plan NN §X` | a numbered internal planning document, section X |
+| `lane <name>` | one of the parallel workstreams the repo was built in (`analysis`, `capture`, `judge`, `groundtruth`, `infra`, `anatomy`) |
+| `PR NNx` | an internal delivery slice, not a GitHub pull request number |
+| `TRACKING` | the internal cross-lane status document |
+
+**They are provenance, never the argument.** The rule is that a test states its
+reasoning inline and cites afterwards, so removing every citation would cost a
+reader nothing but the breadcrumb. That was checked rather than assumed: of the
+393 references, exactly **three** docstrings leaned on a citation to carry the
+explanation, and those three were rewritten to stand on their own.
+
+Keep it that way. If you find yourself writing a docstring that means nothing
+without the plan open in another window, put the reason in the docstring — the
+plan is not going to be there in a year, and it is not there for a reader now.
+
+GitHub Actions run IDs (`33135113150`) *are* public and resolvable, and are the
+preferred citation for anything CI established.
+
 ## The invocations
 
 Every command below is written with its exit-code check, deliberately.
