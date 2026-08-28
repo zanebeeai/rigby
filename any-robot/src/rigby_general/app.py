@@ -165,6 +165,7 @@ def _run_in_world(record, prompt, environment_id, robot_id, settings, traces):
     from .grounding.grounder import figure_site_for
     from .grounding.workspace import build_workspace_frame
     from .scenes import admit_object, load_environment
+    from .scenes.fit import fit_world
     from .trace import RunTrace
     from .viewer import build_scene, sample_track
 
@@ -223,6 +224,27 @@ def _run_in_world(record, prompt, environment_id, robot_id, settings, traces):
         chain,
         figure_site=figure_site_for(record.manifest, effector.chain_id),
     )
+
+    # Sized to this arm, the same way the trial runner sizes it. A world
+    # authored for a metre-class arm asks nothing of a 240 mm one -- every
+    # object refuses on distance and the arm is never tested -- and the console
+    # showing a different answer from the studio for the same pairing is worse
+    # than either answer alone.
+    # fit_world reads a model and a measured scale off one object, which the
+    # registry record does not carry in that shape -- it keeps the compiled MJCF
+    # on disk. A small adapter is honest here; copying the fit to take a second
+    # shape is how the two implementations drifted apart in the first place.
+    class _FitView:
+        def __init__(self, record, model):
+            self.manifest = record.manifest
+            self.morphology = record.manifest.morphology
+            self.finalized = type("F", (), {"model": model})()
+
+    try:
+        environment = fit_world(environment, _FitView(record, model), effector, frame)
+        item = environment.object_by_name(item.name)
+    except Exception as error:  # noqa: BLE001 - fall back to the authored size
+        trace.record("fit", "refused", 0.0, f"left at authored size: {error}")
 
     admission = admit_object(record.manifest, effector, frame, item)
     trace.trial = {
