@@ -18,7 +18,9 @@ from evals.flywheel import (
     single_sample_baseline_index,
 )
 from rigby_poc.analysis.gesture import (
+    _REST_EGO_CAMERA_POSITION,
     arm_landmarks,
+    ego_camera,
 )
 from rigby_poc.analysis.rig import identity_bones
 from rigby_poc.compiler import compile_motion
@@ -218,6 +220,31 @@ def test_strike_evidence_samples_guard_arc_impact_follow_through_and_recovery() 
         "follow_through_late",
         "recover_end",
     } <= labels
+
+
+def test_the_ego_camera_reproduces_the_frozen_rest_pose_exactly() -> None:
+    """The 15-micron property this camera is anchored on.
+
+    ``_REST_EGO_CAMERA_POSITION`` is the frontend's eye offset added to a
+    *rounded* rest head position, so it sits 2.4e-5 m behind what
+    ``frontend/src/camera.ts`` would compute from the true one -- and the rest
+    pose clears the vertical frustum by only 1.5e-5 m. Deriving the head-local
+    offset back out of the frozen literal, rather than retyping the frontend's
+    clean ``(0, 0.04, 0.11)``, is what keeps the camera identical at rest and
+    moving only when the head does. Retyping it flips frame 0 of every gesture
+    and strike clip out of view, so this pins the derivation, not the arithmetic.
+    """
+
+    kinematics = rig_kinematics()
+    head = kinematics.world_matrices(identity_bones())[kinematics.node_by_canonical["head"]]
+    eye_offset = _REST_EGO_CAMERA_POSITION - head[:3, 3]
+
+    position, forward = ego_camera(head[:3, 3], np.eye(3), eye_offset)
+
+    assert np.allclose(position, _REST_EGO_CAMERA_POSITION, atol=1e-12, rtol=0.0)
+    expected_forward = np.array([0.0, -0.65, 1.0])
+    expected_forward /= np.linalg.norm(expected_forward)
+    assert np.allclose(forward, expected_forward, atol=1e-12, rtol=0.0)
 
 
 def test_the_rig_hand_block_carries_the_same_axes_the_visibility_check_reads() -> None:

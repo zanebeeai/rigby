@@ -127,6 +127,79 @@ def world_arm_landmarks(
     )
 
 
+def ego_camera(
+    head_position: np.ndarray, head_delta: np.ndarray, eye_offset: np.ndarray
+) -> tuple[np.ndarray, np.ndarray]:
+    """The ego camera pose the frontend actually renders, for one frame.
+
+    Mirrors ``frontend/src/camera.ts::computeEgoCameraPose``: the eye offset and
+    the neutral gaze are head-local, so both are carried by the head's animation
+    delta -- its world rotation relative to the rest one -- and the eye offset is
+    then hung off wherever the head has moved to.
+
+    ``eye_offset`` is passed in rather than read from a constant so it can be
+    derived from *this* skeleton's rest head position (see
+    :attr:`AnalysisContext.rest_head_transform`), which is what makes the pose
+    reproduce :data:`_REST_EGO_CAMERA_POSITION` exactly at rest instead of
+    2.4e-5 m in front of it.
+
+    Only the position and the forward axis come back. The frontend sets
+    ``camera.up = (0, 1, 0)`` before ``lookAt``, so the camera does not roll with
+    the head and the frustum's right/up axes are rebuilt from world up by the
+    caller.
+    """
+
+    position = head_position + head_delta @ eye_offset
+    forward = head_delta @ EGO_NEUTRAL_GAZE
+    return position, forward / np.linalg.norm(forward)
+
+
+@dataclass(frozen=True)
+class WorldHandSample:
+    """One frame's hand and camera, both measured in world.
+
+    Bundled rather than passed as four parallel dicts because the two halves are
+    only correct together: a world-true wrist judged by the rest-pose camera, or
+    a head-carried camera judged against a chest-frame wrist, is half a fix, and
+    on the two out-of-view corpus cases the two errors currently cancel.
+    """
+
+    wrist: np.ndarray
+    hand_world: Rotation
+    camera_position: np.ndarray
+    camera_forward: np.ndarray
+
+
+def world_hand_samples(
+    ctx: AnalysisContext, hand: Hand, presentation_ranges: list[tuple[float, float]]
+) -> dict[int, WorldHandSample]:
+    """World wrist, hand orientation and ego camera for every sampled frame.
+
+    Keyed by index into ``ctx.frames``. Built only over the presentation window
+    because those are the only frames :func:`evaluate_gesture_structure` judges
+    for visibility, so a gesture clip pays forward kinematics for the frames it
+    actually samples rather than all of them.
+    """
+
+    indices = ctx.indices_in(presentation_ranges)
+    if not indices:
+        # A clip with no presentation window samples nothing, so it should not
+        # pay even the rest-pose evaluation. ``strike_shake_echo`` is such a
+        # clip: a STRIKE program whose only primitive is a SHAKE.
+        return {}
+    head_node = ctx.kinematics.node_by_canonical["head"]
+    rest_head_position, rest_head_rotation = ctx.rest_head_transform
+    eye_offset = _REST_EGO_CAMERA_POSITION - rest_head_position
+    samples: dict[int, WorldHandSample] = {}
+    for index in indices:
+        head = ctx.world_matrices(index)[head_node]
+        head_delta = head[:3, :3] @ rest_head_rotation.T
+        position, forward = ego_camera(head[:3, 3], head_delta, eye_offset)
+        _, _, wrist, hand_world = world_arm_landmarks(ctx, index, hand)
+        samples[index] = WorldHandSample(wrist, hand_world, position, forward)
+    return samples
+
+
 def _inside_torso(point: np.ndarray) -> bool:
     if not 1.01 <= float(point[1]) <= 1.48:
         return False
@@ -155,13 +228,18 @@ def _full_hand_visible(
     hand_world: Rotation,
     contract: dict[str, Any],
     hand_shape: HandShape | None = None,
+    *,
+    camera_position: np.ndarray | None = None,
+    camera_forward: np.ndarray | None = None,
 ) -> bool:
-    # The rest-pose ego camera. ``_REST_EGO_CAMERA_POSITION`` and
-    # ``EGO_NEUTRAL_GAZE`` are the same literals this function used to build
-    # inline, named rather than retyped, so this path is unchanged bit for bit.
-    # Carrying the camera on the head is a separate change -- see G6b.
-    position = _REST_EGO_CAMERA_POSITION
-    forward = EGO_NEUTRAL_GAZE
+    # The camera the head actually carries, when the caller can supply it.
+    # Falling back to the rest pose keeps the frontend-matching literal for
+    # callers with no skeleton to hand -- the corruption harness, which mutates
+    # bones after the clip compiles, and the synthetic partial-bone frames in
+    # the check tests. ``EGO_NEUTRAL_GAZE`` is the same normalised (0, -0.65, 1)
+    # this function used to build inline, so that path is unchanged bit for bit.
+    position = _REST_EGO_CAMERA_POSITION if camera_position is None else camera_position
+    forward = EGO_NEUTRAL_GAZE if camera_forward is None else camera_forward
     world_up = np.asarray([0.0, 1.0, 0.0], dtype=float)
     right = np.cross(forward, world_up)
     right /= np.linalg.norm(right)
@@ -305,14 +383,26 @@ def evaluate_gesture_structure(
     hand: Hand,
     presentation_ranges: list[tuple[float, float]],
     hand_shape: HandShape | None = None,
+    *,
+    world_samples: dict[int, WorldHandSample] | None = None,
 ) -> dict[str, Any]:
     """Structural quality for one hand over a finished clip.
 
-    Visibility is still judged against the reconstructed, chest-relative arm and
-    the rest-pose camera. Moving it onto the world-true wrist and a head-carried
-    camera is G6b, held separately: the two halves are only correct together,
-    and the camera's eye offset is 2.4e-5 m from the renderer's own constant,
-    which is the same size as the frustum margin that decides the verdict.
+    Pass ``world_samples`` -- :func:`world_hand_samples` over the same frames and
+    the same presentation ranges -- and visibility is judged with the wrist and
+    hand orientation the rig actually has in world, against the camera the head
+    actually carries. Without it the sampler falls back to the reconstructed,
+    chest-relative arm and the rest-pose camera.
+
+    That fallback is load-bearing, not a convenience: ``evals/corruptions.py``
+    mutates frame bones *after* the clip compiles, so any context-derived world
+    data would describe the pre-corruption clip, and the synthetic partial-bone
+    frames in ``tests/test_analysis_checks.py`` have no context at all. Both
+    still get the pre-existing answer.
+
+    ``world_samples`` is keyword-only because eight call sites outside this
+    package pass ``frames``, ``hand`` and ``presentation_ranges`` positionally
+    and one passes ``hand_shape`` as a fourth positional argument.
     """
 
     reference = quality_reference()
@@ -324,7 +414,7 @@ def evaluate_gesture_structure(
     forearm_twist_values: list[float] = []
     collisions = 0
     visible: list[bool] = []
-    for frame in frames:
+    for index, frame in enumerate(frames):
         swing, twist = swing_twist_angles(frame.bones[f"{prefix}Hand"].rotation.as_list(), [0.0, 1.0, 0.0])
         swing_values.append(swing)
         twist_values.append(abs(twist))
@@ -343,7 +433,20 @@ def evaluate_gesture_structure(
         shoulder, elbow, wrist, hand_world = arm_landmarks(frame, hand)
         collisions += int(_arm_self_collision(shoulder, elbow, wrist))
         if any(start - 1e-8 <= frame.time_s <= end + 1e-8 for start, end in presentation_ranges):
-            visible.append(_full_hand_visible(wrist, hand_world, contract, hand_shape))
+            sample = world_samples.get(index) if world_samples is not None else None
+            if sample is None:
+                visible.append(_full_hand_visible(wrist, hand_world, contract, hand_shape))
+            else:
+                visible.append(
+                    _full_hand_visible(
+                        sample.wrist,
+                        sample.hand_world,
+                        contract,
+                        hand_shape,
+                        camera_position=sample.camera_position,
+                        camera_forward=sample.camera_forward,
+                    )
+                )
 
     velocity, acceleration, jerk = _angular_kinematics(
         frames, [f"{prefix}UpperArm", f"{prefix}LowerArm", f"{prefix}Hand"]

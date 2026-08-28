@@ -36,6 +36,7 @@ from .gesture import (
     evaluate_gesture_structure,
     shake_joint_oscillation_metrics,
     world_arm_landmarks,
+    world_hand_samples,
 )
 from .safety import safety_metrics as _safety_metrics
 
@@ -156,6 +157,7 @@ def hand_metrics(ctx: AnalysisContext) -> dict[str, Any]:
             # Not `final_shape`: this path has never passed a hand shape, and
             # doing so now would widen the sampled finger/palm spans on every
             # gesture and strike clip. Only the world data changes here.
+            world_samples=world_hand_samples(ctx, program.hand, presentation_ranges),
         )
         metrics.update(structure)
         if program.intent == Intent.GESTURE:

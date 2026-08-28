@@ -34,6 +34,7 @@ from .forearm import (
 from .gesture import (
     evaluate_gesture_structure,
     shake_joint_oscillation_metrics,
+    world_hand_samples,
 )
 from .safety import clip_contract_violations, safety_metrics as _safety_metrics
 from .semantic import (
@@ -102,6 +103,7 @@ def composite_metrics(ctx: AnalysisContext) -> dict[str, Any]:
             # chest-frame wrist and the rest-pose camera are two errors that
             # partly cancel, so correcting one here and not the other would
             # leave the composite cases measuring the cancelled pair.
+            world_samples=world_hand_samples(ctx, hand, presentation_ranges),
         )
         for hand in program.hands
     }
