@@ -141,6 +141,19 @@ class Sensing:
     contact_force_n: dict[str, float]
     opposed: bool
     time_s: float
+    #: Angle between where the head points and the object. The body cannot know
+    #: this about itself, but it is what decides whether the next field is a
+    #: fresh observation or a memory.
+    #: How fast the object and the hand are travelling, m/s. Without these the
+    #: body reads a still photograph: a block already sliding away looks
+    #: identical to one at rest, so a controller keeps issuing the push that is
+    #: moving it. Motion is not visible in a pose, only between two of them.
+    object_velocity: np.ndarray = field(default_factory=lambda: np.zeros(3))
+    hand_velocity: np.ndarray = field(default_factory=lambda: np.zeros(3))
+    gaze_error_deg: float = 0.0
+    #: False when the object is outside the field of view, in which case
+    #: ``object_position`` is the last place it was SEEN, not where it is.
+    in_view: bool = True
 
     def loaded_digits(self, threshold_n: float = 0.5) -> tuple[str, ...]:
         return tuple(
@@ -166,9 +179,26 @@ class Step:
     error: Callable[[Sensing], float]
     reached: Callable[[Sensing], bool]
     active_parts: tuple[str, ...]
+    #: Actions that suit this stage's goal, empty meaning any. Separate from
+    #: ``active_parts`` because acting with the right limb is not the same as
+    #: doing the right thing with it: reaching and standing off both drive the
+    #: arm, and only one of them belongs in a stage that must not touch.
+    allows: tuple[str, ...] = ()
+    #: What this stage's goal actually demands, in numbers. Shown to a selector
+    #: so it can tell "done" from "not done" rather than inferring a threshold
+    #: from readings: told only that the aperture stood at 68.5 degrees and the
+    #: fingertips were 0.107 m out, a model widened the aperture fourteen times
+    #: while the distance never moved. It could see both numbers and neither
+    #: target, so it worked the half that was already satisfied.
+    requires: dict[str, Any] = field(default_factory=dict)
     #: Frames to spend before giving up and advancing anyway. A step that cannot
     #: be reached must not stall the whole motion silently.
     budget_frames: int = 45
+    #: Frames without progress before the attempt is called off, 0 meaning the
+    #: module default. A step that spans the whole task needs a wider window
+    #: than one that only has to close a gap: three seconds of no measurable
+    #: gain is a stuck reach, but it is an ordinary pause in a grasp.
+    stall_frames: int = 0
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -207,6 +237,8 @@ def sense(
     contact_force_n: dict[str, float],
     opposed: bool,
     time_s: float,
+    object_velocity: np.ndarray | None = None,
+    hand_velocity: np.ndarray | None = None,
 ) -> Sensing:
     """Read the situation from the pose and the running simulation."""
     positions = rig_kinematics().canonical_positions(bones)
@@ -223,6 +255,14 @@ def sense(
         contact_force_n=dict(contact_force_n),
         opposed=bool(opposed),
         time_s=float(time_s),
+        object_velocity=(
+            np.zeros(3) if object_velocity is None
+            else np.asarray(object_velocity, dtype=float)
+        ),
+        hand_velocity=(
+            np.zeros(3) if hand_velocity is None
+            else np.asarray(hand_velocity, dtype=float)
+        ),
     )
 
 
@@ -253,6 +293,465 @@ def _surface_distance(
     return float(np.linalg.norm(outside)) if np.any(outside > 0) else inside
 
 
+#: Half-angle of usable sight. Beyond this the object is not being looked at and
+#: its position is a memory rather than an observation.
+FIELD_OF_VIEW_DEG = 35.0
+
+
+def observe(
+    bones: dict[str, BonePose],
+    hand: Hand,
+    true_position: np.ndarray,
+    remembered: np.ndarray | None,
+    contact_force_n: dict[str, float],
+    opposed: bool,
+    time_s: float,
+    object_velocity: np.ndarray | None = None,
+    hand_velocity: np.ndarray | None = None,
+) -> Sensing:
+    """Sense the situation, seeing the object only when looking at it.
+
+    Until now the loop read the object's exact position out of the simulation
+    every frame regardless of where the head pointed, which is not vision. It
+    also made the head pointless: nothing the neck did changed what the body
+    knew, so a selector had no reason to look anywhere, and no way to notice it
+    had overshot.
+
+    Here the position is an OBSERVATION when the object is within the field of
+    view and the last remembered one otherwise. Looking becomes something the
+    controller has to do in order to act well, which is the only way a gaze
+    primitive can earn its place rather than being decoration.
+    """
+    from .gaze_controller import gaze_error_deg
+
+    off_axis = gaze_error_deg(bones, true_position) if bones else 180.0
+    seen = off_axis <= FIELD_OF_VIEW_DEG
+    position = true_position if seen else (
+        remembered if remembered is not None else true_position
+    )
+    reading = sense(bones, hand, position, contact_force_n, opposed, time_s,
+                    object_velocity, hand_velocity)
+    return Sensing(
+        bones=reading.bones,
+        object_position=reading.object_position,
+        tip_positions=reading.tip_positions,
+        convergence=reading.convergence,
+        contact_force_n=reading.contact_force_n,
+        opposed=reading.opposed,
+        time_s=reading.time_s,
+        object_velocity=reading.object_velocity,
+        hand_velocity=reading.hand_velocity,
+        gaze_error_deg=float(off_axis),
+        in_view=bool(seen),
+    )
+
+
+#: What acting blind costs, in metres of equivalent error. Priced so that
+#: turning to look wins over creeping toward a remembered position, but never
+#: over a grasp already in hand.
+_BLIND_PENALTY_M = 0.12
+
+
+def _blind_cost(sensing: Sensing) -> float:
+    """Charge for acting on a memory rather than an observation.
+
+    Switched back on now that something in the loop actually looks at a picture.
+    Where the head points decides what the model is SHOWN, so turning to face
+    the work is no longer decoration -- it is the difference between the brain
+    seeing the object and seeing the table.
+
+    It was briefly zeroed while the selector was a numeric search, which was
+    right at the time: a perception constraint with no perception is a handicap,
+    denying the controller information it has no way to recover. With a VLM the
+    trade reverses, and it tracked well when it was on -- the head reached 9
+    degrees off axis and held there.
+
+    This charged for acting on a remembered position rather than an observed
+    one, and the gaze gate above degraded the position estimate whenever the
+    head pointed elsewhere. Both were built for a VLM that is not there: the
+    selector is a numeric search over Sensing, no image is rendered anywhere in
+    this loop, and nothing consumes a picture.
+
+    Without a seeing component the pair is a handicap and nothing else -- the
+    controller is denied information it has no way to recover, and the neck
+    primitives it chooses to recover it are decoration. Sighted runs reached 1
+    of 4 goals against 2 of 4, entirely from the degradation.
+
+    Kept as a seam rather than deleted. FIELD_OF_VIEW_DEG, ``observe`` and the
+    look primitives all still work; restoring the constraint is putting this
+    penalty back once there is something that renders a frame and decides from
+    it. Turning it on before then only makes the body worse at its task in
+    exchange for realism nothing acts on.
+    """
+    if sensing.in_view:
+        # Still pay a little for looking off-centre, so the gaze tracks rather
+        # than catching the object at the edge of the frame.
+        return _BLIND_PENALTY_M * 0.15 * min(
+            1.0, sensing.gaze_error_deg / max(FIELD_OF_VIEW_DEG, 1e-6))
+    return _BLIND_PENALTY_M
+
+
+def _free_step(situation, scene, hand):
+    """One open step: do the task. No stages, no gates, no thresholds of mine.
+
+    Every goal written for this task had a way of being satisfied without doing
+    it -- a shape reachable while touching nothing, a gate that demanded the
+    grip before permitting the grip, a distance measured to a point inside the
+    object. A selector that writes its own plan should not then be marched
+    through someone else's, so this asks only for the thing actually wanted:
+    the object off the surface.
+    """
+    figure = scene.object_by_id(situation.figure)
+    if figure is None:
+        raise ValueError(f"figure {situation.figure!r} is not in the scene")
+    target = float(figure.transform.translation.y) + 0.12
+
+    def error(s):
+        """How far this is from a held, lifted object.
+
+        The task alone -- the object's height -- is constant through the reach
+        and the whole of the grasp, so a loop watching only that sees no
+        progress from the first frame and calls the attempt off before the hand
+        has arrived. The approach term is here for the stall detector's benefit
+        and nothing else: it shapes when the loop gives up, never what the
+        selector is allowed to do.
+        """
+        gap = float(np.linalg.norm(s.convergence - s.object_position))
+        return abs(target - float(s.object_position[1])) + gap
+
+    return Step(
+        name="pick up the object",
+        situation=situation,
+        error=error,
+        reached=lambda s: float(s.object_position[1]) >= target - 0.01,
+        active_parts=_all_parts(hand),
+        allows=(),
+        requires={"goal": "figure_raised", "height_m": 0.12},
+        budget_frames=10_000,
+        # One step now spans reach, shape, close and lift. Ninety frames of no
+        # measurable gain is a stuck reach; across a whole grasp it is a pause.
+        stall_frames=450,
+    )
+
+
+def _all_parts(hand: Hand) -> tuple[str, ...]:
+    """Every part the body can drive. The model decides what is relevant."""
+    side = hand.value
+    return (
+        f"{side}_shoulder", f"{side}_elbow", f"{side}_wrist",
+        f"{side}_thumb", f"{side}_index", f"{side}_middle",
+        f"{side}_ring", f"{side}_little", "neck", "head",
+    )
+
+
+def steps_from_skill(
+    situation: MotionSituation,
+    scene: SceneManifest,
+    hand: Hand,
+    skill: str,
+) -> list[Step]:
+    """Turn a planning template into steps with goals the body can sense.
+
+    The decomposition used to be four hand-written steps inside this module,
+    which meant a second skill needed a second function. Now the stages, their
+    order and their goals come from ``config/skills/<name>.v1.json`` and this
+    only knows how to measure the four goal kinds.
+    """
+    from .skills import aperture_orthogonality_deg, opposition_pairs, skill_template
+
+    figure = scene.object_by_id(situation.figure)
+    if figure is None:
+        raise ValueError(f"figure {situation.figure!r} is not in the scene")
+    template = skill_template(skill)
+    side = hand.value
+    groups = {
+        "arm": (f"{side}_shoulder", f"{side}_elbow", f"{side}_wrist"),
+        "digits": tuple(
+            f"{side}_{d}" for d in ("thumb", "index", "middle", "ring", "little")),
+        "gaze": ("neck", "head"),
+        "torso": ("spine", "root"),
+    }
+    span = float(np.linalg.norm([
+        figure.dimensions_m.x, figure.dimensions_m.y, figure.dimensions_m.z]))
+    start_height = float(figure.transform.translation.y)
+
+    def _tip_gap(s: Sensing) -> float:
+        gaps = [
+            abs(_surface_distance(t, figure, s.object_position) - _CONTACT_STANDOFF_M)
+            for t in s.tip_positions.values()
+        ]
+        return float(np.mean(gaps))
+
+    def _make(kind: str, params: dict[str, Any]):
+        if kind == "hand_within":
+            limit = float(params.get("distance_m", 0.02))
+
+            def _surface_reach(s: Sensing) -> float:
+                """Fingertip mean to the object's SURFACE, not its centre.
+
+                Measured to the centre, a 5 cm goal on a block whose half-width
+                is 3 cm asks the hand to sit 2 cm INSIDE it -- satisfiable only
+                by driving into the block, which shoves it, which moves the
+                target, which makes the controller reach again. That loop pushed
+                the block 18 cm while the model correctly reported it was still
+                not close enough.
+                """
+                return _surface_distance(s.convergence, figure, s.object_position)
+
+            def error(s: Sensing) -> float:
+                return max(0.0, _surface_reach(s) - limit) + _blind_cost(s)
+
+            return error, (lambda s: _surface_reach(s) <= limit)
+
+        if kind == "aperture_encapsulates":
+            want = float(params.get("orthogonality_deg", 60.0))
+
+            def error(s: Sensing) -> float:
+                # Two things at once, which is the whole point of this stage:
+                # the opening must stand square to the palm AND be around the
+                # object. Either alone is the failure that has been recurring --
+                # square but empty, or containing but flat against the palm.
+                square = max(0.0, want - aperture_orthogonality_deg(s.bones, side))
+                return square * 0.002 + _tip_gap(s) + _blind_cost(s)
+
+            def reached(s: Sensing) -> bool:
+                return (
+                    aperture_orthogonality_deg(s.bones, side) >= want
+                    and _tip_gap(s) <= float(params.get("clearance_m", 0.01)) * 3.0
+                )
+
+            return error, reached
+
+
+
+
+
+        if kind == "thumb_and_finger_touch":
+            floor = float(params.get("min_force_n", 0.3))
+            want_fingers = int(params.get("fingers", 1))
+
+            def error(s: Sensing) -> float:
+                """Shape the hand until the thumb AND fingers are both on it.
+
+                Contact is the signal that the shaping worked, and it is the
+                only one that cannot be faked by geometry: every shape metric
+                here has had a pose that satisfies it while touching nothing,
+                and a search found each one. Orienting the hand and forming the
+                Cs are a single act, not two stages that undo each other.
+                """
+                touched = sum(
+                    1 for d in ("index", "middle", "ring", "little")
+                    if s.contact_force_n.get(d, 0.0) >= floor
+                )
+                thumb_on = s.contact_force_n.get("thumb", 0.0) >= floor
+                return (
+                    object_in_grasp(s, hand)
+                    + 0.04 * (0.0 if thumb_on else 1.0)
+                    + 0.02 * max(0, want_fingers - touched)
+                    + 0.03 * max(0.0, grip_closure(s.bones, hand))
+                    + _blind_cost(s)
+                )
+
+            def reached(s: Sensing) -> bool:
+                touched = sum(
+                    1 for d in ("index", "middle", "ring", "little")
+                    if s.contact_force_n.get(d, 0.0) >= floor
+                )
+                return (
+                    s.contact_force_n.get("thumb", 0.0) >= floor
+                    and touched >= want_fingers
+                )
+
+            return error, reached
+
+        if kind == "palm_presented":
+            want_face = float(params.get("palm_facing", 0.35))
+            want_near = float(params.get("distance_m", 0.10))
+
+            def error(s: Sensing) -> float:
+                """Hand near the object AND turned so the palm faces it.
+
+                What has to be true before closing, and all that has to be. The
+                previous gate demanded the object already lie on the line
+                between thumb and fingers, which an OPEN hand cannot satisfy --
+                that line sits about 5 cm off the block however the arm is
+                placed, and closing the C is the thing that brings it in. So it
+                gated the grip on a condition only the grip could produce, and
+                the run spent twenty-six calls alternating reach and rotate
+                without ever advancing.
+                """
+                from .grasp_aperture import _palm_normal
+
+                toward = s.object_position - s.convergence
+                span = float(np.linalg.norm(toward))
+                near = max(0.0, span - want_near)
+                try:
+                    facing = float(np.dot(_palm_normal(s.bones, hand.value),
+                                          toward / span)) if span > 1e-9 else -1.0
+                except Exception:  # noqa: BLE001
+                    facing = -1.0
+                return near + 0.15 * max(0.0, want_face - facing) + _blind_cost(s)
+
+            def reached(s: Sensing) -> bool:
+                from .grasp_aperture import _palm_normal
+
+                toward = s.object_position - s.convergence
+                span = float(np.linalg.norm(toward))
+                if span > want_near:
+                    return False
+                try:
+                    return float(np.dot(_palm_normal(s.bones, hand.value),
+                                        toward / span)) >= want_face
+                except Exception:  # noqa: BLE001
+                    return False
+
+            return error, reached
+
+        if kind == "object_between_digits":
+            want = float(params.get("inside_m", 0.02))
+
+            def error(s: Sensing) -> float:
+                """How far the object is from being INSIDE the hand's opening.
+
+                The approach used to ask for the fingertips within a distance of
+                the object and stop there, which leaves the object beside the
+                hand rather than in it -- and a hand then closes on the space
+                next to what it is trying to hold. Measured: closing from that
+                pose drove the object from 3.5 cm to 7.0 cm out of the grasp.
+                """
+                return object_in_grasp(s, hand) + _blind_cost(s)
+
+            return error, (lambda s: object_in_grasp(s, hand) <= want)
+
+
+        if kind == "whole_hand_c":
+            want = float(params.get("closure", -0.4))
+
+            def error(s: Sensing) -> float:
+                """Every finger in a C on the object, which is the grip itself."""
+                return (
+                    max(0.0, grip_closure(s.bones, hand) - want)
+                    + object_in_grasp(s, hand)
+                    + _blind_cost(s)
+                )
+
+            return error, (
+                lambda s: grip_closure(s.bones, hand) <= want
+                and object_in_grasp(s, hand) <= 0.03
+            )
+
+        if kind == "thumb_finger_c":
+            want_facing = float(params.get("pad_facing", 0.7))
+            want_gap = float(params.get("contact_m", 0.012))
+
+            def error(s: Sensing) -> float:
+                """How far the hand is from a closed C between thumb and index.
+
+                Replaces the opposition-pair goal, which asked for a reading
+                that only appears AFTER a grip exists and so could not be worked
+                toward: before contact its value was a constant, and after
+                contact the stage was already over. Across fifteen runs it never
+                once read above zero.
+
+                A C is a shape, and a shape can be approached. The thumb's pad
+                faces the index's, the two are on either side of the object, and
+                both are close enough to press it. Get the shape and the forces
+                follow; chase the forces and there is nothing to steer by.
+                """
+                shape = c_shape(s.bones, hand)
+                thumb = s.tip_positions.get("thumb")
+                index = s.tip_positions.get("index")
+                if thumb is None or index is None:
+                    return 1.0
+                gap_t = _surface_distance(thumb, figure, s.object_position)
+                gap_i = _surface_distance(index, figure, s.object_position)
+                return (
+                    # The rays must close on each other, and point at each other.
+                    shape["gap_m"]
+                    + 0.08 * max(0.0, want_facing - shape["converging"])
+                    + max(0.0, gap_t - want_gap)
+                    + max(0.0, gap_i - want_gap)
+                    + _blind_cost(s)
+                )
+
+            def reached(s: Sensing) -> bool:
+                thumb = s.tip_positions.get("thumb")
+                index = s.tip_positions.get("index")
+                if thumb is None or index is None:
+                    return False
+                shape = c_shape(s.bones, hand)
+                return (
+                    shape["converging"] >= want_facing
+                    and shape["gap_m"] <= want_gap * 2.5
+                    and _surface_distance(thumb, figure, s.object_position) <= want_gap
+                    and _surface_distance(index, figure, s.object_position) <= want_gap
+                )
+
+            return error, reached
+
+        if kind == "opposition_pairs":
+            want = int(params.get("pairs", 1))
+            force = float(params.get("min_force_n", 0.5))
+
+            def error(s: Sensing) -> float:
+                have = opposition_pairs(s.contact_force_n, force)
+                if have >= want:
+                    return 0.0
+                # Where the thumb IS, not only whether it has touched. Without
+                # this the error was contact distance plus a constant, so a
+                # thumb beside the fingers scored the same as one across from
+                # them and nothing could work toward a pair.
+                across = thumb_opposition_score(s)
+                return (
+                    _tip_gap(s)
+                    + 0.04 * (1.0 - across)
+                    + 0.03 * max(0, want - have)
+                    + _blind_cost(s)
+                )
+
+            return error, (lambda s: opposition_pairs(s.contact_force_n, force) >= want)
+
+        if kind == "figure_raised":
+            height = float(params.get("height_m", 0.12))
+
+            def error(s: Sensing) -> float:
+                return abs((start_height + height) - float(s.object_position[1]))
+
+            return error, (
+                lambda s: float(s.object_position[1]) >= start_height + height - 0.01)
+
+        raise ValueError(f"no measurement for goal {kind!r}")
+
+    steps: list[Step] = []
+    for stage in template["stages"]:
+        error, reached = _make(stage["goal"], stage.get("goal_params", {}))
+        parts: tuple[str, ...] = ()
+        for group in stage.get("acts_with", ()):
+            parts += groups.get(group, ())
+        steps.append(Step(
+            name=stage["name"],
+            situation=MotionSituation(
+                figure=situation.figure if stage["goal"] == "figure_raised" else "hand",
+                path=stage.get("path", "TO"),
+                motion=stage.get("motion", "MOVE"),
+                ground=situation.figure,
+                manner=stage.get("manner"),
+                source_text=stage["name"]),
+            error=error,
+            reached=reached,
+            # Every primitive, at every stage. Restricting the menu per stage
+            # was meant to stop the model choosing something inappropriate, and
+            # it did -- along with stopping it choosing the thing that would
+            # have worked. A stage that forbids curling a finger cannot form a C
+            # however well the model reasons.
+            active_parts=_all_parts(hand),
+            allows=tuple(stage.get("allows", ())),
+            requires=dict(stage.get("goal_params", {}), goal=stage["goal"]),
+            budget_frames=int(stage.get("budget_frames", 45)),
+        ))
+    return steps
+
+
 def decompose(
     situation: MotionSituation,
     scene: SceneManifest,
@@ -268,10 +767,21 @@ def decompose(
     Each carries its own measurable goal, so "am I done" is a reading rather
     than a stopwatch.
     """
+    from .skills import resolve
+
+    skill = resolve(situation.source_text or "")
+    if skill is not None:
+        # Planned from an uploadable template rather than from this function.
+        return steps_from_skill(situation, scene, hand, skill)
+
     figure = scene.object_by_id(situation.figure)
     if figure is None:
         raise ValueError(f"figure {situation.figure!r} is not in the scene")
     side = hand.value
+    #: The gaze acts throughout. "Do the task and keep your eyes on it" is one
+    #: instruction, not two: without sight the position the body steers by is a
+    #: memory, so looking is part of every step rather than a separate one.
+    gaze = ("neck", "head")
     arm = (f"{side}_shoulder", f"{side}_elbow", f"{side}_wrist")
     digits = (f"{side}_thumb", f"{side}_index", f"{side}_middle",
               f"{side}_ring", f"{side}_little")
@@ -309,7 +819,7 @@ def decompose(
         """
         distance = float(np.linalg.norm(s.convergence - s.object_position))
         shortfall = max(0.0, span - _spread(s))
-        return distance + shortfall
+        return distance + shortfall + _blind_cost(s)
 
     #: How far clear of the object the gross reach stops. One object-span, so
     #: the hand arrives beside what it is reaching for rather than on it.
@@ -335,7 +845,7 @@ def decompose(
         """
         distance = float(np.linalg.norm(s.convergence - _standoff_point(s)))
         shortfall = max(0.0, span - _spread(s))
-        return distance + shortfall
+        return distance + shortfall + _blind_cost(s)
 
     def stage_reached(s: Sensing) -> bool:
         return stage_error(s) < 0.03
@@ -363,7 +873,7 @@ def decompose(
             abs(_surface_distance(tip, figure, s.object_position) - _CONTACT_STANDOFF_M)
             for tip in s.tip_positions.values()
         ]
-        return float(np.mean(gaps)) + (0.0 if s.opposed else 0.03)
+        return float(np.mean(gaps)) + (0.0 if s.opposed else 0.03) + _blind_cost(s)
 
     def grasp_reached(s: Sensing) -> bool:
         # The real test, and the one the old pipeline never applied: load on
@@ -385,7 +895,7 @@ def decompose(
                 ground=situation.figure, source_text="move the hand next to the object"),
             error=stage_error,
             reached=stage_reached,
-            active_parts=arm + digits,
+            active_parts=arm + digits + gaze,
             budget_frames=30,
         ),
         Step(
@@ -395,7 +905,7 @@ def decompose(
                 ground=situation.figure, source_text="move the hand to the object"),
             error=approach_error,
             reached=approach_reached,
-            active_parts=arm + digits,
+            active_parts=arm + digits + gaze,
         ),
         Step(
             name="close until the object is held",
@@ -404,14 +914,14 @@ def decompose(
                 ground=situation.figure, source_text="close on the object"),
             error=grasp_error,
             reached=grasp_reached,
-            active_parts=digits,
+            active_parts=digits + gaze,
         ),
         Step(
             name=f"move the object {situation.path}",
             situation=situation,
             error=lift_error,
             reached=lift_reached,
-            active_parts=arm + digits,
+            active_parts=arm + digits + gaze,
         ),
     ]
 
@@ -581,12 +1091,31 @@ def _solve_reach(sensing: Sensing, hand: Hand, amount: float) -> dict[str, Any]:
     from .models import PrimitiveParameters, Vec3
     from .primitives import arm_pose_from_target, shoulder_position
 
+    # Aim at the object's SURFACE, not its centre. The centre is inside the
+    # block, so aiming there commands the hand into it: measured, every
+    # reach_to call in one run drove the block further across the table, 0 to
+    # 25.8 cm over five calls, while the model kept correctly observing that
+    # the fingertips were not yet close enough.
     aim = _aim_point(hand, sensing, amount)
+    toward = sensing.object_position - sensing.convergence
+    span = float(np.linalg.norm(toward))
+    if span > 1e-6:
+        aim = aim - (toward / span) * _SURFACE_STANDOFF_M
     arm, _ = arm_pose_from_target(
         hand, shoulder_position(hand),
         Vec3(x=float(aim[0]), y=float(aim[1]), z=float(aim[2])),
         PrimitiveParameters(), present_hand=False)
     return arm
+
+
+#: How far short of the object's centre a reach stops: roughly the half-width of
+#: a graspable thing, so the fingertips arrive at its face rather than its middle.
+_SURFACE_STANDOFF_M = 0.035
+
+#: How far short of the object the gross approach stops, in metres. Fixed rather
+#: than derived from the action's magnitude, so the target stays put while the
+#: body moves toward it.
+_STANDOFF_M = 0.12
 
 
 def _solve_stand_off(sensing: Sensing, hand: Hand, amount: float) -> dict[str, Any]:
@@ -598,10 +1127,19 @@ def _solve_stand_off(sensing: Sensing, hand: Hand, amount: float) -> dict[str, A
     distance = float(np.linalg.norm(toward))
     if distance < 1e-6:
         return {}
-    goal = sensing.object_position - (toward / distance) * max(0.06, amount * 0.25)
-    lead = sensing.convergence - np.asarray(
-        rig_kinematics().canonical_positions(sensing.bones)[f"{hand.value}Hand"], dtype=float)
-    aim = goal - lead
+    # The standoff distance is FIXED; ``amount`` says how far along to travel
+    # toward it, not where it is. Scaling the target by the magnitude made the
+    # goalpost move every time the magnitude changed, and the hand oscillated
+    # between 15 and 20 cm out for ten straight decisions -- chasing a point it
+    # displaced each time it acted. A control whose target depends on how hard
+    # you pull it cannot converge.
+    goal = sensing.object_position - (toward / distance) * _STANDOFF_M
+    wrist = np.asarray(
+        rig_kinematics().canonical_positions(sensing.bones)[f"{hand.value}Hand"],
+        dtype=float)
+    lead = sensing.convergence - wrist
+    # Travel a fraction of the way to a fixed goal.
+    aim = wrist + ((goal - lead) - wrist) * float(np.clip(amount, 0.0, 1.0))
     arm, _ = arm_pose_from_target(
         hand, shoulder_position(hand),
         Vec3(x=float(aim[0]), y=float(aim[1]), z=float(aim[2])),
@@ -617,13 +1155,117 @@ def _solve_digits(hand: Hand, curl: float, opposition: float) -> dict[str, Any]:
 
 
 def _solve_open(sensing: Sensing, hand: Hand, amount: float) -> dict[str, Any]:
-    """Spread the hand. ``amount`` is how far toward fully open."""
-    return _solve_digits(hand, curl=max(0.0, 0.35 * (1.0 - amount)), opposition=0.9)
+    """Open the hand into an aperture that stands square to the palm.
+
+    ``amount`` travels toward the pose that maximises that squareness, measured
+    over the thumb's own degrees of freedom rather than guessed: the angle peaks
+    at 73.5 degrees near a thumb curl of 0.45 with the thumb barely opposed, and
+    falls to about 50 as opposition rises past 0.9.
+
+    That mattered because this primitive used to pin opposition at 0.9, chosen
+    to keep the thumb out of the corridor during the APPROACH, and was then
+    reused for a stage that runs with the hand already at the object. Capped at
+    roughly 50 degrees against a goal of 60, the model asked for a wider
+    aperture eight times in a row -- correctly, and to no effect, because the
+    primitive could not produce one. It is the stage's own goal; the primitive
+    that serves it should be aimed at it.
+    """
+    reach = float(np.clip(amount, 0.0, 1.0))
+    return _solve_digits(
+        hand,
+        curl=0.05 + 0.40 * reach,
+        # Enough to keep the thumb off the fingers' side, low enough that the
+        # aperture can stand up. 0.3 measures 68.8 degrees where 0.9 gives 53.2.
+        opposition=0.3,
+    )
+
+
+
+
+def _thumb_move(move: str):
+    """A primitive that runs one named thumb move from the vocabulary."""
+
+    def solve(sensing: Sensing, hand: Hand, amount: float) -> dict[str, Any]:
+        from .body_parts import move_rotations
+
+        return move_rotations(
+            f"{hand.value}_thumb", move, float(np.clip(amount, 0.0, 1.5))
+        )
+
+    return solve
+
+
+def _curl_one(digit: str):
+    """A primitive that curls exactly one finger."""
+
+    def solve(sensing: Sensing, hand: Hand, amount: float) -> dict[str, Any]:
+        from .force_closure import digit_rotations
+
+        held = {
+            d: 0.35 for d in ("thumb", "index", "middle", "ring", "little")
+        }
+        held[digit] = 0.1 + 0.8 * float(np.clip(amount, 0.0, 1.0))
+        rotations = digit_rotations(hand, held, opposition=0.3)
+        stem = digit.title()
+        # Only this finger's bones, so the others keep whatever they were doing.
+        return {k: v for k, v in rotations.items() if stem in k}
+
+    return solve
+
+
+
+def _solve_grip(sensing: Sensing, hand: Hand, amount: float) -> dict[str, Any]:
+    """Close every finger's C on the object. This IS the grip.
+
+    Searched over the thumb and the finger curls together, scored by the mean C
+    across all four fingers rather than by curl. Curling was never the thing:
+    a hand can curl hard with its digits pointing past each other and produce a
+    push, which is what every closing action here has done.
+    """
+    from .force_closure import digit_rotations
+
+    reach = float(np.clip(amount, 0.0, 1.0))
+    best: tuple[float, dict[str, Any]] | None = None
+    for finger_curl in np.linspace(0.2, 0.95, 6):
+        for thumb_curl in np.linspace(0.2, 0.95, 6):
+            for oppose in (0.2, 0.45, 0.7):
+                rotations = digit_rotations(
+                    hand,
+                    {"thumb": float(thumb_curl * reach + 0.1),
+                     **{d: float(finger_curl * reach + 0.1) for d in
+                        ("index", "middle", "ring", "little")}},
+                    opposition=float(oppose),
+                )
+                trial = dict(sensing.bones)
+                for bone, rotation in rotations.items():
+                    trial[bone] = BonePose(rotation=rotation)
+                # Lower is better: -1 is every finger closed in a C.
+                score = grip_closure(trial, hand)
+                if best is None or score < best[0]:
+                    best = (score, rotations)
+    return best[1] if best is not None else {}
 
 
 def _solve_close(sensing: Sensing, hand: Hand, amount: float) -> dict[str, Any]:
-    """Curl every digit together. ``amount`` is how far toward a full fist."""
-    return _solve_digits(hand, curl=float(np.clip(amount, 0.0, 1.0)), opposition=0.9)
+    """Close the hand, thumb coming across as it does.
+
+    ``oppose_thumb`` used to be a separate action and it should not have been.
+    Closing a hand IS the thumb travelling to meet the fingers; splitting them
+    gave the selector two controls that each undid the other's work, and it
+    spent whole stages alternating between them -- opposition flattening the
+    aperture, closing restoring it, neither ever reaching the object.
+
+    One action now, with the thumb's opposition rising alongside the curl and
+    capped where the aperture is still standing. Measured, the angle holds
+    between 56 and 68 degrees across the whole range instead of collapsing to
+    19 at the top of it.
+    """
+    reach = float(np.clip(amount, 0.0, 1.0))
+    return _solve_digits(
+        hand,
+        curl=0.15 + 0.55 * reach,
+        opposition=0.25 + 0.35 * reach,
+    )
 
 
 def _solve_oppose(sensing: Sensing, hand: Hand, amount: float) -> dict[str, Any]:
@@ -636,11 +1278,446 @@ def _solve_oppose(sensing: Sensing, hand: Hand, amount: float) -> dict[str, Any]
     """
     from .force_closure import digit_rotations
 
-    rotations = digit_rotations(
-        hand, {"thumb": float(np.clip(amount, 0.0, 1.0)), "index": 0.55,
-               "middle": 0.55, "ring": 0.55, "little": 0.55},
-        opposition=float(np.clip(0.3 + amount, 0.0, 1.2)))
-    return rotations
+    # Opposition is CAPPED, and that cap is the whole fix. Driven to 1.2 this
+    # primitive flattened the aperture it was supposed to be closing across --
+    # measured, the angle falls from 68 degrees at opposition 0.3 to 19 at 1.2 --
+    # so it and ``open_hand`` spent a whole stage undoing each other, the model
+    # alternating between them and correctly narrating the trap: "the aperture
+    # is flat to the palm, so bring the thumb across to square the grasp".
+    #
+    # The thumb reaches across on CURL, which leaves the aperture standing. Past
+    # about 0.6 of opposition there is nothing left to oppose into.
+    return digit_rotations(
+        hand,
+        {"thumb": 0.15 + 0.45 * float(np.clip(amount, 0.0, 1.0)),
+         "index": 0.55, "middle": 0.55, "ring": 0.55, "little": 0.55},
+        opposition=0.25 + 0.35 * float(np.clip(amount, 0.0, 1.0)))
+
+
+#: A candidate must bring the thumb at least this much closer to the fingers to
+#: count as inward. Small, so a near-stationary refinement still qualifies.
+_INWARD_EPSILON_M = 0.0005
+
+
+def c_shape(
+    bones: dict[str, BonePose], hand: Hand, finger: str = "index"
+) -> dict[str, float]:
+    """Do the thumb and index form a closed C, measured as two rays.
+
+    Take each fingertip and extend it along its last bone. For a C the two rays
+    must CONVERGE -- each pointing at the other -- and pass close enough to be
+    one loop. Two rays that leave the tips at right angles and never meet are
+    not a small C, they are a pair of blades, however near the tips happen to be.
+
+    Returns the closing distance between the rays, whether each points toward
+    the other, and how far from coplanar they are. The earlier measure only
+    asked which way the thumb PAD faced, which a hand can satisfy while its
+    fingers point past each other and enclose nothing.
+    """
+    side = hand.value
+    kinematics = rig_kinematics()
+    try:
+        positions = kinematics.canonical_positions(bones)
+    except Exception:  # noqa: BLE001
+        return {"gap_m": 1.0, "converging": 0.0, "coplanar_m": 1.0}
+
+    def ray(distal: str, proximal: str) -> tuple[np.ndarray, np.ndarray] | None:
+        tip, base = positions.get(distal), positions.get(proximal)
+        if tip is None or base is None:
+            return None
+        direction = np.asarray(tip, dtype=float) - np.asarray(base, dtype=float)
+        size = float(np.linalg.norm(direction))
+        if size < 1e-9:
+            return None
+        return np.asarray(tip, dtype=float), direction / size
+
+    thumb = ray(f"{side}ThumbDistal", f"{side}ThumbProximal")
+    stem = finger.title()
+    index = ray(f"{side}{stem}Distal", f"{side}{stem}Intermediate")
+    if thumb is None or index is None:
+        return {"gap_m": 1.0, "converging": 0.0, "coplanar_m": 1.0}
+
+    (p1, d1), (p2, d2) = thumb, index
+    between = p2 - p1
+    span = float(np.linalg.norm(between))
+    if span < 1e-9:
+        return {"gap_m": 0.0, "converging": 1.0, "coplanar_m": 0.0}
+    unit = between / span
+
+    # THE dot product of the two rays. Two unit vectors that are parallel and
+    # opposite give -1, which is a thumb and finger aimed straight at each
+    # other: a C. At 0 they are perpendicular, which is the pair of blades that
+    # cannot enclose anything. At +1 they point the same way.
+    #
+    # Measured against the line BETWEEN the tips instead, as this was before, a
+    # hand scores well for having its tips near each other while the fingers
+    # themselves point past each other -- which is exactly the shape that kept
+    # failing.
+    facing = float(np.dot(d1, d2))
+    # Reported as "how close to -1", so higher is better like everything else.
+    converging = -facing
+
+    # Do the rays point AT each other, or away? Antiparallel is both: a thumb
+    # and finger aimed at one another give -1, and so does a hand splayed wide
+    # with the two pointing back to back. Told to make the dot product -1, the
+    # search found the second -- the hand opened flat, the metric was satisfied,
+    # and nothing could be held. Direction alone cannot tell a C from a fan.
+    toward_each_other = min(float(np.dot(d1, unit)), float(np.dot(d2, -unit)))
+
+    # Closest approach between the two infinite lines: how nearly they meet.
+    cross = np.cross(d1, d2)
+    size = float(np.linalg.norm(cross))
+    if size < 1e-9:
+        gap = float(np.linalg.norm(np.cross(between, d1)))
+    else:
+        gap = abs(float(np.dot(between, cross / size)))
+    return {
+        # How far the two rays miss each other by. Zero is a closed loop.
+        "gap_m": gap,
+        # The raw dot product of the two ray directions. -1 is antiparallel,
+        # which is necessary for a C and not sufficient.
+        "ray_dot": facing,
+        # +1 when each ray points at the other's tip, negative when they point
+        # away. This is what separates a closing C from an opening fan.
+        "toward": toward_each_other,
+        # The honest single number: antiparallel AND closing. Reported as the
+        # dot product when the rays converge, and as +1 -- the worst case, a
+        # blade -- when they do not, so that targeting -1 cannot be met by
+        # opening the hand.
+        "c_closure": facing if toward_each_other > 0.0 else 1.0,
+        # The same thing sign-flipped, so +1 is best.
+        "converging": converging,
+        # Out-of-plane separation, which is the same quantity here.
+        "coplanar_m": gap,
+    }
+
+
+
+def grip_closure(bones: dict[str, BonePose], hand: Hand) -> float:
+    """The mean C across ALL four fingers. -1 is a whole hand closed on something.
+
+    A grip is not one C. Each finger forms its own with the thumb, and closing
+    all four IS gripping -- there is no separate squeezing step, which is why
+    "close the hand" as a distinct action kept undoing whatever shape had just
+    been made. Measured on the index alone, three fingers can be anywhere.
+    """
+    values = [
+        c_shape(bones, hand, finger)["c_closure"]
+        for finger in ("index", "middle", "ring", "little")
+    ]
+    return float(np.mean(values)) if values else 1.0
+
+
+def object_in_grasp(sensing: Sensing, hand: Hand) -> float:
+    """Distance from the object to the line between thumb and finger group.
+
+    Near zero means the object sits INSIDE the opening, between the thumb and
+    the fingers, which is where it has to be before closing can hold it. The
+    approach was aiming the fingertips a fixed distance from the object's centre
+    and stopping there, which leaves the object beside the hand rather than in
+    it -- the hand then tries to grip a thing that is not between its digits.
+    """
+    thumb = sensing.tip_positions.get("thumb")
+    fingers = [
+        sensing.tip_positions[d]
+        for d in ("index", "middle", "ring", "little")
+        if d in sensing.tip_positions
+    ]
+    if thumb is None or not fingers:
+        return 1.0
+    other = np.mean(fingers, axis=0)
+    span = other - thumb
+    length = float(np.linalg.norm(span))
+    if length < 1e-9:
+        return float(np.linalg.norm(sensing.object_position - thumb))
+    unit = span / length
+    along = float(np.dot(sensing.object_position - thumb, unit))
+    # Clamped, so an object beyond either tip is measured from that tip.
+    along = float(np.clip(along, 0.0, length))
+    closest = thumb + unit * along
+    return float(np.linalg.norm(sensing.object_position - closest))
+
+
+def thumb_pad_facing(bones: dict[str, BonePose], hand: Hand) -> float:
+    """Which way the thumb PAD points. +1 toward the fingers, 0 sideways.
+
+    The difference between a C and a blade, and the quantity that decides
+    whether a thumb can press anything. A thumb can have its tip exactly where a
+    grasp needs it and still be turned so the pad faces out of the hand -- the
+    tip arrives, there is no face to press with, and no amount of closing
+    produces force.
+
+    It was missing from the opposition ladder because that was fitted by
+    minimising thumb-tip to fingertip DISTANCE, which a blade satisfies as well
+    as a C. Measured afterwards, ``oppose_middle`` and ``oppose_ring`` -- the
+    two a mid-hand grasp naturally selects -- put the pad at 0.015 and 0.098.
+    """
+    side = hand.value
+    kinematics = rig_kinematics()
+    try:
+        rotation = kinematics.canonical_world_rotation(bones, f"{side}ThumbDistal")
+        positions = kinematics.canonical_positions(bones)
+    except Exception:  # noqa: BLE001
+        return 0.0
+    pad = rotation @ np.asarray([-1.0, 0.0, 0.0])
+    fingers = np.mean(
+        [positions[f"{side}{d}Distal"] for d in ("Index", "Middle", "Ring", "Little")],
+        axis=0,
+    )
+    toward = fingers - positions[f"{side}ThumbDistal"]
+    size = float(np.linalg.norm(toward))
+    return float(np.dot(pad, toward / size)) if size > 1e-9 else 0.0
+
+
+def _thumb_to_fingers(sensing: Sensing) -> float:
+    """Distance from the thumb tip to the middle of the finger group.
+
+    The quantity that says whether the thumb is coming in or going out. Grabbing
+    reduces it; releasing raises it.
+    """
+    thumb = sensing.tip_positions.get("thumb")
+    fingers = [
+        sensing.tip_positions[d]
+        for d in ("index", "middle", "ring", "little")
+        if d in sensing.tip_positions
+    ]
+    if thumb is None or not fingers:
+        return float("inf")
+    return float(np.linalg.norm(thumb - np.mean(fingers, axis=0)))
+
+
+def thumb_opposition_score(sensing: Sensing, hand: Hand | None = None) -> float:
+    """How well placed the thumb is to form a pair. 1.0 is directly opposite.
+
+    A pair is the thumb and a finger loaded on OPPOSITE faces, so the geometry
+    that decides it is which side of the object each is on -- not how close
+    either is. Measured as the angle between the thumb and the nearest finger
+    as seen from the object's centre: directly across is +1, alongside is 0,
+    same side is -1.
+
+    Nothing measured this before, and that is why the pair goals could not be
+    worked toward. Their error was contact distance plus a constant penalty for
+    having no pairs, so before anything touched, a thumb tucked beside the
+    fingers scored exactly as well as one placed across from them. The goal
+    could not tell the two apart, so no action could move it and every run
+    ended with pairs at zero.
+    """
+    thumb = sensing.tip_positions.get("thumb")
+    if thumb is None:
+        return -1.0
+    centre = sensing.object_position
+    to_thumb = thumb - centre
+    size = float(np.linalg.norm(to_thumb))
+    if size < 1e-9:
+        return -1.0
+    to_thumb = to_thumb / size
+    best = -1.0
+    for digit in ("index", "middle", "ring", "little"):
+        tip = sensing.tip_positions.get(digit)
+        if tip is None:
+            continue
+        to_finger = tip - centre
+        length = float(np.linalg.norm(to_finger))
+        if length < 1e-9:
+            continue
+        # -1 when they point the same way from the centre, +1 when opposite.
+        best = max(best, -float(np.dot(to_thumb, to_finger / length)))
+    return best
+
+
+def _thumb_dof_candidates(hand: Hand, reach: float) -> list[dict[str, Any]]:
+    """Thumb poses swept over its own flexion, abduction and twist."""
+    import math
+
+    from .analysis.anatomy.frame import DofAngles, all_frames, compose
+    from .analysis.anatomy.rom import rom_limit
+    from .models import Quat
+
+    bone = f"{hand.value}ThumbMetacarpal"
+    frames = all_frames()
+    spans = {
+        dof: rom_limit(bone, dof).typical_deg for dof in ("flexion", "abduction", "twist")
+    }
+    out: list[dict[str, Any]] = []
+    grid = np.linspace(-1.0, 1.0, 5)
+    for flex in grid:
+        for abduct in grid:
+            for twist in grid:
+                angles = {}
+                for dof, value in (("flexion", flex), ("abduction", abduct),
+                                   ("twist", twist)):
+                    low, high = spans[dof]
+                    angles[dof] = value * (high if value >= 0 else -low) * reach
+                xyzw = compose(
+                    DofAngles(
+                        flexion_rad=math.radians(angles["flexion"]),
+                        abduction_rad=math.radians(angles["abduction"]),
+                        twist_rad=math.radians(angles["twist"]),
+                    ),
+                    frames[bone],
+                )
+                out.append({bone: Quat(
+                    x=float(xyzw[0]), y=float(xyzw[1]),
+                    z=float(xyzw[2]), w=float(xyzw[3]))})
+    return out
+
+
+def _solve_place_thumb(sensing: Sensing, hand: Hand, amount: float) -> dict[str, Any]:
+    """Bring the thumb inward across the palm, toward the finger it must oppose.
+
+    This is the motion a hand makes touching thumb to little finger: the thumb
+    travels ACROSS the palm rather than curling in front of it, and it is what
+    makes a grip possible at all. The vocabulary already holds it -- the
+    opposition ladder in ``config/body_parts.v1.json``, fitted by search against
+    this rig rather than authored:
+
+        oppose_index    abduction -0.33   nearest the index
+        oppose_middle   abduction -0.50
+        oppose_ring     abduction -0.67
+        oppose_little   abduction -1.00   furthest across
+        palmar_adduct                     laid against the palm, four fingers up
+
+    Abduction is the axis that chooses which finger, which is the anatomy: written
+    from a sign convention first, every one of these carried the thumb AWAY from
+    the fingers, 17.0 cm at oppose_little against 10.4 for a plain extend.
+
+    Searched here over which finger to oppose and how far to travel, scored by
+    whether the thumb ends up across the object from the fingers. The previous
+    version drove generic curl and opposition parameters and never used the
+    fitted motion at all.
+    """
+    from .body_parts import move_rotations
+
+    part = f"{hand.value}_thumb"
+    reach = float(np.clip(amount, 0.0, 1.0))
+    here = _thumb_to_fingers(sensing)
+    best: tuple[float, dict[str, Any]] | None = None
+    candidates: list[dict[str, Any]] = []
+    for move in ("oppose_index", "oppose_middle", "oppose_ring",
+                 "oppose_little", "palmar_adduct"):
+        for magnitude in (0.4, 0.7, 1.0):
+            try:
+                candidates.append(move_rotations(part, move, magnitude * reach))
+            except Exception:  # noqa: BLE001
+                continue
+    # The named poses are five points in a three-dimensional space and none of
+    # them was chosen for pad orientation. Searching the DOFs directly lets a C
+    # be found where the ladder only offers blades.
+    candidates.extend(_thumb_dof_candidates(hand, reach))
+    for rotations in candidates:
+        if True:
+            trial = dict(sensing.bones)
+            for bone, rotation in rotations.items():
+                trial[bone] = BonePose(rotation=rotation)
+            probe = sense(
+                trial, hand, sensing.object_position,
+                sensing.contact_force_n, sensing.opposed, sensing.time_s,
+            )
+            tip = probe.tip_positions.get("thumb")
+            if tip is None:
+                continue
+            # INWARD ONLY. Grabbing has a direction: the thumb travels toward
+            # the fingers it will work against, and a candidate that carries it
+            # the other way is not a worse grasp, it is the opposite motion.
+            # Scored rather than constrained, the search took poses that opened
+            # the hand out at the very moment it should have been closing --
+            # visible on screen as the thumb swinging away just as the fingers
+            # arrived.
+            if _thumb_to_fingers(probe) > here - _INWARD_EPSILON_M:
+                continue
+            across = thumb_opposition_score(probe)
+            near = -abs(float(np.linalg.norm(tip - sensing.object_position)))
+            # A C, not a blade. Weighted to dominate, because a thumb whose pad
+            # faces out of the hand cannot press however well placed its tip is,
+            # and placement alone is what the ladder was fitted for.
+            shape = c_shape(trial, hand)
+            # Close the loop: rays converging and nearly meeting.
+            score = (
+                2.0 * shape["converging"] - 4.0 * shape["gap_m"] + across + 0.5 * near
+            )
+            if best is None or score > best[0]:
+                best = (score, rotations)
+    return best[1] if best is not None else {}
+
+
+def _solve_orient_palm(sensing: Sensing, hand: Hand, amount: float) -> dict[str, Any]:
+    """Supinate the forearm until the palm faces the object.
+
+    The DOF this needed all along, and it was frozen. Measured across a run,
+    ``rightLowerArm`` twist held at exactly -0.0 for every frame, on every clip:
+    the reach solver never writes it, and the closed loop passed neutral
+    parameters, so nothing else did either. The hand was carried around like a
+    fixed block on the end of a working arm.
+
+    Turning it is the whole difference between a graspable presentation and an
+    impossible one::
+
+        forearm twist   -60 deg -> palm faces straight AWAY   (-1.00)
+                          0 deg -> where every run sat        (-0.49)
+                        +80 deg -> palm faces the object      (+0.87)
+
+    An earlier version of this searched the WRIST bone instead, which carries
+    only 10 degrees of roll against the forearm's 80, and moved the hand more
+    than it turned it. Supination is a forearm act; the wrist deviates and
+    flexes but it does not turn the palm over.
+    """
+    import math
+
+    from .analysis.anatomy.frame import DofAngles, all_frames, compose
+    from .analysis.anatomy.rom import rom_limit
+    from .grasp_aperture import _palm_normal
+    from .models import Quat
+
+    bone = f"{hand.value}LowerArm"
+    toward = sensing.object_position - sensing.convergence
+    distance = float(np.linalg.norm(toward))
+    if distance < 1e-6:
+        return {}
+    toward = toward / distance
+
+    frames = all_frames()
+    low, high = rom_limit(bone, "twist").typical_deg
+    existing = sensing.bones.get(bone)
+    # Keep whatever flexion and abduction the reach solved for; only the twist
+    # is ours. Overwriting the others would undo the arm's own solution.
+    if existing is not None:
+        from .analysis.anatomy.frame import decompose
+
+        current = decompose(
+            np.asarray([
+                existing.rotation.x, existing.rotation.y,
+                existing.rotation.z, existing.rotation.w,
+            ]),
+            frames[bone],
+        )
+        flexion, abduction = current.flexion_rad, current.abduction_rad
+    else:
+        flexion = abduction = 0.0
+
+    best: tuple[float, Any] | None = None
+    for fraction in np.linspace(-1.0, 1.0, 17):
+        degrees = fraction * (high if fraction >= 0 else -low) * float(
+            np.clip(amount, 0.0, 1.0)
+        )
+        xyzw = compose(
+            DofAngles(
+                flexion_rad=flexion,
+                abduction_rad=abduction,
+                twist_rad=math.radians(degrees),
+            ),
+            frames[bone],
+        )
+        trial = dict(sensing.bones)
+        trial[bone] = BonePose(rotation=Quat(
+            x=float(xyzw[0]), y=float(xyzw[1]),
+            z=float(xyzw[2]), w=float(xyzw[3])))
+        try:
+            score = float(np.dot(_palm_normal(trial, hand.value), toward))
+        except Exception:  # noqa: BLE001
+            continue
+        if best is None or score > best[0]:
+            best = (score, trial[bone].rotation)
+    return {bone: best[1]} if best is not None else {}
 
 
 def _solve_lift(sensing: Sensing, hand: Hand, amount: float) -> dict[str, Any]:
@@ -658,6 +1735,45 @@ def _solve_lift(sensing: Sensing, hand: Hand, amount: float) -> dict[str, Any]:
     return arm
 
 
+
+def _solve_look_at_figure(sensing: Sensing, hand: Hand, amount: float) -> dict[str, Any]:
+    """Turn the neck and head until the object is in view."""
+    from .gaze_controller import aim_gaze
+
+    result = aim_gaze(sensing.bones, sensing.object_position)
+    if amount >= 0.999:
+        return dict(result.bones)
+    from scipy.spatial.transform import Rotation, Slerp
+
+    from .models import Quat
+
+    out: dict[str, Any] = {}
+    for bone, rotation in result.bones.items():
+        start = sensing.bones.get(bone)
+        if start is None:
+            out[bone] = rotation
+            continue
+        a, b = start.rotation, rotation
+        pair = Rotation.from_quat([[a.x, a.y, a.z, a.w], [b.x, b.y, b.z, b.w]])
+        xyzw = Slerp([0.0, 1.0], pair)([float(np.clip(amount, 0.0, 1.0))]).as_quat()[0]
+        out[bone] = Quat(x=float(xyzw[0]), y=float(xyzw[1]),
+                         z=float(xyzw[2]), w=float(xyzw[3]))
+    return out
+
+
+def _solve_look_at_hand(sensing: Sensing, hand: Hand, amount: float) -> dict[str, Any]:
+    """Watch the grasp rather than the object.
+
+    Different from looking at the object and worth having separately: while
+    closing, what matters is where the fingers are relative to the thing, and
+    that is judged from the hand.
+    """
+    from .gaze_controller import aim_gaze
+
+    result = aim_gaze(sensing.bones, sensing.convergence)
+    return dict(result.bones)
+
+
 def super_primitives(hand: Hand) -> tuple[SuperPrimitive, ...]:
     """Everything the selector may call, this frame."""
     return (
@@ -668,11 +1784,52 @@ def super_primitives(hand: Hand) -> tuple[SuperPrimitive, ...]:
                        "put the fingertips where the object is", _solve_reach),
         SuperPrimitive("open_hand", _digit_parts(hand),
                        "spread the digits wider than the object", _solve_open),
+        *[
+            SuperPrimitive(
+                f"thumb_{move}", (f"{hand.value}_thumb",),
+                describes,
+                _thumb_move(move),
+            )
+            for move, describes in (
+                ("oppose_index", "swing the thumb across toward the index"),
+                ("oppose_middle", "swing the thumb across toward the middle finger"),
+                ("oppose_little", "swing the thumb across toward the little finger"),
+                ("palmar_adduct", "lay the thumb in against the palm"),
+                ("flex", "curl the thumb"),
+                ("extend", "straighten the thumb"),
+                ("abduct", "swing the thumb away from the hand"),
+                ("rotate_in", "rotate the thumb inward about its own axis"),
+                ("rotate_out", "rotate the thumb outward about its own axis"),
+            )
+        ],
+        *[
+            SuperPrimitive(
+                f"curl_{digit}", (f"{hand.value}_{digit}",),
+                f"curl the {digit} alone, leaving the other digits as they are",
+                _curl_one(digit),
+            )
+            for digit in ("index", "middle", "ring", "little")
+        ],
+        SuperPrimitive("grip", _digit_parts(hand),
+                       "close every finger into a C on the object -- this is "
+                       "the grip itself, not a separate squeeze",
+                       _solve_grip),
         SuperPrimitive("close_hand", _digit_parts(hand),
                        "curl every digit toward the object", _solve_close),
-        SuperPrimitive("oppose_thumb", _digit_parts(hand),
-                       "carry the thumb across the palm against the fingers",
-                       _solve_oppose),
+        SuperPrimitive("place_thumb", _digit_parts(hand),
+                       "move the thumb across the object, opposite the fingers, "
+                       "so a pair can form",
+                       _solve_place_thumb),
+        SuperPrimitive("orient_palm", (f"{hand.value}_elbow", f"{hand.value}_wrist"),
+                       "supinate the forearm so the palm faces the object, "
+                       "putting the thumb and fingers on opposite sides of it",
+                       _solve_orient_palm),
+        SuperPrimitive("look_at_object", ("neck", "head"),
+                       "turn the head until the object is in view",
+                       _solve_look_at_figure),
+        SuperPrimitive("look_at_hand", ("neck", "head"),
+                       "watch the hand and what it is closing on",
+                       _solve_look_at_hand),
         SuperPrimitive("lift", _arm_parts(hand),
                        "raise the hand and whatever it holds", _solve_lift),
     )
@@ -696,32 +1853,183 @@ class SuperPrimitiveSelector:
     magnitudes: tuple[float, ...] = (0.15, 0.3, 0.5, 0.7, 0.85, 1.0)
 
     def choose(self, sensing: Sensing, step: Step) -> tuple[str, float, dict[str, Any]]:
+        """The best action available, at either granularity.
+
+        Super primitives are not a replacement for per-part moves, they are the
+        larger of two options. Coordination is what a per-part choice cannot
+        express -- reaching the block needs the shoulder, elbow and wrist
+        together, and one part at a time stalls 19.9 cm out -- but plenty of
+        moments want one finger adjusted rather than a whole hand re-shaped, and
+        a controller that can only speak in whole actions has lost that.
+
+        So both are scored against the same error and the better one wins. A
+        super primitive earns its place each frame rather than being privileged.
+        """
         here = step.error(sensing)
         best: tuple[float, str, float, dict[str, Any]] = (here, "hold", 0.0, {})
+
+        def consider(name: str, amount: float, rotations: dict[str, Any]) -> None:
+            nonlocal best
+            if not rotations:
+                return
+            trial = dict(sensing.bones)
+            for bone, rotation in rotations.items():
+                trial[bone] = BonePose(rotation=rotation)
+            # Probed through the eyes, not around them. Scoring a candidate with
+            # `sense` left `in_view` at its default of True, so a head turn
+            # never appeared to change anything and looking could not win --
+            # the loop found the object once, drifted back out of view at 41
+            # degrees, and spent the rest of the run acting on a memory it had
+            # no reason to refresh.
+            #
+            # The object is placed at its BELIEVED position for the probe, which
+            # is what the body has. Asking "would I see it if I turned this way"
+            # about the place it thinks the object is, is reasoning it can
+            # actually do; asking about the true position would be telepathy
+            # again, one level up.
+            probe = observe(trial, self.hand, sensing.object_position,
+                            sensing.object_position, sensing.contact_force_n,
+                            sensing.opposed, sensing.time_s)
+            value = step.error(probe)
+            if value < best[0]:
+                best = (value, name, amount, rotations)
+
         for primitive in super_primitives(self.hand):
             if not (set(primitive.parts) & set(step.active_parts)):
                 continue
             for amount in self.magnitudes:
                 try:
-                    rotations = primitive.solve(sensing, self.hand, amount)
+                    consider(primitive.name, amount,
+                             primitive.solve(sensing, self.hand, amount))
                 except Exception:
                     continue
-                if not rotations:
-                    continue
-                trial = dict(sensing.bones)
-                for bone, rotation in rotations.items():
-                    trial[bone] = BonePose(rotation=rotation)
-                probe = sense(trial, self.hand, sensing.object_position,
-                              sensing.contact_force_n, sensing.opposed, sensing.time_s)
-                value = step.error(probe)
-                if value < best[0]:
-                    best = (value, primitive.name, amount, rotations)
+
+        # The atomic layer, still on the menu.
+        for part in step.active_parts:
+            try:
+                available = moves_for(part)
+            except Exception:
+                continue
+            for move in available:
+                for amount in self.magnitudes:
+                    try:
+                        consider(f"{part}:{move}", amount,
+                                 move_rotations(part, move, amount))
+                    except Exception:
+                        continue
         return best[1], best[2], best[3]
 
 
 def candidate_moves(step: Step) -> dict[str, tuple[str, ...]]:
     """The moves each active part may run this frame."""
     return {part: tuple(moves_for(part)) for part in step.active_parts}
+
+
+
+# ---------------------------------------------------------------------------
+# Numerical targets: the model names a number, the search drives it there.
+#
+# Choosing one primitive a second is the wrong job for a model. It reasons well
+# about WHAT should be true -- "the thumb and index should point at each other,
+# that is a dot product of -1" -- and badly about which of twenty-two controls
+# moves that number, which is a search problem it cannot run and a numeric
+# optimiser can, thirty times a second instead of once.
+#
+# So the model sets a target and the greedy controller pursues it every frame.
+# The division is the one the two are actually good at.
+# ---------------------------------------------------------------------------
+
+#: Everything the model may aim at, and how to read it.
+METRICS: dict[str, Any] = {}
+
+
+def _register_metrics() -> None:
+    if METRICS:
+        return
+    METRICS.update({
+        # -1 is a C: thumb and index rays parallel and opposite. +1 is a blade.
+        # Antiparallel AND converging. -1 is a C that closes around something.
+        # Prefer this over raw ray_dot, which a splayed-open hand also satisfies.
+        "c_closure": lambda s, h: c_shape(s.bones, h)["c_closure"],
+        # The whole hand: mean C across all four fingers. -1 is a grip.
+        "grip_closure": lambda s, h: grip_closure(s.bones, h),
+        # Metres from the object to the line between thumb and fingers. 0 means
+        # the object is INSIDE the hand's opening rather than beside it.
+        "object_in_grasp_m": lambda s, h: object_in_grasp(s, h),
+        "ray_dot": lambda s, h: c_shape(s.bones, h)["ray_dot"],
+        "rays_toward": lambda s, h: c_shape(s.bones, h)["toward"],
+        # Metres by which the two fingertip rays miss each other.
+        "ray_gap_m": lambda s, h: c_shape(s.bones, h)["gap_m"],
+        # Fingertip mean to the object, metres.
+        "tips_to_object_m": lambda s, h: float(
+            np.linalg.norm(s.convergence - s.object_position)
+        ),
+        # +1 when the thumb is directly across the object from the fingers.
+        "thumb_opposition": lambda s, h: thumb_opposition_score(s),
+        # Metres from the thumb tip to the middle of the finger group.
+        "thumb_to_fingers_m": lambda s, h: _thumb_to_fingers(s),
+        # Degrees the apertures stand off the palm.
+        "aperture_deg": lambda s, h: __import__(
+            "rigby_poc.skills", fromlist=["x"]
+        ).aperture_orthogonality_deg(s.bones, h.value),
+    })
+
+
+@dataclass
+class NumericTarget:
+    """A number the model wants, and what it is currently."""
+
+    metric: str
+    value: float
+    set_at_s: float = 0.0
+
+    def error(self, sensing: Sensing, hand: Hand) -> float:
+        _register_metrics()
+        reader = METRICS.get(self.metric)
+        if reader is None:
+            return 0.0
+        try:
+            return abs(float(reader(sensing, hand)) - float(self.value))
+        except Exception:  # noqa: BLE001
+            return 0.0
+
+    def to_dict(self) -> dict[str, Any]:
+        return {"metric": self.metric, "value": self.value}
+
+
+def pursue_target(
+    sensing: Sensing,
+    hand: Hand,
+    target: NumericTarget,
+    magnitudes: tuple[float, ...] = (0.15, 0.3, 0.5, 0.7, 0.85, 1.0),
+) -> tuple[str, float, dict[str, Any]]:
+    """The greedy half: whichever primitive moves the number closest to target.
+
+    Every primitive at every magnitude, scored only by the named metric. This is
+    the search the model cannot do and does not need to: it has already said
+    what the number should be.
+    """
+    here = target.error(sensing, hand)
+    best: tuple[float, str, float, dict[str, Any]] = (here, "hold", 0.0, {})
+    for primitive in super_primitives(hand):
+        for amount in magnitudes:
+            try:
+                rotations = primitive.solve(sensing, hand, amount)
+            except Exception:  # noqa: BLE001
+                continue
+            if not rotations:
+                continue
+            trial = dict(sensing.bones)
+            for bone, rotation in rotations.items():
+                trial[bone] = BonePose(rotation=rotation)
+            probe = sense(
+                trial, hand, sensing.object_position, sensing.contact_force_n,
+                sensing.opposed, sensing.time_s,
+            )
+            value = target.error(probe, hand)
+            if value < best[0] - 1e-6:
+                best = (value, primitive.name, amount, rotations)
+    return best[1], best[2], best[3]
 
 
 @dataclass
@@ -775,6 +2083,9 @@ def generate(
         raise ValueError(f"figure {situation.figure!r} is not in the scene")
     selector = selector or SuperPrimitiveSelector(hand=hand)
     steps = decompose(situation, scene, hand)
+    # A selector that plans for itself is not marched through mine.
+    if hasattr(selector, "make_plan"):
+        steps = [_free_step(situation, scene, hand)]
     trace = Trace(steps=[s.to_dict() for s in steps])
 
     kinematics = rig_kinematics()
@@ -795,8 +2106,24 @@ def generate(
         landmarks[f"{hand.value}MiddleProximal"] - landmarks[f"{hand.value}Hand"]))
     palm_half = np.asarray([max(0.025, across * 0.55), max(0.028, along * 0.58), 0.012])
 
-    model = mujoco.MjModel.from_xml_string(
-        _embodied_xml(figure, palm_half, lengths, scene.support_height_m))
+    # A camera carried on a mocap body at the head. The embodied model has no
+    # head -- it is hand geometry and the object -- so the eye is added here and
+    # driven each frame from the rendered skeleton, which keeps the image the
+    # model sees tied to where the body is actually looking.
+    xml = _embodied_xml(figure, palm_half, lengths, scene.support_height_m)
+    # Lit, because the embodied model declares no lights at all and a scene
+    # rendered by the default headlight alone came out at a mean brightness of
+    # 31 out of 255 -- dark enough that a model would be guessing.
+    eye = (
+        '<light name="key" pos="0.6 -1.0 2.6" dir="-0.2 0.4 -1" diffuse="1 1 1"/>'
+        '<light name="fill" pos="-0.8 -1.0 2.0" dir="0.3 0.4 -1" '
+        'diffuse="0.5 0.5 0.5"/>'
+        '<body name="ego_eye" mocap="true" pos="0 0 1.6">'
+        '<camera name="ego" fovy="75" pos="0 0 0"/>'
+        "</body>"
+    )
+    xml = xml.replace("</worldbody>", eye + "</worldbody>", 1)
+    model = mujoco.MjModel.from_xml_string(xml)
     data = mujoco.MjData(model)
     block_body = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, "block")
     _seed_embodied_bodies(model, data, landmarks, hand, segment_pairs)
@@ -807,6 +2134,12 @@ def generate(
     frames: list[ClipFrame] = []
     index = 0
     spent = 0
+    #: Where the object was last SEEN. None until it has been looked at once.
+    remembered: np.ndarray | None = None
+    best_error = float("inf")
+    stalled = 0
+    previous_object: np.ndarray | None = None
+    previous_hand: np.ndarray | None = None
 
     for frame_index in range(int(max_seconds * fps)):
         now = frame_index / fps
@@ -818,11 +2151,75 @@ def generate(
             if digit is not None:
                 forces[digit] = max(forces.get(digit, 0.0), float(force))
         opposed = _opposing_contact(details) is not None
-        observed = mj_to_app_position(data.xpos[block_body])
-        reading = sense(pose, hand, observed, forces, opposed, now)
+        truth = mj_to_app_position(data.xpos[block_body])
+        step_s = 1.0 / fps
+        object_velocity = (
+            (truth - previous_object) / step_s if previous_object is not None
+            else np.zeros(3)
+        )
+        previous_object = np.asarray(truth, dtype=float)
+        hand_now = rig_kinematics().canonical_positions(pose).get(
+            f"{hand.value}Hand") if pose else None
+        hand_velocity = (
+            (np.asarray(hand_now) - previous_hand) / step_s
+            if hand_now is not None and previous_hand is not None else np.zeros(3)
+        )
+        if hand_now is not None:
+            previous_hand = np.asarray(hand_now, dtype=float)
+        reading = observe(pose, hand, truth, remembered, forces, opposed, now,
+                          object_velocity, hand_velocity)
+        if reading.in_view:
+            remembered = np.asarray(reading.object_position, dtype=float)
 
         # ---- has this product been achieved? ----
         step = steps[index]
+        # Give up when nothing is getting better. One run spent seventeen calls
+        # and eight seconds working a stage whose object had already been
+        # knocked out of reach, each decision sound and none of them able to
+        # help. A loop that cannot tell "hard" from "hopeless" pays for the
+        # difference indefinitely.
+        current_error = step.error(reading)
+        if current_error < best_error - _PROGRESS_EPSILON_M:
+            best_error, stalled = current_error, 0
+        else:
+            stalled += 1
+        if stalled >= (step.stall_frames or _STALL_FRAMES):
+            trace.decisions.append({
+                "time_s": round(now, 3), "step": step.name, "event": "stalled",
+                "error": round(current_error, 5),
+                "best_error": round(best_error, 5),
+                "loaded": list(reading.loaded_digits()), "opposed": opposed})
+            break
+        # Tell the selector where it is, so it can decide to move.
+        if hasattr(selector, "plan"):
+            selector.plan = tuple(s.name for s in steps)
+            selector.stage_index = index
+        if hasattr(selector, "make_plan") and not getattr(selector, "own_plan", None):
+            selector.make_plan(situation.source_text or "pick up the object")
+        if hasattr(selector, "scene_context") and not selector.scene_context:
+            # What else is in the world. Without it the model reasons about a
+            # block in a void and cannot tell that the surface under it is a
+            # table it must not drive the hand through.
+            selector.scene_context = {
+                "grasping": figure.id,
+                "support_height_m": round(float(scene.support_height_m), 3),
+                "objects": [
+                    {
+                        "id": item.id,
+                        "size_m": [
+                            round(item.dimensions_m.x, 3),
+                            round(item.dimensions_m.y, 3),
+                            round(item.dimensions_m.z, 3),
+                        ],
+                        "at": [
+                            round(item.transform.translation.x, 3),
+                            round(item.transform.translation.y, 3),
+                            round(item.transform.translation.z, 3),
+                        ],
+                    }
+                    for item in scene.objects
+                ],
+            }
         if step.reached(reading):
             trace.decisions.append({
                 "time_s": round(now, 3), "step": step.name,
@@ -831,7 +2228,12 @@ def generate(
                 index += 1
                 spent = 0
                 step = steps[index]
-        elif spent >= step.budget_frames:
+        elif spent >= step.budget_frames and not _stage_controlled(selector):
+            # A timer only advances the plan when nothing else can. With a
+            # selector that owns progression this is off entirely, because
+            # advancing on a clock is what produced the punch: the plan reached
+            # "close" while the hand was still 19 cm away, closed it, and then
+            # the next stage reached in with the hand already shut.
             trace.decisions.append({
                 "time_s": round(now, 3), "step": step.name,
                 "event": "budget_exhausted", "error": round(step.error(reading), 5)})
@@ -843,15 +2245,44 @@ def generate(
         # ---- decide what each part does this instant ----
         action, amount, rotations = selector.choose(reading, step)
         spent += 1
-        if frame_index % 5 == 0:
+        if action == "abandon":
+            trace.decisions.append({
+                "time_s": round(now, 3), "step": step.name, "event": "abandoned",
+                "error": round(step.error(reading), 5),
+                "loaded": list(reading.loaded_digits()), "opposed": opposed})
+            break
+        if action in ("next_stage", "previous_stage"):
+            moved = 1 if action == "next_stage" else -1
+            new_index = int(np.clip(index + moved, 0, len(steps) - 1))
+            trace.decisions.append({
+                "time_s": round(now, 3), "step": step.name, "event": action,
+                "to": steps[new_index].name,
+                "error": round(step.error(reading), 5),
+                "loaded": list(reading.loaded_digits()), "opposed": opposed})
+            index, spent = new_index, 0
+            # A deliberate change of stage is progress, so the stall counter
+            # restarts rather than punishing the loop for having reconsidered.
+            best_error, stalled = float("inf"), 0
+            rotations = {}
+        if True:
             trace.decisions.append({
                 "time_s": round(now, 3), "step": step.name, "event": "chose",
                 "action": action, "amount": amount,
                 "error": round(step.error(reading), 5),
-                "loaded": list(reading.loaded_digits()), "opposed": opposed})
+                "loaded": list(reading.loaded_digits()), "opposed": opposed,
+                "in_view": reading.in_view,
+                "gaze_error_deg": round(reading.gaze_error_deg, 1)})
 
         # ---- move toward the chosen pose, at a bounded rate ----
         target = dict(pose)
+        # Keeping the eyes on the work runs alongside whatever the body is
+        # doing, rather than competing with it for the one decision. Asked to
+        # choose ONE action, a selector always has something more urgent than
+        # looking, so the head never moved for the whole of the last run -- and
+        # a head that never turns is a camera pointed at nothing, which is the
+        # image the brain is being asked to reason from.
+        for bone, rotation in _track_with_head(pose, reading).items():
+            target[bone] = BonePose(rotation=rotation)
         for bone, rotation in rotations.items():
             target[bone] = BonePose(rotation=rotation)
 
@@ -866,6 +2297,10 @@ def generate(
         )
 
         # ---- drive the simulation from the pose actually taken ----
+        _aim_eye(model, data, pose, hand)
+        if hasattr(selector, "pending_image"):
+            selector.pending_image = selector.render(model, data)
+
         current = ClipFrame(time_s=now, bones=pose, objects={})
         _set_embodied_mocap(
             model, data, _frame_hand_landmarks(current, hand), hand, segment_pairs)
@@ -879,6 +2314,60 @@ def generate(
                 translation=Vec3(x=float(placed[0]), y=float(placed[1]), z=float(placed[2])))},
         ))
     return frames, trace
+
+
+#: An improvement smaller than this is not one.
+_PROGRESS_EPSILON_M = 0.002
+
+#: Frames without improvement before the attempt is called off. Three seconds
+#: at 30 fps, which is four decisions at the model's cadence -- long enough to
+#: work a hard stage, short enough not to fund a hopeless one.
+_STALL_FRAMES = 90
+
+
+def _stage_controlled(selector: Any) -> bool:
+    """Whether the selector decides its own place in the plan."""
+    return hasattr(selector, "plan")
+
+
+def _track_with_head(
+    pose: dict[str, BonePose], sensing: Sensing
+) -> dict[str, Any]:
+    """Aim the eyes at the work. Runs every frame, under whatever else is chosen."""
+    from .gaze_controller import aim_gaze
+
+    try:
+        return dict(aim_gaze(pose, sensing.object_position).bones)
+    except Exception:  # noqa: BLE001
+        return {}
+
+
+def _aim_eye(model: Any, data: Any, pose: dict[str, BonePose], hand: Hand) -> None:
+    """Put the camera at the head, pointing where the head points."""
+    import mujoco
+
+    from .physics import _APP_TO_MJ, _mj_quaternion
+
+    kinematics = rig_kinematics()
+    try:
+        positions = kinematics.canonical_positions(pose)
+        rotation = kinematics.canonical_world_rotation(pose, "head")
+    except Exception:
+        return
+    target = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, "ego_eye")
+    if target < 0:
+        return
+    index = int(model.body_mocapid[target])
+    if index < 0:
+        return
+    data.mocap_pos[index] = _APP_TO_MJ @ np.asarray(positions["head"], dtype=float)
+    # A ROTATION changes frames as M R M-transpose, not M R. Written the second
+    # way the camera pointed into empty space and rendered pure black at every
+    # orientation I tried -- a VLM would have been handed blank frames and asked
+    # what it saw. Verified by brightness: 0.0 wrong, 95.7 right.
+    data.mocap_quat[index] = _mj_quaternion(
+        _APP_TO_MJ @ rotation @ _APP_TO_MJ.T
+    )
 
 
 def _rate_limited(
@@ -935,3 +2424,101 @@ def _blend(
         out[bone] = BonePose(rotation=Quat(
             x=float(xyzw[0]), y=float(xyzw[1]), z=float(xyzw[2]), w=float(xyzw[3])))
     return out
+
+
+def compile_closed_loop(
+    prompt: str,
+    scene: SceneManifest,
+    hand: Hand,
+    *,
+    selector: MoveSelector | None = None,
+    fps: float = 30.0,
+    max_seconds: float = 6.0,
+) -> Any:
+    """Run the loop and return a ClipResult, so the pipeline can carry it.
+
+    This is the seam. ``run_best_of_five`` never defined what a candidate is --
+    it calls something that returns a ClipResult, then captures, judges, ranks
+    and repairs it -- so a clip produced by deciding each frame drops into the
+    same flywheel as one produced by interpolating seven authored phases, and
+    the two can be judged against each other.
+    """
+    from importlib.metadata import version
+
+    from .compiler import COMPILER_VERSION
+    from .models import ClipResult, Failure, FailureCode, Provenance
+    from .talmy import interpret
+
+    situation = interpret(prompt, scene)
+    if situation is None:
+        raise ValueError(f"{prompt!r} does not resolve to a motion situation")
+
+    frames, trace = generate(
+        situation, scene, hand, selector=selector, fps=fps, max_seconds=max_seconds
+    )
+    reached = {
+        d["step"] for d in trace.decisions if d.get("event") == "reached"
+    }
+    planned = [step["name"] for step in trace.steps]
+    last = trace.decisions[-1] if trace.decisions else {}
+
+    metrics: dict[str, Any] = {
+        "generator": "closed_loop_v1",
+        "closed_loop": trace.to_dict(),
+        "steps_planned": len(planned),
+        "steps_reached": len(reached),
+        "goals_reached": [name for name in planned if name in reached],
+        "final_error": last.get("error"),
+        "opposed_at_end": bool(last.get("opposed", False)),
+        "loaded_at_end": list(last.get("loaded", [])),
+    }
+    unmet = [name for name in planned if name not in reached]
+    failure = None
+    if unmet:
+        # Named by the goal that was not reached, so the reason a clip failed is
+        # the reading that failed rather than a generic verdict.
+        failure = Failure(
+            code=FailureCode.GRASP_UNSTABLE,
+            message=f"{len(unmet)} of {len(planned)} goals not reached: {unmet[0]}",
+            details={
+                "unmet_goals": unmet,
+                "final_error": last.get("error"),
+                "opposed_at_end": bool(last.get("opposed", False)),
+                "loaded_at_end": list(last.get("loaded", [])),
+            },
+            recoverable=True,
+        )
+    return ClipResult(
+        # Success is every goal reached, judged from readings rather than from
+        # the motion having run to the end. A clip that finished is not a clip
+        # that worked, and conflating them is what let a hand closing on empty
+        # air report a grasp.
+        success=len(reached) == len(planned),
+        fps=fps,
+        duration_s=frames[-1].time_s if frames else 0.0,
+        frames=frames,
+        metrics=metrics,
+        slider_observables={},
+        parametric_observables={},
+        failure=failure,
+        provenance=Provenance(
+            rig_id="mesh2motion-human-vrm1",
+            rig_asset="assets/models/human-male.glb",
+            compiler_version=COMPILER_VERSION,
+            physics_engine="MuJoCo",
+            physics_version=version("mujoco"),
+            planner_provider="closed-loop",
+            planner_model=type(selector or SuperPrimitiveSelector(hand=hand)).__name__,
+            model_calls=0,
+            seed=0,
+            physics_model={
+                "type": "closed loop, decided per frame from super primitives",
+                "parallel_gripper_proxy": False,
+                "free_block_joint": True,
+                "simulation_stepped_inside_the_loop": True,
+                "independent_contact_digits": [
+                    "thumb", "index", "middle", "ring", "little"],
+            },
+            coordinate_frames={"up": "+Y", "units": "metres"},
+        ),
+    )

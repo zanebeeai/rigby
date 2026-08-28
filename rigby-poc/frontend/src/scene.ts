@@ -568,48 +568,48 @@ export class RigbyScene {
    *  visualisation exists to make checkable.
    */
   private updateAperture(side: "left" | "right"): void {
+    // The two rays whose dot product decides whether this is a grip.
+    //
+    // The four aperture quads used to be drawn here, and they described the
+    // hand's internal geometry rather than whether it could hold anything: a
+    // hand scores well on them while its thumb and index point past each other
+    // and enclose nothing. What matters is each fingertip extended along its
+    // last bone -- parallel and opposite, a dot product of -1, is a C; near 0
+    // is two blades that never meet.
     if (!this.apertureFill || !this.apertureEdges) return;
     const s = side === "left" ? "l" : "r";
-    const thumbBase = this.bonePosition(`${side}ThumbMetacarpal`);
     const thumbTip = this.tipPosition(`${side}ThumbDistal`, `thumb_04_leaf_${s}`);
-    const names = ["Index", "Middle", "Ring", "Little"];
-    const leaves = ["index", "middle", "ring", "pinky"];
-    const bases: THREE.Vector3[] = [];
-    const tips: THREE.Vector3[] = [];
-    names.forEach((name, i) => {
-      const base = this.bonePosition(`${side}${name}Proximal`);
-      const tip = this.tipPosition(`${side}${name}Distal`, `${leaves[i]}_04_leaf_${s}`);
-      if (base) bases.push(base);
-      if (tip) tips.push(tip);
-    });
-    const visible =
-      this.apertureVisible && !!thumbBase && !!thumbTip && bases.length > 0 && tips.length > 0;
-    this.apertureFill.visible = visible;
-    this.apertureEdges.visible = visible;
-    if (!visible || !thumbBase || !thumbTip) return;
+    const thumbBase = this.bonePosition(`${side}ThumbProximal`);
+    const indexTip = this.tipPosition(`${side}IndexDistal`, `index_04_leaf_${s}`);
+    const indexBase = this.bonePosition(`${side}IndexIntermediate`);
 
-    const fill = this.apertureFill.geometry.getAttribute("position") as THREE.BufferAttribute;
+    const visible =
+      this.apertureVisible && !!thumbTip && !!thumbBase && !!indexTip && !!indexBase;
+    this.apertureFill.visible = false;
+    this.apertureEdges.visible = visible;
+    if (!visible || !thumbTip || !thumbBase || !indexTip || !indexBase) return;
+
+    // Each ray leaves its tip along the direction of the last bone, drawn long
+    // enough to show whether the two would ever meet.
+    const RAY_M = 0.09;
+    const thumbDir = thumbTip.clone().sub(thumbBase).normalize();
+    const indexDir = indexTip.clone().sub(indexBase).normalize();
+    const thumbEnd = thumbTip.clone().add(thumbDir.clone().multiplyScalar(RAY_M));
+    const indexEnd = indexTip.clone().add(indexDir.clone().multiplyScalar(RAY_M));
+
+    const segments = [
+      thumbTip, thumbEnd,
+      indexTip, indexEnd,
+      // The chord between the tips, so the gap between the rays is visible.
+      thumbTip, indexTip,
+    ];
     const edge = this.apertureEdges.geometry.getAttribute("position") as THREE.BufferAttribute;
-    // One quad per finger, each sharing the thumb's vector. A quad collapses to
-    // its thumb edge when that finger has no tip, which reads as "this finger
-    // is not part of the grasp" rather than silently shifting an average.
-    for (let q = 0; q < APERTURE_QUADS; q += 1) {
-      const base = bases[q] ?? thumbBase;
-      const tip = tips[q] ?? thumbTip;
-      const corners = [thumbBase, thumbTip, tip, base];
-      corners.forEach((c, i) => fill.setXYZ(q * 4 + i, c.x, c.y, c.z));
-      // The two member vectors, plus base-to-base and tip-to-tip.
-      const segments = [
-        thumbBase, thumbTip,
-        base, tip,
-        thumbBase, base,
-        thumbTip, tip,
-      ];
-      segments.forEach((c, i) => edge.setXYZ(q * 8 + i, c.x, c.y, c.z));
+    const last = segments[segments.length - 1] as THREE.Vector3;
+    for (let i = 0; i < edge.count; i += 1) {
+      const point = segments[i] ?? last;
+      edge.setXYZ(i, point.x, point.y, point.z);
     }
-    fill.needsUpdate = true;
     edge.needsUpdate = true;
-    this.apertureFill.geometry.computeBoundingSphere();
     this.apertureEdges.geometry.computeBoundingSphere();
   }
 
