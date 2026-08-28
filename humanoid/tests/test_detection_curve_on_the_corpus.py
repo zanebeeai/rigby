@@ -32,7 +32,6 @@ from evals.calibration.detection import (
     target_detected,
     unmutated_baseline,
 )
-from evals.corpus.loader import compile_case, load_corpus
 from evals.mutations.anatomy import rom_sweep
 from evals.mutations.family import MutationFamily, Tier
 from evals.mutations.inject import add_dof
@@ -54,12 +53,16 @@ CASE_IDS = (
 
 
 @pytest.fixture(scope="module")
-def compiled() -> list[tuple[str, object, object, object]]:
-    by_id = {case.id: case for case in load_corpus()}
-    missing = [case_id for case_id in CASE_IDS if case_id not in by_id]
+def compiled(compile_corpus_case, corpus_by_id) -> list[tuple[str, object, object, object]]:
+    missing = [case_id for case_id in CASE_IDS if case_id not in corpus_by_id]
     assert not missing, f"corpus no longer carries {missing}"
     return [
-        (case_id, compile_case(by_id[case_id]), by_id[case_id].program, by_id[case_id].scene)
+        (
+            case_id,
+            compile_corpus_case(case_id),
+            corpus_by_id[case_id].program,
+            corpus_by_id[case_id].scene,
+        )
         for case_id in CASE_IDS
     ]
 

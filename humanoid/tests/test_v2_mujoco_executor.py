@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 
 from rigby_core.artifacts import ContentAddressedArtifactStore
+from rigby_v2.evidence.errors import EvidenceError, EvidenceFailureReason
 from rigby_core.contracts import (
     MotionKeyframeV2,
     MotionPhaseV2,
@@ -88,7 +89,18 @@ def test_concrete_executor_runs_real_certification_and_evidence(tmp_path: Path) 
     )
     candidates = generate_candidate_set(plan, executor.candidate_compiler).candidates
 
-    results = executor.execute_many(candidates)
+    # A headless runner has no GL context, and this executor renders evidence.
+    # Nightly went red on `CGLError: invalid pixel format` from exactly here
+    # (run 33102674037) while test_v2_evidence_renderer.py -- the same backend,
+    # one call deeper -- skipped cleanly, because only that file translated the
+    # unavailable backend into a skip. A missing renderer is a fact about the
+    # machine, not about this code, and the two files must agree on what it means.
+    try:
+        results = executor.execute_many(candidates)
+    except EvidenceError as error:
+        if error.reason is EvidenceFailureReason.RENDER_BACKEND_UNAVAILABLE:
+            pytest.skip(f"MuJoCo GL backend unavailable on this host: {error}")
+        raise
     result = results[0]
 
     assert tuple(item.candidate_id for item in results) == tuple(

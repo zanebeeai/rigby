@@ -20,21 +20,20 @@ from __future__ import annotations
 import pytest
 
 from evals.capture import MAX_SNAPSHOTS_PER_VIEW, phase_sampling_points
-from evals.corpus.loader import compile_case, load_corpus
 
 pytestmark = pytest.mark.medium
 
 
 @pytest.fixture(scope="module")
-def sample_counts() -> list[tuple[int, str, str]]:
-    """One corpus compile for the whole module. 41 compiles, not 82."""
-    return _sample_counts()
+def sample_counts(compile_whole_corpus, corpus_by_id) -> list[tuple[int, str, str]]:
+    """The corpus compile is shared session-wide; this module adds no compiles."""
+    return _sample_counts(compile_whole_corpus, corpus_by_id)
 
 
-def _sample_counts() -> list[tuple[int, str, str]]:
+def _sample_counts(compile_whole_corpus, corpus_by_id) -> list[tuple[int, str, str]]:
     counts: list[tuple[int, str, str]] = []
-    for case in load_corpus():
-        clip = compile_case(case)
+    for case_id, clip in compile_whole_corpus().items():
+        case = corpus_by_id[case_id]
         if not clip.success:
             # Known-bad cases exist to fail compilation; they are never captured.
             continue
