@@ -312,11 +312,23 @@ function adoptRun(body) {
   DATA.traces.unshift(trace);
 
   // Geometry and rollout, so the Runs view can play it without a rebuild.
+  //
+  // The scene that comes back is the scene the run actually happened in: for a
+  // world run that is the robot *and* the fixtures *and* the object, and its
+  // qpos includes the block's free joint. Filing it under the robot's bare
+  // entry would throw all of that away and play the arm alone in empty space,
+  // which is what the preview did -- so it is registered as its own world and
+  // referenced by name.
+  VIEWER.robots[trace.robot_id] = VIEWER.robots[trace.robot_id] || {};
+  const entry = VIEWER.robots[trace.robot_id];
+  if (body.scene && !entry.scene) {
+    entry.scene = body.scene;
+    if (body.rest_qpos) entry.rest_qpos = body.rest_qpos;
+  }
   if (body.scene) {
-    VIEWER.robots[trace.robot_id] = VIEWER.robots[trace.robot_id] || {};
-    const entry = VIEWER.robots[trace.robot_id];
-    if (!entry.scene) entry.scene = body.scene;
-    if (!entry.rest_qpos && body.rest_qpos) entry.rest_qpos = body.rest_qpos;
+    VIEWER.envs = VIEWER.envs || {};
+    VIEWER.envs[runSceneRef(trace.trace_id)] =
+      { scene: body.scene, rest_qpos: body.rest_qpos, robot_id: trace.robot_id };
   }
   if (body.track) VIEWER.runs[trace.trace_id] = { track: body.track };
 
@@ -325,6 +337,10 @@ function adoptRun(body) {
     header.textContent = DATA.traces.length + ' runs \u00b7 every stage recorded';
   }
 }
+
+/* Scenes from submitted runs are filed alongside the authored worlds, under a
+   key that cannot collide with one. */
+function runSceneRef(traceId) { return 'run:' + traceId; }
 
 /* The motion, where it was asked for. A refused run has no rollout, and the
    absence is stated rather than shown as an empty player. */
@@ -337,7 +353,9 @@ function mountRunPreview(body) {
       : '<div class="note">Nothing to play &mdash; the run refused before it was simulated.</div>';
     return;
   }
-  host.innerHTML = playerMarkup(body.robot_id, '', '');
+  // Reference the run's own scene rather than the robot's bare one.
+  host.innerHTML = playerMarkup(
+    body.robot_id, '', 'env|' + runSceneRef(body.trace_id));
   mountPending();
   const node = host.querySelector('[data-viewer]');
   if (node && node._handle) {
