@@ -134,6 +134,14 @@ true together.
 
 "recent_decisions" is what you have already done, with the readings you did each of them at. You are answering from one frame with no memory, and every long failure here has been the same defensible choice repeated: eleven identical calls in one run, fourteen in another, while the number being steered did not move. If "repeating" appears, treat it as evidence that the approach is wrong rather than under-applied.
 
+A grip is two shapes in order, not one. FIRST open: "open_grip" puts the thumb and fingers \
+parallel with the tips and the knuckles as far apart as they go, which is a C the object can \
+enter -- target grip_parallel high and grip_tip_spread_m and grip_base_spread_m large together. \
+THEN close: "close_grip" shrinks the opening with every finger's curl LOCKED, so the tips come \
+together only by the grip closing rather than by fingers curling inward to meet in mid-air with \
+the object outside them. You have gripped it when contact force appears on the thumb and at \
+least one finger and the object stops moving relative to the hand.
+
 Rules that matter more than they look:
 
 A grasp needs the THUMB loaded against at least one FINGER, on opposite faces of the object. \
@@ -204,10 +212,17 @@ You know how a hand works. Say what it should do, in order, at the level of deta
 the difference between gripping something and pushing it.
 
 Metrics you can read and target while executing:
-  c_closure          -1 when thumb and index point straight at each other around something (a C
-                     that closes); +1 whenever they point apart, including a hand splayed flat,
-                     so it cannot be satisfied by opening
-  grip_closure       the same averaged over all four fingers: -1 is a whole hand closed on it
+  grip_parallel      +1 when the thumb and the four fingers point the SAME way -- not at each
+                     other. This is the open-grip shape: both sets pointing out from the palm
+                     with the object destined for the gap between them
+  grip_tip_spread_m  the opening itself: thumb tip to the middle of the fingertips. OPEN the
+                     grip by making this as large as you can while grip_parallel stays high,
+                     then CLOSE it by shrinking it
+  grip_base_spread_m thumb knuckle to the middle of the finger knuckles. What stops a flat
+                     blade of a hand from passing as a grip: a blade can hold its digits
+                     parallel and its tips apart with every knuckle in one plane, and it
+                     encloses nothing. Keep this wide the whole time
+  grip_closure       -1 is a whole hand closed
   object_in_grasp_m  metres from the object to the line between thumb and fingers; near 0 means
                      the object is INSIDE the opening rather than beside the hand
   palm_to_object_m   metres from the PALM's centre to the object's surface. This is the

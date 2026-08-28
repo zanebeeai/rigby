@@ -1524,6 +1524,189 @@ def _digit_sweep(digit: str):
     return solve
 
 
+#: The four fingers, in the order they sit across the hand.
+_FINGERS = ("index", "middle", "ring", "little")
+
+
+def grip_rays(bones: dict[str, BonePose], hand: Hand) -> dict[str, Any] | None:
+    """The thumb and the finger group, each as a tip, a base and a direction."""
+    side = hand.value
+    try:
+        positions = rig_kinematics().canonical_positions(bones)
+    except Exception:  # noqa: BLE001
+        return None
+
+    def ray(tip_bone: str, base_bone: str):
+        tip, base = positions.get(tip_bone), positions.get(base_bone)
+        if tip is None or base is None:
+            return None
+        tip = np.asarray(tip, dtype=float)
+        base = np.asarray(base, dtype=float)
+        span = tip - base
+        size = float(np.linalg.norm(span))
+        if size < 1e-9:
+            return None
+        return tip, base, span / size
+
+    # One joint back from the tip, not the knuckle. A bone's own rotation does
+    # not move its own origin, so a base taken at the metacarpal and the
+    # knuckles cannot be moved by any digit control -- measured, it read 9.06 cm
+    # at every pose in the search, which is a constant wearing a metric's name.
+    thumb = ray(f"{side}ThumbDistal", f"{side}ThumbProximal")
+    fingers = [
+        ray(f"{side}{digit.title()}Distal", f"{side}{digit.title()}Intermediate")
+        for digit in _FINGERS
+    ]
+    fingers = [f for f in fingers if f is not None]
+    if thumb is None or not fingers:
+        return None
+    tips = np.mean([f[0] for f in fingers], axis=0)
+    bases = np.mean([f[1] for f in fingers], axis=0)
+    direction = np.mean([f[2] for f in fingers], axis=0)
+    size = float(np.linalg.norm(direction))
+    if size < 1e-9:
+        return None
+    return {
+        "thumb_tip": thumb[0], "thumb_base": thumb[1], "thumb_dir": thumb[2],
+        "finger_tip": tips, "finger_base": bases, "finger_dir": direction / size,
+    }
+
+
+def grip_parallel(sensing: Sensing, hand: Hand) -> float:
+    """+1 when the thumb and the finger group point the SAME way.
+
+    Not at each other. An open grip -- the shape a hand takes just before it
+    closes on something -- has the thumb and the fingers both pointing out away
+    from the palm, roughly parallel, with the object destined for the gap
+    between them. Aiming them at each other describes a hand that has already
+    closed, which is why the old measure could only come alive below a 4.4 cm
+    opening while the block it had to admit was 6.0 cm wide.
+    """
+    rays = grip_rays(sensing.bones, hand)
+    if rays is None:
+        return 0.0
+    return float(np.dot(rays["thumb_dir"], rays["finger_dir"]))
+
+
+def grip_tip_spread_m(sensing: Sensing, hand: Hand) -> float:
+    """The opening: thumb tip to the middle of the fingertips, metres.
+
+    Opened as wide as it will go while the digits stay parallel; closed, later,
+    with every finger's curl held fixed. One number, two phases.
+    """
+    rays = grip_rays(sensing.bones, hand)
+    if rays is None:
+        return 0.0
+    return float(np.linalg.norm(rays["thumb_tip"] - rays["finger_tip"]))
+
+
+def grip_base_spread_m(sensing: Sensing, hand: Hand) -> float:
+    """Thumb knuckle to the middle of the finger knuckles, metres.
+
+    What stops a blade from passing as a grip. A flat hand can hold its thumb
+    and fingers parallel and its tips apart while every base sits in the same
+    plane, and that hand encloses nothing. Forcing the bases apart as well is
+    what makes the shape a C rather than a fan.
+    """
+    rays = grip_rays(sensing.bones, hand)
+    if rays is None:
+        return 0.0
+    return float(np.linalg.norm(rays["thumb_base"] - rays["finger_base"]))
+
+
+def _solve_open_grip(sensing: Sensing, hand: Hand, amount: float) -> dict[str, Any]:
+    """Open the hand into a C: digits parallel, tips and bases spread wide.
+
+    Searched rather than authored, over each digit's own two controls, because
+    the pose that maximises this is a property of the rig and not something to
+    guess at. Scored as parallelism plus both separations, which is exactly the
+    shape the definition describes and nothing else.
+    """
+    reach = float(np.clip(amount, 0.0, 1.0))
+    best: tuple[float, dict[str, Any]] | None = None
+    for thumb_curl in (-1.0, -0.5, 0.0, 0.5):
+        for thumb_sweep in (-1.0, -0.5, 0.0, 0.5, 1.0):
+            for finger_curl in (-0.5, 0.0, 0.35, 0.7):
+                for finger_sweep in (-0.5, 0.0, 0.5):
+                    rotations: dict[str, Any] = {}
+                    rotations.update(_digit_curl("thumb")(
+                        sensing, hand, thumb_curl * reach))
+                    rotations.update(_digit_sweep("thumb")(
+                        sensing, hand, thumb_sweep * reach))
+                    for digit in _FINGERS:
+                        rotations.update(_digit_curl(digit)(
+                            sensing, hand, finger_curl * reach))
+                        rotations.update(_digit_sweep(digit)(
+                            sensing, hand, finger_sweep * reach))
+                    trial = dict(sensing.bones)
+                    for bone, rotation in rotations.items():
+                        trial[bone] = BonePose(rotation=rotation)
+                    probe = Sensing(
+                        bones=trial, object_position=sensing.object_position,
+                        tip_positions=sensing.tip_positions,
+                        convergence=sensing.convergence, contact_force_n={},
+                        opposed=False, time_s=sensing.time_s,
+                        object_half_m=sensing.object_half_m)
+                    score = (
+                        grip_parallel(probe, hand)
+                        + grip_tip_spread_m(probe, hand) * 6.0
+                        + grip_base_spread_m(probe, hand) * 6.0
+                    )
+                    if best is None or score > best[0]:
+                        best = (score, rotations)
+    # Doing nothing is a candidate. Every pose above is built from the rest
+    # pose, so without this the search cannot choose to KEEP a hand that is
+    # already open wider than anything it can construct.
+    here = (
+        grip_parallel(sensing, hand)
+        + grip_tip_spread_m(sensing, hand) * 6.0
+        + grip_base_spread_m(sensing, hand) * 6.0
+    )
+    if best is None or here >= best[0]:
+        return {}
+    return best[1]
+
+
+def _solve_close_grip(sensing: Sensing, hand: Hand, amount: float) -> dict[str, Any]:
+    """Close the opening with every finger's curl LOCKED.
+
+    Only the base joint of each digit moves. Whatever shape the fingers were
+    opened into is the shape they keep, so the tips can only come together by
+    the grip itself closing -- which is what a grip is, as against curling the
+    fingertips inward until they meet somewhere in mid-air with the object
+    sitting outside them.
+
+    Contact then stops it: with the digits held by springs rather than welded,
+    the object pushes back and the fingers settle against it.
+    """
+    from scipy.spatial.transform import Rotation
+
+    from .models import Quat
+
+    reach = float(np.clip(amount, 0.0, 1.0))
+    out: dict[str, Any] = {}
+    for digit in ("thumb",) + _FINGERS:
+        base = _digit_bones(hand, digit)[0]
+        delta = _digit_rotation(base, reach * 0.75, 0.0)
+        if delta is None:
+            continue
+        # COMPOSED with whatever the digit is already holding, not written over
+        # it. Replacing the base rotation discards the shape open_grip just
+        # built -- measured, closing from an opened hand moved the tips 0.3 mm,
+        # because the close was undoing the open as fast as it applied.
+        held = sensing.bones.get(base)
+        if held is None:
+            out[base] = delta
+            continue
+        current = Rotation.from_quat(
+            [held.rotation.x, held.rotation.y, held.rotation.z, held.rotation.w])
+        step = Rotation.from_quat([delta.x, delta.y, delta.z, delta.w])
+        combined = (step * current).as_quat()
+        out[base] = Quat(x=float(combined[0]), y=float(combined[1]),
+                         z=float(combined[2]), w=float(combined[3]))
+    return out
+
+
 def _solve_grip(sensing: Sensing, hand: Hand, amount: float) -> dict[str, Any]:
     """Close every finger's C on the object. This IS the grip.
 
@@ -2305,6 +2488,15 @@ def super_primitives(hand: Hand) -> tuple[SuperPrimitive, ...]:
             )
             for digit in ("thumb", "index", "middle", "ring", "little")
         ],
+        SuperPrimitive("open_grip", _digit_parts(hand),
+                       "open the hand into a C -- thumb and fingers pointing "
+                       "the same way, tips wide apart and knuckles wide apart, "
+                       "so the object can enter the opening",
+                       _solve_open_grip),
+        SuperPrimitive("close_grip", _digit_parts(hand),
+                       "close the opening with every finger's curl LOCKED, so "
+                       "the tips come together only by the grip closing",
+                       _solve_close_grip),
         SuperPrimitive("grip", _digit_parts(hand),
                        "close every finger into a C on the object -- this is "
                        "the grip itself, not a separate squeeze",
@@ -2515,7 +2707,23 @@ METRICS: dict[str, Any] = {}
 #: can only get stuck on: measured across the whole vocabulary at a mid-reach
 #: pose, no control changes either of these, and both read identically at the
 #: rest pose and 90 cm later. Offering them as goals is offering a stall.
-UNTARGETABLE = frozenset({"aperture_deg", "thumb_to_fingers_m"})
+UNTARGETABLE = frozenset({
+    "aperture_deg",
+    "thumb_to_fingers_m",
+    # The old C measures, kept readable and retired as goals. They described a
+    # hand that had already closed -- rays aimed at each other -- so c_closure
+    # could not leave its pinned value above a 4.4 cm opening while the block
+    # needing to enter was 6.0 cm wide. There was no posture that both admitted
+    # this object and scored as a C. grip_parallel, grip_tip_spread_m and
+    # grip_base_spread_m describe the OPEN shape instead, which is the one a
+    # hand has to reach before it can close on anything.
+    "c_closure",
+    "rays_toward",
+    "ray_gap_m",
+    # And the trap: nine controls move it, no control hurts it, and a hand
+    # splayed perfectly flat scores full marks.
+    "ray_dot",
+})
 
 
 def targetable() -> tuple[str, ...]:
@@ -2556,6 +2764,12 @@ def _register_metrics() -> None:
         "thumb_opposition": lambda s, h: thumb_opposition_score(s),
         # Metres from the thumb tip to the middle of the finger group.
         "thumb_to_fingers_m": lambda s, h: _thumb_to_fingers(s),
+        # THE grip shape, in three numbers. Open: thumb and fingers pointing the
+        # same way, tips wide, bases wide -- a C. Then close, which shrinks the
+        # tip spread alone with every curl held.
+        "grip_parallel": grip_parallel,
+        "grip_tip_spread_m": grip_tip_spread_m,
+        "grip_base_spread_m": grip_base_spread_m,
         # +1 when the thumb and fingers are level with each other, so the
         # object can sit BETWEEN them; 0 when they are stacked on one face.
         # This is what level_wrist moves, and nothing else moves it: it is the
