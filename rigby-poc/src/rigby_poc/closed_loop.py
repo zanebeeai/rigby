@@ -1178,6 +1178,24 @@ def _palm_frame(sensing: Sensing, hand: Hand):
     except Exception:  # noqa: BLE001
         return None
     centre = np.asarray(centre, dtype=float)
+    normal = np.asarray(rotation[:, 2], dtype=float)
+    # WHICH WAY IS OUT is a fact about the body, not a convention. The palm
+    # transform's third axis flips with handedness, so reading it directly gave
+    # the left hand a normal pointing exactly backwards -- palm_facing -0.928
+    # while the hand was square to the block, and every approach steered by it
+    # went the wrong way. The left hand had the whole vocabulary and could not
+    # grasp anything.
+    #
+    # The thumb sits on the palmar side of any hand, so the outward normal is
+    # whichever sign points toward it. That holds for either hand, and for any
+    # gripper with a thumb-equivalent, without knowing which one this is.
+    try:
+        thumb_base = np.asarray(
+            landmarks[f"{hand.value}ThumbMetacarpal"], dtype=float)
+        if float(np.dot(thumb_base - centre, normal)) < 0.0:
+            normal = -normal
+    except Exception:  # noqa: BLE001
+        pass
     # Not the middle of the palm: the pad across the top of it, at the base of
     # the fingers, where the calluses are. That is the surface a held object
     # actually rests against, and it is roughly a third of the palm's length
@@ -1192,7 +1210,7 @@ def _palm_frame(sensing: Sensing, hand: Hand):
         centre = centre + (knuckles - centre) * _PALM_PAD_FRACTION
     except Exception:  # noqa: BLE001
         pass
-    return centre, np.asarray(rotation[:, 2], dtype=float)
+    return centre, normal
 
 
 def chosen_face(sensing: Sensing, hand: Hand):
