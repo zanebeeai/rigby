@@ -839,6 +839,13 @@ class VLMSelector:
                                 f"Nothing needs approaching or reshaping now. "
                                 f"Keep lifting."
                             )
+                        elif float(np.linalg.norm(sensing.object_velocity)) >= 0.02:
+                            self.rejected = (
+                                f"{action} did nothing: the object is moving at "
+                                f"{float(np.linalg.norm(sensing.object_velocity)):.2f} m/s, "
+                                f"which means you are pushing it. Let it settle "
+                                f"before approaching again."
+                            )
                         else:
                             self.rejected = (
                                 f"{action} produced no movement from this pose."

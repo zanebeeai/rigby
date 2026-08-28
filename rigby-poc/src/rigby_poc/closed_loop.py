@@ -1239,6 +1239,10 @@ _PALM_PAD_FRACTION = 0.6
 #: approach, but real contact does.
 _ARM_STOP_FORCE_N = 2.5
 
+#: Object speed above which the approach is pushing rather than arriving,
+#: m/s. Nothing that is being reached for should be moving.
+_PUSHING_SPEED_M_S = 0.02
+
 #: How far off the face the palm pad is asked to stop, metres.
 #:
 #: Small on purpose. The pad is at the knuckles and the digits reach most of a
@@ -1297,6 +1301,15 @@ def _solve_move_to(sensing: Sensing, hand: Hand, amount: float) -> dict[str, Any
     # grasp, lifted it correctly, then chose move_to and tore the block out of
     # its own hand.
     if holding_object(sensing):
+        return {}
+
+    # And stop if the object is RUNNING AWAY. Force is the wrong sensor for
+    # this: shoving a 0.25 kg block across a table barely registers, and in run
+    # 000510 the approach moved it 9.5 cm without once crossing the 2.5 N stop.
+    # The block's own speed says it directly. The hand then formed a genuinely
+    # strong grasp -- 17.7 N on the thumb, three digits -- on an object that was
+    # already sliding, and lost it during the lift.
+    if float(np.linalg.norm(sensing.object_velocity)) >= _PUSHING_SPEED_M_S:
         return {}
 
     face = chosen_face(sensing, hand)
