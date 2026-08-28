@@ -155,7 +155,7 @@ it needs cannot reach the object by the time it has closed as far as it can.
 hard enough to carry it. Closing stops on its own at the object's width and at any digit that is
 already loaded, so a firm close is safe: it settles rather than crushing.
 
-"lift" raises the arm and keeps gripping while it does. You do not have to alternate.
+"lift" raises the arm and keeps gripping while it does -- you do not have to alternate. Its \namplitude is a RATE, not a height: it is re-run every frame until you say otherwise, so a small \nvalue rises steadily and a large one snatches. Use a small one. Raising the block is not urgent \nonce you are holding it; keeping hold of it is.
 
 A grasp that carries needs roughly 5-10 N on the thumb against a finger. Two loaded pairs with
 the object still is a grasp; contact on fingers alone, with nothing on the thumb, is a push.

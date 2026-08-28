@@ -2413,7 +2413,19 @@ def _solve_lift(sensing: Sensing, hand: Hand, amount: float) -> dict[str, Any]:
 
     positions = rig_kinematics().canonical_positions(sensing.bones)
     wrist = np.asarray(positions[f"{hand.value}Hand"], dtype=float)
-    aim = wrist + np.asarray([0.0, amount * 0.15, 0.0])
+    # Capped, because a lift is a rate and not a distance. The selector is
+    # asked for ONE action every few tenths of a second and lift is re-solved
+    # every frame in between, so a large amplitude is not "lift further", it is
+    # "lift faster" -- and at full amplitude the arm is commanded 15 cm in a
+    # single decision, which pulls the object straight out of the hand holding
+    # it. Measured in run 000505: a grasp at 13.5 N on the thumb and 22.0 on the
+    # little finger raised the block 7.45 cm and then lost it inside a second,
+    # to lift@1.00.
+    #
+    # The cap leaves the gentle end of the range untouched, so a caller asking
+    # for 0.05 gets exactly what it asked for.
+    reach = min(float(amount), 0.3)
+    aim = wrist + np.asarray([0.0, reach * 0.15, 0.0])
     arm, _ = arm_pose_from_target(
         hand, shoulder_position(hand),
         Vec3(x=float(aim[0]), y=float(aim[1]), z=float(aim[2])),
