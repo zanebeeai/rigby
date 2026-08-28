@@ -3456,11 +3456,22 @@ def generate(
             mujoco.mj_step(model, data)
 
         placed = mj_to_app_position(data.xpos[block_body])
-        frames.append(ClipFrame(
-            time_s=now, bones=dict(pose),
-            objects={figure.id: Transform(
-                translation=Vec3(x=float(placed[0]), y=float(placed[1]), z=float(placed[2])))},
-        ))
+        # EVERY object in the scene, not only the one being grasped. A clip is
+        # supposed to describe the scene it came from, and the exporter reads
+        # each object's track out of the frames -- so a clip carrying only the
+        # figure raises KeyError on the first prop the scene happens to contain.
+        # It cost a completed run whose frames were discarded on the way to
+        # disk, which is a worse failure than not rendering, because the calls
+        # had already been spent.
+        #
+        # Only the figure moves; the rest stand where the scene put them.
+        moment = {
+            item.id: item.transform.model_copy(deep=True)
+            for item in scene.objects if item.id != figure.id
+        }
+        moment[figure.id] = Transform(translation=Vec3(
+            x=float(placed[0]), y=float(placed[1]), z=float(placed[2])))
+        frames.append(ClipFrame(time_s=now, bones=dict(pose), objects=moment))
     return frames, trace
 
 
