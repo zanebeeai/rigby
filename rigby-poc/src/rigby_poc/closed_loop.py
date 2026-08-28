@@ -3401,14 +3401,17 @@ def generate(
         # crossed 0.9 m in four frames and reached its standoff before the
         # second decision was taken, which is a teleport with sensing attached
         # rather than a loop.
-        # Slow down on arrival, measured to the object's surface.
-        from .motion_limits import near_contact_distance_m
-        near = bool(
-            palm_to_object_m(reading, hand) <= near_contact_distance_m()
-            or float(np.linalg.norm(
-                reading.convergence - reading.object_position))
-            <= near_contact_distance_m() * 2.0
-        )
+        # NOT rate-limited for proximity. The near-contact ceilings exist and
+        # are measured, and applying them destroys the grasp: the digits cannot
+        # close in time, and the lift goes from 19.99 cm to 1.31 at 45 deg/s and
+        # is still gone at 160. The block's peak speed is 0.46 m/s either way,
+        # so they were not buying what they were meant to buy.
+        #
+        # They were written to stop a thumb at 0.49 m/s throwing the block, and
+        # that turned out to be a symptom of digits welded rigidly to their
+        # commanded poses. Compliant welds and closure that stops at contact fix
+        # the cause; slowing the hand only treated the outcome. The mechanism
+        # stays in motion_limits for a future use, unwired.
         pose = _rate_limited(
             pose, _blend(pose, target, getattr(selector, "rate", 0.25)), 1.0 / fps
         )
