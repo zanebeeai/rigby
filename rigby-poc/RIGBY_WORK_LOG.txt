@@ -597,6 +597,62 @@ STILL OPEN
   lift delays the raise. It is a real cost and probably worth tuning back.
 
 
+-------------------------------------------------------------------------------
+2026-08-28 -- CORRECTION: THE GRASP PENETRATES. THE LIFTS ARE NOT VALID.
+-------------------------------------------------------------------------------
+
+Angelo saw a finger inside the box in the render and asked for the physics to be
+checked. He is right and every penetration check I ran today was measuring the
+wrong thing.
+
+I measured fingertip JOINT ORIGINS against the block. The physics collides
+CAPSULES along each segment, with radii of 6.5 mm and 7.5 mm, so a finger's
+middle can be buried while its tip origin reads clear. Measured properly, against
+the capsules the solver actually uses:
+
+    scripted baseline, 16.54 cm lift   deepest -18.2 mm
+    run 000511, the VLM's 31.64 cm     deepest  -7.5 mm  (index_2 and index_3)
+
+Eighteen millimetres is a third of the way through a 60 mm block. The claims of
+"verified, every fingertip outside the block by 4.5 mm" are wrong, and I made
+them twice.
+
+WHY IT PENETRATES, AND WHY TUNING DOES NOT FIX IT
+
+The digits are dynamic bodies welded to commanded poses. The weld pulls a digit
+to whatever angle it was given; contact pushes back; the equilibrium sits inside
+the object. The holding force IS that overlap. So:
+
+    squeeze 6 N                    -7.5 mm, lifts
+    squeeze 11 N                  -12.2 mm, lifts
+    contact stiffened             -22.6 mm, lifts   (tunnelling, not stiffness)
+    commanded pose stopped at
+      the surface                  -3.3 mm, NO LIFT
+
+Every attempt trades penetration against carrying force, because in this
+actuation model they are the same quantity. There is no setting that both grips
+and stays outside.
+
+One real defect was found on the way: _SQUEEZE_FORCE_N was 6 N while
+_CARRY_FORCE_N was 8, so the closure refused to produce the force the lift was
+waiting for and lifts happened only on dynamic overshoots. Correcting it to
+6/5 made things worse (-17.7 mm, dropped), which means the working configuration
+depends on that mismatch. That is not a design, it is a coincidence being relied
+upon.
+
+WHAT WOULD ACTUALLY FIX IT
+
+Torque-controlled digits. Drive the finger joints with actuators that apply a
+force against whatever they meet, instead of welding them to a pose and letting
+the object argue with the weld. Then grip force is commanded directly and
+contact depth is whatever the surface allows -- which is what a grasp is. The
+compliant welds added today were half of this idea and the half that does not
+resolve it.
+
+Until then: the lifts are real motions of the simulation and are NOT valid
+grasps. Do not quote 19.99 or 31.64 cm as a grasp result.
+
+
 DO NOT
 - Do not push this branch or merge it. It stays local by explicit instruction.
 - Do not tune scripted_grasp.py to make a configuration pass. It is the control,
