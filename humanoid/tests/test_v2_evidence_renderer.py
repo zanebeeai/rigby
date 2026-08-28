@@ -134,12 +134,17 @@ def test_invalid_trace_and_missing_video_backend_are_typed(tmp_path) -> None:
         store,
         EvidenceRenderConfig(width=160, height=120, ffmpeg_path=str(tmp_path / "missing-ffmpeg")),
     )
-    try:
-        with pytest.raises(EvidenceError) as unavailable:
-            renderer.render(model, _trace(model), candidate_id="bad-video", anonymous_id="bad-video")
-    except EvidenceError as error:
-        if error.reason is EvidenceFailureReason.RENDER_BACKEND_UNAVAILABLE:
-            pytest.skip(f"local MuJoCo GL backend unavailable: {error}")
-        raise
+    with pytest.raises(EvidenceError) as unavailable:
+        renderer.render(model, _trace(model), candidate_id="bad-video", anonymous_id="bad-video")
+
+    # Check the reason we caught; do not wrap `pytest.raises` in `try/except
+    # EvidenceError`. That was the previous form and it could not fire:
+    # `pytest.raises` *catches* the error, so the `except` never sees one, and a
+    # headless host fell through to the assertion below with the wrong reason.
+    # On a machine with no GL the render backend fails before the missing ffmpeg
+    # is ever reached, so that is a fact about the host, not about the typing.
+    if unavailable.value.reason is EvidenceFailureReason.RENDER_BACKEND_UNAVAILABLE:
+        pytest.skip(f"MuJoCo GL backend unavailable on this host: {unavailable.value}")
+
     assert unavailable.value.reason is EvidenceFailureReason.VIDEO_BACKEND_UNAVAILABLE
     assert unavailable.value.code.value == "unsupported"
