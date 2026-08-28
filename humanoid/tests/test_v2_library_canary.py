@@ -230,7 +230,12 @@ def test_sealed_button_canary_is_real_but_staging_only() -> None:
 
 @pytest.mark.skipif(
     "RIGBY_V2_CANARY_DATABASE_URL" not in os.environ,
-    reason="live canary database verification is explicitly opt-in",
+    # Deliberately NOT wired into nightly, unlike the other env-gated tests.
+    # The counts below (6354 legacy_candidate rows, a named release_id) describe
+    # one populated snapshot; a fresh CI database cannot satisfy them and
+    # seeding one would only assert that the seed matches itself. Point it at a
+    # real canary database by hand when verifying a migration against one.
+    reason="asserts counts from a specific populated database; not reproducible in CI",
 )
 def test_live_button_canary_database_inventory() -> None:
     database_url = os.environ["RIGBY_V2_CANARY_DATABASE_URL"]

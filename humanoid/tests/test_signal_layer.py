@@ -114,8 +114,16 @@ def test_the_rigid_chain_is_usually_a_leg_and_the_legs_are_exactly_rigid(
     - **The legs are at *exactly* zero rotation on 35 cases.** Not small: zero.
       The compiler never writes a leg rotation at all on the gesture, composite,
       strike and object paths.
-    - **Arms reach ~1e-7 but never exactly zero**, so a rigid arm is a limb that
-      was driven and barely moved, not one that was never addressed.
+    - **Arms are driven and reach ~1e-7**, so a rigid arm is a limb that was
+      driven and barely moved, not one that was never addressed.
+
+      This half used to be asserted as "an arm never reaches *exactly* zero",
+      and that is not portable. Whether a sum of ~1e-7 rotations underflows to
+      the exact zero bit pattern is a fact about the platform's float
+      behaviour: from the same committed clips, darwin-arm64 puts no arm at
+      exactly zero and win32-amd64 puts seven left arms and one right there
+      (run 33150058550). The distinction is real and the bit pattern is not the
+      way to read it, so it is asserted as a ratio below.
 
     A rigid idle arm is still a finding rather than a false positive — §3.2's
     "frozen mannequin limbs" is exactly the one-handed-gesture case, and a real
@@ -143,13 +151,21 @@ def test_the_rigid_chain_is_usually_a_leg_and_the_legs_are_exactly_rigid(
         quiet = min(totals, key=lambda name: totals[name])
         quietest_kind["leg" if quiet.endswith("_leg") else "arm"] += 1
 
-    assert exactly_zero["left_arm"] == exactly_zero["right_arm"] == 0, (
-        f"an arm reached exactly zero rotation: {exactly_zero}. Arms are driven "
-        "and barely move; legs are never written at all, and the distinction is "
-        "the finding."
-    )
     assert exactly_zero["left_leg"] >= 30 and exactly_zero["right_leg"] >= 30, (
         f"the legs are no longer exactly rigid on most cases: {exactly_zero}"
+    )
+
+    # The shape, not the bit pattern -- see the docstring. A leg is never
+    # written, an arm is written and barely moves, and that gap is wide enough
+    # (70 vs 8 on the noisier of the two platforms) to be read as a ratio
+    # without asking either platform for exact-zero arithmetic.
+    arms = exactly_zero["left_arm"] + exactly_zero["right_arm"]
+    legs = exactly_zero["left_leg"] + exactly_zero["right_leg"]
+    assert arms * 4 <= legs, (
+        f"arms are reaching exactly zero nearly as often as legs: {exactly_zero}. "
+        "The distinction between a limb the compiler never writes and one it "
+        "writes and barely moves has collapsed, and that is the finding this "
+        "file exists to hold."
     )
     assert quietest_kind["leg"] > quietest_kind["arm"], quietest_kind
     assert smallest_nonzero < 0.01, (

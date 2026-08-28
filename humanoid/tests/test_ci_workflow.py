@@ -14,6 +14,7 @@ in capture output directories, and the ``PermissionError`` retry ladder in
 
 from __future__ import annotations
 
+import ast
 import re
 from pathlib import Path
 from typing import Any
@@ -283,6 +284,64 @@ def test_nightly_runs_the_slow_tier() -> None:
     assert any(re.search(r"pytest\b.*-m slow", command) for command in commands), (
         "nightly must run `pytest -m slow`; nothing else does, and a tier that "
         "runs nowhere is not a tier"
+    )
+
+
+def test_every_env_gated_test_has_a_workflow_that_opens_the_gate() -> None:
+    """A skipif on an env var nothing sets is a test that does not exist.
+
+    Four of these accumulated -- roughly 440 lines covering the postgres job and
+    library stores, real production surface, gated on RIGBY_TEST_POSTGRES and
+    friends that NO workflow set. They read as covered and ran nowhere.
+
+    Only names inside a `skipif` count. Tests set plenty of other RIGBY_ vars on
+    themselves via monkeypatch to drive configuration, and those are inputs, not
+    gates -- an earlier version of this guard flagged all fourteen of them and
+    would have been silenced rather than read.
+
+    The one exception is declared by name rather than by silence: the library
+    canary asserts row counts from one populated database and cannot run against
+    a fresh one, so it is opt-in on purpose.
+    """
+
+    unrunnable_by_design = {
+        # Asserts row counts from one populated database (6354 legacy_candidate
+        # rows, a named release_id). A fresh database cannot satisfy them and
+        # seeding one would assert only that the seed matches itself.
+        "RIGBY_V2_CANARY_DATABASE_URL",
+        # Needs sealed release-evidence artifacts on disk, not just a migrated
+        # database. Established by running it in CI rather than assumed: nightly
+        # 33147680288 got `OperatorDrillError: sealed database_backup_restore
+        # evidence is missing` against a freshly migrated database.
+        "RIGBY_OPERATOR_DRY_RUN_LIVE",
+    }
+
+    gates: dict[str, str] = {}
+    for path in sorted(Path(__file__).parent.glob("test_*.py")):
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Call):
+                continue
+            function = node.func
+            if not (isinstance(function, ast.Attribute) and function.attr == "skipif"):
+                continue
+            for inner in ast.walk(node):
+                if isinstance(inner, ast.Constant) and isinstance(inner.value, str):
+                    if re.fullmatch(r"RIGBY_[A-Z0-9_]+", inner.value):
+                        gates.setdefault(inner.value, path.name)
+
+    assert gates, "no env-gated tests found at all; the scan is broken, not the suite"
+
+    workflows = "\n".join(path.read_text(encoding="utf-8") for path in _all_workflows())
+    unopened = sorted(
+        f"{name} (gates {source})"
+        for name, source in gates.items()
+        if name not in unrunnable_by_design and name not in workflows
+    )
+    assert not unopened, (
+        f"these env gates are set by no workflow, so the tests behind them run "
+        f"nowhere: {unopened}. Wire one up in nightly.yml, delete the test, or add "
+        f"it to `unrunnable_by_design` with the reason."
     )
 
 

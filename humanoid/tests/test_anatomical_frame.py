@@ -99,7 +99,11 @@ def test_every_frame_is_orthonormal_and_right_handed() -> None:
 
 
 def test_longitudinal_axis_is_local_y_for_every_bone() -> None:
-    """Plan §1.5's claim, re-measured rather than inherited."""
+    """Every bone's longitudinal axis is local +Y, re-measured rather than inherited.
+
+    The claim came from an internal plan (§1.5); it is asserted here against the
+    shipped rig so it stands on the rig rather than on the document.
+    """
 
     cosines = {name: frame.longitudinal_cosine for name, frame in all_frames().items()}
     worst = min(cosines, key=cosines.get)

@@ -149,7 +149,11 @@ def test_the_static_case_really_is_static_to_the_last_decimal(static_clip):
 
 
 def test_injection_is_deterministic(moving_clip):
-    """Same input, byte-identical output.  Plan 06 section 3.6."""
+    """Same input, byte-identical output.
+
+    An injector that varies run to run cannot be used to measure detection: a
+    changed verdict would be indistinguishable from a changed mutation.
+    """
     first = add_dof(moving_clip.model_copy(deep=True), ELBOW, "abduction", 0.3)
     second = add_dof(moving_clip.model_copy(deep=True), ELBOW, "abduction", 0.3)
     assert first.model_dump(mode="json") == second.model_dump(mode="json")
