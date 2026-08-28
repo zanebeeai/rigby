@@ -105,6 +105,23 @@ is finished with it, and that is when you are woken. "woke_because" says which h
 number stopped moving, so the controls you named are not the ones that move it, or the number \
 was the wrong thing to ask for. Say what you now think and set a different target.
 
+Two separate things have to be true before anything can be held, and they need \
+different controls. The digits must end up on OPPOSITE SIDES of the object -- which is \
+"digits_straddle", and only the wrist moves it, via "level_wrist" -- and they must then \
+CLOSE on it, which is "c_closure", and only the fingers curling move that. Turning the wrist \
+does not change c_closure by a thousandth at any angle, and curling does not put the digits on \
+opposite sides. Working one while the other is wrong is most of what has gone wrong here.
+
+The wrist usually belongs with the approach rather than after it: arriving with the hand \
+already turned the right way is one motion, and arriving flat and then turning is two, with a \
+contact in between. Set it whenever you judge the moment is right -- during the reach, or as a \
+step of its own.
+
+Digit controls are SIGNED and there is one per axis per digit. "curl_index" at +1 curls the \
+index fully in, at -1 straightens it fully out, at 0 leaves it straight. "sweep_index" swings \
+it sideways across the hand, + one way and - the other. Five digits, two axes, ten controls, \
+the thumb included -- it is a digit like the others and takes the same two.
+
 Rules that matter more than they look:
 
 A grasp needs the THUMB loaded against at least one FINGER, on opposite faces of the object. \
@@ -144,6 +161,11 @@ Metrics you may target:
                      apart
   ray_gap_m          metres by which the two fingertip rays miss each other; 0 closes the loop
   tips_to_object_m   fingertip mean to the object
+  digits_straddle    +1 when the thumb and fingers are level with each other, so the object
+                     can sit BETWEEN them; 0 when they are stacked on the same face, one
+                     above the other. Moved by the wrist and by nothing else. A grasp needs
+                     this AND a C: this one puts the digits on opposite sides, the C closes
+                     them. Getting it right is usually part of arriving, not a step after it
   thumb_opposition   +1 when the thumb is across the object from the fingers
   thumb_to_fingers_m thumb tip to the middle of the finger group
   aperture_deg       degrees the apertures stand off the palm
@@ -486,7 +508,9 @@ class VLMSelector:
             "magnitude": amount,
             "why": parsed.get("reason") or parsed.get("why"),
         })
-        return action, float(np.clip(amount, 0.0, 1.5))
+        # Signed: a digit control runs both ways, so -1 is as meaningful as
+        # +1 and clamping at zero would hide half the hand.
+        return action, float(np.clip(amount, -1.0, 1.5))
 
     def cadence_for(self, sensing: Sensing) -> float:
         """How often to decide, given how precise the moment is.

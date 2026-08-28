@@ -1214,6 +1214,102 @@ def _curl_one(digit: str):
 
 
 
+#: The bones of each digit, base first. The thumb has a metacarpal where the
+#: fingers have an intermediate, which is the only difference between them and
+#: not a reason for it to have its own vocabulary.
+_DIGIT_CHAINS = {
+    "thumb": ("Metacarpal", "Proximal", "Distal"),
+    "index": ("Proximal", "Intermediate", "Distal"),
+    "middle": ("Proximal", "Intermediate", "Distal"),
+    "ring": ("Proximal", "Intermediate", "Distal"),
+    "little": ("Proximal", "Intermediate", "Distal"),
+}
+
+#: How a curl distributes along a digit, base to tip. A finger does not bend
+#: equally at every joint -- the knuckle carries most of it -- and a uniform
+#: bend gives the claw shape rather than the hook that holds things.
+_CURL_SHARE = (1.0, 0.9, 0.6)
+
+
+def _digit_bones(hand: Hand, digit: str) -> tuple[str, ...]:
+    return tuple(
+        f"{hand.value}{digit.title()}{segment}"
+        for segment in _DIGIT_CHAINS[digit]
+    )
+
+
+def _digit_rotation(bone: str, flex_fraction: float, sweep_fraction: float):
+    """One bone's delta, as a fraction of its own range on each axis."""
+    import math
+
+    from .analysis.anatomy.frame import DofAngles, all_frames, compose
+    from .analysis.anatomy.rom import rom_limit
+    from .models import Quat
+
+    frame = all_frames().get(bone)
+    if frame is None:
+        return None
+
+    def angle(dof: str, fraction: float) -> float:
+        if abs(fraction) < 1e-9:
+            return 0.0
+        try:
+            low, high = rom_limit(bone, dof).typical_deg
+        except Exception:  # noqa: BLE001
+            return 0.0
+        # A signed fraction reaches the limit on whichever side it points, so
+        # the two directions are the same control rather than two primitives.
+        return float(fraction) * (high if fraction > 0 else -low)
+
+    quaternion = compose(
+        DofAngles(
+            math.radians(angle("flexion", flex_fraction)),
+            math.radians(angle("abduction", sweep_fraction)),
+            0.0,
+        ),
+        frame,
+    )
+    return Quat(x=quaternion[0], y=quaternion[1],
+                z=quaternion[2], w=quaternion[3])
+
+
+def _digit_curl(digit: str):
+    """Curl one digit in, or straighten it out.
+
+    Signed: +1 is fully curled, -1 fully extended, 0 is straight. One control
+    per digit per axis, rather than a separate primitive for each direction and
+    each segment -- the thumb alone had nine, which is nine menu entries and
+    nine ways to pick the one that moves the wrong number.
+    """
+
+    def solve(sensing: Sensing, hand: Hand, amount: float) -> dict[str, Any]:
+        reach = float(np.clip(amount, -1.0, 1.0))
+        out: dict[str, Any] = {}
+        for bone, share in zip(_digit_bones(hand, digit), _CURL_SHARE):
+            rotation = _digit_rotation(bone, reach * share, 0.0)
+            if rotation is not None:
+                out[bone] = rotation
+        return out
+
+    return solve
+
+
+def _digit_sweep(digit: str):
+    """Swing one digit sideways, tracing a horizontal line.
+
+    Signed, and applied at the base joint only, because that is where a digit
+    swings from -- sweeping at the tip bends it rather than moving it across.
+    """
+
+    def solve(sensing: Sensing, hand: Hand, amount: float) -> dict[str, Any]:
+        reach = float(np.clip(amount, -1.0, 1.0))
+        base = _digit_bones(hand, digit)[0]
+        rotation = _digit_rotation(base, 0.0, reach)
+        return {base: rotation} if rotation is not None else {}
+
+    return solve
+
+
 def _solve_grip(sensing: Sensing, hand: Hand, amount: float) -> dict[str, Any]:
     """Close every finger's C on the object. This IS the grip.
 
@@ -1391,6 +1487,40 @@ def c_shape(
         "coplanar_m": gap,
     }
 
+
+
+def digits_straddle(sensing: Sensing, hand: Hand) -> float:
+    """Are the thumb and fingers on opposite SIDES of the object, or stacked?
+
+    +1 when the line from thumb tip to fingertip runs parallel to the surface
+    the object rests on -- the two digits level with each other, with the object
+    able to sit between them. 0 when that line is vertical: both digits on the
+    same face, one above the other, which is the arrangement every failed run
+    has been in. In 000489 the thumb rode 7.6 cm above the block while the index
+    sat level with its middle, and nothing measured it.
+
+    This is the wrist's number. It is deliberately separate from the C measures,
+    because the two describe different halves of a grasp and only the pair is
+    sufficient: this one says the digits are on opposite sides of the object,
+    and c_closure says they have closed on it. Swept through the wrist's whole
+    range, c_closure does not move by a thousandth -- turning the wrist carries
+    thumb and fingers together -- so a single number could never have driven
+    both, and the half without a number was the half that never happened.
+    """
+    side = hand.value
+    try:
+        positions = rig_kinematics().canonical_positions(sensing.bones)
+    except Exception:  # noqa: BLE001
+        return 0.0
+    thumb = positions.get(f"{side}ThumbDistal")
+    finger = positions.get(f"{side}IndexDistal")
+    if thumb is None or finger is None:
+        return 0.0
+    span = np.asarray(finger, dtype=float) - np.asarray(thumb, dtype=float)
+    size = float(np.linalg.norm(span))
+    if size < 1e-9:
+        return 0.0
+    return 1.0 - abs(float(np.dot(span / size, np.asarray([0.0, 1.0, 0.0]))))
 
 
 def grip_closure(bones: dict[str, BonePose], hand: Hand) -> float:
@@ -1940,29 +2070,21 @@ def super_primitives(hand: Hand) -> tuple[SuperPrimitive, ...]:
                        _solve_thumb_home),
         *[
             SuperPrimitive(
-                f"thumb_{move}", (f"{hand.value}_thumb",),
-                describes,
-                _thumb_move(move),
+                f"curl_{digit}", (f"{hand.value}_{digit}",),
+                f"curl the {digit} in, or straighten it out -- one control, "
+                f"signed: +1 fully curled, -1 fully extended",
+                _digit_curl(digit),
             )
-            for move, describes in (
-                ("oppose_index", "swing the thumb across toward the index"),
-                ("oppose_middle", "swing the thumb across toward the middle finger"),
-                ("oppose_little", "swing the thumb across toward the little finger"),
-                ("palmar_adduct", "lay the thumb in against the palm"),
-                ("flex", "curl the thumb"),
-                ("extend", "straighten the thumb"),
-                ("abduct", "swing the thumb away from the hand"),
-                ("rotate_in", "rotate the thumb inward about its own axis"),
-                ("rotate_out", "rotate the thumb outward about its own axis"),
-            )
+            for digit in ("thumb", "index", "middle", "ring", "little")
         ],
         *[
             SuperPrimitive(
-                f"curl_{digit}", (f"{hand.value}_{digit}",),
-                f"curl the {digit} alone, leaving the other digits as they are",
-                _curl_one(digit),
+                f"sweep_{digit}", (f"{hand.value}_{digit}",),
+                f"swing the {digit} sideways across the hand, tracing a "
+                f"horizontal line -- signed, the two directions are one control",
+                _digit_sweep(digit),
             )
-            for digit in ("index", "middle", "ring", "little")
+            for digit in ("thumb", "index", "middle", "ring", "little")
         ],
         SuperPrimitive("grip", _digit_parts(hand),
                        "close every finger into a C on the object -- this is "
@@ -2015,7 +2137,11 @@ class SuperPrimitiveSelector:
     """
 
     hand: Hand
-    magnitudes: tuple[float, ...] = (0.15, 0.3, 0.5, 0.7, 0.85, 1.0)
+    #: Signed, because a digit control now runs both ways: curling and
+    #: extending are one primitive, and a search that only tries positive
+    #: amplitudes can reach half of what the hand can do.
+    magnitudes: tuple[float, ...] = (
+        -1.0, -0.7, -0.4, -0.15, 0.15, 0.4, 0.7, 1.0)
     #: Controls the search may touch, empty meaning all of them plus the whole
     #: atomic layer. Set by whatever is driving -- a model that has decided this
     #: is a thumb problem, or a caller that wants an affordable run.
@@ -2192,6 +2318,12 @@ def _register_metrics() -> None:
         "thumb_opposition": lambda s, h: thumb_opposition_score(s),
         # Metres from the thumb tip to the middle of the finger group.
         "thumb_to_fingers_m": lambda s, h: _thumb_to_fingers(s),
+        # +1 when the thumb and fingers are level with each other, so the
+        # object can sit BETWEEN them; 0 when they are stacked on one face.
+        # This is what level_wrist moves, and nothing else moves it: it is the
+        # "opposite sides" half of a grasp, which had no number until now and so
+        # could never be asked for.
+        "digits_straddle": digits_straddle,
         # Degrees the apertures stand off the palm.
         "aperture_deg": lambda s, h: __import__(
             "rigby_poc.skills", fromlist=["x"]
@@ -2230,7 +2362,8 @@ def pursue_target(
     sensing: Sensing,
     hand: Hand,
     target: NumericTarget,
-    magnitudes: tuple[float, ...] = (0.15, 0.3, 0.5, 0.7, 0.85, 1.0),
+    magnitudes: tuple[float, ...] = (
+        -1.0, -0.7, -0.4, -0.15, 0.15, 0.4, 0.7, 1.0),
 ) -> tuple[str, float, dict[str, Any]]:
     """The greedy half: whichever control moves the number closest to target.
 
@@ -2284,7 +2417,7 @@ class Trace:
 #:
 #: That gap is a real mismatch between the hand's aperture and the object, not a
 #: tuning choice, and it is why no run has produced a C on this block.
-_PRE_GRASP_CURL = 0.4
+_PRE_GRASP_CURL = 0.22
 
 
 def _pre_grasp_pose(hand: Hand) -> dict[str, BonePose]:
