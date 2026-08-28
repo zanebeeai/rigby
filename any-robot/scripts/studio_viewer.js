@@ -367,7 +367,12 @@ class RobotRenderer {
   constructor(canvas, scene) {
     this.canvas = canvas;
     this.scene = scene;
-    const gl = canvas.getContext('webgl2', { antialias: true, alpha: true });
+    // preserveDrawingBuffer so a frame can be read back with toDataURL. The
+    // studio uses that to bake selection thumbnails out of the same renderer
+    // that draws the live viewer, rather than shipping a second pipeline or a
+    // folder of pre-rendered images that drift from the geometry.
+    const gl = canvas.getContext('webgl2',
+      { antialias: true, alpha: true, preserveDrawingBuffer: true });
     if (!gl) throw new Error('WebGL2 is unavailable in this browser');
     this.gl = gl;
 

@@ -64,6 +64,7 @@ function renderHome() {
     const kinds = (r.effectors || []).map(e => e.kind).join(', ');
     return `<button class="rcard ${on ? 'on' : ''} ${refused ? 'refused' : ''}"
       ${refused ? 'disabled' : `data-pick-robot="${vesc(r.robot_id)}"`}>
+      <div class="thumb" data-thumb="robot" data-thumb-id="${vesc(r.robot_id)}"></div>
       <div class="rname mono">${vesc(r.robot_id)}</div>
       <div class="rmeta">${vesc(r.origin)}${r.playable ? ' · playable' : ''}</div>
       ${refused
@@ -79,6 +80,7 @@ function renderHome() {
 
   const envCard = (e) => `<button class="ecard ${homeEnvironment === e.environment_id ? 'on' : ''}"
       data-pick-env="${vesc(e.environment_id)}">
+      <div class="thumb wide" data-thumb="env" data-thumb-id="${vesc(e.environment_id)}"></div>
       <div class="mono">${vesc(e.environment_id)}</div>
       <div class="note">${vesc(e.description)}</div>
       <div class="rspecs">${(e.objects || []).map(o =>
@@ -134,6 +136,7 @@ function renderHome() {
     <h2>2 &middot; World <span class="note">optional</span></h2>
     <div class="egrid">
       <button class="ecard ${homeEnvironment === '' ? 'on' : ''}" data-pick-env="">
+        <div class="thumb wide thumb-none"></div>
         <div class="mono">free space</div>
         <div class="note">No objects. The arm moves through its own workspace,
           which is what the baked primitives describe.</div>
@@ -343,6 +346,75 @@ function mountRunPreview(body) {
   }
 }
 
+// -- selection thumbnails ----------------------------------------------------
+
+const THUMB_CACHE = new Map();
+let thumbQueue = Promise.resolve();
+
+/* One offscreen renderer, reused. Sixty live contexts is more than a browser
+   will hand out, so scenes are drawn one at a time and kept as data URLs. */
+function renderThumb(key, scene, rest) {
+  if (THUMB_CACHE.has(key)) return Promise.resolve(THUMB_CACHE.get(key));
+  thumbQueue = thumbQueue.then(() => new Promise((resolve) => {
+    let host = null;
+    try {
+      host = document.createElement('div');
+      host.style.cssText =
+        'position:fixed;left:-9999px;top:0;width:320px;height:200px;pointer-events:none';
+      document.body.appendChild(host);
+      const handle = mountViewer(host, scene, { rest });
+      if (!handle) throw new Error('no renderer');
+      handle.frameCamera();
+      // One frame, then read it back. rAF twice so the resize observer has
+      // settled the canvas before the draw that gets captured.
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        let url = '';
+        try { url = handle.canvas.toDataURL('image/png'); } catch (_) { url = ''; }
+        THUMB_CACHE.set(key, url);
+        try {
+          const gl = handle.canvas.getContext('webgl2');
+          const lose = gl && gl.getExtension('WEBGL_lose_context');
+          if (lose) lose.loseContext();
+        } catch (_) { /* the context is going away regardless */ }
+        host.remove();
+        resolve(url);
+      }));
+    } catch (_) {
+      if (host) host.remove();
+      THUMB_CACHE.set(key, '');
+      resolve('');
+    }
+  }));
+  return thumbQueue;
+}
+
+/* Fill every placeholder currently on screen. Called after each render, so a
+   card that appears when the robot changes gets its picture too. */
+function paintThumbs() {
+  document.querySelectorAll('[data-thumb]:not([data-painted])').forEach((node) => {
+    const kind = node.dataset.thumb;
+    const id = node.dataset.thumbId;
+    let scene = null, rest = null, key = '';
+    if (kind === 'robot') {
+      const entry = (VIEWER.robots || {})[id];
+      if (entry && entry.scene) { scene = entry.scene; rest = entry.rest_qpos; key = 'r:' + id; }
+    } else {
+      // The selected robot standing in that world -- which is the question a
+      // world thumbnail is actually being asked.
+      const entry = (VIEWER.envs || {})[id + '.' + homeRobot];
+      if (entry && entry.scene) {
+        scene = entry.scene; rest = entry.rest_qpos; key = 'e:' + id + '.' + homeRobot;
+      }
+    }
+    node.setAttribute('data-painted', '1');
+    if (!scene) { node.classList.add('thumb-none'); return; }
+    renderThumb(key, scene, rest).then((url) => {
+      if (url) node.style.backgroundImage = 'url(' + url + ')';
+      else node.classList.add('thumb-none');
+    });
+  });
+}
+
 async function pingApi() {
   try {
     const response = await fetch(`${API_BASE}/api/v3/health`, { mode: 'cors' });
@@ -424,6 +496,10 @@ async function submitUpload() {
 }
 
 function wireHome() {
+  // Placeholders are rebuilt on every render, so painting here covers the
+  // first paint and every change of selection -- including a robot change,
+  // which alters what the world thumbnails should be showing.
+  paintThumbs();
   document.querySelectorAll('[data-pick-robot]').forEach((node) => {
     node.onclick = () => { homeRobot = node.dataset.pickRobot; render(); };
   });

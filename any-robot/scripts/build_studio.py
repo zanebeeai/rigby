@@ -688,6 +688,16 @@ td.mono,th.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-siz
 .st-detail code{font-size:11.5px}
 .st.bad .st-detail code{color:var(--bad)}
 #home-preview{margin-top:14px}
+/* Selection thumbnails, drawn from the same geometry the viewer plays. */
+.thumb{width:100%;height:74px;border-radius:6px;background:var(--chip);
+  background-size:cover;background-position:center;margin-bottom:8px;
+  border:1px solid var(--line)}
+.thumb.wide{height:86px}
+.thumb-none{position:relative;background-image:none !important}
+.thumb-none::after{content:'no geometry';position:absolute;inset:0;display:flex;
+  align-items:center;justify-content:center;font-size:10.5px;color:var(--muted);
+  letter-spacing:.05em;text-transform:uppercase}
+.rcard.refused .thumb{opacity:.4;filter:grayscale(1)}
 #home-preview .player{margin:0}
 .dofs{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--card)}
 .dof-head{display:flex;justify-content:space-between;gap:10px;padding:7px 11px;
