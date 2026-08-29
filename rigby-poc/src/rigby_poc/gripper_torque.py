@@ -153,6 +153,14 @@ def _model_xml(block_half, block_at, table_top: float) -> str:
             <geom name="seg3" type="capsule" fromto="0 0 0 0 {lengths[2]} 0"
                   size="{radii[2]}" mass="0.4" rgba="0.42 0.47 0.56 1"/>
             <body name="plate" pos="0 {lengths[2]} 0">
+              <!-- The wrist camera. Mounted behind and above the plate looking
+                   straight down the approach axis, so the fingers frame the
+                   bottom of the view the way they do on a real wrist cam.
+                   xyaxes gives right=+x and up=+z, which puts the view
+                   direction along local +y -- the direction the hand reaches.
+                   This is the ONLY exteroceptive instrument on the machine. -->
+              <camera name="wrist" pos="0 -0.02 0.055" xyaxes="1 0 0 0 0 1"
+                      fovy="70"/>
               <geom name="plate_geom" contype="4" conaffinity="3" type="box" size="0.05 0.012 0.04"
                     mass="0.35" rgba="0.25 0.5 0.7 1"/>
               <body name="finger_left" pos="0 0 0">
@@ -196,6 +204,7 @@ class Body:
     model: Any
     data: Any
     block_half: np.ndarray
+    _eye: object = None
 
     def address(self, name: str) -> int:
         joint = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_JOINT, name)
@@ -229,6 +238,28 @@ class Body:
         left, right = self.pads()
         thickness = float(spec()["kinematics"]["finger"]["thickness_m"])
         return float(max(0.0, np.linalg.norm(left - right) - 2.0 * thickness))
+
+    def view(self, width: int = 320, height: int = 240) -> np.ndarray:
+        """What the wrist camera sees, as RGB pixels.
+
+        A real render through a real camera in the model, not a geometric
+        stand-in. The renderer is built once and kept: constructing one per
+        frame costs a GL context each time.
+        """
+        if self._eye is None or self._eye.width != width:
+            self._eye = mujoco.Renderer(self.model, height=height, width=width)
+        self._eye.update_scene(self.data, camera="wrist")
+        return self._eye.render()
+
+    def camera_pose(self) -> tuple[np.ndarray, np.ndarray]:
+        """Where the wrist camera is and how it is pointed, in the world.
+
+        Known from the arm's own joint encoders and the fixed mounting, which is
+        why a robot may use it: it is proprioception, not perception.
+        """
+        index = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_CAMERA, "wrist")
+        return (np.asarray(self.data.cam_xpos[index]),
+                np.asarray(self.data.cam_xmat[index]).reshape(3, 3))
 
     def approach(self) -> np.ndarray:
         """The direction the gripper points, from the plate out past the pads."""

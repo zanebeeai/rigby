@@ -26,19 +26,33 @@ from .gripper_torque import JOINTS, Body
 
 #: The eight phases, unchanged in name and order from the welded gripper and,
 #: for the first six, from the humanoid hand.
-PHASES: tuple[tuple[str, float], ...] = (
-    ("search", 1.0),
-    ("move_to", 1.0),
-    ("open_grip", 1.0),
-    ("move_to", 1.0),
-    ("close_grip", 0.4),
-    ("close_grip", 1.0),
-    ("lift", 0.05),
-    ("carry_over", 0.35),
-    ("release", 0.5),
+PHASES: tuple[tuple[str, float, str], ...] = (
+    ("search", 1.0, "seen"),
+    ("inspect", 0.5, "vantage"),
+    ("move_to", 1.0, "near"),
+    ("open_grip", 1.0, "opened"),
+    ("move_to", 1.0, "engulfed"),
+    ("close_grip", 0.4, "gripped"),
+    ("close_grip", 1.0, "gripped"),
+    ("lift", 0.05, "above_rim"),
+    ("carry_over", 0.35, "over_target"),
+    ("release", 0.5, "done"),
 )
 
-#: How long the camera dwells on one patch of table before moving to the next.
+#: Each phase names the gate that ends it, rather than the gate being keyed by
+#: position in the list. Two separate bugs came from the old arrangement:
+#: inserting the search phase renumbered every gate after it, and inserting this
+#: one would have done it again. A phase's exit condition belongs to the phase.
+
+#: How far above what it believes it is looking at the hand goes to take its
+#: careful look, metres.
+_INSPECT_HEIGHT_M = 0.24
+#: Close enough to that vantage to call the look a good one.
+_VANTAGE_M = 0.05
+#: Once a fresh look moves the belief less than this, looking again is not
+#: buying anything, metres.
+_SETTLED_M = 0.004
+
 _SCAN_DWELL_S = 0.75
 #: How far above a patch the camera sits while inspecting it, metres. Inside the
 #: lens's useful range and far enough back that a patch fills less than the cone.
@@ -175,6 +189,14 @@ def holding(seen: Sensed) -> bool:
 # Placing the arm: a search over joint targets, honouring the declared range.
 # ---------------------------------------------------------------------------
 
+def _shut() -> float:
+    """The travel a fully closed finger reports. Fixed by the mechanism."""
+    for joint in spec()["kinematics"]["joints"]:
+        if joint["name"] == "finger_left":
+            return float(joint["range_m"][0])
+    return 0.0
+
+
 def _limits() -> list[tuple[float, float]]:
     joints = {j["name"]: j for j in spec()["kinematics"]["joints"]}
     out = []
@@ -199,8 +221,16 @@ _SEEDS: tuple[tuple[float, float, float, float], ...] = (
 
 
 def _reach_for(body: Body, goal: np.ndarray, square_to: np.ndarray | None,
-               support: float) -> np.ndarray | None:
-    """Joint angles that put the grasp centre on ``goal``.
+               support: float, aim: str = "grasp") -> np.ndarray | None:
+    """Joint angles that put ``aim`` on ``goal`` -- the grasp centre, or the eye.
+
+    Aiming the CAMERA is a different request from aiming the hand, and treating
+    them as the same thing was worth about twenty millimetres of error. The lens
+    sits five and a half centimetres off the grasp centre, so a pose that puts
+    the hand directly over the object leaves the object twenty-two degrees off
+    the optical axis -- and a plane-ranged estimate taken from that far off axis
+    is exactly the oblique measurement this whole approach is worst at. Looking
+    at something means pointing the part that sees.
 
     Solved against the model's own kinematics by probing candidate angles
     through mj_kinematics, so the search cannot drift from what the simulation
@@ -218,7 +248,13 @@ def _reach_for(body: Body, goal: np.ndarray, square_to: np.ndarray | None,
         for slot, value in zip(address[:4], angles):
             data.qpos[slot] = value
         mujoco.mj_kinematics(model, data)
-        here = body.grasp_centre()
+        if aim == "camera":
+            # Cameras are placed by mj_camlight, which mj_kinematics does not
+            # call, so without this the eye never moves during the search.
+            mujoco.mj_camlight(model, data)
+            here = body.camera_pose()[0]
+        else:
+            here = body.grasp_centre()
         cost = float(np.linalg.norm(here - goal))
         if square_to is not None:
             cost += (1.0 - float(np.dot(body.approach(), -square_to))) * 0.30
@@ -296,7 +332,7 @@ def _scan_poses(body: Body, support: float) -> list[np.ndarray]:
     poses = []
     for patch in _SCAN_GRID:
         at = np.asarray([patch[0], patch[1], support + _SCAN_HEIGHT_M])
-        found = _reach_for(body, at, down, support)
+        found = _reach_for(body, at, down, support, aim="camera")
         if found is not None:
             poses.append(found)
     _scan_cache = poses
@@ -324,7 +360,7 @@ class Command:
 def decide(body: Body, seen: Sensed, phase: int, support: float,
            now: float) -> Command:
     """One phase's command. The refusals are the same ones the hand makes."""
-    name, amount = PHASES[phase]
+    name, amount, _gate = PHASES[phase]
     q = body.q()
     target = q.copy()
 
@@ -346,7 +382,41 @@ def decide(body: Body, seen: Sensed, phase: int, support: float,
     # Sized from what the camera estimated, not from what the object is.
     estimate = (float(np.min(seen.object_size)) if seen.object_size is not None
                 else 0.03)
-    opening_travel = estimate + _GRIP_CLEARANCE_M
+    # OPEN ALL THE WAY. The opening used to be set to the estimated width plus
+    # clearance, which needs the estimate to be right, and from directly above
+    # it cannot be: a camera looking straight down at something sees its
+    # footprint and NOTHING of its height, so the "height" in that estimate is
+    # really a second horizontal extent. Taking the smallest of the three then
+    # picked a number that had nothing to do with the width being gripped, and
+    # the fingers opened to 5.7 cm around a 6.0 cm block and pressed on top of
+    # it. Nothing is lost by opening fully before the approach, and an object
+    # too wide for the jaws is a refusal, not a target width.
+    opening_travel = _limits()[4][1]
+
+    if name == "inspect":
+        # GO AND LOOK PROPERLY. The scan finds the object from wherever the
+        # sweep happened to be pointing, which is almost never square to it, and
+        # a single oblique look at a quarter of a metre lands 38 mm out with the
+        # size half again too big. Committing to that put the hand six
+        # centimetres from the block with the block four centimetres off the
+        # grip axis, and no amount of careful approaching fixed it, because
+        # nothing was ever going to correct the belief.
+        #
+        # So before reaching for anything, move to directly above where it is
+        # believed to be, square on, at the range the estimate is actually good
+        # at, and look again. The belief updates while the hand travels, so the
+        # vantage refines itself: coarse look, better look, then commit.
+        if seen.object_at is None:
+            return Command(target, 0.0, "refused: nothing to inspect",
+                           hold_station=True)
+        goal = np.asarray(seen.object_at) + np.asarray([0.0, 0.0,
+                                                        _INSPECT_HEIGHT_M])
+        found = _reach_for(body, goal, np.asarray([0.0, 0.0, 1.0]), support,
+                           aim="camera")
+        if found is not None:
+            target[:4] = q[:4] + (found - q[:4]) * float(np.clip(amount, 0, 1))
+        target[4] = target[5] = opening_travel
+        return Command(target)
 
     if name == "move_to":
         # The refusals survive losing the sensors, which is the interesting
@@ -362,7 +432,7 @@ def decide(body: Body, seen: Sensed, phase: int, support: float,
             return Command(target, 0.0, "refused: never seen the object", hold_station=True)
         # And do not advance on the object with a closed hand: the pads would
         # arrive where the block is instead of around it.
-        if body.opening() < estimate * 1.5:
+        if seen.q[4] < opening_travel - 0.004:
             target[4] = target[5] = opening_travel
             return Command(target, 0.0, "opening first")
         face = chosen_face(body, seen)
@@ -387,14 +457,25 @@ def decide(body: Body, seen: Sensed, phase: int, support: float,
         return Command(target)
 
     if name == "close_grip":
-        if object_in_grasp_m(body, seen) > estimate * 1.3 + 0.01:
+        if object_in_grasp_m(body, seen) > max(0.03, body.opening() * 0.7):
             return Command(target, 0.0, "refused: object not between the pads", hold_station=True)
         # Close ONTO the object and squeeze with a commanded force. The travel
         # target sits at the object's own half-width, so the fingers are not
         # asked to occupy the space the block is in -- the squeeze does the
         # holding, which is what makes this a grip rather than an overlap.
-        thickness = float(spec()["kinematics"]["finger"]["thickness_m"])
-        target[4] = target[5] = estimate + thickness
+        # CLOSE UNTIL SOMETHING STOPS YOU. The fingers used to be sent to the
+        # object's estimated half-width, which works only as well as that
+        # estimate -- and the estimate comes from a single camera that reads a
+        # 30 mm block as anywhere from 33 to 51 mm, so the fingers were being
+        # told to stop a centimetre outside the thing they were closing on.
+        # Nothing here needs to know how big it is: keep closing, and when the
+        # fingers stall, hold them where they stalled and let the squeeze do the
+        # gripping. That is what the encoder is for and what a real parallel
+        # gripper does.
+        if holding(seen):
+            target[4], target[5] = q[4], q[5]
+        else:
+            target[4] = target[5] = _shut()
         firm = float(np.clip(amount, 0.0, 1.0))
         squeeze = _ARRIVE_SQUEEZE_N + (_CARRY_SQUEEZE_N - _ARRIVE_SQUEEZE_N) * firm
         return Command(target, squeeze)
@@ -442,29 +523,48 @@ def decide(body: Body, seen: Sensed, phase: int, support: float,
 
 
 def advance(body: Body, seen: Sensed, phase: int, now: float) -> int:
-    """The same gates, on the same numbers -- now sensed rather than known."""
-    estimate = (float(np.min(seen.object_size)) if seen.object_size is not None
-                else 0.03)
-    if phase == 0 and seen.object_seen:
-        return 1
-    if phase == 1 and palm_to_object_m(body, seen) <= _ARRIVED_M:
-        return 2
-    if phase == 2 and body.opening() >= estimate * 2.0:
+    """Whether this phase is finished, asked of the gate the phase names."""
+    gate = PHASES[phase][2]
+    done = False
+
+    if gate == "seen":
+        done = seen.object_seen
+    elif gate == "vantage":
+        # Standing where the good look is taken, HAVING TAKEN IT, and having
+        # taken enough of them that the answer has stopped moving.
+        #
+        # Being near the vantage is not enough on its own: the sweep pose that
+        # first spots the object already sits within five centimetres of it, so
+        # a proximity-only gate was satisfied on the same frame the object was
+        # found and the phase passed through in one step without a single extra
+        # look. The machine then drove at a 23 mm error and never corrected it,
+        # because after that first glance the object was never in frame again.
+        if seen.object_at is not None:
+            want = np.asarray(seen.object_at) + np.asarray(
+                [0.0, 0.0, _INSPECT_HEIGHT_M])
+            done = bool(seen.object_seen
+                        and seen.looks >= 3
+                        and seen.belief_shift <= _SETTLED_M
+                        and float(np.linalg.norm(body.camera_pose()[0] - want))
+                        <= _VANTAGE_M)
+    elif gate == "near":
+        done = palm_to_object_m(body, seen) <= _ARRIVED_M
+    elif gate == "opened":
         # Open when it is OPEN, not when a timer says so. A fixed dwell let the
         # approach resume with the pads 1 cm apart around a 6 cm block, so
-        # move_to drove closed fingers into the object and jammed them there --
-        # and the phase after that waited forever for a grasp that could not
-        # form. A gate on elapsed time cannot tell a hand that opened from one
-        # that was blocked.
-        return 3
-    if phase == 3 and object_in_grasp_m(body, seen) <= estimate * _ENGULFED_FRACTION:
-        return 4
-    if phase == 4 and holding(seen):
-        return 5
-    if phase == 5 and holding(seen):
-        return 6
-    if phase == 6 and object_above_rim_m(body, seen) >= 0.02:
-        return 7
-    if phase == 7 and object_over_target_m(body, seen) <= _OVER_TARGET_M             and holding(seen):
-        return 8
-    return phase
+        # move_to drove closed fingers into the object and jammed them there.
+        done = seen.q[4] >= _limits()[4][1] - 0.004
+    elif gate == "engulfed":
+        # Measured against the OPENING, which the encoders know exactly, rather
+        # than against the estimated size, which they do not. Scaling this by an
+        # inflated estimate let the hand close on the air beside the block.
+        done = object_in_grasp_m(body, seen) <= max(0.018, body.opening() * 0.4)
+    elif gate == "gripped":
+        done = holding(seen)
+    elif gate == "above_rim":
+        done = object_above_rim_m(body, seen) >= 0.02
+    elif gate == "over_target":
+        done = (object_over_target_m(body, seen) <= _OVER_TARGET_M
+                and holding(seen))
+
+    return phase + 1 if done and phase + 1 < len(PHASES) else phase

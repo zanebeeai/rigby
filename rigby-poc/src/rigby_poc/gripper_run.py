@@ -74,7 +74,7 @@ def run(block_half=None, block_at=None, table_top: float = 0.72,
         # SENSE, then decide. Everything the controller reads passes through
         # here, so what it may know is one function rather than eighteen call
         # sites reaching into the simulator.
-        seen = sense(body, eyes, held, squeeze, now)
+        seen = sense(body, eyes, held, squeeze, now, table_top)
         phase = advance(body, seen, phase, now)
         command = decide(body, seen, phase, table_top, now)
         squeeze = command.squeeze_n
@@ -146,8 +146,8 @@ def run(block_half=None, block_at=None, table_top: float = 0.72,
         "fps": fps,
         "table_top_m": float(table_top),
         "block_half_m": [float(v) for v in block_half],
-        "phase_names": ["search", "approach", "open", "engulf", "close",
-                        "squeeze", "lift", "carry", "release"],
+        "phase_names": ["search", "inspect", "approach", "open", "engulf",
+                        "close", "squeeze", "lift", "carry", "release"],
         "simulated_geoms": ["left_geom", "right_geom", "plate_geom",
                             "block_geom", "table", "bin"],
         "pedestal": spec()["kinematics"].get("pedestal"),

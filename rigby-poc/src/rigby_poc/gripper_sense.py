@@ -12,10 +12,22 @@ So this instrument list is deliberately short:
 
 JOINT ENCODERS. Exact, and the only thing that is. Every arm has them.
 
-ONE CAMERA on the wrist, looking along the approach axis. It reports the object
-only while the object is in front of it and within range, as an estimate with
-error, not as a fact. Out of view, the controller has a memory and knows it is
-a memory.
+ONE CAMERA on the wrist, looking along the approach axis. It is a real camera --
+declared in the model, rendered through, and read as PIXELS. The previous
+version computed a field-of-view cone geometrically and then returned the true
+position with an error added, which tests the controller against a plausible
+error but still reads the answer out of the simulator. This one segments the
+image and works the position out from where the object appears, so being wrong
+is a property of the view rather than a number chosen here.
+
+Range comes from the GROUND PLANE, not from knowing the object's size: the
+bottom edge of the blob is where the object meets the bench, the bench height is
+known furniture, so the ray through that pixel meets it at exactly one point.
+Size then follows from how large the object appears at that range. This is the
+standard monocular trick and it carries the standard monocular error -- the
+bottom edge seen from an angle is the object's near-bottom corner, not the point
+under its centre, so estimates are biased toward the camera. That bias is real
+and the controller has to tolerate it.
 
 NO FORCE SENSOR. Contact is inferred from the encoders: a finger told to close,
 which has stopped moving, and which is not shut, has something between the pads.
@@ -40,18 +52,23 @@ import numpy as np
 
 from .gripper_torque import Body
 
-#: The wrist camera's half-angle and useful range, metres. A short cone, because
-#: a wrist camera cannot see what the hand is not pointing at, and that
-#: limitation is most of what makes looking a decision rather than a given.
-_FOV_DEG = 40.0
-_RANGE_M = 0.75
-_NEAR_M = 0.03
-
-#: Fractional error on a camera's estimate of where something is and how big it
-#: is. Fixed rather than random so a run is reproducible and a failure can be
-#: repeated; the point is that the number is WRONG, not that it is noisy.
-_POSITION_ERROR = 0.004
-_SIZE_ERROR = 0.08
+#: What the camera renders at. Coarse on purpose: a wrist camera is not a
+#: measuring instrument, and a metre of range across 150 rows is about the
+#: resolution these estimates deserve.
+_VIEW_W, _VIEW_H = 200, 150
+#: Vertical field of view, matching the camera declared in the model.
+_FOV_Y_DEG = 70.0
+#: Fewer lit pixels than this is noise, not an object.
+_MIN_BLOB_PX = 25
+#: The range band a look is worth believing over, metres. There is a FAR limit
+#: for the obvious reason and a NEAR one that is not obvious at all: measured,
+#: the estimate gets WORSE as the hand closes in, from 2-5 mm at a quarter of a
+#: metre to 25-35 mm at eleven centimetres. Close up the object fills the frame,
+#: its top face reads as part of the silhouette, and the fingers start to cut
+#: into the blob. So the machine looks from a step back, keeps that answer, and
+#: does not let the approach spoil it.
+_RANGE_M = 0.9
+_TRUST_NEAR_M = 0.20
 
 #: A finger moving slower than this, in m/s, has stopped. Encoders differenced
 #: between frames, which is what a velocity reading on real hardware is.
@@ -96,6 +113,11 @@ class Sensed:
     grip_effort_n: float
     #: The arm has stopped short of where it was sent.
     arm_stalled: bool
+    #: How far the last accepted look moved the belief, and how many there have
+    #: been. Whether to trust the estimate is itself something the machine can
+    #: work out, and it is what says when looking is finished.
+    belief_shift: float = 1.0
+    looks: int = 0
 
     def holding(self) -> bool:
         """Both pads meeting resistance while the grip is being driven closed.
@@ -128,39 +150,94 @@ class Senses:
     #: contact and left when you open your hand -- not a fresh measurement each
     #: frame. Real grippers latch for the same reason.
     latched: bool = False
+    #: How far the last accepted look moved the belief, metres, and how many
+    #: looks have been accepted. A belief that stops moving is a belief worth
+    #: acting on; one look is never enough to know that.
+    shift: float = 1.0
+    looks: int = 0
 
-    def look(self, body: Body, now: float) -> tuple[np.ndarray | None, bool,
-                                                    np.ndarray | None]:
-        """What the camera reports this frame."""
-        eye = body.body_at("plate")
-        forward = body.approach()
-        truth = body.block()
-        toward = truth - eye
-        distance = float(np.linalg.norm(toward))
-        if distance < 1e-9:
-            return self.last_at, False, self.last_size
-        angle = float(np.degrees(np.arccos(
-            np.clip(float(np.dot(toward / distance, forward)), -1.0, 1.0))))
-        visible = (angle <= _FOV_DEG and _NEAR_M <= distance <= _RANGE_M)
-        if not visible:
+    def look(self, body: Body, now: float, bench: float
+             ) -> tuple[np.ndarray | None, bool, np.ndarray | None]:
+        """Find the object in the wrist image, or report that it is not there."""
+        image = body.view(_VIEW_W, _VIEW_H)
+        red = image[:, :, 0].astype(np.int16)
+        green = image[:, :, 1].astype(np.int16)
+        blue = image[:, :, 2].astype(np.int16)
+        # The object is the only warm thing in the scene: bench, arm, fingers
+        # and bin are all blue-grey. Warmth survives the highlight blowing out
+        # to white at close range, which a hue test does not.
+        warm = (red > green + 12) & (green > blue + 4)
+        if int(warm.sum()) < _MIN_BLOB_PX:
             return self.last_at, False, self.last_size
 
-        # An estimate, not the truth. The error is along the viewing direction,
-        # because that is where a single camera is worst: bearing is easy and
-        # depth is not.
-        bias = (toward / distance) * (_POSITION_ERROR * distance / _RANGE_M)
-        self.last_at = truth + bias
-        self.last_size = np.asarray(body.block_half) * (1.0 + _SIZE_ERROR)
+        rows, cols = np.nonzero(warm)
+        u0, u1 = float(cols.min()), float(cols.max())
+        v0, v1 = float(rows.min()), float(rows.max())
+        # Touching the frame edge means the object is cut off, so its apparent
+        # size is a lower bound and its bottom edge may not be its bottom.
+        if u0 <= 0 or v0 <= 0 or u1 >= _VIEW_W - 1 or v1 >= _VIEW_H - 1:
+            return self.last_at, False, self.last_size
+
+        eye, orient = body.camera_pose()
+        focal = (_VIEW_H / 2.0) / float(np.tan(np.radians(_FOV_Y_DEG) / 2.0))
+
+        def ray(u: float, v: float) -> np.ndarray:
+            local = np.asarray([(u - _VIEW_W / 2.0) / focal,
+                                -(v - _VIEW_H / 2.0) / focal, -1.0])
+            world = orient @ local
+            return world / float(np.linalg.norm(world))
+
+        # Where it is. The ray through the blob's CENTRE, met with the plane
+        # the object's centre lies in -- which is the bench raised by half the
+        # object's height, and that height is not known until the range is.
+        # So solve it by iteration: guess a height, range off that plane,
+        # measure the height that range implies, repeat. Three passes is
+        # already stable to well under a millimetre.
+        #
+        # The first version ranged off the BOTTOM edge of the blob instead,
+        # which needs no iteration and is wrong by four to seven centimetres:
+        # seen from an angle the lowest lit pixel is the object's near-bottom
+        # corner, not the point under its centre, so every estimate was pulled
+        # toward the camera and every size came out inflated. The controller
+        # then closed its fingers on the space beside the block.
+        middle = ray((u0 + u1) / 2.0, (v0 + v1) / 2.0)
+        if middle[2] > -1e-3:
+            return self.last_at, False, self.last_size
+        half_tall = 0.03
+        centre = None
+        for _pass in range(3):
+            distance = (bench + half_tall - float(eye[2])) / float(middle[2])
+            if not (0.0 < distance <= _RANGE_M):
+                return self.last_at, False, self.last_size
+            centre = eye + middle * distance
+            half_tall = max((v1 - v0) / 2.0 * distance / focal, 0.004)
+        if centre is None:
+            return self.last_at, False, self.last_size
+        if (float(np.linalg.norm(np.asarray(centre) - eye)) < _TRUST_NEAR_M
+                and self.last_at is not None):
+            # Too close to improve on what is already known. Report it as still
+            # in sight, but do not overwrite a better look with a worse one.
+            return self.last_at, True, self.last_size
+        half_wide = max((u1 - u0) / 2.0 * distance / focal, 0.004)
+
+        self.shift = (float(np.linalg.norm(np.asarray(centre) - self.last_at))
+                      if self.last_at is not None else 1.0)
+        self.looks += 1
+        self.last_at = np.asarray(centre)
+        # The camera sees two of the three half-extents. The depth it cannot see
+        # is assumed as wide as the width it can, which is what any single view
+        # has to do.
+        self.last_size = np.asarray([half_wide, half_wide, half_tall])
         self.last_seen_s = now
         self.frames_seen += 1
         return self.last_at, True, self.last_size
 
 
 def sense(body: Body, eyes: Senses, commanded: np.ndarray, squeeze_n: float,
-          now: float) -> Sensed:
+          now: float, bench: float = 0.72) -> Sensed:
     """One honest observation of the machine and its world."""
     q = np.asarray(body.q())
-    at, seen, size = eyes.look(body, now)
+    at, seen, size = eyes.look(body, now, bench)
 
     # Contact from the encoders alone. Being driven shut, having stopped, and
     # not being shut: three readings a stepper controller already has.
@@ -193,6 +270,8 @@ def sense(body: Body, eyes: Senses, commanded: np.ndarray, squeeze_n: float,
         contact_right=right or eyes.latched,
         grip_effort_n=float(squeeze_n),
         arm_stalled=arm_stalled,
+        belief_shift=float(eyes.shift),
+        looks=int(eyes.looks),
     )
 
 
@@ -200,8 +279,9 @@ def audit(body: Body) -> dict[str, str]:
     """What is readable, and by what instrument. The boundary, in one place."""
     return {
         "joint positions": "encoders, exact",
-        "object position": "one wrist camera, only while in view, with error",
-        "object size": "the same camera, estimated once seen",
+        "object position": "segmented from the wrist camera image, ranged off "
+                           "the bench plane; only while fully in view",
+        "object size": "apparent size in the same image at that range",
         "contact": "driven shut, stopped, and not shut -- encoders, no force "
                    "sensor",
         "grip effort": "motor command, not a load cell",

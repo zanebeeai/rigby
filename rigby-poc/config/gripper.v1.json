@@ -205,6 +205,18 @@
         "the object is not over the bin -- letting go anywhere else drops it on the floor"
       ],
       "note": "open_grip refuses while holding, on purpose: opening a loaded hand is how a grasp is lost by accident. Releasing is the same motion asked for on purpose, and it is a separate word so the accident and the intention cannot be confused."
+    },
+    {
+      "name": "insert",
+      "solver": "insert",
+      "parts": "arm",
+      "amplitude": "how far down to press per attempt, as a fraction of the socket depth",
+      "describes": "lower what is held into the socket, feeling for the jam and searching sideways when it does not go in",
+      "refuses_when": [
+        "nothing is held -- there is nothing to insert",
+        "the hand is not over the socket -- pressing down anywhere else drives the object into the bench"
+      ],
+      "note": "The only primitive so far that expects to FAIL repeatedly and treats that as information. Everything else either works or refuses; this one presses, detects that it did not go in, backs off, shifts a millimetre and presses again. That is what makes insertion a different kind of motion rather than a tighter version of placing."
     }
   ],
   "metrics": [
@@ -257,6 +269,18 @@
       "targetable": false,
       "sensor": "vision, or the object ceasing to move once let go",
       "describes": "1 when the object is inside the bin. READABLE ONLY: it is the outcome, not something to steer by"
+    },
+    {
+      "name": "object_over_socket_m",
+      "wants": 0.0,
+      "sensor": "grasp centre from joint encoders, socket position known a priori",
+      "describes": "horizontal distance from what is held to the middle of the socket"
+    },
+    {
+      "name": "insertion_depth_m",
+      "wants": null,
+      "sensor": "grasp centre from encoders, socket rim height known, object size estimated by the camera",
+      "describes": "how far the held object's underside is BELOW the socket rim. Negative means still above it"
     }
   ],
   "senses": [
@@ -306,6 +330,27 @@
         0.02
       ],
       "rim_height_m": 0.995
+    },
+    "socket": {
+      "note": "The hard task. Same place as the bin and the same riser, so reaching it is known to work and the ONLY thing that changed is the clearance: 2 mm per side instead of 45. That is the point -- insertion is not hard because of where the hole is, it is hard because of how little room there is once you are over it, and because you do not know exactly how the object is sitting in your hand.",
+      "centre": [
+        0.3,
+        0.94,
+        0.02
+      ],
+      "inner_half_m": [
+        0.032,
+        0.05,
+        0.042
+      ],
+      "wall_m": 0.012,
+      "riser_from": [
+        0.3,
+        0.72,
+        0.02
+      ],
+      "rim_height_m": 0.99,
+      "clearance_note": "Block half-extents are [0.030, 0.040, 0.030] in MuJoCo x/y/z. Socket inner half is [0.032, 0.042] laterally, so 2 mm of slack on every side, and 10 cm deep."
     }
   },
   "rate_limits": {
