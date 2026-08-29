@@ -35,9 +35,10 @@ def _links(state: GripperState) -> list[dict]:
     # place the gripper and collide with nothing, so an arm shown solid beside a
     # solid block invites exactly the wrong conclusion about what the solver is
     # resolving.
+    radii = document["kinematics"].get("link_radius_m", [0.022, 0.019, 0.016])
     out = [
         {"kind": "segment", "from": joints[i], "to": joints[i + 1],
-         "radius": 0.028 if i == 0 else 0.024 if i == 1 else 0.020,
+         "radius": float(radii[min(i, len(radii) - 1)]),
          "simulated": False}
         for i in range(len(joints) - 1)
     ]

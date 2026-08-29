@@ -59,11 +59,11 @@ const key = new THREE.DirectionalLight(0xffffff, 1.5);
 key.position.set(1.2, 2.2, 1.4);
 scene.add(key);
 
-// Anything the solver does not have is drawn as a wireframe, so the picture
-// cannot imply that the arm is colliding with something. Only the pads, the
-// plate, the block and the table are in the physics.
-const armMaterial = new THREE.MeshBasicMaterial({
-  color: 0x55617a, wireframe: true,
+// The arm is solid but visibly a different thing from the gripper: it is
+// linkage, not collision geometry. Only the pads, the plate, the block and the
+// table are in the physics, and the clip marks which is which.
+const armMaterial = new THREE.MeshStandardMaterial({
+  color: 0x6a768d, roughness: 0.5, metalness: 0.1,
 });
 const fingerMaterial = new THREE.MeshStandardMaterial({ color: 0x4fa3d1, roughness: 0.4 });
 const plateMaterial = new THREE.MeshStandardMaterial({ color: 0x3d6f96, roughness: 0.5 });
@@ -105,10 +105,12 @@ function build(first: Frame, data: Clip) {
   for (const link of first.links) {
     let mesh: THREE.Mesh;
     if (link.kind === "segment") {
-      mesh = new THREE.Mesh(
-        new THREE.BoxGeometry(link.radius * 2, link.radius * 2, 1),
-        armMaterial,
-      );
+      // A cylinder along its own length, which is what a linkage looks like.
+      // Three.js cylinders stand along Y, so it is turned onto Z once here and
+      // the stretch below then works in the same axis as every other link.
+      const tube = new THREE.CylinderGeometry(link.radius, link.radius, 1, 16);
+      tube.rotateX(Math.PI / 2);
+      mesh = new THREE.Mesh(tube, armMaterial);
     } else if (link.kind === "finger") {
       mesh = new THREE.Mesh(
         new THREE.BoxGeometry(link.half[0] * 2, link.half[1] * 2, 1),

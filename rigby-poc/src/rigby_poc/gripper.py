@@ -33,6 +33,42 @@ def spec() -> dict[str, Any]:
     return json.loads((_CONFIG / "gripper.v1.json").read_text(encoding="utf-8"))
 
 
+
+@lru_cache(maxsize=1)
+def joint_limits() -> dict[str, tuple[float, float]]:
+    """The declared range of each joint, in radians.
+
+    Read from the manifest rather than assumed, and actually ENFORCED, which it
+    was not: the search that places the arm was free coordinate descent with no
+    limits at all, so a manifest declaring the wrist at plus or minus 120
+    degrees watched it work at -199, folded through itself and intersecting the
+    block. A range nothing checks is a comment.
+    """
+    out: dict[str, tuple[float, float]] = {}
+    for joint in spec()["kinematics"]["joints"]:
+        if "range_deg" in joint:
+            low, high = joint["range_deg"]
+            out[joint["name"]] = (float(np.radians(low)), float(np.radians(high)))
+    return out
+
+
+def within_limits(state: "GripperState") -> bool:
+    limits = joint_limits()
+    for name in ("yaw", "lift", "elbow", "wrist"):
+        low, high = limits.get(name, (-np.inf, np.inf))
+        if not (low <= getattr(state, name) <= high):
+            return False
+    return True
+
+
+def clamp(state: "GripperState") -> "GripperState":
+    limits = joint_limits()
+    out = state.copy()
+    for name in ("yaw", "lift", "elbow", "wrist"):
+        low, high = limits.get(name, (-np.inf, np.inf))
+        setattr(out, name, float(np.clip(getattr(out, name), low, high)))
+    return out
+
 @dataclass
 class GripperState:
     """Everything the machine is, as joint values.
@@ -282,6 +318,12 @@ def solve_move_to(state: GripperState, obj: np.ndarray, half: np.ndarray,
                 for direction in (1.0, -1.0):
                     trial = best.copy()
                     setattr(trial, name, getattr(trial, name) + step * direction)
+                    # A pose outside the declared range is not a candidate. The
+                    # search used to accept them and the arm reached -199 on a
+                    # joint declared at +/-120, which is where the folded links
+                    # and the segments through the block came from.
+                    if not within_limits(trial):
+                        continue
                     value = cost(trial)
                     if value < here - 1e-5:
                         best, here, improved = trial, value, True
@@ -292,7 +334,7 @@ def solve_move_to(state: GripperState, obj: np.ndarray, half: np.ndarray,
     for name in ("yaw", "lift", "elbow", "wrist"):
         start = getattr(state, name)
         setattr(moved, name, start + (getattr(best, name) - start) * reach)
-    return moved
+    return clamp(moved)
 
 
 def solve_open_grip(state: GripperState, obj: np.ndarray, half: np.ndarray,
@@ -363,7 +405,7 @@ def solve_lift(state: GripperState, forces: dict[str, float],
     if _pad_height(probe) < here:
         up = -1.0
     moved.lift = state.lift + up * reach * _LIFT_RATE_RAD
-    return moved
+    return clamp(moved)
 
 
 def _pad_height(state: GripperState) -> float:

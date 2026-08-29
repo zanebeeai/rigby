@@ -7,27 +7,124 @@
     "what_is_the_same": "The numbers. palm_to_object_m is the distance from whatever does the holding to the object's surface, whether that is a palm pad or the plate between two fingers. object_in_grasp_m is the object's distance from the line between the gripping surfaces. Both are properties of grasping, not of hands.",
     "amplitude": "Declared per primitive here as it is for the hand, and for the same reason: a number between 0 and 1 does not describe itself, and four failures in this project came from assuming the wrong meaning."
   },
-
   "kinematics": {
-    "base": {"at": [0.0, 0.72, 0.0], "note": "bolted to the table, metres"},
+    "base": {
+      "at": [
+        0.0,
+        0.72,
+        -0.28
+      ],
+      "note": "bolted to the table, 58 cm back from the block so the arm works at something like its own length rather than folded on top of the object"
+    },
     "joints": [
-      {"name": "yaw",    "kind": "revolute",  "axis": [0, 1, 0], "range_deg": [-150, 150]},
-      {"name": "lift",   "kind": "revolute",  "axis": [1, 0, 0], "range_deg": [-100, 100]},
-      {"name": "elbow",  "kind": "revolute",  "axis": [1, 0, 0], "range_deg": [-140, 140]},
-      {"name": "wrist",  "kind": "revolute",  "axis": [1, 0, 0], "range_deg": [-120, 120]},
-      {"name": "finger_left",  "kind": "prismatic", "axis": [1, 0, 0], "range_m": [0.0, 0.055]},
-      {"name": "finger_right", "kind": "prismatic", "axis": [-1, 0, 0], "range_m": [0.0, 0.055]}
+      {
+        "name": "yaw",
+        "kind": "revolute",
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "range_deg": [
+          -150,
+          150
+        ]
+      },
+      {
+        "name": "lift",
+        "kind": "revolute",
+        "axis": [
+          1,
+          0,
+          0
+        ],
+        "range_deg": [
+          -100,
+          100
+        ]
+      },
+      {
+        "name": "elbow",
+        "kind": "revolute",
+        "axis": [
+          1,
+          0,
+          0
+        ],
+        "range_deg": [
+          -140,
+          140
+        ]
+      },
+      {
+        "name": "wrist",
+        "kind": "revolute",
+        "axis": [
+          1,
+          0,
+          0
+        ],
+        "range_deg": [
+          -120,
+          120
+        ]
+      },
+      {
+        "name": "finger_left",
+        "kind": "prismatic",
+        "axis": [
+          1,
+          0,
+          0
+        ],
+        "range_m": [
+          0.0,
+          0.055
+        ]
+      },
+      {
+        "name": "finger_right",
+        "kind": "prismatic",
+        "axis": [
+          -1,
+          0,
+          0
+        ],
+        "range_m": [
+          0.0,
+          0.055
+        ]
+      }
     ],
-    "segments_m": [0.26, 0.24, 0.10],
-    "finger": {"length_m": 0.07, "thickness_m": 0.012, "pad_width_m": 0.03}
+    "segments_m": [
+      0.36,
+      0.32,
+      0.12
+    ],
+    "finger": {
+      "length_m": 0.07,
+      "thickness_m": 0.012,
+      "pad_width_m": 0.03
+    },
+    "link_radius_m": [
+      0.022,
+      0.019,
+      0.016
+    ]
   },
-
   "part_groups": {
-    "arm": ["yaw", "lift", "elbow", "wrist"],
-    "digits": ["finger_left", "finger_right"],
+    "arm": [
+      "yaw",
+      "lift",
+      "elbow",
+      "wrist"
+    ],
+    "digits": [
+      "finger_left",
+      "finger_right"
+    ],
     "gaze": []
   },
-
   "primitives": [
     {
       "name": "move_to",
@@ -47,7 +144,9 @@
       "parts": "digits",
       "amplitude": "how far toward the open shape, not how wide",
       "describes": "open the fingers to the object's width plus clearance, so it can enter the opening",
-      "refuses_when": ["the gripper is holding the object -- opening is how you put it down"]
+      "refuses_when": [
+        "the gripper is holding the object -- opening is how you put it down"
+      ]
     },
     {
       "name": "close_grip",
@@ -66,10 +165,11 @@
       "parts": "arm",
       "amplitude": "a RATE of rise, re-run every frame, not a height",
       "describes": "raise the arm, still gripping",
-      "refuses_when": ["the grip carries less than the object's weight with margin -- it squeezes instead"]
+      "refuses_when": [
+        "the grip carries less than the object's weight with margin -- it squeezes instead"
+      ]
     }
   ],
-
   "metrics": [
     {
       "name": "palm_to_object_m",
@@ -103,12 +203,31 @@
       "describes": "+1 always. A parallel gripper cannot be anything else, which is the shape the humanoid hand had to be taught. READABLE ONLY: nothing can move it and nothing needs to"
     }
   ],
-
   "senses": [
-    {"name": "joint_states", "sensor": "joint encoders", "always": true},
-    {"name": "contact_force_per_digit", "sensor": "pads on each finger", "always": true},
-    {"name": "object_position", "sensor": "vision", "always": false},
-    {"name": "object_size", "sensor": "vision", "always": false},
-    {"name": "object_velocity", "sensor": "vision, between observations", "always": false}
+    {
+      "name": "joint_states",
+      "sensor": "joint encoders",
+      "always": true
+    },
+    {
+      "name": "contact_force_per_digit",
+      "sensor": "pads on each finger",
+      "always": true
+    },
+    {
+      "name": "object_position",
+      "sensor": "vision",
+      "always": false
+    },
+    {
+      "name": "object_size",
+      "sensor": "vision",
+      "always": false
+    },
+    {
+      "name": "object_velocity",
+      "sensor": "vision, between observations",
+      "always": false
+    }
   ]
 }
