@@ -188,6 +188,11 @@ class GripperRun:
 
     states: list[GripperState] = field(default_factory=list)
     block: list[np.ndarray] = field(default_factory=list)
+    #: The block's ORIENTATION, which the simulation has had all along and
+    #: nothing was reading. A box gripped and carried turns with the gripper,
+    #: and a clip that records only where it is can never show that: it looked
+    #: like the physics was ignoring rotation when it was the recording.
+    block_quat: list[np.ndarray] = field(default_factory=list)
     forces: list[dict[str, float]] = field(default_factory=list)
     phases: list[int] = field(default_factory=list)
     times: list[float] = field(default_factory=list)
@@ -267,6 +272,7 @@ def run(block_half: np.ndarray, block_at: np.ndarray, table_top: float = 0.72,
                     forces[digit] = max(forces.get(digit, 0.0), float(abs(force[0])))
 
         obj = _app(data.xpos[block_body].copy())
+        spin = data.xquat[block_body].copy()
         velocity = (obj - previous) * fps if previous is not None else np.zeros(3)
         previous = obj
 
@@ -315,6 +321,7 @@ def run(block_half: np.ndarray, block_at: np.ndarray, table_top: float = 0.72,
 
         out.states.append(state.copy())
         out.block.append(obj)
+        out.block_quat.append(spin)
         out.forces.append(dict(forces))
         out.phases.append(phase)
         out.times.append(now)

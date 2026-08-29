@@ -19,6 +19,7 @@ interface Frame {
   phase: number;
   links: Link[];
   block: number[];
+  block_quat: number[];
   forces: Record<string, number>;
   opening_m: number;
   over_target_m: number;
@@ -204,6 +205,13 @@ function show(index: number) {
     }
   });
   block.position.copy(vec(frame.block));
+  // Orientation as well as place. Without it a carried box slides around the
+  // scene perfectly upright however the gripper turns, which reads as physics
+  // that ignores rotation and is really a clip that never recorded it.
+  const q = frame.block_quat;
+  if (q && q.length === 4) {
+    block.quaternion.set(q[1], q[2], q[3], q[0]);
+  }
 
   const held = frame.forces["finger_left"] ?? 0;
   const other = frame.forces["finger_right"] ?? 0;

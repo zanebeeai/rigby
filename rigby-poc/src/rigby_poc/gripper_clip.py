@@ -66,13 +66,18 @@ def export(run: GripperRun, block_half: np.ndarray, table_top: float,
     """Write a run where the browser can fetch it."""
     _PUBLIC.mkdir(parents=True, exist_ok=True)
     frames = []
-    for state, block, forces, phase, time_s in zip(
-            run.states, run.block, run.forces, run.phases, run.times):
+    for state, block, spin, forces, phase, time_s in zip(
+            run.states, run.block, run.block_quat, run.forces, run.phases,
+            run.times):
         frames.append({
             "t": round(float(time_s), 4),
             "phase": int(phase),
             "links": _links(state),
             "block": [float(v) for v in block],
+            # MuJoCo quaternions are wxyz and this scene is Z-up against the
+            # viewer's Y-up, so the axes are swapped to match the positions.
+            "block_quat": [float(spin[0]), float(spin[1]),
+                           float(spin[3]), float(spin[2])],
             "forces": {k: round(float(v), 2) for k, v in forces.items()},
             "opening_m": round(forward(state)["opening"], 5),
             "over_target_m": round(object_over_target_m(block), 4),
