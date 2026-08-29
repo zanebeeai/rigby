@@ -21,11 +21,13 @@ from dataclasses import dataclass, field
 import numpy as np
 
 from .gripper import spec
+from .gripper_sense import Sensed
 from .gripper_torque import JOINTS, Body
 
 #: The eight phases, unchanged in name and order from the welded gripper and,
 #: for the first six, from the humanoid hand.
 PHASES: tuple[tuple[str, float], ...] = (
+    ("search", 1.0),
     ("move_to", 1.0),
     ("open_grip", 1.0),
     ("move_to", 1.0),
@@ -35,6 +37,12 @@ PHASES: tuple[tuple[str, float], ...] = (
     ("carry_over", 0.35),
     ("release", 0.5),
 )
+
+#: How long the camera dwells on one patch of table before moving to the next.
+_SCAN_DWELL_S = 0.75
+#: How far above a patch the camera sits while inspecting it, metres. Inside the
+#: lens's useful range and far enough back that a patch fills less than the cone.
+_SCAN_HEIGHT_M = 0.30
 
 _ARRIVED_M = 0.12
 _ENGULFED_FRACTION = 0.9
@@ -60,34 +68,45 @@ def bin_of() -> dict:
 
 
 # ---------------------------------------------------------------------------
-# The same metrics, read off a torque-driven body.
+# The same metrics -- but read from what the machine can SENSE, not from the
+# simulator. Every one of these used to reach into the world for the object's
+# true pose and true size. They now take a Sensed, which carries a camera's
+# estimate of where the object was last seen and how big it looked, and nothing
+# else. A metric that cannot be computed from an observation is a metric a real
+# robot cannot have.
 # ---------------------------------------------------------------------------
 
-def palm_to_object_m(body: Body) -> float:
-    offset = np.abs(body.grasp_centre() - body.block()) - body.block_half
+def palm_to_object_m(body: Body, seen: Sensed) -> float:
+    if seen.object_at is None or seen.object_size is None:
+        return 1.0
+    offset = np.abs(body.grasp_centre() - seen.object_at) - seen.object_size
     return float(np.linalg.norm(np.maximum(offset, 0.0)))
 
 
-def object_in_grasp_m(body: Body) -> float:
+def object_in_grasp_m(body: Body, seen: Sensed) -> float:
+    if seen.object_at is None:
+        return 1.0
     left, right = body.pads()
     span = right - left
     length = float(np.linalg.norm(span))
     if length < 1e-9:
-        return float(np.linalg.norm(body.block() - left))
+        return float(np.linalg.norm(seen.object_at - left))
     unit = span / length
-    along = float(np.clip(float(np.dot(body.block() - left, unit)), 0.0, length))
-    return float(np.linalg.norm(body.block() - (left + unit * along)))
+    along = float(np.clip(float(np.dot(seen.object_at - left, unit)), 0.0, length))
+    return float(np.linalg.norm(seen.object_at - (left + unit * along)))
 
 
-def palm_facing(body: Body) -> float:
-    face = chosen_face(body)
+def palm_facing(body: Body, seen: Sensed) -> float:
+    face = chosen_face(body, seen)
     if face is None:
         return 0.0
     return float(np.dot(body.approach(), -face[1]))
 
 
-def chosen_face(body: Body):
-    centre, half = body.block(), body.block_half
+def chosen_face(body: Body, seen: Sensed):
+    if seen.object_at is None or seen.object_size is None:
+        return None
+    centre, half = seen.object_at, seen.object_size
     here = body.grasp_centre()
     best = None
     for axis in range(3):
@@ -105,17 +124,34 @@ def chosen_face(body: Body):
     return None if best is None else (best[1], best[2])
 
 
-def object_over_target_m(body: Body) -> float:
+def object_over_target_m(body: Body, seen: Sensed) -> float:
+    """How far the HELD object is from over the bin.
+
+    While the object is in the hand its position is known from the hand: the
+    grasp centre is where it is, give or take the offset measured when it was
+    picked up. That is not a camera reading and does not need to be -- a robot
+    holding something knows roughly where it is holding it.
+    """
     target = bin_of()["centre"]
-    block = body.block()
+    block = body.grasp_centre() if seen.holding() else (
+        seen.object_at if seen.object_at is not None else body.grasp_centre())
     return float(np.linalg.norm([block[0] - target[0], block[1] - target[1]]))
 
 
-def object_above_rim_m(body: Body) -> float:
-    return float(body.block()[2] - float(body.block_half[2]) - bin_of()["rim"])
+def object_above_rim_m(body: Body, seen: Sensed) -> float:
+    where = body.grasp_centre() if seen.holding() else (
+        seen.object_at if seen.object_at is not None else body.grasp_centre())
+    half = seen.object_size[2] if seen.object_size is not None else 0.04
+    return float(where[2] - float(half) - bin_of()["rim"])
 
 
 def object_in_target(body: Body) -> bool:
+    """Whether the task succeeded. NOT a control input.
+
+    This one reads the simulator on purpose, because it is the grader rather
+    than a sensor: it says whether the run worked, and nothing steers by it.
+    Keeping the scoring honest means keeping it OUT of the loop.
+    """
     bin_doc = bin_of()
     block = body.block()
     return bool(
@@ -125,10 +161,14 @@ def object_in_target(body: Body) -> bool:
         and block[2] >= bin_doc["centre"][2] - bin_doc["inner"][1])
 
 
-def holding(body: Body) -> bool:
-    forces = body.forces()
-    return (forces.get("finger_left", 0.0) >= _HOLDING_N
-            and forces.get("finger_right", 0.0) >= _HOLDING_N)
+def holding(seen: Sensed) -> bool:
+    """Both fingers meeting resistance while being driven closed.
+
+    No force sensor. Two fingers that will not close further while told to
+    close have something between them, which a load cell would report at extra
+    cost and no extra information.
+    """
+    return seen.holding()
 
 
 # ---------------------------------------------------------------------------
@@ -145,6 +185,17 @@ def _limits() -> list[tuple[float, float]]:
     out.append((float(travel[0]), float(travel[1])))
     out.append((float(travel[0]), float(travel[1])))
     return out
+
+
+#: Starting poses for the restarts, in radians: arm folded, arm out, arm high,
+#: arm across. Fixed rather than random so a run repeats exactly.
+_SEEDS: tuple[tuple[float, float, float, float], ...] = (
+    (0.0, -0.6, 1.2, 0.4),
+    (0.0, 0.3, -1.0, -0.4),
+    (0.8, -0.3, 0.9, 0.2),
+    (-0.8, -0.3, 0.9, 0.2),
+    (0.0, -1.0, 1.6, 0.6),
+)
 
 
 def _reach_for(body: Body, goal: np.ndarray, square_to: np.ndarray | None,
@@ -176,26 +227,80 @@ def _reach_for(body: Body, goal: np.ndarray, square_to: np.ndarray | None,
                 return None
         return cost
 
-    best = np.asarray([data.qpos[a] for a in address[:4]])
-    here = evaluate(best)
-    if here is None:
-        here = 1e6
-    for _pass in range(7):
-        for index in range(4):
-            for step in (0.25, 0.09, 0.03, 0.01):
-                for direction in (1.0, -1.0):
-                    trial = best.copy()
-                    trial[index] += step * direction
-                    low, high = limits[index]
-                    if not (low <= trial[index] <= high):
-                        continue
-                    value = evaluate(trial)
-                    if value is not None and value < here - 1e-5:
-                        best, here = trial, value
+    def descend(seed: np.ndarray, passes: int) -> tuple[np.ndarray, float]:
+        best = seed.copy()
+        here = evaluate(best)
+        if here is None:
+            here = 1e6
+        for _pass in range(passes):
+            for index in range(4):
+                for step in (0.25, 0.09, 0.03, 0.01):
+                    for direction in (1.0, -1.0):
+                        trial = best.copy()
+                        trial[index] += step * direction
+                        low, high = limits[index]
+                        if not (low <= trial[index] <= high):
+                            continue
+                        value = evaluate(trial)
+                        if value is not None and value < here - 1e-5:
+                            best, here = trial, value
+        return best, here
+
+    start = np.asarray([data.qpos[a] for a in address[:4]])
+    best, here = descend(start, 7)
+
+    # RESTARTS, and only when the first answer is poor. Coordinate descent moves
+    # one joint at a time and accepts only strict improvement, so it cannot
+    # cross a ridge that needs two joints turning together -- which is exactly
+    # what folding the arm back over a target near the base requires. From the
+    # carrying pose it therefore refused to fold, drifted downhill instead, and
+    # ploughed the held block twenty centimetres across the table while every
+    # frame reported honest progress. The same goal solves to 2 mm from a
+    # different starting pose. So try a few, keep the best, and pay for it only
+    # on the frames where one start was not enough.
+    if here > 0.02:
+        for seed in _SEEDS:
+            candidate, cost = descend(np.asarray(seed), 5)
+            if cost < here:
+                best, here = candidate, cost
+            if here <= 0.01:
+                break
+
     data.qpos[:] = saved_q
     data.qvel[:] = saved_v
     mujoco.mj_forward(model, data)
     return best if here < 1e5 else None
+
+
+#: The patches of table the camera visits, in the order it visits them. This is
+#: knowledge of the FURNITURE -- where the work surface is and how far across it
+#: the arm can reach -- which a machine is entitled to the way it is entitled to
+#: know where its own bench is. It contains nothing about the object.
+_SCAN_GRID = tuple(
+    np.asarray([x, y, 0.0]) for y in (0.30, 0.14, 0.45) for x in (0.0, -0.20, 0.20)
+)
+
+_scan_cache: list[np.ndarray] | None = None
+
+
+def _scan_poses(body: Body, support: float) -> list[np.ndarray]:
+    """Arm poses that point the wrist camera down at each patch in turn.
+
+    Solved once. The scan is a fixed property of the bench, so re-deriving it
+    every frame would be the same answer at forty times the cost.
+    """
+    global _scan_cache
+    if _scan_cache is not None:
+        return _scan_cache
+    down = np.asarray([0.0, 0.0, 1.0])
+    poses = []
+    for patch in _SCAN_GRID:
+        at = np.asarray([patch[0], patch[1], support + _SCAN_HEIGHT_M])
+        found = _reach_for(body, at, down, support)
+        if found is not None:
+            poses.append(found)
+    _scan_cache = poses
+    return poses
 
 
 @dataclass
@@ -205,29 +310,62 @@ class Command:
     target: np.ndarray
     squeeze_n: float = 0.0
     note: str = ""
+    #: A refusal means STAY, not "re-aim at wherever I have ended up". Every
+    #: refusal used to return the arm's current pose as its target, which under
+    #: position welds was a true no-op because the body was always exactly where
+    #: it was put. Under torque it is not: the arm sags a millimetre, the next
+    #: frame adopts the sag as the goal, and a refusal that repeats for ten
+    #: seconds walks the arm down to the table one millimetre at a time while
+    #: reporting that it is doing nothing. Holding station means holding the
+    #: last command.
+    hold_station: bool = False
 
 
-def decide(body: Body, phase: int, support: float, now: float) -> Command:
+def decide(body: Body, seen: Sensed, phase: int, support: float,
+           now: float) -> Command:
     """One phase's command. The refusals are the same ones the hand makes."""
     name, amount = PHASES[phase]
     q = body.q()
     target = q.copy()
-    opening_travel = float(np.min(body.block_half)) + _GRIP_CLEARANCE_M
+
+    if name == "search":
+        # LOOK FOR IT. With one camera on the wrist the machine does not begin
+        # knowing where anything is, and under ground truth that question never
+        # came up -- the object's position was simply readable, from the first
+        # frame, through the back of the robot's own head. It is not. So the
+        # first thing the arm does is sweep the camera across the bench until
+        # something turns up, which is what a real one does and what the
+        # previous eight phases were quietly excused from.
+        poses = _scan_poses(body, support)
+        if not poses:
+            return Command(target, 0.0, "refused: nowhere to look", hold_station=True)
+        target[4] = target[5] = _GRIP_CLEARANCE_M
+        at = poses[int(now / _SCAN_DWELL_S) % len(poses)]
+        target[:4] = at
+        return Command(target, 0.0, "searching")
+    # Sized from what the camera estimated, not from what the object is.
+    estimate = (float(np.min(seen.object_size)) if seen.object_size is not None
+                else 0.03)
+    opening_travel = estimate + _GRIP_CLEARANCE_M
 
     if name == "move_to":
-        forces = body.forces()
-        if (max(forces.values(), default=0.0) >= 2.5 or holding(body)
-                or float(np.linalg.norm(body.data.cvel[
-                    __import__("mujoco").mj_name2id(
-                        body.model, __import__("mujoco").mjtObj.mjOBJ_BODY,
-                        "block")][3:])) >= 0.02):
-            return Command(target, 0.0, "refused: touching, holding or pushing")
+        # The refusals survive losing the sensors, which is the interesting
+        # part. "Am I touching something" is now the arm failing to reach where
+        # it was sent, and "am I holding something" is two fingers that will not
+        # close -- both from encoders. The one refusal that needed the object's
+        # velocity is gone: a machine with one wrist camera cannot know that an
+        # object it is not looking at is sliding, and pretending otherwise was
+        # the cheat.
+        if seen.arm_stalled or holding(seen):
+            return Command(target, 0.0, "refused: obstructed or already holding", hold_station=True)
+        if not seen.object_seen and seen.object_at is None:
+            return Command(target, 0.0, "refused: never seen the object", hold_station=True)
         # And do not advance on the object with a closed hand: the pads would
         # arrive where the block is instead of around it.
-        if body.opening() < float(np.min(body.block_half)) * 1.5:
+        if body.opening() < estimate * 1.5:
             target[4] = target[5] = opening_travel
             return Command(target, 0.0, "opening first")
-        face = chosen_face(body)
+        face = chosen_face(body, seen)
         if face is None:
             return Command(target)
         centre, normal = face
@@ -236,33 +374,33 @@ def decide(body: Body, phase: int, support: float, now: float) -> Command:
         if float(np.linalg.norm(lateral)) > 0.04:
             goal = centre + normal * 0.14
         else:
-            goal = body.block()
+            goal = seen.object_at
         found = _reach_for(body, goal, normal, support)
         if found is not None:
             target[:4] = q[:4] + (found - q[:4]) * float(np.clip(amount, 0, 1))
         return Command(target)
 
     if name == "open_grip":
-        if holding(body):
-            return Command(target, 0.0, "refused: holding")
+        if holding(seen):
+            return Command(target, 0.0, "refused: holding", hold_station=True)
         target[4] = target[5] = opening_travel
         return Command(target)
 
     if name == "close_grip":
-        if object_in_grasp_m(body) > float(np.min(body.block_half)) * 1.3 + 0.01:
-            return Command(target, 0.0, "refused: object not between the pads")
+        if object_in_grasp_m(body, seen) > estimate * 1.3 + 0.01:
+            return Command(target, 0.0, "refused: object not between the pads", hold_station=True)
         # Close ONTO the object and squeeze with a commanded force. The travel
         # target sits at the object's own half-width, so the fingers are not
         # asked to occupy the space the block is in -- the squeeze does the
         # holding, which is what makes this a grip rather than an overlap.
         thickness = float(spec()["kinematics"]["finger"]["thickness_m"])
-        target[4] = target[5] = float(np.min(body.block_half)) + thickness
+        target[4] = target[5] = estimate + thickness
         firm = float(np.clip(amount, 0.0, 1.0))
         squeeze = _ARRIVE_SQUEEZE_N + (_CARRY_SQUEEZE_N - _ARRIVE_SQUEEZE_N) * firm
         return Command(target, squeeze)
 
     if name == "lift":
-        if not holding(body):
+        if not holding(seen):
             return Command(target, _CARRY_SQUEEZE_N, "squeezing: not holding yet")
         goal = body.grasp_centre() + np.asarray([0.0, 0.0, 0.10])
         found = _reach_for(body, goal, None, support)
@@ -272,14 +410,23 @@ def decide(body: Body, phase: int, support: float, now: float) -> Command:
         return Command(target, _CARRY_SQUEEZE_N)
 
     if name == "carry_over":
-        if not holding(body):
-            return Command(target, _CARRY_SQUEEZE_N, "refused: nothing held")
+        if not holding(seen):
+            return Command(target, _CARRY_SQUEEZE_N, "refused: nothing held", hold_station=True)
         bin_doc = bin_of()
-        carry_offset = body.grasp_centre() - body.block()
+        # Drive the GRASP CENTRE to the bin, with no offset. While something is
+        # held, where the hand is is where the object is -- that is what closing
+        # on it means. The version that corrected by (grasp centre - last seen
+        # position) was correcting against a camera fix taken before the pick,
+        # frozen because the block ends up nearer than the lens can focus, so
+        # the correction grew with every centimetre of lift and walked the goal
+        # out of the workspace. A stale reading is worse than no reading when
+        # something better is already known.
         goal = np.asarray([
             bin_doc["centre"][0], bin_doc["centre"][1],
-            bin_doc["rim"] + _CLEARANCE_M + float(body.block_half[2]),
-        ]) + carry_offset
+            bin_doc["rim"] + _CLEARANCE_M + (
+                float(seen.object_size[2]) if seen.object_size is not None
+                else 0.04),
+        ])
         found = _reach_for(body, goal, None, support)
         if found is not None:
             target[:4] = q[:4] + (found - q[:4]) * float(np.clip(amount, 0, 1))
@@ -287,34 +434,37 @@ def decide(body: Body, phase: int, support: float, now: float) -> Command:
         return Command(target, _CARRY_SQUEEZE_N)
 
     # release
-    if object_over_target_m(body) > _OVER_TARGET_M * 2.0:
-        return Command(target, _CARRY_SQUEEZE_N, "refused: not over the bin")
+    if object_over_target_m(body, seen) > _OVER_TARGET_M * 2.0:
+        return Command(target, _CARRY_SQUEEZE_N, "refused: not over the bin", hold_station=True)
     limits = _limits()
     target[4] = target[5] = limits[4][1]
     return Command(target, 0.0)
 
 
-def advance(body: Body, phase: int, now: float) -> int:
-    """The same gates, on the same numbers."""
-    if phase == 0 and palm_to_object_m(body) <= _ARRIVED_M:
+def advance(body: Body, seen: Sensed, phase: int, now: float) -> int:
+    """The same gates, on the same numbers -- now sensed rather than known."""
+    estimate = (float(np.min(seen.object_size)) if seen.object_size is not None
+                else 0.03)
+    if phase == 0 and seen.object_seen:
         return 1
-    if phase == 1 and body.opening() >= float(np.min(body.block_half)) * 2.0:
+    if phase == 1 and palm_to_object_m(body, seen) <= _ARRIVED_M:
+        return 2
+    if phase == 2 and body.opening() >= estimate * 2.0:
         # Open when it is OPEN, not when a timer says so. A fixed dwell let the
         # approach resume with the pads 1 cm apart around a 6 cm block, so
         # move_to drove closed fingers into the object and jammed them there --
         # and the phase after that waited forever for a grasp that could not
         # form. A gate on elapsed time cannot tell a hand that opened from one
         # that was blocked.
-        return 2
-    if phase == 2 and object_in_grasp_m(body) <= float(
-            np.min(body.block_half)) * _ENGULFED_FRACTION:
         return 3
-    if phase == 3 and holding(body):
+    if phase == 3 and object_in_grasp_m(body, seen) <= estimate * _ENGULFED_FRACTION:
         return 4
-    if phase == 4 and holding(body):
+    if phase == 4 and holding(seen):
         return 5
-    if phase == 5 and object_above_rim_m(body) >= 0.02:
+    if phase == 5 and holding(seen):
         return 6
-    if phase == 6 and object_over_target_m(body) <= _OVER_TARGET_M and holding(body):
+    if phase == 6 and object_above_rim_m(body, seen) >= 0.02:
         return 7
+    if phase == 7 and object_over_target_m(body, seen) <= _OVER_TARGET_M             and holding(seen):
+        return 8
     return phase

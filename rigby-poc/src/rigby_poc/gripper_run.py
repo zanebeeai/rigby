@@ -27,6 +27,7 @@ from .gripper_control import (
     palm_facing,
     palm_to_object_m,
 )
+from .gripper_sense import Senses, sense
 from .gripper_torque import JOINTS, computed_torque, make
 
 _PUBLIC = Path(__file__).resolve().parents[2] / "frontend" / "public"
@@ -58,6 +59,8 @@ def run(block_half=None, block_at=None, table_top: float = 0.72,
     ceiling = _rate_ceiling()
 
     phase = 0
+    eyes = Senses()
+    squeeze = 0.0
     per_frame = max(1, int(round((1.0 / fps) / body.model.opt.timestep)))
     frames: list[dict] = []
     worst_penetration = 0.0
@@ -68,13 +71,19 @@ def run(block_half=None, block_at=None, table_top: float = 0.72,
 
     for index in range(int(seconds * fps)):
         now = index / fps
-        phase = advance(body, phase, now)
-        command = decide(body, phase, table_top, now)
+        # SENSE, then decide. Everything the controller reads passes through
+        # here, so what it may know is one function rather than eighteen call
+        # sites reaching into the simulator.
+        seen = sense(body, eyes, held, squeeze, now)
+        phase = advance(body, seen, phase, now)
+        command = decide(body, seen, phase, table_top, now)
+        squeeze = command.squeeze_n
         # The rate limit lives here, once, between deciding and doing -- the
         # same place the humanoid's does, and for the same reason: no primitive
         # can bypass it and no new one has to remember it.
-        step = np.clip(command.target - held, -ceiling / fps, ceiling / fps)
-        held = held + step
+        if not command.hold_station:
+            held = held + np.clip(command.target - held,
+                                  -ceiling / fps, ceiling / fps)
         for _ in range(per_frame):
             body.data.ctrl[:] = computed_torque(body, held, command.squeeze_n)
             mujoco.mj_step(body.model, body.data)
@@ -111,15 +120,17 @@ def run(block_half=None, block_at=None, table_top: float = 0.72,
                            float(quat[3]), float(quat[2])],
             "forces": {k: round(v, 2) for k, v in body.forces().items()},
             "opening_m": round(body.opening(), 5),
-            "over_target_m": round(object_over_target_m(body), 4),
-            "above_rim_m": round(object_above_rim_m(body), 4),
+            "over_target_m": round(object_over_target_m(body, seen), 4),
+            "above_rim_m": round(object_above_rim_m(body, seen), 4),
+            "object_seen": bool(seen.object_seen),
             "in_target": bool(object_in_target(body)),
             "penetration_mm": round(body.penetration_mm(), 3),
         })
         if verbose and index % 45 == 0:
             print(f"  t={now:5.2f} ph{phase} {PHASES[phase][0]:<11} "
-                  f"palm={palm_to_object_m(body) * 100:5.1f} "
-                  f"in={object_in_grasp_m(body) * 100:5.1f} "
+                  f"palm={palm_to_object_m(body, seen) * 100:5.1f} "
+                  f"in={object_in_grasp_m(body, seen) * 100:5.1f} "
+                  f"{'SEEN' if seen.object_seen else 'blind'} "
                   f"open={body.opening() * 100:5.2f} "
                   f"pen={body.penetration_mm():4.2f}mm "
                   f"f={ {k: round(v, 1) for k, v in body.forces().items() if v > 0.3} }")
@@ -130,11 +141,13 @@ def run(block_half=None, block_at=None, table_top: float = 0.72,
         "protocol": "gripper_clip_v1",
         "embodiment": "gripper",
         "control": "computed torque",
+        "sensing": "joint encoders, one wrist camera, contact from tracking "
+                   "error. No force sensor, no object pose, no object size.",
         "fps": fps,
         "table_top_m": float(table_top),
         "block_half_m": [float(v) for v in block_half],
-        "phase_names": ["approach", "open", "engulf", "close", "squeeze",
-                        "lift", "carry", "release"],
+        "phase_names": ["search", "approach", "open", "engulf", "close",
+                        "squeeze", "lift", "carry", "release"],
         "simulated_geoms": ["left_geom", "right_geom", "plate_geom",
                             "block_geom", "table", "bin"],
         "pedestal": spec()["kinematics"].get("pedestal"),
