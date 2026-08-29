@@ -59,8 +59,14 @@ _FINGER_STILL = 0.004
 #: How far from fully shut a stopped finger must be before its stopping means
 #: something is in the way rather than that it simply arrived, metres.
 _NOT_SHUT_M = 0.006
-#: The arm has stopped short of where it was sent, in radians.
-_ARM_STALL_RAD = 0.05
+#: The arm has stopped short of where it was sent: this much angle behind its
+#: command, in radians, AND moving slower than this, in rad/s. Both halves are
+#: needed. Lag alone is not obstruction -- an arm slewing at its rate limit sits
+#: a couple of degrees behind its target the whole way, which is what following
+#: a moving target looks like, and testing lag alone declared every fast reach
+#: obstructed. An arm that is behind AND has stopped is against something.
+_ARM_STALL_RAD = 0.08
+_ARM_STILL = 0.08
 
 
 def _finger_floor() -> float:
@@ -173,7 +179,9 @@ def sense(body: Body, eyes: Senses, commanded: np.ndarray, squeeze_n: float,
         eyes.latched = True
     elif not driving or float(np.min(q[4:])) <= shut + _NOT_SHUT_M:
         eyes.latched = False
-    arm_stalled = bool(np.any(np.abs(commanded[:4] - q[:4]) > _ARM_STALL_RAD))
+    behind = np.abs(commanded[:4] - q[:4]) > _ARM_STALL_RAD
+    stopped = np.abs(qd[:4]) < _ARM_STILL
+    arm_stalled = bool(np.any(behind & stopped))
 
     return Sensed(
         q=q,
