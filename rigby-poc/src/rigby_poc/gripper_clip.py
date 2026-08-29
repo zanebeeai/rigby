@@ -82,6 +82,8 @@ def export(run: GripperRun, block_half: np.ndarray, table_top: float,
         "block_half_m": [float(v) for v in block_half],
         "phase_names": ["approach", "open", "engulf", "close", "squeeze", "lift"],
         "simulated_geoms": ["finger_left", "finger_right", "plate", "block", "table"],
+        "pedestal": spec()["kinematics"].get("pedestal"),
+        "support_height_m": spec()["kinematics"].get("support_height_m"),
         "achieved": {k: round(float(v), 5) for k, v in achieved.items()},
         "frames": frames,
     }

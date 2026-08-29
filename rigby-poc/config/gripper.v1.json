@@ -11,10 +11,10 @@
     "base": {
       "at": [
         0.0,
-        0.72,
-        -0.28
+        1.06,
+        -0.3
       ],
-      "note": "bolted to the table, 58 cm back from the block so the arm works at something like its own length rather than folded on top of the object"
+      "note": "on a pedestal 34 cm above the table and 60 cm back. Mounted flat ON the surface the arm could not reach forward without swinging a link under it, so every legal pose was a useless one: it stayed above the table and stopped reaching. Real arms stand on a plinth for the same reason."
     },
     "joints": [
       {
@@ -110,7 +110,22 @@
       0.022,
       0.019,
       0.016
-    ]
+    ],
+    "support_height_m": 0.72,
+    "support_note": "The surface the arm is bolted to and works above. No link may go below it: the joint ranges alone do not say so, and the solver drove the first elbow to 30 cm under the table, which reads on screen as an arm rising out of the floor. A range of motion is not the same as a reachable workspace.",
+    "pedestal": {
+      "from": [
+        0.0,
+        0.72,
+        -0.3
+      ],
+      "to": [
+        0.0,
+        1.06,
+        -0.3
+      ],
+      "radius_m": 0.05
+    }
   },
   "part_groups": {
     "arm": [

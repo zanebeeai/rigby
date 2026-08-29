@@ -25,6 +25,7 @@ interface Frame {
 
 interface Clip {
   fps: number;
+  pedestal?: { from: number[]; to: number[]; radius_m: number };
   table_top_m: number;
   block_half_m: number[];
   phase_names: string[];
@@ -46,9 +47,9 @@ scene.background = new THREE.Color(0x171a21);
 const camera = new THREE.PerspectiveCamera(34, 1, 0.02, 20);
 // Framed on the work, not the room: the whole point of watching this is
 // the last few centimetres, and a wide shot of a table hides them.
-camera.position.set(0.46, 0.98, 0.78);
+camera.position.set(0.62, 1.16, 0.92);
 const controls = new OrbitControls(camera, canvas);
-controls.target.set(0.0, 0.80, 0.29);
+controls.target.set(0.0, 0.86, 0.16);
 controls.enableDamping = true;
 controls.minDistance = 0.15;
 controls.maxDistance = 3.0;
@@ -101,6 +102,22 @@ function build(first: Frame, data: Clip) {
   );
   table.position.set(0, data.table_top_m - 0.01, 0.25);
   scene.add(table);
+
+  // The plinth the arm stands on. Bolted flat to the table the arm could not
+  // reach forward without swinging a link under the surface, so the mount is
+  // part of the machine and worth seeing.
+  if (data.pedestal) {
+    const from = vec(data.pedestal.from);
+    const to = vec(data.pedestal.to);
+    const post = new THREE.Mesh(
+      new THREE.CylinderGeometry(
+        data.pedestal.radius_m, data.pedestal.radius_m * 1.25,
+        Math.max(to.y - from.y, 0.01), 20),
+      new THREE.MeshStandardMaterial({ color: 0x4a5262, roughness: 0.7 }),
+    );
+    post.position.set(from.x, (from.y + to.y) / 2, from.z);
+    scene.add(post);
+  }
 
   for (const link of first.links) {
     let mesh: THREE.Mesh;

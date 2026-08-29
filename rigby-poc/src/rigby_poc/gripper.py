@@ -58,7 +58,34 @@ def within_limits(state: "GripperState") -> bool:
         low, high = limits.get(name, (-np.inf, np.inf))
         if not (low <= getattr(state, name) <= high):
             return False
+    return clears_support(state)
+
+
+def clears_support(state: "GripperState") -> bool:
+    """Is the whole arm above the surface it is bolted to?
+
+    Joint ranges say what each joint may do; they do not say where the arm may
+    BE. Every angle can be legal while the linkage they add up to is buried:
+    measured, the first elbow reached 30 cm under the table, which reads on
+    screen as an arm rising out of the floor. A range of motion is not a
+    reachable workspace, and the difference has to be checked separately.
+    """
+    support = float(spec()["kinematics"].get("support_height_m", -np.inf))
+    place = forward(state)
+    for point in place["joints"]:
+        if float(point[1]) < support - _SUPPORT_MARGIN_M:
+            return False
+    for key in ("left_pad", "right_pad", "plate"):
+        if float(place[key][1]) < support - _SUPPORT_MARGIN_M:
+            return False
     return True
+
+
+#: How far below the surface a link may dip before the pose is refused, metres.
+#: Not zero: the pads have to reach an object resting ON the surface, so its
+#: own thickness is fair game and the table plane is not a hard ceiling for
+#: everything.
+_SUPPORT_MARGIN_M = 0.02
 
 
 def clamp(state: "GripperState") -> "GripperState":
@@ -78,17 +105,19 @@ class GripperState:
     same controller is the point of this file.
     """
 
-    # HOME is up and back, clear of everything. The first default put the pads
-    # at y=0.608 with the table top at 0.72 -- the arm started a hand's width
-    # BELOW the surface it works on, and 25 cm from the block, so the run opened
-    # already halfway into its own approach with no room to line up. Searched
-    # for a pose that stands 31.6 cm above the table, 35 cm back from the block,
-    # and looks slightly downward, so the first motion is a descent onto the
-    # work rather than a lunge across it.
+    # HOME is up and back, clear of everything, and re-fitted whenever the
+    # mounting moves -- a home pose is a fact about where the base is, not a
+    # constant. Mounted flat on the table the first default put the pads BELOW
+    # the surface the arm works on; raised onto the pedestal, the same numbers
+    # put them 76 cm up and out of reach entirely.
+    #
+    # Searched against the current mount for a pose standing 34 cm above the
+    # table and 41 cm back from the block, with every joint inside its declared
+    # range and no link under the surface.
     yaw: float = 0.0
-    lift: float = -0.20
-    elbow: float = -1.40
-    wrist: float = -1.40
+    lift: float = 1.70
+    elbow: float = -2.40
+    wrist: float = -0.20
     finger: float = 0.05
 
     def as_array(self) -> np.ndarray:
