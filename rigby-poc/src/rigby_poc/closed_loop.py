@@ -1283,6 +1283,13 @@ _ARM_STOP_FORCE_N = 2.5
 #: m/s. Nothing that is being reached for should be moving.
 _PUSHING_SPEED_M_S = 0.02
 
+#: Lateral error above which the approach lines up before coming in, metres.
+_APPROACH_ALIGN_M = 0.03
+
+#: How far back along the face's normal that lining up happens, metres. Far
+#: enough that an open hand swinging across cannot reach the object.
+_APPROACH_LANE_M = 0.10
+
 #: How far off the face the palm pad is asked to stop, metres.
 #:
 #: Small on purpose. The pad is at the knuckles and the digits reach most of a
@@ -1358,7 +1365,23 @@ def _solve_move_to(sensing: Sensing, hand: Hand, amount: float) -> dict[str, Any
         return {}
     face_centre, face_normal = face
     palm, _normal = frame
-    goal = face_centre + face_normal * _FACE_STANDOFF_M
+    # APPROACH ALONG THE NORMAL, not straight at the goal. Aiming the palm at
+    # its final position lets the solver get there by whatever arm swing it
+    # likes, and an open hand swung in sideways sweeps its fingers through the
+    # object's volume on the way: measured, the block was displaced 7 to 10 cm
+    # during the approach alone, in every placement, before anything closed.
+    # The speed guard trips 18 frames while that happens and still cannot
+    # prevent it, because by the time motion registers the object has been hit.
+    #
+    # So the approach has two parts, which is how manipulation does this: line
+    # up out along the face's normal first, then come straight in. The lateral
+    # error is closed at a distance where the hand cannot touch anything.
+    lateral = (palm - face_centre) - face_normal * float(
+        np.dot(palm - face_centre, face_normal))
+    if float(np.linalg.norm(lateral)) > _APPROACH_ALIGN_M:
+        goal = face_centre + face_normal * (_FACE_STANDOFF_M + _APPROACH_LANE_M)
+    else:
+        goal = face_centre + face_normal * _FACE_STANDOFF_M
     reach = float(np.clip(amount, 0.0, 1.0))
     want = palm + (goal - palm) * reach
 
@@ -1637,9 +1660,24 @@ _CARRY_FORCE_N = 8.0
 #: Slack left above the object's width when closing, metres.
 _GRIP_FLOOR_MARGIN_M = 0.012
 
-#: How far off the grasp line the object may be and still be worth closing
-#: on, metres. Beyond this the digits are beside it rather than around it.
-_CLOSE_MAX_OFFSET_M = 0.038
+#: How far off the grasp line the object may be and still be worth closing on,
+#: as a multiple of its own half-width, plus a fixed allowance.
+#:
+#: Scaled, because a fixed threshold is a threshold fitted to one object. The
+#: measure is from the object's CENTRE to the line between thumb and fingers, so
+#: a wider block's centre sits further out at the same quality of grasp: a 6 cm
+#: block wants about 3 cm and an 8 cm block about 4, and a single 0.038 both
+#: refused the wide block and let the narrow one be closed on from too far away.
+#: Across ten placements and sizes, every success sat between 1.6 and 3.3 cm and
+#: every failure above it -- the discriminator is real, it just is not constant.
+_CLOSE_OFFSET_SCALE = 0.9
+_CLOSE_OFFSET_BASE_M = 0.008
+
+
+def _close_offset_m(sensing: Sensing) -> float:
+    """How far off the line this object may be and still be closeable."""
+    half = float(np.min(np.asarray(sensing.object_half_m, dtype=float)))
+    return half * _CLOSE_OFFSET_SCALE + _CLOSE_OFFSET_BASE_M
 
 
 def _hold_force_n(amount: float) -> float:
@@ -1880,7 +1918,7 @@ def _solve_close_grip(sensing: Sensing, hand: Hand, amount: float) -> dict[str, 
     # tenths of a second. A rule the body keeps needs no discipline from the
     # thing deciding, and the refusal is reported, so it reads as "move first",
     # not as silence.
-    if object_in_grasp(sensing, hand) > _CLOSE_MAX_OFFSET_M:
+    if object_in_grasp(sensing, hand) > _close_offset_m(sensing):
         return {}
 
     floor = float(np.min(sensing.object_half_m) * 2.0) + _GRIP_FLOOR_MARGIN_M

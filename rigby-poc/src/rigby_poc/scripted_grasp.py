@@ -41,8 +41,11 @@ PHASES: tuple[tuple[str, float], ...] = (
 
 #: Palm-to-object distance at which the approach has arrived, metres.
 _ARRIVED_M = 0.10
-#: How near the grasp line the object must be before anything closes, metres.
-_ENGULFED_M = 0.025
+#: How near the grasp line the object must be before anything closes, as a
+#: fraction of the object's own half-width. Fixed metres is a threshold fitted
+#: to one block: the measure runs from the object's CENTRE, so a wider object
+#: sits further out at the same quality of grasp.
+_ENGULFED_FRACTION = 0.8
 #: How long to hold the open shape before advancing into the object, seconds.
 _OPEN_DWELL_S = 1.0
 
@@ -77,7 +80,8 @@ class ScriptedGrasp(SuperPrimitiveSelector):
             self.phase = 1
         elif self.phase == 1 and sensing.time_s > _OPEN_DWELL_S:
             self.phase = 2
-        elif self.phase == 2 and object_in_grasp(sensing, self.hand) <= _ENGULFED_M:
+        elif self.phase == 2 and object_in_grasp(sensing, self.hand) <= (
+                float(min(sensing.object_half_m)) * _ENGULFED_FRACTION):
             self.phase = 3
         elif self.phase == 3 and pairs >= 1:
             self.phase = 4
