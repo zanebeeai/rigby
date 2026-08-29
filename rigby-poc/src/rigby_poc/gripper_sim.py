@@ -16,6 +16,7 @@ import numpy as np
 
 from .gripper import (
     GripperState,
+    rate_limited,
     bin_spec,
     object_above_rim_m,
     object_in_target,
@@ -302,7 +303,11 @@ def run(block_half: np.ndarray, block_at: np.ndarray, table_top: float = 0.72,
             if nxt is None:  # too weak to carry: squeeze instead
                 nxt = solve_close_grip(state, obj, block_half, forces, 1.0)
         if nxt is not None:
-            state = nxt
+            # No faster than the machine is declared to move. Without this the
+            # solvers close a fraction of the REMAINING distance each frame, so
+            # a big correction snaps: 472 deg/s at the elbow on the handover
+            # from lift to carry, which is what it looked like.
+            state = rate_limited(state, nxt, 1.0 / fps)
 
         place(state)
         for _ in range(per_frame):

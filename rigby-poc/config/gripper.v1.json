@@ -307,5 +307,16 @@
       ],
       "rim_height_m": 0.995
     }
+  },
+  "rate_limits": {
+    "note": "How fast each joint may move, which the range of motion does not say. Unlimited, the solvers move a FRACTION OF THE REMAINING DISTANCE each frame, so the closer they are to a large correction the harder they snap: measured, 472 deg/s at the elbow on the lift-to-carry handover, about 1.3 revolutions a second. The humanoid learned the same lesson and carries angular_rate_limits for the same reason -- a pose envelope bounds where a joint may be, never how fast it gets there, and every pose along a snap is legal.",
+    "reference": "A collaborative arm runs 60-120 deg/s in normal operation and tops out near 180. Parallel grippers close at 50-150 mm/s.",
+    "joints_deg_per_s": {
+      "yaw": 110.0,
+      "lift": 85.0,
+      "elbow": 100.0,
+      "wrist": 140.0
+    },
+    "finger_m_per_s": 0.07
   }
 }

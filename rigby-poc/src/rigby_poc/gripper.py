@@ -52,6 +52,38 @@ def joint_limits() -> dict[str, tuple[float, float]]:
     return out
 
 
+@lru_cache(maxsize=1)
+def rate_limits() -> dict[str, float]:
+    """Radians per second each joint may move, and metres per second the fingers.
+
+    Separate from the range of motion because they answer different questions.
+    A range says where a joint may BE; a rate says how fast it may get there,
+    and every pose along a snap is inside the envelope. That is exactly how the
+    elbow reached 472 deg/s while never leaving its declared 140 degrees.
+    """
+    document = spec().get("rate_limits", {})
+    out = {
+        name: float(np.radians(value))
+        for name, value in document.get("joints_deg_per_s", {}).items()
+    }
+    out["finger"] = float(document.get("finger_m_per_s", 0.07))
+    return out
+
+
+def rate_limited(current: "GripperState", target: "GripperState",
+                 dt: float) -> "GripperState":
+    """Move toward the target no faster than the manifest allows."""
+    limits = rate_limits()
+    out = current.copy()
+    for name in ("yaw", "lift", "elbow", "wrist", "finger"):
+        start = float(getattr(current, name))
+        want = float(getattr(target, name))
+        ceiling = float(limits.get(name, np.inf)) * dt
+        step = float(np.clip(want - start, -ceiling, ceiling))
+        setattr(out, name, start + step)
+    return out
+
+
 def within_limits(state: "GripperState") -> bool:
     limits = joint_limits()
     for name in ("yaw", "lift", "elbow", "wrist"):
