@@ -10,9 +10,9 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 type Link =
-  | { kind: "segment"; from: number[]; to: number[]; radius: number }
-  | { kind: "finger"; from: number[]; to: number[]; half: number[] }
-  | { kind: "plate"; at: number[]; approach: number[]; across: number[] };
+  | { kind: "segment"; from: number[]; to: number[]; radius: number; simulated: boolean }
+  | { kind: "finger"; from: number[]; to: number[]; half: number[]; simulated: boolean }
+  | { kind: "plate"; at: number[]; approach: number[]; across: number[]; simulated: boolean };
 
 interface Frame {
   t: number;
@@ -59,7 +59,12 @@ const key = new THREE.DirectionalLight(0xffffff, 1.5);
 key.position.set(1.2, 2.2, 1.4);
 scene.add(key);
 
-const armMaterial = new THREE.MeshStandardMaterial({ color: 0x5a6b86, roughness: 0.55 });
+// Anything the solver does not have is drawn as a wireframe, so the picture
+// cannot imply that the arm is colliding with something. Only the pads, the
+// plate, the block and the table are in the physics.
+const armMaterial = new THREE.MeshBasicMaterial({
+  color: 0x55617a, wireframe: true,
+});
 const fingerMaterial = new THREE.MeshStandardMaterial({ color: 0x4fa3d1, roughness: 0.4 });
 const plateMaterial = new THREE.MeshStandardMaterial({ color: 0x3d6f96, roughness: 0.5 });
 const blockMaterial = new THREE.MeshStandardMaterial({ color: 0xd98c4a, roughness: 0.7 });

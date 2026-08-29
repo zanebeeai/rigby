@@ -180,12 +180,19 @@ def run(block_half: np.ndarray, block_at: np.ndarray, table_top: float = 0.72,
             data.mocap_quat[targets[name]] = quaternion
 
     place(state)
-    for name in ("finger_left", "finger_right", "plate"):
+    # Seed ORIENTATION as well as position. Setting only the position left every
+    # body at identity rotation while its mocap target was already turned, and
+    # the welds -- the plate's especially, at solref 0.002 -- resolved that gap
+    # as an impulse: NaN in QACC at t=0.008, on the third step. A run that
+    # begins unstable is not a measurement of anything.
+    spot = forward(state)
+    orientation = _quaternion(spot["across"], spot["approach"])
+    for name, key in (("finger_left", "left_pad"), ("finger_right", "right_pad"),
+                      ("plate", "plate")):
         body = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, name)
-        key = {"finger_left": "left_pad", "finger_right": "right_pad",
-               "plate": "plate"}[name]
-        data.qpos[model.jnt_qposadr[model.body_jntadr[body]]:
-                  model.jnt_qposadr[model.body_jntadr[body]] + 3] = _mj(forward(state)[key])
+        address = model.jnt_qposadr[model.body_jntadr[body]]
+        data.qpos[address:address + 3] = _mj(spot[key])
+        data.qpos[address + 3:address + 7] = orientation
     mujoco.mj_forward(model, data)
 
     for index in range(int(seconds * fps)):

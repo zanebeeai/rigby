@@ -42,10 +42,17 @@ class GripperState:
     same controller is the point of this file.
     """
 
+    # HOME is up and back, clear of everything. The first default put the pads
+    # at y=0.608 with the table top at 0.72 -- the arm started a hand's width
+    # BELOW the surface it works on, and 25 cm from the block, so the run opened
+    # already halfway into its own approach with no room to line up. Searched
+    # for a pose that stands 31.6 cm above the table, 35 cm back from the block,
+    # and looks slightly downward, so the first motion is a descent onto the
+    # work rather than a lunge across it.
     yaw: float = 0.0
-    lift: float = -0.5
-    elbow: float = 1.0
-    wrist: float = 0.3
+    lift: float = -0.20
+    elbow: float = -1.40
+    wrist: float = -1.40
     finger: float = 0.05
 
     def as_array(self) -> np.ndarray:
@@ -245,9 +252,18 @@ def solve_move_to(state: GripperState, obj: np.ndarray, half: np.ndarray,
     middle = (place["left_pad"] + place["right_pad"]) / 2.0
     lateral = (middle - centre) - normal * float(np.dot(middle - centre, normal))
     if float(np.linalg.norm(lateral)) > _APPROACH_ALIGN_M:
+        # Far out along the face's normal, where a gripper swinging across
+        # cannot touch anything, and line up there first.
         goal = centre + normal * (_FACE_STANDOFF_M + _APPROACH_LANE_M)
     else:
-        goal = centre + normal * _FACE_STANDOFF_M
+        # Then bring the pad midpoint to the object's CENTRE, not to a standoff
+        # off its surface. A parallel gripper holds by straddling: its pads have
+        # to end up either side of the object, so the point between them belongs
+        # inside it. Aimed 2 cm off the top face instead, the gripper arrived
+        # perfectly square -- palm_facing 1.00, 2.09 cm away -- with the object
+        # 6.09 cm below the line between its pads, and stalled there for seven
+        # seconds because nothing was between them to close on.
+        goal = obj
 
     def cost(candidate: GripperState) -> float:
         spot = forward(candidate)

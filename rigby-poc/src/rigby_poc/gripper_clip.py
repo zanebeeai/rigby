@@ -29,9 +29,16 @@ def _links(state: GripperState) -> list[dict]:
     joints = [list(map(float, p)) for p in place["joints"]]
     document = spec()
     finger = document["kinematics"]["finger"]
+    # WHAT IS ACTUALLY SIMULATED is marked, because it is not everything drawn.
+    # The physics contains the two finger boxes, the plate, the block and the
+    # table -- nothing else. The arm segments are kinematic scaffolding: they
+    # place the gripper and collide with nothing, so an arm shown solid beside a
+    # solid block invites exactly the wrong conclusion about what the solver is
+    # resolving.
     out = [
         {"kind": "segment", "from": joints[i], "to": joints[i + 1],
-         "radius": 0.028 if i == 0 else 0.024 if i == 1 else 0.020}
+         "radius": 0.028 if i == 0 else 0.024 if i == 1 else 0.020,
+         "simulated": False}
         for i in range(len(joints) - 1)
     ]
     for name in ("left_pad", "right_pad"):
@@ -41,10 +48,12 @@ def _links(state: GripperState) -> list[dict]:
         out.append({"kind": "finger", "from": list(map(float, back)),
                     "to": list(map(float, pad)),
                     "half": [float(finger["thickness_m"]),
-                             float(finger["pad_width_m"]) / 2.0]})
+                             float(finger["pad_width_m"]) / 2.0],
+                    "simulated": True})
     out.append({"kind": "plate", "at": list(map(float, place["plate"])),
                 "approach": list(map(float, place["approach"])),
-                "across": list(map(float, place["across"]))})
+                "across": list(map(float, place["across"])),
+                "simulated": True})
     return out
 
 
@@ -71,6 +80,7 @@ def export(run: GripperRun, block_half: np.ndarray, table_top: float,
         "table_top_m": float(table_top),
         "block_half_m": [float(v) for v in block_half],
         "phase_names": ["approach", "open", "engulf", "close", "squeeze", "lift"],
+        "simulated_geoms": ["finger_left", "finger_right", "plate", "block", "table"],
         "achieved": {k: round(float(v), 5) for k, v in achieved.items()},
         "frames": frames,
     }
