@@ -224,7 +224,9 @@ def _reach_for(body: Body, goal: np.ndarray, square_to: np.ndarray | None,
                support: float, aim: str = "grasp",
                square_weight: float = 0.30,
                keep_out: tuple | None = None,
-               stay_near: float = 0.0) -> np.ndarray | None:
+               stay_near: float = 0.0,
+               tolerance: float = 0.03,
+               warm_key: str | None = None) -> np.ndarray | None:
     """Joint angles that put ``aim`` on ``goal`` -- the grasp centre, or the eye.
 
     Aiming the CAMERA is a different request from aiming the hand, and treating
@@ -260,17 +262,36 @@ def _reach_for(body: Body, goal: np.ndarray, square_to: np.ndarray | None,
             here = body.camera_pose()[0]
         else:
             here = body.grasp_centre()
-        cost = float(np.linalg.norm(here - goal))
+        # RANKED, NOT SUMMED. Getting to the point is the task; how the hand
+        # is angled and how far the arm had to move to do it are preferences.
+        # Adding them together lets a preference buy position error with
+        # itself, and both of this solver's worst failures were exactly that
+        # trade being made silently:
+        #
+        #   the approach-angle term bought 0.95 of facing for 49 mm of miss,
+        #   and 49 mm misses a handle;
+        #
+        #   the stay-near term created a DEAD ZONE around the goal -- inside
+        #   about two centimetres, closing the last of the gap cost more in
+        #   joint travel than it gained in position, so the solver returned
+        #   "stay where you are" and the hand sat 18 mm short of a 22 mm
+        #   handle, which is the difference between gripping a bar and shoving
+        #   it sideways.
+        #
+        # So the preferences are scaled by how well the task is already met:
+        # zero while the hand is further than `tolerance` from the goal, fading
+        # in only as it arrives, and capped so they can never be worth more
+        # than half the tolerance. Position always wins the argument.
+        gap = float(np.linalg.norm(here - goal))
+        cost = gap
+        slack = float(np.clip(1.0 - gap / max(tolerance, 1e-6), 0.0, 1.0))
+        preference = 0.0
         if square_to is not None:
-            # What a miss on the approach angle is worth, in metres of position.
-            # It is a WEIGHT, not a constraint, and the right value depends on
-            # the task: this arm's four joints all turn about one axis bar the
-            # yaw, so the hand's heading is locked to the arm's own vertical
-            # plane and a truly square approach to an off-axis target does not
-            # exist. Demanding one anyway made the solver buy 0.95 of facing
-            # with 49 mm of position error, and 49 mm misses a handle.
-            cost += (1.0 - float(np.dot(body.approach(), -square_to))) \
+            preference += (1.0 - float(np.dot(body.approach(), -square_to))) \
                 * square_weight
+        if stay_near:
+            preference += stay_near * float(np.linalg.norm(angles - start))
+        cost += slack * min(preference, tolerance * 0.5)
         for name in ("shoulder", "seg1", "seg2", "seg3", "plate_geom"):
             if float(body.geom_at(name)[2]) < support:
                 return None
@@ -294,14 +315,6 @@ def _reach_for(body: Body, goal: np.ndarray, square_to: np.ndarray | None,
                 inside = np.minimum(where - low, high - where)
                 if bool(np.all(inside > 0.0)):
                     cost += 3.0 * float(np.min(inside)) + 0.25
-        if stay_near:
-            # Prefer the nearby answer. Coordinate descent restarted from fixed
-            # seeds will happily return a valid pose on the far side of the
-            # workspace for a millimetre of improvement, and the arm then swings
-            # through everything between here and there. This is the standard
-            # minimum-norm preference, and it is also what makes the motion
-            # look like a machine rather than a scramble.
-            cost += stay_near * float(np.linalg.norm(angles - start))
         return cost
 
     def descend(seed: np.ndarray, passes: int) -> tuple[np.ndarray, float]:
@@ -323,6 +336,50 @@ def _reach_for(body: Body, goal: np.ndarray, square_to: np.ndarray | None,
                             best, here = trial, value
         return best, here
 
+    def quality(angles: np.ndarray) -> tuple[float, float]:
+        """What the pose actually achieves: distance, and how it is angled.
+
+        Asked separately from the cost, because the cost ranks preferences
+        BELOW the task and therefore stops reflecting how badly a preference is
+        being missed once the task is met. Escalating on cost alone meant a
+        pose that arrived facing exactly backwards looked cheap, so no harder
+        search was ever run and every approach-angle weight gave the same
+        wrong answer.
+        """
+        for slot, value in zip(address[:4], angles):
+            data.qpos[slot] = value
+        mujoco.mj_kinematics(model, data)
+        if aim == "camera":
+            mujoco.mj_camlight(model, data)
+            spot = body.camera_pose()[0]
+        else:
+            spot = body.grasp_centre()
+        angle = (float(np.dot(body.approach(), -square_to))
+                 if square_to is not None else 1.0)
+        return float(np.linalg.norm(spot - goal)), angle
+
+    def rank(angles: np.ndarray) -> tuple[int, float]:
+        """Order poses the way the task orders them, not the way a sum does.
+
+        First: does it reach the point at all, within tolerance. Only among
+        poses that do is the approach angle compared, and only among poses that
+        do not is the remaining distance compared. This is the ordering the
+        ranked cost expresses locally, applied to CHOOSING between candidates
+        -- and it has to be applied here too, because the ranked cost
+        deliberately ignores the approach angle while the hand is still far
+        away, which leaves a search that picks its starting point on position
+        alone no reason to ever look in a basin where the hand faces the right
+        way. It would then refine, perfectly, to the wrong side of the handle.
+        """
+        gap, facing = quality(angles)
+        if gap <= tolerance:
+            return (0, -facing)
+        return (1, gap)
+
+    def struggling_at(angles: np.ndarray) -> bool:
+        gap, facing = quality(angles)
+        return gap > min(0.012, tolerance / 2.0) or facing < 0.75
+
     best, here = descend(start, 7)
 
     # RESTARTS, and only when the first answer is poor. Coordinate descent moves
@@ -334,12 +391,12 @@ def _reach_for(body: Body, goal: np.ndarray, square_to: np.ndarray | None,
     # frame reported honest progress. The same goal solves to 2 mm from a
     # different starting pose. So try a few, keep the best, and pay for it only
     # on the frames where one start was not enough.
-    if here > 0.02:
+    if struggling_at(best):
         for seed in _SEEDS:
             candidate, cost = descend(np.asarray(seed), 5)
-            if cost < here - 0.01:
+            if rank(candidate) < rank(best):
                 best, here = candidate, cost
-            if here <= 0.01:
+            if not struggling_at(best):
                 break
 
     # STILL STUCK: sweep the whole joint space coarsely and descend from the
@@ -350,27 +407,43 @@ def _reach_for(body: Body, goal: np.ndarray, square_to: np.ndarray | None,
     # backwards or the right facing two hundred millimetres away. The sweep is
     # expensive and runs only on the frames where the cheap search failed;
     # once it lands in the right basin, stay_near keeps the next frame there.
-    if here > 0.03:
+    if struggling_at(best):
         grid = [np.linspace(low, high, n) for (low, high), n
                 in zip(limits[:4], (9, 7, 9, 7))]
-        coarse, cost_of = None, 1e9
+        # WHERE TO LOOK is a different question from WHAT TO ACCEPT, and they
+        # want different rules. The grid steps 37 degrees at a time, so no point
+        # on it is ever within the tolerance -- judge it by the task hierarchy
+        # and every square fails the first test, the comparison falls through to
+        # distance alone, and the sweep hands back a starting point in a basin
+        # where the hand faces backwards. It then refines, perfectly, to the
+        # wrong side of the handle. A blend is the right heuristic at this
+        # resolution: it says which region is promising. The hierarchy still
+        # decides what comes out at the end.
+        coarse, best_blend = None, 9e9
         for a in grid[0]:
             for b in grid[1]:
                 for c in grid[2]:
                     for d in grid[3]:
                         trial = np.asarray([a, b, c, d])
-                        value = evaluate(trial)
-                        if value is not None and value < cost_of:
-                            coarse, cost_of = trial, value
+                        if evaluate(trial) is None:
+                            continue
+                        gap, facing = quality(trial)
+                        blend = gap + 0.6 * (1.0 - facing)
+                        if blend < best_blend:
+                            coarse, best_blend = trial, blend
         if coarse is not None:
             candidate, cost = descend(coarse, 6)
-            if cost < here:
+            if rank(candidate) < rank(best):
                 best, here = candidate, cost
 
     data.qpos[:] = saved_q
     data.qvel[:] = saved_v
     mujoco.mj_forward(model, data)
-    return best if here < 1e5 else None
+    if here >= 1e5:
+        return None
+    if warm_key:
+        _WARM[warm_key] = best.copy()
+    return best
 
 
 #: The patches of table the camera visits, in the order it visits them. This is
@@ -382,6 +455,15 @@ _SCAN_GRID = tuple(
 )
 
 _scan_cache: list[np.ndarray] | None = None
+
+#: The last pose each named reach settled on. A solver that restarts from
+#: wherever the BODY currently is starts, early in a move, a long way from its
+#: own previous answer -- so it re-searches from scratch every frame, lands in a
+#: different basin whenever the escalation happens to fire, and the target
+#: flickers between two arm configurations while the hand never arrives. Keeping
+#: the previous answer and trying it first makes the search stable across frames
+#: and, because it is nearly always still the best one, cheap.
+_WARM: dict[str, np.ndarray] = {}
 
 
 def _scan_poses(body: Body, support: float) -> list[np.ndarray]:
