@@ -341,11 +341,18 @@ def test_analysis_needs_no_network(monkeypatch: pytest.MonkeyPatch) -> None:
 #: Equality is deliberate in both directions. Too many passes is a check that
 #: stopped reading ``AnalysisContext``; too few is coverage that quietly went
 #: away. Update these numbers when a change legitimately moves them, and say so.
+#: The carried-capsule change (G6c) moved five more. Self-collision now reads
+#: the arm pivots and torso carriers from world matrices on every frame, so the
+#: three gesture cases and ``strike_left_hook`` go from their presentation
+#: window to one pass per clip frame plus the rest-head pose, and
+#: ``strike_shake_echo`` -- which has no presentation window and therefore no
+#: rest-head evaluation -- goes from none to exactly one pass per frame.
 _FK_SHAPES: dict[str, tuple[str, int]] = {
-    "gesture_shaka_right": ("windowed", 30),
-    "gesture_open_palm": ("windowed", 46),
-    "gesture_point_right": ("windowed", 46),
-    "strike_left_hook": ("windowed", 75),
+    "gesture_shaka_right": ("per_frame", 1),
+    "gesture_open_palm": ("per_frame", 1),
+    "gesture_point_right": ("per_frame", 1),
+    "strike_left_hook": ("per_frame", 1),
+    "strike_shake_echo": ("per_frame", 0),
     "grab_block_right": ("none", 0),
     "composite_travel_foul": ("per_frame", 1),
     "composite_finger_count_gaze": ("per_frame", 1),
@@ -375,7 +382,6 @@ _FK_SHAPES: dict[str, tuple[str, int]] = {
     "full_body_turn": ("per_frame", 1),
     "full_body_run": ("per_frame", 1),
     "full_body_crouch": ("per_frame", 1),
-    "strike_shake_echo": ("none", 0),
 }
 
 

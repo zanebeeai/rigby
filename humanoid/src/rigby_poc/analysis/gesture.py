@@ -223,16 +223,115 @@ def world_hand_samples(
     return samples
 
 
-def _inside_torso(point: np.ndarray) -> bool:
-    if not 1.01 <= float(point[1]) <= 1.48:
-        return False
+#: The torso capsule's vertical extent in the rig's rest-world frame.
+_TORSO_CAPSULE_Y_M = (1.01, 1.48)
+
+
+def _torso_cross_section(point: np.ndarray) -> bool:
     # Conservative torso capsule in the calibrated rig's X/Z cross-section.
     # The arms are permitted to pass in front of the chest, but not through it.
     normalized = (float(point[0]) / 0.19) ** 2 + ((float(point[2]) + 0.015) / 0.145) ** 2
     return normalized < 1.0
 
 
-def _arm_self_collision(shoulder: np.ndarray, elbow: np.ndarray, wrist: np.ndarray) -> bool:
+def _inside_torso(point: np.ndarray) -> bool:
+    """The rest-world torso capsule -- the geometric definition, unchanged.
+
+    Takes a point in the rig's rest-world frame. The carried check below maps
+    world points back into each torso carrier's rest frame and asks this same
+    cross-section question slice by slice, so this function stays the single
+    home of the capsule's literals and is exact at the rest pose.
+    """
+
+    low, high = _TORSO_CAPSULE_Y_M
+    return low <= float(point[1]) <= high and _torso_cross_section(point)
+
+
+#: The bones that carry the capsule, hips upward. The strike trunk yaw is
+#: graded across spine/chest/upperChest and root motion will translate the
+#: hips, so no single bone can carry the whole capsule rigidly: each carries
+#: the slice between its own rest pivot height and the next carrier's.
+_TORSO_CAPSULE_CARRIERS = ("hips", "spine", "chest", "upperChest")
+
+
+@cache
+def _torso_capsule_bands() -> tuple[tuple[str, float, float, np.ndarray], ...]:
+    """``(bone, band_low, band_high, rest_world_matrix)`` per capsule slice.
+
+    The capsule's y-range is partitioned at the carriers' rest pivot heights
+    (hips 0.9167, spine 1.0174, chest 1.1405, upperChest 1.2817), clamped to
+    the range: the hips carry the thin band below the spine pivot and the
+    upperChest slice runs to the capsule top. At the rest pose the union of
+    carried slices is exactly the fixed capsule.
+
+    The rest world matrices are composed here from the parent chain directly
+    rather than through ``RigKinematics.world_matrices`` on purpose: that
+    funnel is counted per case by the forward-kinematics equality guard, and a
+    module-level cache firing through it would add one pass to whichever case
+    runs first -- a count that depends on test order is not an equality.
+    """
+
+    kinematics = rig_kinematics()
+    node = kinematics.node_by_canonical
+
+    def rest_world(index: int) -> np.ndarray:
+        matrix = kinematics.rest[index].matrix(None, None)
+        parent = kinematics.parents.get(index)
+        return matrix if parent is None else rest_world(parent) @ matrix
+
+    rest = {bone: rest_world(node[bone]) for bone in _TORSO_CAPSULE_CARRIERS}
+    pivots = [float(rest[bone][1, 3]) for bone in _TORSO_CAPSULE_CARRIERS]
+    low, high = _TORSO_CAPSULE_Y_M
+    bands: list[tuple[str, float, float, np.ndarray]] = []
+    last = len(_TORSO_CAPSULE_CARRIERS) - 1
+    for index, bone in enumerate(_TORSO_CAPSULE_CARRIERS):
+        band_low = low if index == 0 else max(low, pivots[index])
+        band_high = high if index == last else min(high, pivots[index + 1])
+        if band_high <= band_low:
+            continue
+        bands.append((bone, band_low, band_high, rest[bone]))
+    return tuple(bands)
+
+
+def _torso_carry(
+    matrices: list[np.ndarray], node: dict[str, int]
+) -> tuple[tuple[float, float, np.ndarray], ...]:
+    """Per-slice world-to-rest maps for one frame's torso pose.
+
+    For each capsule slice, ``rest_world @ inverse(current_world)`` maps a
+    world-frame point back into the carrier's rest frame, where the capsule
+    literals are defined. Rigid inverse rather than ``np.linalg.inv`` because
+    the matrices are rotations plus translations and nothing else.
+    """
+
+    carries: list[tuple[float, float, np.ndarray]] = []
+    for bone, band_low, band_high, rest_matrix in _torso_capsule_bands():
+        current = matrices[node[bone]]
+        rotation = current[:3, :3]
+        inverse = np.eye(4)
+        inverse[:3, :3] = rotation.T
+        inverse[:3, 3] = -rotation.T @ current[:3, 3]
+        carries.append((band_low, band_high, rest_matrix @ inverse))
+    return tuple(carries)
+
+
+def _inside_torso_carried(
+    point: np.ndarray, carries: tuple[tuple[float, float, np.ndarray], ...]
+) -> bool:
+    homogeneous = np.asarray([point[0], point[1], point[2], 1.0], dtype=float)
+    for band_low, band_high, carry in carries:
+        mapped = carry @ homogeneous
+        if band_low <= float(mapped[1]) <= band_high and _torso_cross_section(mapped):
+            return True
+    return False
+
+
+def _arm_self_collision(
+    shoulder: np.ndarray,
+    elbow: np.ndarray,
+    wrist: np.ndarray,
+    carries: tuple[tuple[float, float, np.ndarray], ...],
+) -> bool:
     samples: list[np.ndarray] = []
     # Ignore the proximal upper-arm section that begins on the torso surface.
     # The shoulder joint starts inside the torso mesh. Samples before the
@@ -243,7 +342,7 @@ def _arm_self_collision(shoulder: np.ndarray, elbow: np.ndarray, wrist: np.ndarr
         samples.append(shoulder * (1.0 - alpha) + elbow * alpha)
     for alpha in np.linspace(0.0, 1.0, 7):
         samples.append(elbow * (1.0 - alpha) + wrist * alpha)
-    return any(_inside_torso(point) for point in samples)
+    return any(_inside_torso_carried(point, carries) for point in samples)
 
 
 def _full_hand_visible(
@@ -430,8 +529,16 @@ def evaluate_gesture_structure(
     hand_shape: HandShape | None = None,
     *,
     world_samples: dict[int, WorldHandSample] | None = None,
+    ctx: AnalysisContext | None = None,
 ) -> dict[str, Any]:
     """Structural quality for one hand over a finished clip.
+
+    Pass ``ctx`` -- the :class:`AnalysisContext` whose ``frames`` are the frames
+    under evaluation -- and self-collision reads the arm pivots and the torso
+    carriers out of the context's memoised per-frame world matrices, so the
+    check costs no additional forward kinematics. Without it, each frame's
+    hierarchy is evaluated directly from its bones; that path exists for the
+    same callers as the visibility fallback below and pays real FK per frame.
 
     Pass ``world_samples`` -- :func:`world_hand_samples` over the same frames and
     the same presentation ranges -- and visibility is judged with the wrist and
@@ -450,9 +557,16 @@ def evaluate_gesture_structure(
     and one passes ``hand_shape`` as a fourth positional argument.
     """
 
+    if ctx is not None and len(ctx.frames) != len(frames):
+        raise ValueError(
+            "ctx.frames must be the frames under evaluation -- a context built "
+            "from different frames would read pre-mutation world data"
+        )
     reference = quality_reference()
     limits = reference["hard_limits"]
     contract = reference["camera_contract"]
+    kinematics = ctx.kinematics if ctx is not None else rig_kinematics()
+    node = kinematics.node_by_canonical
     prefix = hand.value
     swing_values: list[float] = []
     twist_values: list[float] = []
@@ -467,19 +581,35 @@ def evaluate_gesture_structure(
             frame.bones[f"{prefix}LowerArm"].rotation.as_list(), [0.0, 1.0, 0.0]
         )
         forearm_twist_values.append(abs(forearm_twist))
-        # Self-collision stays on the reconstructed arm deliberately.
-        # ``_inside_torso`` pins a *fixed* world capsule over y in [1.01, 1.48]
-        # while the trunk yaw is graded across spine/chest/upperChest, so world
-        # points would be tested against a chest-frame torso -- half a fix, and
-        # the brief forbids moving self-collision silently. Measured either way
-        # the check stays latent: closest approach is 1.08-1.55 normalised radii
-        # against a gate at 1.0, and 0 of 407 strike frames fire. Carrying the
-        # capsule on the chest is the real fix and is its own change.
-        shoulder, elbow, wrist, hand_world = arm_landmarks(frame, hand)
-        collisions += int(_arm_self_collision(shoulder, elbow, wrist))
+        # Self-collision in world: the arm pivots and the torso capsule in one
+        # shared frame. The old check reconstructed the arm on a fixed rest
+        # shoulder -- the upperChest-carried frame -- and tested it against a
+        # capsule fixed in world: two different frames, wrong by the 2.9 cm the
+        # hips drift inside the chest frame under a graded trunk yaw, and wrong
+        # by the whole crouch the moment root motion translates the pelvis.
+        # The capsule is carried per torso bone now, so pelvis motion moves the
+        # torso and its capsule together.
+        matrices = (
+            ctx.world_matrices(index)
+            if ctx is not None
+            else kinematics.world_matrices(frame.bones)
+        )
+        collisions += int(
+            _arm_self_collision(
+                matrices[node[f"{prefix}UpperArm"]][:3, 3],
+                matrices[node[f"{prefix}LowerArm"]][:3, 3],
+                matrices[node[f"{prefix}Hand"]][:3, 3],
+                _torso_carry(matrices, node),
+            )
+        )
         if any(start - 1e-8 <= frame.time_s <= end + 1e-8 for start, end in presentation_ranges):
             sample = world_samples.get(index) if world_samples is not None else None
             if sample is None:
+                # The visibility fallback stays on the chest-frame arm and the
+                # rest-pose camera deliberately: G6b kept that pairing because
+                # its two errors partly cancel and the post-compile mutation
+                # path depends on it. Only self-collision moved to world.
+                _, _, wrist, hand_world = arm_landmarks(frame, hand)
                 visible.append(_full_hand_visible(wrist, hand_world, contract, hand_shape))
             else:
                 visible.append(

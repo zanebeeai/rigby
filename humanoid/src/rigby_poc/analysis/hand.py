@@ -158,6 +158,7 @@ def hand_metrics(ctx: AnalysisContext) -> dict[str, Any]:
             # doing so now would widen the sampled finger/palm spans on every
             # gesture and strike clip. Only the world data changes here.
             world_samples=world_hand_samples(ctx, program.hand, presentation_ranges),
+            ctx=ctx,
         )
         metrics.update(structure)
         if program.intent == Intent.GESTURE:
