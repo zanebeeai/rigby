@@ -46,8 +46,8 @@ from .kinematics import rig_kinematics
 from .physics import PhysicsOutcome, simulate_grasp
 from .primitives import (
     MAX_WRIST_TWIST_RAD,
-    ARM_REACH_M,
     TRUNK_YAW_DISTRIBUTION,
+    arm_reach_m,
     arm_pose_from_target,
     counter_rotate_about_trunk,
     forearm_shake_amplitude_rad,
@@ -614,7 +614,7 @@ def _composite_workspace_target(target: EffectorTarget) -> Vec3:
     )
     shoulder = np.asarray(shoulder_position(target.hand).as_list(), dtype=float)
     offset = hand_target - shoulder
-    maximum_reach = ARM_REACH_M - 0.018
+    maximum_reach = arm_reach_m(target.hand) - 0.018
     distance = float(np.linalg.norm(offset))
     if distance > maximum_reach:
         hand_target = shoulder + offset * (maximum_reach / max(distance, 1e-8))
@@ -3899,7 +3899,7 @@ def _compile_object_interaction(scene: SceneManifest, program: MotionProgram) ->
         shoulder = np.asarray(shoulder_position(program.hand).as_list(), dtype=float)
         center = np.asarray(target_object.transform.translation.as_list(), dtype=float)
         distance = float(np.linalg.norm(center - shoulder))
-        effective_reach_m = min(scene.reachable_radius_m, ARM_REACH_M - 1e-4)
+        effective_reach_m = min(scene.reachable_radius_m, arm_reach_m(program.hand) - 1e-4)
         if center[2] <= shoulder[2] or distance > effective_reach_m:
             return _failure_result(
                 scene,
@@ -5515,7 +5515,7 @@ def compile_motion(request: CompileRequest) -> ClipResult:
                 np.asarray(target_object.transform.translation.as_list()) - np.asarray(shoulder.as_list())
             )
         )
-        effective_reach_m = min(scene.reachable_radius_m, ARM_REACH_M - 1e-4)
+        effective_reach_m = min(scene.reachable_radius_m, arm_reach_m(program.hand) - 1e-4)
         if distance > effective_reach_m:
             return _failure_result(
                 scene,
@@ -5526,7 +5526,7 @@ def compile_motion(request: CompileRequest) -> ClipResult:
                     "distance_m": distance,
                     "declared_scene_limit_m": scene.reachable_radius_m,
                     "effective_limit_m": effective_reach_m,
-                    "analytic_arm_reach_m": ARM_REACH_M,
+                    "analytic_arm_reach_m": arm_reach_m(program.hand),
                 },
             )
 

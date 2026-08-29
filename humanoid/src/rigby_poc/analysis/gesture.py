@@ -17,16 +17,9 @@ from typing import Any
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from ..kinematics import rig_kinematics
+from ..kinematics import arm_calibration, rig_kinematics
 from ..models import ClipFrame, Hand, HandShape
-from ..primitives import (
-    _HAND_REST_LOCAL_XYZW,
-    _LOWER_ARM_REST_LOCAL_XYZW,
-    _UPPER_ARM_REST_WORLD_XYZW,
-    LOWER_ARM_LENGTH_M,
-    UPPER_ARM_LENGTH_M,
-    shoulder_position,
-)
+from ..primitives import shoulder_position
 from .context import AnalysisContext
 from .contract import (
     ANATOMY,
@@ -99,17 +92,18 @@ def swing_twist_angles(quaternion_xyzw: Iterable[float], axis: Iterable[float]) 
 
 def arm_landmarks(frame: ClipFrame, hand: Hand) -> tuple[np.ndarray, np.ndarray, np.ndarray, Rotation]:
     prefix = hand.value
+    calibration = arm_calibration(prefix)
     shoulder = np.asarray(shoulder_position(hand).as_list(), dtype=float)
     upper_delta = Rotation.from_quat(frame.bones[f"{prefix}UpperArm"].rotation.as_list())
     lower_delta = Rotation.from_quat(frame.bones[f"{prefix}LowerArm"].rotation.as_list())
-    upper_world = Rotation.from_quat(_UPPER_ARM_REST_WORLD_XYZW[hand]) * upper_delta
-    lower_base = upper_world * Rotation.from_quat(_LOWER_ARM_REST_LOCAL_XYZW[hand])
+    upper_world = Rotation.from_quat(calibration.upper_rest_world_xyzw) * upper_delta
+    lower_base = upper_world * Rotation.from_quat(calibration.lower_rest_local_xyzw)
     lower_world = lower_base * lower_delta
-    elbow = shoulder + upper_world.apply([0.0, UPPER_ARM_LENGTH_M, 0.0])
-    wrist = elbow + lower_world.apply([0.0, LOWER_ARM_LENGTH_M, 0.0])
+    elbow = shoulder + upper_world.apply([0.0, calibration.upper_length_m, 0.0])
+    wrist = elbow + lower_world.apply([0.0, calibration.lower_length_m, 0.0])
     hand_world = (
         lower_world
-        * Rotation.from_quat(_HAND_REST_LOCAL_XYZW[hand])
+        * Rotation.from_quat(calibration.hand_rest_local_xyzw)
         * Rotation.from_quat(frame.bones[f"{prefix}Hand"].rotation.as_list())
     )
     return shoulder, elbow, wrist, hand_world

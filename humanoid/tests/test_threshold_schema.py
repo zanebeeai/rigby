@@ -283,8 +283,11 @@ def test_ported_values_match_their_cited_config_source() -> None:
 
     calibration = profile["coordinate_calibration"]
     assert value_of("anatomy.shoulder_origin_m") == calibration["rest_world_pivots_m"]["leftUpperArm"]
-    assert value_of("anatomy.upper_arm_length_m") == calibration["arm_lengths_m"]["upper"]
-    assert value_of("anatomy.lower_arm_length_m") == calibration["arm_lengths_m"]["lower"]
+    # The arm-length entries were retired with the primitives constants they
+    # duplicated: generation and measurement now derive per-side lengths from
+    # the rig itself (kinematics.arm_calibration). The profile's rounded copy
+    # deliberately remains -- it feeds evals/orientation.py's tolerance-gated
+    # reach plausibility check, a consumer class where 4 decimals is honest.
 
 
 def test_generator_ceilings_are_bit_identical_to_the_constants_they_replace() -> None:
