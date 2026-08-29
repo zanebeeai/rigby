@@ -41,10 +41,17 @@ PHASES: tuple[tuple[str, float], ...] = (
 
 #: Palm-to-object distance at which the approach has arrived, metres.
 _ARRIVED_M = 0.10
-#: How near the grasp line the object must be before anything closes, as a
-#: fraction of the object's own half-width. Fixed metres is a threshold fitted
-#: to one block: the measure runs from the object's CENTRE, so a wider object
-#: sits further out at the same quality of grasp.
+#: How near the grasp line the object must be before this controller tries to
+#: close, as a fraction of the object's own half-width. The measure runs from
+#: the object's CENTRE, so a wider object sits further out at the same quality
+#: of grasp and a fixed number of metres is a threshold fitted to one block.
+#:
+#: Deliberately TIGHTER than close_grip's own refusal, which is not a
+#: duplication of it. They answer different questions: the hand refuses what is
+#: impossible -- an object so far off the line that closing could only push it
+#: -- while this waits for what is GOOD. Collapsing the two and closing as soon
+#: as the hand would permit took the sweep from five successes to three, because
+#: every early attempt that fails also shoves the block out of reach.
 _ENGULFED_FRACTION = 0.8
 #: How long to hold the open shape before advancing into the object, seconds.
 _OPEN_DWELL_S = 1.0
