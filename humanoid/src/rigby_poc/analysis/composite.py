@@ -178,7 +178,7 @@ def composite_metrics(ctx: AnalysisContext) -> dict[str, Any]:
     structural_failures.extend(_parallel_forearm_failures(metrics))
     if metrics["nan_count"]:
         structural_failures.append("clip contains non-finite transforms")
-    if clip_contract_violations(metrics, allow_root_motion=False):
+    if clip_contract_violations(metrics, policy="fixed"):
         structural_failures.append("clip exceeds a joint limit")
     structural_failures.extend(_intra_hand_contact_failures(program, metrics))
     structural_failures.extend(_semantic_cycle_failures(program, metrics))

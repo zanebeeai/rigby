@@ -28,6 +28,21 @@
       },
       "resolves": "08 SS1.1 item 2"
     },
+    "physics.strike_root_drift_max_m": {
+      "value": 0.15,
+      "unit": "m",
+      "applies_to": [
+        "strike"
+      ],
+      "source": {
+        "kind": "provisional",
+        "cites": [
+          "src/rigby_poc/analysis/safety.py",
+          "src/rigby_poc/analysis/context.py"
+        ],
+        "rationale": "The bounded root-motion envelope for strikes -- the third state the 2026-08-29 legs ruling created: a crouch or weight shift is real root motion and keeps a real whole-clip gate, judged against this bound instead of the 1e-06 fixed-root epsilon (which stays untouched for every fixed-root path). 0.15 m covers a deep crouch (~0.12 m hips drop) plus a lateral weight shift with margin; it is a scoping guess, not a measurement -- every shipped strike today has root_drift_m exactly 0.000, so no data exists to derive it from. Promote to `measured` from the legs demo hillclimb before any strike that actually moves its pelvis is blessed into the corpus."
+      }
+    },
     "physics.foot_drift_max_m": {
       "value": 0.001,
       "unit": "m",

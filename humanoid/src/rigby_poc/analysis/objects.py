@@ -150,7 +150,7 @@ def handoff_metrics(ctx: AnalysisContext) -> dict[str, Any]:
         )
     if safety["nan_count"]:
         structural_failures.append("clip contains non-finite transforms")
-    if clip_contract_violations(safety, allow_root_motion=False):
+    if clip_contract_violations(safety, policy="fixed"):
         structural_failures.append("clip exceeds a joint limit")
     if safety["discontinuities"]:
         structural_failures.append(

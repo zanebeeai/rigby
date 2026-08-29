@@ -35,7 +35,7 @@ def full_body_failures(fb: FullBodyPass, metrics: dict[str, Any], horizontal_con
     structural_failures: list[str] = []
     if metrics["nan_count"]:
         structural_failures.append("clip contains non-finite transforms")
-    if clip_contract_violations(metrics, allow_root_motion=True):
+    if clip_contract_violations(metrics, policy="free"):
         structural_failures.append("clip exceeds a joint limit")
     if metrics["discontinuities"]:
         structural_failures.append(
