@@ -20,6 +20,7 @@ export default defineConfig({
         review: "review.html",
         capture: "capture.html",
         comparison: "comparison.html",
+        gripper: "gripper.html",
       },
     },
   },
