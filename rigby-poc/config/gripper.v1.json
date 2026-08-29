@@ -78,9 +78,10 @@
           0
         ],
         "range_m": [
-          0.0,
+          0.012,
           0.055
-        ]
+        ],
+        "note": "Travel STARTS at the pad's own half-thickness, not at zero. At zero both pads sit on the plate centreline and pass straight through each other -- they are deliberately excluded from colliding with one another so that a gripper closing on nothing can close, and the price of that is that nothing else stops them overlapping. Bounded here instead, so fully shut means the pads touching."
       },
       {
         "name": "finger_right",
@@ -91,9 +92,10 @@
           0
         ],
         "range_m": [
-          0.0,
+          0.012,
           0.055
-        ]
+        ],
+        "note": "Travel STARTS at the pad's own half-thickness, not at zero. At zero both pads sit on the plate centreline and pass straight through each other -- they are deliberately excluded from colliding with one another so that a gripper closing on nothing can close, and the price of that is that nothing else stops them overlapping. Bounded here instead, so fully shut means the pads touching."
       }
     ],
     "segments_m": [
@@ -351,6 +353,77 @@
       ],
       "rim_height_m": 0.99,
       "clearance_note": "Block half-extents are [0.030, 0.040, 0.030] in MuJoCo x/y/z. Socket inner half is [0.032, 0.042] laterally, so 2 mm of slack on every side, and 10 cm deep."
+    },
+    "fridge": {
+      "note": "A cabinet with a hinged door and a handle, standing on the bench. The task is to open it, take out what is inside, and put that on the bench. It is here because every task so far has been about an object that was simply lying there. This one has a mechanism in it, and the door's arc is a constraint the arm has to obey rather than a path it gets to choose.",
+      "centre": [
+        0.22,
+        0.82,
+        0.24
+      ],
+      "inner_half_m": [
+        0.09,
+        0.1,
+        0.075
+      ],
+      "wall_m": 0.012,
+      "door": {
+        "hinge_at": [
+          0.322,
+          0.147
+        ],
+        "width_m": 0.204,
+        "swing_deg": [
+          0.0,
+          135.0
+        ],
+        "damping": 0.35,
+        "note": "Hinged on the far side and opened by pulling the near edge toward the arm, so the door ends up as a wall off to one side and the opening faces the arm. The swing limit is what makes this articulated: the handle may travel along exactly one arc, and any pull not tangent to it is a pull the hinge refuses."
+      },
+      "handle": {
+        "at_from_hinge_m": -0.185,
+        "stands_off_m": 0.082,
+        "radius_m": 0.011,
+        "half_length_m": 0.055,
+        "note": "A vertical bar on brackets, so a parallel gripper closing along its own x axis can take it from in front. It stands 82 mm off the door because the fingers are 70 mm long: at the 38 mm it started at, the jaws closed with one pad on the handle and the other 9 N deep into the door panel, holding the door SHUT while the arm pulled. A handle has to have room behind it for the hand. The brackets sit at the two ENDS of the bar, not its middle. With one central bracket the jaws closed with one pad on the bar and the other 9 N into the bracket behind it, which is a grip on the door rather than on the handle. Real handles mount at the ends for exactly this reason: the middle has to be free for a hand.",
+        "brackets_at_z": [
+          -0.048,
+          0.048
+        ]
+      },
+      "contents_at": [
+        0.22,
+        0.75,
+        0.25
+      ],
+      "place_target": [
+        -0.16,
+        0.75,
+        0.2
+      ],
+      "place_tolerance_m": 0.08
+    },
+    "cameras": {
+      "note": "Two viewpoints, which is the smallest number that answers both questions a manipulation task asks: WHERE IS EVERYTHING, which a wrist camera buried in the workspace cannot see, and WHERE EXACTLY IS THIS, which a room camera three quarters of a metre away cannot resolve.",
+      "room": {
+        "at": [
+          -1.05,
+          1.42,
+          -0.62
+        ],
+        "looks_at": [
+          0.14,
+          0.85,
+          0.14
+        ],
+        "fovy_deg": 52.0,
+        "note": "In the corner, high, seeing the whole bench: the arm, the cabinet, and where things get put down."
+      },
+      "wrist": {
+        "mounted_on": "plate",
+        "fovy_deg": 70.0,
+        "note": "Already there. Sees detail, and only what the hand is pointed at."
+      }
     }
   },
   "rate_limits": {
@@ -362,6 +435,7 @@
       "elbow": 100.0,
       "wrist": 140.0
     },
-    "finger_m_per_s": 0.07
+    "finger_m_per_s": 0.07,
+    "finger_note": "This is the APERTURE rate -- how fast the gap between the jaws changes -- which is what a gripper's datasheet quotes. Both fingers move, so each one is limited to half of it. Applying it per finger made the jaws close at 0.14 m/s, twice the declared figure, and it read on screen as the jaws snapping shut."
   }
 }

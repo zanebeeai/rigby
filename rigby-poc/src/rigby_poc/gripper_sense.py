@@ -86,6 +86,15 @@ _ARM_STALL_RAD = 0.08
 _ARM_STILL = 0.08
 
 
+def _open_limit() -> float:
+    """The travel a fully open finger reports. Fixed by the mechanism."""
+    from .gripper import spec
+    for joint in spec()["kinematics"]["joints"]:
+        if joint["name"] == "finger_left":
+            return float(joint["range_m"][1])
+    return 0.055
+
+
 def _finger_floor() -> float:
     """The travel a fully shut finger reports. Fixed by the mechanism."""
     from .gripper import spec
@@ -150,6 +159,8 @@ class Senses:
     #: contact and left when you open your hand -- not a fresh measurement each
     #: frame. Real grippers latch for the same reason.
     latched: bool = False
+    #: Consecutive frames both pads have reported resistance.
+    settling: int = 0
     #: How far the last accepted look moved the belief, metres, and how many
     #: looks have been accepted. A belief that stops moving is a belief worth
     #: acting on; one look is never enough to know that.
@@ -243,18 +254,38 @@ def sense(body: Body, eyes: Senses, commanded: np.ndarray, squeeze_n: float,
     # not being shut: three readings a stepper controller already has.
     qd = np.asarray(body.qd())
     shut = _finger_floor()
-    driving = squeeze_n > 0.0 or bool(np.any(commanded[4:] < q[4:] - 1e-6))
-    left = bool(driving and abs(float(qd[4])) < _FINGER_STILL
-                and q[4] > shut + _NOT_SHUT_M)
-    right = bool(driving and abs(float(qd[5])) < _FINGER_STILL
-                 and q[5] > shut + _NOT_SHUT_M)
-
-    # Latch it. Enter on both pads reporting resistance, leave when the hand is
-    # told to open or when the fingers have run all the way shut -- meaning
-    # whatever was between them is not there any more.
-    if left and right:
+    # "I told it to close further, it has not, and it has stopped." All three
+    # clauses matter. Without the third -- that the command is actually AHEAD of
+    # where the finger is -- the test fires on the first frame of any grip
+    # phase, when the squeeze is already commanded and the fingers are simply
+    # still open and not yet moving. That latched "holding" onto thin air, the
+    # jaws froze where they were, and the arm spent thirty seconds pulling a
+    # door handle it was merely standing next to.
+    # Squeezed, stopped, and NEITHER fully open NOR fully shut. That last pair
+    # is what makes it work without a force sensor: fully open and stationary is
+    # a hand that has just arrived and not started closing, fully shut is a hand
+    # that closed on nothing, and anything in between that will not move while
+    # being squeezed has something in it.
+    #
+    # Two earlier versions of this test failed in opposite directions. Testing
+    # the tracking error's sign fired when the finger was pushed PAST its target
+    # by the squeeze, which is what a successful grip looks like. Testing that
+    # the command is ahead of the finger fires only while closing, so a settled
+    # grip reads empty the moment it succeeds -- and it needs BOTH fingers to
+    # read blocked, which an off-centre object breaks, because the two fingers
+    # stop at different travels and only the further one looks blocked.
+    wide = _open_limit()
+    settled = ((squeeze_n > 0.0)
+               & (np.abs(np.asarray([qd[4], qd[5]])) < _FINGER_STILL)
+               & (np.asarray([q[4], q[5]]) > shut + _NOT_SHUT_M)
+               & (np.asarray([q[4], q[5]]) < wide - 0.010))
+    left, right = bool(settled[0]), bool(settled[1])
+    eyes.settling = eyes.settling + 1 if (left and right) else 0
+    if eyes.settling >= 4:
         eyes.latched = True
-    elif not driving or float(np.min(q[4:])) <= shut + _NOT_SHUT_M:
+    elif (squeeze_n <= 0.0
+          or bool(np.any(np.asarray(commanded[4:]) > q[4:] + 0.004))
+          or float(np.min(q[4:])) <= shut + _NOT_SHUT_M):
         eyes.latched = False
     behind = np.abs(commanded[:4] - q[:4]) > _ARM_STALL_RAD
     stopped = np.abs(qd[:4]) < _ARM_STILL

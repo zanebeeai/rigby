@@ -41,7 +41,9 @@ def _rate_ceiling() -> np.ndarray:
     per_joint = document.get("joints_deg_per_s", {})
     return np.asarray(
         [float(np.radians(per_joint.get(name, 120.0))) for name in JOINTS[:4]]
-        + [float(document.get("finger_m_per_s", 0.07))] * 2)
+        # Halved: the declared figure is how fast the GAP closes,
+        # and both fingers contribute to the gap.
+        + [float(document.get("finger_m_per_s", 0.07)) / 2.0] * 2)
 
 
 def _app(point: np.ndarray) -> list[float]:

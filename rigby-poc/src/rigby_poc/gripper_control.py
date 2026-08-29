@@ -221,7 +221,10 @@ _SEEDS: tuple[tuple[float, float, float, float], ...] = (
 
 
 def _reach_for(body: Body, goal: np.ndarray, square_to: np.ndarray | None,
-               support: float, aim: str = "grasp") -> np.ndarray | None:
+               support: float, aim: str = "grasp",
+               square_weight: float = 0.30,
+               keep_out: tuple | None = None,
+               stay_near: float = 0.0) -> np.ndarray | None:
     """Joint angles that put ``aim`` on ``goal`` -- the grasp centre, or the eye.
 
     Aiming the CAMERA is a different request from aiming the hand, and treating
@@ -244,6 +247,8 @@ def _reach_for(body: Body, goal: np.ndarray, square_to: np.ndarray | None,
     saved_v = data.qvel.copy()
     address = [body.address(n) for n in JOINTS]
 
+    start = np.asarray([data.qpos[a] for a in address[:4]])
+
     def evaluate(angles: np.ndarray) -> float | None:
         for slot, value in zip(address[:4], angles):
             data.qpos[slot] = value
@@ -257,10 +262,46 @@ def _reach_for(body: Body, goal: np.ndarray, square_to: np.ndarray | None,
             here = body.grasp_centre()
         cost = float(np.linalg.norm(here - goal))
         if square_to is not None:
-            cost += (1.0 - float(np.dot(body.approach(), -square_to))) * 0.30
+            # What a miss on the approach angle is worth, in metres of position.
+            # It is a WEIGHT, not a constraint, and the right value depends on
+            # the task: this arm's four joints all turn about one axis bar the
+            # yaw, so the hand's heading is locked to the arm's own vertical
+            # plane and a truly square approach to an off-axis target does not
+            # exist. Demanding one anyway made the solver buy 0.95 of facing
+            # with 49 mm of position error, and 49 mm misses a handle.
+            cost += (1.0 - float(np.dot(body.approach(), -square_to))) \
+                * square_weight
         for name in ("shoulder", "seg1", "seg2", "seg3", "plate_geom"):
             if float(body.geom_at(name)[2]) < support:
                 return None
+        if keep_out is not None:
+            # Solid furniture. The only obstacle the solver knew about was the
+            # bench, as a height -- so with a cabinet in the workspace it
+            # happily returned poses resting on the cabinet roof, and the arm
+            # drove there and jammed. A box is a crude occupancy model and it is
+            # the difference between a pose that exists and a pose that can be
+            # held.
+            # A PENALTY, not a veto. Refusing invalid poses outright walls the
+            # search off: coordinate descent only steps to strictly better
+            # VALID poses, so a good pose on the far side of the cabinet is
+            # unreachable even when it exists, and the solver settles for
+            # whatever it can see from where it started. Scoring the depth of
+            # the intrusion instead leaves the landscape continuous, so the
+            # search can cross the obstacle to get to the answer behind it.
+            low, high = keep_out
+            for name in ("plate_geom", "left_geom", "right_geom", "seg3"):
+                where = body.geom_at(name)
+                inside = np.minimum(where - low, high - where)
+                if bool(np.all(inside > 0.0)):
+                    cost += 3.0 * float(np.min(inside)) + 0.25
+        if stay_near:
+            # Prefer the nearby answer. Coordinate descent restarted from fixed
+            # seeds will happily return a valid pose on the far side of the
+            # workspace for a millimetre of improvement, and the arm then swings
+            # through everything between here and there. This is the standard
+            # minimum-norm preference, and it is also what makes the motion
+            # look like a machine rather than a scramble.
+            cost += stay_near * float(np.linalg.norm(angles - start))
         return cost
 
     def descend(seed: np.ndarray, passes: int) -> tuple[np.ndarray, float]:
@@ -282,7 +323,6 @@ def _reach_for(body: Body, goal: np.ndarray, square_to: np.ndarray | None,
                             best, here = trial, value
         return best, here
 
-    start = np.asarray([data.qpos[a] for a in address[:4]])
     best, here = descend(start, 7)
 
     # RESTARTS, and only when the first answer is poor. Coordinate descent moves
@@ -297,10 +337,35 @@ def _reach_for(body: Body, goal: np.ndarray, square_to: np.ndarray | None,
     if here > 0.02:
         for seed in _SEEDS:
             candidate, cost = descend(np.asarray(seed), 5)
-            if cost < here:
+            if cost < here - 0.01:
                 best, here = candidate, cost
             if here <= 0.01:
                 break
+
+    # STILL STUCK: sweep the whole joint space coarsely and descend from the
+    # best square found. Five hand-picked seeds cover five basins, and the arm
+    # has four joints -- reaching a handle needs the hand pointing at the door,
+    # which lives in a basin none of the seeds are in, so every weighting of
+    # position against approach angle returned either the right place facing
+    # backwards or the right facing two hundred millimetres away. The sweep is
+    # expensive and runs only on the frames where the cheap search failed;
+    # once it lands in the right basin, stay_near keeps the next frame there.
+    if here > 0.03:
+        grid = [np.linspace(low, high, n) for (low, high), n
+                in zip(limits[:4], (9, 7, 9, 7))]
+        coarse, cost_of = None, 1e9
+        for a in grid[0]:
+            for b in grid[1]:
+                for c in grid[2]:
+                    for d in grid[3]:
+                        trial = np.asarray([a, b, c, d])
+                        value = evaluate(trial)
+                        if value is not None and value < cost_of:
+                            coarse, cost_of = trial, value
+        if coarse is not None:
+            candidate, cost = descend(coarse, 6)
+            if cost < here:
+                best, here = candidate, cost
 
     data.qpos[:] = saved_q
     data.qvel[:] = saved_v

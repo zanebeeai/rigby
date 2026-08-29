@@ -50,7 +50,107 @@ _FINGER_OMEGA = 26.0
 JOINTS = ("yaw", "lift", "elbow", "wrist", "finger_left", "finger_right")
 
 
-def _model_xml(block_half, block_at, table_top: float) -> str:
+def _room_camera(document) -> str:
+    """The fixed camera in the corner, aimed by hand at the middle of the bench.
+
+    MuJoCo can aim a camera at a body, but the interesting point here is a place
+    rather than a thing, and a camera that tracks a moving body reframes itself
+    every time the arm picks something up.
+    """
+    doc = document["scene"].get("cameras", {}).get("room")
+    if doc is None:
+        return ""
+    eye = np.asarray([doc["at"][0], doc["at"][2], doc["at"][1]], dtype=float)
+    at = np.asarray([doc["looks_at"][0], doc["looks_at"][2], doc["looks_at"][1]],
+                    dtype=float)
+    forward = at - eye
+    forward = forward / np.linalg.norm(forward)
+    right = np.cross(forward, np.asarray([0.0, 0.0, 1.0]))
+    right = right / np.linalg.norm(right)
+    up = np.cross(-forward, right)
+    return (f'<camera name="room" pos="{eye[0]:.4f} {eye[1]:.4f} {eye[2]:.4f}" '
+            f'fovy="{float(doc.get("fovy_deg", 58.0)):.1f}" '
+            f'xyaxes="{right[0]:.4f} {right[1]:.4f} {right[2]:.4f} '
+            f'{up[0]:.4f} {up[1]:.4f} {up[2]:.4f}"/>')
+
+
+def _bin_furniture(document, table_top: float) -> str:
+    """The elevated bin, for the pick-and-place task."""
+    doc = document["scene"]["bin"]
+    cx, cy, cz = (float(doc["centre"][0]), float(doc["centre"][2]),
+                  float(doc["centre"][1]))
+    inner = doc["inner_half_m"]
+    wall = float(doc["wall_m"])
+    walls = "".join(
+        f'<geom name="bin_wall{i}" contype="1" conaffinity="6" type="box" '
+        f'pos="{cx + dx * (inner[0] + wall)} {cy + dz * (inner[2] + wall)} {cz}" '
+        f'size="{wall if dx else inner[0] + wall * 2} '
+        f'{inner[2] + wall * 2 if dx else wall} {inner[1]}" '
+        f'rgba="0.5 0.55 0.63 1" friction="0.9 0.02 0.001"/>'
+        for i, (dx, dz) in enumerate(((1, 0), (-1, 0), (0, 1), (0, -1))))
+    return f"""
+    <geom name="bin_floor" contype="1" conaffinity="6" type="box"
+          pos="{cx} {cy} {cz - inner[1] - wall}"
+          size="{inner[0] + wall} {inner[2] + wall} {wall}"
+          rgba="0.45 0.5 0.58 1"/>
+    {walls}
+    <geom name="bin_riser" contype="1" conaffinity="6" type="cylinder"
+          pos="{cx} {cy} {(table_top + cz - inner[1]) / 2}"
+          size="0.045 {max((cz - inner[1] - table_top) / 2, 0.01)}"
+          rgba="0.4 0.44 0.52 1"/>"""
+
+
+def _fridge_furniture(document, table_top: float) -> str:
+    """The cabinet: four fixed walls, and a door on a hinge with a handle."""
+    doc = document["scene"]["fridge"]
+    cx, cy = float(doc["centre"][0]), float(doc["centre"][2])
+    ix, iz, iy = (float(doc["inner_half_m"][0]), float(doc["inner_half_m"][1]),
+                  float(doc["inner_half_m"][2]))
+    wall = float(doc["wall_m"])
+    mid = table_top + iz
+    hinge_x, hinge_y = (float(doc["door"]["hinge_at"][0]),
+                        float(doc["door"]["hinge_at"][1]))
+    width = float(doc["door"]["width_m"])
+    low, high = doc["door"]["swing_deg"]
+    handle = doc["handle"]
+    hx = float(handle["at_from_hinge_m"])
+    stand = float(handle["stands_off_m"])
+    skin = 'contype="1" conaffinity="6"'
+    stems = "".join(
+        f'<geom name="door_stem{i}" contype="1" conaffinity="6" type="box" '
+        f'pos="{hx} {-stand / 2:.4f} {z}" size="0.008 {stand / 2} 0.010" '
+        f'mass="0.03" rgba="0.45 0.48 0.55 1"/>'
+        for i, z in enumerate(handle.get("brackets_at_z", [0.0])))
+    return f"""
+    <geom name="fridge_back" {skin} type="box" rgba="0.62 0.65 0.70 1"
+          pos="{cx} {cy + iy + wall / 2:.4f} {mid}"
+          size="{ix + wall} {wall / 2} {iz}"/>
+    <geom name="fridge_left" {skin} type="box" rgba="0.62 0.65 0.70 1"
+          pos="{cx + ix + wall / 2:.4f} {cy} {mid}"
+          size="{wall / 2} {iy + wall} {iz}"/>
+    <geom name="fridge_right" {skin} type="box" rgba="0.62 0.65 0.70 1"
+          pos="{cx - ix - wall / 2:.4f} {cy} {mid}"
+          size="{wall / 2} {iy + wall} {iz}"/>
+    <geom name="fridge_top" {skin} type="box" rgba="0.58 0.61 0.67 1"
+          pos="{cx} {cy} {table_top + 2 * iz + wall / 2:.4f}"
+          size="{ix + wall} {iy + wall} {wall / 2}"/>
+
+    <body name="door" pos="{hinge_x} {hinge_y} {mid}">
+      <joint name="door_hinge" type="hinge" axis="0 0 1"
+             range="{low} {high}" damping="{float(doc['door']['damping'])}"/>
+      <geom name="door_panel" contype="1" conaffinity="6" type="box"
+            pos="{-width / 2:.4f} 0 0" size="{width / 2} {wall / 2} {iz}"
+            mass="0.5" rgba="0.70 0.73 0.78 1"/>
+      {stems}
+      <geom name="handle" contype="1" conaffinity="6" type="cylinder"
+            pos="{hx} {-stand:.4f} 0"
+            size="{float(handle['radius_m'])} {float(handle['half_length_m'])}"
+            mass="0.05" rgba="0.88 0.90 0.94 1" friction="1.4 0.02 0.001"/>
+    </body>"""
+
+
+def _model_xml(block_half, block_at, table_top: float,
+               scene: str = "bin") -> str:
     """The arm as a jointed chain, the fingers as slides, nothing welded."""
     document = spec()
     kinematics = document["kinematics"]
@@ -59,7 +159,6 @@ def _model_xml(block_half, block_at, table_top: float) -> str:
     finger = kinematics["finger"]
     base = kinematics["base"]["at"]
     limits = {j["name"]: j for j in kinematics["joints"]}
-    bin_doc = document["scene"]["bin"]
 
     def deg(name: str) -> str:
         """The declared range, in the units MuJoCo is actually reading.
@@ -82,23 +181,18 @@ def _model_xml(block_half, block_at, table_top: float) -> str:
     # MuJoCo is Z-up; the manifest is authored Y-up, so the base is placed once
     # here and nothing downstream converts again.
     bx, by, bz = float(base[0]), float(base[2]), float(base[1])
-    cx, cy, cz = (float(bin_doc["centre"][0]), float(bin_doc["centre"][2]),
-                  float(bin_doc["centre"][1]))
-    inner = bin_doc["inner_half_m"]
-    wall = float(bin_doc["wall_m"])
-    walls = "".join(
-        f'<geom name="bin_wall{i}" contype="1" conaffinity="6" type="box" '
-        f'pos="{cx + dx * (inner[0] + wall)} {cy + dz * (inner[2] + wall)} {cz}" '
-        f'size="{wall if dx else inner[0] + wall * 2} '
-        f'{inner[2] + wall * 2 if dx else wall} {inner[1]}" '
-        f'rgba="0.5 0.55 0.63 1" friction="0.9 0.02 0.001"/>'
-        for i, (dx, dz) in enumerate(((1, 0), (-1, 0), (0, 1), (0, -1))))
+    furniture = (_fridge_furniture(document, table_top) if scene == "fridge"
+                 else _bin_furniture(document, table_top))
+    room_camera = _room_camera(document)
 
     return f"""
 <mujoco>
   <!-- Angles in degrees, which is MuJoCo's default and the units the
        manifest already declares. Stated rather than relied upon. -->
   <compiler angle="degree"/>
+  <!-- The offscreen buffer defaults to 640x480, which is fine for the wrist
+       camera and too small for a room view worth showing anyone. -->
+  <visual><global offwidth="1280" offheight="960"/></visual>
   <option timestep="0.001" gravity="0 0 -9.81" integrator="implicitfast"/>
   <!-- WHAT MAY TOUCH WHAT, stated once. Bit 1 is scenery, bit 2 the object,
        bit 4 the gripping surfaces. The arm links carry neither, so they collide
@@ -114,18 +208,23 @@ def _model_xml(block_half, block_at, table_top: float) -> str:
     <joint damping="0.4" armature="0.01"/>
   </default>
   <worldbody>
-    <light name="key" pos="0.6 -1.0 2.6" dir="-0.2 0.4 -1" diffuse="1 1 1"/>
+    <light name="key" pos="0.6 -1.0 2.6" dir="-0.2 0.4 -1"
+           diffuse="0.75 0.75 0.75" specular="0.1 0.1 0.1"/>
+    <light name="fill" pos="-1.2 0.4 2.2" dir="0.5 -0.1 -1"
+           diffuse="0.45 0.46 0.5" specular="0 0 0"/>
+    <light name="back" pos="0.9 1.6 2.0" dir="-0.3 -0.7 -1"
+           diffuse="0.3 0.31 0.35" specular="0 0 0"/>
+    <!-- The room. Not decoration: a corner camera looking into a void gives a
+         model no sense of scale or of where anything is, and "the far wall" is
+         a landmark the way the bench edge is. -->
+    <geom name="wall_back" contype="0" conaffinity="0" type="box"
+          pos="0 1.15 1.25" size="2.0 0.02 0.9" rgba="0.30 0.32 0.38 1"/>
+    <geom name="wall_side" contype="0" conaffinity="0" type="box"
+          pos="0.95 0 1.25" size="0.02 1.15 0.9" rgba="0.26 0.28 0.34 1"/>
     <geom name="table" contype="1" conaffinity="6" type="plane" pos="0 0 {table_top}" size="2 2 0.1"
           rgba="0.4 0.42 0.48 1"/>
-    <geom name="bin_floor" contype="1" conaffinity="6" type="box"
-          pos="{cx} {cy} {cz - inner[1] - wall}"
-          size="{inner[0] + wall} {inner[2] + wall} {wall}"
-          rgba="0.45 0.5 0.58 1"/>
-    {walls}
-    <geom name="bin_riser" contype="1" conaffinity="6" type="cylinder"
-          pos="{cx} {cy} {(table_top + cz - inner[1]) / 2}"
-          size="0.045 {max((cz - inner[1] - table_top) / 2, 0.01)}"
-          rgba="0.4 0.44 0.52 1"/>
+    {furniture}
+    {room_camera}
     <geom name="pedestal" contype="1" conaffinity="6" type="cylinder" pos="{bx} {by} {(table_top + bz) / 2}"
           size="0.05 {max((bz - table_top) / 2, 0.01)}" rgba="0.4 0.44 0.52 1"/>
 
@@ -204,7 +303,7 @@ class Body:
     model: Any
     data: Any
     block_half: np.ndarray
-    _eye: object = None
+    _eye: dict | None = None
 
     def address(self, name: str) -> int:
         joint = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_JOINT, name)
@@ -239,17 +338,27 @@ class Body:
         thickness = float(spec()["kinematics"]["finger"]["thickness_m"])
         return float(max(0.0, np.linalg.norm(left - right) - 2.0 * thickness))
 
-    def view(self, width: int = 320, height: int = 240) -> np.ndarray:
+    def view(self, width: int = 320, height: int = 240,
+             camera: str = "wrist") -> np.ndarray:
         """What the wrist camera sees, as RGB pixels.
 
         A real render through a real camera in the model, not a geometric
         stand-in. The renderer is built once and kept: constructing one per
         frame costs a GL context each time.
         """
-        if self._eye is None or self._eye.width != width:
-            self._eye = mujoco.Renderer(self.model, height=height, width=width)
-        self._eye.update_scene(self.data, camera="wrist")
-        return self._eye.render()
+        # Cached per SIZE, not per width. Two cameras at two resolutions
+        # alternating through one width-keyed slot rebuilt the renderer on every
+        # single call, and a dozen abandoned GL contexts later every frame came
+        # back black -- which reads exactly like a camera pointed at nothing.
+        if self._eye is None:
+            self._eye = {}
+        key = (int(width), int(height))
+        if key not in self._eye:
+            self._eye[key] = mujoco.Renderer(self.model, height=height,
+                                             width=width)
+        viewer = self._eye[key]
+        viewer.update_scene(self.data, camera=camera)
+        return viewer.render()
 
     def camera_pose(self) -> tuple[np.ndarray, np.ndarray]:
         """Where the wrist camera is and how it is pointed, in the world.
@@ -354,8 +463,8 @@ def computed_torque(body: Body, target: np.ndarray,
 
 
 def make(block_half: np.ndarray, block_at: np.ndarray,
-         table_top: float = 0.72) -> Body:
-    xml = _model_xml(block_half, block_at, table_top)
+         table_top: float = 0.72, scene: str = "bin") -> Body:
+    xml = _model_xml(block_half, block_at, table_top, scene)
     model = mujoco.MjModel.from_xml_string(xml)
     data = mujoco.MjData(model)
     body = Body(model=model, data=data, block_half=np.asarray(block_half))
