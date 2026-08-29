@@ -18,6 +18,8 @@ from rigby_poc.analysis import (
     clip_contract_violations,
     evaluate_gesture_structure,
     gesture_structure_checks,
+    root_drift_policy,
+    root_motion_allowed,
     safety_checks,
     safety_metrics,
     semantic_cycle_metrics,
@@ -25,6 +27,7 @@ from rigby_poc.analysis import (
     validate,
 )
 from rigby_poc.analysis.geometry import line_segment_distance
+from rigby_poc.analysis.physics import physics_checks
 from rigby_poc.analysis.gesture import (
     _inside_torso,
     _inside_torso_carried,
@@ -106,12 +109,12 @@ def test_a_single_frame_rotation_jump_counts_as_one_discontinuity() -> None:
     assert metrics["max_frame_rotation_delta_rad"] == pytest.approx(0.5, abs=1e-9)
 
 
-def _check(metrics: dict, check_id: str, *, allow_root_motion: bool = False):
+def _check(metrics: dict, check_id: str, *, policy: str = "fixed"):
     """One check out of ``safety_checks``, by id, asserting it was emitted."""
 
     found = [
         check
-        for check in safety_checks(metrics, allow_root_motion=allow_root_motion)
+        for check in safety_checks(metrics, policy=policy)
         if check.id == check_id
     ]
     assert found, f"{check_id} was not emitted at all"
@@ -155,22 +158,119 @@ def test_root_translation_is_reported_as_root_drift_not_as_a_joint_limit() -> No
     assert moving_root["joint_limit_violations"] == 0
 
     # But still gated: the compiler's clip-level gates see it.
-    assert clip_contract_violations(fixed_root, allow_root_motion=False) == 1
-    assert clip_contract_violations(moving_root, allow_root_motion=True) == 0
+    assert clip_contract_violations(fixed_root, policy="fixed") == 1
+    assert clip_contract_violations(moving_root, policy="free") == 0
 
     # And addressable, against the bound the program implies.
-    fixed_check = _check(fixed_root, "contract.clip.root_drift", allow_root_motion=False)
-    moving_check = _check(moving_root, "contract.clip.root_drift", allow_root_motion=True)
+    fixed_check = _check(fixed_root, "contract.clip.root_drift", policy="fixed")
+    moving_check = _check(moving_root, "contract.clip.root_drift", policy="free")
     assert fixed_check.status == "fail"
     assert fixed_check.measured == pytest.approx(0.4)
-    assert fixed_check.threshold == root_drift_limit_m(allow_root_motion=False)
+    assert fixed_check.threshold == root_drift_limit_m(policy="fixed")
     # A program that enables root motion has no bound, so this is not-measured
     # rather than passing -- the conflation four lanes hit separately.
     assert moving_check.status == "skip"
-    assert root_drift_limit_m(allow_root_motion=True) is None
+    assert root_drift_limit_m(policy="free") is None
 
     assert "must remain fixed" in fixed_root["safety_derivation"]
     assert "explicitly enabled" in moving_root["safety_derivation"]
+
+
+def test_the_bounded_policy_is_a_real_gate_not_a_skip() -> None:
+    """The third state, asserted on both sides of its bound.
+
+    ``bounded`` exists so a strike can move its pelvis without losing the
+    whole-clip root gate. Both failure directions of the two binary options
+    are pinned here: a drift inside the envelope passes (where ``fixed``
+    would have failed it by five orders of magnitude), and a drift outside
+    the envelope fails (where ``free`` would have skipped and gated
+    nothing).
+    """
+
+    bounded_limit = root_drift_limit_m(policy="bounded")
+    fixed_limit = root_drift_limit_m(policy="fixed")
+    assert fixed_limit is not None and bounded_limit is not None
+    assert fixed_limit < bounded_limit
+
+    crouch = safety_metrics(
+        [
+            _frame(0, hips=Vec3(x=0.0, y=0.0, z=0.0)),
+            _frame(1, hips=Vec3(x=0.0, y=-0.05, z=0.0)),
+        ]
+    )
+    assert crouch["root_drift_m"] == pytest.approx(0.05)
+    check = _check(crouch, "contract.clip.root_drift", policy="bounded")
+    assert check.status == "pass"
+    assert check.threshold == bounded_limit
+    assert clip_contract_violations(crouch, policy="bounded") == 0
+    # The same crouch under the fixed epsilon is the binary outcome the
+    # ruling rejected.
+    assert clip_contract_violations(crouch, policy="fixed") == 1
+
+    wander = safety_metrics(
+        [
+            _frame(0, hips=Vec3(x=0.0, y=0.0, z=0.0)),
+            _frame(1, hips=Vec3(x=0.0, y=0.0, z=bounded_limit * 2.0)),
+        ]
+    )
+    far_check = _check(wander, "contract.clip.root_drift", policy="bounded")
+    assert far_check.status == "fail"
+    assert clip_contract_violations(wander, policy="bounded") == 1
+
+
+def test_floating_feet_fail_ground_support_instead_of_passing_silently() -> None:
+    """TRACKING's legs trap, closed before any leg authoring exists to hit it.
+
+    ``foot_skate_check`` measures displacement only between frame pairs that
+    are both in contact, so a clip whose feet leave the floor gives it nothing
+    to measure and it reports 0.0 -- a pass, which is even quieter than the
+    skip TRACKING recorded. ``ground_support`` counts the unsupported frames
+    directly, so knees-only-with-fixed-hips floating the feet is a loud
+    failure on the bounded path the legs work will compile under.
+    """
+
+    lifted = [_frame(index, hips=Vec3(x=0.0, y=0.3, z=0.0)) for index in range(4)]
+    checks = {c.id: c for c in physics_checks(lifted, fps=FPS, root_policy="bounded")}
+    support = checks["physics.contact.ground_support"]
+    skate = checks["physics.contact.foot_skate"]
+    assert support.status == "fail"
+    assert support.measured == 4.0
+    # The hole this check closes: with no contact, foot skate cannot fail.
+    assert skate.status != "fail"
+
+    planted = [_frame(index) for index in range(4)]
+    planted_checks = {
+        c.id: c for c in physics_checks(planted, fps=FPS, root_policy="bounded")
+    }
+    assert planted_checks["physics.contact.ground_support"].status == "pass"
+
+    free = {c.id: c for c in physics_checks(lifted, fps=FPS, root_policy="free")}
+    assert free["physics.contact.ground_support"].status == "skip"
+
+
+def test_every_intent_has_a_deliberate_root_drift_policy() -> None:
+    """The intent-to-policy map, closed over the enum.
+
+    A new ``Intent`` member lands on ``fixed`` -- the strictest state -- until
+    someone decides otherwise in ``root_drift_policy``; this test makes that
+    decision a red test here rather than a silent default there. It also pins
+    ``root_motion_allowed`` to mean exactly ``free``: a bounded strike moves
+    its root and is still not "allowed" in the unbounded sense the
+    ``safety_derivation`` string has always reported.
+    """
+
+    base = _wave_program(required_reversals=2.0)
+    expected = {
+        Intent.FULL_BODY: "free",
+        Intent.SEQUENCE: "free",
+        Intent.STRIKE: "bounded",
+    }
+    for intent in Intent:
+        program = base.model_copy(update={"intent": intent})
+        assert root_drift_policy(program) == expected.get(intent, "fixed"), intent
+        assert root_motion_allowed(program) == (
+            root_drift_policy(program) == "free"
+        ), intent
 
 
 def test_an_elbow_past_its_profile_limit_is_no_longer_counted_here() -> None:

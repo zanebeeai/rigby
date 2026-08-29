@@ -26,6 +26,7 @@ from ..models import (
     Transform,
 )
 from .rig import identity_bones
+from .safety import RootDriftPolicy
 
 # Phase kinds whose interval counts as an active presentation, per intent.
 # ``compile_motion`` appends exactly these while it emits frames; reading them
@@ -51,17 +52,38 @@ _PRESENTATION_KINDS: dict[Intent, frozenset[str]] = {
 _TRAVEL_SETUP_LABEL = "parallel_forearm_travel_setup"
 
 
-def root_motion_allowed(program: MotionProgram) -> bool:
-    """Whether this program's clip may translate its root.
+def root_drift_policy(program: MotionProgram) -> RootDriftPolicy:
+    """How this program's root translation is judged. One definition.
 
-    Matches the ``allow_root_motion`` argument each compile path passes to the
-    safety metrics: only the whole-body and sequence paths enable it. One
-    definition, because :func:`rigby_poc.analysis.validate` needs the same
-    answer without an :class:`AnalysisContext` to hand, and two copies of a rule
-    that decides whether a gate applies is how the gate stops applying.
+    ``free`` for whole-body and sequence, whose programs legitimately travel;
+    ``bounded`` for strikes -- the 2026-08-29 ruling: a crouch or weight shift
+    is real root motion and keeps a real whole-clip gate, against
+    ``physics.strike_root_drift_max_m`` instead of the fixed-root epsilon;
+    ``fixed`` for everything else. The compile paths pass the same answer as
+    literals per path; :func:`rigby_poc.analysis.validate` derives it from the
+    program here, and two copies of a rule that decides whether a gate applies
+    is how the gate stops applying.
     """
 
-    return program.intent in {Intent.FULL_BODY, Intent.SEQUENCE}
+    if program.intent in {Intent.FULL_BODY, Intent.SEQUENCE}:
+        return "free"
+    if program.intent == Intent.STRIKE:
+        return "bounded"
+    return "fixed"
+
+
+def root_motion_allowed(program: MotionProgram) -> bool:
+    """Whether this program's clip may translate its root without any bound.
+
+    ``free`` alone: a bounded strike does translate its root, but it is not
+    *allowed* in the sense this predicate has always meant -- exempt from a
+    whole-clip drift gate. This stays the ``allow_root_motion`` argument the
+    compile paths pass to ``safety_metrics`` (which only renders the
+    derivation string from it), so the string is a function of the same rule
+    it always was.
+    """
+
+    return root_drift_policy(program) == "free"
 
 
 class AnalysisContext:

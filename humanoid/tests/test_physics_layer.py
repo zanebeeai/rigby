@@ -27,7 +27,17 @@ from rigby_poc.analysis.contract import PHYSICS, CheckResult
 #: One corpus compile per case in a module fixture; see test_corpus_compile_budget.py.
 pytestmark = pytest.mark.medium
 
-PHYSICS_IDS = frozenset({"physics.ground.penetration", "physics.contact.foot_skate"})
+PHYSICS_IDS = frozenset(
+    {
+        "physics.ground.penetration",
+        "physics.contact.foot_skate",
+        # Added for the legs work: frames with neither foot in contact,
+        # counted directly, because foot skate reports 0.0 -- a pass -- when
+        # contact is lost entirely. Skips on free-root programs and on the
+        # zero-frame case, like its siblings.
+        "physics.contact.ground_support",
+    }
+)
 
 #: The clip that compiles to no frames, so every physics check skips.
 NO_FRAMES_CASE = "knownbad-eigenvalues-unsupported"

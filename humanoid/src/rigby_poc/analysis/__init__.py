@@ -26,7 +26,7 @@ from .contact import (
     intra_hand_contact_failures,
     intra_hand_contact_metrics,
 )
-from .context import AnalysisContext, root_motion_allowed
+from .context import AnalysisContext, root_drift_policy, root_motion_allowed
 from .contract import (
     ANATOMY,
     CONTRACT,
@@ -258,10 +258,12 @@ def validate(
     checks.extend(intra_hand_contact_checks(program, metrics))
     checks.extend(semantic_cycle_checks(program, metrics))
     checks.extend(
-        safety_checks(metrics, allow_root_motion=root_motion_allowed(program))
+        safety_checks(metrics, policy=root_drift_policy(program))
     )
     checks.extend(rom_checks(frames, fps=fps))
-    checks.extend(physics_checks(frames, fps=fps))
+    checks.extend(
+        physics_checks(frames, fps=fps, root_policy=root_drift_policy(program))
+    )
     checks.extend(signal_checks(frames, fps=fps))
     return checks
 
@@ -350,6 +352,7 @@ __all__ = [
     "quality_reference",
     "rig_profile",
     "rom_checks",
+    "root_drift_policy",
     "root_motion_allowed",
     "safety_checks",
     "safety_metrics",

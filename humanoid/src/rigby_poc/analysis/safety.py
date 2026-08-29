@@ -23,13 +23,26 @@ quantity is unchanged; only the label and the addressability are.
 from __future__ import annotations
 
 import math
-from typing import Any
+from typing import Any, Literal
 
 import numpy as np
 
 from ..models import ClipFrame
 from ..thresholds import value_of
 from .contract import CONTRACT, CheckResult, count_check, skipped, upper_bound_check
+
+#: How a clip's root translation is judged. ``fixed`` is the float-noise
+#: epsilon every hands-and-arms path compiles under; ``bounded`` is the strike
+#: envelope -- root motion is real but must stay inside a stated bound rather
+#: than being waved through; ``free`` is whole-body and sequence, where the
+#: program legitimately travels and there is no whole-clip bound to apply.
+#: Three states, not a bool, because the 2026-08-29 ruling on legs-in-strikes
+#: rejected both binary outcomes: joining ``free`` deletes the strike root
+#: gate entirely, and staying ``fixed`` (1e-06) forbids a 5 cm crouch by
+#: 50,000x. A ``Literal`` rather than an enum so every state is enumerable by
+#: the type and a router with a missing branch is a type error, not a silent
+#: fold -- the same closure argument the check-status router records.
+RootDriftPolicy = Literal["fixed", "bounded", "free"]
 
 
 def safety_metrics(
@@ -115,7 +128,7 @@ def safety_metrics(
     }
 
 
-def root_drift_limit_m(*, allow_root_motion: bool) -> float | None:
+def root_drift_limit_m(*, policy: RootDriftPolicy) -> float | None:
     """The bound a clip's root drift is judged against, or ``None`` if unbounded.
 
     Derived rather than published. An earlier version of this put it in
@@ -125,13 +138,23 @@ def root_drift_limit_m(*, allow_root_motion: bool) -> float | None:
     that digest is taken over the whole metrics dict. A key nothing had before
     is a digest change for everything, whatever its value. The measurement is
     unchanged; only where the bound is looked up moved.
+
+    Every policy state is handled explicitly and anything else raises: a new
+    state falling through to a permissive default is how a gate stops applying
+    without anyone deciding it should.
     """
 
-    return None if allow_root_motion else float(value_of("physics.root_drift_max_m"))
+    if policy == "free":
+        return None
+    if policy == "bounded":
+        return float(value_of("physics.strike_root_drift_max_m"))
+    if policy == "fixed":
+        return float(value_of("physics.root_drift_max_m"))
+    raise ValueError(f"unhandled root-drift policy: {policy!r}")
 
 
 def clip_contract_violations(
-    metrics: dict[str, Any], *, allow_root_motion: bool
+    metrics: dict[str, Any], *, policy: RootDriftPolicy
 ) -> int:
     """What the compiler's clip-level gates have always actually meant.
 
@@ -149,25 +172,28 @@ def clip_contract_violations(
     so this is a rename with a gate behind it rather than a behaviour change.
     """
 
-    limit = root_drift_limit_m(allow_root_motion=allow_root_motion)
+    limit = root_drift_limit_m(policy=policy)
     drifted = limit is not None and float(metrics.get("root_drift_m", 0.0)) > limit
     return int(metrics.get("joint_limit_violations", 0)) + int(drifted)
 
 
 def _root_drift_check(
-    metrics: dict[str, Any], *, allow_root_motion: bool
+    metrics: dict[str, Any], *, policy: RootDriftPolicy
 ) -> CheckResult:
     """The root-drift verdict, addressable under its own name.
 
-    A program that explicitly enables root motion has no bound to be judged
-    against, so this is a **skip** rather than a pass. Reporting it as a pass
-    would put a verdict in the output that is not derived from what it claims to
-    describe -- the not-measured / measured-negative conflation four lanes hit
-    separately in this push, and the same distinction ``rom_checks`` makes for a
-    bone the clip never posed.
+    A program whose policy is ``free`` has no bound to be judged against, so
+    that is a **skip** rather than a pass. Reporting it as a pass would put a
+    verdict in the output that is not derived from what it claims to describe
+    -- the not-measured / measured-negative conflation four lanes hit
+    separately in this push, and the same distinction ``rom_checks`` makes for
+    a bone the clip never posed. ``bounded`` is NOT a skip: there is a real
+    bound and this is the gate that applies it, which is the entire point of
+    the third state -- strikes keep a whole-clip root gate while the pelvis is
+    allowed to move inside the stated envelope.
     """
 
-    limit = root_drift_limit_m(allow_root_motion=allow_root_motion)
+    limit = root_drift_limit_m(policy=policy)
     if limit is None:
         return skipped(
             "contract.clip.root_drift",
@@ -179,19 +205,24 @@ def _root_drift_check(
         CONTRACT,
         float(metrics.get("root_drift_m", 0.0)),
         limit,
-        detail="the root travelled further than a fixed-root clip permits",
+        detail=(
+            "the root travelled further than this intent's bounded envelope permits"
+            if policy == "bounded"
+            else "the root travelled further than a fixed-root clip permits"
+        ),
     )
 
 
 def safety_checks(
-    metrics: dict[str, Any], *, allow_root_motion: bool = False
+    metrics: dict[str, Any], *, policy: RootDriftPolicy = "fixed"
 ) -> list[CheckResult]:
     """Report the safety metrics as individually addressable checks.
 
-    ``allow_root_motion`` matches the argument the compile path passed to
-    :func:`safety_metrics`; it decides whether the root-drift bound applies at
-    all. It defaults to the value every path except whole-body and sequence
-    uses, because a wrong default here silences a gate rather than raising.
+    ``policy`` is :func:`rigby_poc.analysis.context.root_drift_policy` of the
+    program the clip compiled from; it decides which root-drift bound applies,
+    if any. It defaults to ``fixed`` -- the strictest state and the one every
+    path except strike, whole-body and sequence uses -- because a wrong default
+    here silences a gate rather than raising.
     """
 
     return [
@@ -208,7 +239,7 @@ def safety_checks(
             int(metrics.get("joint_limit_violations", 0)),
             detail="clip exceeds a joint limit",
         ),
-        _root_drift_check(metrics, allow_root_motion=allow_root_motion),
+        _root_drift_check(metrics, policy=policy),
         count_check(
             "contract.clip.rotational_discontinuities",
             CONTRACT,
