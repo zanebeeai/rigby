@@ -82,7 +82,7 @@ BUDGET: dict[str, int] = {
     "analysis/full_body/posture.py": 4,
     "analysis/full_body/rotation.py": 2,
     "analysis/full_body/selectors.py": 2,
-    "analysis/gesture.py": 4,
+    "analysis/gesture.py": 2,
     "analysis/semantic.py": 1,
 }
 

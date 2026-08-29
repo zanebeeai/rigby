@@ -104,6 +104,7 @@ def composite_metrics(ctx: AnalysisContext) -> dict[str, Any]:
             # partly cancel, so correcting one here and not the other would
             # leave the composite cases measuring the cancelled pair.
             world_samples=world_hand_samples(ctx, hand, presentation_ranges),
+            ctx=ctx,
         )
         for hand in program.hands
     }

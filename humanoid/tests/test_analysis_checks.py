@@ -25,7 +25,13 @@ from rigby_poc.analysis import (
     validate,
 )
 from rigby_poc.analysis.geometry import line_segment_distance
-from rigby_poc.analysis.rig import identity_pose
+from rigby_poc.analysis.gesture import (
+    _inside_torso,
+    _inside_torso_carried,
+    _torso_carry,
+)
+from rigby_poc.analysis.rig import identity_bones, identity_pose
+from rigby_poc.kinematics import rig_kinematics
 from rigby_poc.models import (
     AssertionSpec,
     BonePose,
@@ -304,6 +310,128 @@ def test_hand_visibility_is_only_sampled_inside_the_presentation_window() -> Non
     assert windowed["active_hand_visibility_samples"] == 4
     assert unwindowed["active_hand_visibility_samples"] == 0
     assert unwindowed["active_hand_visibility_fraction"] == 0.0
+
+
+# --------------------------------------------------------------------------
+# self-collision: the carried torso capsule
+# --------------------------------------------------------------------------
+
+#: Swings the right upper arm across the chest; the forearm passes through the
+#: torso. Found by direct measurement against the capsule, not by eye.
+_ARM_ACROSS_CHEST = _quat(Rotation.from_rotvec([0.0, 0.0, 1.9]))
+
+#: The mirror rotation raises the arm instead; nothing intersects the torso.
+_ARM_RAISED = _quat(Rotation.from_rotvec([0.0, 0.0, -1.9]))
+
+_PELVIS_DROP = Vec3(x=0.0, y=-0.35, z=0.0)
+
+
+def _world_arm_samples(frame: ClipFrame) -> list[np.ndarray]:
+    """The exact sample points ``_arm_self_collision`` walks, in world."""
+
+    kinematics = rig_kinematics()
+    node = kinematics.node_by_canonical
+    matrices = kinematics.world_matrices(frame.bones)
+    shoulder, elbow, wrist = (
+        matrices[node[f"right{bone}"]][:3, 3]
+        for bone in ("UpperArm", "LowerArm", "Hand")
+    )
+    samples = [shoulder * (1 - a) + elbow * a for a in np.linspace(0.55, 1.0, 5)]
+    samples += [elbow * (1 - a) + wrist * a for a in np.linspace(0.0, 1.0, 7)]
+    return samples
+
+
+def test_the_carried_capsule_is_exactly_the_fixed_capsule_at_rest() -> None:
+    """At the rest pose, carrying the capsule must change nothing.
+
+    Every carried slice's map is rest-to-rest there, so the union of slices is
+    the fixed capsule by construction -- asserted over a dense grid rather than
+    trusted, because the slice boundaries are exactly where a partition bug
+    would live.
+    """
+
+    kinematics = rig_kinematics()
+    matrices = kinematics.world_matrices(identity_bones())
+    carries = _torso_carry(matrices, kinematics.node_by_canonical)
+    inside = 0
+    for x in np.linspace(-0.3, 0.3, 13):
+        for y in np.linspace(0.85, 1.6, 26):
+            # A point exactly on the capsule's y boundary is a measure-zero
+            # surface where the carry map's ~1e-8 float composition may flip
+            # an inclusive comparison; the check's production margins are
+            # >= 0.09 normalised radii, so the boundary itself proves nothing.
+            if min(abs(y - 1.01), abs(y - 1.48)) < 1e-6:
+                continue
+            for z in np.linspace(-0.3, 0.3, 13):
+                point = np.asarray([x, y, z])
+                fixed = _inside_torso(point)
+                inside += int(fixed)
+                assert fixed == _inside_torso_carried(point, carries), point
+    assert inside > 0, "the grid must actually enter the capsule"
+
+
+def test_an_arm_swung_across_the_chest_is_a_self_collision() -> None:
+    frames = [_frame(index, {"rightUpperArm": _ARM_ACROSS_CHEST}) for index in range(6)]
+
+    structure = evaluate_gesture_structure(frames, Hand.RIGHT, [])
+    checks = {check.id: check for check in gesture_structure_checks(structure)}
+
+    assert structure["self_collision_frames"] == 6
+    assert not structure["structural_valid"]
+    assert any(
+        "self collision" in failure for failure in structure["structural_failures"]
+    )
+    assert checks["anatomy.arm.self_collision"].status == "fail"
+
+
+def test_a_dropped_pelvis_carries_the_capsule_with_it() -> None:
+    """The reason the capsule is bone-carried, asserted as a discrimination.
+
+    The same across-the-chest arm, with the pelvis translated 0.35 m down: the
+    arm still passes through the (dropped) torso, so the check must fire -- and
+    the retired rest-world capsule structurally could not have fired, because
+    the whole body sits below its fixed y-band. Both halves are asserted on the
+    same world sample points the check itself walks, so this test is what keeps
+    a regression to a world-pinned capsule from passing as a refactor.
+    """
+
+    frames = [
+        _frame(index, {"rightUpperArm": _ARM_ACROSS_CHEST}, hips=_PELVIS_DROP)
+        for index in range(4)
+    ]
+
+    structure = evaluate_gesture_structure(frames, Hand.RIGHT, [])
+
+    assert structure["self_collision_frames"] == 4
+    for frame in frames:
+        assert not any(_inside_torso(point) for point in _world_arm_samples(frame)), (
+            "the fixed rest-world capsule saw this collision after all -- the "
+            "discrimination this test exists for is gone"
+        )
+
+
+def test_a_dropped_pelvis_does_not_invent_a_phantom_collision() -> None:
+    """The fixed capsule's other failure direction under root motion.
+
+    With the arm raised and the pelvis dropped, the arm sweeps through the
+    region of world space the rest-pose torso used to occupy while the actual
+    torso is 0.35 m lower. The carried check must stay silent; the fixed
+    capsule fires on empty air, and that phantom is asserted so this case
+    keeps discriminating.
+    """
+
+    frames = [
+        _frame(index, {"rightUpperArm": _ARM_RAISED}, hips=_PELVIS_DROP)
+        for index in range(4)
+    ]
+
+    structure = evaluate_gesture_structure(frames, Hand.RIGHT, [])
+
+    assert structure["self_collision_frames"] == 0
+    assert any(
+        any(_inside_torso(point) for point in _world_arm_samples(frame))
+        for frame in frames
+    ), "the fixed capsule no longer fires here, so this case discriminates nothing"
 
 
 # --------------------------------------------------------------------------
