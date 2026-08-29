@@ -359,6 +359,13 @@ class PrimitiveParameters(Contract):
     wrist_roll: Annotated[float, Field(ge=-1.0, le=1.0)] = 0.0
     elbow_swivel: Annotated[float, Field(ge=-1.0, le=1.0)] = 0.0
     torso_participation: Annotated[float, Field(ge=0.0, le=1.0)] = 0.2
+    # Root-space leg posture for strike phases (2026-08-29 ruling: root-space +
+    # IK, no joint-level authoring vocabulary). Metres of hips translation per
+    # phase keyframe; knee/ankle angles are derived by solve_leg on planted
+    # ankles, never authored. 0.0 means the compile path is byte-identical to
+    # the pre-legs output -- every stored corpus program compiles unchanged.
+    crouch_depth_m: Annotated[float, Field(ge=0.0, le=0.20)] = 0.0
+    weight_shift_m: Annotated[float, Field(ge=-0.12, le=0.12)] = 0.0
     path_arc: Annotated[float, Field(ge=-1.0, le=1.0)] = 0.0
     wrist_flourish: Annotated[float, Field(ge=-1.0, le=1.0)] = 0.0
     wrist_shake_amplitude: Annotated[float, Field(ge=0.0, le=1.0)] = 0.0
