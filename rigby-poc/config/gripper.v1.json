@@ -1,0 +1,114 @@
+{
+  "schema_version": "embodiment.v1",
+  "embodiment": "gripper",
+  "notes": {
+    "purpose": "A three-segment arm with a two-finger parallel gripper, declared in the same schema as the humanoid hand. It is here to test whether the architecture is about grasping or about THIS hand. Nothing above the solvers should have to change: the same metric names, the same primitives, the same refusals, the same phase sequence.",
+    "what_is_different": "Almost everything below the interface. Four joints instead of a shoulder chain and nineteen finger bones. Fingers that translate rather than curl, so there is no thumb, no opposition to arrange, no curl to lock, and the C-shape the humanoid had to be taught is the gripper's resting geometry. If the same controller drives both, the vocabulary was the right abstraction.",
+    "what_is_the_same": "The numbers. palm_to_object_m is the distance from whatever does the holding to the object's surface, whether that is a palm pad or the plate between two fingers. object_in_grasp_m is the object's distance from the line between the gripping surfaces. Both are properties of grasping, not of hands.",
+    "amplitude": "Declared per primitive here as it is for the hand, and for the same reason: a number between 0 and 1 does not describe itself, and four failures in this project came from assuming the wrong meaning."
+  },
+
+  "kinematics": {
+    "base": {"at": [0.0, 0.72, 0.0], "note": "bolted to the table, metres"},
+    "joints": [
+      {"name": "yaw",    "kind": "revolute",  "axis": [0, 1, 0], "range_deg": [-150, 150]},
+      {"name": "lift",   "kind": "revolute",  "axis": [1, 0, 0], "range_deg": [-100, 100]},
+      {"name": "elbow",  "kind": "revolute",  "axis": [1, 0, 0], "range_deg": [-140, 140]},
+      {"name": "wrist",  "kind": "revolute",  "axis": [1, 0, 0], "range_deg": [-120, 120]},
+      {"name": "finger_left",  "kind": "prismatic", "axis": [1, 0, 0], "range_m": [0.0, 0.055]},
+      {"name": "finger_right", "kind": "prismatic", "axis": [-1, 0, 0], "range_m": [0.0, 0.055]}
+    ],
+    "segments_m": [0.26, 0.24, 0.10],
+    "finger": {"length_m": 0.07, "thickness_m": 0.012, "pad_width_m": 0.03}
+  },
+
+  "part_groups": {
+    "arm": ["yaw", "lift", "elbow", "wrist"],
+    "digits": ["finger_left", "finger_right"],
+    "gaze": []
+  },
+
+  "primitives": [
+    {
+      "name": "move_to",
+      "solver": "move_to",
+      "parts": "arm",
+      "amplitude": "fraction of the way to the target",
+      "describes": "carry the gripper to a face of the object and arrive square to it, with the object between the fingers rather than beyond them",
+      "refuses_when": [
+        "either finger carries more than 2.5 N -- the gripper is already touching, and the arm has more leverage than the fingers",
+        "the gripper is holding the object -- the face being approached is between the fingers, so approaching drives the gripper through what it carries",
+        "the object is moving faster than 0.02 m/s -- that is the approach pushing it, and force does not register it"
+      ]
+    },
+    {
+      "name": "open_grip",
+      "solver": "open_grip",
+      "parts": "digits",
+      "amplitude": "how far toward the open shape, not how wide",
+      "describes": "open the fingers to the object's width plus clearance, so it can enter the opening",
+      "refuses_when": ["the gripper is holding the object -- opening is how you put it down"]
+    },
+    {
+      "name": "close_grip",
+      "solver": "close_grip",
+      "parts": "digits",
+      "amplitude": "the contact force to close TO, in newtons, low arriving and high carrying",
+      "describes": "bring the fingers together onto the object",
+      "refuses_when": [
+        "the object is too far off the line between the finger pads -- closing could only push it",
+        "the opening is already at the object's own width -- solids do not compress"
+      ]
+    },
+    {
+      "name": "lift",
+      "solver": "lift",
+      "parts": "arm",
+      "amplitude": "a RATE of rise, re-run every frame, not a height",
+      "describes": "raise the arm, still gripping",
+      "refuses_when": ["the grip carries less than the object's weight with margin -- it squeezes instead"]
+    }
+  ],
+
+  "metrics": [
+    {
+      "name": "palm_to_object_m",
+      "wants": 0.0,
+      "sensor": "range from the gripper plate to the object; a short-range rangefinder between the fingers",
+      "describes": "metres from the plate between the fingers to the object's surface"
+    },
+    {
+      "name": "palm_facing",
+      "wants": 1.0,
+      "sensor": "the gripper's approach axis from joint angles against the face normal from vision",
+      "describes": "+1 when the gripper looks straight at the face it is approaching, 0 edge-on"
+    },
+    {
+      "name": "object_in_grasp_m",
+      "wants": 0.0,
+      "sensor": "object position from vision, finger positions from joint encoders",
+      "describes": "metres from the object to the line between the finger pads; near zero means it is INSIDE the opening"
+    },
+    {
+      "name": "grip_tip_spread_m",
+      "wants": null,
+      "sensor": "finger joint encoders",
+      "describes": "the opening between the finger pads. Opened to the object's size, then closed"
+    },
+    {
+      "name": "grip_parallel",
+      "wants": 1.0,
+      "targetable": false,
+      "sensor": "mechanically guaranteed",
+      "describes": "+1 always. A parallel gripper cannot be anything else, which is the shape the humanoid hand had to be taught. READABLE ONLY: nothing can move it and nothing needs to"
+    }
+  ],
+
+  "senses": [
+    {"name": "joint_states", "sensor": "joint encoders", "always": true},
+    {"name": "contact_force_per_digit", "sensor": "pads on each finger", "always": true},
+    {"name": "object_position", "sensor": "vision", "always": false},
+    {"name": "object_size", "sensor": "vision", "always": false},
+    {"name": "object_velocity", "sensor": "vision, between observations", "always": false}
+  ]
+}
