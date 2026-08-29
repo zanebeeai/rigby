@@ -263,7 +263,12 @@ playButton.addEventListener("click", () => {
   playButton.textContent = playing ? "❚❚ Pause" : "▶ Play";
 });
 
-fetch(`${import.meta.env.BASE_URL}gripper-run.json`)
+// Which clip to show. Defaults to the latest run, but ?clip=<name> loads any
+// exported one -- which is how the recorder walks a run frame by frame without
+// racing the play loop.
+const wanted = new URLSearchParams(location.search).get("clip") || "gripper-run";
+
+fetch(`${import.meta.env.BASE_URL}${wanted}.json`)
   .then((response) => response.json())
   .then((data: Clip) => {
     clip = data;
@@ -273,6 +278,20 @@ fetch(`${import.meta.env.BASE_URL}gripper-run.json`)
     summary.textContent =
       `${data.frames.length} frames · lift held ${lift.toFixed(2)} cm`;
     show(0);
+    // The handle the recorder drives. Seeking is explicit and synchronous, so a
+    // captured frame is the frame that was asked for rather than whichever one
+    // the animation loop had reached.
+    (window as unknown as Record<string, unknown>).rigbyClip = {
+      frames: data.frames.length,
+      fps: data.fps,
+      seek(index: number) {
+        playing = false;
+        cursor = Math.max(0, Math.min(index, data.frames.length - 1));
+        scrub.value = String(cursor);
+        show(cursor);
+        renderer.render(scene, camera);
+      },
+    };
   })
   .catch(() => {
     summary.textContent = "no gripper run exported yet";
