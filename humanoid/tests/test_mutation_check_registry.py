@@ -151,6 +151,10 @@ def test_only_the_clip_contract_checks_reach_every_case(
         "contract.clip.root_drift",
         "contract.clip.rotational_discontinuities",
         "physics.contact.foot_skate",
+        # Emitted on all 47 like its siblings: a skip on free-root programs
+        # (airborne frames are legitimate there) and on the zero-frame case,
+        # a measurement everywhere else.
+        "physics.contact.ground_support",
         "physics.ground.penetration",
         "signal.activity.dead_limb",
         "signal.smoothness.sparc",

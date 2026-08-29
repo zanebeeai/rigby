@@ -261,7 +261,9 @@ def validate(
         safety_checks(metrics, policy=root_drift_policy(program))
     )
     checks.extend(rom_checks(frames, fps=fps))
-    checks.extend(physics_checks(frames, fps=fps))
+    checks.extend(
+        physics_checks(frames, fps=fps, root_policy=root_drift_policy(program))
+    )
     checks.extend(signal_checks(frames, fps=fps))
     return checks
 

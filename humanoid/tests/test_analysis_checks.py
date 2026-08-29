@@ -27,6 +27,7 @@ from rigby_poc.analysis import (
     validate,
 )
 from rigby_poc.analysis.geometry import line_segment_distance
+from rigby_poc.analysis.physics import physics_checks
 from rigby_poc.analysis.gesture import (
     _inside_torso,
     _inside_torso_carried,
@@ -215,6 +216,36 @@ def test_the_bounded_policy_is_a_real_gate_not_a_skip() -> None:
     far_check = _check(wander, "contract.clip.root_drift", policy="bounded")
     assert far_check.status == "fail"
     assert clip_contract_violations(wander, policy="bounded") == 1
+
+
+def test_floating_feet_fail_ground_support_instead_of_passing_silently() -> None:
+    """TRACKING's legs trap, closed before any leg authoring exists to hit it.
+
+    ``foot_skate_check`` measures displacement only between frame pairs that
+    are both in contact, so a clip whose feet leave the floor gives it nothing
+    to measure and it reports 0.0 -- a pass, which is even quieter than the
+    skip TRACKING recorded. ``ground_support`` counts the unsupported frames
+    directly, so knees-only-with-fixed-hips floating the feet is a loud
+    failure on the bounded path the legs work will compile under.
+    """
+
+    lifted = [_frame(index, hips=Vec3(x=0.0, y=0.3, z=0.0)) for index in range(4)]
+    checks = {c.id: c for c in physics_checks(lifted, fps=FPS, root_policy="bounded")}
+    support = checks["physics.contact.ground_support"]
+    skate = checks["physics.contact.foot_skate"]
+    assert support.status == "fail"
+    assert support.measured == 4.0
+    # The hole this check closes: with no contact, foot skate cannot fail.
+    assert skate.status != "fail"
+
+    planted = [_frame(index) for index in range(4)]
+    planted_checks = {
+        c.id: c for c in physics_checks(planted, fps=FPS, root_policy="bounded")
+    }
+    assert planted_checks["physics.contact.ground_support"].status == "pass"
+
+    free = {c.id: c for c in physics_checks(lifted, fps=FPS, root_policy="free")}
+    assert free["physics.contact.ground_support"].status == "skip"
 
 
 def test_every_intent_has_a_deliberate_root_drift_policy() -> None:

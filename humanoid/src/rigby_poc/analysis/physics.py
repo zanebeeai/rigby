@@ -36,8 +36,9 @@ import numpy as np
 from ..kinematics import RigKinematics, rig_kinematics
 from ..models import BonePose, ClipFrame
 from ..thresholds import value_of
-from .contract import PHYSICS, CheckResult, skipped, upper_bound_check
+from .contract import PHYSICS, CheckResult, count_check, skipped, upper_bound_check
 from .rig import rig_profile
+from .safety import RootDriftPolicy
 
 #: Segment mass as a fraction of total body mass, and where along the segment
 #: that mass acts, as a fraction of segment length from the proximal joint.
@@ -474,7 +475,56 @@ def foot_skate_check(
     )
 
 
-def physics_checks(frames: list[ClipFrame], *, fps: float) -> list[CheckResult]:
+def ground_support_check(
+    contacts: FootContacts | None,
+    *,
+    root_policy: RootDriftPolicy,
+) -> CheckResult:
+    """At least one foot on the ground on every frame, counted directly.
+
+    The hole this closes is TRACKING's legs trap: :func:`foot_skate_check`
+    measures displacement only between frame pairs that are *both* in contact,
+    so a clip whose feet leave the floor entirely makes it skip rather than
+    fail -- floating reads as "nothing to measure". This check counts the
+    frames with neither foot in contact, so knees-only-with-fixed-hips fails
+    loudly instead of silently, and it exists *before* any leg authoring
+    starts hillclimbing against it.
+
+    Skipped for a free-root program: whole-body motion legitimately leaves the
+    ground (a jump, a cartwheel, a climb), and scoring those frames would be a
+    verdict not derived from what it claims to describe. Fixed- and
+    bounded-root programs plant their feet by contract -- a bounded strike may
+    crouch and shift, but it does not become airborne.
+    """
+
+    if root_policy == "free":
+        return skipped(
+            "physics.contact.ground_support",
+            PHYSICS,
+            detail="the program enables root motion; airborne frames are legitimate",
+        )
+    if contacts is None or contacts.frames == 0:
+        return skipped(
+            "physics.contact.ground_support",
+            PHYSICS,
+            detail="no frames, so there is no support to measure",
+        )
+    unsupported = sum(
+        1
+        for index in range(contacts.frames)
+        if not (bool(contacts.left[index]) or bool(contacts.right[index]))
+    )
+    return count_check(
+        "physics.contact.ground_support",
+        PHYSICS,
+        unsupported,
+        detail="frames with neither foot in ground contact",
+    )
+
+
+def physics_checks(
+    frames: list[ClipFrame], *, fps: float, root_policy: RootDriftPolicy = "fixed"
+) -> list[CheckResult]:
     """Every physics verdict for a clip. Plan 10 §3.1.
 
     **Always emits every id it owns**, skipping where it measured nothing rather
@@ -490,7 +540,12 @@ def physics_checks(frames: list[ClipFrame], *, fps: float) -> list[CheckResult]:
     it later would change every call site. Stated rather than left to look like
     an oversight.
 
-    **Two of §3.1's eight checks ship here.** The other six are deferred with
+    ``root_policy`` decides whether the ground-support check applies at all --
+    a free-root program is legitimately airborne -- and defaults to ``fixed``,
+    the strictest state, for the same reason ``safety_checks`` does.
+
+    **Three of §3.1's eight checks ship here** (ground support was added for
+    the legs work, closing the foot-skate skip hole). The other five are deferred with
     measured reasons, recorded in TRACKING and in plan 10 §3.1; the short form is
     that ``balance`` has the wrong criterion for dynamic motion, ``ballistic``
     and ``momentum`` need a flight phase the corpus has in 5 of 46 cases (and
@@ -517,6 +572,7 @@ def physics_checks(frames: list[ClipFrame], *, fps: float) -> list[CheckResult]:
             contacts,
             threshold_m=float(value_of("physics.foot_drift_max_m")),
         ),
+        ground_support_check(contacts, root_policy=root_policy),
     ]
 
 
@@ -532,6 +588,7 @@ __all__ = [
     "center_of_mass_series",
     "foot_contacts",
     "foot_skate_check",
+    "ground_support_check",
     "ground_height",
     "ground_height_of",
     "ground_penetration_check",
