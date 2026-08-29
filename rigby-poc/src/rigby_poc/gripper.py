@@ -409,6 +409,124 @@ def solve_close_grip(state: GripperState, obj: np.ndarray, half: np.ndarray,
     return moved
 
 
+# ---------------------------------------------------------------------------
+# Placing: the second half of pick AND place.
+# ---------------------------------------------------------------------------
+
+def bin_spec() -> dict:
+    return spec()["scene"]["bin"]
+
+
+def object_over_target_m(obj: np.ndarray) -> float:
+    """Horizontal distance from the object to the middle of the bin.
+
+    Height is deliberately ignored. Carrying is a problem in the plane; the
+    height is what clearing the rim is about, and mixing them into one distance
+    makes a gripper that is perfectly placed but too low look the same as one
+    that is high and in the wrong county.
+    """
+    centre = np.asarray(bin_spec()["centre"], dtype=float)
+    flat = np.asarray([obj[0] - centre[0], 0.0, obj[2] - centre[2]])
+    return float(np.linalg.norm(flat))
+
+
+def object_above_rim_m(obj: np.ndarray, half: np.ndarray) -> float:
+    """How far the object's underside clears the bin's rim.
+
+    Negative means carrying it across would strike the wall.
+    """
+    rim = float(bin_spec()["rim_height_m"])
+    return float(obj[1] - float(half[1]) - rim)
+
+
+def object_in_target(obj: np.ndarray) -> bool:
+    """Is the object inside the bin?"""
+    document = bin_spec()
+    centre = np.asarray(document["centre"], dtype=float)
+    inner = np.asarray(document["inner_half_m"], dtype=float)
+    return bool(
+        abs(obj[0] - centre[0]) <= inner[0]
+        and abs(obj[2] - centre[2]) <= inner[2]
+        and obj[1] <= float(document["rim_height_m"])
+        and obj[1] >= centre[1] - inner[1]
+    )
+
+
+#: How high above the rim the object is carried before it is let go, metres.
+_CLEARANCE_M = 0.06
+#: Horizontal error at which the object counts as over the bin, metres.
+_OVER_TARGET_M = 0.03
+
+
+def solve_carry_over(state: GripperState, obj: np.ndarray, half: np.ndarray,
+                     forces: dict[str, float], amount: float) -> GripperState | None:
+    """Carry what is held to a point above the bin, clear of its rim."""
+    if not holding(forces):
+        return None
+    if (object_over_target_m(obj) <= _OVER_TARGET_M
+            and object_above_rim_m(obj, half) >= 0.0):
+        return None
+
+    document = bin_spec()
+    centre = np.asarray(document["centre"], dtype=float)
+    # The pads go where the OBJECT needs to be, offset by however far the object
+    # currently sits from them. Steering the gripper to the bin instead leaves
+    # the block hanging beside it by exactly that offset.
+    place = forward(state)
+    middle = (place["left_pad"] + place["right_pad"]) / 2.0
+    carry_offset = middle - obj
+    goal = np.asarray([
+        centre[0],
+        float(document["rim_height_m"]) + _CLEARANCE_M + float(half[1]),
+        centre[2],
+    ]) + carry_offset
+
+    def cost(candidate: GripperState) -> float:
+        spot = forward(candidate)
+        mid = (spot["left_pad"] + spot["right_pad"]) / 2.0
+        return float(np.linalg.norm(mid - goal))
+
+    best = state.copy()
+    here = cost(best)
+    for _pass in range(6):
+        for name in ("yaw", "lift", "elbow", "wrist"):
+            for step in (0.14, 0.05, 0.015):
+                for direction in (1.0, -1.0):
+                    trial = best.copy()
+                    setattr(trial, name, getattr(trial, name) + step * direction)
+                    if not within_limits(trial):
+                        continue
+                    value = cost(trial)
+                    if value < here - 1e-5:
+                        best, here = trial, value
+    reach = float(np.clip(amount, 0.0, 1.0))
+    moved = state.copy()
+    for name in ("yaw", "lift", "elbow", "wrist"):
+        start = getattr(state, name)
+        setattr(moved, name, start + (getattr(best, name) - start) * reach)
+    return clamp(moved)
+
+
+def solve_release(state: GripperState, obj: np.ndarray, half: np.ndarray,
+                  amount: float) -> GripperState | None:
+    """Let go, deliberately.
+
+    open_grip refuses while the gripper is holding something, on purpose:
+    opening a loaded hand is how a grasp gets lost by accident, and that refusal
+    has saved several runs. Releasing is the same motion asked for ON PURPOSE,
+    so it is a separate word -- the accident and the intention should not share
+    a name, or the guard has to decide which one you meant.
+    """
+    if object_over_target_m(obj) > _OVER_TARGET_M * 2.0:
+        return None
+    document = spec()
+    limit = document["kinematics"]["joints"][4]["range_m"][1]
+    reach = float(np.clip(amount, 0.0, 1.0))
+    moved = state.copy()
+    moved.finger = min(limit, state.finger + (limit - state.finger) * reach)
+    return moved
+
+
 def solve_lift(state: GripperState, forces: dict[str, float],
                amount: float) -> GripperState | None:
     """Raise the arm, still gripping. Too early, and it squeezes instead."""

@@ -21,11 +21,18 @@ interface Frame {
   block: number[];
   forces: Record<string, number>;
   opening_m: number;
+  over_target_m: number;
+  above_rim_m: number;
+  in_target: boolean;
 }
 
 interface Clip {
   fps: number;
   pedestal?: { from: number[]; to: number[]; radius_m: number };
+  bin?: {
+    centre: number[]; inner_half_m: number[]; wall_m: number;
+    riser_from: number[]; rim_height_m: number;
+  };
   table_top_m: number;
   block_half_m: number[];
   phase_names: string[];
@@ -47,9 +54,9 @@ scene.background = new THREE.Color(0x171a21);
 const camera = new THREE.PerspectiveCamera(34, 1, 0.02, 20);
 // Framed on the work, not the room: the whole point of watching this is
 // the last few centimetres, and a wide shot of a table hides them.
-camera.position.set(0.62, 1.16, 0.92);
+camera.position.set(0.78, 1.32, 1.00);
 const controls = new OrbitControls(camera, canvas);
-controls.target.set(0.0, 0.86, 0.16);
+controls.target.set(0.16, 0.90, 0.16);
 controls.enableDamping = true;
 controls.minDistance = 0.15;
 controls.maxDistance = 3.0;
@@ -140,6 +147,40 @@ function build(first: Frame, data: Clip) {
     root.add(mesh);
   }
 
+  // The bin the block is going into: four walls, a floor and its riser. Static
+  // scenery in the physics, so it is drawn once and never moved.
+  if (data.bin) {
+    const c = data.bin.centre;
+    const inner = data.bin.inner_half_m;
+    const wall = data.bin.wall_m;
+    const binMaterial = new THREE.MeshStandardMaterial({
+      color: 0x7b8598, roughness: 0.75,
+    });
+    const floor = new THREE.Mesh(
+      new THREE.BoxGeometry((inner[0] + wall) * 2, wall * 2, (inner[2] + wall) * 2),
+      binMaterial);
+    floor.position.set(c[0], c[1] - inner[1] - wall, c[2]);
+    scene.add(floor);
+    const sides: Array<[number, number]> = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+    for (const [dx, dz] of sides) {
+      const panel = new THREE.Mesh(
+        new THREE.BoxGeometry(
+          dx ? wall * 2 : (inner[0] + wall * 2) * 2,
+          inner[1] * 2,
+          dx ? (inner[2] + wall * 2) * 2 : wall * 2),
+        binMaterial);
+      panel.position.set(
+        c[0] + dx * (inner[0] + wall), c[1], c[2] + dz * (inner[2] + wall));
+      scene.add(panel);
+    }
+    const riser = data.bin.riser_from;
+    const post = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.045, 0.055, c[1] - inner[1] - riser[1], 18),
+      new THREE.MeshStandardMaterial({ color: 0x4a5262, roughness: 0.7 }));
+    post.position.set(c[0], (riser[1] + c[1] - inner[1]) / 2, c[2]);
+    scene.add(post);
+  }
+
   const half = data.block_half_m;
   block = new THREE.Mesh(
     new THREE.BoxGeometry(half[0] * 2, half[1] * 2, half[2] * 2),
@@ -171,7 +212,10 @@ function show(index: number) {
     `<span class="phase">${clip.phase_names[frame.phase] ?? frame.phase}</span>` +
     ` &nbsp; opening <b>${(frame.opening_m * 100).toFixed(1)} cm</b>` +
     ` &nbsp; pads <b>${held.toFixed(1)}</b> / <b>${other.toFixed(1)} N</b>` +
-    ` &nbsp; block height <b>${frame.block[1].toFixed(3)} m</b>`;
+    ` &nbsp; block height <b>${frame.block[1].toFixed(3)} m</b>` +
+    ` &nbsp; over bin <b>${(frame.over_target_m * 100).toFixed(1)} cm</b>` +
+    ` &nbsp; rim <b>${(frame.above_rim_m * 100).toFixed(1)} cm</b>` +
+    (frame.in_target ? ` &nbsp; <span class="phase">IN THE BIN</span>` : "");
 }
 
 function resize() {

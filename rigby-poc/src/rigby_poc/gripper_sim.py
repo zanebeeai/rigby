@@ -16,6 +16,12 @@ import numpy as np
 
 from .gripper import (
     GripperState,
+    bin_spec,
+    object_above_rim_m,
+    object_in_target,
+    object_over_target_m,
+    solve_carry_over,
+    solve_release,
     _CARRY_FORCE_N,
     chosen_face,
     forward,
@@ -38,6 +44,11 @@ PHASES: tuple[tuple[str, float], ...] = (
     ("close_grip", 0.4),
     ("close_grip", 1.0),
     ("lift", 0.05),
+    # Pick was six phases; place adds two. Carrying is its own problem -- the
+    # object has to clear the rim before it crosses, not after -- and letting go
+    # is a decision rather than the absence of one.
+    ("carry_over", 0.35),
+    ("release", 0.5),
 )
 
 _ARRIVED_M = 0.10
@@ -59,6 +70,7 @@ def _model_xml(block_half: np.ndarray, block_at: np.ndarray,
     reach = float(finger["length_m"]) / 2.0
     thick = float(finger["thickness_m"])
     pad = float(finger["pad_width_m"]) / 2.0
+    bin_xml = _bin_xml()
     return f"""
 <mujoco>
   <option timestep="0.002" gravity="0 0 -9.81" integrator="implicitfast"/>
@@ -88,6 +100,7 @@ def _model_xml(block_half: np.ndarray, block_at: np.ndarray,
             rgba="0.3 0.7 0.9 1" friction="0.9 0.02 0.001"
             solref="0.004 1" solimp="0.98 0.999 0.0005"/>
     </body>
+    {bin_xml}
     <body name="plate" pos="0 0 0">
       <freejoint name="plate_free"/>
       <geom name="plate_geom" type="box" size="0.05 0.04 0.015" mass="0.4"
@@ -107,6 +120,41 @@ def _model_xml(block_half: np.ndarray, block_at: np.ndarray,
   </equality>
 </mujoco>
 """
+
+
+def _bin_xml() -> str:
+    """An open-topped bin on a riser: four walls, a floor and a post.
+
+    Static geometry, so it is scenery the solver must respect rather than
+    another thing to hold. The riser is the point of the task: carrying to a
+    target at a different height is what a lift alone does not test.
+    """
+    document = spec()["scene"]["bin"]
+    centre = np.asarray(document["centre"], dtype=float)
+    inner = np.asarray(document["inner_half_m"], dtype=float)
+    wall = float(document["wall_m"])
+    riser = np.asarray(document["riser_from"], dtype=float)
+    mj = _mj(centre)
+    pieces = [
+        f'<geom name="bin_floor" type="box" pos="{mj[0]} {mj[1]} {mj[2] - inner[1] - wall}" '
+        f'size="{inner[0] + wall} {inner[2] + wall} {wall}" rgba="0.45 0.5 0.58 1" '
+        'friction="0.9 0.02 0.001"/>',
+    ]
+    for index, (dx, dz) in enumerate(((1, 0), (-1, 0), (0, 1), (0, -1))):
+        along = inner[0] if dx else inner[2]
+        pieces.append(
+            f'<geom name="bin_wall{index}" type="box" '
+            f'pos="{mj[0] + dx * (inner[0] + wall)} '
+            f'{mj[1] + dz * (inner[2] + wall)} {mj[2]}" '
+            f'size="{wall if dx else inner[0] + wall * 2} '
+            f'{inner[2] + wall * 2 if dx else wall} {inner[1]}" '
+            'rgba="0.5 0.55 0.63 1" friction="0.9 0.02 0.001"/>')
+    post = _mj((centre + riser) / 2.0)
+    height = float(centre[1] - riser[1]) / 2.0
+    pieces.append(
+        f'<geom name="bin_riser" type="cylinder" pos="{post[0]} {post[1]} {post[2]}" '
+        f'size="0.045 {max(height, 0.01)}" rgba="0.4 0.44 0.52 1"/>')
+    return "".join(pieces)
 
 
 def _mj(point: np.ndarray) -> np.ndarray:
@@ -233,6 +281,10 @@ def run(block_half: np.ndarray, block_at: np.ndarray, table_top: float = 0.72,
             phase = 4
         elif phase == 4 and holding(forces):
             phase = 5
+        elif phase == 5 and object_above_rim_m(obj, block_half) >= 0.02:
+            phase = 6
+        elif phase == 6 and object_over_target_m(obj) <= 0.03 and holding(forces):
+            phase = 7
 
         name, amount = PHASES[phase]
         if name == "move_to":
@@ -241,6 +293,10 @@ def run(block_half: np.ndarray, block_at: np.ndarray, table_top: float = 0.72,
             nxt = solve_open_grip(state, obj, block_half, forces, amount)
         elif name == "close_grip":
             nxt = solve_close_grip(state, obj, block_half, forces, amount)
+        elif name == "carry_over":
+            nxt = solve_carry_over(state, obj, block_half, forces, amount)
+        elif name == "release":
+            nxt = solve_release(state, obj, block_half, amount)
         else:
             nxt = solve_lift(state, forces, amount)
             if nxt is None:  # too weak to carry: squeeze instead
@@ -262,5 +318,7 @@ def run(block_half: np.ndarray, block_at: np.ndarray, table_top: float = 0.72,
                   f"palm={gap * 100:6.2f}cm in={inside * 100:5.2f}cm "
                   f"open={forward(state)['opening'] * 100:5.2f}cm "
                   f"face={palm_facing(state, obj, block_half):+.2f} "
+                  f"over={object_over_target_m(obj) * 100:5.1f}cm "
+                  f"rim={object_above_rim_m(obj, block_half) * 100:+5.1f}cm "
                   f"f={ {k: round(v, 1) for k, v in forces.items() if v > 0.3} }")
     return out

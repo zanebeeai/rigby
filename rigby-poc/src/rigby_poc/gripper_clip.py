@@ -17,7 +17,10 @@ from pathlib import Path
 
 import numpy as np
 
-from .gripper import GripperState, forward, spec
+from .gripper import (
+    GripperState, forward, object_above_rim_m, object_in_target,
+    object_over_target_m, spec,
+)
 from .gripper_sim import GripperRun
 
 _PUBLIC = Path(__file__).resolve().parents[2] / "frontend" / "public"
@@ -72,6 +75,9 @@ def export(run: GripperRun, block_half: np.ndarray, table_top: float,
             "block": [float(v) for v in block],
             "forces": {k: round(float(v), 2) for k, v in forces.items()},
             "opening_m": round(forward(state)["opening"], 5),
+            "over_target_m": round(object_over_target_m(block), 4),
+            "above_rim_m": round(object_above_rim_m(block, block_half), 4),
+            "in_target": bool(object_in_target(block)),
         })
     achieved = run.lift_achieved()
     document = {
@@ -80,9 +86,11 @@ def export(run: GripperRun, block_half: np.ndarray, table_top: float,
         "fps": 30,
         "table_top_m": float(table_top),
         "block_half_m": [float(v) for v in block_half],
-        "phase_names": ["approach", "open", "engulf", "close", "squeeze", "lift"],
+        "phase_names": ["approach", "open", "engulf", "close", "squeeze",
+                        "lift", "carry", "release"],
         "simulated_geoms": ["finger_left", "finger_right", "plate", "block", "table"],
         "pedestal": spec()["kinematics"].get("pedestal"),
+        "bin": spec().get("scene", {}).get("bin"),
         "support_height_m": spec()["kinematics"].get("support_height_m"),
         "achieved": {k: round(float(v), 5) for k, v in achieved.items()},
         "frames": frames,

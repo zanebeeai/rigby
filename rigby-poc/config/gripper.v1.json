@@ -183,6 +183,28 @@
       "refuses_when": [
         "the grip carries less than the object's weight with margin -- it squeezes instead"
       ]
+    },
+    {
+      "name": "carry_over",
+      "solver": "carry_over",
+      "parts": "arm",
+      "amplitude": "fraction of the way to the target",
+      "describes": "carry what is held to a point above the bin, high enough to clear its rim",
+      "refuses_when": [
+        "nothing is held -- there is nothing to carry, and moving as if there were only walks the gripper somewhere useless",
+        "the object is already over the bin and clear of the rim -- the move is done"
+      ]
+    },
+    {
+      "name": "release",
+      "solver": "release",
+      "parts": "digits",
+      "amplitude": "how far to open",
+      "describes": "let go, deliberately",
+      "refuses_when": [
+        "the object is not over the bin -- letting go anywhere else drops it on the floor"
+      ],
+      "note": "open_grip refuses while holding, on purpose: opening a loaded hand is how a grasp is lost by accident. Releasing is the same motion asked for on purpose, and it is a separate word so the accident and the intention cannot be confused."
     }
   ],
   "metrics": [
@@ -216,6 +238,25 @@
       "targetable": false,
       "sensor": "mechanically guaranteed",
       "describes": "+1 always. A parallel gripper cannot be anything else, which is the shape the humanoid hand had to be taught. READABLE ONLY: nothing can move it and nothing needs to"
+    },
+    {
+      "name": "object_over_target_m",
+      "wants": 0.0,
+      "sensor": "object position from vision, bin position known or seen",
+      "describes": "horizontal distance from the object to the middle of the bin, ignoring height"
+    },
+    {
+      "name": "object_above_rim_m",
+      "wants": null,
+      "sensor": "object position from vision, bin geometry known or seen",
+      "describes": "how far the object's underside clears the bin's rim. Negative means it would strike the wall on the way across"
+    },
+    {
+      "name": "object_in_target",
+      "wants": 1.0,
+      "targetable": false,
+      "sensor": "vision, or the object ceasing to move once let go",
+      "describes": "1 when the object is inside the bin. READABLE ONLY: it is the outcome, not something to steer by"
     }
   ],
   "senses": [
@@ -244,5 +285,27 @@
       "sensor": "vision, between observations",
       "always": false
     }
-  ]
+  ],
+  "scene": {
+    "note": "The task is pick AND place, so the scene has somewhere to put things. The bin stands on a riser, which is the point of it: carrying to a target at a different height is the part a lift alone does not test.",
+    "bin": {
+      "centre": [
+        0.3,
+        0.94,
+        0.02
+      ],
+      "inner_half_m": [
+        0.075,
+        0.055,
+        0.075
+      ],
+      "wall_m": 0.012,
+      "riser_from": [
+        0.3,
+        0.72,
+        0.02
+      ],
+      "rim_height_m": 0.995
+    }
+  }
 }
