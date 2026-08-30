@@ -148,7 +148,7 @@ def test_root_translation_is_reported_as_root_drift_not_as_a_joint_limit() -> No
     ]
 
     fixed_root = safety_metrics(frames)
-    moving_root = safety_metrics(frames, allow_root_motion=True)
+    moving_root = safety_metrics(frames, policy="free")
 
     assert fixed_root["root_drift_m"] == pytest.approx(0.4)
     assert moving_root["root_drift_m"] == pytest.approx(0.4)

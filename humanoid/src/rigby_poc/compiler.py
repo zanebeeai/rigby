@@ -5260,7 +5260,7 @@ def _compile_sequence(scene: SceneManifest, program: MotionProgram) -> ClipResul
         elapsed = step_end_s
 
     metrics = _base_metrics()
-    metrics.update(_safety_metrics(frames, allow_root_motion=True))
+    metrics.update(_safety_metrics(frames, policy="free"))
     metrics["phase_ranges_s"] = phase_ranges
     metrics["sequence_step_ranges_s"] = step_ranges
     metrics["sequence_step_count"] = len(step_ranges)
@@ -5542,6 +5542,27 @@ def compile_motion(request: CompileRequest) -> ClipResult:
     elapsed = 0.0
     final_shape = HandShape.OPEN
     side = 1.0 if program.hand == Hand.LEFT else -1.0
+    # Root-space leg posture, strikes only (2026-08-29 ruling). Authored as
+    # per-phase hips offsets -- crouch_depth_m / weight_shift_m in metres --
+    # and the legs follow by exact IK on ankles planted at the idle stance's
+    # own ankle positions, the same solver the whole-body path uses. Gated on
+    # any nonzero value so a program authored before this capability compiles
+    # byte-identically: every stored corpus program carries the 0.0 defaults
+    # and takes none of this path.
+    strike_root_enabled = program.intent == Intent.STRIKE and any(
+        item.parameters.crouch_depth_m != 0.0 or item.parameters.weight_shift_m != 0.0
+        for item in program.primitives
+    )
+    current_root = np.zeros(3)
+    target_root = np.zeros(3)
+    planted_ankles: dict[str, tuple[np.ndarray, np.ndarray]] = {}
+    kinematics = rig_kinematics()
+    if strike_root_enabled:
+        stance = {name: BonePose(rotation=value) for name, value in base.items()}
+        stance_world = kinematics.world_matrices(stance)
+        for leg_side in ("left", "right"):
+            matrix = stance_world[kinematics.node_by_canonical[f"{leg_side}Foot"]]
+            planted_ankles[leg_side] = (matrix[:3, 3].copy(), matrix[:3, :3].copy())
     last_target = (
         strike_target(
             program.hand,
@@ -5572,6 +5593,16 @@ def compile_motion(request: CompileRequest) -> ClipResult:
 
     for primitive in program.primitives:
         start = current.copy()
+        start_root = current_root
+        if strike_root_enabled:
+            target_root = np.asarray(
+                [
+                    primitive.parameters.weight_shift_m,
+                    -primitive.parameters.crouch_depth_m,
+                    0.0,
+                ],
+                dtype=float,
+            )
         shape = primitive.hand_shape or final_shape
         if program.intent == Intent.GRAB and target_object is not None:
             target = target_object.transform.translation.model_copy(
@@ -5780,12 +5811,33 @@ def compile_motion(request: CompileRequest) -> ClipResult:
                         [0.0, shake_angle, 0.0],
                     )
                 )
+            if strike_root_enabled:
+                # The hips ride the same eased alpha as every rotation channel,
+                # so the root arrives exactly at each phase keyframe and the
+                # cross-phase lerp endpoints are shared. The legs are then
+                # solved fresh per frame against the planted stance ankles --
+                # bent knees under a dropped pelvis, feet never leaving the
+                # floor -- with the foot's world rotation held so the sole
+                # stays flat.
+                root = start_root * (1.0 - alpha) + target_root * alpha
+                pose["hips"] = BonePose(
+                    rotation=pose["hips"].rotation,
+                    position=Vec3(x=float(root[0]), y=float(root[1]), z=float(root[2])),
+                )
+                for leg_side, (ankle_target, foot_rotation) in planted_ankles.items():
+                    solved = kinematics.solve_leg(
+                        pose, leg_side, ankle_target, foot_world_rotation=foot_rotation
+                    )
+                    for name, rotation in solved.items():
+                        pose[name] = BonePose(rotation=rotation)
             now = elapsed + local_index / fps
             objects: dict[str, Transform] = {}
             for item in scene.objects:
                 objects[item.id] = _nearest_object_transform(physics, now, total_s, item.transform)
             frames.append(ClipFrame(time_s=now, bones=pose, objects=objects))
         current = target_pose
+        if strike_root_enabled:
+            current_root = target_root
         last_target = target
         final_shape = shape
         elapsed += phase_duration_s

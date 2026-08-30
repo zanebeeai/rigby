@@ -59,7 +59,7 @@ def full_body_metrics(ctx: "Any") -> dict[str, Any]:
     fb = FullBodyPass(ctx)
     metrics: dict[str, Any] = {}
 
-    metrics.update(safety_metrics(fb.frames, allow_root_motion=True))
+    metrics.update(safety_metrics(fb.frames, policy="free"))
     root_metrics(fb, metrics)
 
     jumping_jack_metrics(fb, metrics)

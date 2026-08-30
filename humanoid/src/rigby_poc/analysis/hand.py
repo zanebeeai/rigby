@@ -30,7 +30,7 @@ import numpy as np
 
 from ..models import ClipFrame, HandShape, Intent, MotionProgram, PrimitiveKind
 from ..primitives import forearm_shake_amplitude_rad
-from .context import AnalysisContext
+from .context import AnalysisContext, root_drift_policy as _root_drift_policy
 from .fingers import curl_values_from_frame as _curl_values_from_frame
 from .gesture import (
     evaluate_gesture_structure,
@@ -148,7 +148,9 @@ def hand_metrics(ctx: AnalysisContext) -> dict[str, Any]:
         metrics["wrist_shake_cycles"] = shake_params.wrist_shake_cycles
         metrics["wrist_shake_amplitude_rad"] = shake_amplitude_rad
         metrics["shake_duration_s"] = shake_params.duration_s
-    metrics.update(_safety_metrics(frames))
+    # Gesture and grab stay "fixed"; a strike's derivation string names the
+    # bounded envelope its pelvis actually moves inside.
+    metrics.update(_safety_metrics(frames, policy=_root_drift_policy(program)))
     if program.intent in {Intent.GESTURE, Intent.STRIKE}:
         structure = evaluate_gesture_structure(
             frames,

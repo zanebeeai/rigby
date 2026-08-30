@@ -1325,37 +1325,52 @@ def _strike_primitives(
     power = 0.78 if re.search(r"\b(hard|heavy|powerful|power)\b", lower) else 0.62
     elbow_side = 1.0 if hand == Hand.LEFT else -1.0
     strike_family_scale = 1.30 if strike_type == StrikeType.CROSS else 1.0
+    # The last two columns are the root-space leg posture (2026-08-29 ruling):
+    # crouch_depth_m, and weight_shift_m signed relative to the punching side
+    # (positive shifts toward the punching hand's side; the compiler receives
+    # the world-signed value via elbow_side). The legs themselves are solved,
+    # never authored -- these two scalars are the entire vocabulary, and they
+    # are the demo hillclimb's surface.
     if strike_type == StrikeType.HOOK:
         # A hook is thrown with the trunk: the torso column leads the family so
-        # the body coils through load and whips through the arc.
+        # the body coils through load and whips through the arc. The weight
+        # loads away from the arc and drives through it.
         hook_torso = min(0.92, power + 0.18)
         specs = (
-            (PrimitiveKind.GUARD, 0.65, 0.08, -0.08, 0.02, 0.26, 0.18, 0.0),
-            (PrimitiveKind.LOAD, 0.60, 0.02, 0.00, 0.35, 0.54, 0.45, 0.45),
-            (PrimitiveKind.STRIKE, 0.80, 0.08, 0.25, 0.00, 0.66, hook_torso, 0.82),
-            (PrimitiveKind.FOLLOW_THROUGH, 0.50, -0.02, 0.22, 0.20, 0.62, hook_torso * 0.85, 0.52),
-            (PrimitiveKind.RECOVER, 0.85, 0.0, 0.0, 0.0, 0.10, 0.0, 0.0),
+            (PrimitiveKind.GUARD, 0.65, 0.08, -0.08, 0.02, 0.26, 0.18, 0.0, 0.030, 0.000),
+            (PrimitiveKind.LOAD, 0.60, 0.02, 0.00, 0.35, 0.54, 0.45, 0.45, 0.065, -0.055),
+            (PrimitiveKind.STRIKE, 0.80, 0.08, 0.25, 0.00, 0.66, hook_torso, 0.82, 0.060, 0.065),
+            (PrimitiveKind.FOLLOW_THROUGH, 0.50, -0.02, 0.22, 0.20, 0.62, hook_torso * 0.85, 0.52, 0.055, 0.035),
+            (PrimitiveKind.RECOVER, 0.85, 0.0, 0.0, 0.0, 0.10, 0.0, 0.0, 0.0, 0.0),
         )
     elif strike_type == StrikeType.UPPERCUT:
+        # The uppercut is the crouch-and-rise punch: deepest drop in load, the
+        # pelvis rising through impact so the fist inherits the whole body's
+        # vertical drive.
         specs = (
-            (PrimitiveKind.GUARD, 0.65, 0.08, -0.08, 0.02, 0.26, 0.18, 0.0),
-            (PrimitiveKind.LOAD, 0.58, -0.45, 0.05, 0.18, 0.34, 0.34, 0.32),
-            (PrimitiveKind.STRIKE, 0.78, 0.48, 0.32, -0.12, 0.44, power, 0.72),
-            (PrimitiveKind.FOLLOW_THROUGH, 0.46, 0.58, 0.22, -0.18, 0.36, power * 0.82, 0.42),
-            (PrimitiveKind.RECOVER, 0.85, 0.0, 0.0, 0.0, 0.10, 0.0, 0.0),
+            (PrimitiveKind.GUARD, 0.65, 0.08, -0.08, 0.02, 0.26, 0.18, 0.0, 0.035, 0.000),
+            (PrimitiveKind.LOAD, 0.58, -0.45, 0.05, 0.18, 0.34, 0.34, 0.32, 0.120, -0.030),
+            (PrimitiveKind.STRIKE, 0.78, 0.48, 0.32, -0.12, 0.44, power, 0.72, 0.035, 0.030),
+            (PrimitiveKind.FOLLOW_THROUGH, 0.46, 0.58, 0.22, -0.18, 0.36, power * 0.82, 0.42, 0.050, 0.020),
+            (PrimitiveKind.RECOVER, 0.85, 0.0, 0.0, 0.0, 0.10, 0.0, 0.0, 0.0, 0.0),
         )
     else:
         cross_power = min(0.88, power + (0.10 if strike_type == StrikeType.CROSS else 0.0))
-        # A jab stays quick and economical -- a small torso snap -- while a
-        # cross is the rear-hand power punch and drives the full rotation.
+        # A jab stays quick and economical -- a small torso snap and a subtle
+        # dip -- while a cross is the rear-hand power punch and drives the full
+        # rotation with a real weight transfer.
         torso_load = 0.35 if strike_type == StrikeType.CROSS else 0.22
         torso_strike = cross_power if strike_type == StrikeType.CROSS else 0.40
+        crouch_load = 0.060 if strike_type == StrikeType.CROSS else 0.045
+        crouch_strike = 0.055 if strike_type == StrikeType.CROSS else 0.050
+        shift_load = -0.045 if strike_type == StrikeType.CROSS else -0.020
+        shift_strike = 0.055 if strike_type == StrikeType.CROSS else 0.030
         specs = (
-            (PrimitiveKind.GUARD, 0.65, 0.08, -0.08, 0.02, 0.26, 0.18, 0.0),
-            (PrimitiveKind.LOAD, 0.52, 0.04, 0.02, 0.10, 0.32, torso_load, 0.14),
-            (PrimitiveKind.STRIKE, 0.76, 0.06, 0.64, -0.04, 0.24, torso_strike, 0.18),
-            (PrimitiveKind.FOLLOW_THROUGH, 0.42, 0.02, 0.52, -0.06, 0.22, torso_strike * 0.82, 0.10),
-            (PrimitiveKind.RECOVER, 0.82, 0.0, 0.0, 0.0, 0.10, 0.0, 0.0),
+            (PrimitiveKind.GUARD, 0.65, 0.08, -0.08, 0.02, 0.26, 0.18, 0.0, 0.030, 0.000),
+            (PrimitiveKind.LOAD, 0.52, 0.04, 0.02, 0.10, 0.32, torso_load, 0.14, crouch_load, shift_load),
+            (PrimitiveKind.STRIKE, 0.76, 0.06, 0.64, -0.04, 0.24, torso_strike, 0.18, crouch_strike, shift_strike),
+            (PrimitiveKind.FOLLOW_THROUGH, 0.42, 0.02, 0.52, -0.06, 0.22, torso_strike * 0.82, 0.10, crouch_strike * 0.9, shift_strike * 0.7),
+            (PrimitiveKind.RECOVER, 0.82, 0.0, 0.0, 0.0, 0.10, 0.0, 0.0, 0.0, 0.0),
         )
     return [
         MotionPrimitive(
@@ -1373,9 +1388,11 @@ def _strike_primitives(
                 path_arc=arc,
                 finger_curl=0.18 if kind != PrimitiveKind.RECOVER else 0.0,
                 thumb_opposition=0.92 if kind != PrimitiveKind.RECOVER else 0.75,
+                crouch_depth_m=crouch,
+                weight_shift_m=shift * elbow_side,
             ),
         )
-        for kind, duration, height, depth, lateral, elbow, torso, arc in specs
+        for kind, duration, height, depth, lateral, elbow, torso, arc, crouch, shift in specs
     ]
 
 

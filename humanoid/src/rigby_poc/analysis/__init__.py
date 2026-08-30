@@ -198,7 +198,7 @@ def analyze_context(ctx: AnalysisContext) -> dict[str, Any]:
         # branch stay with the compiler by design -- see analysis.hand.
         return hand_metrics(ctx)
 
-    metrics.update(safety_metrics(ctx.frames, allow_root_motion=ctx.allow_root_motion))
+    metrics.update(safety_metrics(ctx.frames, policy=root_drift_policy(ctx.program)))
 
     if not _is_handoff(ctx):
         metrics.update(_angular_metrics(ctx))

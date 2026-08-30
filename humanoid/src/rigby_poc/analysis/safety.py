@@ -48,7 +48,7 @@ RootDriftPolicy = Literal["fixed", "bounded", "free"]
 def safety_metrics(
     frames: list[ClipFrame],
     *,
-    allow_root_motion: bool = False,
+    policy: RootDriftPolicy = "fixed",
 ) -> dict[str, Any]:
     if not frames:
         return {
@@ -123,7 +123,15 @@ def safety_metrics(
         "quaternion_norm_max_error": norm_error,
         "safety_derivation": (
             "computed over every frame/local delta quaternion and authored hips translation; "
-            + ("root motion is explicitly enabled" if allow_root_motion else "root motion must remain fixed")
+            + {
+                "fixed": "root motion must remain fixed",
+                # A published string that says "fixed" about a clip whose
+                # pelvis deliberately moves is a diagnostic that lies; the
+                # bounded state names itself. This is a metrics VALUE, so it
+                # landed with the strike re-bless, not with the gate.
+                "bounded": "root motion is bounded to the strike envelope",
+                "free": "root motion is explicitly enabled",
+            }[policy]
         ),
     }
 
