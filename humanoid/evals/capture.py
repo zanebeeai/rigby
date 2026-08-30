@@ -1688,6 +1688,7 @@ class CaptureSession:
         output_dir: Path,
         *,
         views: Iterable[str] = ("ego", "orbit"),
+        extra_uniform_samples: int = 0,
     ) -> Path:
         if not SAFE_RESULT_ID.fullmatch(result_id):
             raise ValueError("result id contains unsupported characters")
@@ -1701,6 +1702,25 @@ class CaptureSession:
         clip = _clip_document(payload)
         duration_s = _clip_duration_s(clip)
         points = phase_sampling_points(payload)
+        if extra_uniform_samples > 0:
+            # The 10f2 format-confound arm's lever. Key-pose stills are
+            # label-selected downstream, so appending uniform-interval samples
+            # leaves them untouched and densifies ONLY the chronological
+            # timeline sheets -- the temporal channel the format hypothesis is
+            # about. `uniform-` labels collide with no key-pose label.
+            existing = {round(float(point["time_s"]), 6) for point in points}
+            step = duration_s / (extra_uniform_samples + 1)
+            for index in range(1, extra_uniform_samples + 1):
+                time_s = round(index * step, 6)
+                if time_s not in existing:
+                    points.append(
+                        {
+                            "time_s": time_s,
+                            "phase": "uniform",
+                            "label": f"uniform-{index:02d}",
+                        }
+                    )
+            points.sort(key=lambda point: float(point["time_s"]))
         if len(points) > MAX_SNAPSHOTS_PER_VIEW:
             raise RuntimeError(
                 f"{result_id} samples {len(points)} phase points per view, above the "
@@ -1921,6 +1941,7 @@ def capture_results(
     deterministic_render: bool = False,
     strategy: str = "seek",
     screenshot_source: str = "canvas",
+    extra_uniform_samples: int = 0,
 ) -> list[Path]:
     """Capture many results through one browser launch."""
     selected = tuple(views)
@@ -1931,7 +1952,12 @@ def capture_results(
         screenshot_source=screenshot_source,
     ) as session:
         return [
-            session.capture(result_id, output_dir, views=selected)
+            session.capture(
+                result_id,
+                output_dir,
+                views=selected,
+                extra_uniform_samples=extra_uniform_samples,
+            )
             for result_id, output_dir in requests
         ]
 
