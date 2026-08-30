@@ -90,6 +90,8 @@ class Job:
         spec_id = self.spec.id if self.spec is not None else "unmutated"
         return f"{self.case_id}--{spec_id}".replace(".", "_")
 
+    evidence_format: str = "keyframe"
+
     def record_skeleton(self, run_id: str) -> dict[str, Any]:
         return {
             "schema_version": RECORD_SCHEMA,
@@ -100,6 +102,7 @@ class Job:
             "family": self.spec.family.value if self.spec else None,
             "severity": self.spec.severity if self.spec else None,
             "tier": tier_for(self.spec.severity).value if self.spec else None,
+            "evidence_format": self.evidence_format,
         }
 
 
@@ -146,6 +149,21 @@ def main() -> int:
                         help="only this many pending jobs (smoke runs)")
     parser.add_argument("--skip-grading", action="store_true",
                         help="compile/persist/capture/record only; no judge")
+    parser.add_argument(
+        "--evidence-format",
+        choices=("keyframe", "dense24"),
+        default="keyframe",
+        help=(
+            "keyframe: the 10f evidence exactly. dense24: the same key-pose "
+            "stills plus 24 uniform-interval samples per view, densifying only "
+            "the chronological timeline sheets -- the format-confound arm's B."
+        ),
+    )
+    parser.add_argument(
+        "--families",
+        default=None,
+        help="comma-separated mutation families to run (unmutated always kept)",
+    )
     args = parser.parse_args()
 
     if args.env_file is not None:
@@ -167,10 +185,24 @@ def main() -> int:
     # records for every job that names it.
     clips: dict[str, Any] = {}
     cases_by_id = {case.root.name: case for case in corpus}
+    families = (
+        {name.strip() for name in args.families.split(",") if name.strip()}
+        if args.families
+        else None
+    )
+    active_specs = (
+        [spec for spec in specs if spec.family.value in families]
+        if families is not None
+        else specs
+    )
+    if families is not None and not active_specs:
+        raise SystemExit(f"--families {args.families!r} matched no sweep")
     jobs: list[Job] = []
     for case_id in sorted(cases_by_id):
-        jobs.append(Job(case_id, None))
-        jobs.extend(Job(case_id, spec) for spec in specs)
+        jobs.append(Job(case_id, None, args.evidence_format))
+        jobs.extend(
+            Job(case_id, spec, args.evidence_format) for spec in active_specs
+        )
 
     done = load_terminal_keys(records_dir)
     pending = [job for job in jobs if job.key not in done]
@@ -245,7 +277,13 @@ def main() -> int:
             (result_id, evidence_root / result_id) for _, result_id in renderable
         ]
         try:
-            manifests = capture_results(requests, base_url=args.base_url)
+            manifests = capture_results(
+                requests,
+                base_url=args.base_url,
+                extra_uniform_samples=(
+                    24 if args.evidence_format == "dense24" else 0
+                ),
+            )
         except Exception as error:
             for job, result_id in renderable:
                 record = job.record_skeleton(run_id)
