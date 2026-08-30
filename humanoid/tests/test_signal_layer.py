@@ -39,6 +39,15 @@ LEG_MOVING_CASES = frozenset(
         "fullbody-run-forward",
         "fullbody-walk-forward",
         "sequence-wave-then-pushup",
+        # The five strike cases joined 2026-08-29: the legs bless gave every
+        # strike a crouch and weight shift solved through the knees and
+        # ankles, so the limbs 10c measured at exactly-zero rotation now move.
+        # This is the dead-limb finding healing, not the check weakening.
+        "knownbad-strike-hyperfast",
+        "strike-cross-right",
+        "strike-hook-right",
+        "strike-jab-left",
+        "strike-uppercut-right",
     }
 )
 
@@ -95,7 +104,9 @@ def test_the_dead_limb_check_fires_on_the_upper_body_only_clips(verdicts) -> Non
         for case_id, (checks, _clip) in verdicts.items()
         if any(c.id == "signal.activity.dead_limb" and c.failed for c in checks)
     ]
-    assert len(failing) == 38, f"{len(failing)} cases failed dead_limb, expected 38"
+    # 38 until 2026-08-29; the five strike cases moved to the passing set
+    # with the legs bless.
+    assert len(failing) == 33, f"{len(failing)} cases failed dead_limb, expected 33"
 
 
 def test_the_rigid_chain_is_usually_a_leg_and_the_legs_are_exactly_rigid(

@@ -77,10 +77,9 @@ def root_motion_allowed(program: MotionProgram) -> bool:
 
     ``free`` alone: a bounded strike does translate its root, but it is not
     *allowed* in the sense this predicate has always meant -- exempt from a
-    whole-clip drift gate. This stays the ``allow_root_motion`` argument the
-    compile paths pass to ``safety_metrics`` (which only renders the
-    derivation string from it), so the string is a function of the same rule
-    it always was.
+    whole-clip drift gate. ``safety_metrics`` now takes the full policy and
+    renders a three-way derivation string from it; this boolean remains for
+    callers asking the binary question only.
     """
 
     return root_drift_policy(program) == "free"

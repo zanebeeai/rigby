@@ -5260,7 +5260,7 @@ def _compile_sequence(scene: SceneManifest, program: MotionProgram) -> ClipResul
         elapsed = step_end_s
 
     metrics = _base_metrics()
-    metrics.update(_safety_metrics(frames, allow_root_motion=True))
+    metrics.update(_safety_metrics(frames, policy="free"))
     metrics["phase_ranges_s"] = phase_ranges
     metrics["sequence_step_ranges_s"] = step_ranges
     metrics["sequence_step_count"] = len(step_ranges)
