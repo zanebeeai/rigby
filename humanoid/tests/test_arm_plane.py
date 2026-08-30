@@ -41,11 +41,12 @@ from rigby_poc.arm_plane import (
     ELBOW_FLEXION_AXIS_LOCAL,
     UPPER_ARM_TWIST_BAND_RAD,
 )
+from rigby_poc.kinematics import arm_calibration
 from rigby_poc.models import Hand, PrimitiveParameters, Quat, Vec3
 from rigby_poc.primitives import (
-    LOWER_ARM_LENGTH_M,
-    UPPER_ARM_LENGTH_M,
+    _arm_rest_rotations,
     arm_pose_from_target,
+    arm_segment_lengths,
     shoulder_position,
 )
 from rigby_poc.thresholds import value_of
@@ -102,9 +103,7 @@ RUN_ELBOW_POLE = {hand: Vec3(x=_side(hand) * 0.6, y=-0.55, z=-0.5) for hand in H
 
 def _arm_world_rotations(hand: Hand, poses: dict[str, Quat]) -> dict[str, Rotation]:
     """World rotations composed from the solver's own rest calibration."""
-    rest_upper = Rotation.from_quat(primitives._UPPER_ARM_REST_WORLD_XYZW[hand])
-    rest_lower = Rotation.from_quat(primitives._LOWER_ARM_REST_LOCAL_XYZW[hand])
-    rest_hand = Rotation.from_quat(primitives._HAND_REST_LOCAL_XYZW[hand])
+    rest_upper, rest_lower, rest_hand = _arm_rest_rotations(hand)
     upper = rest_upper * Rotation.from_quat(poses[f"{hand.value}UpperArm"].as_list())
     lower = upper * rest_lower * Rotation.from_quat(poses[f"{hand.value}LowerArm"].as_list())
     world_hand = lower * rest_hand * Rotation.from_quat(poses[f"{hand.value}Hand"].as_list())
@@ -116,7 +115,7 @@ def _elbow_line(hand: Hand, target: Vec3) -> tuple[np.ndarray, np.ndarray, float
     shoulder = np.asarray(shoulder_position(hand).as_list(), dtype=float)
     reach = np.asarray(target.as_list(), dtype=float) - shoulder
     distance = float(np.linalg.norm(reach))
-    upper, lower = UPPER_ARM_LENGTH_M, LOWER_ARM_LENGTH_M
+    upper, lower = arm_segment_lengths(hand)
     clamped = float(np.clip(distance, abs(upper - lower) + 1e-4, upper + lower - 1e-4))
     direction = reach / max(distance, 1e-8)
     along = (upper**2 - lower**2 + clamped**2) / (2 * clamped)
@@ -241,7 +240,7 @@ def test_hand_world_orientation_matches_a_roll_off_replica(
         # fixed solve mirrored would be compared against the other branch's
         # pre-roll hand, which is a different orientation by design.
         world = _arm_world_rotations(hand, poses)
-        elbow = shoulder + world["upper"].apply([0.0, 1.0, 0.0]) * UPPER_ARM_LENGTH_M
+        elbow = shoulder + world["upper"].apply([0.0, 1.0, 0.0]) * arm_segment_lengths(hand)[0]
         with monkeypatch.context() as patch:
             patch.setattr(primitives, "humeral_roll", lambda *args: 0.0)
             patch.setattr(primitives, "UPPER_ARM_TWIST_BAND_RAD", math.inf)
@@ -397,3 +396,77 @@ def test_a_feasible_elbow_hint_is_still_honoured(hand: Hand) -> None:
     )
     assert moved > math.radians(10.0)
     assert abs(_decomposed(hand, hinted, "UpperArm").twist_rad) <= UPPER_ARM_TWIST_BAND_RAD
+
+
+# ---------------------------------------------------------------------------
+# arm calibration: rig-derived, replacing the six frozen literals
+# ---------------------------------------------------------------------------
+
+#: The retired constants, kept as the measurement of what the retirement
+#: changed. They are the test's fixtures now, not anyone's source of truth.
+_RETIRED_UPPER_REST_WORLD_XYZW = {
+    Hand.LEFT: (0.009422436964241731, -0.009307101973217042, 0.7089223032569065, -0.7051622249379483),
+    Hand.RIGHT: (-0.009422320458211458, -0.009307162762708104, 0.7089222775335169, 0.7051622515529192),
+}
+_RETIRED_LOWER_REST_LOCAL_XYZW = {
+    Hand.LEFT: (0.02164141647517681, 0.0002870236639864743, -0.006738185882568359, 0.9997430443763733),
+    Hand.RIGHT: (0.021641412749886513, -0.0002871047181542963, 0.006738179363310337, 0.9997430443763733),
+}
+_RETIRED_HAND_REST_LOCAL_XYZW = {
+    Hand.LEFT: (-0.00840034894645214, -0.00005970777783659287, 0.009397653862833977, 0.9999206066131592),
+    Hand.RIGHT: (-0.00840041134506464, 0.00005969807898509316, -0.009397652931511402, 0.9999205470085144),
+}
+_RETIRED_UPPER_LENGTH_M = 0.2966
+_RETIRED_LOWER_LENGTH_M = 0.2798
+
+
+def _rotation_distance(a: tuple[float, ...], b: tuple[float, ...]) -> float:
+    return float((Rotation.from_quat(a) * Rotation.from_quat(b).inv()).magnitude())
+
+
+def test_arm_calibration_matches_the_rig_and_names_the_change() -> None:
+    """The rig-derived calibration, pinned against the literals it retired.
+
+    Two different claims, deliberately separated. The rest ROTATIONS agree
+    with the frozen copies to ~1e-15, so for orientation the retirement is a
+    near-no-op and any visible motion change traces to the lengths. The
+    LENGTHS move by the 5.3 / 11.9 um the 4-decimal rounding hid -- asserted
+    both that the gap exists (the change is real, not a refactor) and that it
+    stays micrometre-scale (a regression in the derivation cannot hide inside
+    this test's tolerance).
+    """
+
+    for hand in (Hand.LEFT, Hand.RIGHT):
+        calibration = arm_calibration(hand.value)
+        assert _rotation_distance(
+            calibration.upper_rest_world_xyzw, _RETIRED_UPPER_REST_WORLD_XYZW[hand]
+        ) < 5e-15
+        assert _rotation_distance(
+            calibration.lower_rest_local_xyzw, _RETIRED_LOWER_REST_LOCAL_XYZW[hand]
+        ) < 5e-15
+        assert _rotation_distance(
+            calibration.hand_rest_local_xyzw, _RETIRED_HAND_REST_LOCAL_XYZW[hand]
+        ) < 5e-15
+        upper_gap = abs(calibration.upper_length_m - _RETIRED_UPPER_LENGTH_M)
+        lower_gap = abs(calibration.lower_length_m - _RETIRED_LOWER_LENGTH_M)
+        assert 1e-6 < upper_gap < 2e-5, "the rounding gap this PR closes is gone or grew"
+        assert 1e-5 < lower_gap < 3e-5, "the rounding gap this PR closes is gone or grew"
+        upper, lower = arm_segment_lengths(hand)
+        assert (upper, lower) == (calibration.upper_length_m, calibration.lower_length_m)
+
+
+def test_the_rig_is_left_right_asymmetric_and_the_calibration_says_so() -> None:
+    """~1.1e-7 m of upper-arm asymmetry is the asset's, reported not repaired.
+
+    A symmetrised shared constant would manufacture an exactness the rig does
+    not have; the 2026-08-29 ruling chose truth over imposed symmetry, so the
+    asymmetry is pinned as a property. If a future rig IS exactly symmetric,
+    this test should be updated with that measurement, not deleted.
+    """
+
+    left = arm_calibration("left")
+    right = arm_calibration("right")
+    upper_asymmetry = abs(left.upper_length_m - right.upper_length_m)
+    assert 5e-8 < upper_asymmetry < 5e-7
+    lower_asymmetry = abs(left.lower_length_m - right.lower_length_m)
+    assert lower_asymmetry < 5e-7

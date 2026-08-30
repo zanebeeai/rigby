@@ -18,6 +18,7 @@ from .arm_plane import (
 from .arm_plane import (
     signed_angle_about_axis as _signed_angle_about_axis,
 )
+from .kinematics import arm_calibration
 from .models import (
     Digit,
     Hand,
@@ -138,24 +139,38 @@ _THUMB_TO_FINGERTIP_POSES: dict[Digit, tuple[float, ...]] = {
 }
 
 
-# Rest-orientation calibration extracted from the preserved CC0 humanoid GLB.
-# Clip rotations are local deltas post-multiplied onto these rest transforms.
-_UPPER_ARM_REST_WORLD_XYZW = {
-    Hand.LEFT: (0.009422436964241731, -0.009307101973217042, 0.7089223032569065, -0.7051622249379483),
-    Hand.RIGHT: (-0.009422320458211458, -0.009307162762708104, 0.7089222775335169, 0.7051622515529192),
-}
-_LOWER_ARM_REST_LOCAL_XYZW = {
-    Hand.LEFT: (0.02164141647517681, 0.0002870236639864743, -0.006738185882568359, 0.9997430443763733),
-    Hand.RIGHT: (0.021641412749886513, -0.0002871047181542963, 0.006738179363310337, 0.9997430443763733),
-}
-_HAND_REST_LOCAL_XYZW = {
-    Hand.LEFT: (-0.00840034894645214, -0.00005970777783659287, 0.009397653862833977, 0.9999206066131592),
-    Hand.RIGHT: (-0.00840041134506464, 0.00005969807898509316, -0.009397652931511402, 0.9999205470085144),
-}
+# Rest-orientation calibration and segment lengths, derived from the rig at
+# first use rather than frozen here. The retired literals matched the rig's
+# rest rotations to ~1e-16 but rounded the segment lengths to 4 decimals --
+# 5.3 and 11.9 um from the true pivot distances, which is not a rigid
+# transform and is why impact_elbow_angle_deg drifted at 1e-9..9e-8 relative.
+# Per side, because the rig itself is left/right asymmetric at ~1.1e-7 m.
+# Clip rotations remain local deltas post-multiplied onto these rest
+# transforms; only where the numbers come from moved.
 
-UPPER_ARM_LENGTH_M = 0.2966
-LOWER_ARM_LENGTH_M = 0.2798
-ARM_REACH_M = UPPER_ARM_LENGTH_M + LOWER_ARM_LENGTH_M
+
+def arm_segment_lengths(hand: Hand) -> tuple[float, float]:
+    """Upper and lower arm pivot-to-pivot lengths for one side, in metres."""
+
+    calibration = arm_calibration(hand.value)
+    return calibration.upper_length_m, calibration.lower_length_m
+
+
+def arm_reach_m(hand: Hand) -> float:
+    """Shoulder-to-wrist reach with the arm straight, for one side."""
+
+    return arm_calibration(hand.value).reach_m
+
+
+def _arm_rest_rotations(hand: Hand) -> tuple[Rotation, Rotation, Rotation]:
+    """Upper-world, lower-local and hand-local rest rotations for one side."""
+
+    calibration = arm_calibration(hand.value)
+    return (
+        Rotation.from_quat(calibration.upper_rest_world_xyzw),
+        Rotation.from_quat(calibration.lower_rest_local_xyzw),
+        Rotation.from_quat(calibration.hand_rest_local_xyzw),
+    )
 
 # A shaka is made readable by pronating/supinating the forearm, not by asking
 # the wrist joint to absorb the entire camera-facing hand orientation.  These
@@ -392,7 +407,7 @@ def arm_pose_from_target(
     target_v = np.asarray(target.as_list(), dtype=float)
     delta = target_v - shoulder_v
     distance = float(np.linalg.norm(delta))
-    upper, lower = UPPER_ARM_LENGTH_M, LOWER_ARM_LENGTH_M
+    upper, lower = arm_segment_lengths(hand)
     clamped = float(np.clip(distance, abs(upper - lower) + 1e-4, upper + lower - 1e-4))
     direction = delta / max(distance, 1e-8)
     along = (upper**2 - lower**2 + clamped**2) / (2 * clamped)
@@ -433,9 +448,7 @@ def arm_pose_from_target(
                 )
             ).apply(bend)
 
-    rest_upper = Rotation.from_quat(_UPPER_ARM_REST_WORLD_XYZW[hand])
-    lower_local_rest = Rotation.from_quat(_LOWER_ARM_REST_LOCAL_XYZW[hand])
-    hand_rest = Rotation.from_quat(_HAND_REST_LOCAL_XYZW[hand])
+    rest_upper, lower_local_rest, hand_rest = _arm_rest_rotations(hand)
     pronation_budget = max(
         0.0, MAX_FOREARM_TWIST_RAD - max(0.0, float(forearm_twist_reserve_rad))
     )

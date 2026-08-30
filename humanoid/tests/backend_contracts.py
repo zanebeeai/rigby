@@ -328,10 +328,10 @@ def test_targets_objects_and_arm_segments_stay_in_avatar_forward_half_space(hand
         parameters,
         present_hand=True,
     )
-    assert target_distance < 0.2966 + 0.2798
-    rest_upper = Rotation.from_quat(primitive_library._UPPER_ARM_REST_WORLD_XYZW[hand])
+    assert target_distance < primitive_library.arm_reach_m(hand)
+    rest_upper, rest_lower_local, _ = primitive_library._arm_rest_rotations(hand)
     upper_world = rest_upper * Rotation.from_quat(pose[f"{hand.value}UpperArm"].as_list())
-    lower_base = upper_world * Rotation.from_quat(primitive_library._LOWER_ARM_REST_LOCAL_XYZW[hand])
+    lower_base = upper_world * rest_lower_local
     lower_world = lower_base * Rotation.from_quat(pose[f"{hand.value}LowerArm"].as_list())
     assert upper_world.apply([0.0, 1.0, 0.0])[2] > 0.0
     assert lower_world.apply([0.0, 1.0, 0.0])[2] > 0.0
@@ -380,8 +380,12 @@ def test_forward_target_beyond_two_link_arm_reach_fails_before_ik_clamping() -> 
     assert clip.failure.code.value == "unreachable_target"
     assert clip.failure.details["distance_m"] < clip.failure.details["declared_scene_limit_m"]
     assert clip.failure.details["distance_m"] > clip.failure.details["effective_limit_m"]
-    assert clip.failure.details["analytic_arm_reach_m"] == pytest.approx(0.2966 + 0.2798)
-    assert clip.failure.details["effective_limit_m"] == pytest.approx(0.2966 + 0.2798 - 1e-4)
+    # Exact equality against the derivation, not approx against the retired
+    # rounded literals: the published reach IS arm_reach_m now, 17 um below
+    # the old 0.5764 sum, and this metric must track it bit-for-bit.
+    reach = primitive_library.arm_reach_m(program.hand)
+    assert clip.failure.details["analytic_arm_reach_m"] == reach
+    assert clip.failure.details["effective_limit_m"] == pytest.approx(reach - 1e-4)
 
 
 def test_store_contract_and_glb_reimport(tmp_path: Path) -> None:

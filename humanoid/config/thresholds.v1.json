@@ -361,38 +361,6 @@
       },
       "resolves": "08 SS1.1 item 4"
     },
-    "anatomy.upper_arm_length_m": {
-      "value": 0.2966,
-      "unit": "m",
-      "applies_to": [
-        "*"
-      ],
-      "source": {
-        "kind": "external",
-        "cites": [
-          "config/rig_profiles/mesh2motion-human-vrm1.json coordinate_calibration.arm_lengths_m.upper",
-          "src/rigby_poc/primitives.py:135"
-        ],
-        "derived_from": "mesh2motion VRM rig asset measurement",
-        "rationale": "Duplicated exactly in primitives.py:135; 08b deletes the copy."
-      }
-    },
-    "anatomy.lower_arm_length_m": {
-      "value": 0.2798,
-      "unit": "m",
-      "applies_to": [
-        "*"
-      ],
-      "source": {
-        "kind": "external",
-        "cites": [
-          "config/rig_profiles/mesh2motion-human-vrm1.json coordinate_calibration.arm_lengths_m.lower",
-          "src/rigby_poc/primitives.py:136"
-        ],
-        "derived_from": "mesh2motion VRM rig asset measurement",
-        "rationale": "Duplicated exactly in primitives.py:136; 08b deletes the copy."
-      }
-    },
     "semantic.reach_tolerance_m": {
       "value": 0.0,
       "unit": "m",

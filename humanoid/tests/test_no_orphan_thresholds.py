@@ -39,8 +39,6 @@ UNMIGRATED: dict[str, str] = {
     "signal.angular_acceleration_max_rad_s2": "config/motion_quality_reference.json hard_limits",
     "signal.angular_jerk_max_rad_s3": "config/motion_quality_reference.json hard_limits",
     "signal.min_active_hand_visibility_fraction": "config/motion_quality_reference.json hard_limits",
-    "anatomy.upper_arm_length_m": "src/rigby_poc/primitives.py UPPER_ARM_LENGTH_M -- 08d",
-    "anatomy.lower_arm_length_m": "src/rigby_poc/primitives.py LOWER_ARM_LENGTH_M -- 08d",
     "physics.min_lift_m": "acceptance_criteria.yaml physical_proof",
     "physics.min_hold_s": "acceptance_criteria.yaml physical_proof",
     "physics.max_vertical_drift_m": "acceptance_criteria.yaml physical_proof",

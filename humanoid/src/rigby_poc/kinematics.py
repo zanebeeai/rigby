@@ -508,3 +508,75 @@ def rig_kinematics() -> RigKinematics:
         PROJECT_ROOT / "assets" / "models" / "human-male.glb",
         PROJECT_ROOT / "config" / "rig_profiles" / "mesh2motion-human-vrm1.json",
     )
+
+
+def _xyzw(matrix: np.ndarray) -> tuple[float, float, float, float]:
+    value = Rotation.from_matrix(matrix).as_quat()
+    return (float(value[0]), float(value[1]), float(value[2]), float(value[3]))
+
+
+@dataclass(frozen=True)
+class ArmCalibration:
+    """One arm's rest calibration, derived from the rig instead of typed.
+
+    This retires the six frozen copies ``primitives.py`` carried since the
+    original extraction: the two segment lengths were rounded to 4 decimals
+    (5.3 and 11.9 um from the rig's true distances -- not a rigid transform,
+    which is why ``impact_elbow_angle_deg`` drifted at 1e-9..9e-8 relative
+    and the hook lost its exact left/right mirror), and the three rest
+    rotations matched the rig only to 3.3e-16 / 4.5e-09 / 6.7e-08. The rig
+    is itself left/right asymmetric at ~1.1e-7 m in the upper-arm length;
+    deriving per side reports that asymmetry honestly instead of
+    symmetrising it away.
+
+    ``xyzw`` tuples rather than ``Rotation`` objects so the values are
+    hashable and exactly serialisable; callers rebuild rotations with
+    ``Rotation.from_quat``.
+    """
+
+    upper_rest_world_xyzw: tuple[float, float, float, float]
+    lower_rest_local_xyzw: tuple[float, float, float, float]
+    hand_rest_local_xyzw: tuple[float, float, float, float]
+    upper_length_m: float
+    lower_length_m: float
+
+    @property
+    def reach_m(self) -> float:
+        return self.upper_length_m + self.lower_length_m
+
+
+@lru_cache(maxsize=2)
+def arm_calibration(side: str) -> ArmCalibration:
+    """Rest rotations and segment lengths for one arm; ``side`` in {left, right}.
+
+    Rest world matrices are composed from the parent chain directly rather
+    than through :meth:`RigKinematics.world_matrices` on purpose: that funnel
+    is counted per case by the forward-kinematics equality guard, and a
+    process-level cache firing through it would add one pass to whichever
+    case ran first -- a count that depends on order is not an equality. Same
+    reasoning as the torso capsule bands.
+
+    Lengths are pivot-to-pivot distances of the composed rest positions, not
+    raw translation norms, so parent rotation and scale compose correctly.
+    """
+
+    if side not in {"left", "right"}:
+        raise ValueError("side must be left or right")
+    kinematics = rig_kinematics()
+    node = kinematics.node_by_canonical
+
+    def rest_world(index: int) -> np.ndarray:
+        matrix = kinematics.rest[index].matrix(None, None)
+        parent = kinematics.parents.get(index)
+        return matrix if parent is None else rest_world(parent) @ matrix
+
+    upper = rest_world(node[f"{side}UpperArm"])
+    lower = rest_world(node[f"{side}LowerArm"])
+    hand = rest_world(node[f"{side}Hand"])
+    return ArmCalibration(
+        upper_rest_world_xyzw=_xyzw(upper[:3, :3]),
+        lower_rest_local_xyzw=_xyzw(kinematics.rest[node[f"{side}LowerArm"]].rotation),
+        hand_rest_local_xyzw=_xyzw(kinematics.rest[node[f"{side}Hand"]].rotation),
+        upper_length_m=float(np.linalg.norm(lower[:3, 3] - upper[:3, 3])),
+        lower_length_m=float(np.linalg.norm(hand[:3, 3] - lower[:3, 3])),
+    )
