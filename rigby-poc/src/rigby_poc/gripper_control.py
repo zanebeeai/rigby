@@ -450,7 +450,13 @@ def _reach_for(body: Body, goal: np.ndarray, square_to: np.ndarray | None,
             if (rank(candidate) < rank(best) if ranked
                     else cost < here - 0.01):
                 best, here = candidate, cost
-            if not struggling_at(best):
+            # Stop when the answer is GOOD, not merely when it is no longer
+            # bad enough to have triggered the search. Entering at 0.02 and
+            # leaving at 0.02 means the first seed that clears the entry bar
+            # ends the loop, so a better one two seeds later is never tried --
+            # and on the two placements furthest from the arm, which need it,
+            # that was the difference between a grasp and nothing.
+            if (not struggling_at(best)) if ranked else (here <= 0.01):
                 break
 
     # STILL STUCK: sweep the whole joint space coarsely and descend from the

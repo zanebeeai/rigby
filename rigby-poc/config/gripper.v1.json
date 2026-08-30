@@ -78,10 +78,10 @@
           0
         ],
         "range_m": [
-          0.012,
+          0.0,
           0.055
         ],
-        "note": "Travel STARTS at the pad's own half-thickness, not at zero. At zero both pads sit on the plate centreline and pass straight through each other -- they are deliberately excluded from colliding with one another so that a gripper closing on nothing can close, and the price of that is that nothing else stops them overlapping. Bounded here instead, so fully shut means the pads touching."
+        "note": "Restored to the range the pick-and-place was measured under. Starting travel at the pad half-thickness is the physically right bound -- at zero the pads pass through each other -- but it moves every grip the controller has been tuned against, and it went in as part of unrelated work. It belongs in its own change, measured on its own."
       },
       {
         "name": "finger_right",
@@ -92,10 +92,10 @@
           0
         ],
         "range_m": [
-          0.012,
+          0.0,
           0.055
         ],
-        "note": "Travel STARTS at the pad's own half-thickness, not at zero. At zero both pads sit on the plate centreline and pass straight through each other -- they are deliberately excluded from colliding with one another so that a gripper closing on nothing can close, and the price of that is that nothing else stops them overlapping. Bounded here instead, so fully shut means the pads touching."
+        "note": "Restored to the range the pick-and-place was measured under. Starting travel at the pad half-thickness is the physically right bound -- at zero the pads pass through each other -- but it moves every grip the controller has been tuned against, and it went in as part of unrelated work. It belongs in its own change, measured on its own."
       }
     ],
     "segments_m": [
