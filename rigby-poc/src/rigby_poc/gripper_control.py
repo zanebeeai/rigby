@@ -226,7 +226,8 @@ def _reach_for(body: Body, goal: np.ndarray, square_to: np.ndarray | None,
                keep_out: tuple | None = None,
                stay_near: float = 0.0,
                tolerance: float = 0.03,
-               warm_key: str | None = None) -> np.ndarray | None:
+               warm_key: str | None = None,
+               max_travel: float | None = None) -> np.ndarray | None:
     """Joint angles that put ``aim`` on ``goal`` -- the grasp centre, or the eye.
 
     Aiming the CAMERA is a different request from aiming the hand, and treating
@@ -250,6 +251,10 @@ def _reach_for(body: Body, goal: np.ndarray, square_to: np.ndarray | None,
     address = [body.address(n) for n in JOINTS]
 
     start = np.asarray([data.qpos[a] for a in address[:4]])
+    if warm_key is not None:
+        anchor = _ANCHOR.setdefault(warm_key, start.copy())
+    else:
+        anchor = start
 
     def evaluate(angles: np.ndarray) -> float | None:
         for slot, value in zip(address[:4], angles):
@@ -292,6 +297,22 @@ def _reach_for(body: Body, goal: np.ndarray, square_to: np.ndarray | None,
         if stay_near:
             preference += stay_near * float(np.linalg.norm(angles - start))
         cost += slack * min(preference, tolerance * 0.5)
+        if max_travel is not None and float(
+                np.linalg.norm(angles - anchor)) > max_travel:
+            # HOW FAR THE ARM MUST MOVE IS A CONSTRAINT, NOT A PREFERENCE.
+            # Ranking position first and capping the preferences so they cannot
+            # outvote it also made them too weak to reject a gross
+            # reconfiguration: the solver returned yaw at its 150 degree limit
+            # with the elbow folded back, reaching the handle over its own
+            # shoulder, thirteen millimetres from the goal and therefore cheap.
+            # Getting into that pose means swinging the whole arm across the
+            # workspace, which is not a tie-break against ten millimetres of
+            # position -- it is a different manoeuvre, and one no planner would
+            # accept to service a single reach. So it is ruled out rather than
+            # priced. Bounding travel from the CURRENT pose keeps the admissible
+            # set a ball around where the arm already is, so this does not wall
+            # the search off the way an obstacle veto would.
+            return None
         for name in ("shoulder", "seg1", "seg2", "seg3", "plate_geom"):
             if float(body.geom_at(name)[2]) < support:
                 return None
@@ -464,6 +485,13 @@ _scan_cache: list[np.ndarray] | None = None
 #: the previous answer and trying it first makes the search stable across frames
 #: and, because it is nearly always still the best one, cheap.
 _WARM: dict[str, np.ndarray] = {}
+
+#: The pose each named reach began from. Travel is budgeted against THIS, not
+#: against wherever the arm has since got to. Measuring from the current pose
+#: ratchets: the moment the arm starts down a wrong basin the budget re-centres
+#: on it, the correct answer falls permanently out of range, and the arm walks
+#: steadily further away with every frame reporting that it is within budget.
+_ANCHOR: dict[str, np.ndarray] = {}
 
 
 def _scan_poses(body: Body, support: float) -> list[np.ndarray]:

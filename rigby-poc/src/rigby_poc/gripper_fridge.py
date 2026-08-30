@@ -69,6 +69,15 @@ READY_AT = np.asarray([0.02, -0.02, 1.14])
 #: How much a metre of joint travel is worth against a metre of position error.
 #: Enough to stop the solver crossing the room for a millimetre.
 _STAY_NEAR = 0.05
+#: The most the arm may reconfigure to service one reach, radians summed over
+#: the joints. Generous enough for any reach in this workspace and far short of
+#: below the 5.1 the over-the-shoulder contortion needs. A narrow gap, and a
+#: real one.
+_MAX_TRAVEL = 4.7
+
+#: Which approaches have committed to their final run-in. Latched, because a
+#: threshold recomputed every frame is a threshold that chatters.
+_COMMITTED: dict[str, bool] = {}
 
 _HANDLE_SQUEEZE_N = 9.0
 _CARRY_SQUEEZE_N = 12.0
@@ -221,15 +230,26 @@ def decide(body: Body, seen: Scene, phase: int, support: float,
     facing = np.asarray([0.0, -1.0, 0.0])
 
     if name == "to_handle":
-        # Stand off in front of the handle, square to the door's face, then
-        # close the last little bit. Coming straight at it from wherever the arm
-        # happens to be puts a finger through the door panel on the way.
+        # Stand off in front of the handle, square to the door's face, then go
+        # in. Coming straight at it from wherever the arm happens to be puts a
+        # finger through the door panel on the way.
+        #
+        # COMMITTING to the second half is a latch, not a threshold. Choosing
+        # between the standoff and the handle by whether the gap exceeds a
+        # number means that when the gap sits near that number the goal jumps
+        # ten centimetres every frame, and the arm oscillates in front of the
+        # handle indefinitely -- which is exactly what it did, for fifty-four
+        # seconds, while the jaws rocked between 6.8 and 7.9 cm against the
+        # door. Once you have lined up, you go in.
         gap = float(np.linalg.norm(body.grasp_centre() - seen.handle_at))
-        goal = (seen.handle_at + facing * 0.10 if gap > 0.14 else seen.handle_at)
+        if gap <= 0.14:
+            _COMMITTED["to_handle"] = True
+        goal = (seen.handle_at if _COMMITTED.get("to_handle")
+                else seen.handle_at + facing * 0.10)
         found = _reach_for(body, goal, facing, support,
                            square_weight=_SQUARE_WEIGHT,
                            keep_out=keep_out(), stay_near=_STAY_NEAR,
-                           warm_key=name)
+                           warm_key=name, max_travel=_MAX_TRAVEL)
         if found is not None:
             target[:4] = q[:4] + (found - q[:4]) * float(np.clip(amount, 0, 1))
         target[4] = target[5] = _limits()[4][1]
@@ -253,7 +273,7 @@ def decide(body: Body, seen: Scene, phase: int, support: float,
         goal = handle_on_arc(min(seen.door_deg + _ARC_STEP_DEG * 6.0,
                                  _OPEN_ENOUGH_DEG + 6.0))
         found = _reach_for(body, goal, None, support, stay_near=_STAY_NEAR,
-                           warm_key=name)
+                           warm_key=name, max_travel=_MAX_TRAVEL)
         if found is not None:
             target[:4] = q[:4] + (found - q[:4]) * 0.35
         target[4] = target[5] = q[4]
@@ -270,7 +290,7 @@ def decide(body: Body, seen: Scene, phase: int, support: float,
         found = _reach_for(body, goal, facing, support,
                            square_weight=_SQUARE_WEIGHT,
                            keep_out=keep_out(), stay_near=_STAY_NEAR,
-                           warm_key=name)
+                           warm_key=name, max_travel=_MAX_TRAVEL)
         if found is not None:
             target[:4] = q[:4] + (found - q[:4]) * float(np.clip(amount, 0, 1))
         target[4] = target[5] = _limits()[4][1]
@@ -290,7 +310,7 @@ def decide(body: Body, seen: Scene, phase: int, support: float,
         found = _reach_for(body, goal, facing, support,
                            square_weight=_SQUARE_WEIGHT,
                            keep_out=keep_out(), stay_near=_STAY_NEAR,
-                           warm_key=name)
+                           warm_key=name, max_travel=_MAX_TRAVEL)
         if found is not None:
             target[:4] = q[:4] + (found - q[:4]) * float(np.clip(amount, 0, 1))
         target[4] = target[5] = _limits()[4][1]
@@ -313,7 +333,7 @@ def decide(body: Body, seen: Scene, phase: int, support: float,
         found = _reach_for(body, goal, facing, support,
                            square_weight=_SQUARE_WEIGHT,
                            keep_out=keep_out(), stay_near=_STAY_NEAR,
-                           warm_key=name)
+                           warm_key=name, max_travel=_MAX_TRAVEL)
         if found is not None:
             target[:4] = q[:4] + (found - q[:4]) * 0.5
         target[4] = target[5] = q[4]
@@ -325,7 +345,7 @@ def decide(body: Body, seen: Scene, phase: int, support: float,
                            hold_station=True)
         goal = place["place"] + np.asarray([0.0, 0.0, 0.12])
         found = _reach_for(body, goal, None, support, keep_out=keep_out(),
-                           stay_near=_STAY_NEAR, warm_key=name)
+                           stay_near=_STAY_NEAR, warm_key=name, max_travel=_MAX_TRAVEL)
         if found is not None:
             target[:4] = q[:4] + (found - q[:4]) * 0.35
         target[4] = target[5] = q[4]
@@ -334,7 +354,7 @@ def decide(body: Body, seen: Scene, phase: int, support: float,
     # set_down
     goal = place["place"] + np.asarray([0.0, 0.0, 0.035])
     found = _reach_for(body, goal, None, support, keep_out=keep_out(),
-                       stay_near=_STAY_NEAR, warm_key=name)
+                       stay_near=_STAY_NEAR, warm_key=name, max_travel=_MAX_TRAVEL)
     if found is not None:
         target[:4] = q[:4] + (found - q[:4]) * 0.3
     low = float(np.linalg.norm(body.grasp_centre() - goal)) < 0.04
