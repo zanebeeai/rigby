@@ -50,6 +50,25 @@ _FINGER_OMEGA = 26.0
 JOINTS = ("yaw", "lift", "elbow", "wrist", "finger_left", "finger_right")
 
 
+#: The original single key light. The pick-and-place was tuned under it and its
+#: camera reads the scene through it.
+_BENCH_LIGHTING = (
+    '<light name="key" pos="0.6 -1.0 2.6" dir="-0.2 0.4 -1" diffuse="1 1 1"/>')
+
+#: A lit room, for the scene that has a camera standing in the corner of one.
+_ROOM_LIGHTING = """
+    <light name="key" pos="0.6 -1.0 2.6" dir="-0.2 0.4 -1"
+           diffuse="0.75 0.75 0.75" specular="0.1 0.1 0.1"/>
+    <light name="fill" pos="-1.2 0.4 2.2" dir="0.5 -0.1 -1"
+           diffuse="0.45 0.46 0.5" specular="0 0 0"/>
+    <light name="back" pos="0.9 1.6 2.0" dir="-0.3 -0.7 -1"
+           diffuse="0.3 0.31 0.35" specular="0 0 0"/>
+    <geom name="wall_back" contype="0" conaffinity="0" type="box"
+          pos="0 1.15 1.25" size="2.0 0.02 0.9" rgba="0.30 0.32 0.38 1"/>
+    <geom name="wall_side" contype="0" conaffinity="0" type="box"
+          pos="0.95 0 1.25" size="0.02 1.15 0.9" rgba="0.26 0.28 0.34 1"/>"""
+
+
 def _room_camera(document) -> str:
     """The fixed camera in the corner, aimed by hand at the middle of the bench.
 
@@ -183,6 +202,14 @@ def _model_xml(block_half, block_at, table_top: float,
     bx, by, bz = float(base[0]), float(base[2]), float(base[1])
     furniture = (_fridge_furniture(document, table_top) if scene == "fridge"
                  else _bin_furniture(document, table_top))
+    # The room -- three lights and two walls -- belongs to the CABINET scene,
+    # which has a camera in the corner that needs somewhere to look and a sense
+    # of scale. Adding it globally relit the pick-and-place too, and that scene
+    # is read by a camera that finds the object by segmenting warm pixels: the
+    # blob changed shape, the estimates moved, and placements that had a
+    # millimetre of jaw clearance stopped landing. Lighting is scene dress for
+    # one task and an input to perception for the other.
+    lighting = (_ROOM_LIGHTING if scene == "fridge" else _BENCH_LIGHTING)
     room_camera = _room_camera(document)
 
     return f"""
@@ -208,21 +235,9 @@ def _model_xml(block_half, block_at, table_top: float,
     <joint damping="0.4" armature="0.01"/>
   </default>
   <worldbody>
-    <light name="key" pos="0.6 -1.0 2.6" dir="-0.2 0.4 -1"
-           diffuse="0.75 0.75 0.75" specular="0.1 0.1 0.1"/>
-    <light name="fill" pos="-1.2 0.4 2.2" dir="0.5 -0.1 -1"
-           diffuse="0.45 0.46 0.5" specular="0 0 0"/>
-    <light name="back" pos="0.9 1.6 2.0" dir="-0.3 -0.7 -1"
-           diffuse="0.3 0.31 0.35" specular="0 0 0"/>
-    <!-- The room. Not decoration: a corner camera looking into a void gives a
-         model no sense of scale or of where anything is, and "the far wall" is
-         a landmark the way the bench edge is. -->
-    <geom name="wall_back" contype="0" conaffinity="0" type="box"
-          pos="0 1.15 1.25" size="2.0 0.02 0.9" rgba="0.30 0.32 0.38 1"/>
-    <geom name="wall_side" contype="0" conaffinity="0" type="box"
-          pos="0.95 0 1.25" size="0.02 1.15 0.9" rgba="0.26 0.28 0.34 1"/>
-    <geom name="table" contype="1" conaffinity="6" type="plane" pos="0 0 {table_top}" size="2 2 0.1"
-          rgba="0.4 0.42 0.48 1"/>
+    {lighting}
+    <geom name="table" contype="1" conaffinity="6" type="plane"
+          pos="0 0 {table_top}" size="2 2 0.1" rgba="0.4 0.42 0.48 1"/>
     {furniture}
     {room_camera}
     <geom name="pedestal" contype="1" conaffinity="6" type="cylinder" pos="{bx} {by} {(table_top + bz) / 2}"

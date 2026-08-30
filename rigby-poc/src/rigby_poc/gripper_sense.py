@@ -267,6 +267,12 @@ def sense(body: Body, eyes: Senses, commanded: np.ndarray, squeeze_n: float,
     # that closed on nothing, and anything in between that will not move while
     # being squeezed has something in it.
     #
+    # The "not fully open" margin has to be SMALL. At 10 mm it silently capped
+    # the gripper: a finger holding anything wider than about 6.6 cm sits above
+    # the threshold, so contact never registered, the grip never latched, and
+    # the wide-block case simply never picked anything up. A margin meant to
+    # exclude one starting pose was quietly excluding a whole class of object.
+    #
     # Two earlier versions of this test failed in opposite directions. Testing
     # the tracking error's sign fired when the finger was pushed PAST its target
     # by the squeeze, which is what a successful grip looks like. Testing that
@@ -278,7 +284,7 @@ def sense(body: Body, eyes: Senses, commanded: np.ndarray, squeeze_n: float,
     settled = ((squeeze_n > 0.0)
                & (np.abs(np.asarray([qd[4], qd[5]])) < _FINGER_STILL)
                & (np.asarray([q[4], q[5]]) > shut + _NOT_SHUT_M)
-               & (np.asarray([q[4], q[5]]) < wide - 0.010))
+               & (np.asarray([q[4], q[5]]) < wide - 0.002))
     left, right = bool(settled[0]), bool(settled[1])
     eyes.settling = eyes.settling + 1 if (left and right) else 0
     if eyes.settling >= 4:

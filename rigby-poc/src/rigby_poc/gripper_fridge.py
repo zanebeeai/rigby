@@ -179,7 +179,7 @@ def _grip_state(body: Body, commanded: np.ndarray, squeeze_n: float,
     settled = ((squeeze_n > 0.0)
                & (np.abs(np.asarray([qd[4], qd[5]])) < 0.004)
                & (np.asarray([q[4], q[5]]) > shut + 0.004)
-               & (np.asarray([q[4], q[5]]) < wide - 0.010))
+               & (np.asarray([q[4], q[5]]) < wide - 0.002))
     left, right = bool(settled[0]), bool(settled[1])
     latched["for"] = latched.get("for", 0) + 1 if (left and right) else 0
     if latched["for"] >= 4:
@@ -249,7 +249,7 @@ def decide(body: Body, seen: Scene, phase: int, support: float,
         found = _reach_for(body, goal, facing, support,
                            square_weight=_SQUARE_WEIGHT,
                            keep_out=keep_out(), stay_near=_STAY_NEAR,
-                           warm_key=name, max_travel=_MAX_TRAVEL)
+                           warm_key=name, max_travel=_MAX_TRAVEL, ranked=True)
         if found is not None:
             target[:4] = q[:4] + (found - q[:4]) * float(np.clip(amount, 0, 1))
         target[4] = target[5] = _limits()[4][1]
@@ -273,7 +273,7 @@ def decide(body: Body, seen: Scene, phase: int, support: float,
         goal = handle_on_arc(min(seen.door_deg + _ARC_STEP_DEG * 6.0,
                                  _OPEN_ENOUGH_DEG + 6.0))
         found = _reach_for(body, goal, None, support, stay_near=_STAY_NEAR,
-                           warm_key=name, max_travel=_MAX_TRAVEL)
+                           warm_key=name, max_travel=_MAX_TRAVEL, ranked=True)
         if found is not None:
             target[:4] = q[:4] + (found - q[:4]) * 0.35
         target[4] = target[5] = q[4]
@@ -290,7 +290,7 @@ def decide(body: Body, seen: Scene, phase: int, support: float,
         found = _reach_for(body, goal, facing, support,
                            square_weight=_SQUARE_WEIGHT,
                            keep_out=keep_out(), stay_near=_STAY_NEAR,
-                           warm_key=name, max_travel=_MAX_TRAVEL)
+                           warm_key=name, max_travel=_MAX_TRAVEL, ranked=True)
         if found is not None:
             target[:4] = q[:4] + (found - q[:4]) * float(np.clip(amount, 0, 1))
         target[4] = target[5] = _limits()[4][1]
@@ -310,7 +310,7 @@ def decide(body: Body, seen: Scene, phase: int, support: float,
         found = _reach_for(body, goal, facing, support,
                            square_weight=_SQUARE_WEIGHT,
                            keep_out=keep_out(), stay_near=_STAY_NEAR,
-                           warm_key=name, max_travel=_MAX_TRAVEL)
+                           warm_key=name, max_travel=_MAX_TRAVEL, ranked=True)
         if found is not None:
             target[:4] = q[:4] + (found - q[:4]) * float(np.clip(amount, 0, 1))
         target[4] = target[5] = _limits()[4][1]
@@ -333,7 +333,7 @@ def decide(body: Body, seen: Scene, phase: int, support: float,
         found = _reach_for(body, goal, facing, support,
                            square_weight=_SQUARE_WEIGHT,
                            keep_out=keep_out(), stay_near=_STAY_NEAR,
-                           warm_key=name, max_travel=_MAX_TRAVEL)
+                           warm_key=name, max_travel=_MAX_TRAVEL, ranked=True)
         if found is not None:
             target[:4] = q[:4] + (found - q[:4]) * 0.5
         target[4] = target[5] = q[4]
@@ -345,7 +345,7 @@ def decide(body: Body, seen: Scene, phase: int, support: float,
                            hold_station=True)
         goal = place["place"] + np.asarray([0.0, 0.0, 0.12])
         found = _reach_for(body, goal, None, support, keep_out=keep_out(),
-                           stay_near=_STAY_NEAR, warm_key=name, max_travel=_MAX_TRAVEL)
+                           stay_near=_STAY_NEAR, warm_key=name, max_travel=_MAX_TRAVEL, ranked=True)
         if found is not None:
             target[:4] = q[:4] + (found - q[:4]) * 0.35
         target[4] = target[5] = q[4]
@@ -354,7 +354,7 @@ def decide(body: Body, seen: Scene, phase: int, support: float,
     # set_down
     goal = place["place"] + np.asarray([0.0, 0.0, 0.035])
     found = _reach_for(body, goal, None, support, keep_out=keep_out(),
-                       stay_near=_STAY_NEAR, warm_key=name, max_travel=_MAX_TRAVEL)
+                       stay_near=_STAY_NEAR, warm_key=name, max_travel=_MAX_TRAVEL, ranked=True)
     if found is not None:
         target[:4] = q[:4] + (found - q[:4]) * 0.3
     low = float(np.linalg.norm(body.grasp_centre() - goal)) < 0.04

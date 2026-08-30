@@ -240,7 +240,8 @@ def _reach_for(body: Body, goal: np.ndarray, square_to: np.ndarray | None,
                stay_near: float = 0.0,
                tolerance: float = 0.03,
                warm_key: str | None = None,
-               max_travel: float | None = None) -> np.ndarray | None:
+               max_travel: float | None = None,
+               ranked: bool = False) -> np.ndarray | None:
     """Joint angles that put ``aim`` on ``goal`` -- the grasp centre, or the eye.
 
     Aiming the CAMERA is a different request from aiming the hand, and treating
@@ -280,36 +281,37 @@ def _reach_for(body: Body, goal: np.ndarray, square_to: np.ndarray | None,
             here = body.camera_pose()[0]
         else:
             here = body.grasp_centre()
-        # RANKED, NOT SUMMED. Getting to the point is the task; how the hand
-        # is angled and how far the arm had to move to do it are preferences.
-        # Adding them together lets a preference buy position error with
-        # itself, and both of this solver's worst failures were exactly that
-        # trade being made silently:
+        # Two objectives, and which one is right depends on the task.
         #
-        #   the approach-angle term bought 0.95 of facing for 49 mm of miss,
-        #   and 49 mm misses a handle;
+        # RANKED (opt-in): getting to the point is the task; how the hand is
+        # angled and how far the arm moved are preferences, scored zero until
+        # the hand is within `tolerance` and capped so they can never outvote
+        # position. This is what a handle needs -- a preference must not be
+        # able to buy position error with itself, and in a plain sum it can.
         #
-        #   the stay-near term created a DEAD ZONE around the goal -- inside
-        #   about two centimetres, closing the last of the gap cost more in
-        #   joint travel than it gained in position, so the solver returned
-        #   "stay where you are" and the hand sat 18 mm short of a 22 mm
-        #   handle, which is the difference between gripping a bar and shoving
-        #   it sideways.
+        # SUMMED (default): everything weighted together. Less principled, and
+        # measurably better on the pick-and-place: ranking cost that task 3 of
+        # 12 placements, because a grasp approach wants its orientation shaped
+        # over the whole reach rather than treated as a tie-break near the end,
+        # and the tolerance that expresses this differs per reach in a way that
+        # is not yet understood well enough to set from first principles.
         #
-        # So the preferences are scaled by how well the task is already met:
-        # zero while the hand is further than `tolerance` from the goal, fading
-        # in only as it arrives, and capped so they can never be worth more
-        # than half the tolerance. Position always wins the argument.
+        # So the default stays the behaviour that is measured to work, and the
+        # ranked objective is asked for where it is needed. An architecture is
+        # not better for being tidier than the evidence.
         gap = float(np.linalg.norm(here - goal))
         cost = gap
-        slack = float(np.clip(1.0 - gap / max(tolerance, 1e-6), 0.0, 1.0))
         preference = 0.0
         if square_to is not None:
             preference += (1.0 - float(np.dot(body.approach(), -square_to))) \
                 * square_weight
         if stay_near:
             preference += stay_near * float(np.linalg.norm(angles - start))
-        cost += slack * min(preference, tolerance * 0.5)
+        if ranked:
+            slack = float(np.clip(1.0 - gap / max(tolerance, 1e-6), 0.0, 1.0))
+            cost += slack * min(preference, tolerance * 0.5)
+        else:
+            cost += preference
         if max_travel is not None and float(
                 np.linalg.norm(angles - anchor)) > max_travel:
             # HOW FAR THE ARM MUST MOVE IS A CONSTRAINT, NOT A PREFERENCE.
@@ -419,6 +421,15 @@ def _reach_for(body: Body, goal: np.ndarray, square_to: np.ndarray | None,
         return (1, gap + 0.01 * travel)
 
     def struggling_at(angles: np.ndarray) -> bool:
+        """Whether to spend more search on this.
+
+        Under the ranked objective the cost stops reflecting a badly-missed
+        preference once the task is met, so escalation has to ask what the pose
+        ACHIEVES. Under a plain sum the cost still carries everything, and
+        asking it is both cheaper and what the working configuration did.
+        """
+        if not ranked:
+            return here > 0.02
         gap, facing = quality(angles)
         return gap > min(0.012, tolerance / 2.0) or facing < 0.75
 
@@ -436,7 +447,8 @@ def _reach_for(body: Body, goal: np.ndarray, square_to: np.ndarray | None,
     if struggling_at(best):
         for seed in _SEEDS:
             candidate, cost = descend(np.asarray(seed), 5)
-            if rank(candidate) < rank(best):
+            if (rank(candidate) < rank(best) if ranked
+                    else cost < here - 0.01):
                 best, here = candidate, cost
             if not struggling_at(best):
                 break
@@ -449,7 +461,16 @@ def _reach_for(body: Body, goal: np.ndarray, square_to: np.ndarray | None,
     # backwards or the right facing two hundred millimetres away. The sweep is
     # expensive and runs only on the frames where the cheap search failed;
     # once it lands in the right basin, stay_near keeps the next frame there.
-    if struggling_at(best):
+    # The whole-joint-space sweep is part of the same opt-in. It was added for
+    # the cabinet handle and it is not free: on the pick-and-place -- which
+    # never needed it, because that workspace is open and the cheap descent
+    # already finds the answer -- it fires whenever the cheap search is merely
+    # imperfect and hands back a pose in a different arm configuration, and the
+    # placement rate fell from 11/12 to 8/12 and then 6/12 while every isolated
+    # measurement of the solver said it had improved. A search that is better at
+    # finding the global optimum is not better if the thing it was already
+    # finding was the one you wanted.
+    if ranked and struggling_at(best):
         grid = [np.linspace(low, high, n) for (low, high), n
                 in zip(limits[:4], (9, 7, 9, 7))]
         # WHERE TO LOOK is a different question from WHAT TO ACCEPT, and they
@@ -469,13 +490,16 @@ def _reach_for(body: Body, goal: np.ndarray, square_to: np.ndarray | None,
                         trial = np.asarray([a, b, c, d])
                         if evaluate(trial) is None:
                             continue
-                        gap, facing = quality(trial)
-                        blend = gap + 0.6 * (1.0 - facing)
+                        if ranked:
+                            gap, facing = quality(trial)
+                            blend = gap + 0.6 * (1.0 - facing)
+                        else:
+                            blend = evaluate(trial) or 9e9
                         if blend < best_blend:
                             coarse, best_blend = trial, blend
         if coarse is not None:
             candidate, cost = descend(coarse, 6)
-            if rank(candidate) < rank(best):
+            if (rank(candidate) < rank(best) if ranked else cost < here):
                 best, here = candidate, cost
 
     data.qpos[:] = saved_q
@@ -528,8 +552,7 @@ def _scan_poses(body: Body, support: float) -> list[np.ndarray]:
     poses = []
     for patch in _SCAN_GRID:
         at = np.asarray([patch[0], patch[1], support + _SCAN_HEIGHT_M])
-        found = _reach_for(body, at, down, support, aim="camera",
-                           tolerance=_AIM_OVER_M)
+        found = _reach_for(body, at, down, support, aim="camera")
         if found is not None:
             poses.append(found)
     _scan_cache = poses
@@ -609,7 +632,7 @@ def decide(body: Body, seen: Sensed, phase: int, support: float,
         goal = np.asarray(seen.object_at) + np.asarray([0.0, 0.0,
                                                         _INSPECT_HEIGHT_M])
         found = _reach_for(body, goal, np.asarray([0.0, 0.0, 1.0]), support,
-                           aim="camera", tolerance=_AIM_OVER_M)
+                           aim="camera")
         if found is not None:
             target[:4] = q[:4] + (found - q[:4]) * float(np.clip(amount, 0, 1))
         target[4] = target[5] = opening_travel
@@ -642,8 +665,7 @@ def decide(body: Body, seen: Sensed, phase: int, support: float,
             goal = centre + normal * 0.14
         else:
             goal = seen.object_at
-        found = _reach_for(body, goal, normal, support,
-                           tolerance=_AIM_OVER_M)
+        found = _reach_for(body, goal, normal, support)
         if found is not None:
             target[:4] = q[:4] + (found - q[:4]) * float(np.clip(amount, 0, 1))
         return Command(target)
