@@ -64,6 +64,19 @@ _OPEN_DWELL_S = 0.6
 _CLEARANCE_M = 0.07
 _OVER_TARGET_M = 0.035
 _GRIP_CLEARANCE_M = 0.022
+#: Over what distance the approach ANGLE is allowed to matter, metres.
+#:
+#: The ranked objective scores preferences at zero until the hand is within
+#: `tolerance` of the goal, and the default tolerance is millimetric because
+#: that is what "arrived" means for a grasp. But for an APPROACH, arriving
+#: pointed the wrong way is not a near miss to be corrected at the end -- the
+#: hand has to come in along the right line the whole way, or it arrives having
+#: swung through the object. Left at the default the grasp still worked and the
+#: pose it grasped from was different enough that the carry afterwards ended up
+#: 41 cm from the bin. So the tolerance is the standoff scale here: this is the
+#: distance over which "how am I pointed" is part of the task rather than a
+#: tie-break.
+_AIM_OVER_M = 0.16
 #: Newtons of feed-forward squeeze, commanded rather than hoped for.
 _ARRIVE_SQUEEZE_N = 2.0
 _CARRY_SQUEEZE_N = 12.0
@@ -395,7 +408,15 @@ def _reach_for(body: Body, goal: np.ndarray, square_to: np.ndarray | None,
         gap, facing = quality(angles)
         if gap <= tolerance:
             return (0, -facing)
-        return (1, gap)
+        # Still short of the goal: order by distance, but not ONLY by distance.
+        # Ignoring joint travel entirely here lets the search swap a perfectly
+        # good nearby answer for a distant configuration that is a millimetre
+        # closer, and the arm then swings across the whole workspace chasing it
+        # -- which is what stopped the carry reaching the bin at all, ending it
+        # 41 cm away still holding the block. A centimetre of gap is worth about
+        # a radian of travel; below that exchange rate, stay where you are.
+        travel = float(np.linalg.norm(angles - start))
+        return (1, gap + 0.01 * travel)
 
     def struggling_at(angles: np.ndarray) -> bool:
         gap, facing = quality(angles)
@@ -507,7 +528,8 @@ def _scan_poses(body: Body, support: float) -> list[np.ndarray]:
     poses = []
     for patch in _SCAN_GRID:
         at = np.asarray([patch[0], patch[1], support + _SCAN_HEIGHT_M])
-        found = _reach_for(body, at, down, support, aim="camera")
+        found = _reach_for(body, at, down, support, aim="camera",
+                           tolerance=_AIM_OVER_M)
         if found is not None:
             poses.append(found)
     _scan_cache = poses
@@ -587,7 +609,7 @@ def decide(body: Body, seen: Sensed, phase: int, support: float,
         goal = np.asarray(seen.object_at) + np.asarray([0.0, 0.0,
                                                         _INSPECT_HEIGHT_M])
         found = _reach_for(body, goal, np.asarray([0.0, 0.0, 1.0]), support,
-                           aim="camera")
+                           aim="camera", tolerance=_AIM_OVER_M)
         if found is not None:
             target[:4] = q[:4] + (found - q[:4]) * float(np.clip(amount, 0, 1))
         target[4] = target[5] = opening_travel
@@ -620,7 +642,8 @@ def decide(body: Body, seen: Sensed, phase: int, support: float,
             goal = centre + normal * 0.14
         else:
             goal = seen.object_at
-        found = _reach_for(body, goal, normal, support)
+        found = _reach_for(body, goal, normal, support,
+                           tolerance=_AIM_OVER_M)
         if found is not None:
             target[:4] = q[:4] + (found - q[:4]) * float(np.clip(amount, 0, 1))
         return Command(target)
