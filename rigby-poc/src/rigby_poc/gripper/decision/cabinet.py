@@ -269,7 +269,9 @@ def decide(body: Body, seen: Scene, phase: int, support: float,
                 else seen.handle_at + facing * 0.10)
         found = travel_to(body, goal, facing, support,
                            square_weight=_SQUARE_WEIGHT,
-                           keep_out=keep_out(), stay_near=_STAY_NEAR,
+                           keep_out=keep_out(),
+                           avoid=work.mechanism.occupies(),
+                           stay_near=_STAY_NEAR,
                            warm_key=name, ranked=True)
         if found is not None:
             target[:4] = q[:4] + (found - q[:4]) * float(np.clip(amount, 0, 1))
@@ -326,7 +328,9 @@ def decide(body: Body, seen: Scene, phase: int, support: float,
                            place["mid_z"] + 0.06])
         found = travel_to(body, goal, facing, support,
                            square_weight=_SQUARE_WEIGHT,
-                           keep_out=keep_out(), stay_near=_STAY_NEAR,
+                           keep_out=keep_out(),
+                           avoid=work.mechanism.occupies(),
+                           stay_near=_STAY_NEAR,
                            warm_key=name, ranked=True)
         if found is not None:
             target[:4] = q[:4] + (found - q[:4]) * float(np.clip(amount, 0, 1))
@@ -346,7 +350,9 @@ def decide(body: Body, seen: Scene, phase: int, support: float,
         goal = seen.object_at if lined_up else outside
         found = travel_to(body, goal, facing, support,
                            square_weight=_SQUARE_WEIGHT,
-                           keep_out=keep_out(), stay_near=_STAY_NEAR,
+                           keep_out=keep_out(),
+                           avoid=work.mechanism.occupies(),
+                           stay_near=_STAY_NEAR,
                            warm_key=name, ranked=True)
         if found is not None:
             target[:4] = q[:4] + (found - q[:4]) * float(np.clip(amount, 0, 1))
@@ -369,7 +375,9 @@ def decide(body: Body, seen: Scene, phase: int, support: float,
         goal = np.asarray([here[0], place["front_y"] - _CLEAR_M, here[2]])
         found = travel_to(body, goal, facing, support,
                            square_weight=_SQUARE_WEIGHT,
-                           keep_out=keep_out(), stay_near=_STAY_NEAR,
+                           keep_out=keep_out(),
+                           avoid=work.mechanism.occupies(),
+                           stay_near=_STAY_NEAR,
                            warm_key=name, ranked=True)
         if found is not None:
             target[:4] = q[:4] + (found - q[:4]) * 0.5

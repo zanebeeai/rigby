@@ -37,8 +37,12 @@ _MOVED_M = 0.0012
 #: How much of the newly observed direction to believe each step. Low enough to
 #: ride out one noisy frame, high enough to track an arc without lagging it.
 _TRUST_NEW = 0.35
-#: Frames of no movement before concluding the current direction is barred.
-_BARRED_AFTER = 6
+#: Frames without accumulating the threshold before a direction is called
+#: barred. Generous, because it is now counting time rather than frames of
+#: stillness: a direction that has not produced a millimetre in a second and a
+#: half is genuinely against the constraint, and being impatient here is what
+#: made the search thrash.
+_BARRED_AFTER = 45
 #: How far to swing the heading when looking for a direction that yields. Real
 #: search, alternating sides and widening -- a hinge tangent can be ninety
 #: degrees from the pull that first engaged it.
@@ -68,6 +72,14 @@ class Mechanism:
     still_for: int = 0
     #: Which cast we are trying, when the current heading stops yielding.
     casting: int = 0
+    #: Where the hand has been while opening. The held thing was there too, so
+    #: this is a record of the space the mechanism has swung into -- which is
+    #: the only way anything downstream can know that an obstacle MOVED. A door
+    #: that was flush with a cabinet is now standing out in the middle of the
+    #: workspace, and every keep-out box in the system describes furniture as it
+    #: was found. The arm swung straight through where the door had gone and
+    #: prised its own jaws open on it.
+    swept: list = field(default_factory=list, repr=False)
     _was_at: np.ndarray | None = field(default=None, repr=False)
 
     def start(self, pull: np.ndarray) -> None:
@@ -86,14 +98,31 @@ class Mechanism:
         here = np.asarray(hand_at, dtype=float)
         if self._was_at is None:
             self._was_at = here
+        if not self.swept or float(np.linalg.norm(here - self.swept[-1])) > 0.03:
+            self.swept.append(here.copy())
             return
         moved = here - self._was_at
-        self._was_at = here
         distance = float(np.linalg.norm(moved))
 
         if distance < _MOVED_M:
+            # NOT MOVED FAR ENOUGH YET -- which is not the same as not moving.
+            # The reference point must NOT advance here. Advancing it every
+            # frame turns the test into "did it move a millimetre since last
+            # frame", which at thirty frames a second demands 36 mm/s before
+            # anything registers at all. A door swinging under a careful pull
+            # moves about a fiftieth of that, so every frame looked like noise,
+            # the heading never updated, the distance opened stayed at exactly
+            # zero, and the search cast around two hundred times while the door
+            # quietly swung to 45 degrees behind its back.
+            #
+            # Left alone, the reference accumulates: slow motion is detected
+            # just as well as fast motion, only later. That also makes this
+            # independent of the frame rate and of how fast the mechanism
+            # happens to be, which a per-frame threshold never was.
             self.still_for += 1
             return
+
+        self._was_at = here
 
         # It moved: that displacement is the mechanism telling us what it
         # allows. Believe most of the old heading and some of the new one, so a
@@ -146,6 +175,17 @@ class Mechanism:
         """Give up on this cast and try the next one."""
         self.casting += 1
         self.still_for = 0
+
+
+    def occupies(self, radius: float = 0.075) -> list:
+        """The space the thing now stands in, as spheres along its swept path.
+
+        Spheres rather than a box because the swept region of a hinge is an arc,
+        and a box around an arc swallows the opening the arm has to reach
+        through. Coarse, and that is the right amount of precision for "the door
+        is somewhere over there now".
+        """
+        return [(point, radius) for point in self.swept]
 
 
 def _turn_about(vector: np.ndarray, axis: np.ndarray, radians: float) -> np.ndarray:

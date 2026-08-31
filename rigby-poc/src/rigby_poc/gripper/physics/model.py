@@ -233,6 +233,16 @@ def _model_xml(block_half, block_at, table_top: float,
     <geom friction="0.9 0.02 0.001" solref="0.004 1" solimp="0.98 0.999 0.0005"
           contype="0" conaffinity="0"/>
     <joint damping="0.4" armature="0.01"/>
+    <!-- Finger travel limits stiff enough to be limits. A joint range in
+         MuJoCo is a constraint like any other, and a constraint can be
+         overpowered: an arm swinging into a door it had just opened pried the
+         jaws to 14.4 cm, which is 6 cm wider than the mechanism can physically
+         go. A limit that a hard enough shove walks through is not modelling a
+         stop, it is modelling a strong spring. -->
+    <default class="finger">
+      <joint damping="0.4" armature="0.01"
+             solreflimit="0.002 1" solimplimit="0.99 0.9999 0.0001"/>
+    </default>
   </default>
   <worldbody>
     {lighting}
@@ -278,7 +288,7 @@ def _model_xml(block_half, block_at, table_top: float,
               <geom name="plate_geom" contype="4" conaffinity="3" type="box" size="0.05 0.012 0.04"
                     mass="0.35" rgba="0.25 0.5 0.7 1"/>
               <body name="finger_left" pos="0 0 0">
-                <joint name="finger_left" type="slide" axis="1 0 0"
+                <joint name="finger_left" class="finger" type="slide" axis="1 0 0"
                        range="{travel[0]} {travel[1]}"/>
                 <geom name="left_geom" contype="4" conaffinity="3" type="box"
                       pos="0 {reach / 2 + 0.012} 0"
@@ -286,7 +296,7 @@ def _model_xml(block_half, block_at, table_top: float,
                       rgba="0.3 0.7 0.9 1"/>
               </body>
               <body name="finger_right" pos="0 0 0">
-                <joint name="finger_right" type="slide" axis="-1 0 0"
+                <joint name="finger_right" class="finger" type="slide" axis="-1 0 0"
                        range="{travel[0]} {travel[1]}"/>
                 <geom name="right_geom" contype="4" conaffinity="3" type="box"
                       pos="0 {reach / 2 + 0.012} 0"

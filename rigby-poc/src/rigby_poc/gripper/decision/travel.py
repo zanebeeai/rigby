@@ -76,9 +76,28 @@ def detour(start: np.ndarray, end: np.ndarray, box: tuple) -> np.ndarray:
     return np.asarray([end[0], end[1], max(above, float(end[2]))])
 
 
+def _hits_any(start: np.ndarray, end: np.ndarray, spheres: list) -> np.ndarray | None:
+    """The first sphere a straight line runs into, if any."""
+    for fraction in np.linspace(0.0, 1.0, _SAMPLES):
+        point = start + (end - start) * fraction
+        for centre, radius in spheres:
+            if float(np.linalg.norm(point - centre)) < radius:
+                return np.asarray(centre)
+    return None
+
+
+def _around(start: np.ndarray, centre: np.ndarray, radius: float) -> np.ndarray:
+    """Somewhere clear of a sphere: straight up and over it.
+
+    The same answer as for a box, and for the same reason -- these arms work
+    above a bench, and the space above a thing is the space reliably free.
+    """
+    return np.asarray([start[0], start[1], float(centre[2]) + radius + _OVER_M])
+
+
 def travel_to(body: Body, goal: np.ndarray, square_to, support: float,
-              *, keep_out: tuple | None = None, step: float = STEP_M,
-              **kwargs) -> np.ndarray | None:
+              *, keep_out: tuple | None = None, avoid: list | None = None,
+              step: float = STEP_M, **kwargs) -> np.ndarray | None:
     """Joint angles for the next short step of a straight run to ``goal``.
 
     Call it every frame. It re-reads where the hand is, so the line is
@@ -88,8 +107,24 @@ def travel_to(body: Body, goal: np.ndarray, square_to, support: float,
     here = np.asarray(body.grasp_centre())
     aim_at = np.asarray(goal, dtype=float)
 
-    if keep_out is not None and crosses(here, aim_at, keep_out):
+    # A KEEP-OUT YOU ARE DELIBERATELY REACHING INTO IS NOT A KEEP-OUT.
+    #
+    # These boxes describe furniture by its bounding volume, and a container's
+    # bounding volume contains its inside. So every route to something on a
+    # shelf "crossed the obstacle", the arm detoured over the top, and it hovered
+    # above the cabinet indefinitely trying to get into it. The box is a
+    # statement about the walls; wanting to be inside is a statement that the
+    # caller knows better, and the caller is the one that chose the goal.
+    reaching_in = keep_out is not None and _inside(aim_at, keep_out)
+    if keep_out is not None and not reaching_in and crosses(here, aim_at, keep_out):
         aim_at = detour(here, aim_at, keep_out)
+    if avoid:
+        # Whatever the arm has already moved is now somewhere it was not when
+        # the furniture was declared. This is the only obstacle in the system
+        # that the machine learned about by doing something.
+        struck = _hits_any(here, aim_at, avoid)
+        if struck is not None:
+            aim_at = _around(here, struck, float(avoid[0][1]))
 
     to_go = aim_at - here
     span = float(np.linalg.norm(to_go))
@@ -97,4 +132,4 @@ def travel_to(body: Body, goal: np.ndarray, square_to, support: float,
         return None
     waypoint = here + to_go / span * min(step, span)
     return _reach_for(body, waypoint, square_to, support,
-                      keep_out=keep_out, **kwargs)
+                      keep_out=None if reaching_in else keep_out, **kwargs)
