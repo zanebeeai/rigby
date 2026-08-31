@@ -658,4 +658,48 @@ DO NOT
 - Do not tune scripted_grasp.py to make a configuration pass. It is the control,
   not the product; if it needs tuning per scene it has stopped being a control.
 
+-------------------------------------------------------------------------------
+2026-08-31 -- GRIPPER LIVE-RUN DASHBOARD (CODEX HANDOFF)
+-------------------------------------------------------------------------------
+
+Started a separate worktree at C:\Users\angel\Rigby-codex-gripper-ui on branch
+codex/gripper-live-ui, based on Claude's grasp/auto-lift commit 47d6445. Claude's
+active Rigby-mainwork worktree was not modified.
+
+The old gripper replay page is now a persistent live-run dashboard:
+
+- Prompt input, examples, explicit model-call warning, and a ten-call default cap.
+- Each attempt runs in an isolated subprocess and persists request, state, events,
+  worker logs, and replay frames below results/gripper-runs.
+- The browser follows the actual MuJoCo body/object frames at 5 Hz while the run
+  is active, then replays the full 30 fps clip when it finishes.
+- The decision trace shows model-call start/decision events and the latest numeric
+  target, body part, named primitive, progress, and physical measurements.
+- Run history survives refresh and can reopen completed, failed, or aborted runs.
+- Abort terminates the run subprocess (including after an API reload via its PID),
+  not merely the browser animation.
+- A startup marker prevents a fast child process from racing the API's initial
+  state write. Clips are served through a validated API route, including when a
+  custom run directory is configured.
+- Switching between runs now clears a prior replay if the newly selected run has
+  not produced frames, preventing stale gripper state from being mislabelled LIVE.
+
+The directed runner now serializes the actual simulated links, jaw pads, plate,
+block pose/quaternion, contact forces, opening, target distances, visibility,
+holding state, penetration, chosen target/part/move, and error. Its progress hook
+does not add model calls. Also corrected an existing Python scope bug caused by
+an in-function `import mujoco.viewer` shadowing the top-level mujoco module.
+
+Verification:
+
+- 36 relevant Python tests passed, including an API-free MuJoCo streaming run and
+  a persistent/real-abort contract.
+- 33 frontend tests passed.
+- TypeScript and the production Vite build passed.
+- Browser-tested empty state, history, a 45-frame physical replay, switching away
+  from a clip, and an abort that killed a dedicated offline helper process.
+- No model/API calls were made. Monetary API cost: $0.00.
+- Browser fixtures lived only in a temporary Windows directory and are not part of
+  the branch.
+
 END OF LOG
