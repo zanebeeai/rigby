@@ -211,7 +211,7 @@ class Mechanism:
             return None
         return np.asarray([cx, cy])
 
-    def occupies(self, radius: float = 0.06) -> list:
+    def occupies(self, radius: float = 0.03) -> list:
         """Where the thing is NOW, as spheres.
 
         Two corrections live in this one method, in opposite directions.
@@ -231,6 +231,12 @@ class Mechanism:
         So: from the pivot, if the path says there is one, out to where the edge
         now is. When there is no pivot the thing slid, and a slider occupies
         roughly where it ended up.
+
+        The radius describes the THING -- a door panel is twelve millimetres
+        thick, so it is small. How much room the ROBOT needs around it is not
+        this method's business; travel inflates by the hand's own size. Rolling
+        the two together put the standoff the arm was heading for inside the
+        obstacle it was avoiding, and it could then never arrive anywhere.
         """
         if not self.swept:
             return []

@@ -42,6 +42,13 @@ from .solver import _reach_for
 STEP_M = 0.045
 #: Clearance to leave when going over an obstacle, metres.
 _OVER_M = 0.07
+#: HOW BIG THE HAND ITSELF IS, metres. Every obstacle is inflated by this
+#: before the line is tested against it, because what has to miss the obstacle
+#: is not the point being steered -- it is the gripper, and the gripper is
+#: twelve centimetres of plate and fingers hanging around that point. Avoiding
+#: with a point routed the grasp centre neatly past a door panel and swept the
+#: fingers straight through it, closing the door the arm had just opened.
+_HAND_REACH_M = 0.065
 #: How many points along a segment to test against an obstacle. The gripper is
 #: about 12 cm long, so sampling every few centimetres cannot step over it.
 _SAMPLES = 14
@@ -79,21 +86,28 @@ def detour(start: np.ndarray, end: np.ndarray, box: tuple) -> np.ndarray:
 def _hits_any(start: np.ndarray, end: np.ndarray, spheres: list) -> np.ndarray | None:
     """The first sphere a straight line runs into, if any.
 
-    Spheres that already contain the starting point are ignored, and that is not
-    a detail. The swept path of an opening motion ends WHERE THE HAND IS -- it
-    was the hand that traced it -- so the arm finishes every open standing
-    inside its own record of where the door went. Treated as an obstacle like
-    any other, that is a trap with no exit: every direction it tries is blocked,
-    including the one leading out. It parked 38 cm from the shelf and stayed
-    there. You cannot avoid a place you are already in. You can only leave it.
+    A sphere the hand is ALREADY INSIDE gets a different rule: moving away from
+    its centre is allowed, moving deeper is not. Skipping such spheres outright
+    was the first attempt and it fails in two opposite ways at once. The arm
+    finishes an opening motion standing inside its own record of where the thing
+    went -- it was holding the thing -- so skipping them left it free to walk
+    straight along the panel it was avoiding, pushing the door shut behind it.
+    Blocking them instead is a trap with no exit: every direction is refused,
+    including the one leading out, and the arm sits still for a minute.
+
+    You may leave what you are inside. You may not go further in.
     """
-    live = [(centre, radius) for centre, radius in spheres
-            if float(np.linalg.norm(start - centre)) >= radius]
-    for fraction in np.linspace(0.0, 1.0, _SAMPLES):
-        point = start + (end - start) * fraction
-        for centre, radius in live:
-            if float(np.linalg.norm(point - centre)) < radius:
-                return np.asarray(centre)
+    for centre, radius in spheres:
+        centre = np.asarray(centre)
+        if float(np.linalg.norm(start - centre)) < radius:
+            if float(np.linalg.norm(end - centre)) < float(
+                    np.linalg.norm(start - centre)):
+                return centre
+            continue
+        for fraction in np.linspace(0.0, 1.0, _SAMPLES):
+            if float(np.linalg.norm(
+                    start + (end - start) * fraction - centre)) < radius:
+                return centre
     return None
 
 
@@ -104,6 +118,42 @@ def _around(start: np.ndarray, centre: np.ndarray, radius: float) -> np.ndarray:
     above a bench, and the space above a thing is the space reliably free.
     """
     return np.asarray([start[0], start[1], float(centre[2]) + radius + _OVER_M])
+
+
+def clear_of(point: np.ndarray, obstacles: list, margin: float = 0.0
+             ) -> np.ndarray:
+    """The nearest point to ``point`` that has room around it.
+
+    A place to retreat to is a place with ROOM, not a coordinate. The standoff
+    this task backs off to was worked out from where the cabinet is, which is
+    correct while the cabinet is shut and wrong the moment its door is standing
+    open across the front of it -- the point lands beside the panel, and then no
+    obstacle radius works: big enough to keep the arm from sweeping the door
+    closed is big enough to swallow the very place the arm is retreating to, and
+    small enough to leave that place reachable is small enough to let the door
+    be shoved shut. There is no number that satisfies both, because the fault is
+    not the number.
+
+    So the point moves. It is pushed straight out of whatever it is inside until
+    it is clear of everything, which is a few iterations because pushing out of
+    one thing can push it into another.
+    """
+    where = np.asarray(point, dtype=float)
+    for _ in range(24):
+        worst = None
+        for centre, radius in obstacles:
+            centre = np.asarray(centre)
+            room = float(np.linalg.norm(where - centre)) - (radius + margin)
+            if room < 0.0 and (worst is None or room < worst[0]):
+                worst = (room, centre, radius)
+        if worst is None:
+            return where
+        _room, centre, radius = worst
+        away = where - centre
+        size = float(np.linalg.norm(away))
+        away = away / size if size > 1e-6 else np.asarray([0.0, -1.0, 0.0])
+        where = centre + away * (radius + margin + 0.005)
+    return where
 
 
 def travel_to(body: Body, goal: np.ndarray, square_to, support: float,
@@ -130,6 +180,7 @@ def travel_to(body: Body, goal: np.ndarray, square_to, support: float,
     if keep_out is not None and not reaching_in and crosses(here, aim_at, keep_out):
         aim_at = detour(here, aim_at, keep_out)
     if avoid:
+        avoid = [(centre, radius + _HAND_REACH_M) for centre, radius in avoid]
         # Whatever the arm has already moved is now somewhere it was not when
         # the furniture was declared. This is the only obstacle in the system
         # that the machine learned about by doing something.

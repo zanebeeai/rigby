@@ -25,7 +25,7 @@ import numpy as np
 from ..body.manifest import spec
 from .opening import PUSH_M, Mechanism
 from .solver import Command, _limits, _reach_for, _shut
-from .travel import travel_to
+from .travel import _HAND_REACH_M, clear_of, travel_to
 from ..physics.model import Body
 
 #: The order of the work. Each phase names the gate that ends it.
@@ -50,6 +50,8 @@ _OPEN_ENOUGH_DEG = 78.0
 _ARC_STEP_DEG = 2.0
 #: Where the hand waits before going in, metres in front of the opening.
 _STANDOFF_M = 0.13
+#: How far to back straight out before going anywhere else, metres.
+_WITHDRAW_M = 0.22
 #: Close enough to count as arrived, metres. Tight, and it has to be: the
 #: handle is a 22 mm bar, so arriving 22 mm off centre puts it against one pad
 #: with nothing on the other side, and closing then shoves the bar sideways
@@ -323,9 +325,30 @@ def decide(body: Body, seen: Scene, phase: int, support: float,
         return Command(target, 0.0)
 
     if name == "back_off":
-        # Out of the door's way before crossing in front of the opening.
-        goal = np.asarray([place["centre_x"], place["front_y"] - _STANDOFF_M,
-                           place["mid_z"] + 0.06])
+        # WITHDRAW BEFORE TRAVERSING.
+        #
+        # Letting go of a door leaves the hand out at the door's edge, and the
+        # straight line from there to anywhere in front of the cabinet crosses
+        # the panel -- so the arm swept the door shut on its way to standing
+        # clear of it, which then swung the panel further into the path it was
+        # taking. Measured, the standoff itself is clear once the door is past
+        # about seventy degrees; it was never the destination that was wrong,
+        # only the route to it.
+        #
+        # So back out along the way you came in first, until there is room, and
+        # only then go where you are going. It is what a person does taking
+        # their hand out of a cupboard, and it needs no map -- just the
+        # direction the hand was pointing when it arrived.
+        retreat = body.grasp_centre() + facing * _WITHDRAW_M
+        if not work.committed.get("withdrawn"):
+            if float(np.linalg.norm(body.grasp_centre() - retreat)) < 0.02                     or body.grasp_centre()[1] <= place["front_y"] - _WITHDRAW_M:
+                work.committed["withdrawn"] = True
+            goal = retreat
+        else:
+            goal = clear_of(
+                np.asarray([place["centre_x"], place["front_y"] - _STANDOFF_M,
+                            place["mid_z"] + 0.06]),
+                work.mechanism.occupies(), _HAND_REACH_M)
         found = travel_to(body, goal, facing, support,
                            square_weight=_SQUARE_WEIGHT,
                            keep_out=keep_out(),
@@ -440,6 +463,8 @@ def advance(body: Body, seen: Scene, phase: int, now: float,
     elif gate == "released":
         done = float(seen.q[4]) >= _limits()[4][1] - 0.006
     elif gate == "clear_of_door":
+        # Judged against the SAME moved point the phase is driving to, or the
+        # phase can never satisfy its own gate.
         # AT the standoff, not merely past a line. This tested one axis, and one
         # axis is not a position: after swinging the door round, the hand ends
         # up well forward in y and eighteen centimetres off to the side, BEHIND
@@ -447,9 +472,10 @@ def advance(body: Body, seen: Scene, phase: int, now: float,
         # perfectly while being nowhere near where the phase means. It passed in
         # a single frame without the arm backing off at all, and every phase
         # after it then tried to work from behind the open door.
-        want = np.asarray([place["centre_x"],
-                           place["front_y"] - _STANDOFF_M,
-                           place["mid_z"] + 0.06])
+        want = clear_of(
+            np.asarray([place["centre_x"], place["front_y"] - _STANDOFF_M,
+                        place["mid_z"] + 0.06]),
+            work.mechanism.occupies(), _HAND_REACH_M)
         done = float(np.linalg.norm(here - want)) <= 0.05
     elif gate == "at_contents":
         done = (seen.object_at is not None
