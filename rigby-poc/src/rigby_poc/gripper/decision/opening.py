@@ -50,6 +50,13 @@ _CAST_DEG = (18.0, -18.0, 36.0, -36.0, 55.0, -55.0, 75.0, -75.0)
 #: Having moved at least this far, a mechanism that stops yielding is open
 #: rather than not yet started, metres.
 _STARTED_M = 0.012
+#: A fitted turning circle outside this range of radii, or scattering further
+#: than this from the fit, is not a pivot -- it is a straight pull with noise on
+#: it, or a bad fit. Metres.
+_PIVOT_MIN_M = 0.05
+_PIVOT_MAX_M = 0.80
+_PIVOT_FIT_M = 0.02
+
 #: How far to push ahead of the hand along the permitted direction, metres.
 #: A goal, not a step: the mechanism decides how much of it actually happens.
 PUSH_M = 0.05
@@ -177,15 +184,65 @@ class Mechanism:
         self.still_for = 0
 
 
-    def occupies(self, radius: float = 0.075) -> list:
-        """The space the thing now stands in, as spheres along its swept path.
+    def pivot(self) -> np.ndarray | None:
+        """Where the thing turns about, inferred from the SHAPE of its path.
 
-        Spheres rather than a box because the swept region of a hinge is an arc,
-        and a box around an arc swallows the opening the arm has to reach
-        through. Coarse, and that is the right amount of precision for "the door
-        is somewhere over there now".
+        The machine is never told there is a hinge. But it has just dragged
+        something through a sequence of positions, and if those positions lie on
+        a circle then the thing turns, and the centre of that circle is what it
+        turns about. If they lie on a line it slides and there is no pivot at
+        all. The shape of the path is the shape of the mechanism -- which is a
+        fact about mechanisms, not about doors, and costs one least-squares fit.
+
+        Fitted in the horizontal plane because these pivots are vertical. A
+        general version fits the plane of motion first; this does not, and would
+        not recognise a hatch that lifts.
         """
-        return [(point, radius) for point in self.swept]
+        if len(self.swept) < 5:
+            return None
+        points = np.asarray(self.swept)
+        x, y = points[:, 0], points[:, 1]
+        design = np.column_stack([2.0 * x, 2.0 * y, np.ones(len(x))])
+        answer, *_ = np.linalg.lstsq(design, x ** 2 + y ** 2, rcond=None)
+        cx, cy, c = float(answer[0]), float(answer[1]), float(answer[2])
+        span = float(np.sqrt(max(c + cx * cx + cy * cy, 0.0)))
+        drift = float(np.max(np.abs(np.hypot(x - cx, y - cy) - span)))
+        if not (_PIVOT_MIN_M <= span <= _PIVOT_MAX_M) or drift > _PIVOT_FIT_M:
+            return None
+        return np.asarray([cx, cy])
+
+    def occupies(self, radius: float = 0.06) -> list:
+        """Where the thing is NOW, as spheres.
+
+        Two corrections live in this one method, in opposite directions.
+
+        It first returned the WHOLE swept path, which is a history -- everywhere
+        the thing has been. A door that has swung ninety degrees is standing in
+        one place and the arc it came through is empty again, so walling off the
+        history blocked the very space the arm needed to get in front of the
+        opening, and blocked it intermittently, which made the arm oscillate in
+        place for ninety seconds.
+
+        It then returned only the last point, which is where the EDGE is. But a
+        door is a panel, not an edge: it spans from its hinge to its handle, and
+        an arm routing around the handle alone walks straight through the middle
+        of the panel and shoves the door shut again -- 72 degrees back to 1.5.
+
+        So: from the pivot, if the path says there is one, out to where the edge
+        now is. When there is no pivot the thing slid, and a slider occupies
+        roughly where it ended up.
+        """
+        if not self.swept:
+            return []
+        edge = np.asarray(self.swept[-1])
+        turn = self.pivot()
+        if turn is None:
+            return [(edge, radius)]
+        hub = np.asarray([turn[0], turn[1], float(edge[2])])
+        reach = float(np.linalg.norm(edge - hub))
+        steps = max(2, int(reach / 0.05) + 1)
+        return [(hub + (edge - hub) * along, radius)
+                for along in np.linspace(0.2, 1.0, steps)]
 
 
 def _turn_about(vector: np.ndarray, axis: np.ndarray, radians: float) -> np.ndarray:

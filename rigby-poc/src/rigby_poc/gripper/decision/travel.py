@@ -77,10 +77,21 @@ def detour(start: np.ndarray, end: np.ndarray, box: tuple) -> np.ndarray:
 
 
 def _hits_any(start: np.ndarray, end: np.ndarray, spheres: list) -> np.ndarray | None:
-    """The first sphere a straight line runs into, if any."""
+    """The first sphere a straight line runs into, if any.
+
+    Spheres that already contain the starting point are ignored, and that is not
+    a detail. The swept path of an opening motion ends WHERE THE HAND IS -- it
+    was the hand that traced it -- so the arm finishes every open standing
+    inside its own record of where the door went. Treated as an obstacle like
+    any other, that is a trap with no exit: every direction it tries is blocked,
+    including the one leading out. It parked 38 cm from the shelf and stayed
+    there. You cannot avoid a place you are already in. You can only leave it.
+    """
+    live = [(centre, radius) for centre, radius in spheres
+            if float(np.linalg.norm(start - centre)) >= radius]
     for fraction in np.linspace(0.0, 1.0, _SAMPLES):
         point = start + (end - start) * fraction
-        for centre, radius in spheres:
+        for centre, radius in live:
             if float(np.linalg.norm(point - centre)) < radius:
                 return np.asarray(centre)
     return None

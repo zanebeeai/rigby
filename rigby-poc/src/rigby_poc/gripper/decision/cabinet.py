@@ -440,14 +440,27 @@ def advance(body: Body, seen: Scene, phase: int, now: float,
     elif gate == "released":
         done = float(seen.q[4]) >= _limits()[4][1] - 0.006
     elif gate == "clear_of_door":
-        done = here[1] <= place["front_y"] - _STANDOFF_M + 0.04
+        # AT the standoff, not merely past a line. This tested one axis, and one
+        # axis is not a position: after swinging the door round, the hand ends
+        # up well forward in y and eighteen centimetres off to the side, BEHIND
+        # the door it has just opened -- which satisfies "far enough forward"
+        # perfectly while being nowhere near where the phase means. It passed in
+        # a single frame without the arm backing off at all, and every phase
+        # after it then tried to work from behind the open door.
+        want = np.asarray([place["centre_x"],
+                           place["front_y"] - _STANDOFF_M,
+                           place["mid_z"] + 0.06])
+        done = float(np.linalg.norm(here - want)) <= 0.05
     elif gate == "at_contents":
         done = (seen.object_at is not None
                 and float(np.linalg.norm(here - seen.object_at)) <= 0.035)
     elif gate == "has_contents":
         done = seen.holding()
     elif gate == "clear_of_cabinet":
-        done = here[1] <= place["front_y"] - _CLEAR_M + 0.03
+        # Same correction: out in front AND lined up with the opening, not just
+        # forward of a line that the whole swing of the door also satisfies.
+        done = (here[1] <= place["front_y"] - _CLEAR_M + 0.03
+                and abs(float(here[0] - place["centre_x"])) <= 0.09)
     elif gate == "over_spot":
         done = (float(np.linalg.norm((here - place["place"])[[0, 1]]))
                 <= _ON_SPOT_M and seen.holding())
