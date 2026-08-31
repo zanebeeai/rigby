@@ -299,6 +299,19 @@ def _model_xml(block_half, block_at, table_top: float,
       </body>
     </body>
   </worldbody>
+  <!-- THE JAWS ARE MECHANICALLY LINKED, as a parallel gripper's are: one
+       motor, one screw, both jaws always the same distance from the centre.
+       Without this they are two independent actuators that merely happen to be
+       commanded alike, and an object between them is free to push one closed
+       while the other opens. The APERTURE stays correct throughout -- which is
+       why nothing downstream noticed -- while the CENTRE walks sideways, and a
+       cabinet handle ended up pinned against one pad with the other shut on
+       nothing at all. Coupling them is what makes an object self-centre in the
+       jaws, and self-centring is most of what a parallel gripper is for. -->
+  <equality>
+    <joint joint1="finger_left" joint2="finger_right" polycoef="0 1 0 0 0"/>
+  </equality>
+
   <actuator>
     <motor joint="yaw" name="m_yaw" gear="1" ctrlrange="-80 80"/>
     <motor joint="lift" name="m_lift" gear="1" ctrlrange="-120 120"/>

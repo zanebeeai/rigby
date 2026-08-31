@@ -39,6 +39,23 @@ from ..body.manifest import spec
 from ..physics.model import JOINTS, Body
 
 
+#: The last pose each named reach settled on. A solver that restarts from
+#: wherever the BODY currently is starts, early in a move, a long way from its
+#: own previous answer -- so it re-searches from scratch every frame, lands in a
+#: different basin whenever the escalation happens to fire, and the target
+#: flickers between two arm configurations while the hand never arrives. Keeping
+#: the previous answer and trying it first makes the search stable across frames
+#: and, because it is nearly always still the best one, cheap.
+_WARM: dict[str, np.ndarray] = {}
+
+#: The pose each named reach began from. Travel is budgeted against THIS, not
+#: against wherever the arm has since got to. Measuring from the current pose
+#: ratchets: the moment the arm starts down a wrong basin the budget re-centres
+#: on it, the correct answer falls permanently out of range, and the arm walks
+#: steadily further away with every frame reporting that it is within budget.
+_ANCHOR: dict[str, np.ndarray] = {}
+
+
 @dataclass
 class Command:
     """What the controller should track, and how hard to squeeze."""

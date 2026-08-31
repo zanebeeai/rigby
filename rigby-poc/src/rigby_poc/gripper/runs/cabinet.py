@@ -13,6 +13,7 @@ from ..decision.solver import _reach_for
 from ..decision.cabinet import (
     PHASES,
     READY_AT,
+    Working,
     advance,
     decide,
     geometry,
@@ -59,6 +60,7 @@ def run(seconds: float = 40.0, fps: int = 30, table_top: float = 0.72,
         mujoco.mj_forward(body.model, body.data)
 
     latched = {"on": False}
+    work = Working()
     held = np.asarray(body.q())
     squeeze = 0.0
     phase = 0
@@ -74,9 +76,9 @@ def run(seconds: float = 40.0, fps: int = 30, table_top: float = 0.72,
     for index in range(int(seconds * fps)):
         now = index / fps
         seen = look_global(body, held, squeeze, latched)
-        phase = advance(body, seen, phase, now)
+        phase = advance(body, seen, phase, now, work)
         reached = max(reached, phase)
-        command = decide(body, seen, phase, table_top, now)
+        command = decide(body, seen, phase, table_top, now, work)
         squeeze = command.squeeze_n
         if not command.hold_station:
             held = held + np.clip(command.target - held,
@@ -111,7 +113,11 @@ def run(seconds: float = 40.0, fps: int = 30, table_top: float = 0.72,
             "block": _app(body.block()),
             "block_quat": [float(quat[0]), float(quat[1]),
                            float(quat[3]), float(quat[2])],
+            # Recorded for the viewer and the grader. The CONTROLLER never
+            # reads it -- it works out how far the thing has opened from how far
+            # its own hand has travelled.
             "door_deg": round(float(np.degrees(body.data.qpos[slot])), 2),
+            "opened_m": round(float(work.mechanism.opened_m), 4),
             "forces": {k: round(v, 2) for k, v in body.forces().items()},
             "opening_m": round(body.opening(), 5),
             "on_bench": bool(on_the_bench(body)),

@@ -17,13 +17,15 @@ difference in the result is attributable to that and to nothing else.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import mujoco
 import numpy as np
 
 from ..body.manifest import spec
+from .opening import PUSH_M, Mechanism
 from .solver import Command, _limits, _reach_for, _shut
+from .travel import travel_to
 from ..physics.model import Body
 
 #: The order of the work. Each phase names the gate that ends it.
@@ -75,9 +77,20 @@ _STAY_NEAR = 0.05
 #: real one.
 _MAX_TRAVEL = 4.7
 
-#: Which approaches have committed to their final run-in. Latched, because a
-#: threshold recomputed every frame is a threshold that chatters.
-_COMMITTED: dict[str, bool] = {}
+@dataclass
+class Working:
+    """What the controller remembers between frames, for ONE run.
+
+    This was two module-level dicts, which meant a second run in the same
+    process began believing whatever the first one had concluded -- fine for a
+    single task, wrong the moment anything sweeps.
+    """
+
+    #: What has been learned about the thing being opened, by moving it.
+    mechanism: Mechanism = field(default_factory=Mechanism)
+    #: Which approaches have committed to their final run-in. Latched, because a
+    #: threshold recomputed every frame is a threshold that chatters.
+    committed: dict = field(default_factory=dict)
 
 _HANDLE_SQUEEZE_N = 9.0
 _CARRY_SQUEEZE_N = 12.0
@@ -100,9 +113,10 @@ def geometry() -> dict:
     """The cabinet, in MuJoCo coordinates, from the manifest."""
     doc = spec()["scene"]["fridge"]
     return {
-        "hinge": np.asarray(doc["door"]["hinge_at"], dtype=float),
-        "handle_rel": np.asarray([float(doc["handle"]["at_from_hinge_m"]),
-                                  -float(doc["handle"]["stands_off_m"])]),
+        # No hinge, and no handle-relative-to-hinge. Where the door pivots and
+        # how far it swings are properties of the mechanism, and the machine
+        # discovers those by moving it. What stays is where the FURNITURE is,
+        # which is the same class of prior as knowing where the bench is.
         "centre_x": float(doc["centre"][0]),
         "front_y": float(doc["centre"][2]) - float(doc["inner_half_m"][2])
         - float(doc["wall_m"]),
@@ -112,21 +126,6 @@ def geometry() -> dict:
                              doc["place_target"][1]], dtype=float),
         "tolerance": float(doc["place_tolerance_m"]),
     }
-
-
-def handle_on_arc(degrees: float) -> np.ndarray:
-    """Where the handle is when the door stands at ``degrees``.
-
-    Trigonometry the machine is entitled to: it is the shape of the furniture,
-    the same class of prior as knowing where the bench is. What it is NOT
-    entitled to is the angle -- that has to be measured or inferred.
-    """
-    place = geometry()
-    radians = np.radians(degrees)
-    turn = np.asarray([[np.cos(radians), -np.sin(radians)],
-                       [np.sin(radians), np.cos(radians)]])
-    flat = place["hinge"] + turn @ place["handle_rel"]
-    return np.asarray([flat[0], flat[1], place["mid_z"]])
 
 
 @dataclass
@@ -182,12 +181,25 @@ def _grip_state(body: Body, commanded: np.ndarray, squeeze_n: float,
                & (np.asarray([q[4], q[5]]) < wide - 0.002))
     left, right = bool(settled[0]), bool(settled[1])
     latched["for"] = latched.get("for", 0) + 1 if (left and right) else 0
-    if latched["for"] >= 4:
+    if latched["for"] >= 4 and not latched.get("on"):
         latched["on"] = True
-    elif (squeeze_n <= 0.0
-          or bool(np.any(commanded[4:] > q[4:] + 0.004))
-          or float(np.min(q[4:])) <= shut + 0.004):
+        # Remember WHERE the grip closed. Letting go is judged against this
+        # rather than against where the fingers are right now, because where
+        # they are right now moves: a door being pulled round pushes the jaws
+        # about, and a command that sits a few millimetres outside a finger the
+        # object has just shoved inward looks exactly like an instruction to
+        # open. It is not. It is the same instruction as last frame, and the
+        # finger moved. The door was being dropped at 65 degrees by that.
+        latched["at"] = np.asarray(q[4:]).copy()
+    held_at = latched.get("at")
+    told_to_open = (held_at is not None
+                    and bool(np.any(commanded[4:] > held_at + 0.006)))
+    if squeeze_n <= 0.0 or told_to_open or float(np.min(q[4:])) <= shut + 0.004:
         latched["on"] = False
+        latched["at"] = None
+
+    # Obstruction: behind where it was sent AND stopped. Lag alone is an arm
+    # following a moving target, not an arm against something.
     stalled = bool(np.any((np.abs(commanded[:4] - q[:4]) > 0.08)
                           & (np.abs(qd[:4]) < 0.08)))
     return (left or latched["on"], right or latched["on"], stalled)
@@ -221,7 +233,7 @@ def look_global(body: Body, commanded: np.ndarray, squeeze_n: float,
 
 
 def decide(body: Body, seen: Scene, phase: int, support: float,
-           now: float) -> Command:
+           now: float, work: Working) -> Command:
     """One phase's command."""
     name, amount, _gate = PHASES[phase]
     place = geometry()
@@ -243,10 +255,10 @@ def decide(body: Body, seen: Scene, phase: int, support: float,
         # door. Once you have lined up, you go in.
         gap = float(np.linalg.norm(body.grasp_centre() - seen.handle_at))
         if gap <= 0.14:
-            _COMMITTED["to_handle"] = True
-        goal = (seen.handle_at if _COMMITTED.get("to_handle")
+            work.committed["to_handle"] = True
+        goal = (seen.handle_at if work.committed.get("to_handle")
                 else seen.handle_at + facing * 0.10)
-        found = _reach_for(body, goal, facing, support,
+        found = travel_to(body, goal, facing, support,
                            square_weight=_SQUARE_WEIGHT,
                            keep_out=keep_out(), stay_near=_STAY_NEAR,
                            warm_key=name, max_travel=_MAX_TRAVEL, ranked=True)
@@ -266,17 +278,33 @@ def decide(body: Body, seen: Scene, phase: int, support: float,
         if not seen.holding():
             return Command(target, _HANDLE_SQUEEZE_N,
                            "refused: lost the handle", hold_station=True)
-        # ONE STEP ALONG THE ARC. Not the destination -- the next point on the
-        # circle the hinge allows. Aiming at where the handle ends up pulls
-        # along a chord, which is partly into the hinge, and a hinge answers
-        # that by not moving.
-        goal = handle_on_arc(min(seen.door_deg + _ARC_STEP_DEG * 6.0,
-                                 _OPEN_ENOUGH_DEG + 6.0))
-        found = _reach_for(body, goal, None, support, stay_near=_STAY_NEAR,
+        # ASK THE MECHANISM WHICH WAY IT GOES.
+        #
+        # This used to compute where the handle would be at a given door angle,
+        # from the hinge position and the swing, both read out of the manifest.
+        # It opened exactly one piece of furniture and it did so by being told
+        # the answer. Nothing here knows this is a door: it pushes, watches
+        # where its own hand actually ended up, and goes that way next. The
+        # deflection IS the direction the mechanism permits, and re-asking every
+        # frame is what tracks a tangent that rotates.
+        hand = body.grasp_centre()
+        work.mechanism.start(-body.approach())
+        work.mechanism.observe(hand)
+        if work.mechanism.barred():
+            work.mechanism.cast_wider()
+        goal = hand + work.mechanism.aim() * PUSH_M
+        found = travel_to(body, goal, None, support, stay_near=_STAY_NEAR,
                            warm_key=name, max_travel=_MAX_TRAVEL, ranked=True)
         if found is not None:
-            target[:4] = q[:4] + (found - q[:4]) * 0.35
-        target[4] = target[5] = q[4]
+            target[:4] = q[:4] + (found - q[:4]) * 0.5
+        # HOLD EACH FINGER WHERE IT IS, not both where the left one is. An
+        # object is never exactly centred in the jaws, so the two fingers stop
+        # at different travels -- and commanding both to the left one's position
+        # tells the right one to OPEN by the difference. The grip latch reads
+        # that, correctly, as the hand being asked to let go, and releases. The
+        # door was being dropped at 67 degrees by a line that looks like it
+        # freezes the grip.
+        target[4], target[5] = q[4], q[5]
         return Command(target, _HANDLE_SQUEEZE_N)
 
     if name == "let_go":
@@ -287,7 +315,7 @@ def decide(body: Body, seen: Scene, phase: int, support: float,
         # Out of the door's way before crossing in front of the opening.
         goal = np.asarray([place["centre_x"], place["front_y"] - _STANDOFF_M,
                            place["mid_z"] + 0.06])
-        found = _reach_for(body, goal, facing, support,
+        found = travel_to(body, goal, facing, support,
                            square_weight=_SQUARE_WEIGHT,
                            keep_out=keep_out(), stay_near=_STAY_NEAR,
                            warm_key=name, max_travel=_MAX_TRAVEL, ranked=True)
@@ -307,7 +335,7 @@ def decide(body: Body, seen: Scene, phase: int, support: float,
         lined_up = float(np.linalg.norm(
             (body.grasp_centre() - outside)[[0, 2]])) < 0.03
         goal = seen.object_at if lined_up else outside
-        found = _reach_for(body, goal, facing, support,
+        found = travel_to(body, goal, facing, support,
                            square_weight=_SQUARE_WEIGHT,
                            keep_out=keep_out(), stay_near=_STAY_NEAR,
                            warm_key=name, max_travel=_MAX_TRAVEL, ranked=True)
@@ -330,13 +358,20 @@ def decide(body: Body, seen: Scene, phase: int, support: float,
         # Straight back out. Anything else swings what is held into a wall.
         here = body.grasp_centre()
         goal = np.asarray([here[0], place["front_y"] - _CLEAR_M, here[2]])
-        found = _reach_for(body, goal, facing, support,
+        found = travel_to(body, goal, facing, support,
                            square_weight=_SQUARE_WEIGHT,
                            keep_out=keep_out(), stay_near=_STAY_NEAR,
                            warm_key=name, max_travel=_MAX_TRAVEL, ranked=True)
         if found is not None:
             target[:4] = q[:4] + (found - q[:4]) * 0.5
-        target[4] = target[5] = q[4]
+        # HOLD EACH FINGER WHERE IT IS, not both where the left one is. An
+        # object is never exactly centred in the jaws, so the two fingers stop
+        # at different travels -- and commanding both to the left one's position
+        # tells the right one to OPEN by the difference. The grip latch reads
+        # that, correctly, as the hand being asked to let go, and releases. The
+        # door was being dropped at 67 degrees by a line that looks like it
+        # freezes the grip.
+        target[4], target[5] = q[4], q[5]
         return Command(target, _CARRY_SQUEEZE_N)
 
     if name == "carry_to_bench":
@@ -344,16 +379,23 @@ def decide(body: Body, seen: Scene, phase: int, support: float,
             return Command(target, _CARRY_SQUEEZE_N, "refused: nothing held",
                            hold_station=True)
         goal = place["place"] + np.asarray([0.0, 0.0, 0.12])
-        found = _reach_for(body, goal, None, support, keep_out=keep_out(),
+        found = travel_to(body, goal, None, support, keep_out=keep_out(),
                            stay_near=_STAY_NEAR, warm_key=name, max_travel=_MAX_TRAVEL, ranked=True)
         if found is not None:
             target[:4] = q[:4] + (found - q[:4]) * 0.35
-        target[4] = target[5] = q[4]
+        # HOLD EACH FINGER WHERE IT IS, not both where the left one is. An
+        # object is never exactly centred in the jaws, so the two fingers stop
+        # at different travels -- and commanding both to the left one's position
+        # tells the right one to OPEN by the difference. The grip latch reads
+        # that, correctly, as the hand being asked to let go, and releases. The
+        # door was being dropped at 67 degrees by a line that looks like it
+        # freezes the grip.
+        target[4], target[5] = q[4], q[5]
         return Command(target, _CARRY_SQUEEZE_N)
 
     # set_down
     goal = place["place"] + np.asarray([0.0, 0.0, 0.035])
-    found = _reach_for(body, goal, None, support, keep_out=keep_out(),
+    found = travel_to(body, goal, None, support, keep_out=keep_out(),
                        stay_near=_STAY_NEAR, warm_key=name, max_travel=_MAX_TRAVEL, ranked=True)
     if found is not None:
         target[:4] = q[:4] + (found - q[:4]) * 0.3
@@ -362,7 +404,8 @@ def decide(body: Body, seen: Scene, phase: int, support: float,
     return Command(target, 0.0 if low else _CARRY_SQUEEZE_N)
 
 
-def advance(body: Body, seen: Scene, phase: int, now: float) -> int:
+def advance(body: Body, seen: Scene, phase: int, now: float,
+            work: Working) -> int:
     """Whether this phase is finished."""
     gate = PHASES[phase][2]
     place = geometry()
@@ -374,7 +417,9 @@ def advance(body: Body, seen: Scene, phase: int, now: float) -> int:
     elif gate == "has_handle":
         done = seen.holding()
     elif gate == "door_open":
-        done = seen.door_deg >= _OPEN_ENOUGH_DEG
+        # It moved, and then nothing moved it further. Not an angle: an angle
+        # only exists for a hinge, and this has to work for a drawer too.
+        done = work.mechanism.opened()
     elif gate == "released":
         done = float(seen.q[4]) >= _limits()[4][1] - 0.006
     elif gate == "clear_of_door":
