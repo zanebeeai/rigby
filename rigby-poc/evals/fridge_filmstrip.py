@@ -16,12 +16,12 @@ from PIL import Image, ImageDraw
 
 sys.path.insert(0, "src")
 
-from rigby_poc.gripper import spec  # noqa: E402
-from rigby_poc.gripper_control import _reach_for  # noqa: E402
-from rigby_poc.gripper_fridge import (  # noqa: E402
+from rigby_poc.gripper.body.manifest import spec  # noqa: E402
+from rigby_poc.gripper.decision.solver import _reach_for  # noqa: E402
+from rigby_poc.gripper.decision.cabinet import (  # noqa: E402
     PHASES, READY_AT, advance, decide, look_global,
 )
-from rigby_poc.gripper_torque import JOINTS, computed_torque, make  # noqa: E402
+from rigby_poc.gripper.physics.model import JOINTS, computed_torque, make  # noqa: E402
 
 _ROOM = (440, 330)
 _WRIST = (240, 180)

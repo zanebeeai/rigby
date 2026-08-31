@@ -50,7 +50,7 @@ from dataclasses import dataclass, field
 
 import numpy as np
 
-from .gripper_torque import Body
+from ..physics.model import Body
 
 #: What the camera renders at. Coarse on purpose: a wrist camera is not a
 #: measuring instrument, and a metre of range across 150 rows is about the
@@ -88,7 +88,7 @@ _ARM_STILL = 0.08
 
 def _finger_floor() -> float:
     """The travel a fully shut finger reports. Fixed by the mechanism."""
-    from .gripper import spec
+    from ..body.manifest import spec
     for joint in spec()["kinematics"]["joints"]:
         if joint["name"] == "finger_left":
             return float(joint["range_m"][0])

@@ -17,7 +17,7 @@ import numpy as np
 
 sys.path.insert(0, "src")
 
-from rigby_poc.gripper_run import run  # noqa: E402
+from rigby_poc.gripper.runs.pick_and_place import run  # noqa: E402
 
 #: Placement and size, in MuJoCo coordinates. The bench is the region the scan
 #: grid covers; two of these sit outside it on purpose.

@@ -25,7 +25,7 @@ from typing import Any
 
 import numpy as np
 
-_CONFIG = Path(__file__).resolve().parents[2] / "config"
+_CONFIG = Path(__file__).resolve().parent
 
 
 @lru_cache(maxsize=1)

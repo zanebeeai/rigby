@@ -23,7 +23,7 @@ from .gripper import (
 )
 from .gripper_sim import GripperRun
 
-_PUBLIC = Path(__file__).resolve().parents[2] / "frontend" / "public"
+_PUBLIC = Path(__file__).resolve().parents[4] / "frontend" / "public"
 
 
 def _links(state: GripperState) -> list[dict]:

@@ -22,9 +22,9 @@ from dataclasses import dataclass
 import mujoco
 import numpy as np
 
-from .gripper import spec
-from .gripper_control import Command, _limits, _reach_for, _shut
-from .gripper_torque import Body
+from ..body.manifest import spec
+from .solver import Command, _limits, _reach_for, _shut
+from ..physics.model import Body
 
 #: The order of the work. Each phase names the gate that ends it.
 PHASES: tuple[tuple[str, float, str], ...] = (

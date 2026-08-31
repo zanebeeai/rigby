@@ -14,8 +14,8 @@ from pathlib import Path
 import mujoco
 import numpy as np
 
-from .gripper import spec
-from .gripper_control import (
+from ..body.manifest import spec
+from ..decision.pick_and_place import (
     PHASES,
     advance,
     decide,
@@ -27,10 +27,10 @@ from .gripper_control import (
     palm_facing,
     palm_to_object_m,
 )
-from .gripper_sense import Senses, sense
-from .gripper_torque import JOINTS, computed_torque, make
+from ..sensing.wrist_camera import Senses, sense
+from ..physics.model import JOINTS, computed_torque, make
 
-_PUBLIC = Path(__file__).resolve().parents[2] / "frontend" / "public"
+_PUBLIC = Path(__file__).resolve().parents[4] / "frontend" / "public"
 
 #: Joint speed ceilings, so the arm moves like a machine rather than a cut.
 #: Applied to the TARGET, not to the body: a rate limit on a torque controller

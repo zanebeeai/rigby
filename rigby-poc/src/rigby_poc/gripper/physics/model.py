@@ -36,7 +36,7 @@ from typing import Any
 import mujoco
 import numpy as np
 
-from .gripper import spec
+from ..body.manifest import spec
 
 #: Damping ratio and natural frequency of the closed-loop error. Dimensionless
 #: on purpose: they say how the error should decay, not what the arm weighs.

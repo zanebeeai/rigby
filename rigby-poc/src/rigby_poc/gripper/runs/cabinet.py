@@ -8,9 +8,9 @@ from pathlib import Path
 import mujoco
 import numpy as np
 
-from .gripper import spec
-from .gripper_control import _reach_for
-from .gripper_fridge import (
+from ..body.manifest import spec
+from ..decision.solver import _reach_for
+from ..decision.cabinet import (
     PHASES,
     READY_AT,
     advance,
@@ -19,9 +19,9 @@ from .gripper_fridge import (
     look_global,
     on_the_bench,
 )
-from .gripper_torque import JOINTS, computed_torque, make
+from ..physics.model import JOINTS, computed_torque, make
 
-_PUBLIC = Path(__file__).resolve().parents[2] / "frontend" / "public"
+_PUBLIC = Path(__file__).resolve().parents[4] / "frontend" / "public"
 
 
 def _ceiling() -> np.ndarray:
