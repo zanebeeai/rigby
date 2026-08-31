@@ -61,6 +61,9 @@ def run(seconds: float = 40.0, fps: int = 30, table_top: float = 0.72,
 
     latched = {"on": False}
     work = Working()
+    # The pose it started from is, by construction, clear of everything: it got
+    # there before anything had been moved. Retreats go back to it.
+    work.ready_q = None if ready is None else np.asarray(ready).copy()
     held = np.asarray(body.q())
     squeeze = 0.0
     phase = 0

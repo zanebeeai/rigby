@@ -50,8 +50,20 @@ _OPEN_ENOUGH_DEG = 78.0
 _ARC_STEP_DEG = 2.0
 #: Where the hand waits before going in, metres in front of the opening.
 _STANDOFF_M = 0.13
-#: How far to back straight out before going anywhere else, metres.
-_WITHDRAW_M = 0.22
+def _withdraw_far_enough() -> float:
+    """How far back takes the jaws off whatever they are around, metres.
+
+    The finger length plus a margin, from the manifest, because that is what
+    the number actually means: the bar is out of the hand once the hand has
+    moved further than the hand is deep. It was 220 mm, chosen by eye, and the
+    arm cannot extend that far backwards from the door -- measured, it reaches
+    85 mm and oscillates there, completely free, touching nothing, while a gate
+    waits for a displacement that is not available. Nothing was obstructing it
+    and nothing was wrong with its dexterity; it had simply been asked for more
+    room than the workspace has.
+    """
+    return float(spec()["kinematics"]["finger"]["length_m"]) + 0.035
+
 #: Close enough to count as arrived, metres. Tight, and it has to be: the
 #: handle is a 22 mm bar, so arriving 22 mm off centre puts it against one pad
 #: with nothing on the other side, and closing then shoves the bar sideways
@@ -99,11 +111,21 @@ class Working:
 
     #: What has been learned about the thing being opened, by moving it.
     mechanism: Mechanism = field(default_factory=Mechanism)
+    #: The joint pose the arm started from, known to be clear of everything.
+    ready_q: object = None
     #: Which approaches have committed to their final run-in. Latched, because a
     #: threshold recomputed every frame is a threshold that chatters.
     committed: dict = field(default_factory=dict)
 
-_HANDLE_SQUEEZE_N = 9.0
+#: Squeeze for holding a handle, newtons. Higher than it looks like it needs to
+#: be, and the reason is the load direction: pulling a door drags the handle
+#: DEEPER into the jaws, and a grip that merely holds against gravity lets it
+#: slide back until it bottoms out on the wrist plate 35 mm behind the pads.
+#: After that the plate is carrying the load, the handle's brackets ride against
+#: it, and the whole assembly ends up wrapped round the plate at 200 N. Friction
+#: at the pads is what stops an object migrating in the hand, and it has to beat
+#: the pull, not the weight.
+_HANDLE_SQUEEZE_N = 26.0
 _CARRY_SQUEEZE_N = 12.0
 
 
@@ -325,89 +347,44 @@ def decide(body: Body, seen: Scene, phase: int, support: float,
         return Command(target, 0.0)
 
     if name == "back_off":
-        # WITHDRAW BEFORE TRAVERSING.
+        # CLEAR THE OBJECT, THEN GO HOME. Both, in that order.
         #
-        # Letting go of a door leaves the hand out at the door's edge, and the
-        # straight line from there to anywhere in front of the cabinet crosses
-        # the panel -- so the arm swept the door shut on its way to standing
-        # clear of it, which then swung the panel further into the path it was
-        # taking. Measured, the standoff itself is clear once the door is past
-        # about seventy degrees; it was never the destination that was wrong,
-        # only the route to it.
+        # Going straight home is a joint-space move, and a joint-space move
+        # rotates the wrist. With the handle bar still sitting between the open
+        # jaws that binds -- measured, the arm sat 2.17 radians from home
+        # indefinitely against five to nine newtons, which is nothing, but it is
+        # a hook rather than a squeeze and no amount of torque turns a hook into
+        # a clearance. First slide straight out along the axis the hand let go
+        # with, which is a pure translation and takes the jaws off the bar.
+        # Then home, which needs no obstacle model because the arm reached that
+        # pose before anything had been moved.
         #
-        # So back out along the way you came in first, until there is room, and
-        # only then go where you are going. It is what a person does taking
-        # their hand out of a cupboard, and it needs no map -- just the
-        # direction the hand was pointing when it arrived.
-        # MEASURED FROM WHERE THE MOTION STARTED, not against a fixed line.
-        #
-        # Third time this exact mistake has bitten today, so it is worth the
-        # words. "Have I backed off far enough" was asked as "is my hand past
-        # y = front - 0.22", and holding a door open at ninety degrees ALREADY
-        # puts the hand well forward of that line. So the withdrawal reported
-        # itself complete on its first frame, before it had moved at all, and
-        # the arm went straight back to attempting the blocked direct route.
-        #
-        # Progress is a displacement, and a displacement needs the place you
-        # started from. An absolute threshold cannot express "I have moved away
-        # from something" -- it can only express "I am somewhere", and those are
-        # different questions.
+        # Neither half is sufficient. The translation alone leaves the arm in
+        # front of an open door with a geometry problem I spent most of a day
+        # failing to solve; the homing alone cannot get off the handle.
         here = body.grasp_centre()
         began = work.committed.setdefault("let_go_at", here.copy())
-        # ALONG THE HAND'S OWN AXIS, not along a world direction.
-        #
-        # "Back out the way you came in" was written as world -y, which is where
-        # the hand was pointing when it first reached the handle. By the time it
-        # lets go it has followed the door through ninety degrees and is
-        # pointing somewhere else entirely, so backing off in -y dragged the
-        # gripper sideways across the panel, shoved the door from 91 back to 63
-        # degrees, and jammed against it. The way you came in is a property of
-        # the hand, not of the room.
-        # AND NEVER INTO THE BENCH. The hand's axis picks up a downward tilt
-        # while following the arc round, so simply negating it aims the retreat
-        # at the table: measured, [-0.78, -0.55, -0.30]. The arm backed off ten
-        # millimetres, drove itself into the benchtop and stalled there for the
-        # rest of the run. Retreating away from something must not mean
-        # retreating into something else, and the one surface always present is
-        # the one the whole workspace stands on. Downward is removed; upward is
-        # left alone, because lifting clear of a thing is a fine way to leave it.
         out = work.committed.get("out_along")
         if out is None:
             out = -body.approach()
             out = np.asarray([out[0], out[1], max(float(out[2]), 0.0)])
             size = float(np.linalg.norm(out))
-            out = (out / size if size > 1e-6
-                   else np.asarray([0.0, -1.0, 0.0]))
+            out = out / size if size > 1e-6 else np.asarray([0.0, -1.0, 0.0])
             work.committed["out_along"] = out
+        out = np.asarray(out)
+
         if not work.committed.get("withdrawn"):
-            if float(np.linalg.norm(here - np.asarray(began))) >= _WITHDRAW_M:
+            if float(np.linalg.norm(here - np.asarray(began))) >= _withdraw_far_enough():
                 work.committed["withdrawn"] = True
-            goal = np.asarray(began) + np.asarray(out) * (_WITHDRAW_M + 0.05)
-        else:
-            goal = clear_of(
-                np.asarray([place["centre_x"], place["front_y"] - _STANDOFF_M,
-                            place["mid_z"] + 0.06]),
-                work.mechanism.occupies(), _HAND_REACH_M)
-        # WITHDRAWING IS A TRANSLATION, NOT A RE-ORIENTATION.
-        #
-        # Asking to face `facing` -- the world direction the hand had when it
-        # first arrived -- while backing out of the handle makes the wrist swing
-        # 48 degrees on the way, and a rotating pair of jaws wedges the bar
-        # between them instead of sliding off it. Kinematically every pose along
-        # the retreat is reachable to within 4 mm with no joint near a limit, so
-        # nothing here was ever a reach problem; the hand was simply turning
-        # while trying to leave. Hold the orientation it let go with, slide
-        # straight out, and turn afterwards. It is what you do taking your hand
-        # out of a hole.
-        aim_face = np.asarray(out) if not work.committed.get("withdrawn")             else facing
-        found = travel_to(body, goal, aim_face, support,
-                           square_weight=_SQUARE_WEIGHT,
-                           keep_out=keep_out(),
-                           avoid=work.mechanism.occupies(),
-                           stay_near=_STAY_NEAR,
-                           warm_key=name, ranked=True)
-        if found is not None:
-            target[:4] = q[:4] + (found - q[:4]) * float(np.clip(amount, 0, 1))
+            # Square to the axis it let go with, so this is a translation and
+            # not a turn: rotating jaws wedge a bar instead of sliding off it.
+            found = travel_to(body, np.asarray(began) + out * (_withdraw_far_enough() + 0.05),
+                              out, support, square_weight=_SQUARE_WEIGHT,
+                              stay_near=_STAY_NEAR, warm_key=name, ranked=True)
+            if found is not None:
+                target[:4] = q[:4] + (found - q[:4]) * float(np.clip(amount, 0, 1))
+        elif work.ready_q is not None:
+            target[:4] = q[:4] + (np.asarray(work.ready_q) - q[:4]) * 0.25
         target[4] = target[5] = _limits()[4][1]
         return Command(target)
 
@@ -514,20 +491,16 @@ def advance(body: Body, seen: Scene, phase: int, now: float,
     elif gate == "released":
         done = float(seen.q[4]) >= _limits()[4][1] - 0.006
     elif gate == "clear_of_door":
-        # Judged against the SAME moved point the phase is driving to, or the
-        # phase can never satisfy its own gate.
-        # AT the standoff, not merely past a line. This tested one axis, and one
-        # axis is not a position: after swinging the door round, the hand ends
-        # up well forward in y and eighteen centimetres off to the side, BEHIND
-        # the door it has just opened -- which satisfies "far enough forward"
-        # perfectly while being nowhere near where the phase means. It passed in
-        # a single frame without the arm backing off at all, and every phase
-        # after it then tried to work from behind the open door.
-        want = clear_of(
-            np.asarray([place["centre_x"], place["front_y"] - _STANDOFF_M,
-                        place["mid_z"] + 0.06]),
-            work.mechanism.occupies(), _HAND_REACH_M)
-        done = float(np.linalg.norm(here - want)) <= 0.05
+        # Home is a joint pose, so this is a joint-space question. The earlier
+        # version asked whether the hand had arrived at a computed standoff
+        # beside the open door -- which was the right question for the phase it
+        # used to be, and is the wrong one now that the phase simply goes back
+        # to where it started. The gate has to ask about the motion actually
+        # being performed.
+        done = (work.committed.get("withdrawn", False)
+                and work.ready_q is not None
+                and float(np.linalg.norm(np.asarray(seen.q[:4])
+                                         - np.asarray(work.ready_q))) <= 0.12)
     elif gate == "at_contents":
         done = (seen.object_at is not None
                 and float(np.linalg.norm(here - seen.object_at)) <= 0.035)
