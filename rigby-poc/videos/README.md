@@ -40,3 +40,20 @@ The unfinished task, kept because it is the honest state of it. The arm finds
 the cabinet handle and closes on it, and the door does not open. Room camera
 with the wrist camera inset, and a live readout of phase, door angle, jaw
 opening and whether the grip has latched.
+
+## gripper-two-cameras.webm
+
+The same pick-and-place, seen through both cameras at once: the corner camera
+full frame, and the wrist camera inset top-right. The inset is not an
+illustration -- it is the image the controller is segmenting to find the block,
+frame for frame, so you can watch it lose sight of the block as it closes in and
+fall back on what it remembers.
+
+The readout carries the phase, the jaw opening, whether the grip has latched,
+and whether the block is currently in view or the machine is running blind.
+
+The bench keeps its single key light, unchanged, because that lighting is an
+INPUT: the controller finds the block by segmenting warm pixels, so relighting
+the scene for a nicer picture would change the run. The corner frames are
+brightened afterwards, on the recorded image only, which the simulation never
+sees.
