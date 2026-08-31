@@ -18,7 +18,7 @@
     },
     "joints": [
       {
-        "name": "yaw",
+        "name": "base",
         "kind": "revolute",
         "axis": [
           0,
@@ -31,7 +31,7 @@
         ]
       },
       {
-        "name": "lift",
+        "name": "segment_1",
         "kind": "revolute",
         "axis": [
           1,
@@ -44,7 +44,7 @@
         ]
       },
       {
-        "name": "elbow",
+        "name": "segment_2",
         "kind": "revolute",
         "axis": [
           1,
@@ -57,7 +57,7 @@
         ]
       },
       {
-        "name": "wrist",
+        "name": "segment_3",
         "kind": "revolute",
         "axis": [
           1,
@@ -131,10 +131,10 @@
   },
   "part_groups": {
     "arm": [
-      "yaw",
-      "lift",
-      "elbow",
-      "wrist"
+      "base",
+      "segment_1",
+      "segment_2",
+      "segment_3"
     ],
     "digits": [
       "finger_left",
@@ -177,8 +177,8 @@
       ]
     },
     {
-      "name": "lift",
-      "solver": "lift",
+      "name": "segment_1",
+      "solver": "segment_1",
       "parts": "arm",
       "amplitude": "a RATE of rise, re-run every frame, not a height",
       "describes": "raise the arm, still gripping",
@@ -385,7 +385,7 @@
         "stands_off_m": 0.082,
         "radius_m": 0.011,
         "half_length_m": 0.09,
-        "note": "A vertical bar on brackets, so a parallel gripper closing along its own x axis can take it from in front. It stands 82 mm off the door because the fingers are 70 mm long: at the 38 mm it started at, the jaws closed with one pad on the handle and the other 9 N deep into the door panel, holding the door SHUT while the arm pulled. A handle has to have room behind it for the hand. The brackets sit at the two ENDS of the bar, not its middle. With one central bracket the jaws closed with one pad on the bar and the other 9 N into the bracket behind it, which is a grip on the door rather than on the handle. Real handles mount at the ends for exactly this reason: the middle has to be free for a hand. The bar is 180 mm long with its brackets 164 mm apart, because the wrist plate is 80 mm tall and sits 47 mm behind the grasp centre -- so whenever the gripper holds the bar, the plate is INSIDE the bracket span. At the original 96 mm spacing that left 8 mm of margin a side, and any misalignment as the door swung jammed the plate between the brackets at 280 N, which no retreat could pull against. A handle has to have room for the whole hand, not just the fingers.",
+        "note": "A vertical bar on brackets, so a parallel gripper closing along its own x axis can take it from in front. It stands 82 mm off the door because the fingers are 70 mm long: at the 38 mm it started at, the jaws closed with one pad on the handle and the other 9 N deep into the door panel, holding the door SHUT while the arm pulled. A handle has to have room behind it for the hand. The brackets sit at the two ENDS of the bar, not its middle. With one central bracket the jaws closed with one pad on the bar and the other 9 N into the bracket behind it, which is a grip on the door rather than on the handle. Real handles mount at the ends for exactly this reason: the middle has to be free for a hand. The bar is 180 mm long with its brackets 164 mm apart, because the gripper plate is 80 mm tall and sits 47 mm behind the grasp centre -- so whenever the gripper holds the bar, the plate is INSIDE the bracket span. At the original 96 mm spacing that left 8 mm of margin a side, and any misalignment as the door swung jammed the plate between the brackets at 280 N, which no retreat could pull against. A handle has to have room for the whole hand, not just the fingers.",
         "brackets_at_z": [
           -0.082,
           0.082
@@ -404,7 +404,7 @@
       "place_tolerance_m": 0.08
     },
     "cameras": {
-      "note": "Two viewpoints, which is the smallest number that answers both questions a manipulation task asks: WHERE IS EVERYTHING, which a wrist camera buried in the workspace cannot see, and WHERE EXACTLY IS THIS, which a room camera three quarters of a metre away cannot resolve.",
+      "note": "Two viewpoints, which is the smallest number that answers both questions a manipulation task asks: WHERE IS EVERYTHING, which a gripper camera buried in the workspace cannot see, and WHERE EXACTLY IS THIS, which a room camera three quarters of a metre away cannot resolve.",
       "room": {
         "at": [
           -1.05,
@@ -419,7 +419,7 @@
         "fovy_deg": 52.0,
         "note": "In the corner, high, seeing the whole bench: the arm, the cabinet, and where things get put down."
       },
-      "wrist": {
+      "segment_3": {
         "mounted_on": "plate",
         "fovy_deg": 70.0,
         "note": "Already there. Sees detail, and only what the hand is pointed at."
@@ -430,12 +430,162 @@
     "note": "How fast each joint may move, which the range of motion does not say. Unlimited, the solvers move a FRACTION OF THE REMAINING DISTANCE each frame, so the closer they are to a large correction the harder they snap: measured, 472 deg/s at the elbow on the lift-to-carry handover, about 1.3 revolutions a second. The humanoid learned the same lesson and carries angular_rate_limits for the same reason -- a pose envelope bounds where a joint may be, never how fast it gets there, and every pose along a snap is legal.",
     "reference": "A collaborative arm runs 60-120 deg/s in normal operation and tops out near 180. Parallel grippers close at 50-150 mm/s.",
     "joints_deg_per_s": {
-      "yaw": 110.0,
-      "lift": 85.0,
-      "elbow": 100.0,
-      "wrist": 140.0
+      "base": 110.0,
+      "segment_1": 85.0,
+      "segment_2": 100.0,
+      "segment_3": 140.0
     },
     "finger_m_per_s": 0.07,
     "finger_note": "This is the APERTURE rate -- how fast the gap between the jaws changes -- which is what a gripper's datasheet quotes. Both fingers move, so each one is limited to half of it. Applying it per finger made the jaws close at 0.14 m/s, twice the declared figure, and it read on screen as the jaws snapping shut."
+  },
+  "directed": {
+    "note": "The vocabulary a PLANNER works in, as opposed to the phase list a scripted controller follows. The planner never names a motion: it names a number that should become true and which controls may pursue it, and a greedy search finds the joint angles. Deciding what ought to be true is a judgement about the task; finding the pose that makes it true is a search.",
+    "why_places_and_not_only_objects": "The first version offered only object-relative numbers, every one of which is unreadable until something has been seen -- and the machine begins blind. The planner had nothing it could ask for, the search correctly reported that no control moved the number, and the arm sat still with its error frozen at its starting value. A vocabulary that cannot express 'go and look' cannot express this task.",
+    "goals": [
+      {
+        "name": "hand_x_m",
+        "always_readable": true,
+        "describes": "where the hand is, across"
+      },
+      {
+        "name": "hand_y_m",
+        "always_readable": true,
+        "describes": "where the hand is, in depth"
+      },
+      {
+        "name": "hand_z_m",
+        "always_readable": true,
+        "describes": "how high the hand is"
+      },
+      {
+        "name": "hand_pointing_down",
+        "always_readable": true,
+        "describes": "how squarely the palm faces the bench, 1 for straight down. This is what replaced the pair of view_ goals: because the camera is fixed to the hand, aiming the eye and orienting the hand are the same act, and there is no reason to name them twice."
+      },
+      {
+        "name": "grip_tip_spread_m",
+        "always_readable": true,
+        "describes": "the gap between the pads, from the encoders"
+      },
+      {
+        "name": "palm_to_object_m",
+        "always_readable": false,
+        "describes": "metres from the gripping surfaces to the object's surface"
+      },
+      {
+        "name": "object_in_grasp_m",
+        "always_readable": false,
+        "describes": "metres from the object to the LINE BETWEEN THE PADS. Near zero means inside the opening, which is the condition for closing ON it rather than beside it."
+      },
+      {
+        "name": "palm_facing",
+        "always_readable": false,
+        "describes": "+1 looking straight at the face being approached, 0 edge-on"
+      },
+      {
+        "name": "object_over_target_m",
+        "always_readable": false,
+        "describes": "horizontal metres from what is held to the middle of the bin"
+      },
+      {
+        "name": "object_above_rim_m",
+        "always_readable": false,
+        "describes": "how far the held object's underside clears the rim. Negative would strike the wall."
+      }
+    ],
+    "readable_but_not_askable": [
+      {
+        "name": "object_in_target",
+        "why": "the outcome. Naming it as a target is naming the goal as its own method."
+      },
+      {
+        "name": "holding",
+        "why": "a state, entered by closing on something, not a number to steer"
+      },
+      {
+        "name": "object_seen",
+        "why": "a fact about the camera, changed by aiming it -- steer view_x_m and view_y_m instead"
+      }
+    ],
+    "controls": [
+      {
+        "name": "arm",
+        "moves": [
+          "base",
+          "segment_1",
+          "segment_2",
+          "segment_3"
+        ],
+        "describes": "the whole arm together -- use this to put the hand or the eye somewhere"
+      },
+      {
+        "name": "base",
+        "moves": [
+          "base"
+        ]
+      },
+      {
+        "name": "segment_1",
+        "moves": [
+          "segment_1"
+        ]
+      },
+      {
+        "name": "segment_2",
+        "moves": [
+          "segment_2"
+        ]
+      },
+      {
+        "name": "segment_3",
+        "moves": [
+          "segment_3"
+        ]
+      },
+      {
+        "name": "grip",
+        "moves": [
+          "finger_left",
+          "finger_right"
+        ],
+        "describes": "the jaws, one control because they are mechanically linked. Offering them separately would let a search ask for something the mechanism cannot do and then score it as an improvement."
+      }
+    ],
+    "why_not_a_view_point": "Looking was first offered as view_x_m/view_y_m: where the camera's axis meets the bench. It read as a place, but it was a RAY INTERSECTION, and the cheapest way to move it is to translate the camera rather than turn it. The search duly drove the hand to 8 cm above the bench with the lens still level, which scored well and saw nothing. The camera is bolted to the hand, so the honest quantity is the hand's own orientation."
+  },
+  "sensors": {
+    "note": "Every instrument the machine is allowed to read. The rule has not changed -- as few as will do the job -- and these two were added because a run proved the job could not be done without them.",
+    "instruments": [
+      {
+        "name": "gripper_camera",
+        "kind": "camera",
+        "mounted": "on the plate, looking along the approach axis",
+        "reads": "warm pixels, segmented, for where the object is across the bench",
+        "cannot_read": "how far away anything is. A camera looking down a line says where along the line, never how far."
+      },
+      {
+        "name": "room_camera",
+        "kind": "camera",
+        "mounted": "fixed in the corner of the room",
+        "reads": "the whole scene, for the planner to look at"
+      },
+      {
+        "name": "tip_load_cells",
+        "kind": "force",
+        "mounted": "one in each fingertip pad",
+        "reads": "normal force at each pad, in newtons",
+        "blind_to": "WHAT it is touching. A load cell reports a number, not the identity of what pressed on it, so the reading sums every contact on that pad whatever produced it.",
+        "why_added": "holding was inferred from the encoders -- fingers that will not close further while being driven shut. Fingers that have stopped closing may simply have met EACH OTHER, so closing on nothing read exactly like closing on the block. The planner was told it had the block, said so in its own words, and walked down its plan with empty jaws."
+      },
+      {
+        "name": "gripper_rangefinder",
+        "kind": "time_of_flight",
+        "mounted": "beside the gripper camera, pointed along the approach axis",
+        "reads": "distance to the first surface ahead, in metres",
+        "sits_on_the_centre_line": "the fingers slide out to either side of it, so the beam passes between the jaws rather than into them",
+        "why_added": "it answers the one question the camera cannot: HEIGHT. Without it the only way to find the bench was to open the jaws wide and close until they stalled.",
+        "reads_its_ceiling_when_clear": 1.5
+      }
+    ]
   }
 }

@@ -47,7 +47,7 @@ _OMEGA = 12.0
 _FINGER_OMEGA = 26.0
 
 #: Names in the order their joints appear, which is also the order of qpos.
-JOINTS = ("yaw", "lift", "elbow", "wrist", "finger_left", "finger_right")
+JOINTS = ("base", "segment_1", "segment_2", "segment_3", "finger_left", "finger_right")
 
 
 #: The original single key light. The pick-and-place was tuned under it and its
@@ -261,29 +261,29 @@ def _model_xml(block_half, block_at, table_top: float,
     </body>
 
     <body name="base" pos="{bx} {by} {bz}">
-      <joint name="yaw" type="hinge" axis="0 0 1" range="{deg('yaw')}"/>
-      <geom name="shoulder" type="sphere" size="{radii[0] * 1.3}" mass="0.6"
+      <joint name="base" type="hinge" axis="0 0 1" range="{deg('base')}"/>
+      <geom name="base_hub" type="sphere" size="{radii[0] * 1.3}" mass="0.6"
             rgba="0.42 0.47 0.56 1"/>
       <body name="link1" pos="0 0 0">
-        <joint name="lift" type="hinge" axis="1 0 0" range="{deg('lift')}"/>
+        <joint name="segment_1" type="hinge" axis="1 0 0" range="{deg('segment_1')}"/>
         <geom name="seg1" type="capsule" fromto="0 0 0 0 {lengths[0]} 0"
               size="{radii[0]}" mass="1.1" rgba="0.42 0.47 0.56 1"/>
         <body name="link2" pos="0 {lengths[0]} 0">
-          <joint name="elbow" type="hinge" axis="1 0 0" range="{deg('elbow')}"/>
+          <joint name="segment_2" type="hinge" axis="1 0 0" range="{deg('segment_2')}"/>
           <geom name="seg2" type="capsule" fromto="0 0 0 0 {lengths[1]} 0"
                 size="{radii[1]}" mass="0.8" rgba="0.42 0.47 0.56 1"/>
           <body name="link3" pos="0 {lengths[1]} 0">
-            <joint name="wrist" type="hinge" axis="1 0 0" range="{deg('wrist')}"/>
+            <joint name="segment_3" type="hinge" axis="1 0 0" range="{deg('segment_3')}"/>
             <geom name="seg3" type="capsule" fromto="0 0 0 0 {lengths[2]} 0"
                   size="{radii[2]}" mass="0.4" rgba="0.42 0.47 0.56 1"/>
             <body name="plate" pos="0 {lengths[2]} 0">
-              <!-- The wrist camera. Mounted behind and above the plate looking
+              <!-- The gripper camera. Mounted behind and above the plate looking
                    straight down the approach axis, so the fingers frame the
                    bottom of the view the way they do on a real wrist cam.
                    xyaxes gives right=+x and up=+z, which puts the view
                    direction along local +y -- the direction the hand reaches.
                    This is the ONLY exteroceptive instrument on the machine. -->
-              <camera name="wrist" pos="0 -0.02 0.055" xyaxes="1 0 0 0 0 1"
+              <camera name="gripper" pos="0 -0.02 0.055" xyaxes="1 0 0 0 0 1"
                       fovy="70"/>
               <geom name="plate_geom" contype="4" conaffinity="3" type="box" size="0.05 0.012 0.04"
                     mass="0.35" rgba="0.25 0.5 0.7 1"/>
@@ -323,10 +323,10 @@ def _model_xml(block_half, block_at, table_top: float,
   </equality>
 
   <actuator>
-    <motor joint="yaw" name="m_yaw" gear="1" ctrlrange="-80 80"/>
-    <motor joint="lift" name="m_lift" gear="1" ctrlrange="-120 120"/>
-    <motor joint="elbow" name="m_elbow" gear="1" ctrlrange="-90 90"/>
-    <motor joint="wrist" name="m_wrist" gear="1" ctrlrange="-40 40"/>
+    <motor joint="base" name="m_yaw" gear="1" ctrlrange="-80 80"/>
+    <motor joint="segment_1" name="m_lift" gear="1" ctrlrange="-120 120"/>
+    <motor joint="segment_2" name="m_elbow" gear="1" ctrlrange="-90 90"/>
+    <motor joint="segment_3" name="m_wrist" gear="1" ctrlrange="-40 40"/>
     <motor joint="finger_left" name="m_left" gear="1" ctrlrange="-60 60"/>
     <motor joint="finger_right" name="m_right" gear="1" ctrlrange="-60 60"/>
   </actuator>
@@ -377,8 +377,8 @@ class Body:
         return float(max(0.0, np.linalg.norm(left - right) - 2.0 * thickness))
 
     def view(self, width: int = 320, height: int = 240,
-             camera: str = "wrist") -> np.ndarray:
-        """What the wrist camera sees, as RGB pixels.
+             camera: str = "gripper") -> np.ndarray:
+        """What the gripper camera sees, as RGB pixels.
 
         A real render through a real camera in the model, not a geometric
         stand-in. The renderer is built once and kept: constructing one per
@@ -398,15 +398,23 @@ class Body:
         viewer.update_scene(self.data, camera=camera)
         return viewer.render()
 
-    def camera_pose(self) -> tuple[np.ndarray, np.ndarray]:
-        """Where the wrist camera is and how it is pointed, in the world.
+    def camera_pose(self, name: str = "gripper"
+                    ) -> tuple[np.ndarray, np.ndarray]:
+        """Where a camera is and how it is pointed, in the world.
 
-        Known from the arm's own joint encoders and the fixed mounting, which is
-        why a robot may use it: it is proprioception, not perception.
+        For the hand camera this is proprioception: the arm's joint encoders
+        plus a fixed mounting. For the room camera it is calibration -- a fixed
+        camera whose place in the room was measured once. Both are things a real
+        machine may know without looking at anything.
         """
-        index = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_CAMERA, "wrist")
+        index = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_CAMERA, name)
         return (np.asarray(self.data.cam_xpos[index]),
                 np.asarray(self.data.cam_xmat[index]).reshape(3, 3))
+
+    def camera_fovy(self, name: str = "gripper") -> float:
+        """A camera's vertical field of view in degrees, as the model declares."""
+        index = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_CAMERA, name)
+        return float(self.model.cam_fovy[index])
 
     def approach(self) -> np.ndarray:
         """The direction the gripper points, from the plate out past the pads."""
@@ -440,6 +448,82 @@ class Body:
                 if geom in names:
                     out[digit] = max(out.get(digit, 0.0), float(abs(force[0])))
         return out
+
+    #: Every geom that is part of the hand itself.
+    _OWN_GEOMS = ("left_geom", "right_geom", "plate_geom")
+
+    def tip_forces(self) -> tuple[float, float]:
+        """Normal force at each fingertip pad, in newtons. A real load cell.
+
+        Deliberately BLIND to what it is touching. forces() above filters to
+        contacts involving block_geom, which is fine for scoring a run from the
+        outside but is ground truth: a load cell in a fingertip reports a
+        number, not the identity of what pressed on it. This sums every contact
+        on each pad, whatever produced it -- the block, the bench, the bin, the
+        other finger.
+
+        This is what replaces inferring a grip from the encoders. Fingers that
+        have stopped closing are not necessarily fingers with something between
+        them; they may simply have met each other. Force tells them apart.
+        """
+        left = right = 0.0
+        force = np.zeros(6)
+        for index in range(self.data.ncon):
+            contact = self.data.contact[index]
+            names = {
+                mujoco.mj_id2name(self.model, mujoco.mjtObj.mjOBJ_GEOM, contact.geom1),
+                mujoco.mj_id2name(self.model, mujoco.mjtObj.mjOBJ_GEOM, contact.geom2),
+            }
+            # SELF-TOUCH IS NOT A GRIP. With nothing between them the jaws run
+            # all the way shut and press on EACH OTHER, and a pad that reports
+            # every force it feels reports that one too -- both cells reading
+            # hard with the opening at 0.00 cm. Measuring force instead of
+            # inferring it from the encoders removed one route to "holding
+            # nothing" and left this one open.
+            #
+            # A machine can tell the difference without being told what it is
+            # touching: it knows its own geometry, so a contact whose other side
+            # is also part of the gripper is itself, not the world.
+            if names <= set(self._OWN_GEOMS):
+                continue
+            mujoco.mj_contactForce(self.model, self.data, index, force)
+            size = float(abs(force[0]))
+            if "left_geom" in names:
+                left = max(left, size)
+            if "right_geom" in names:
+                right = max(right, size)
+        return left, right
+
+    def range_ahead(self, reach_m: float = 1.5) -> tuple[float, str]:
+        """Distance from the wrist to the first surface along the approach axis.
+
+        A time-of-flight rangefinder bolted beside the gripper camera and pointed
+        the same way. It sits on the centre line, and the fingers slide out to
+        either side of it, so the beam passes between the jaws rather than into
+        them -- which is what makes the reading mean "how far to what is in
+        front of the hand".
+
+        It answers the one question the top-down camera cannot: HEIGHT. A camera
+        looking straight down sees where a thing is across the bench and says
+        nothing about how far below it is; that gap is why the jaws were opened
+        wide and closed until they stalled. One number fixes it.
+
+        Returns the distance and the name of what was struck. The name is for
+        the log and for tests -- it is not offered to the planner, because a
+        rangefinder returns a distance and nothing else.
+        """
+        origin, _ = self.camera_pose()
+        direction = np.ascontiguousarray(self.approach(), dtype=np.float64)
+        hit = np.zeros(1, dtype=np.int32)
+        distance = mujoco.mj_ray(
+            self.model, self.data,
+            np.ascontiguousarray(origin, dtype=np.float64), direction,
+            None, 1, -1, hit)
+        if distance < 0.0 or distance > reach_m:
+            return reach_m, ""
+        struck = mujoco.mj_id2name(
+            self.model, mujoco.mjtObj.mjOBJ_GEOM, int(hit[0])) or ""
+        return float(distance), struck
 
     def penetration_mm(self) -> float:
         """Deepest the gripper is inside the block, in millimetres.
