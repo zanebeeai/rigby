@@ -71,6 +71,15 @@ READY_AT = np.asarray([0.02, -0.02, 1.14])
 #: How much a metre of joint travel is worth against a metre of position error.
 #: Enough to stop the solver crossing the room for a millimetre.
 _STAY_NEAR = 0.05
+#: RETIRED, and why. The travel budget existed to stop the solver answering a
+#: reach with a configuration on the far side of the workspace. Once every reach
+#: became a short step along a straight line, it could no longer do that -- it is
+#: never asked about anywhere distant -- so the budget stopped protecting
+#: anything and started doing harm: anchored at the phase's first frame, it
+#: capped the TOTAL motion of a phase, and following a door through ninety
+#: degrees is one long continuous motion. The arm swung the door to 46 degrees
+#: and then stopped dead against its own allowance. Structure beats a number.
+#:
 #: The most the arm may reconfigure to service one reach, radians summed over
 #: the joints. Generous enough for any reach in this workspace and far short of
 #: below the 5.1 the over-the-shoulder contortion needs. A narrow gap, and a
@@ -261,7 +270,7 @@ def decide(body: Body, seen: Scene, phase: int, support: float,
         found = travel_to(body, goal, facing, support,
                            square_weight=_SQUARE_WEIGHT,
                            keep_out=keep_out(), stay_near=_STAY_NEAR,
-                           warm_key=name, max_travel=_MAX_TRAVEL, ranked=True)
+                           warm_key=name, ranked=True)
         if found is not None:
             target[:4] = q[:4] + (found - q[:4]) * float(np.clip(amount, 0, 1))
         target[4] = target[5] = _limits()[4][1]
@@ -294,7 +303,7 @@ def decide(body: Body, seen: Scene, phase: int, support: float,
             work.mechanism.cast_wider()
         goal = hand + work.mechanism.aim() * PUSH_M
         found = travel_to(body, goal, None, support, stay_near=_STAY_NEAR,
-                           warm_key=name, max_travel=_MAX_TRAVEL, ranked=True)
+                           warm_key=name, ranked=True)
         if found is not None:
             target[:4] = q[:4] + (found - q[:4]) * 0.5
         # HOLD EACH FINGER WHERE IT IS, not both where the left one is. An
@@ -318,7 +327,7 @@ def decide(body: Body, seen: Scene, phase: int, support: float,
         found = travel_to(body, goal, facing, support,
                            square_weight=_SQUARE_WEIGHT,
                            keep_out=keep_out(), stay_near=_STAY_NEAR,
-                           warm_key=name, max_travel=_MAX_TRAVEL, ranked=True)
+                           warm_key=name, ranked=True)
         if found is not None:
             target[:4] = q[:4] + (found - q[:4]) * float(np.clip(amount, 0, 1))
         target[4] = target[5] = _limits()[4][1]
@@ -338,7 +347,7 @@ def decide(body: Body, seen: Scene, phase: int, support: float,
         found = travel_to(body, goal, facing, support,
                            square_weight=_SQUARE_WEIGHT,
                            keep_out=keep_out(), stay_near=_STAY_NEAR,
-                           warm_key=name, max_travel=_MAX_TRAVEL, ranked=True)
+                           warm_key=name, ranked=True)
         if found is not None:
             target[:4] = q[:4] + (found - q[:4]) * float(np.clip(amount, 0, 1))
         target[4] = target[5] = _limits()[4][1]
@@ -361,7 +370,7 @@ def decide(body: Body, seen: Scene, phase: int, support: float,
         found = travel_to(body, goal, facing, support,
                            square_weight=_SQUARE_WEIGHT,
                            keep_out=keep_out(), stay_near=_STAY_NEAR,
-                           warm_key=name, max_travel=_MAX_TRAVEL, ranked=True)
+                           warm_key=name, ranked=True)
         if found is not None:
             target[:4] = q[:4] + (found - q[:4]) * 0.5
         # HOLD EACH FINGER WHERE IT IS, not both where the left one is. An
@@ -380,7 +389,7 @@ def decide(body: Body, seen: Scene, phase: int, support: float,
                            hold_station=True)
         goal = place["place"] + np.asarray([0.0, 0.0, 0.12])
         found = travel_to(body, goal, None, support, keep_out=keep_out(),
-                           stay_near=_STAY_NEAR, warm_key=name, max_travel=_MAX_TRAVEL, ranked=True)
+                           stay_near=_STAY_NEAR, warm_key=name, ranked=True)
         if found is not None:
             target[:4] = q[:4] + (found - q[:4]) * 0.35
         # HOLD EACH FINGER WHERE IT IS, not both where the left one is. An
@@ -396,7 +405,7 @@ def decide(body: Body, seen: Scene, phase: int, support: float,
     # set_down
     goal = place["place"] + np.asarray([0.0, 0.0, 0.035])
     found = travel_to(body, goal, None, support, keep_out=keep_out(),
-                       stay_near=_STAY_NEAR, warm_key=name, max_travel=_MAX_TRAVEL, ranked=True)
+                       stay_near=_STAY_NEAR, warm_key=name, ranked=True)
     if found is not None:
         target[:4] = q[:4] + (found - q[:4]) * 0.3
     low = float(np.linalg.norm(body.grasp_centre() - goal)) < 0.04
