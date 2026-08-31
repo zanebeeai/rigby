@@ -199,7 +199,7 @@ def _reach_for(body: Body, goal: np.ndarray, square_to: np.ndarray | None,
             # set a ball around where the arm already is, so this does not wall
             # the search off the way an obstacle veto would.
             return None
-        for name in ("shoulder", "seg1", "seg2", "seg3", "plate_geom"):
+        for name in ("base_hub", "seg1", "seg2", "seg3", "plate_geom"):
             if float(body.geom_at(name)[2]) < support:
                 return None
         if keep_out is not None:

@@ -24,7 +24,7 @@ from rigby_poc.gripper.decision.cabinet import (  # noqa: E402
 from rigby_poc.gripper.physics.model import JOINTS, computed_torque, make  # noqa: E402
 
 _ROOM = (440, 330)
-_WRIST = (240, 180)
+_GRIP = (240, 180)
 
 
 def filmstrip(seconds: float = 40.0, fps: int = 30, samples: int = 6,
@@ -70,10 +70,10 @@ def filmstrip(seconds: float = 40.0, fps: int = 30, samples: int = 6,
             shots.append((
                 label,
                 Image.fromarray(body.view(*_ROOM, camera="room")),
-                Image.fromarray(body.view(*_WRIST, camera="wrist"))))
+                Image.fromarray(body.view(*_GRIP, camera="gripper"))))
 
     pad, bar = 8, 20
-    cell_w = _ROOM[0] + _WRIST[0] + pad
+    cell_w = _ROOM[0] + _GRIP[0] + pad
     sheet = Image.new("RGB", (cell_w + pad * 2,
                               (_ROOM[1] + bar + pad) * len(shots) + pad),
                       (18, 20, 26))

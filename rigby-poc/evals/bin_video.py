@@ -1,11 +1,11 @@
 """Record the pick-and-place from both cameras, straight out of MuJoCo.
 
-Corner camera full frame, wrist camera inset, and a readout of what the machine
+Corner camera full frame, gripper camera inset, and a readout of what the machine
 believes at that moment. These are the simulator's own renders through the two
 cameras declared in the model, so what you watch is what was simulated and the
 inset is literally what the controller was looking through.
 
-The bench scene keeps its single key light, unchanged, because the wrist camera
+The bench scene keeps its single key light, unchanged, because the gripper camera
 is an INPUT: the controller finds the block by segmenting warm pixels, and
 relighting the scene to make a nicer video would change the run. The corner
 frames are brightened afterwards, on the recorded image only, which the
@@ -34,11 +34,11 @@ from rigby_poc.gripper.decision.pick_and_place import (  # noqa: E402
 from rigby_poc.gripper.physics.model import (  # noqa: E402
     JOINTS, computed_torque, make,
 )
-from rigby_poc.gripper.sensing.wrist_camera import Senses, sense  # noqa: E402
+from rigby_poc.gripper.sensing.gripper_camera import Senses, sense  # noqa: E402
 
 _OUT = Path("videos")
 _ROOM = (640, 460)
-_WRIST = (240, 180)
+_GRIP = (240, 180)
 _BUNDLED = sorted(
     (Path.home() / "AppData/Local/ms-playwright").glob("ffmpeg-*/ffmpeg-*.exe"))
 
@@ -83,11 +83,11 @@ def record(seconds: float = 24.0, fps: int = 30, table_top: float = 0.72,
         room = ImageEnhance.Brightness(room).enhance(1.55)
         room = ImageEnhance.Contrast(room).enhance(1.08)
         frame = room
-        frame.paste(Image.fromarray(body.view(*_WRIST, camera="wrist")),
-                    (_ROOM[0] - _WRIST[0] - 10, 10))
+        frame.paste(Image.fromarray(body.view(*_GRIP, camera="gripper")),
+                    (_ROOM[0] - _GRIP[0] - 10, 10))
         draw = ImageDraw.Draw(frame)
-        draw.rectangle([(_ROOM[0] - _WRIST[0] - 10, 10),
-                        (_ROOM[0] - 10, 10 + _WRIST[1])],
+        draw.rectangle([(_ROOM[0] - _GRIP[0] - 10, 10),
+                        (_ROOM[0] - 10, 10 + _GRIP[1])],
                        outline=(120, 140, 170))
         draw.text((12, 10), f"t={now:5.2f}s   phase {phase}: {PHASES[phase][0]}",
                   fill=(235, 240, 250))
@@ -97,8 +97,8 @@ def record(seconds: float = 24.0, fps: int = 30, table_top: float = 0.72,
                   fill=(200, 210, 225))
         draw.text((12, 42), "IN THE BIN" if object_in_target(body) else "",
                   fill=(150, 230, 160))
-        draw.text((_ROOM[0] - _WRIST[0] - 10, 14 + _WRIST[1]),
-                  "wrist camera - what the controller sees",
+        draw.text((_ROOM[0] - _GRIP[0] - 10, 14 + _GRIP[1]),
+                  "gripper camera - what the controller sees",
                   fill=(150, 165, 190))
         shots.append(frame)
 

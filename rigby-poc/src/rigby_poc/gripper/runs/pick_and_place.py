@@ -27,7 +27,7 @@ from ..decision.pick_and_place import (
     palm_facing,
     palm_to_object_m,
 )
-from ..sensing.wrist_camera import Senses, sense
+from ..sensing.gripper_camera import Senses, sense
 from ..physics.model import JOINTS, computed_torque, make
 
 _PUBLIC = Path(__file__).resolve().parents[4] / "frontend" / "public"
@@ -141,7 +141,7 @@ def run(block_half=None, block_at=None, table_top: float = 0.72,
         "protocol": "gripper_clip_v1",
         "embodiment": "gripper",
         "control": "computed torque",
-        "sensing": "joint encoders, one wrist camera, contact from tracking "
+        "sensing": "joint encoders, one gripper camera, contact from tracking "
                    "error. No force sensor, no object pose, no object size.",
         "fps": fps,
         "table_top_m": float(table_top),

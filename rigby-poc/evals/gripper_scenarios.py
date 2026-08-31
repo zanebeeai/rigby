@@ -1,7 +1,7 @@
 """Does the honest-sensing gripper work anywhere, or only where it was tuned?
 
 Every run here uses the same controller with the same instrument list: joint
-encoders, one wrist camera, contact inferred from the encoders. The block moves
+encoders, one gripper camera, contact inferred from the encoders. The block moves
 around the bench and changes size, and nothing tells the machine that it has.
 
 The sweep is the point. A single scripted success at one placement proves the

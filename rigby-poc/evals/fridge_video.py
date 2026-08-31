@@ -30,7 +30,7 @@ from rigby_poc.gripper.physics.model import JOINTS, computed_torque, make  # noq
 
 _OUT = Path("milestones/video")
 _ROOM = (640, 460)
-_WRIST = (240, 180)
+_GRIP = (240, 180)
 _BUNDLED = sorted(
     (Path.home() / "AppData/Local/ms-playwright").glob("ffmpeg-*/ffmpeg-*.exe"))
 
@@ -76,11 +76,11 @@ def record(seconds: float = 30.0, fps: int = 30, name: str = "fridge-attempt",
             mujoco.mj_step(body.model, body.data)
 
         frame = Image.fromarray(body.view(*_ROOM, camera="room")).convert("RGB")
-        frame.paste(Image.fromarray(body.view(*_WRIST, camera="wrist")),
-                    (_ROOM[0] - _WRIST[0] - 10, 10))
+        frame.paste(Image.fromarray(body.view(*_GRIP, camera="gripper")),
+                    (_ROOM[0] - _GRIP[0] - 10, 10))
         draw = ImageDraw.Draw(frame)
-        draw.rectangle([(_ROOM[0] - _WRIST[0] - 10, 10),
-                        (_ROOM[0] - 10, 10 + _WRIST[1])],
+        draw.rectangle([(_ROOM[0] - _GRIP[0] - 10, 10),
+                        (_ROOM[0] - 10, 10 + _GRIP[1])],
                        outline=(120, 140, 170))
         draw.text((12, 10), f"t={now:5.2f}s   phase {phase}: "
                             f"{PHASES[phase][0]}", fill=(225, 232, 245))
@@ -88,7 +88,7 @@ def record(seconds: float = 30.0, fps: int = 30, name: str = "fridge-attempt",
                             f"jaws {body.opening() * 100:4.1f} cm    "
                             f"holding {seen.holding()}", fill=(190, 200, 215))
         draw.text((12, 42), command.note or "", fill=(230, 170, 150))
-        draw.text((_ROOM[0] - _WRIST[0] - 10, 14 + _WRIST[1]), "wrist camera",
+        draw.text((_ROOM[0] - _GRIP[0] - 10, 14 + _GRIP[1]), "gripper camera",
                   fill=(150, 165, 190))
         shots.append(frame)
 

@@ -75,7 +75,7 @@ def rate_limited(current: "GripperState", target: "GripperState",
     """Move toward the target no faster than the manifest allows."""
     limits = rate_limits()
     out = current.copy()
-    for name in ("yaw", "lift", "elbow", "wrist", "finger"):
+    for name in ("base", "segment_1", "segment_2", "segment_3", "finger"):
         start = float(getattr(current, name))
         want = float(getattr(target, name))
         ceiling = float(limits.get(name, np.inf)) * dt
@@ -86,7 +86,7 @@ def rate_limited(current: "GripperState", target: "GripperState",
 
 def within_limits(state: "GripperState") -> bool:
     limits = joint_limits()
-    for name in ("yaw", "lift", "elbow", "wrist"):
+    for name in ("base", "segment_1", "segment_2", "segment_3"):
         low, high = limits.get(name, (-np.inf, np.inf))
         if not (low <= getattr(state, name) <= high):
             return False
@@ -123,7 +123,7 @@ _SUPPORT_MARGIN_M = 0.02
 def clamp(state: "GripperState") -> "GripperState":
     limits = joint_limits()
     out = state.copy()
-    for name in ("yaw", "lift", "elbow", "wrist"):
+    for name in ("base", "segment_1", "segment_2", "segment_3"):
         low, high = limits.get(name, (-np.inf, np.inf))
         setattr(out, name, float(np.clip(getattr(out, name), low, high)))
     return out
@@ -374,7 +374,7 @@ def solve_move_to(state: GripperState, obj: np.ndarray, half: np.ndarray,
     here = cost(best)
     for _pass in range(6):
         improved = False
-        for name in ("yaw", "lift", "elbow", "wrist"):
+        for name in ("base", "segment_1", "segment_2", "segment_3"):
             for step in (0.20, 0.06, 0.02):
                 for direction in (1.0, -1.0):
                     trial = best.copy()
@@ -392,7 +392,7 @@ def solve_move_to(state: GripperState, obj: np.ndarray, half: np.ndarray,
         return None
     reach = float(np.clip(amount, 0.0, 1.0))
     moved = state.copy()
-    for name in ("yaw", "lift", "elbow", "wrist"):
+    for name in ("base", "segment_1", "segment_2", "segment_3"):
         start = getattr(state, name)
         setattr(moved, name, start + (getattr(best, name) - start) * reach)
     return clamp(moved)
@@ -521,7 +521,7 @@ def solve_carry_over(state: GripperState, obj: np.ndarray, half: np.ndarray,
     best = state.copy()
     here = cost(best)
     for _pass in range(6):
-        for name in ("yaw", "lift", "elbow", "wrist"):
+        for name in ("base", "segment_1", "segment_2", "segment_3"):
             for step in (0.14, 0.05, 0.015):
                 for direction in (1.0, -1.0):
                     trial = best.copy()
@@ -533,7 +533,7 @@ def solve_carry_over(state: GripperState, obj: np.ndarray, half: np.ndarray,
                         best, here = trial, value
     reach = float(np.clip(amount, 0.0, 1.0))
     moved = state.copy()
-    for name in ("yaw", "lift", "elbow", "wrist"):
+    for name in ("base", "segment_1", "segment_2", "segment_3"):
         start = getattr(state, name)
         setattr(moved, name, start + (getattr(best, name) - start) * reach)
     return clamp(moved)

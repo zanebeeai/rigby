@@ -16,7 +16,7 @@ import numpy as np
 
 from ..body.manifest import spec
 from ..physics.model import JOINTS, Body
-from ..sensing.wrist_camera import Sensed
+from ..sensing.gripper_camera import Sensed
 from .solver import Command, _limits, _reach_for, _shut
 
 
@@ -210,7 +210,7 @@ _scan_cache: list[np.ndarray] | None = None
 
 
 def _scan_poses(body: Body, support: float) -> list[np.ndarray]:
-    """Arm poses that point the wrist camera down at each patch in turn.
+    """Arm poses that point the gripper camera down at each patch in turn.
 
     Solved once. The scan is a fixed property of the bench, so re-deriving it
     every frame would be the same answer at forty times the cost.
@@ -295,7 +295,7 @@ def decide(body: Body, seen: Sensed, phase: int, support: float,
         # part. "Am I touching something" is now the arm failing to reach where
         # it was sent, and "am I holding something" is two fingers that will not
         # close -- both from encoders. The one refusal that needed the object's
-        # velocity is gone: a machine with one wrist camera cannot know that an
+        # velocity is gone: a machine with one gripper camera cannot know that an
         # object it is not looking at is sliding, and pretending otherwise was
         # the cheat.
         if seen.arm_stalled or holding(seen):
@@ -414,7 +414,15 @@ def advance(body: Body, seen: Sensed, phase: int, now: float) -> int:
         if seen.object_at is not None:
             want = np.asarray(seen.object_at) + np.asarray(
                 [0.0, 0.0, _INSPECT_HEIGHT_M])
+            # THE CLOSE CAMERA MUST HAVE SEEN IT. looks counts every accepted
+            # look, and the room camera's count the same as the hand's -- so
+            # three settled looks from a metre and a half away satisfied this
+            # gate, and the machine committed to a grasp on a position it had
+            # never inspected. It cost the widest block at the furthest reach.
+            #
+            # A coarse fix is enough to walk toward and not enough to close on.
             done = bool(seen.object_seen
+                        and seen.fine_fix
                         and seen.looks >= 3
                         and seen.belief_shift <= _SETTLED_M
                         and float(np.linalg.norm(body.camera_pose()[0] - want))
