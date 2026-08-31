@@ -305,7 +305,7 @@ def decide(body: Body, seen: Scene, phase: int, support: float,
         work.mechanism.observe(hand)
         if work.mechanism.barred():
             work.mechanism.cast_wider()
-        goal = hand + work.mechanism.aim() * PUSH_M
+        goal = hand + work.mechanism.aim(hand_at=hand) * PUSH_M
         found = travel_to(body, goal, None, support, stay_near=_STAY_NEAR,
                            warm_key=name, ranked=True)
         if found is not None:
@@ -339,17 +339,68 @@ def decide(body: Body, seen: Scene, phase: int, support: float,
         # only then go where you are going. It is what a person does taking
         # their hand out of a cupboard, and it needs no map -- just the
         # direction the hand was pointing when it arrived.
-        retreat = body.grasp_centre() + facing * _WITHDRAW_M
+        # MEASURED FROM WHERE THE MOTION STARTED, not against a fixed line.
+        #
+        # Third time this exact mistake has bitten today, so it is worth the
+        # words. "Have I backed off far enough" was asked as "is my hand past
+        # y = front - 0.22", and holding a door open at ninety degrees ALREADY
+        # puts the hand well forward of that line. So the withdrawal reported
+        # itself complete on its first frame, before it had moved at all, and
+        # the arm went straight back to attempting the blocked direct route.
+        #
+        # Progress is a displacement, and a displacement needs the place you
+        # started from. An absolute threshold cannot express "I have moved away
+        # from something" -- it can only express "I am somewhere", and those are
+        # different questions.
+        here = body.grasp_centre()
+        began = work.committed.setdefault("let_go_at", here.copy())
+        # ALONG THE HAND'S OWN AXIS, not along a world direction.
+        #
+        # "Back out the way you came in" was written as world -y, which is where
+        # the hand was pointing when it first reached the handle. By the time it
+        # lets go it has followed the door through ninety degrees and is
+        # pointing somewhere else entirely, so backing off in -y dragged the
+        # gripper sideways across the panel, shoved the door from 91 back to 63
+        # degrees, and jammed against it. The way you came in is a property of
+        # the hand, not of the room.
+        # AND NEVER INTO THE BENCH. The hand's axis picks up a downward tilt
+        # while following the arc round, so simply negating it aims the retreat
+        # at the table: measured, [-0.78, -0.55, -0.30]. The arm backed off ten
+        # millimetres, drove itself into the benchtop and stalled there for the
+        # rest of the run. Retreating away from something must not mean
+        # retreating into something else, and the one surface always present is
+        # the one the whole workspace stands on. Downward is removed; upward is
+        # left alone, because lifting clear of a thing is a fine way to leave it.
+        out = work.committed.get("out_along")
+        if out is None:
+            out = -body.approach()
+            out = np.asarray([out[0], out[1], max(float(out[2]), 0.0)])
+            size = float(np.linalg.norm(out))
+            out = (out / size if size > 1e-6
+                   else np.asarray([0.0, -1.0, 0.0]))
+            work.committed["out_along"] = out
         if not work.committed.get("withdrawn"):
-            if float(np.linalg.norm(body.grasp_centre() - retreat)) < 0.02                     or body.grasp_centre()[1] <= place["front_y"] - _WITHDRAW_M:
+            if float(np.linalg.norm(here - np.asarray(began))) >= _WITHDRAW_M:
                 work.committed["withdrawn"] = True
-            goal = retreat
+            goal = np.asarray(began) + np.asarray(out) * (_WITHDRAW_M + 0.05)
         else:
             goal = clear_of(
                 np.asarray([place["centre_x"], place["front_y"] - _STANDOFF_M,
                             place["mid_z"] + 0.06]),
                 work.mechanism.occupies(), _HAND_REACH_M)
-        found = travel_to(body, goal, facing, support,
+        # WITHDRAWING IS A TRANSLATION, NOT A RE-ORIENTATION.
+        #
+        # Asking to face `facing` -- the world direction the hand had when it
+        # first arrived -- while backing out of the handle makes the wrist swing
+        # 48 degrees on the way, and a rotating pair of jaws wedges the bar
+        # between them instead of sliding off it. Kinematically every pose along
+        # the retreat is reachable to within 4 mm with no joint near a limit, so
+        # nothing here was ever a reach problem; the hand was simply turning
+        # while trying to leave. Hold the orientation it let go with, slide
+        # straight out, and turn afterwards. It is what you do taking your hand
+        # out of a hole.
+        aim_face = np.asarray(out) if not work.committed.get("withdrawn")             else facing
+        found = travel_to(body, goal, aim_face, support,
                            square_weight=_SQUARE_WEIGHT,
                            keep_out=keep_out(),
                            avoid=work.mechanism.occupies(),

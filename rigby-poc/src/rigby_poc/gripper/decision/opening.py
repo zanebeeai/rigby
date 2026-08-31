@@ -162,7 +162,35 @@ class Mechanism:
         return (self.opened_m >= _STARTED_M
                 and self.casting >= len(_CAST_DEG))
 
-    def aim(self, up: np.ndarray | None = None) -> np.ndarray:
+    def tangent_at(self, hand_at: np.ndarray) -> np.ndarray | None:
+        """The exact direction the mechanism allows here, once the pivot is known.
+
+        The observed heading is where the hand WENT, and that includes being
+        shoved. Pushing along it therefore carries a radial component -- a
+        squeeze straight at the pivot -- which does no opening at all and drives
+        the hand into the mechanism. Measured, that is precisely what happened:
+        the wrist plate ended up wedged between the handle and both its
+        brackets at 190 to 280 N, forces no retreat could pull against, and the
+        run was over long before anything noticed.
+
+        A turning thing permits exactly one direction at each point and it is
+        perpendicular to the arm from the pivot. Once the pivot is known there
+        is no reason to approximate it. The sign comes from the heading, which
+        is what says which way round it has been going.
+        """
+        turn = self.pivot()
+        if turn is None or self.heading is None:
+            return None
+        arm = np.asarray([float(hand_at[0]) - float(turn[0]),
+                          float(hand_at[1]) - float(turn[1]), 0.0])
+        size = float(np.linalg.norm(arm))
+        if size < 1e-6:
+            return None
+        along = np.cross(np.asarray([0.0, 0.0, 1.0]), arm / size)
+        return along if float(np.dot(along, self.heading)) >= 0.0 else -along
+
+    def aim(self, up: np.ndarray | None = None,
+            hand_at: np.ndarray | None = None) -> np.ndarray:
         """Which way to push now.
 
         Normally the direction last observed to work. When that has stopped
@@ -173,6 +201,10 @@ class Mechanism:
         if self.heading is None:
             return np.asarray([0.0, -1.0, 0.0])
         if not self.barred():
+            if hand_at is not None:
+                exact = self.tangent_at(hand_at)
+                if exact is not None:
+                    return exact
             return self.heading
         axis = np.asarray([0.0, 0.0, 1.0]) if up is None else np.asarray(up)
         turn = np.radians(_CAST_DEG[self.casting % len(_CAST_DEG)])
