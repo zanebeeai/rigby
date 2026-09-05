@@ -33,7 +33,11 @@ _TERMINAL = {"completed", "failed", "aborted", "interrupted"}
 class GripperRunRequest(BaseModel):
     task: str = Field(min_length=1, max_length=400)
     seconds: float = Field(default=32.0, ge=5.0, le=90.0)
-    max_model_calls: int = Field(default=10, ge=1, le=20)
+    # Raised from 20 once the budget stopped being spent on repeats. At 20 a
+    # run reached the grasp at t=17 with two decisions left, so the ceiling was
+    # deciding the outcome rather than the machine. 60 is headroom, not a
+    # target -- runs still stop when the clock runs out.
+    max_model_calls: int = Field(default=10, ge=1, le=60)
 
 
 def _now() -> str:
@@ -117,9 +121,22 @@ class GripperRunStore:
         ]
         log = (directory / "worker.log").open("ab")
         try:
+            # THE CHILD NEEDS THE SAME PATH THE SERVER GAVE ITSELF. This venv
+            # lives beside a different checkout and has no editable install
+            # pointing here, so the API adds src/ to sys.path at startup --
+            # which does nothing for a subprocess. The worker died on
+            # "No module named rigby_poc.gripper" before it drew a frame, and
+            # the run sat at "initializing" because the state file said running
+            # and the process that would have updated it was already gone.
+            source = str(PROJECT_ROOT / "src")
+            environment = dict(os.environ)
+            existing = environment.get("PYTHONPATH", "")
+            environment["PYTHONPATH"] = (
+                source + os.pathsep + existing if existing else source)
             process = subprocess.Popen(
                 command,
                 cwd=str(PROJECT_ROOT),
+                env=environment,
                 stdin=subprocess.DEVNULL,
                 stdout=log,
                 stderr=subprocess.STDOUT,

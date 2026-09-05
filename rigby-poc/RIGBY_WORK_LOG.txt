@@ -703,3 +703,135 @@ Verification:
   the branch.
 
 END OF LOG
+
+
+================================================================================
+PERCEIVING THE SCENE INSTEAD OF BEING TOLD ABOUT IT (2026-09-04)
+================================================================================
+
+Question that started it: how do four corner cameras not see the bin, and was
+the bin in the imagination space?
+
+Answer: nothing had ever tried. The segmenter looked for "the only warm thing on
+a blue-grey bench", which finds the block and nothing else, and the imagination
+held exactly one key -- block_xyz. The bin was declared furniture read from the
+manifest. The machine knew where it was because a file said so.
+
+THE ARM WAS A GHOST.
+
+  seg1, seg2, seg3 and base_hub carried no contype or conaffinity, so both
+  defaulted to 0, which in MuJoCo means "collides with nothing". The arm passed
+  through the bin and through the bench; only the plate and the pads were ever
+  stopped by anything. Given contype=8 conaffinity=1 they are now solid against
+  the bin and the table and deliberately not against the block, the hand, or
+  each other.
+
+  That fix then broke the arm the other way. The pedestal the arm is bolted to
+  carried the furniture mask, so the links began fighting their own mount:
+  28.6 mm of permanent penetration at base_hub, 22 mm at seg1, 0.35 rad of joint
+  drift in 1500 steps while commanded to hold still. The pedestal is now
+  contype=4, which keeps it solid to the block and the hand and takes it out of
+  the links' way. At rest: 0 contacts, drift below 1e-5 rad.
+
+THE BIN COULD NOT HAVE BEEN SEGMENTED, AND THAT WAS MEASURED FIRST.
+
+  Painted blue-grey like the bench, across the four corner cameras:
+
+      camera              BIN lum        TABLE lum      BIN b-r   TABLE b-r
+      room                66.9 +- 24.1   78.4 +- 27.0   15.7      15.3
+      corner_front_right  88.3 +- 29.1   86.8 +- 31.0   20.9      15.5
+      corner_back_left    57.5 +- 19.3   72.1 +- 24.2   13.8      12.7
+      corner_back_right   63.8 +- 27.8   79.0 +- 25.9   14.6      14.8
+
+  Overlapping distributions in both statistics. No threshold separates them. The
+  bin is now green (0.16 0.62 0.30), which is what workcells actually do to a
+  container a vision system has to find. Nothing in the code knows that.
+
+WHAT REPLACED THE SEGMENTER: sensing/landmarks.py
+
+  A first attempt gave the model a vocabulary of colour words and let it choose
+  "orange" and "green". That is the same mistake one layer up -- whoever writes
+  the vocabulary has already decided what the scene contains.
+
+  So the model is told nothing about what to look for. It is shown the four
+  corner views at a stated size, reads the task, and reports which things the
+  task requires and the pixel each appears at in each view. Rays through those
+  picks cross, and the crossing is in metres. How far they miss is measured.
+
+  The appearance is LEARNED from the patch under each pick, so the item can be
+  followed at 30 Hz between model calls. Nobody wrote down that the block is
+  orange; it is orange because that is what was under the place the model
+  pointed at.
+
+  THE LEARNED LOOK IS VERIFIED BEFORE IT IS KEPT. A pick a few pixels off the
+  object samples the bench behind it, and the tracker then follows the bench
+  forever while the belief drifts and nothing complains. Measured: a look
+  learned on the object put the belief 2 mm from the block and 17 mm from the
+  bin; one learned off the edge put it 220-357 mm out. The patch's own coherence
+  does NOT separate these -- it read 0.09 on a good look and 0.95 on a bad one.
+  What separates them is tracking with the candidate and checking where it
+  lands, so every camera the model pointed with proposes a look, each is tried,
+  and one that does not lead back to the anchor is refused outright. The
+  position survives; only the appearance is dropped.
+
+THE IMAGINATION IS NOW COMPARED AND CORRECTED, NOT REBUILT.
+
+  It used to be recomputed from scratch each call and kept nothing, which means
+  there was no belief to contradict: a picture that is discarded cannot be found
+  to have been wrong, and cannot get better either. Every decision is now
+  preceded by measuring each item again, reporting measured_xyz against
+  believed_xyz and the gap between them, and moving the belief toward the
+  measurement by as much as the cameras' agreement earns.
+
+  The declared bin is reported beside the perceived one. The goal metrics still
+  measure against the manifest, and cameras_vs_declared_bin_m came out at
+  17.8 mm, so the planner is shown the discrepancy rather than having it chosen
+  for it silently.
+
+RESOLUTION. Corner views 480x360 -> 768x576, hand camera to the model
+  320x240 -> 640x480. Distinct render sizes went from four to four, NOT five:
+  identification, tracking, and the corner picture sent with each decision now
+  share one size instead of being two near-identical ones. Every distinct size
+  costs a GL context and this codebase has gone black from exhausting them.
+
+  Measured effect, picks jittered to stand for imprecise pointing:
+
+      pick jitter    block anchor       block belief   bin belief
+      480x360        20.5/21.4/36.1 mm  2.3 mm         16.8 mm
+      768x576        10.8/12.3/20.9 mm  1.4 mm         17.5 mm
+
+  At 480x360 a 15 px sloppy pick got its look refused; at 768x576 it is learned
+  correctly. The bin's residual ~17 mm is not resolution -- it is that each ray
+  runs through the centroid of the bin surface THAT camera can see rather than
+  through the middle of the bin, and the miss reports it.
+
+A BUG FOUND WHILE VERIFYING, AND IT WAS EXPENSIVE.
+
+  expand()'s empty-reply branch had been copied from ask() and kept the names
+  its new scope does not have: it read `now`, which expand() has no parameter
+  for, and returned self.held, which is a goal and not a plan. The bare except
+  swallowed the NameError, so a truncated expansion was logged as
+  "error: name 'now' is not defined" and became an empty plan -- and an empty
+  plan is exactly the condition ask() expands on, so it re-expanded on EVERY
+  call for the rest of the run. A token-budget overrun turned into an unbounded
+  spend, silently. Fixed, and expansion is now capped at two attempts, after
+  which the run decides from the instruction itself.
+
+VERIFICATION. 32 tests, all passing, no model calls, $0.00:
+  - tests/test_landmarks.py (7 new): the bin is perceived at all; both items
+    from one mechanism that names neither; looking again corrects a sloppy pick;
+    a look that finds the bench is refused; one camera is a direction not a
+    position; disagreeing picks report a large miss; an unseen item keeps its
+    stale belief and says so.
+  - tests/test_gripper_solidity.py (14 new): every link solid against bin and
+    bench, ghost to its own mount, the hand unchanged, and an arm told to hold
+    still that touches nothing and does not drift.
+  - tests/test_gripper_squeeze.py (7) and tests/test_directed_control.py (4)
+    unchanged and still passing.
+
+NOT DONE, and deliberately: the frozen corpus has not been re-run. Making the
+arm solid is exactly the kind of change that has twice cost corpus cases this
+session, and the 11/12 baseline should be re-measured before any of this is
+trusted in a run.
+
+END OF SECTION

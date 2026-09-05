@@ -44,7 +44,26 @@ _ZETA = 1.0
 _OMEGA = 12.0
 #: The fingers track more sharply than the arm -- they are light and their job
 #: is contact, where lag reads as a soft grip.
-_FINGER_OMEGA = 26.0
+#: Finger tracking stiffness, and it is ASYMMETRIC because the two directions
+#: are not the same problem.
+#:
+#: CLOSING should be gentle. The grip force is the squeeze, a commanded number,
+#: so stiff closing buys nothing and costs something: raised to 45 uniformly,
+#: the jaws batted a narrow block aside before the grip formed and
+#: right-far-narrow stopped grasping at all.
+#:
+#: OPENING needs authority. The failure that started this was a gripper that
+#: closed on nothing, drove into the side of the block, and then could not
+#: reopen: drive of m*omega^2*error = 0.06 * 676 * 0.039 = 1.6 N against 2.96 N
+#: of measured contact resistance, so the command said "open" for twelve
+#: seconds while the jaws crawled a millimetre a second.
+#:
+#: Uniform values cost a corpus case either way -- 60 gave 10/12, 45 gave 10/12
+#: and broke a different one. Splitting them keeps the gentle close that works
+#: and gives opening the 8.4 N it needs.
+_FINGER_CLOSING_OMEGA = 26.0
+_FINGER_OPENING_OMEGA = 60.0
+_FINGER_OMEGA = _FINGER_CLOSING_OMEGA
 
 #: Names in the order their joints appear, which is also the order of qpos.
 JOINTS = ("base", "segment_1", "segment_2", "segment_3", "finger_left", "finger_right")
@@ -76,21 +95,29 @@ def _room_camera(document) -> str:
     rather than a thing, and a camera that tracks a moving body reframes itself
     every time the arm picks something up.
     """
-    doc = document["scene"].get("cameras", {}).get("room")
-    if doc is None:
-        return ""
-    eye = np.asarray([doc["at"][0], doc["at"][2], doc["at"][1]], dtype=float)
-    at = np.asarray([doc["looks_at"][0], doc["looks_at"][2], doc["looks_at"][1]],
-                    dtype=float)
-    forward = at - eye
-    forward = forward / np.linalg.norm(forward)
-    right = np.cross(forward, np.asarray([0.0, 0.0, 1.0]))
-    right = right / np.linalg.norm(right)
-    up = np.cross(-forward, right)
-    return (f'<camera name="room" pos="{eye[0]:.4f} {eye[1]:.4f} {eye[2]:.4f}" '
+    declared = document["scene"].get("cameras", {})
+    out = []
+    for name in ("room", "corner_front_right", "corner_back_left",
+                 "corner_back_right"):
+        doc = declared.get(name)
+        if doc is None or "at" not in doc:
+            continue
+        eye = np.asarray([doc["at"][0], doc["at"][2], doc["at"][1]],
+                         dtype=float)
+        at = np.asarray([doc["looks_at"][0], doc["looks_at"][2],
+                         doc["looks_at"][1]], dtype=float)
+        forward = at - eye
+        forward = forward / np.linalg.norm(forward)
+        right = np.cross(forward, np.asarray([0.0, 0.0, 1.0]))
+        right = right / np.linalg.norm(right)
+        up = np.cross(-forward, right)
+        out.append(
+            f'<camera name="{name}" '
+            f'pos="{eye[0]:.4f} {eye[1]:.4f} {eye[2]:.4f}" '
             f'fovy="{float(doc.get("fovy_deg", 58.0)):.1f}" '
             f'xyaxes="{right[0]:.4f} {right[1]:.4f} {right[2]:.4f} '
             f'{up[0]:.4f} {up[1]:.4f} {up[2]:.4f}"/>')
+    return "".join(out)
 
 
 def _bin_furniture(document, table_top: float) -> str:
@@ -105,13 +132,29 @@ def _bin_furniture(document, table_top: float) -> str:
         f'pos="{cx + dx * (inner[0] + wall)} {cy + dz * (inner[2] + wall)} {cz}" '
         f'size="{wall if dx else inner[0] + wall * 2} '
         f'{inner[2] + wall * 2 if dx else wall} {inner[1]}" '
-        f'rgba="0.5 0.55 0.63 1" friction="0.9 0.02 0.001"/>'
+        f'rgba="0.16 0.62 0.30 1" friction="0.9 0.02 0.001"/>'
         for i, (dx, dz) in enumerate(((1, 0), (-1, 0), (0, 1), (0, -1))))
     return f"""
+    <!-- THE BIN IS GREEN BECAUSE IT WAS INVISIBLE. Painted blue-grey like
+         the bench it stood on, it could not be segmented from it: measured
+         across the four corner cameras, bin pixels ran 57-88 mean luminance
+         against the table's 72-87, and blue-minus-red 13.8-20.9 against
+         12.7-15.5. Those distributions overlap almost completely, so no
+         threshold on colour separates them and the bin was furniture the
+         cameras could not report -- the machine knew where it was only
+         because the manifest said so.
+
+         Green is not a trick to make the demo work. It is what workcells
+         actually do: a container a vision system must find is colour-coded so
+         that it can be, and the alternative is a fiducial marker, which is the
+         same admission with more steps. What matters for the architecture is
+         that NOTHING here knows the bin is green -- the colour is named in the
+         landmark vocabulary and chosen by the model when it decides what to
+         look for. -->
     <geom name="bin_floor" contype="1" conaffinity="6" type="box"
           pos="{cx} {cy} {cz - inner[1] - wall}"
           size="{inner[0] + wall} {inner[2] + wall} {wall}"
-          rgba="0.45 0.5 0.58 1"/>
+          rgba="0.13 0.52 0.26 1"/>
     {walls}
     <geom name="bin_riser" contype="1" conaffinity="6" type="cylinder"
           pos="{cx} {cy} {(table_top + cz - inner[1]) / 2}"
@@ -250,7 +293,14 @@ def _model_xml(block_half, block_at, table_top: float,
           pos="0 0 {table_top}" size="2 2 0.1" rgba="0.4 0.42 0.48 1"/>
     {furniture}
     {room_camera}
-    <geom name="pedestal" contype="1" conaffinity="6" type="cylinder" pos="{bx} {by} {(table_top + bz) / 2}"
+    <!-- THE PEDESTAL IS NOT AN OBSTACLE. It is the post the arm is bolted
+         to, and it carried the furniture mask, so the moment the links stopped
+         being ghosts they began colliding with their own mount: 28.6 mm of
+         permanent penetration at base_hub, 22 mm at seg1, and 0.35 rad of
+         joint drift in 1500 steps while the arm was commanded to hold still.
+         contype=4 keeps it solid to the block and to the hand and takes it out
+         of the links' way, which is the only pair it was ever wrong about. -->
+    <geom name="pedestal" contype="4" conaffinity="6" type="cylinder" pos="{bx} {by} {(table_top + bz) / 2}"
           size="0.05 {max((bz - table_top) / 2, 0.01)}" rgba="0.4 0.44 0.52 1"/>
 
     <body name="block" pos="{block_at[0]} {block_at[1]} {block_at[2]}">
@@ -260,21 +310,33 @@ def _model_xml(block_half, block_at, table_top: float,
             mass="0.25" rgba="0.85 0.55 0.3 1"/>
     </body>
 
+    <!-- THE ARM'S LINKS ARE SOLID AGAINST THE FURNITURE. They carried
+         contype=0 conaffinity=0, which in MuJoCo means "collides with
+         nothing" -- so every link was a ghost and the arm swung straight
+         through the bin and the table while only the plate and the pads were
+         ever stopped by anything.
+
+         contype=8 conaffinity=1 means: collide with the table and the bin
+         (contype 1), and with nothing else. Not with the block, which the
+         fingers handle and which a link brushing past should not knock
+         across the bench; not with the plate or the pads, which are parts of
+         the same hand; and not with each other, since neighbouring capsules
+         on a chain touch by construction. -->
     <body name="base" pos="{bx} {by} {bz}">
       <joint name="base" type="hinge" axis="0 0 1" range="{deg('base')}"/>
-      <geom name="base_hub" type="sphere" size="{radii[0] * 1.3}" mass="0.6"
+      <geom name="base_hub" contype="8" conaffinity="1" type="sphere" size="{radii[0] * 1.3}" mass="0.6"
             rgba="0.42 0.47 0.56 1"/>
       <body name="link1" pos="0 0 0">
         <joint name="segment_1" type="hinge" axis="1 0 0" range="{deg('segment_1')}"/>
-        <geom name="seg1" type="capsule" fromto="0 0 0 0 {lengths[0]} 0"
+        <geom name="seg1" contype="8" conaffinity="1" type="capsule" fromto="0 0 0 0 {lengths[0]} 0"
               size="{radii[0]}" mass="1.1" rgba="0.42 0.47 0.56 1"/>
         <body name="link2" pos="0 {lengths[0]} 0">
           <joint name="segment_2" type="hinge" axis="1 0 0" range="{deg('segment_2')}"/>
-          <geom name="seg2" type="capsule" fromto="0 0 0 0 {lengths[1]} 0"
+          <geom name="seg2" contype="8" conaffinity="1" type="capsule" fromto="0 0 0 0 {lengths[1]} 0"
                 size="{radii[1]}" mass="0.8" rgba="0.42 0.47 0.56 1"/>
           <body name="link3" pos="0 {lengths[1]} 0">
             <joint name="segment_3" type="hinge" axis="1 0 0" range="{deg('segment_3')}"/>
-            <geom name="seg3" type="capsule" fromto="0 0 0 0 {lengths[2]} 0"
+            <geom name="seg3" contype="8" conaffinity="1" type="capsule" fromto="0 0 0 0 {lengths[2]} 0"
                   size="{radii[2]}" mass="0.4" rgba="0.42 0.47 0.56 1"/>
             <body name="plate" pos="0 {lengths[2]} 0">
               <!-- The gripper camera. Mounted behind and above the plate looking
@@ -332,6 +394,12 @@ def _model_xml(block_half, block_at, table_top: float,
   </actuator>
 </mujoco>
 """
+
+
+#: How far past the plate the beam starts, metres. From the plate centre
+#: the first thing it finds is the plate itself -- it read plate_geom at
+#: 1.2 cm every time -- so it begins clear of the hand it is mounted in.
+_BEAM_START_M = 0.022
 
 
 @dataclass
@@ -512,7 +580,24 @@ class Body:
         the log and for tests -- it is not offered to the planner, because a
         rangefinder returns a distance and nothing else.
         """
-        origin, _ = self.camera_pose()
+        # THE BEAM LEAVES THE CENTRE OF THE HAND, on the grasp axis.
+        #
+        # It used to start at the camera, which is mounted 5.5 cm off that
+        # axis, so it ran parallel to the line between the jaws rather than
+        # along it. Measured at the moment of three successful grasps it read
+        # the TABLE at 11 cm while the block sat squarely between the pads --
+        # straight past the thing it exists to detect. A rangefinder that
+        # cannot see what is in the jaws cannot tell "above the block" from
+        # "around the block", which is the one distinction it is here for.
+        #
+        # The plate is the centre of the hand and approach() is the line out
+        # through the grasp centre, so a beam from there passes between the
+        # pads by construction: the fingers slide out to either side of it.
+        # Clear of the plate's own front face, or the first thing the
+        # beam finds is the hand it is mounted in: from the plate
+        # centre it read plate_geom at 1.2 cm every time.
+        direction0 = self.approach()
+        origin = self.body_at("plate") + direction0 * _BEAM_START_M
         direction = np.ascontiguousarray(self.approach(), dtype=np.float64)
         hit = np.zeros(1, dtype=np.int32)
         distance = mujoco.mj_ray(
@@ -562,6 +647,12 @@ def computed_torque(body: Body, target: np.ndarray,
     error = target - body.q()
     rate = -body.qd()
     omega = np.asarray([_OMEGA] * 4 + [_FINGER_OMEGA] * 2)
+    # A finger being asked to OPEN gets the stiffer gain; one being asked to
+    # close keeps the gentle one. `error` is target - current, so a positive
+    # error on a finger joint is a widening.
+    for slot in (4, 5):
+        if error[slot] > 0.0:
+            omega[slot] = _FINGER_OPENING_OMEGA
     wanted = 2.0 * _ZETA * omega * rate + omega ** 2 * error
 
     full = np.zeros(model.nv)

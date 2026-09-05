@@ -1,0 +1,252 @@
+{
+  "schema_version": "1.0",
+  "$comment": "The gripper's frozen corpus. Twelve cases the phase controller is expected to place, and four KNOWN-BAD cases that must trip a named gate. The known-bad half is the point: a suite where everything is supposed to pass cannot tell a working machine from a broken assertion, and this suite was rewritten from a shell one-liner that lost five cases silently.",
+  "controller": "pick_and_place",
+  "seconds": 24.0,
+  "table_top_m": 0.72,
+  "cases": [
+    {
+      "id": "centred-narrow",
+      "half": [
+        0.025,
+        0.04,
+        0.03
+      ],
+      "at": [
+        0.0,
+        0.3,
+        0.76
+      ],
+      "expect": "placed"
+    },
+    {
+      "id": "right-far-narrow",
+      "half": [
+        0.025,
+        0.04,
+        0.03
+      ],
+      "at": [
+        0.1,
+        0.34,
+        0.76
+      ],
+      "expect": "placed"
+    },
+    {
+      "id": "left-near-narrow",
+      "half": [
+        0.025,
+        0.04,
+        0.03
+      ],
+      "at": [
+        -0.1,
+        0.26,
+        0.76
+      ],
+      "expect": "placed"
+    },
+    {
+      "id": "right-close-narrow",
+      "half": [
+        0.025,
+        0.04,
+        0.03
+      ],
+      "at": [
+        0.06,
+        0.24,
+        0.76
+      ],
+      "expect": "placed"
+    },
+    {
+      "id": "centred-medium",
+      "half": [
+        0.03,
+        0.04,
+        0.03
+      ],
+      "at": [
+        0.0,
+        0.3,
+        0.76
+      ],
+      "expect": "placed"
+    },
+    {
+      "id": "right-far-medium",
+      "half": [
+        0.03,
+        0.04,
+        0.03
+      ],
+      "at": [
+        0.1,
+        0.34,
+        0.76
+      ],
+      "expect": "placed"
+    },
+    {
+      "id": "left-near-medium",
+      "half": [
+        0.03,
+        0.04,
+        0.03
+      ],
+      "at": [
+        -0.1,
+        0.26,
+        0.76
+      ],
+      "expect": "placed"
+    },
+    {
+      "id": "right-close-medium",
+      "half": [
+        0.03,
+        0.04,
+        0.03
+      ],
+      "at": [
+        0.06,
+        0.24,
+        0.76
+      ],
+      "expect": "placed"
+    },
+    {
+      "id": "centred-wide",
+      "half": [
+        0.035,
+        0.04,
+        0.03
+      ],
+      "at": [
+        0.0,
+        0.3,
+        0.76
+      ],
+      "expect": "placed"
+    },
+    {
+      "id": "right-far-wide",
+      "half": [
+        0.035,
+        0.04,
+        0.03
+      ],
+      "at": [
+        0.1,
+        0.34,
+        0.76
+      ],
+      "expect": "placed"
+    },
+    {
+      "id": "left-near-wide",
+      "half": [
+        0.035,
+        0.04,
+        0.03
+      ],
+      "at": [
+        -0.1,
+        0.26,
+        0.76
+      ],
+      "expect": "placed",
+      "notes": "The thinnest margin in the suite: widest block at the furthest reach. It is the case that flips when timing shifts by 0.1 s, and it was lost when the room camera began locating and inspection started at t=0.0 instead of t=0.8."
+    },
+    {
+      "id": "right-close-wide",
+      "half": [
+        0.035,
+        0.04,
+        0.03
+      ],
+      "at": [
+        0.06,
+        0.24,
+        0.76
+      ],
+      "expect": "placed"
+    },
+    {
+      "id": "knownbad-too-wide-for-jaws",
+      "half": [
+        0.055,
+        0.04,
+        0.03
+      ],
+      "at": [
+        0.0,
+        0.3,
+        0.76
+      ],
+      "expect": "fails",
+      "must_fail": [
+        "grasped"
+      ],
+      "notes": "110 mm across against jaws that open to 86 mm. If this is ever reported as grasped, the grip is being inferred from something other than the pads."
+    },
+    {
+      "id": "knownbad-out-of-reach",
+      "half": [
+        0.03,
+        0.04,
+        0.03
+      ],
+      "at": [
+        0.75,
+        0.3,
+        0.76
+      ],
+      "expect": "fails",
+      "must_fail": [
+        "grasped",
+        "lifted"
+      ],
+      "notes": "Beyond the arm's span. Must fail rather than report a grasp on empty bench."
+    },
+    {
+      "id": "knownbad-behind-the-base",
+      "half": [
+        0.03,
+        0.04,
+        0.03
+      ],
+      "at": [
+        0.0,
+        -0.35,
+        0.76
+      ],
+      "expect": "fails",
+      "must_fail": [
+        "grasped"
+      ],
+      "notes": "Behind the turntable, out of both cameras' useful view. Must fail on not seeing it, not on a bad guess about where it is."
+    },
+    {
+      "id": "knownbad-thinner-than-the-jaws",
+      "half": [
+        0.002,
+        0.04,
+        0.03
+      ],
+      "at": [
+        0.0,
+        0.3,
+        0.723
+      ],
+      "expect": "fails",
+      "must_fail": [
+        "grasped"
+      ],
+      "notes": "4 mm across, against jaws that stop 7 mm apart. The pads close past it and meet their own travel limit, so a grip is physically impossible -- and since the limit is the one added when the pads were found to be driving 12 mm through each other, this case fails if that floor is ever removed."
+    }
+  ],
+  "$replaced": "knownbad-buried-in-bench was removed after its first run. Placing a free body inside static geometry does not produce a buried block: the contact solver ejects it to 4.55 m. The case tested MuJoCo's penetration recovery rather than anything about the gripper, and a known-bad case that fails for a reason it does not name is worse than no case at all."
+}

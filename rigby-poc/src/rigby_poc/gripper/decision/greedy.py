@@ -126,6 +126,89 @@ def _named(using: tuple[str, ...]) -> list[str]:
     return wanted or list(known)
 
 
+def contests(body: Body, seen: Sensed, metrics: tuple[str, ...],
+             start_from: np.ndarray | None = None) -> dict[str, list[str]]:
+    """For each number, which OTHER numbers get worse when it is driven.
+
+    Measured on this body at this pose, by taking the move that best improves
+    each metric and reading what that move did to everything else. Nothing here
+    knows what the task is: it is a fact about the mechanism, and it comes out
+    different for a bin, a shelf or a doorway.
+
+    It exists because the planner could not see the conflict. Given the whole
+    carry it drove "get the block over the bin" alone, then "get it above the
+    rim" alone, then the first again -- each undoing the last, three times,
+    while using `also` perfectly well on eleven other goals. It was not missing
+    the mechanism for protecting a number. It was missing the knowledge that
+    these two fight.
+
+    The alternative was a carry_to_bin primitive with the answer written in,
+    which works for one bin and teaches the planner nothing.
+    """
+    from .goals import BEST_AT_ONE, NEEDS_SIGHT, READABLE
+
+    model, data = body.model, body.data
+    address = [body.address(name) for name in JOINTS]
+    saved_q, saved_v = data.qpos.copy(), data.qvel.copy()
+    limits = _limits()
+    start = (np.asarray(start_from) if start_from is not None
+             else np.asarray([data.qpos[a] for a in address]))
+
+    def read_all():
+        out = {}
+        for name in metrics:
+            fn = READABLE.get(name)
+            if fn is None:
+                continue
+            if name in NEEDS_SIGHT and seen.object_at is None:
+                continue
+            out[name] = float(fn(body, seen))
+        return out
+
+    for slot, value in zip(address, start):
+        data.qpos[slot] = value
+    mujoco.mj_kinematics(model, data)
+    mujoco.mj_camlight(model, data)
+    here = read_all()
+
+    def better(name, was, now):
+        return (now > was) if name in BEST_AT_ONE else (now < was)
+
+    out: dict[str, list[str]] = {}
+    for driven in here:
+        best = None
+        for part in parts():
+            for move in moves_for(part):
+                for amount in (-1.0, 1.0):
+                    trial = _pose_for(part, move, start, limits, amount)
+                    if trial is None or np.allclose(trial, start):
+                        continue
+                    for slot, value in zip(address, trial):
+                        data.qpos[slot] = value
+                    mujoco.mj_kinematics(model, data)
+                    mujoco.mj_camlight(model, data)
+                    now = read_all()
+                    if driven not in now:
+                        continue
+                    gain = abs(now[driven] - here[driven])
+                    if better(driven, here[driven], now[driven]) and (
+                            best is None or gain > best[0]):
+                        best = (gain, now)
+        if best is None:
+            continue
+        hurt = [other for other, was in here.items()
+                if other != driven and other in best[1]
+                and not better(other, was, best[1][other])
+                and abs(best[1][other] - was) > 0.01]
+        if hurt:
+            out[driven] = sorted(hurt)
+
+    data.qpos[:] = saved_q
+    data.qvel[:] = saved_v
+    mujoco.mj_forward(model, data)
+    return out
+
+
 def changers(body: Body, seen: Sensed,
              metrics: tuple[str, ...],
              start_from: np.ndarray | None = None) -> dict[str, list[str]]:

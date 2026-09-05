@@ -135,6 +135,9 @@ class Sensed:
     #: enough to walk toward and not good enough to close the fingers on.
     seen_by: str = ""
     fine_fix: bool = False
+    #: How far the corner rays missed each other, metres, and who voted.
+    corner_spread_m: float = 0.0
+    corner_votes: list = field(default_factory=list)
     #: How far the last accepted look moved the belief, and how many there have
     #: been. Whether to trust the estimate is itself something the machine can
     #: work out, and it is what says when looking is finished.
@@ -208,13 +211,39 @@ class Senses:
         a coarse position for something is worth more than no position at all,
         and it is what makes the first approach possible.
         """
+        # THE HAND CAMERA FIRST, ALWAYS. Triangulation is better than any
+        # single distant view, and it is still not better than a camera 20 cm
+        # from the object -- and more importantly, the hand camera is the one
+        # that sets fine_fix, which is what tells a controller it has actually
+        # inspected the thing before closing on it.
+        #
+        # Putting the corners first cost every case in the corpus: the hand
+        # camera was never consulted, fine_fix never became true, and the
+        # phase controller sat in `inspect` for twelve runs out of twelve. The
+        # estimate was excellent and the machine never used it.
         fix = _locate(body, "gripper", _VIEW_W, _VIEW_H, _FOV_Y_DEG,
                       bench, _RANGE_M)
         by = "gripper"
         if fix is None:
-            fix = _locate(body, "room", _ROOM_W, _ROOM_H,
-                          body.camera_fovy("room"), bench, _ROOM_RANGE_M)
-            by = "room"
+            # FOUR CORNERS INSTEAD OF ONE, when the hand cannot see it. This is
+            # what replaces ranging a single corner off the declared bench
+            # plane: rays from known positions cross on their own, so nothing
+            # is assumed about the height of the table, and the spread between
+            # them says how much the cameras disagree. Measured against truth:
+            # 3-4 mm, where the plane method gave 10 mm at rest and 33-38 mm
+            # while the arm was moving -- and it keeps working when the block is
+            # off the bench, which the plane method cannot do by construction.
+            crossed = triangulate(body)
+            if crossed is not None and crossed[1] <= _AGREE_M:
+                point, spread, voters = crossed
+                self.corner_spread_m = round(float(spread), 4)
+                self.corner_votes = list(voters)
+                fix = (point, 0.025, 0.03)
+                by = "corners"
+            else:
+                fix = _locate(body, "room", _ROOM_W, _ROOM_H,
+                              body.camera_fovy("room"), bench, _ROOM_RANGE_M)
+                by = "room"
         if fix is None:
             self.seen_by = ""
             return self.last_at, False, self.last_size
@@ -231,7 +260,7 @@ class Senses:
         # So the room camera may FIND the block, and it may confirm the block is
         # still there, but it may not correct a hand-camera fix. It is still
         # seen either way; what it may not do is move the number.
-        if by == "room" and self.fine_fix:
+        if by in ("room", "corners") and self.fine_fix:
             self.seen_by = by
             return self.last_at, True, self.last_size
 
@@ -258,6 +287,89 @@ class Senses:
         self.seen_by = by
         self.fine_fix = self.fine_fix or by == "gripper"
         return self.last_at, True, self.last_size
+
+
+#: The corner cameras, by name. Any that can see the object contributes a ray.
+_CORNERS = ("room", "corner_front_right", "corner_back_left",
+            "corner_back_right")
+#: Rays this far from agreeing are not looking at the same thing.
+_AGREE_M = 0.06
+
+
+def _blob_ray(body: Body, camera: str, width: int = 320, height: int = 240):
+    """A ray from one camera through the warm blob, or None if it sees none.
+
+    Returns the camera's position and a unit direction. No range, no plane, no
+    assumption about where the object is -- only the direction it lies in, which
+    is the one thing a single camera honestly knows.
+    """
+    image = body.view(width, height, camera=camera)
+    red = image[:, :, 0].astype(np.int16)
+    green = image[:, :, 1].astype(np.int16)
+    blue = image[:, :, 2].astype(np.int16)
+    warm = (red > green + 12) & (green > blue + 4)
+    if int(warm.sum()) < _MIN_BLOB_PX:
+        return None
+    rows, cols = np.nonzero(warm)
+    u = float(cols.mean())
+    v = float(rows.mean())
+    eye, orient = body.camera_pose(camera)
+    focal = (height / 2.0) / float(
+        np.tan(np.radians(body.camera_fovy(camera)) / 2.0))
+    local = np.asarray([(u - width / 2.0) / focal,
+                        -(v - height / 2.0) / focal, -1.0])
+    world = orient @ local
+    return np.asarray(eye), world / float(np.linalg.norm(world))
+
+
+def triangulate(body: Body):
+    """Where the rays from every corner that can see it cross.
+
+    THE PLANE ASSUMPTION GOES AWAY HERE. Ranging a single camera works by
+    meeting its ray with a surface whose height was declared, so the estimate
+    is only ever as true as that declaration: move the bench and the belief is
+    wrong while reporting the same confidence. Two rays from known positions
+    cross on their own, and four cross with something left over -- the residual,
+    which says how well they agree and is a confidence that was measured rather
+    than assumed.
+
+    Occlusion falls out for free. A corner that cannot see the block returns no
+    ray rather than a wrong one, and the corner facing the bin sees nothing at
+    all from where it stands.
+
+    Least squares for the point nearest all the rays: sum (I - dd^T) p =
+    sum (I - dd^T) o. Returns the point, the spread, and which cameras voted.
+    """
+    seen_by = []
+    A = np.zeros((3, 3))
+    b = np.zeros(3)
+    rays = []
+    for name in _CORNERS:
+        try:
+            got = _blob_ray(body, name)
+        except Exception:
+            got = None
+        if got is None:
+            continue
+        eye, direction = got
+        rays.append((eye, direction))
+        seen_by.append(name)
+        project = np.eye(3) - np.outer(direction, direction)
+        A += project
+        b += project @ eye
+    if len(rays) < 2:
+        return None
+    try:
+        point = np.linalg.solve(A, b)
+    except np.linalg.LinAlgError:
+        return None
+    # How far the point sits off each ray. Rays that disagree are not looking
+    # at the same object, and a number that says so is worth more than a point.
+    spread = 0.0
+    for eye, direction in rays:
+        offset = (point - eye) - direction * float(np.dot(point - eye, direction))
+        spread = max(spread, float(np.linalg.norm(offset)))
+    return np.asarray(point), spread, seen_by
 
 
 def _locate(body: Body, camera: str, width: int, height: int, fovy: float,
@@ -376,16 +488,74 @@ def sense(body: Body, eyes: Senses, commanded: np.ndarray, squeeze_n: float,
 
 
 def audit(body: Body) -> dict[str, str]:
-    """What is readable, and by what instrument. The boundary, in one place."""
+    """What is readable, and by what instrument. The boundary, in one place.
+
+    This went stale once already -- it was still claiming there was no force
+    sensor after the load cells went in, and said nothing about the rangefinder
+    or the room camera's ability to locate. A statement of what the machine may
+    know is worth nothing if it is not kept true, so it is written to be checked
+    against the code rather than remembered.
+    """
     return {
-        "joint positions": "encoders, exact",
-        "object position": "segmented from the gripper camera image, ranged off "
-                           "the bench plane; only while fully in view",
-        "object size": "apparent size in the same image at that range",
-        "contact": "driven shut, stopped, and not shut -- encoders, no force "
-                   "sensor",
-        "grip effort": "motor command, not a load cell",
-        "bin position": "known a priori: it is fixed furniture, not a percept",
-        "NOT available": "true object pose, true object size, contact force, "
-                         "anything about the object while it is out of view",
+        "joint positions":
+            "encoders, exact",
+        "object position":
+            "segmented from EITHER camera and ranged off the bench plane. The "
+            "hand camera is preferred because it is close; the room camera "
+            "acquires when the hand cannot see, and stops writing to the "
+            "belief once the hand has had a proper look",
+        "object size":
+            "apparent size in the same image at that range; the depth no "
+            "single view can see is assumed equal to the width it can",
+        "contact":
+            "MEASURED. A load cell in each fingertip pad, reporting normal "
+            "force in newtons, blind to what it is touching. Contact between "
+            "the gripper's own parts is excluded as self-touch",
+        "grip effort":
+            "the motor command, which is what is asked for -- not what is felt",
+        "range ahead":
+            "time-of-flight along the approach axis; a distance, never an "
+            "identity",
+        "bin position":
+            "PERCEIVED, and also declared, and the two are compared. The "
+            "corner cameras locate it the same way they locate anything else "
+            "-- the model points at it in each view and the rays are crossed "
+            "-- which puts it about 17 mm from its true centre, the bias being "
+            "that each ray runs through the centroid of the bin surface THAT "
+            "camera can see rather than through the middle of the bin. The "
+            "goal metrics still measure against the declared centre, so the "
+            "gap between the two is reported to the planner rather than "
+            "quietly picked for it. Until this existed the bin was invisible "
+            "to every instrument here and known only because a manifest said "
+            "so",
+        "what is in the scene":
+            "NOT declared. The model reads the task, looks at the four corner "
+            "views and says what it has to find and where each thing is, in "
+            "pixels. Nothing in the sensing code knows the scene contains a "
+            "block or a bin, and a task naming something else needs no code "
+            "change. See sensing/landmarks.py",
+        "an object's appearance":
+            "LEARNED from where the model pointed, not declared. The patch "
+            "under each pick is sampled so the item can be followed between "
+            "model calls at frame rate. A learned look is verified by tracking "
+            "with it before it is kept: a pick that clipped the background "
+            "teaches the tracker to follow the background, which measured 220-"
+            "357 mm of silent belief drift, so a look that does not lead back "
+            "to where the picks put the item is refused outright",
+        "bench height":
+            "DECLARED, not sensed. Monocular ranging works by meeting a ray "
+            "with a known plane, so the height of the table is an assumption "
+            "the whole estimate rests on. In a fixed workcell it is calibrated "
+            "once; it is not free",
+        "camera poses":
+            "the hand camera from the arm's own encoders and a fixed "
+            "mounting, the room camera from calibration",
+        "object colour":
+            "ASSUMED. Segmentation finds the only warm thing in a blue-grey "
+            "scene, which is a prior about this bench and not a general one",
+        "NOT available":
+            "true object pose, true object size, true object mass, anything "
+            "about the object while neither camera can see it, and whether a "
+            "grasp succeeded -- object_in_target reads the simulator and is "
+            "the judge, never a control input",
     }

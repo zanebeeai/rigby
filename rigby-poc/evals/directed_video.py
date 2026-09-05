@@ -1,7 +1,7 @@
 """Record a VLM-directed run as the model saw it: both cameras, side by side.
 
 Two panels, each rendered at the SAME resolution the planner sends and with the
-SAME pixels -- corner at 480x340, wrist at 320x240, neither brightened. An
+SAME pixels -- corner at 768x576, wrist at 640x480, neither brightened. An
 earlier version of this recorder showed the corner view full-frame at 640x460
 with brightness 1.55 applied, which is a nicer picture of the run but is not
 what the model was looking at, and the whole point of showing both feeds is to
@@ -45,8 +45,8 @@ from rigby_poc.gripper.sensing.gripper_camera import Senses, sense  # noqa: E402
 _OUT = Path("videos")
 #: EXACTLY the sizes decision/planner.py renders for the model. Kept here as a
 #: pair of constants so a change there and a silent divergence here is visible.
-_CORNER = (480, 340)
-_GRIP = (320, 240)
+_CORNER = (768, 576)
+_GRIP = (640, 480)
 _PAD = 10
 _LABEL = 20
 _READOUT = 92

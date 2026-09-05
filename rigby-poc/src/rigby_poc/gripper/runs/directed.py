@@ -28,6 +28,8 @@ from ..decision.pick_and_place import (
     object_over_target_m,
 )
 from ..decision.planner import Planner
+from ..decision.grip import DEFAULT as GRIP_DEFAULT, jaw_command
+from ..decision.primitives import object_between_jaws
 from ..physics.model import JOINTS, computed_torque, make
 from ..sensing.gripper_camera import Senses, sense
 
@@ -78,7 +80,19 @@ def _frame(body, seen, now: float, target, how: dict, error: float) -> dict[str,
         "phase": 0,
         "links": links,
         "block": _app(body.block()),
-        "block_quat": [float(quat[0]), float(quat[1]), float(quat[3]), float(quat[2])],
+        # ORIENTATION NEEDS MORE THAN A SWAP. _app converts a POSITION from
+        # MuJoCo's Z-up to the viewer's Y-up by exchanging y and z, which is
+        # fine for a point and wrong for a rotation: exchanging two axes is a
+        # reflection, determinant -1, so under it a rotation transforms as
+        # P M P^-1 and the quaternion's vector part must be NEGATED as well as
+        # permuted. Without the negation the block is drawn mirrored -- it turns
+        # the wrong way and looks as though it is not held, while the physics
+        # has it clamped to within 2.7 mm over seventeen seconds. Measured on a
+        # 55 degree rotation: 0.366 of error, against 0.000 with the negation.
+        #
+        # The arm escapes this because it is drawn from endpoints, not angles.
+        "block_quat": [float(quat[0]), -float(quat[1]),
+                       -float(quat[3]), -float(quat[2])],
         "forces": {key: round(value, 2) for key, value in body.forces().items()},
         "opening_m": round(body.opening(), 5),
         "over_target_m": round(object_over_target_m(body, seen), 4),
@@ -95,6 +109,37 @@ def _frame(body, seen, now: float, target, how: dict, error: float) -> dict[str,
     }
 
 
+def _thumbnail(body, camera: str, width: int = 192, height: int = 144) -> str:
+    """One camera, as a data URI small enough to ship with every progress tick.
+
+    RENDERED AT A SIZE SOMETHING ELSE ALREADY USES, then shrunk in PIL. Every
+    distinct size is another MuJoCo Renderer and another GL context, and a run
+    died on "Default framebuffer is not complete" with five of them open --
+    sensing at two sizes, the planner's two images, and these. Downscaling an
+    existing render costs nothing and adds no context.
+
+    And it never raises. A picture for the dashboard must not be able to end a
+    forty-call run: if the renderer is unhappy the panel goes blank and the arm
+    carries on.
+    """
+    import base64
+    import io
+
+    from PIL import Image
+
+    try:
+        raw = body.view(320, 240, camera=camera)
+    except Exception:
+        return ""
+    picture = Image.fromarray(raw).convert("RGB")
+    if (width, height) != picture.size:
+        picture = picture.resize((width, height))
+    buffer = io.BytesIO()
+    picture.save(buffer, format="JPEG", quality=70)
+    return ("data:image/jpeg;base64,"
+            + base64.b64encode(buffer.getvalue()).decode("ascii"))
+
+
 def _clip_shell(task: str, fps: int, table_top: float) -> dict[str, Any]:
     bin_doc = spec()["scene"]["bin"]
     return {
@@ -105,7 +150,7 @@ def _clip_shell(task: str, fps: int, table_top: float) -> dict[str, Any]:
         "task": task,
         "fps": fps,
         "table_top_m": float(table_top),
-        "block_half_m": [0.03, 0.04, 0.03],
+        "block_half_m": [0.025, 0.025, 0.03],
         "phase_names": ["directed"],
         "pedestal": spec()["kinematics"].get("pedestal"),
         "bin": bin_doc,
@@ -129,8 +174,18 @@ def run(task: str = "put the orange block into the bin",
         output_path: Path | None = None,
         on_progress: Callable[[dict[str, Any]], None] | None = None) -> dict:
     """One sentence in; a sequence of numbers pursued until the task is done."""
-    body = make(np.asarray([0.03, 0.04, 0.03]), np.asarray([0.0, 0.30, 0.76]),
-                table_top=table_top)
+    # A BLOCK THE JAWS CAN TAKE AT ANY YAW. The old one was 60 x 80 mm in
+    # cross-section: 60 mm across the grasp axis, which the 86 mm jaws clear
+    # easily, and 100 mm on the diagonal, which they cannot clear at all. The
+    # block is a free body and does get knocked askew, and the moment it turns
+    # the grasp stops being merely hard and becomes impossible -- with nothing
+    # in the readings to say so, since the width the camera measures is the
+    # width it happens to see.
+    #
+    # Square cross-section, 50 mm across, 70.7 mm on the diagonal: 15 mm of
+    # margin whichever way it is facing.
+    body = make(np.asarray([0.025, 0.025, 0.03]),
+                np.asarray([0.0, 0.30, 0.76]), table_top=table_top)
     ceiling = _ceiling()
     planner = planner or Planner(task=task)
 
@@ -189,15 +244,57 @@ def run(task: str = "put the orange block into the bin",
                           f"={held_target.value} also="
                           f"{[list(a) for a in held_target.also]} "
                           f"using={list(held_target.using)}")
+        # A DIRECT ACT SKIPS THE SEARCH. The joints go where the act says, at
+        # the same rate limit as everything else -- what is bypassed is the
+        # question of WHICH joints, not the physics of moving them.
+        if getattr(planner, "doing", ""):
+            from ..decision.primitives import direct as build_direct
+
+            act = build_direct(planner.doing)
+            if act is not None:
+                wanted = act.pose(body, held)
+                held = held + np.clip(wanted - held,
+                                      -ceiling / fps, ceiling / fps)
+                squeeze = 0.0
+                for _ in range(per_frame):
+                    body.data.ctrl[:] = computed_torque(body, held, squeeze)
+                    mujoco.mj_step(body.model, body.data)
+                frames.append(_frame(body, seen, now, None,
+                                     {"part": "direct", "move": planner.doing},
+                                     0.0))
+                continue
+
+        # THE JAWS FIRST, AND ALWAYS. They are a state, so they are driven every
+        # frame whether or not the arm has a goal. Putting this after the
+        # `target is None` check meant a planner with nothing to chase left the
+        # hand frozen in whatever the fingers last happened to be doing.
+        held, squeeze = jaw_command(getattr(planner, "jaws", GRIP_DEFAULT),
+                                    body, held)
+
         target = planner.held
         if target is None:
+            for _ in range(per_frame):
+                body.data.ctrl[:] = computed_torque(body, held, squeeze)
+                mujoco.mj_step(body.model, body.data)
             continue
 
         wanted, error, how = pursue(body, seen, target, planner.spans,
                                     start_from=held)
         # The search says where the joints should be; the rate limit says how
         # fast they may get there. Same place as everywhere else in this system.
+        # OPTIONAL, because it is instrumentation. A planner has to decide --
+        # due() and ask() -- and everything else here is this loop telling it
+        # how things went. Requiring the newer hooks broke a test double that
+        # implemented the actual contract perfectly well, which is a sign the
+        # contract had quietly grown rather than that the double was wrong.
+        watching = getattr(planner, "observe", None)
+        if callable(watching):
+            watching(error, how, now)
+        # The search moves the ARM. Whatever it thinks the fingers should do is
+        # discarded -- the jaws answer to their state, not to a goal.
+        jaws_now = held[4:].copy()
         held = held + np.clip(wanted - held, -ceiling / fps, ceiling / fps)
+        held[4:] = jaws_now
         # SQUEEZE UNLESS THE PLAN ASKS FOR AN OPENING. Stateless, and that is
         # the point: two cleverer versions of this rule both failed, and both
         # failed by inferring a persistent condition from an instantaneous one.
@@ -213,11 +310,6 @@ def run(task: str = "put the orange block into the bin",
         # the plan is trying to do. If the current goal wants the jaws WIDER
         # than they are, it is an opening and the squeeze comes off. Anything
         # else, hold on.
-        wants_wider = False
-        for metric, value, _weight in target.terms():
-            if metric == "grip_tip_spread_m":
-                wants_wider = float(value) > body.opening() + 0.004
-        squeeze = 0.0 if wants_wider else 12.0
 
         for _ in range(per_frame):
             body.data.ctrl[:] = computed_torque(body, held, squeeze)
@@ -250,6 +342,21 @@ def run(task: str = "put the orange block into the bin",
                     "object_seen": bool(seen.object_seen),
                     "in_target": bool(frame["in_target"]),
                 },
+                # BOTH FEEDS, as the model is given them, small enough to send
+                # five times a second. A dashboard that draws the simulated
+                # body shows where things ARE; these show what the machine can
+                # SEE, and the difference between the two is most of what goes
+                # wrong here.
+                "cameras": {
+                    "room": _thumbnail(body, "room"),
+                    "gripper": _thumbnail(body, "gripper"),
+                },
+                # THE DECISIONS SO FAR, shipped with every tick. The transcript
+                # used to be written only when a run finished, so an aborted run
+                # kept its thousand frames and lost every decision that produced
+                # them -- the exact runs most worth reading, since a run is
+                # usually stopped because something looked wrong.
+                "transcript": list(planner.transcript),
                 "message": f"Trying {how['part']} / {how['move']} toward {target.metric}",
                 "frame": frame,
                 "clip": _clip_shell(task, fps, table_top),

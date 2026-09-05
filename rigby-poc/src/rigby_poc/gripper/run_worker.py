@@ -38,12 +38,17 @@ def execute(root: Path, run_id: str) -> None:
             state["elapsed_s"] = float(event.get("elapsed_s", state.get("elapsed_s", 0.0)))
             state["progress"] = float(event.get("progress", 0.0))
             state["latest"] = event.get("latest")
+            # Kept out of the frame list on purpose: the clip holds a thousand
+            # frames and two images each would make it unopenable.
+            state["cameras"] = event.get("cameras")
             state["model_calls"] = int(event.get("model_calls", state.get("model_calls", 0)))
             state["stage"] = "acting"
             state["message"] = str(event.get("message", "The search is pursuing the current target"))
             clip = event.get("clip")
             if isinstance(clip, dict):
                 clip["frames"] = frames
+                # Carried through so a run that is stopped still explains itself.
+                clip["transcript"] = event.get("transcript") or []
                 atomic_write_json(directory / "clip.json", clip)
         else:
             state["stage"] = str(event.get("stage", kind))

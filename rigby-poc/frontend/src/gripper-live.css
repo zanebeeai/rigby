@@ -27,3 +27,18 @@ html, body { overflow: hidden; }
 .history { position: fixed; z-index: 50; top: 58px; right: 0; bottom: 0; width: min(390px, 94vw); padding: 19px; overflow-y: auto; border-left: 1px solid var(--line-bright); background: #0c1117f7; backdrop-filter: blur(14px); transform: translateX(101%); transition: transform .22s ease; box-shadow: -20px 0 50px #0008; }.history.open { transform: translateX(0); }.history-head { display: flex; justify-content: space-between; align-items: start; }.history-head h2 { margin: 4px 0 0; font-size: 18px; }.history > p { color: var(--muted); font-size: 10px; line-height: 1.5; }.icon-button { border: 0; color: var(--muted); background: transparent; font-size: 22px; cursor: pointer; }.history-list { display: grid; gap: 8px; margin-top: 16px; }.history-run { width: 100%; padding: 11px; text-align: left; border: 1px solid var(--line); border-radius: 5px; color: inherit; background: #10171e; cursor: pointer; }.history-run:hover, .history-run.selected { border-color: #3b8a75; background: #10221d; }.history-run > div { display: flex; justify-content: space-between; gap: 8px; }.history-run strong { overflow: hidden; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }.history-run span { color: var(--muted); font: 7px "DM Mono", monospace; text-transform: uppercase; }.history-run p { margin: 5px 0 0; color: #71808b; font-size: 8px; line-height: 1.4; }
 @media (max-width: 1050px) { .workspace { grid-template-columns: 330px 1fr; }.inspector { display: none; } }
 @media (max-width: 760px) { html, body { overflow: auto; }.shell { height: auto; min-height: 100vh; }.workspace { display: flex; flex-direction: column; }.control-panel { border-right: 0; }.stage { height: 70vh; min-height: 520px; }.quiet-link, .connection { display: none; } }
+
+/* The two feeds the planner is actually given, at the size they are sent.
+   Small on purpose: this panel answers "what can it see", and a large render
+   of the simulated body already answers "where is everything". */
+.camera-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0 14px; }
+.camera-pair figure { margin: 0; }
+.camera-pair img {
+  width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block;
+  border: 1px solid rgba(150, 170, 200, 0.35); border-radius: 4px;
+  background: #0f1218;
+}
+.camera-pair figcaption {
+  font-size: 10px; letter-spacing: 0.04em; text-transform: uppercase;
+  color: rgba(190, 205, 230, 0.65); margin-top: 4px;
+}

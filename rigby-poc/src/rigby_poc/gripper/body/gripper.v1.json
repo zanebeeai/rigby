@@ -78,10 +78,10 @@
           0
         ],
         "range_m": [
-          0.0,
+          0.0155,
           0.055
         ],
-        "note": "Restored to the range the pick-and-place was measured under. Starting travel at the pad half-thickness is the physically right bound -- at zero the pads pass through each other -- but it moves every grip the controller has been tuned against, and it went in as part of unrelated work. It belongs in its own change, measured on its own."
+        "note": "Travel starts at the pad half-thickness plus clearance, which is the physically right bound: at zero the pads pass straight through each other. Each pad is 24 mm thick and the two geoms do not collide (their contype/conaffinity masks exclude the pair), so the jaws could drive 12 mm of pure interpenetration before they were even nominally shut -- and opening() reports max(0, centres - 24 mm), so it read 0.00 cm through all of it. That is what made the fingers appear to phase into the block. The floor of 0.0155 m leaves 7.0 mm of daylight at full closure. Maximum aperture is unchanged at 86 mm, since only the lower bound moved."
       },
       {
         "name": "finger_right",
@@ -92,10 +92,10 @@
           0
         ],
         "range_m": [
-          0.0,
+          0.0155,
           0.055
         ],
-        "note": "Restored to the range the pick-and-place was measured under. Starting travel at the pad half-thickness is the physically right bound -- at zero the pads pass through each other -- but it moves every grip the controller has been tuned against, and it went in as part of unrelated work. It belongs in its own change, measured on its own."
+        "note": "Travel starts at the pad half-thickness plus clearance, which is the physically right bound: at zero the pads pass straight through each other. Each pad is 24 mm thick and the two geoms do not collide (their contype/conaffinity masks exclude the pair), so the jaws could drive 12 mm of pure interpenetration before they were even nominally shut -- and opening() reports max(0, centres - 24 mm), so it read 0.00 cm through all of it. That is what made the fingers appear to phase into the block. The floor of 0.0155 m leaves 7.0 mm of daylight at full closure. Maximum aperture is unchanged at 86 mm, since only the lower bound moved."
       }
     ],
     "segments_m": [
@@ -404,7 +404,7 @@
       "place_tolerance_m": 0.08
     },
     "cameras": {
-      "note": "Two viewpoints, which is the smallest number that answers both questions a manipulation task asks: WHERE IS EVERYTHING, which a gripper camera buried in the workspace cannot see, and WHERE EXACTLY IS THIS, which a room camera three quarters of a metre away cannot resolve.",
+      "note": "Four corners and the hand. One corner view answers WHERE IS EVERYTHING, but only for the things that corner can see: the arm occludes the bench from some angles, the block hides behind the bin from others, and a single oblique view conflates sideways offset with depth -- which is why the planner reported the hand 'aligned' while it sat 4.4 cm to one side. Four corners disagree with each other, and a disagreement is information.",
       "room": {
         "at": [
           -1.05,
@@ -417,12 +417,54 @@
           0.14
         ],
         "fovy_deg": 52.0,
-        "note": "In the corner, high, seeing the whole bench: the arm, the cabinet, and where things get put down."
+        "note": "The FRONT-LEFT corner. Keeps the name `room` because sensing, the recorders and the dashboard all address it by that name, and renaming a camera that four files look up by string is how the bin sweep went from 12/12 to 7/12 earlier today."
       },
       "segment_3": {
         "mounted_on": "plate",
         "fovy_deg": 70.0,
         "note": "Already there. Sees detail, and only what the hand is pointed at."
+      },
+      "corner_front_right": {
+        "at": [
+          1.05,
+          1.42,
+          -0.62
+        ],
+        "looks_at": [
+          0.14,
+          0.85,
+          0.14
+        ],
+        "fovy_deg": 52.0,
+        "note": "Opposite the original corner, across the bench."
+      },
+      "corner_back_left": {
+        "at": [
+          -1.05,
+          1.42,
+          0.85
+        ],
+        "looks_at": [
+          0.14,
+          0.85,
+          0.14
+        ],
+        "fovy_deg": 52.0,
+        "note": "Behind the arm, looking back over the base toward the bin."
+      },
+      "corner_back_right": {
+        "at": [
+          1.05,
+          1.42,
+          0.85
+        ],
+        "looks_at": [
+          0.14,
+          0.85,
+          0.14
+        ],
+        "fovy_deg": 52.0,
+        "note": "The fourth corner. Sees the far side of anything the front corners see edge-on."
       }
     }
   },

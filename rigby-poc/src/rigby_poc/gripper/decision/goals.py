@@ -83,7 +83,36 @@ READABLE = {
     "hand_z_m": lambda body, seen: float(body.grasp_centre()[2]),
     "hand_pointing_down": lambda body, seen: float(
         np.clip(-body.approach()[2], -1.0, 1.0)),
-    "grip_tip_spread_m": lambda body, seen: float(body.opening()),
+
+    # EVERY JOINT, IN DEGREES, ASKABLE. Without these the planner could only
+    # ask for numbers somebody had thought to define -- and when it wanted the
+    # arm a little higher, or this segment folded a little further, there was
+    # no way to say so and no control that could be found to do it. A joint
+    # angle is the simplest metric there is: always readable, moved by exactly
+    # one part, and never contested by anything else.
+    #
+    # This is what lets the planner act without being handed the actuators. It
+    # still names a number and the search still drives it; the difference is
+    # that the vocabulary no longer runs out.
+    # EACH SEGMENT'S FAR END, AS A POINT. A joint angle says how much a hinge
+    # has turned, which is exact and says nothing about where the arm ended up.
+    # The far end of a segment is a place, it moves on a circle around that
+    # segment's own pivot, and "put this end here" is a thing that can be
+    # pictured. Every one of these is forward kinematics from the encoders --
+    # the machine's own body, not the world.
+    "segment_1_tip_x_m": lambda body, seen: float(body.body_at("link2")[0]),
+    "segment_1_tip_y_m": lambda body, seen: float(body.body_at("link2")[1]),
+    "segment_1_tip_z_m": lambda body, seen: float(body.body_at("link2")[2]),
+    "segment_2_tip_x_m": lambda body, seen: float(body.body_at("link3")[0]),
+    "segment_2_tip_y_m": lambda body, seen: float(body.body_at("link3")[1]),
+    "segment_2_tip_z_m": lambda body, seen: float(body.body_at("link3")[2]),
+    "segment_3_tip_x_m": lambda body, seen: float(body.body_at("plate")[0]),
+    "segment_3_tip_y_m": lambda body, seen: float(body.body_at("plate")[1]),
+    "segment_3_tip_z_m": lambda body, seen: float(body.body_at("plate")[2]),
+    "base_deg": lambda body, seen: float(np.degrees(body.q()[0])),
+    "segment_1_deg": lambda body, seen: float(np.degrees(body.q()[1])),
+    "segment_2_deg": lambda body, seen: float(np.degrees(body.q()[2])),
+    "segment_3_deg": lambda body, seen: float(np.degrees(body.q()[3])),
     # THE RANGEFINDER IS ASKABLE, and it is the only always-readable number
     # that says anything about HEIGHT. A camera looking straight down cannot
     # tell how far below the bench is; that is why the jaws were opened wide
@@ -94,6 +123,21 @@ READABLE = {
     "palm_to_object_m": task.palm_to_object_m,
     "object_in_grasp_m": task.object_in_grasp_m,
     "palm_facing": task.palm_facing,
+    # WHETHER THE JAWS FACE THE THING THEY ARE MEANT TO CLOSE ON. A hand four
+    # centimetres away and pointing across the block reads well on every
+    # distance in this list, and cannot grasp anything.
+    # Zero once the object is closer than 5 cm -- in the hand, or as good as --
+    # for the same reason the aim block reports none there: the direction to a
+    # thing you are holding is noise, and a goal driven by noise chases it.
+    "pointing_at_object": lambda body, seen: (
+        0.0 if (seen.object_at is None or float(np.linalg.norm(
+            np.asarray(seen.object_at) - body.grasp_centre())) < 0.05)
+        else float(np.clip(np.dot(
+            body.approach(),
+            (np.asarray(seen.object_at) - body.grasp_centre())
+            / max(float(np.linalg.norm(
+                np.asarray(seen.object_at) - body.grasp_centre())), 1e-6)),
+            -1.0, 1.0))),
     "object_over_target_m": task.object_over_target_m,
     "object_above_rim_m": task.object_above_rim_m,
 }
@@ -114,21 +158,85 @@ _FLOOR = {
     "hand_x_m": 0.03, "hand_y_m": 0.03, "hand_z_m": 0.03,
     "grip_tip_spread_m": 0.01,
     "range_ahead_m": 0.02,
+    # Degrees, so the floor is a couple of degrees rather than centimetres.
+    "segment_1_tip_x_m": 0.02, "segment_1_tip_y_m": 0.02, "segment_1_tip_z_m": 0.02,
+    "segment_2_tip_x_m": 0.02, "segment_2_tip_y_m": 0.02, "segment_2_tip_z_m": 0.02,
+    "segment_3_tip_x_m": 0.02, "segment_3_tip_y_m": 0.02, "segment_3_tip_z_m": 0.02,
+    "base_deg": 2.0,
+    "segment_1_deg": 2.0,
+    "segment_2_deg": 2.0,
+    "segment_3_deg": 2.0,
     "palm_to_object_m": 0.02, "object_in_grasp_m": 0.02,
     "palm_facing": 0.25,
+    "pointing_at_object": 0.2,
     "object_over_target_m": 0.03, "object_above_rim_m": 0.03,
 }
 
 #: Which numbers mean nothing until the object has been seen. The planner is
 #: told this explicitly rather than left to discover it by watching a metric
 #: refuse to move.
-NEEDS_SIGHT = ("palm_to_object_m", "object_in_grasp_m", "palm_facing",
+
+#: What each number means and which way is better. The planner had the names
+#: and the values and nothing that said 1.0 was the good end of
+#: pointing_at_object -- so it asked for 0.7 while sitting at 1.0, the search
+#: obediently made the aim worse, and the hand swung off a block that was
+#: already between the jaws. A number without a direction is half a fact.
+DESCRIBES: dict[str, str] = {
+    "hand_x_m": "where the hand is across the bench, metres. A place, not a "
+                "score: aim for the value you want.",
+    "hand_y_m": "where the hand is in depth, metres. A place.",
+    "hand_z_m": "how high the hand is, metres. A place.",
+    "hand_pointing_down": "how squarely the palm faces the bench. 1.0 is "
+                          "straight down, 0.0 is level, negative is upward. "
+                          "HIGHER IS BETTER for reaching down at something.",
+    "grip_tip_spread_m": "the gap between the pads, metres. 0.007 is shut, "
+                         "0.086 is as wide as they go. A width, not a score.",
+    "range_ahead_m": "distance to the first surface along the grasp axis, "
+                     "metres. Smaller means nearer.",
+    "pointing_at_object": "whether the jaws face the block. 1.0 is straight at "
+                          "it, 0.0 is square across it, negative is away. "
+                          "HIGHER IS BETTER, and 1.0 is perfect -- asking for "
+                          "less than you already have asks the arm to aim "
+                          "worse.",
+    "palm_facing": "whether the palm is square to the face it would grasp. "
+                   "1.0 is flat on, 0.0 is edge-on. HIGHER IS BETTER.",
+    "palm_to_object_m": "distance from the palm to the block's surface, "
+                        "metres. LOWER IS BETTER, 0 is touching.",
+    "object_in_grasp_m": "how far the block is from the line between the pads, "
+                         "metres. LOWER IS BETTER.",
+    "object_over_target_m": "how far the block is from being over the bin, "
+                            "metres, measured flat. LOWER IS BETTER.",
+    "object_above_rim_m": "how far the block is above the bin rim, metres. "
+                          "Positive is clear of the rim.",
+    "base_deg": "the turntable angle, degrees. A place.",
+    "segment_1_deg": "the first hinge, degrees. A place.",
+    "segment_2_deg": "the second hinge, degrees. A place.",
+    "segment_3_deg": "the third hinge, degrees. A place.",
+}
+for _seg in ("segment_1", "segment_2", "segment_3"):
+    for _ax in ("x", "y", "z"):
+        DESCRIBES[f"{_seg}_tip_{_ax}_m"] = (
+            f"where {_seg}'s far end is, {_ax} in metres. A place. Only "
+            "segment_3's end carries the gripper.")
+
+#: Metrics where 1.0 is perfect and less is worse, rather than a distance to be
+#: driven to zero. Without this the planner asked for pointing_at_object = 0.7
+#: while its aim was already 1.0 -- a reasonable-looking number that is a
+#: request to aim WORSE. The search obliged, the hand swung off a block that was
+#: already between the jaws, and the next four decisions were spent trying to
+#: get back to the position it had just given away.
+BEST_AT_ONE = ("pointing_at_object", "palm_facing", "hand_pointing_down")
+
+NEEDS_SIGHT = ("pointing_at_object", "palm_to_object_m", "object_in_grasp_m", "palm_facing",
                "object_over_target_m", "object_above_rim_m")
 
 #: Readable but not askable: outcomes and states, not handles. Naming an outcome
 #: as a target is naming the goal as its own method.
-OUTCOMES = ("object_in_target", "holding", "object_seen",
-            "tip_force_left_n", "tip_force_right_n")
+OUTCOMES = ("grip_tip_spread_m",
+            "object_in_target", "holding", "object_seen",
+            "tip_force_left_n", "tip_force_right_n",
+            "object_in_hand_view", "beam_finds_object",
+            "object_between_jaws")
 
 
 def readable(body: Body, seen: Sensed) -> dict[str, float]:
@@ -142,6 +250,24 @@ def readable(body: Body, seen: Sensed) -> dict[str, float]:
     # that pursues a force, because the squeeze is a fixed hold rather than a
     # commanded number. Offering them as targets would be offering something
     # the search cannot chase.
+    # Readable, not askable: whether the HAND can see the object, as opposed to
+    # whether anything can. An approach that is close but pointed elsewhere is
+    # the failure this separates out.
+    from .primitives import beam_finds_object, object_in_hand_view
+
+    from .primitives import object_between_jaws
+
+    # READABLE, NOT ASKABLE. The jaws are a state now and the search does not
+    # touch the fingers, so a goal naming this metric drives nothing at all.
+    # Leaving it on the askable list meant the planner reached for the lever it
+    # already knew: it asked for grip_tip_spread_m = 0.007 twice, in the step
+    # called "close the gripper", and the jaws stayed open for the whole run
+    # while the pads brushed the block at 1 N. A control that does nothing must
+    # not be offered.
+    out["grip_tip_spread_m"] = round(float(body.opening()), 5)
+    out["object_between_jaws"] = float(object_between_jaws(body, seen))
+    out["object_in_hand_view"] = float(object_in_hand_view(body, seen))
+    out["beam_finds_object"] = float(beam_finds_object(body, seen))
     out["tip_force_left_n"] = round(float(seen.tip_force_left_n), 3)
     out["tip_force_right_n"] = round(float(seen.tip_force_right_n), 3)
     out["object_in_target"] = float(task.object_in_target(body))
@@ -157,6 +283,20 @@ class NumericTarget:
     metric: str
     value: float
     set_at_s: float = 0.0
+    #: HOW THE VALUE IS TO BE MET: "==", ">=" or "<=".
+    #:
+    #: Equality is the wrong shape for most of these. "Aim at the block" is not
+    #: "aim at exactly 0.9 of straight-on" -- it is "at least this square", and
+    #: once you are squarer than that there is nothing left to fix. Driving an
+    #: equality target past its value makes the error rise again, which is how
+    #: a goal that is going well starts reading as a goal going wrong.
+    compare: str = "=="
+    #: CONDITIONS THE NUMBERS CANNOT EXPRESS. A distance can be small while the
+    #: block sits below the jaws, behind them, or off to one side -- close, and
+    #: impossible to grasp. Named conditions from decision.primitives.CONDITIONS
+    #: are checked alongside the error, so arriving at the number is not the
+    #: same as arriving.
+    requires: tuple[str, ...] = ()
     #: Further (metric, value, weight) pursued at the same time.
     also: tuple[tuple[str, float, float], ...] = ()
     #: Which controls the search may touch. Naming these is half the
@@ -165,7 +305,26 @@ class NumericTarget:
     using: tuple[str, ...] = ()
 
     def terms(self) -> tuple[tuple[str, float, float], ...]:
-        return ((self.metric, self.value, 1.0),) + tuple(self.also)
+        return ((self.metric, self.value, 1.0),) + tuple(
+            (a[0], a[1], a[2] if len(a) > 2 else 0.5) for a in self.also)
+
+    def compare_for(self, metric: str) -> str:
+        """The comparison this target uses for one of its numbers."""
+        if metric == self.metric:
+            return self.compare
+        for entry in self.also:
+            if entry[0] == metric and len(entry) > 3:
+                return str(entry[3])
+        return "=="
+
+    @staticmethod
+    def _short(now: float, wanted: float, how: str) -> float:
+        """How far short of the requirement, which is 0 once it is met."""
+        if how == ">=":
+            return max(0.0, wanted - now)
+        if how == "<=":
+            return max(0.0, now - wanted)
+        return abs(now - wanted)
 
     def usable(self, seen: Sensed) -> bool:
         """Whether every number in this target can currently be read at all."""
@@ -189,7 +348,8 @@ class NumericTarget:
                 continue
             if metric in NEEDS_SIGHT and seen.object_at is None:
                 continue
-            gap = abs(float(read(body, seen)) - float(wanted))
+            gap = self._short(float(read(body, seen)), float(wanted),
+                              self.compare_for(metric))
             span = max(float((scale or {}).get(metric, 1.0)),
                        _FLOOR.get(metric, 0.05))
             total += weight * gap / span
@@ -202,8 +362,15 @@ class NumericTarget:
             read = READABLE.get(metric)
             if read is None or (metric in NEEDS_SIGHT and seen.object_at is None):
                 continue
-            spans[metric] = max(abs(float(read(body, seen)) - float(wanted)),
-                                _FLOOR.get(metric, 0.05))
+            # THE SAME SHORTFALL THE ERROR USES. If the scale measured a
+            # difference while the error measured a shortfall, a threshold that
+            # was already satisfied would be scaled by how far PAST it the
+            # number sat -- which is a large number for a goal with nothing left
+            # to do.
+            spans[metric] = max(
+                self._short(float(read(body, seen)), float(wanted),
+                            self.compare_for(metric)),
+                _FLOOR.get(metric, 0.05))
         return spans
 
     def reached(self, body: Body, seen: Sensed,
@@ -218,4 +385,24 @@ class NumericTarget:
         when the target is set precisely so that progress means something, and
         this is the one place that most needs them.
         """
+        if not self.satisfied(body, seen):
+            return False
         return self.error(body, seen, spans or self.spans(body, seen)) <= within
+
+    def satisfied(self, body: Body, seen: Sensed) -> bool:
+        """Whether every named condition holds. Vacuously true if there are none."""
+        from .primitives import CONDITIONS
+
+        for name in self.requires:
+            check = CONDITIONS.get(name)
+            if check is not None and not check(body, seen):
+                return False
+        return True
+
+    def unmet(self, body: Body, seen: Sensed) -> list[str]:
+        """Which conditions are not holding, for the planner to be told."""
+        from .primitives import CONDITIONS
+
+        return [name for name in self.requires
+                if (CONDITIONS.get(name) is not None
+                    and not CONDITIONS[name](body, seen))]

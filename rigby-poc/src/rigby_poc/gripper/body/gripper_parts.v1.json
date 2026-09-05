@@ -119,10 +119,8 @@
       "segment_1",
       "segment_2",
       "segment_3"
-    ],
-    "gripper": [
-      "gripper"
     ]
   },
-  "$why_packages": "What the planner names is a PACKAGE -- everything that moves the hand through space, or the fingers -- and the search is free inside it. Naming parts one at a time asked the planner to know which hinge does what, and it does not: told to bring the hand in, it named the last hinge alone, which changes where the hand points and not how far it reaches, so nothing could fold the middle segment and the arm stayed stretched out past the block for a whole run. That is a fact about the mechanism, and the mechanism should answer it. With five parts there is nothing to win by choosing between them and a whole run to lose by choosing wrong. A hand with twenty joints would be a different argument."
+  "$why_packages": "What the planner names is a PACKAGE -- everything that moves the hand through space, or the fingers -- and the search is free inside it. Naming parts one at a time asked the planner to know which hinge does what, and it does not: told to bring the hand in, it named the last hinge alone, which changes where the hand points and not how far it reaches, so nothing could fold the middle segment and the arm stayed stretched out past the block for a whole run. That is a fact about the mechanism, and the mechanism should answer it. With five parts there is nothing to win by choosing between them and a whole run to lose by choosing wrong. A hand with twenty joints would be a different argument.",
+  "$why_no_gripper_package": "The fingers are a STATE, not a search. Leaving a `gripper` package on the menu offered the planner a control that the run loop discards -- it named it, the search moved the fingers in its probe, and the jaw state overwrote the result every frame."
 }

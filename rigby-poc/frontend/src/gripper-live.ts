@@ -12,6 +12,7 @@ interface GripperRun {
   started_at: string; updated_at: string; finished_at?: string | null;
   progress: number; elapsed_s: number; model_calls: number; can_abort: boolean;
   clip_url?: string | null; events: RunEvent[]; latest?: Record<string, unknown> | null;
+  cameras?: { room?: string; gripper?: string } | null;
   achieved?: Record<string, unknown> | null; error?: string | null;
 }
 type Link =
@@ -169,6 +170,10 @@ function renderRun(run: GripperRun | null) {
   ui.runTitle.textContent = run.task; ui.runBadge.textContent = run.status; ui.runBadge.className = `status-badge ${run.status}`;
   ui.runMessage.textContent = run.error || run.message; ui.progress.style.width = `${Math.max(0, Math.min(1, run.progress || 0)) * 100}%`;
   ui.elapsed.textContent = `${Number(run.elapsed_s || 0).toFixed(1)} s`; ui.calls.textContent = String(run.model_calls ?? 0);
+  const room = document.querySelector<HTMLImageElement>("#cam-room");
+  const grip = document.querySelector<HTMLImageElement>("#cam-grip");
+  if (room && run.cameras?.room) room.src = run.cameras.room;
+  if (grip && run.cameras?.gripper) grip.src = run.cameras.gripper;
   ui.target.textContent = String(run.latest?.target ?? "—"); ui.move.textContent = run.latest ? `${String(run.latest.part ?? "—")} / ${String(run.latest.move ?? "—")}` : "—";
   ui.abort.hidden = !run.can_abort; ui.run.disabled = run.can_abort; renderEvents(run.events ?? []);
   const live = run.status === "running" || run.status === "queued"; ui.liveDot.className = `live-dot ${live ? "live" : run.status === "failed" ? "failed" : "idle"}`; ui.stageLabel.textContent = live ? "LIVE" : "REPLAY";
