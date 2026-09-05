@@ -1,6 +1,6 @@
 {
   "compiler_metrics": {
-    "attachment_started_s": 1.005,
+    "attachment_started_s": 1.25,
     "catch_intercept_error_m": 0.0,
     "catch_time_s": null,
     "discontinuities": 0,
@@ -11,19 +11,19 @@
     "hold_duration_s": 1.0,
     "joint_limit_violations": 0,
     "landing_height_error_m": 0.0,
-    "lift_height_m": 0.1424461696612409,
+    "lift_height_m": 0.14244616966123957,
     "lost_table_contact": true,
-    "max_angular_acceleration_rad_s2": 61.52766903155865,
-    "max_angular_jerk_rad_s3": 1396.704199968966,
+    "max_angular_acceleration_rad_s2": 69.84819137968933,
+    "max_angular_jerk_rad_s3": 2021.9272434057632,
     "max_angular_velocity_rad_s": 7.153162009861741,
     "max_frame_rotation_delta_rad": 0.2384387336620566,
-    "max_penetration_m": 0.00010517625312427337,
+    "max_penetration_m": 0.00010517625312364986,
     "nan_count": 0,
     "object_action": "throw",
     "object_apex_height_m": 0.38,
     "object_expected_roll_turns": 0.0,
     "object_flight_distance_m": 0.85,
-    "object_flight_duration_s": 0.9032645877797076,
+    "object_flight_duration_s": 0.9056880230960307,
     "object_guided_distance_m": 0.0,
     "object_guided_lateral_error_m": 0.0,
     "object_guided_projected_distance_m": 0.0,
@@ -35,7 +35,7 @@
       },
       {
         "state": "attached",
-        "time_s": 1.005
+        "time_s": 1.25
       },
       {
         "state": "released",
@@ -46,16 +46,16 @@
         "time_s": 2.7500000000000004
       }
     ],
-    "object_max_step_m": 0.2020700661676987,
-    "object_max_step_reference_m": 0.22219447866583364,
+    "object_max_step_m": 0.20337230600402184,
+    "object_max_step_reference_m": 0.22296513273485377,
     "object_measured_roll_turns": 0.0,
     "object_measured_support_spin_turns": 0.0,
     "object_placement_horizontal_distance_m": 0.0,
     "object_spin_turns": 0.3,
     "opposing_contact_ratio": 1.0,
     "opposing_contacts": true,
-    "palm_relative_object_slip_m": 1.5043163512556135e-16,
-    "palm_relative_slip_m": 0.0005939707056739171,
+    "palm_relative_object_slip_m": 1.2586013583571652e-16,
+    "palm_relative_slip_m": 0.000593970705673917,
     "phase_ranges_s": [
       {
         "end_s": 0.55,
@@ -98,14 +98,14 @@
         "start_s": 2.416666666666667
       },
       {
-        "end_s": 3.653264587779708,
+        "end_s": 3.6556880230960314,
         "kind": "flight",
         "start_s": 2.7500000000000004
       },
       {
-        "end_s": 4.286597921113041,
+        "end_s": 4.289021356429364,
         "kind": "recover",
-        "start_s": 3.653264587779708
+        "start_s": 3.6556880230960314
       }
     ],
     "physics_engine": "MuJoCo",
@@ -165,8 +165,8 @@
     "fixed_root_foot_max_rotation_delta_rad": 0.0,
     "foot_drift_m": 0.0,
     "joint_limit_violations": 0,
-    "max_angular_acceleration_rad_s2": 61.52766903155865,
-    "max_angular_jerk_rad_s3": 1396.704199968966,
+    "max_angular_acceleration_rad_s2": 69.84819137968933,
+    "max_angular_jerk_rad_s3": 2021.9272434057632,
     "max_angular_velocity_rad_s": 7.153162009861741,
     "max_frame_rotation_delta_rad": 0.2384387336620566,
     "nan_count": 0,
@@ -1010,6 +1010,56 @@
             "x": 0.0,
             "y": 0.07,
             "z": 0.55
+          }
+        }
+      },
+      {
+        "dimensions_m": {
+          "x": 1.05,
+          "y": 0.055,
+          "z": 0.72
+        },
+        "friction": 0.9,
+        "id": "table",
+        "kind": "table",
+        "mass_kg": 25.0,
+        "sockets": [
+          {
+            "approach_normal": {
+              "x": 0.0,
+              "y": 1.0,
+              "z": 0.0
+            },
+            "grasp_span_m": 0.1,
+            "id": "top_center",
+            "role": "support",
+            "supports_body_weight": false,
+            "transform": {
+              "rotation": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "translation": {
+                "x": 0.0,
+                "y": 0.0275,
+                "z": 0.0
+              }
+            }
+          }
+        ],
+        "transform": {
+          "rotation": {
+            "w": 1.0,
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "translation": {
+            "x": 0.0,
+            "y": 0.9825,
+            "z": 0.5
           }
         }
       }

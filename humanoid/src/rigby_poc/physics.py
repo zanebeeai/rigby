@@ -28,10 +28,33 @@ class PhysicsOutcome:
     metrics: dict[str, Any]
 
 
-def _xml(block: SceneObject) -> str:
+def _table_geom(block: SceneObject, support: SceneObject | None) -> str:
+    """The MuJoCo box the block rests on.
+
+    From the scene's support surface when the manifest carries one, so the
+    proxy sees the same table the compiler and the viewer see. Scenes without
+    one (older fixtures, ad-hoc runners) keep the derived 1 m slab whose top is
+    the block's underside, so their output is unchanged.
+    """
+
+    if support is None:
+        half_y = block.dimensions_m.y / 2.0
+        table_top = block.transform.translation.y - half_y
+        return (
+            f'<geom name="table" type="box" size="0.5 0.5 0.025" '
+            f'pos="0 0 {table_top - 0.025}" rgba="0.35 0.28 0.2 1"/>'
+        )
+    position = app_to_mj_position(support.transform.translation.as_list())
+    d = support.dimensions_m
+    return (
+        f'<geom name="table" type="box" size="{d.x / 2.0} {d.z / 2.0} {d.y / 2.0}" '
+        f'pos="{position[0]} {position[1]} {position[2]}" rgba="0.35 0.28 0.2 1"/>'
+    )
+
+
+def _xml(block: SceneObject, support: SceneObject | None = None) -> str:
     d = block.dimensions_m
     half = [d.x / 2.0, d.y / 2.0, d.z / 2.0]
-    table_top = block.transform.translation.y - half[1]
     return f"""
 <mujoco model="rigby_contact_proxy">
   <compiler angle="radian" inertiafromgeom="true"/>
@@ -44,7 +67,7 @@ def _xml(block: SceneObject) -> str:
   </default>
   <worldbody>
     <geom name="floor" type="plane" size="2 2 0.1" pos="0 0 0" friction="1 0.01 0.001"/>
-    <geom name="table" type="box" size="0.5 0.5 0.025" pos="0 0 {table_top - 0.025}" rgba="0.35 0.28 0.2 1"/>
+    {_table_geom(block, support)}
     <body name="cartesian_hand" pos="0 0 0">
       <joint name="hand_x" type="slide" axis="1 0 0" range="-0.8 0.8"/>
       <joint name="hand_y" type="slide" axis="0 1 0" range="-0.8 0.8"/>
@@ -133,13 +156,14 @@ def simulate_grasp(
     thumb_opposition: float = 0.75,
     digit_curl_adjustments: dict[str, float] | None = None,
     fps: int = 30,
+    support: SceneObject | None = None,
 ) -> PhysicsOutcome:
     """Lift a free MuJoCo block through opposing contact/friction only.
 
     The block has a free joint and the model deliberately contains no equality,
     weld, tendon, parent relation, or block actuator.
     """
-    model = mujoco.MjModel.from_xml_string(_xml(block))
+    model = mujoco.MjModel.from_xml_string(_xml(block, support))
     data = mujoco.MjData(model)
     block_body = _body_id(model, "block")
     hand_body = _body_id(model, "cartesian_hand")

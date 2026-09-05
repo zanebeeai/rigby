@@ -320,6 +320,10 @@ class SceneObject(Contract):
             ]
             if len(climb_contacts) < 2:
                 raise ValueError("a ladder requires at least two weight-bearing climb contacts")
+        if self.kind == "table" and not any(
+            socket.role == AffordanceRole.SUPPORT for socket in self.sockets
+        ):
+            raise ValueError("a table requires a support socket")
         return self
 
 
@@ -346,6 +350,24 @@ class SceneManifest(Contract):
 
     def object_by_id(self, object_id: str) -> SceneObject | None:
         return next((item for item in self.objects if item.id == object_id), None)
+
+    def support_surface(self) -> SceneObject | None:
+        """The surface objects rest on, or ``None`` for a scene without one.
+
+        Identified by kind rather than by socket role: the hurdle also carries
+        a ``support`` socket (it is stepped on), and it is not a table.
+        """
+
+        return next((item for item in self.objects if item.kind == "table"), None)
+
+    def graspable_objects(self) -> list[SceneObject]:
+        """Objects a hand can close on -- everything with a grasp socket."""
+
+        return [
+            item
+            for item in self.objects
+            if any(socket.role == AffordanceRole.GRASP for socket in item.sockets)
+        ]
 
 
 class PrimitiveParameters(Contract):
@@ -1026,4 +1048,24 @@ def default_scene() -> SceneManifest:
             )
         ],
     )
-    return SceneManifest(objects=[block, ladder, hurdle])
+    # The support surface: top face at y=1.01, which is the block's underside
+    # (1.05 - 0.04). Appended last: several consumers fall back to objects[0]
+    # as "the thing to manipulate" and must never see the table there.
+    table = SceneObject(
+        id="table",
+        kind="table",
+        transform=Transform(translation=Vec3(x=0.0, y=0.9825, z=0.5)),
+        dimensions_m=Vec3(x=1.05, y=0.055, z=0.72),
+        mass_kg=25.0,
+        friction=0.9,
+        sockets=[
+            AffordanceSocket(
+                id="top_center",
+                transform=Transform(translation=Vec3(x=0.0, y=0.0275, z=0.0)),
+                approach_normal=Vec3(x=0.0, y=1.0, z=0.0),
+                grasp_span_m=0.10,
+                role=AffordanceRole.SUPPORT,
+            )
+        ],
+    )
+    return SceneManifest(objects=[block, ladder, hurdle, table])

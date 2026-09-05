@@ -394,8 +394,15 @@ def arm_pose_from_target(
     elbow_hint: Vec3 | None = None,
     elbow_hint_weight: float = 1.0,
     elbow_pole: Vec3 | None = None,
+    allow_mirror: bool = True,
 ) -> tuple[dict[str, Quat], float]:
     """Calibrated analytic two-link IK returned as rest-relative local deltas.
+
+    ``allow_mirror=False`` keeps the primary bend-plane branch even when it
+    violates the twist band. A caller re-solving every frame along a path
+    needs that: the mirrored branch is a half-turn of the humerus away, and
+    letting the choice flip between two neighbouring frames is a visible
+    snap where the band violation it avoids is not.
 
     ``elbow_hint`` pins the elbow near a world position; ``elbow_hint_weight``
     lets a caller blending a target toward that hint carry the *bend plane*
@@ -572,7 +579,7 @@ def arm_pose_from_target(
         )
 
     solution = solve(bend)
-    if solution.violates:
+    if solution.violates and allow_mirror:
         # The equivalent bend-plane branch: the elbow mirrored through the
         # shoulder->target line.  The hinge stays aligned with that branch's
         # plane normal, so elbow flexion stays the non-negative interior bend;

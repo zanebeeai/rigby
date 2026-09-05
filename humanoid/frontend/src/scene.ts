@@ -9,12 +9,7 @@ import {
 } from "./avatar";
 import { applyEgoCameraPose, computeEgoCameraPose, trackOrbitRoot } from "./camera";
 import { egoVerticalFovDeg } from "./generated/camera";
-import type {
-  BlockParameters,
-  CameraMode,
-  ContactEvent,
-  MotionFrame,
-} from "./types";
+import type { BlockParameters, CameraMode, ContactEvent, MotionFrame, SupportSurfaceParameters } from "./types";
 
 const DEG = Math.PI / 180;
 const AVATAR_ASSET_URL = "/assets/models/human-male.glb";
@@ -130,6 +125,7 @@ export class RigbyScene {
   private readonly block: THREE.Group;
   private readonly ladder: THREE.Group;
   private readonly table: THREE.Mesh;
+  private supportSurfacePresent = false;
   private readonly socketMarker: THREE.Mesh;
   private readonly contactMarkers = new THREE.Group();
   private readonly taskEnvironment = new THREE.Group();
@@ -239,13 +235,15 @@ export class RigbyScene {
     floor.receiveShadow = true;
     this.scene.add(floor);
 
+    // A unit box: its size and place come from the scene manifest's support
+    // surface via updateSupportSurface, never from a literal here.
     this.table = new THREE.Mesh(
-      new THREE.BoxGeometry(1.05, 0.055, 0.72),
+      new THREE.BoxGeometry(1, 1, 1),
       new THREE.MeshStandardMaterial({ color: 0x303a43, roughness: 0.82 }),
     );
-    this.table.position.set(0, 0.985, 0.5);
     this.table.castShadow = true;
     this.table.receiveShadow = true;
+    this.table.visible = false;
     this.taskEnvironment.add(this.table);
     this.scene.add(this.taskEnvironment);
 
@@ -378,7 +376,17 @@ export class RigbyScene {
 
   setTaskEnvironmentVisible(visible: boolean, supportSurfaceVisible = visible): void {
     this.taskEnvironment.visible = visible;
-    this.table.visible = visible && supportSurfaceVisible;
+    this.table.visible = visible && supportSurfaceVisible && this.supportSurfacePresent;
+  }
+
+  /** Size and place the support surface from the manifest; null means the scene has none. */
+  updateSupportSurface(params: SupportSurfaceParameters | null): void {
+    this.supportSurfacePresent = params !== null;
+    if (params) {
+      this.table.scale.set(params.width, params.height, params.depth);
+      this.table.position.set(...params.position);
+    }
+    this.table.visible = this.table.visible && this.supportSurfacePresent;
   }
 
   setObjectId(objectId: string | null | undefined): void {

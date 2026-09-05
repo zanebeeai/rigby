@@ -3,7 +3,7 @@
     "carried_object_ids": [
       "block"
     ],
-    "carried_object_max_step_m": 0.10763872202541461,
+    "carried_object_max_step_m": 0.10763872202541465,
     "carried_object_max_step_reference_m": 0.08,
     "carried_object_release_times_s": {},
     "discontinuities": 0,
@@ -16,8 +16,8 @@
     "joint_limit_violations": 0,
     "lift_height_m": 0.0,
     "lost_table_contact": true,
-    "max_angular_acceleration_rad_s2": 23.940780931525467,
-    "max_angular_jerk_rad_s3": 463.4576057217398,
+    "max_angular_acceleration_rad_s2": 38.07640917465494,
+    "max_angular_jerk_rad_s3": 1142.2922752396446,
     "max_angular_velocity_rad_s": 4.446586278995852,
     "max_frame_rotation_delta_rad": 0.21582010673993376,
     "max_penetration_m": 0.0,
@@ -145,8 +145,8 @@
     "fixed_root_foot_max_rotation_delta_rad": 3.141592653589793,
     "foot_drift_m": 0.0,
     "joint_limit_violations": 0,
-    "max_angular_acceleration_rad_s2": 23.940780931525467,
-    "max_angular_jerk_rad_s3": 463.4576057217398,
+    "max_angular_acceleration_rad_s2": 38.07640917465494,
+    "max_angular_jerk_rad_s3": 1142.2922752396446,
     "max_angular_velocity_rad_s": 4.446586278995852,
     "max_frame_rotation_delta_rad": 0.21582010673993376,
     "nan_count": 0,
@@ -1111,6 +1111,56 @@
             "x": 0.0,
             "y": 0.07,
             "z": 0.55
+          }
+        }
+      },
+      {
+        "dimensions_m": {
+          "x": 1.05,
+          "y": 0.055,
+          "z": 0.72
+        },
+        "friction": 0.9,
+        "id": "table",
+        "kind": "table",
+        "mass_kg": 25.0,
+        "sockets": [
+          {
+            "approach_normal": {
+              "x": 0.0,
+              "y": 1.0,
+              "z": 0.0
+            },
+            "grasp_span_m": 0.1,
+            "id": "top_center",
+            "role": "support",
+            "supports_body_weight": false,
+            "transform": {
+              "rotation": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "translation": {
+                "x": 0.0,
+                "y": 0.0275,
+                "z": 0.0
+              }
+            }
+          }
+        ],
+        "transform": {
+          "rotation": {
+            "w": 1.0,
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "translation": {
+            "x": 0.0,
+            "y": 0.9825,
+            "z": 0.5
           }
         }
       }

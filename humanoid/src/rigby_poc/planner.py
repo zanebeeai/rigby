@@ -1423,6 +1423,13 @@ def provider_status() -> dict[str, object]:
     }
 
 
+
+def _support_id(scene: SceneManifest) -> str | None:
+    """Id of the scene's support surface, or ``None`` when it has none."""
+
+    support = scene.support_surface()
+    return None if support is None else support.id
+
 class OfflinePlanner:
     _unsupported = re.compile(r"(?!)")
     _body_action = re.compile(
@@ -3334,8 +3341,14 @@ class OfflinePlanner:
             if action in {ObjectAction.DROP, ObjectAction.SPIN}
             else 0.14
             if action == ObjectAction.PULL
+            # A push is delivered by the hand's leading edge, and from a fixed
+            # stance that edge reaches about 0.11 m past a block on the table
+            # before the arm is straight; 0.18 was only ever "reached" by a
+            # block pinned to a wrist estimate the rendered arm did not match.
+            else 0.15
+            if action in {ObjectAction.PUSH, ObjectAction.ROLL}
             else 0.18
-            if action in {ObjectAction.PUSH, ObjectAction.ROLL, ObjectAction.PLACE}
+            if action == ObjectAction.PLACE
             else 1.60
             if re.search(r"\b(?:far|hard|powerful|across)\b", lower)
             else 0.45
@@ -4057,7 +4070,14 @@ class OfflinePlanner:
 
     @staticmethod
     def _resolve_object(text: str, scene: SceneManifest) -> str | None:
-        mentions = [item.id for item in scene.objects if re.search(rf"\b{re.escape(item.id)}\b", text)]
+        # The support surface is where things rest, never the thing manipulated:
+        # "place it on the table" is about the block, so the table is not a mention.
+        support = scene.support_surface()
+        mentions = [
+            item.id
+            for item in scene.objects
+            if item is not support and re.search(rf"\b{re.escape(item.id)}\b", text)
+        ]
         if len(mentions) == 1:
             return mentions[0]
         block_mentions = bool(re.search(r"\b(block|cube|box|object in front)\b", text))
@@ -4375,6 +4395,8 @@ class OpenAIPlanner:
             )
             if object_id is None or object_id not in {item.id for item in request.scene.objects}:
                 raise ValueError("object interaction requires an exact scene object id")
+            if object_id == _support_id(request.scene):
+                raise ValueError("the support surface is not an object to interact with")
             if selection.object_action is None or selection.object_motion is None:
                 raise ValueError("object interaction requires action and motion target")
             return _object_interaction_program(
@@ -4456,6 +4478,8 @@ class OpenAIPlanner:
         object_id = selection.object_id or OfflinePlanner._resolve_object(request.text.lower(), request.scene)
         if object_id is None or object_id not in {item.id for item in request.scene.objects}:
             raise ValueError("grab selection requires an exact scene object id")
+        if object_id == _support_id(request.scene):
+            raise ValueError("the support surface is not a grasp target")
         base = PrimitiveParameters(arm_depth=0.50, elbow_swivel=0.20)
         phase_specs = (
             (PrimitiveKind.REACH, HandShape.OPEN, {"duration_s": 0.65}),
@@ -4557,9 +4581,12 @@ class OpenAIPlanner:
                     "dexterous action requires concurrent gaze at the active hand"
                 )
         ids = {item.id for item in scene.objects}
+        support_id = _support_id(scene)
         for primitive in program.primitives:
             if primitive.object_id is not None and primitive.object_id not in ids:
                 raise ValueError(f"unknown object id: {primitive.object_id}")
+            if primitive.object_id is not None and primitive.object_id == support_id:
+                raise ValueError("the support surface cannot be a primitive's object")
             if (
                 primitive.gaze_target is not None
                 and primitive.gaze_target.object_id is not None

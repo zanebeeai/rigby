@@ -11,6 +11,14 @@ export interface BlockParameters {
   position: [number, number, number];
 }
 
+/** The surface objects rest on, read from the scene manifest's `table` object. */
+export interface SupportSurfaceParameters {
+  width: number;
+  height: number;
+  depth: number;
+  position: [number, number, number];
+}
+
 export interface MotionParameters {
   handedness: Handedness;
   duration: number;

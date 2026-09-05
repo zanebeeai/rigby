@@ -1,4 +1,4 @@
-import type { MotionProgram } from "./types";
+import type { MotionProgram, SceneManifest, SupportSurfaceParameters } from "./types";
 
 function programsInSequence(program: MotionProgram | null | undefined): MotionProgram[] {
   if (!program) return [];
@@ -46,4 +46,27 @@ export function shouldShowTaskSupportSurface(program: MotionProgram | null | und
   return shouldShowTaskEnvironment(program)
     && activeObstacleObjectId(program) === null
     && taskObjectId !== "ladder";
+}
+
+/**
+ * The support surface to draw for this program, or null to draw none.
+ *
+ * The geometry comes from the manifest's `table` object -- the same body the
+ * compiler plans against -- so the viewer never carries its own copy of it.
+ * A scene without a table draws no table, whatever the program wants.
+ */
+export function supportSurfaceFor(
+  program: MotionProgram | null | undefined,
+  scene: Pick<SceneManifest, "objects"> | null | undefined,
+): SupportSurfaceParameters | null {
+  if (!shouldShowTaskSupportSurface(program)) return null;
+  const table = scene?.objects?.find((item) => item.kind === "table");
+  if (!table) return null;
+  const { translation } = table.transform;
+  return {
+    width: table.dimensions_m.x,
+    height: table.dimensions_m.y,
+    depth: table.dimensions_m.z,
+    position: [translation.x, translation.y, translation.z],
+  };
 }

@@ -4,6 +4,7 @@ import {
   activeTaskObjectId,
   shouldShowTaskEnvironment,
   shouldShowTaskSupportSurface,
+  supportSurfaceFor,
 } from "./environment";
 import { DEMO_CLIP, DEMO_PROGRAM, DEMO_SUMMARY } from "./mock";
 import { formatMetric, frameAt } from "./motion";
@@ -353,6 +354,32 @@ function sceneManifest() {
             id: "top_center",
             transform: {
               translation: { x: 0, y: 0.05, z: 0 },
+              rotation: { x: 0, y: 0, z: 0, w: 1 },
+            },
+            approach_normal: { x: 0, y: 1, z: 0 },
+            grasp_span_m: 0.10,
+            role: "support" as const,
+            supports_body_weight: false,
+          },
+        ],
+      },
+      {
+        // The support surface. Top face y=1.01, the default block's underside.
+        // Mirrors rigby_poc.models.default_scene(); keep the two in step.
+        id: "table",
+        kind: "table" as const,
+        transform: {
+          translation: { x: 0, y: 0.9825, z: 0.5 },
+          rotation: { x: 0, y: 0, z: 0, w: 1 },
+        },
+        dimensions_m: { x: 1.05, y: 0.055, z: 0.72 },
+        mass_kg: 25,
+        friction: 0.9,
+        sockets: [
+          {
+            id: "top_center",
+            transform: {
+              translation: { x: 0, y: 0.0275, z: 0 },
               rotation: { x: 0, y: 0, z: 0, w: 1 },
             },
             approach_normal: { x: 0, y: 1, z: 0 },
@@ -797,6 +824,7 @@ function renderProgram(): void {
     parameters.objectLandingHeight = Number(program.object_motion.landing_height_m ?? 0.04);
   }
   ui.programIntent.textContent = String(program?.intent ?? "No plan").replaceAll("_", " ");
+  scene.updateSupportSurface(supportSurfaceFor(program, sceneManifest()));
   scene.setTaskEnvironmentVisible(
     shouldShowTaskEnvironment(program),
     shouldShowTaskSupportSurface(program),

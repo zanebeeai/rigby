@@ -5,6 +5,7 @@ import {
   activeTaskObjectId,
   shouldShowTaskEnvironment,
   shouldShowTaskSupportSurface,
+  supportSurfaceFor,
 } from "./environment";
 import type { MotionProgram } from "./types";
 
@@ -86,5 +87,48 @@ describe("task environment visibility", () => {
     };
     expect(activeTaskObjectId(program)).toBe("parcel");
     expect(shouldShowTaskEnvironment(program)).toBe(true);
+  });
+});
+
+describe("support surface from the manifest", () => {
+  const scene = {
+    objects: [
+      {
+        id: "block",
+        kind: "block",
+        transform: { translation: { x: 0, y: 1.05, z: 0.29 }, rotation: { x: 0, y: 0, z: 0, w: 1 } },
+        dimensions_m: { x: 0.06, y: 0.08, z: 0.06 },
+        mass_kg: 0.25,
+        friction: 1.2,
+        sockets: [],
+      },
+      {
+        id: "table",
+        kind: "table",
+        transform: { translation: { x: 0, y: 0.9825, z: 0.5 }, rotation: { x: 0, y: 0, z: 0, w: 1 } },
+        dimensions_m: { x: 1.05, y: 0.055, z: 0.72 },
+        mass_kg: 25,
+        friction: 0.9,
+        sockets: [],
+      },
+    ],
+  };
+  const grab: MotionProgram = { intent: "grab", object_id: "block", primitives: [] };
+
+  it("reads the table's size and place from the manifest", () => {
+    expect(supportSurfaceFor(grab, scene)).toEqual({
+      width: 1.05,
+      height: 0.055,
+      depth: 0.72,
+      position: [0, 0.9825, 0.5],
+    });
+  });
+
+  it("draws nothing when the scene has no table", () => {
+    expect(supportSurfaceFor(grab, { objects: scene.objects.slice(0, 1) })).toBeNull();
+  });
+
+  it("still hides the table where the program says so", () => {
+    expect(supportSurfaceFor({ intent: "full_body", primitives: [] }, scene)).toBeNull();
   });
 });

@@ -627,6 +627,35 @@
         ],
         "rationale": "Total trunk yaw the strike generator may request at torso_participation = 1.0, distributed over spine/chest/upperChest by TRUNK_YAW_DISTRIBUTION. Bounded by the trunk ROM typical band: the largest distribution weight is 0.40, and 0.40 x 0.63 rad = 14.4 deg, inside every trunk segment's 15-deg typical twist band (all three are provisional, report-only bounds). An authored generator ceiling in the wrist_twist_generator_max_rad family, not a measured quantity."
       }
+    },
+    "contact.hand_clearance_m": {
+      "value": 0.004,
+      "unit": "m",
+      "applies_to": [
+        "grab"
+      ],
+      "source": {
+        "kind": "provisional",
+        "cites": [
+          "src/rigby_poc/clearance.py"
+        ],
+        "rationale": "Margin the skinned hand keeps from the support surface and, before contact, from the object, when a keyframe's wrist target is moved out of a body it would otherwise pass through. 4 mm is twice the contact audit's 2 mm touch tolerance so a cleared keyframe reads as clear there, and well under the 27.5 mm the hand used to sink into the table. Provisional: set to be invisible, not measured against anything."
+      }
+    },
+    "contact.hand_clearance_blend_m": {
+      "value": 0.008,
+      "unit": "m",
+      "applies_to": [
+        "grab",
+        "object_interaction"
+      ],
+      "source": {
+        "kind": "provisional",
+        "cites": [
+          "src/rigby_poc/clearance.py"
+        ],
+        "rationale": "Penetration depth at which a blended (joint-space) frame is fully replaced by its cleared re-solve. Below it the two are mixed in proportion, so the correction fades to nothing as the hand leaves the body instead of switching off with a pop. The residual this leaves is at most a quarter of the ramp, 2 mm, the contact audit's touch tolerance. Provisional."
+      }
     }
   }
 }

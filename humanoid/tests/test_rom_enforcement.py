@@ -156,8 +156,13 @@ def test_the_elbow_is_the_whole_story_and_the_rest_is_the_variance(corpus_failur
     # arm interpolation: 16 rejections split 9 elbow-only and 7 on other DOFs
     # (feet, hand twist, little-finger abduction, and the cartwheel's mixed
     # set). Before the roll fix it was 37 elbow-only of 46.
-    assert len(elbow_only) == 9, sorted(elbow_only)
-    assert len(rejected) - len(elbow_only) == 7
+    #
+    # 2026-09-05, hand clearance: grasp-block-overhead moved from elbow-only to
+    # the mixed set. Its wrist now keeps the seat it closed with as it lifts
+    # the block overhead, and holding that seat at full height twists the
+    # hand and upper arm past their bounds. Still 16 rejected; 8 and 8.
+    assert len(elbow_only) == 8, sorted(elbow_only)
+    assert len(rejected) - len(elbow_only) == 8
 
 
 def test_only_the_symmetric_fullbody_trio_fails_on_both_elbows(corpus_failures) -> None:
