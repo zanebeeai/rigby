@@ -334,12 +334,24 @@ class RigKinematics:
         *,
         hand_world_rotation: np.ndarray | None = None,
         bend_hint_world: np.ndarray | None = None,
+        allow_mirror: bool = True,
+        absorb_hand_twist: bool = False,
     ) -> dict[str, Quat]:
         """Return exact local rotations for a planted or reaching hand target.
 
         Unlike the lightweight authoring-space arm solve, this evaluates the
         complete posed hierarchy first.  It therefore remains correct when
         the pelvis and chest are horizontal, as in a crawl or push-up.
+
+        ``allow_mirror=False`` keeps the primary bend-plane branch even when
+        it breaks the twist band: a caller solving every frame of a path must
+        not have the elbow hop to the mirrored branch between two frames.
+
+        ``absorb_hand_twist`` moves the roll of ``hand_world_rotation`` about
+        the forearm's long axis into the forearm as pronation, within the
+        generator budget, so the wrist joint carries only flexion and
+        deviation. A hand placed by orientation needs this: the wrist itself
+        barely rotates, the forearm does.
         """
 
         upper_name = f"{side}UpperArm"
@@ -462,7 +474,7 @@ class RigKinematics:
             )
 
         chosen = solve(bend_direction)
-        if abs(chosen[3]) > UPPER_ARM_TWIST_BAND_RAD or chosen[4] > 1e-9:
+        if allow_mirror and (abs(chosen[3]) > UPPER_ARM_TWIST_BAND_RAD or chosen[4] > 1e-9):
             # The equivalent bend-plane branch: elbow mirrored through the
             # shoulder->target line, hinge still aligned with that branch's
             # plane normal (flexion stays the non-negative interior bend).
@@ -474,14 +486,29 @@ class RigKinematics:
                 chosen = mirrored
         upper_world_rotation, lower_world_rotation, upper_delta, _, _ = chosen
 
-        lower_local_rotation = upper_world_rotation.T @ lower_world_rotation
-        lower_delta = lower_rest_rotation.T @ lower_local_rotation
-
         desired_hand_world = (
             hand_world_rotation
             if hand_world_rotation is not None
             else current_world[hand_index][:3, :3]
         )
+        if absorb_hand_twist and hand_world_rotation is not None:
+            # The twist the wrist would have to carry about the forearm's
+            # long axis becomes forearm pronation instead, up to the budget;
+            # only what the budget cannot take stays in the hand joint.
+            hand_rest_rotation = self.rest[hand_index].rotation
+            wrist_delta = hand_rest_rotation.T @ (lower_world_rotation.T @ desired_hand_world)
+            wanted = twist_about_local_y(Rotation.from_matrix(wrist_delta))
+            lower_delta_now = lower_rest_rotation.T @ (upper_world_rotation.T @ lower_world_rotation)
+            present = twist_about_local_y(Rotation.from_matrix(lower_delta_now))
+            total = float(np.clip(present + wanted, -pronation_budget, pronation_budget))
+            lower_world_rotation = (
+                lower_world_rotation
+                @ Rotation.from_rotvec([0.0, total - present, 0.0]).as_matrix()
+            )
+
+        lower_local_rotation = upper_world_rotation.T @ lower_world_rotation
+        lower_delta = lower_rest_rotation.T @ lower_local_rotation
+
         hand_local_rotation = lower_world_rotation.T @ desired_hand_world
         hand_delta = self.rest[hand_index].rotation.T @ hand_local_rotation
         return {

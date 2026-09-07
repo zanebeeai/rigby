@@ -4,6 +4,7 @@ import {
   activeTaskObjectId,
   shouldShowTaskEnvironment,
   shouldShowTaskSupportSurface,
+  supportSurfaceFor,
 } from "./environment";
 import {
   captureHeightPx,
@@ -14,6 +15,7 @@ import { frameAt, unwrapClip } from "./motion";
 import { RigbyScene, type RenderProvenance } from "./scene";
 import {
   DEFAULT_PARAMETERS,
+  type SceneManifest,
   type BlockParameters,
   type CameraMode,
   type ClipResult,
@@ -66,7 +68,8 @@ function blockParameters(sceneValue: unknown, preferredObjectId?: string | null)
       friction?: number;
     }>;
   };
-  const block = scene.objects?.find((item) => item.id === preferredObjectId) ?? scene.objects?.[0];
+  const block = scene.objects?.find((item) => item.id === preferredObjectId)
+    ?? scene.objects?.find((item) => item.kind !== "table");
   const translation = block?.transform?.translation;
   const dimensions = block?.dimensions_m;
   return {
@@ -161,6 +164,9 @@ async function initialize(): Promise<void> {
       strictAssets: true,
       deterministicRender,
     });
+    scene.updateSupportSurface(
+      supportSurfaceFor(program, payload.scene as Pick<SceneManifest, "objects"> | undefined),
+    );
     scene.setTaskEnvironmentVisible(
       shouldShowTaskEnvironment(program),
       shouldShowTaskSupportSurface(program),

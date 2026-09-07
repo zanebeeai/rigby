@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+from collections.abc import Mapping
 from dataclasses import dataclass
 
 import numpy as np
@@ -298,27 +299,52 @@ def _bone_key(hand: Hand, finger: str, segment: str) -> str:
     return f"{hand.value}{finger}{segment}"
 
 
+def effective_curls(shape: HandShape, parameters: PrimitiveParameters) -> dict[str, float]:
+    """The per-digit curl a hand pose closes to, before any blend, in [0, 1]."""
+
+    definition = HAND_SHAPES[shape]
+    adjustments = {
+        "Thumb": parameters.thumb_curl,
+        "Index": parameters.index_curl,
+        "Middle": parameters.middle_curl,
+        "Ring": parameters.ring_curl,
+        "Little": parameters.little_curl,
+    }
+    return {
+        finger: float(
+            np.clip(
+                definition.curls[finger] + parameters.finger_curl * 0.2 + adjustments[finger] * 0.25,
+                0.0,
+                1.0,
+            )
+        )
+        for finger in FINGERS
+    }
+
+
 def hand_pose(
     hand: Hand,
     shape: HandShape,
     parameters: PrimitiveParameters,
     blend: float = 1.0,
+    curl_overrides: Mapping[str, float] | None = None,
 ) -> dict[str, Quat]:
+    """Finger bone rotations for one hand shape.
+
+    ``curl_overrides`` replaces the curl of the named digits (``"Index"`` ...)
+    with an explicit value in [0, 1]: a grasp closes each finger to the curl
+    at which it first meets the object, which no shape definition knows.
+    """
+
     definition = HAND_SHAPES[shape]
     side = 1.0 if hand == Hand.LEFT else -1.0
     result: dict[str, Quat] = {}
+    curls = effective_curls(shape, parameters)
     for finger in FINGERS:
-        base_curl = definition.curls[finger]
-        digit_adjustment = {
-            "Thumb": parameters.thumb_curl,
-            "Index": parameters.index_curl,
-            "Middle": parameters.middle_curl,
-            "Ring": parameters.ring_curl,
-            "Little": parameters.little_curl,
-        }[finger]
-        curl = float(
-            np.clip(base_curl + parameters.finger_curl * 0.2 + digit_adjustment * 0.25, 0.0, 1.0)
-        ) * blend
+        curl = curls[finger]
+        if curl_overrides is not None and finger in curl_overrides:
+            curl = float(np.clip(curl_overrides[finger], 0.0, 1.0))
+        curl *= blend
         base_splay = definition.splay[finger]
         # Positive finger_splay expands the authored silhouette away from its
         # center for every digit.  The old additive rule widened one side of a
@@ -332,7 +358,11 @@ def hand_pose(
             splay_angle = splay * 0.30 * side if index == 0 else 0.0
             opposition = 0.0
             if finger == "Thumb" and index == 0:
-                opposition = (definition.thumb_opposition * 0.7 + parameters.thumb_opposition * 0.3) * 0.75 * side
+                # Negative: this rotation swings the thumb metacarpal toward
+                # the palm. With the sign the other way "opposition" carried
+                # the thumb dorsally onto the knuckle plane, and a fist had no
+                # pocket between thumb and fingers for anything to sit in.
+                opposition = -(definition.thumb_opposition * 0.7 + parameters.thumb_opposition * 0.3) * 0.75 * side
             result[_bone_key(hand, finger, segment)] = quat_euler(curl_angle, opposition, splay_angle)
     return result
 
@@ -394,8 +424,15 @@ def arm_pose_from_target(
     elbow_hint: Vec3 | None = None,
     elbow_hint_weight: float = 1.0,
     elbow_pole: Vec3 | None = None,
+    allow_mirror: bool = True,
 ) -> tuple[dict[str, Quat], float]:
     """Calibrated analytic two-link IK returned as rest-relative local deltas.
+
+    ``allow_mirror=False`` keeps the primary bend-plane branch even when it
+    violates the twist band. A caller re-solving every frame along a path
+    needs that: the mirrored branch is a half-turn of the humerus away, and
+    letting the choice flip between two neighbouring frames is a visible
+    snap where the band violation it avoids is not.
 
     ``elbow_hint`` pins the elbow near a world position; ``elbow_hint_weight``
     lets a caller blending a target toward that hint carry the *bend plane*
@@ -572,7 +609,7 @@ def arm_pose_from_target(
         )
 
     solution = solve(bend)
-    if solution.violates:
+    if solution.violates and allow_mirror:
         # The equivalent bend-plane branch: the elbow mirrored through the
         # shoulder->target line.  The hinge stays aligned with that branch's
         # plane normal, so elbow flexion stays the non-negative interior bend;
@@ -702,6 +739,22 @@ def shoulder_position(hand: Hand) -> Vec3:
 
     x, y, z = value_of("anatomy.shoulder_origin_m")
     return Vec3(x=x if hand == Hand.LEFT else -x, y=y, z=z)
+
+
+#: Float noise a retiming ratio is allowed to sit above an integer before it
+#: counts as the next frame. A phase whose largest joint step divides the
+#: subdivision target exactly (object-catch-left's close: 5.0) lands a few
+#: ulp either side of the integer depending on the platform's libm, and one
+#: side gets an extra frame -- the corpus recorded 93 frames on macOS and
+#: recompiled to 94 on Windows. Well above ulp, well below any real step.
+SUBDIVISION_ROUNDING_EPSILON = 1e-9
+
+
+def subdivision_frames(delta_rad: float, step_rad: float) -> int:
+    """Frames needed so no single frame turns a joint more than ``step_rad``:
+    the subdivision count plus one, rounded up but not by float noise."""
+
+    return int(math.ceil(delta_rad / step_rad - SUBDIVISION_ROUNDING_EPSILON)) + 1
 
 
 def smoothstep(value: float, easing: float) -> float:

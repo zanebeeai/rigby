@@ -3,7 +3,7 @@
     "carried_object_ids": [
       "block"
     ],
-    "carried_object_max_step_m": 0.10763872202541461,
+    "carried_object_max_step_m": 0.10763872202541465,
     "carried_object_max_step_reference_m": 0.08,
     "carried_object_release_times_s": {},
     "discontinuities": 0,
@@ -16,10 +16,10 @@
     "joint_limit_violations": 0,
     "lift_height_m": 0.0,
     "lost_table_contact": true,
-    "max_angular_acceleration_rad_s2": 23.940780931525467,
-    "max_angular_jerk_rad_s3": 463.4576057217398,
+    "max_angular_acceleration_rad_s2": 37.30517391127086,
+    "max_angular_jerk_rad_s3": 1119.1552173381224,
     "max_angular_velocity_rad_s": 4.446586278995852,
-    "max_frame_rotation_delta_rad": 0.21582010673993376,
+    "max_frame_rotation_delta_rad": 0.24082463148253067,
     "max_penetration_m": 0.0,
     "nan_count": 0,
     "opposing_contacts": false,
@@ -40,55 +40,55 @@
         "step_intent": "object_interaction"
       },
       {
-        "end_s": 1.3833333333333333,
+        "end_s": 1.35,
         "kind": "contact",
         "start_s": 1.1833333333333333,
         "step_index": 1,
         "step_intent": "object_interaction"
       },
       {
-        "end_s": 1.65,
+        "end_s": 1.6166666666666667,
         "kind": "close",
-        "start_s": 1.3833333333333333,
+        "start_s": 1.35,
         "step_index": 1,
         "step_intent": "object_interaction"
       },
       {
-        "end_s": 2.0166666666666666,
+        "end_s": 1.9833333333333334,
         "kind": "absorb",
-        "start_s": 1.65,
+        "start_s": 1.6166666666666667,
         "step_index": 1,
         "step_intent": "object_interaction"
       },
       {
-        "end_s": 2.4833333333333334,
+        "end_s": 2.45,
         "kind": "hold",
-        "start_s": 2.0166666666666666,
+        "start_s": 1.9833333333333334,
         "step_index": 1,
         "step_intent": "object_interaction"
       },
       {
-        "end_s": 3.1166666666666667,
+        "end_s": 3.0833333333333335,
         "kind": "recover",
-        "start_s": 2.4833333333333334,
+        "start_s": 2.45,
         "step_index": 1,
         "step_intent": "object_interaction"
       },
       {
         "action": "turn",
-        "end_s": 4.866666666666667,
+        "end_s": 4.833333333333334,
         "kind": "body",
         "label": "turn_1",
-        "start_s": 3.6166666666666667,
+        "start_s": 3.5833333333333335,
         "step_index": 2,
         "step_intent": "full_body"
       },
       {
         "action": "hold",
-        "end_s": 5.866666666666667,
+        "end_s": 5.833333333333334,
         "kind": "recover",
         "label": "settle_to_balanced_stance",
-        "start_s": 4.866666666666667,
+        "start_s": 4.833333333333334,
         "step_index": 2,
         "step_intent": "full_body"
       }
@@ -107,7 +107,7 @@
     "sequence_step_ranges_s": [
       {
         "child_structural_valid": true,
-        "end_s": 3.1166666666666667,
+        "end_s": 3.0833333333333335,
         "horizontal_pose_contact_point_count": null,
         "horizontal_pose_requested": false,
         "horizontal_pose_variant": null,
@@ -118,13 +118,13 @@
       },
       {
         "child_structural_valid": true,
-        "end_s": 5.866666666666667,
+        "end_s": 5.833333333333334,
         "horizontal_pose_contact_point_count": null,
         "horizontal_pose_requested": false,
         "horizontal_pose_variant": null,
         "intent": "full_body",
         "source_text": "turn around",
-        "start_s": 3.6166666666666667,
+        "start_s": 3.5833333333333335,
         "step_index": 2
       }
     ],
@@ -145,16 +145,16 @@
     "fixed_root_foot_max_rotation_delta_rad": 3.141592653589793,
     "foot_drift_m": 0.0,
     "joint_limit_violations": 0,
-    "max_angular_acceleration_rad_s2": 23.940780931525467,
-    "max_angular_jerk_rad_s3": 463.4576057217398,
+    "max_angular_acceleration_rad_s2": 37.30517391127086,
+    "max_angular_jerk_rad_s3": 1119.1552173381224,
     "max_angular_velocity_rad_s": 4.446586278995852,
-    "max_frame_rotation_delta_rad": 0.21582010673993376,
+    "max_frame_rotation_delta_rad": 0.24082463148253067,
     "nan_count": 0,
     "quaternion_norm_max_error": 2.220446049250313e-16,
     "root_drift_m": 1.022706919151517e-11,
     "safety_derivation": "computed over every frame/local delta quaternion and authored hips translation; root motion is explicitly enabled"
   },
-  "frame_count": 176,
+  "frame_count": 175,
   "id": "sequence_catch_then_turn",
   "intent": "sequence",
   "program": {
@@ -1111,6 +1111,56 @@
             "x": 0.0,
             "y": 0.07,
             "z": 0.55
+          }
+        }
+      },
+      {
+        "dimensions_m": {
+          "x": 1.05,
+          "y": 0.055,
+          "z": 0.72
+        },
+        "friction": 0.9,
+        "id": "table",
+        "kind": "table",
+        "mass_kg": 25.0,
+        "sockets": [
+          {
+            "approach_normal": {
+              "x": 0.0,
+              "y": 1.0,
+              "z": 0.0
+            },
+            "grasp_span_m": 0.1,
+            "id": "top_center",
+            "role": "support",
+            "supports_body_weight": false,
+            "transform": {
+              "rotation": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "translation": {
+                "x": 0.0,
+                "y": 0.0275,
+                "z": 0.0
+              }
+            }
+          }
+        ],
+        "transform": {
+          "rotation": {
+            "w": 1.0,
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "translation": {
+            "x": 0.0,
+            "y": 0.9825,
+            "z": 0.5
           }
         }
       }

@@ -164,6 +164,11 @@ def test_the_elbow_landscape_after_the_humeral_roll_fix(clip, compile_whole_corp
     transients between roll-bearing keyframes, not authored motion. The exact
     dirty set is pinned so a compiler change that re-introduces the artifact
     turns this red as a set change, not as a silent rate shift.
+
+    2026-09-05, hand clearance: grasp-block-overhead left the set. Its lift now
+    keeps the seat the grip closed with and carries the block overhead on a
+    path whose elbow abduction stays inside the bound; what it breaches
+    instead is hand and upper-arm twist (see test_rom_enforcement).
     """
 
     clean, dirty = [], []
@@ -182,14 +187,13 @@ def test_the_elbow_landscape_after_the_humeral_roll_fix(clip, compile_whole_corp
         "fullbody-cartwheel",
         "fullbody-dance",
         "fullbody-run-forward",
-        "grasp-block-overhead",
         "knownbad-strike-hyperfast",
         "strike-cross-right",
         "strike-hook-right",
         "strike-jab-left",
         "strike-uppercut-right",
     ], sorted(dirty)
-    assert len(clean) == 36, sorted(clean)
+    assert len(clean) == 37, sorted(clean)
     assert CASE in dirty, "the chosen corpus clip must still carry a real excursion"
 
 

@@ -72,7 +72,12 @@ jobs:
     # 30 was not headroom, it was the failure mode: every main run from
     # 33092603029 onward ended "The operation was canceled" at 30m1x on Windows.
     # The suite is smaller now; this is a hang detector, not a budget.
-    timeout-minutes: 45
+    #
+    # 45 became the failure mode too: main's Windows job took 38m38s on
+    # 33321402181, and on PR #20 it completed in 44m14s once (2389 passed) and
+    # was cancelled at 76% and at 74% on the two runs beside it. The macOS
+    # job took 29m. 60 keeps the hang detector a hang detector.
+    timeout-minutes: 60
     defaults:
       run:
         working-directory: humanoid

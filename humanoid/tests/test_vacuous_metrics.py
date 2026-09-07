@@ -305,8 +305,17 @@ def test_object_interaction_slip_is_float_noise_on_every_action(
     }
 
     assert len(measured) >= 8, "the corpus lost its object-interaction cases"
-    worst = max(measured.values())
+    # Since 2026-09-05 the wrist a carried object is attached to is the rig's
+    # own FK wrist, which moves with the chest. A spin pins the block to the
+    # table and turns it under a hand whose wrist the chest carries a few
+    # millimetres between phases, so its slip is now a real, small number
+    # rather than round-trip noise. Every action that carries the object still
+    # reports noise, because the object is defined relative to that wrist.
+    real_slip = {case_id for case_id in measured if "spin" in case_id}
+    noise = {case_id: value for case_id, value in measured.items() if case_id not in real_slip}
+    worst = max(noise.values())
     assert worst < 1e-12, (
-        f"worst slip is {worst:.3e}; it used to be float noise on every action"
+        f"worst slip is {worst:.3e}; it used to be float noise on every carried action"
     )
     assert worst < 0.005 / 1e9, "the 0.005 gate is nine orders from firing"
+    assert all(measured[case_id] < 0.005 for case_id in real_slip), measured

@@ -342,6 +342,56 @@
           "z": 0.55
         }
       }
+    },
+    {
+      "dimensions_m": {
+        "x": 1.05,
+        "y": 0.055,
+        "z": 0.72
+      },
+      "friction": 0.9,
+      "id": "table",
+      "kind": "table",
+      "mass_kg": 25.0,
+      "sockets": [
+        {
+          "approach_normal": {
+            "x": 0.0,
+            "y": 1.0,
+            "z": 0.0
+          },
+          "grasp_span_m": 0.1,
+          "id": "top_center",
+          "role": "support",
+          "supports_body_weight": false,
+          "transform": {
+            "rotation": {
+              "w": 1.0,
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "translation": {
+              "x": 0.0,
+              "y": 0.0275,
+              "z": 0.0
+            }
+          }
+        }
+      ],
+      "transform": {
+        "rotation": {
+          "w": 1.0,
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "translation": {
+          "x": 0.0,
+          "y": 0.9825,
+          "z": 0.5
+        }
+      }
     }
   ],
   "reachable_radius_m": 0.72,
