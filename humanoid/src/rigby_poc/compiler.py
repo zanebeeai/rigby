@@ -1,15 +1,44 @@
 from __future__ import annotations
 
 import math
+from collections.abc import Mapping
 from importlib.metadata import version
 from pathlib import Path
-from collections.abc import Mapping
 from typing import Any
 
 import numpy as np
 from scipy.interpolate import CubicSpline
 from scipy.spatial.transform import Rotation
 
+from .analysis import _angular_kinematics, arm_landmarks
+from .analysis.composite import composite_metrics as _composite_metrics
+from .analysis.context import (
+    AnalysisContext as _AnalysisContext,
+)
+from .analysis.context import (
+    root_drift_policy as _root_drift_policy,
+)
+from .analysis.full_body import full_body_metrics as _full_body_metrics
+from .analysis.geometry import line_segment_distance as _line_segment_distance
+from .analysis.hand import hand_metrics as _hand_metrics
+from .analysis.objects import handoff_metrics as _handoff_metrics
+from .analysis.rig import (
+    EGO_NEUTRAL_GAZE as _EGO_NEUTRAL_GAZE,
+)
+from .analysis.rig import (
+    RIG_PROFILE,
+)
+from .analysis.rig import (
+    identity_pose as _identity_pose,
+)
+from .analysis.safety import (
+    clip_contract_violations as _clip_contract_violations,
+)
+from .analysis.safety import (
+    safety_metrics as _safety_metrics,
+)
+from .analysis.semantic import semantic_cycle_assertion as _semantic_cycle_assertion
+from .arm_plane import twist_about_local_y
 from .clearance import (
     ForbiddenBody,
     basis_with_first_axis,
@@ -38,9 +67,9 @@ from .grasp import (
     solve_seat,
 )
 from .hand_mesh import hand_mesh
+from .kinematics import rig_kinematics
 from .models import (
     AffordanceRole,
-    BonePose,
     BodyAction,
     BodyClimbDirection,
     BodyObstacleMode,
@@ -48,6 +77,7 @@ from .models import (
     BodyRotationMode,
     BodySupportMode,
     BodyTarget,
+    BonePose,
     ClipFrame,
     ClipResult,
     CompileRequest,
@@ -61,8 +91,8 @@ from .models import (
     MotionProgram,
     ObjectAction,
     ObjectInteractionStyle,
-    PrimitiveParameters,
     PrimitiveKind,
+    PrimitiveParameters,
     Provenance,
     Quat,
     SceneManifest,
@@ -72,17 +102,15 @@ from .models import (
     Transform,
     Vec3,
 )
-from .arm_plane import twist_about_local_y
-from .kinematics import rig_kinematics
 from .physics import PhysicsOutcome, simulate_grasp
 from .primitives import (
     MAX_WRIST_TWIST_RAD,
     TRUNK_YAW_DISTRIBUTION,
-    arm_reach_m,
     arm_pose_from_target,
+    arm_reach_m,
     counter_rotate_about_trunk,
-    forearm_shake_amplitude_rad,
     finger_assertions,
+    forearm_shake_amplitude_rad,
     gesture_target,
     hand_pose,
     presentation_arc_amplitude_rad,
@@ -91,32 +119,11 @@ from .primitives import (
     strike_path_target,
     strike_target,
     strike_trunk_yaw,
+    subdivision_frames,
     thumb_to_fingertip_pose,
     trunk_yaw_poses,
     wrist_flourish_amplitude_rad,
 )
-from .analysis import _angular_kinematics, arm_landmarks
-from .analysis.context import (
-    AnalysisContext as _AnalysisContext,
-    root_drift_policy as _root_drift_policy,
-)
-from .analysis.composite import composite_metrics as _composite_metrics
-from .analysis.full_body import full_body_metrics as _full_body_metrics
-from .analysis.geometry import line_segment_distance as _line_segment_distance
-from .analysis.hand import hand_metrics as _hand_metrics
-from .analysis.objects import handoff_metrics as _handoff_metrics
-from .analysis.rig import (
-    EGO_NEUTRAL_GAZE as _EGO_NEUTRAL_GAZE,
-    RIG_PROFILE,
-    identity_pose as _identity_pose,
-)
-from .analysis.safety import (
-    clip_contract_violations as _clip_contract_violations,
-    safety_metrics as _safety_metrics,
-)
-from .analysis.semantic import semantic_cycle_assertion as _semantic_cycle_assertion
-
-
 from .thresholds import value_of
 
 #: Nlerp is not constant-angular-speed near 180 degrees, so every compile path
@@ -3337,7 +3344,7 @@ def _compile_composite(scene: SceneManifest, program: MotionProgram) -> ClipResu
             )
             for key in base
         )
-        frame_count = max(requested_frames, int(math.ceil(target_delta / NLERP_SUBDIVISION_RAD)) + 1)
+        frame_count = max(requested_frames, subdivision_frames(target_delta, NLERP_SUBDIVISION_RAD))
         phase_duration_s = max(primitive.parameters.duration_s, (frame_count - 1) / fps)
         phase_ranges.append(
             {
@@ -3916,7 +3923,7 @@ def _compile_object_handoff(
             )
             for name in base
         )
-        frame_count = max(frame_count, int(math.ceil(target_delta / NLERP_SUBDIVISION_RAD)) + 1)
+        frame_count = max(frame_count, subdivision_frames(target_delta, NLERP_SUBDIVISION_RAD))
         phase_duration_s = max(requested_duration, (frame_count - 1) / scene.fps)
         phase_ranges.append(
             {
@@ -4431,7 +4438,7 @@ def _compile_object_interaction(scene: SceneManifest, program: MotionProgram) ->
             )
             for key in base
         )
-        frame_count = max(frame_count, int(math.ceil(target_delta / NLERP_SUBDIVISION_RAD)) + 1)
+        frame_count = max(frame_count, subdivision_frames(target_delta, NLERP_SUBDIVISION_RAD))
         phase_duration_s = max(requested_duration, (frame_count - 1) / scene.fps)
         phase_object_start = current_object_position.copy()
         phase_ranges.append(
@@ -5660,7 +5667,7 @@ def _compile_sequence(scene: SceneManifest, program: MotionProgram) -> ClipResul
             )
             transition = max(
                 transition,
-                (int(math.ceil(boundary_delta / NLERP_SUBDIVISION_RAD)) + 1) / fps,
+                subdivision_frames(boundary_delta, NLERP_SUBDIVISION_RAD) / fps,
             )
             for _ in range(4):
                 bridge = _blend_sequence_boundary(
@@ -6334,7 +6341,7 @@ def compile_motion(request: CompileRequest) -> ClipResult:
         # old discontinuity-only rule because it also keeps acceleration under
         # the human-reference envelope when a model requests a very short
         # phase.
-        frame_count = max(frame_count, int(math.ceil(target_delta / NLERP_SUBDIVISION_RAD)) + 1)
+        frame_count = max(frame_count, subdivision_frames(target_delta, NLERP_SUBDIVISION_RAD))
         phase_duration_s = max(primitive.parameters.duration_s, (frame_count - 1) / fps)
         phase_ranges.append(
             {

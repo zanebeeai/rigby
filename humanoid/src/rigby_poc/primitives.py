@@ -741,6 +741,22 @@ def shoulder_position(hand: Hand) -> Vec3:
     return Vec3(x=x if hand == Hand.LEFT else -x, y=y, z=z)
 
 
+#: Float noise a retiming ratio is allowed to sit above an integer before it
+#: counts as the next frame. A phase whose largest joint step divides the
+#: subdivision target exactly (object-catch-left's close: 5.0) lands a few
+#: ulp either side of the integer depending on the platform's libm, and one
+#: side gets an extra frame -- the corpus recorded 93 frames on macOS and
+#: recompiled to 94 on Windows. Well above ulp, well below any real step.
+SUBDIVISION_ROUNDING_EPSILON = 1e-9
+
+
+def subdivision_frames(delta_rad: float, step_rad: float) -> int:
+    """Frames needed so no single frame turns a joint more than ``step_rad``:
+    the subdivision count plus one, rounded up but not by float noise."""
+
+    return int(math.ceil(delta_rad / step_rad - SUBDIVISION_ROUNDING_EPSILON)) + 1
+
+
 def smoothstep(value: float, easing: float) -> float:
     value = float(np.clip(value, 0.0, 1.0))
     cubic = value * value * (3.0 - 2.0 * value)
