@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+from collections.abc import Mapping
 from dataclasses import dataclass
 
 import numpy as np
@@ -298,27 +299,52 @@ def _bone_key(hand: Hand, finger: str, segment: str) -> str:
     return f"{hand.value}{finger}{segment}"
 
 
+def effective_curls(shape: HandShape, parameters: PrimitiveParameters) -> dict[str, float]:
+    """The per-digit curl a hand pose closes to, before any blend, in [0, 1]."""
+
+    definition = HAND_SHAPES[shape]
+    adjustments = {
+        "Thumb": parameters.thumb_curl,
+        "Index": parameters.index_curl,
+        "Middle": parameters.middle_curl,
+        "Ring": parameters.ring_curl,
+        "Little": parameters.little_curl,
+    }
+    return {
+        finger: float(
+            np.clip(
+                definition.curls[finger] + parameters.finger_curl * 0.2 + adjustments[finger] * 0.25,
+                0.0,
+                1.0,
+            )
+        )
+        for finger in FINGERS
+    }
+
+
 def hand_pose(
     hand: Hand,
     shape: HandShape,
     parameters: PrimitiveParameters,
     blend: float = 1.0,
+    curl_overrides: Mapping[str, float] | None = None,
 ) -> dict[str, Quat]:
+    """Finger bone rotations for one hand shape.
+
+    ``curl_overrides`` replaces the curl of the named digits (``"Index"`` ...)
+    with an explicit value in [0, 1]: a grasp closes each finger to the curl
+    at which it first meets the object, which no shape definition knows.
+    """
+
     definition = HAND_SHAPES[shape]
     side = 1.0 if hand == Hand.LEFT else -1.0
     result: dict[str, Quat] = {}
+    curls = effective_curls(shape, parameters)
     for finger in FINGERS:
-        base_curl = definition.curls[finger]
-        digit_adjustment = {
-            "Thumb": parameters.thumb_curl,
-            "Index": parameters.index_curl,
-            "Middle": parameters.middle_curl,
-            "Ring": parameters.ring_curl,
-            "Little": parameters.little_curl,
-        }[finger]
-        curl = float(
-            np.clip(base_curl + parameters.finger_curl * 0.2 + digit_adjustment * 0.25, 0.0, 1.0)
-        ) * blend
+        curl = curls[finger]
+        if curl_overrides is not None and finger in curl_overrides:
+            curl = float(np.clip(curl_overrides[finger], 0.0, 1.0))
+        curl *= blend
         base_splay = definition.splay[finger]
         # Positive finger_splay expands the authored silhouette away from its
         # center for every digit.  The old additive rule widened one side of a
@@ -332,7 +358,11 @@ def hand_pose(
             splay_angle = splay * 0.30 * side if index == 0 else 0.0
             opposition = 0.0
             if finger == "Thumb" and index == 0:
-                opposition = (definition.thumb_opposition * 0.7 + parameters.thumb_opposition * 0.3) * 0.75 * side
+                # Negative: this rotation swings the thumb metacarpal toward
+                # the palm. With the sign the other way "opposition" carried
+                # the thumb dorsally onto the knuckle plane, and a fist had no
+                # pocket between thumb and fingers for anything to sit in.
+                opposition = -(definition.thumb_opposition * 0.7 + parameters.thumb_opposition * 0.3) * 0.75 * side
             result[_bone_key(hand, finger, segment)] = quat_euler(curl_angle, opposition, splay_angle)
     return result
 

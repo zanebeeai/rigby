@@ -20,6 +20,23 @@ from .clearance import (
     hinted_arm_solve,
     pushing_front_m,
 )
+from .grasp import (
+    Box,
+    Seat,
+    arc_path,
+    attach_offset,
+    carried_transform,
+    close_to_contact,
+    elbow_direction,
+    elbow_hang,
+    grasp_finger_axis,
+    grasp_palm_normal,
+    hand_world,
+    rotate_toward,
+    rotation_toward,
+    solve_hand_along,
+    solve_seat,
+)
 from .hand_mesh import hand_mesh
 from .models import (
     AffordanceRole,
@@ -49,6 +66,7 @@ from .models import (
     Provenance,
     Quat,
     SceneManifest,
+    SceneObject,
     TrajectoryKind,
     TrajectoryPlane,
     Transform,
@@ -459,11 +477,6 @@ def _slider_observables(scene: SceneManifest, program: MotionProgram) -> dict[st
     return result
 
 
-_GRAB_TOUCHING_PHASES = frozenset(
-    {PrimitiveKind.CONTACT, PrimitiveKind.CLOSE, PrimitiveKind.LIFT, PrimitiveKind.HOLD}
-)
-
-
 #: Fraction of a reach spent travelling to the point above the target; the
 #: rest is the descent onto it.
 _REACH_OVER_FRACTION = 0.7
@@ -489,6 +502,7 @@ def _reach_over_path(start: Vec3, end: Vec3, alpha: float, rise_m: float) -> Vec
         )
     blend = smoothstep((alpha - _REACH_OVER_FRACTION) / (1.0 - _REACH_OVER_FRACTION), 0.0)
     return Vec3(x=over.x, y=over.y + (end.y - over.y) * blend, z=over.z)
+
 
 
 def _push_destination_wall(
@@ -550,45 +564,6 @@ def _fk_arm_landmarks(
         Rotation.from_matrix(hand_matrix[:3, :3]),
     )
 
-
-def _grab_forbidden_bodies(
-    scene: SceneManifest,
-    target_object: SceneObject,
-    kind: PrimitiveKind,
-    object_transform: Transform,
-) -> list[ForbiddenBody]:
-    """What the skinned hand must stay out of at one moment of a grab.
-
-    The support surface, always, left through its top: nothing about a pickup
-    should put a finger through the table. The object, where it is *now*
-    (``object_transform``, which the simulation moves once it is lifted): kept
-    clear of on the way in and, open again, on the way out; touched but not
-    entered from contact through hold.
-    """
-
-    bodies: list[ForbiddenBody] = []
-    support = scene.support_surface()
-    if support is not None:
-        top = next(
-            (socket for socket in support.sockets if socket.role == AffordanceRole.SUPPORT),
-            None,
-        )
-        bodies.append(
-            ForbiddenBody.from_scene_object(
-                support, escape_along=top.approach_normal if top is not None else None
-            )
-        )
-    bodies.append(
-        ForbiddenBody.from_scene_object(
-            target_object,
-            transform=object_transform,
-            # Nearest face throughout: opening around a held block, an escape
-            # "over the top" would measure a fingertip under the block as
-            # the whole block deep and throw the wrist up by that much.
-            margin_m=0.0 if kind in _GRAB_TOUCHING_PHASES else None,
-        )
-    )
-    return bodies
 
 
 #: Object-interaction phases in which the hand is travelling to or from the
@@ -737,30 +712,6 @@ def _physics_for(program: MotionProgram, scene: SceneManifest) -> PhysicsOutcome
     outcome.metrics["grasp_attempts"] = attempts.index((grip_force, thumb_opposition)) + 1
     return outcome
 
-
-def _app_quaternion_from_mj(wxyz: list[float]) -> Quat:
-    mj_rotation = Rotation.from_quat([wxyz[1], wxyz[2], wxyz[3], wxyz[0]]).as_matrix()
-    conversion = np.asarray([[1.0, 0.0, 0.0], [0.0, 0.0, -1.0], [0.0, 1.0, 0.0]])
-    app_rotation = conversion.T @ mj_rotation @ conversion
-    xyzw = Rotation.from_matrix(app_rotation).as_quat()
-    return Quat(x=float(xyzw[0]), y=float(xyzw[1]), z=float(xyzw[2]), w=float(xyzw[3]))
-
-
-def _nearest_object_transform(
-    physics: PhysicsOutcome | None,
-    time_s: float,
-    total_s: float,
-    original: Transform,
-) -> Transform:
-    if physics is None or not physics.trajectory:
-        return original
-    physical_end = physics.trajectory[-1][0]
-    scaled = min(physical_end, time_s / max(total_s, 1e-8) * physical_end)
-    sample = min(physics.trajectory, key=lambda item: abs(item[0] - scaled))
-    return Transform(
-        translation=Vec3(x=sample[1][0], y=sample[1][1], z=sample[1][2]),
-        rotation=_app_quaternion_from_mj(sample[2]),
-    )
 
 
 def _failure_result(
@@ -6166,7 +6117,6 @@ def compile_motion(request: CompileRequest) -> ClipResult:
             )
 
     physics = _physics_for(program, scene) if program.intent == Intent.GRAB else None
-    total_s = sum(item.parameters.duration_s for item in program.primitives)
     fps = scene.fps
     # Both authored motion families begin from a relaxed humanoid stance. The
     # identity pose is the rig's calibration T-pose and should never leak into
@@ -6176,9 +6126,24 @@ def compile_motion(request: CompileRequest) -> ClipResult:
     frames: list[ClipFrame] = []
     elapsed = 0.0
     final_shape = HandShape.OPEN
-    grab_grip_offset = (0.0, 0.0, 0.0)
-    grab_seat: tuple[float, float, float] | None = None
     side = 1.0 if program.hand == Hand.LEFT else -1.0
+    # A grab is placed by orientation: the hand's own frame is put around the
+    # block once (the seat), the fingers are closed onto its skin at contact
+    # and close, and from the end of close the block rides the rendered hand
+    # through the rig's FK. Nothing below re-solves a wrist against a point.
+    grasp_block: Box | None = None
+    grasp_boxes: list[Box] = []
+    grasp_seat: Seat | None = None
+    grasp_curls: dict[str, float] | None = None
+    grasp_hold: tuple[np.ndarray, Rotation] | None = None
+    grasp_hint: np.ndarray | None = None
+    if program.intent == Intent.GRAB and target_object is not None:
+        grasp_block = Box.from_scene_object(target_object)
+        grasp_boxes = [grasp_block]
+        support = scene.support_surface()
+        if support is not None:
+            grasp_boxes.append(Box.from_scene_object(support))
+        grasp_hint = elbow_hang(program.hand.value)
     # Root-space leg posture, strikes only (2026-08-29 ruling). Authored as
     # per-phase hips offsets -- crouch_depth_m / weight_shift_m in metres --
     # and the legs follow by exact IK on ankles planted at the idle stance's
@@ -6241,20 +6206,31 @@ def compile_motion(request: CompileRequest) -> ClipResult:
                 dtype=float,
             )
         shape = primitive.hand_shape or final_shape
-        if program.intent == Intent.GRAB and target_object is not None:
-            target = target_object.transform.translation.model_copy(
-                update={
-                    "x": target_object.transform.translation.x + primitive.parameters.lateral_offset * 0.08,
-                    "y": target_object.transform.translation.y
-                    + (primitive.parameters.lift_height_m if primitive.kind in (PrimitiveKind.LIFT, PrimitiveKind.HOLD, PrimitiveKind.RECOVER) else 0.0)
-                    + primitive.parameters.arm_height * 0.08,
-                    # The IK target is the wrist, not the block center. Keep a
-                    # palm-length offset along the object's front approach
-                    # axis so the block sits between the fingers instead of
-                    # intersecting the wrist/forearm mesh.
-                    "z": target_object.transform.translation.z - 0.085 + primitive.parameters.arm_depth * 0.08,
-                }
+        grasp_lifted = primitive.kind in (PrimitiveKind.LIFT, PrimitiveKind.HOLD, PrimitiveKind.RECOVER)
+        grasp_trunk: dict[str, BonePose] | None = None
+        if program.intent == Intent.GRAB and target_object is not None and grasp_block is not None:
+            # The keyframe is solved against the trunk it will be rendered
+            # with, so the seat is where the rendered hand ends up.
+            trunk = current.copy()
+            trunk["chest"] = Quat(
+                y=math.sin(primitive.parameters.torso_participation * 0.08),
+                w=math.cos(primitive.parameters.torso_participation * 0.08),
             )
+            grasp_trunk = {name: BonePose(rotation=rotation) for name, rotation in trunk.items()}
+            if grasp_seat is None:
+                _, grasp_seat, grasp_hint = solve_seat(
+                    grasp_trunk,
+                    program.hand.value,
+                    grasp_block,
+                    grasp_finger_axis(target_object, primitive),
+                    grasp_palm_normal(program.hand, target_object, primitive),
+                    grasp_hint,
+                    primitive.parameters,
+                )
+            wrist_key = grasp_seat.wrist.copy()
+            if grasp_lifted:
+                wrist_key[1] += primitive.parameters.lift_height_m
+            target = Vec3(x=float(wrist_key[0]), y=float(wrist_key[1]), z=float(wrist_key[2]))
         elif program.intent == Intent.STRIKE and program.strike_type is not None:
             target = strike_target(
                 program.hand,
@@ -6283,63 +6259,46 @@ def compile_motion(request: CompileRequest) -> ClipResult:
                 if program.intent == Intent.STRIKE
                 else 0.0
             )
-            arm, _ = arm_pose_from_target(
-                program.hand,
-                shoulder_position(program.hand),
-                counter_rotate_about_trunk(target, keyframe_trunk_yaw),
-                primitive.parameters,
-                present_hand=program.intent == Intent.GESTURE,
-                forearm_twist_reserve_rad=(
-                    forearm_twist_reserve_rad
-                    if program.intent == Intent.GESTURE
-                    else 0.0
-                ),
-            )
-            fingers = hand_pose(program.hand, shape, primitive.parameters)
-            if program.intent == Intent.GRAB and target_object is not None:
-                # The wrist pivot above was placed against the block's centre;
-                # move it until the hand's own skin is out of the table (and,
-                # on the way in, out of the block), re-solving the arm each
-                # pass so the check is on the pose that gets rendered.
-                forbidden = _grab_forbidden_bodies(
-                    scene,
-                    target_object,
-                    primitive.kind,
-                    _nearest_object_transform(
-                        physics,
-                        elapsed + primitive.parameters.duration_s,
-                        total_s,
-                        target_object.transform,
+            if grasp_seat is not None and grasp_trunk is not None:
+                arm = solve_hand_along(
+                    grasp_trunk,
+                    program.hand.value,
+                    np.asarray(target.as_list(), dtype=float),
+                    grasp_seat.rotation,
+                    grasp_hint,
+                )
+                if primitive.kind in (PrimitiveKind.CONTACT, PrimitiveKind.CLOSE):
+                    # Each digit closes to where its skin first meets the
+                    # block or the table, from this phase's own shape; the
+                    # curls found at close are what the hand lifts with.
+                    body = dict(trunk)
+                    body.update(arm)
+                    curls = close_to_contact(
+                        program.hand, shape, primitive.parameters, body, grasp_boxes
+                    )
+                    if primitive.kind == PrimitiveKind.CLOSE:
+                        grasp_curls = curls
+                    fingers = hand_pose(program.hand, shape, primitive.parameters, curl_overrides=curls)
+                elif grasp_lifted and grasp_curls is not None:
+                    fingers = hand_pose(
+                        program.hand, shape, primitive.parameters, curl_overrides=grasp_curls
+                    )
+                else:
+                    fingers = hand_pose(program.hand, shape, primitive.parameters)
+            else:
+                arm, _ = arm_pose_from_target(
+                    program.hand,
+                    shoulder_position(program.hand),
+                    counter_rotate_about_trunk(target, keyframe_trunk_yaw),
+                    primitive.parameters,
+                    present_hand=program.intent == Intent.GESTURE,
+                    forearm_twist_reserve_rad=(
+                        forearm_twist_reserve_rad
+                        if program.intent == Intent.GESTURE
+                        else 0.0
                     ),
                 )
-                if primitive.kind in (PrimitiveKind.LIFT, PrimitiveKind.HOLD, PrimitiveKind.RECOVER):
-                    # The grip was seated at CLOSE; lifting keeps that seat.
-                    # Re-clearing from the authored centre would drop the hand
-                    # back onto the block by however far CLOSE had to rise.
-                    target = Vec3(
-                        x=target.x + grab_grip_offset[0],
-                        y=target.y + grab_grip_offset[1],
-                        z=target.z + grab_grip_offset[2],
-                    )
-                if forbidden:
-                    authored = target
-                    cleared = clear_wrist_target(
-                        program.hand,
-                        target,
-                        lambda point: arm_pose_from_target(
-                            program.hand, shoulder_position(program.hand), point, primitive.parameters
-                        )[0],
-                        current,
-                        fingers,
-                        forbidden,
-                    )
-                    target, arm = cleared.target, cleared.arm
-                    if primitive.kind == PrimitiveKind.CLOSE:
-                        grab_grip_offset = (
-                            target.x - authored.x,
-                            target.y - authored.y,
-                            target.z - authored.z,
-                        )
+                fingers = hand_pose(program.hand, shape, primitive.parameters)
             target_pose = current.copy()
             target_pose.update(arm)
             target_pose.update(fingers)
@@ -6395,13 +6354,11 @@ def compile_motion(request: CompileRequest) -> ClipResult:
             PrimitiveKind.FOLLOW_THROUGH,
         ):
             presentation_ranges.append((elapsed, elapsed + phase_duration_s))
-        grab_path_start: Vec3 | None = None
-        grab_elbow_hint: Vec3 | None = None
-        grab_pole: Vec3 | None = None
-        if program.intent == Intent.GRAB and target_object is not None:
-            grab_path_start = bone_world_position(start, f"{program.hand.value}Hand")
-            grab_elbow_hint = bone_world_position(start, f"{program.hand.value}LowerArm")
-            grab_pole = bend_pole(program.hand, start, primitive.parameters)
+        grasp_path: tuple[np.ndarray, Rotation, np.ndarray] | None = None
+        if grasp_seat is not None:
+            start_bones = {name: BonePose(rotation=rotation) for name, rotation in start.items()}
+            start_wrist, start_rotation = hand_world(start_bones, program.hand.value)
+            grasp_path = (start_wrist, start_rotation, elbow_direction(start_bones, program.hand.value))
         for local_index in range(frame_count):
             if frames and local_index == 0:
                 continue
@@ -6437,71 +6394,44 @@ def compile_motion(request: CompileRequest) -> ClipResult:
                 pose.update(
                     {name: BonePose(rotation=rotation) for name, rotation in path_arm.items()}
                 )
-            if program.intent == Intent.GRAB and target_object is not None and grab_path_start is not None:
-                # Joint-space nlerp swings the hand through the table's front
-                # edge and the block's face on its way in and out. Carry the
-                # wrist along a straight Cartesian path instead, clear each
-                # frame's hand skin out of the forbidden bodies, and hint the
-                # elbow at where it was last frame so the bend plane never
-                # jumps. At alpha=1 this is the cleared keyframe exactly.
-                frame_time_s = elapsed + local_index / fps
-                block_transform_now = _nearest_object_transform(
-                    physics, frame_time_s, total_s, target_object.transform
-                )
-                if primitive.kind in (PrimitiveKind.LIFT, PrimitiveKind.HOLD, PrimitiveKind.RECOVER):
-                    # Once the grip is closed the hand goes where the simulated
-                    # block goes, holding the seat it closed with, so the two
-                    # never drift apart by the difference between an authored
-                    # lift height and the one the simulation actually produced.
-                    block_now = block_transform_now.translation
-                    if grab_seat is None:
-                        block_then = _nearest_object_transform(
-                            physics, elapsed, total_s, target_object.transform
-                        ).translation
-                        grab_seat = (
-                            grab_path_start.x - block_then.x,
-                            grab_path_start.y - block_then.y,
-                            grab_path_start.z - block_then.z,
-                        )
-                    path_target = Vec3(
-                        x=block_now.x + grab_seat[0],
-                        y=block_now.y + grab_seat[1],
-                        z=block_now.z + grab_seat[2],
+            if grasp_seat is not None and grasp_path is not None and grasp_hint is not None:
+                # The wrist travels a straight path (the reach comes in over
+                # the block) and the hand turns from where it started to the
+                # seat's orientation; the arm is solved fresh on each frame
+                # against the trunk being rendered, elbow pinned to its branch
+                # and eased from where it hung to where a grab hangs it. At
+                # alpha=1 this is the keyframe's own solve.
+                start_wrist, start_rotation, start_elbow = grasp_path
+                path_end = np.asarray(target.as_list(), dtype=float)
+                if primitive.kind == PrimitiveKind.REACH:
+                    # One eased arc up and over to the seat, on the phase's
+                    # own clock: the hand comes at the block's side from above
+                    # and behind, palm side leading, so it crosses neither the
+                    # block nor the table's edge, and the arm never has to
+                    # start faster than the phase's easing asks.
+                    wrist_now = arc_path(
+                        start_wrist, path_end, alpha, target_object.dimensions_m.y
                     )
-                elif primitive.kind == PrimitiveKind.REACH:
-                    path_target = _reach_over_path(
-                        grab_path_start, target, local_index / (frame_count - 1), target_object.dimensions_m.y
-                    )
+                    hint_now = rotate_toward(start_elbow, grasp_hint, alpha)
                 else:
-                    path_target = Vec3(
-                        x=grab_path_start.x + (target.x - grab_path_start.x) * alpha,
-                        y=grab_path_start.y + (target.y - grab_path_start.y) * alpha,
-                        z=grab_path_start.z + (target.z - grab_path_start.z) * alpha,
-                    )
-                hint = grab_elbow_hint
-
-                def _solve_path_arm(
-                    point: Vec3, _hint: Vec3 | None = hint, _pole: Vec3 | None = grab_pole
-                ) -> dict[str, Quat]:
-                    return hinted_arm_solve(program.hand, point, primitive.parameters, _hint, _pole)
-
-                frame_pose = {name: bone.rotation for name, bone in pose.items()}
-                forbidden = _grab_forbidden_bodies(
-                    scene, target_object, primitive.kind, block_transform_now
+                    wrist_now = start_wrist + (path_end - start_wrist) * alpha
+                    hint_now = grasp_hint
+                rotation_now = rotation_toward(
+                    start_rotation, Rotation.from_matrix(grasp_seat.rotation), alpha
+                ).as_matrix()
+                path_arm = solve_hand_along(
+                    pose, program.hand.value, wrist_now, rotation_now, hint_now
                 )
-                cleared = clear_wrist_target(
-                    program.hand, path_target, _solve_path_arm, frame_pose, {}, forbidden
-                )
-                pose.update(
-                    {name: BonePose(rotation=rotation) for name, rotation in cleared.arm.items()}
-                )
-                frame_pose.update(cleared.arm)
-                grab_elbow_hint = bone_world_position(frame_pose, f"{program.hand.value}LowerArm")
+                pose.update({name: BonePose(rotation=rotation) for name, rotation in path_arm.items()})
                 if local_index == frame_count - 1:
-                    # The next phase interpolates from this pose, so it must be
-                    # the hinted solve that was rendered, not the pole solve
-                    # the keyframe was planned with.
-                    target_pose.update(cleared.arm)
+                    # The next phase interpolates from the pose that was
+                    # rendered, which is this solve.
+                    target_pose.update(path_arm)
+                if primitive.kind == PrimitiveKind.CLOSE and local_index == frame_count - 1:
+                    # The fingers have closed: from here the block is carried
+                    # by the rendered hand, through the rig's own FK.
+                    wrist_fk, hand_fk = hand_world(pose, program.hand.value)
+                    grasp_hold = attach_offset(hand_fk, wrist_fk, grasp_block)
             if (
                 program.intent == Intent.GESTURE
                 and primitive.kind == PrimitiveKind.PRESENT
@@ -6586,10 +6516,12 @@ def compile_motion(request: CompileRequest) -> ClipResult:
             now = elapsed + local_index / fps
             objects: dict[str, Transform] = {}
             for item in scene.objects:
-                # Only the grasped object rides the simulated trajectory; every
-                # other body -- the table it rested on included -- stays put.
-                if target_object is not None and item.id == target_object.id:
-                    objects[item.id] = _nearest_object_transform(physics, now, total_s, item.transform)
+                # The grasped block rides the rendered hand once it is held;
+                # every other body -- the table it rested on included -- and
+                # the block before that stay where the scene put them.
+                if target_object is not None and item.id == target_object.id and grasp_hold is not None:
+                    wrist_fk, hand_fk = hand_world(pose, program.hand.value)
+                    objects[item.id] = carried_transform(hand_fk, wrist_fk, *grasp_hold)
                 else:
                     objects[item.id] = item.transform
             frames.append(ClipFrame(time_s=now, bones=pose, objects=objects))
