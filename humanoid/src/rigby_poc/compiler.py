@@ -6267,10 +6267,12 @@ def compile_motion(request: CompileRequest) -> ClipResult:
                     grasp_seat.rotation,
                     grasp_hint,
                 )
-                if primitive.kind in (PrimitiveKind.CONTACT, PrimitiveKind.CLOSE):
-                    # Each digit closes to where its skin first meets the
-                    # block or the table, from this phase's own shape; the
-                    # curls found at close are what the hand lifts with.
+                if not grasp_lifted:
+                    # Each digit goes to the curl nearest this phase's shape
+                    # at which its skin touches neither block nor table: an
+                    # open finger lifts off the table, a closing one stops at
+                    # the block. The curls found at close are what the hand
+                    # lifts with.
                     body = dict(trunk)
                     body.update(arm)
                     curls = close_to_contact(

@@ -45,12 +45,23 @@ from .models import (
 from .primitives import FINGERS, effective_curls, hand_pose
 
 #: Gap the palm skin is seated at from the face it holds, and the gap a closing
-#: finger stops at. Below the contact audit's 2 mm touch tolerance.
+#: finger stops at, measured on the skin. Below the contact audit's 2 mm touch
+#: tolerance so a seated digit reads as touching; wide enough that the thumb's
+#: blend of curl and opposition between two seated keyframes, which bows up
+#: to 1 mm nearer the block than either end, stays out of it.
 TOUCH_MARGIN_M = 0.0015
 #: Gap kept between the hand's lowest finger and the surface the block rests on.
 SUPPORT_CLEARANCE_M = 0.005
+#: How far past the knuckle line the block's far face sits. With the face on
+#: the knuckle line the fingers close over the block's far-top edge and end
+#: 0.89 curled; 20 mm out they meet the far face at 0.69, the closure an
+#: unpitched hand had (0.72), which is what read as held.
+FAR_FACE_PAST_KNUCKLE_M = 0.02
 #: Bisection steps for the closure; 2**-10 of the curl range.
 CLOSURE_STEPS = 10
+#: Samples of the curl range scanned from straight to fully closed to find
+#: the band a digit may close through; the boundaries are then bisected.
+CLOSURE_SCAN = 32
 #: Angle the seat may put between the fingers and the forearm. Past it the
 #: whole grasp frame turns toward the forearm, so the block is taken a little
 #: diagonally or with the fingers pitched a little down rather than the wrist
@@ -203,14 +214,16 @@ def pocket_local(
     pocket = np.asarray(
         [
             geometry.palm_sign * (geometry.palm_depth_m + along_normal + TOUCH_MARGIN_M),
-            geometry.knuckle_m - along_fingers - depth_m,
+            geometry.knuckle_m + FAR_FACE_PAST_KNUCKLE_M - along_fingers - depth_m,
             0.5 * (geometry.little_edge_m + geometry.index_edge_m),
         ],
         dtype=float,
     )
     # World up in the wrist frame; the little finger's outer edge, at the
     # knuckle line and at the open fingertip, must sit above the block's
-    # underside by the clearance.
+    # underside by the clearance. The fingertip too: fingers pitched down
+    # toward the forearm put a straight little finger into the table, and
+    # from there every curl that lifts it off goes into the block.
     up = rotation.T @ np.asarray([0.0, 1.0, 0.0])
     if up[2] > 1e-6:
         vertical = block.extent_along(np.asarray([0.0, 1.0, 0.0]))
@@ -446,46 +459,84 @@ def close_to_contact(
     body: Mapping[str, Quat],
     boxes: list[Box],
 ) -> dict[str, float]:
-    """The curl at which each digit of ``shape`` first touches one of ``boxes``.
+    """The curl nearest each digit's curl in ``shape`` at which it touches
+    nothing in ``boxes``.
 
     ``body`` is the pose the hand is closing in: trunk and arm. Each digit is
-    bisected on its own against its own skin, from open to the shape's curl;
-    a digit that never meets anything keeps the shape's curl.
+    bisected on its own against its own skin. A digit that meets nothing at
+    the shape's curl keeps it; one that does closes back to first contact;
+    one that is inside something even fully open (a straight finger reaching
+    the table an open hand rests beside) curls up off it instead.
     """
 
     mesh = hand_mesh(hand.value)
     curls = effective_curls(shape, parameters)
 
     def depth(digit: str, curl: float) -> float:
+        # Penetration of the digit's skin into the nearest box: positive
+        # inside, negative the distance to it. Clear means at least the
+        # margin outside.
         pose = dict(body)
         pose.update(hand_pose(hand, shape, parameters, curl_overrides={digit: curl}))
         points = mesh.world({name: BonePose(rotation=rotation) for name, rotation in pose.items()})[
             mesh.groups[digit]
         ]
-        worst = 0.0
-        for box in boxes:
-            worst = max(
-                worst,
-                -float(box_signed_distance(points, box.centre, box.rotation, box.half_extents).min()),
-            )
-        return worst
+        return max(
+            -float(box_signed_distance(points, box.centre, box.rotation, box.half_extents).min())
+            for box in boxes
+        )
 
     closed: dict[str, float] = {}
     touching: dict[str, bool] = {}
+    samples = np.linspace(0.0, 1.0, CLOSURE_SCAN + 1)
     for digit in FINGERS:
-        high = curls[digit]
-        if depth(digit, high) <= TOUCH_MARGIN_M:
-            closed[digit] = high
-            touching[digit] = False
+        target = curls[digit]
+        clear = [depth(digit, float(value)) <= -TOUCH_MARGIN_M for value in samples]
+
+        def boundary(inside: float, outside: float, digit: str = digit) -> float:
+            # The clear curl nearest ``inside`` between a clear ``outside``
+            # and a penetrating ``inside`` sample.
+            for _ in range(CLOSURE_STEPS):
+                middle = 0.5 * (inside + outside)
+                if depth(digit, middle) <= -TOUCH_MARGIN_M:
+                    outside = middle
+                else:
+                    inside = middle
+            return outside
+
+        # Where the finger starts: straight, or if a straight finger is
+        # already in something (the table an open hand rests beside), the
+        # first curl at which it comes clear of it.
+        first_clear = next((index for index, value in enumerate(clear) if value), None)
+        if first_clear is None:
+            closed[digit] = target
+            touching[digit] = True
             continue
-        low = 0.0
-        for _ in range(CLOSURE_STEPS):
-            middle = 0.5 * (low + high)
-            if depth(digit, middle) <= TOUCH_MARGIN_M:
-                low = middle
+        floor = 0.0 if first_clear == 0 else boundary(float(samples[first_clear - 1]), float(samples[first_clear]))
+        # Then closing from there: the first sample that meets something
+        # bounds the curl, the finger never sweeps through to a clear curl
+        # on the far side of the block.
+        blocked = next(
+            (index for index in range(first_clear + 1, len(samples)) if not clear[index]),
+            None,
+        )
+        if blocked is None or float(samples[blocked]) > target:
+            if target <= floor:
+                # The shape is straighter than the lift-off: lifted it is.
+                closed[digit] = floor
+                touching[digit] = True
+            elif depth(digit, target) <= -TOUCH_MARGIN_M:
+                closed[digit] = target
+                touching[digit] = False
             else:
-                high = middle
-        closed[digit] = low
+                previous = max(
+                    floor,
+                    max(float(value) for value, ok in zip(samples, clear) if ok and value <= target),
+                )
+                closed[digit] = boundary(target, previous)
+                touching[digit] = True
+            continue
+        closed[digit] = max(floor, boundary(float(samples[blocked]), float(samples[blocked - 1])))
         touching[digit] = True
     # A finger that meets nothing closes with its nearest finger that did,
     # rather than curling into a fist beside a block the others are holding.
@@ -555,9 +606,9 @@ def rotate_toward(start: np.ndarray, end: np.ndarray, alpha: float) -> np.ndarra
 
 __all__ = [
     "Box",
-    "arc_path",
     "HandGeometry",
     "Seat",
+    "arc_path",
     "attach_offset",
     "carried_transform",
     "close_to_contact",
