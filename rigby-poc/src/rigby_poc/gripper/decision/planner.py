@@ -63,6 +63,13 @@ _RELOOK_AFTER_S = 6.0
 #: How many times an instruction may be expanded before the run gives up on
 #: having a plan and decides from the sentence alone.
 _EXPAND_TRIES = 2
+#: The two searches the model may choose between.
+SEARCHES = ("direct", "ahead")
+#: Words that obviously mean one of them.
+_SEARCH_WORDS = {
+    "ahead": ("ahead", "look", "route", "plan", "avoid", "obstacle"),
+    "direct": ("direct", "greedy", "fast", "simple", "quick"),
+}
 
 PLAN_PROMPT = """You are directing a robot arm with a two-finger parallel gripper.
 
@@ -78,6 +85,7 @@ HOW TO REPLY -- one JSON object. Every field is optional except "why":
    "also":  [["<number>", <n>, <weight>], ...],
    "using": ["move"],
    "step_done": true|false,
+   "search": "direct" | "ahead",
    "placed": true|false, "placed_why": "<what you can see that says so>",
    "why":   "<one sentence>"}
 
@@ -137,6 +145,36 @@ tip_force_right_n, pushing_n.
               carry were going fine. BACK OFF AND COME AT IT DIFFERENTLY -- for
               a container that means over the opening and then down, never
               sideways at rim height.
+
+SEARCH -- HOW THE GOAL BECOMES JOINT ANGLES. You choose. It stays as you set it
+until you change it, so set it when the situation changes rather than on every
+reply.
+
+  "direct"  Tries every named move once and takes whichever most improves the
+            number. Fast: about 6 to 20 ms. BLIND TO OBSTACLES -- it scores a
+            move that drives straight through a wall exactly as well as one
+            that does not, because the wall does not appear in the number.
+
+  "ahead"   Searches routes three moves deep and throws away any route that
+            hits something, checking BOTH the arm and whatever it is carrying
+            against the room. Costs about 150 ms empty and 350 ms carrying, and
+            it plans three moves but executes one and replans.
+
+WHEN TO USE "ahead". Whenever something solid is near what you are moving --
+which above all means once you are CARRYING the object anywhere near the bin.
+The failure this exists for: the arm reached rim height two millimetres outside
+the bin's opening, so it was over the WALL, and "direct" then swung the base
+sideways because sideways was closer to the bin centre. It crushed the block
+against the wall at 87 N until the jaws were prised open and the block fell
+out. Every single move on the way there was an improvement to the number.
+
+"direct" is fine in open space: crossing the bench, aiming, reaching down for
+something with nothing beside it. It is roughly twenty times cheaper, and being
+cheaper is worth something because the arm re-plans continuously.
+
+If pushing_n is not zero you are ALREADY against something. Switch to "ahead"
+and change what you are asking for; a search cannot route around an obstacle
+you are already pressing into.
 
 USING. Name "move" -- the whole arm -- and let the search pick which joint and
 which motion. Do not name individual joints: asked to bring the hand closer, an
@@ -584,6 +622,11 @@ class Planner:
     _expand_tries: int = field(default=0, repr=False)
     #: The model's own verdict that the task is done, and when it first said so.
     #: Scored against the grader afterwards; never used to steer.
+    #: WHICH SEARCH TURNS THE GOAL INTO JOINT ANGLES, chosen by the model.
+    #: Sticky: it stays as set until the model changes it, so a decision to
+    #: look ahead while carrying something survives the next few goals rather
+    #: than having to be repeated on each one.
+    search: str = field(default="direct", repr=False)
     claims_placed: bool = field(default=False, repr=False)
     claimed_placed_at: float = field(default=0.0, repr=False)
     #: HOW OFTEN EACH METRIC HAS BEEN ASKED FOR, over the whole run.
@@ -1345,6 +1388,7 @@ class Planner:
             "sensed": numbers,
             "your_body_right_now": self.machine(body, seen),
             "jaws_are": self.jaws,
+            "search_is": self.search,
             "your_imagination": dict(self.imagination or {}),
             # WHAT YOU SAID WAS HERE, and what has become of each of those
             # things since. The planner used to be handed one position and no
@@ -1579,6 +1623,17 @@ class Planner:
         # disagree: whether the block is in the bin, and whether the machine
         # knew. In the run of 2026-09-06 those two would have disagreed for
         # twenty seconds and eight decisions.
+        asked_search = str(parsed.get("search", "")).strip().lower()
+        if asked_search in SEARCHES:
+            self.search = asked_search
+        elif asked_search:
+            # Near-misses are obvious in meaning and refusing them on spelling
+            # helps nobody -- the same lesson as "close_gripper" for the jaws.
+            for name, words in _SEARCH_WORDS.items():
+                if any(word in asked_search for word in words):
+                    self.search = name
+                    break
+
         self.claims_placed = bool(parsed.get("placed", False))
         if self.claims_placed and not self.claimed_placed_at:
             self.claimed_placed_at = round(now, 2)
@@ -1653,6 +1708,7 @@ class Planner:
             # first question worth asking of a run that froze.
             "predicament": situation.get("predicament"),
             "jaws": self.jaws,
+            "search": self.search,
             "imagination": dict(self.imagination or {}),
             "imagination_confidence": round(self.imagination_confidence, 3),
             "aim": self.aim(body),

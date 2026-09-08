@@ -21,6 +21,7 @@ import numpy as np
 
 from ..body.manifest import spec
 from ..decision.goals import readable
+from ..decision.greedy import pursue
 from ..decision.lookahead import Foresight, foresee
 from ..decision.pick_and_place import (
     object_above_rim_m,
@@ -341,10 +342,23 @@ def run(task: str = "put the orange block into the bin",
         # Recomputed every _PLAN_EVERY frames rather than every frame, because
         # what comes back is a setpoint and the arm takes several frames to
         # slew to it anyway.
-        if index % _PLAN_EVERY == 0 or route is None:
-            route = foresee(body, seen, target, planner.spans,
-                            start_from=held, sight=sight)
-        wanted, error, how = route
+        # WHICH SEARCH IS THE MODEL'S CALL. "direct" is the one-move greedy
+        # search: fast, and blind to anything solid. "ahead" routes three moves
+        # and refuses the ones that hit something, for about twenty times the
+        # cost. The model sets it from what it can see, because whether there
+        # is a wall near what you are carrying is exactly the sort of thing a
+        # camera answers and a metric does not.
+        looking_ahead = getattr(planner, "search", "direct") == "ahead"
+        if looking_ahead:
+            if index % _PLAN_EVERY == 0 or route is None:
+                route = foresee(body, seen, target, planner.spans,
+                                start_from=held, sight=sight)
+            wanted, error, how = route
+        else:
+            # Cheap enough to run every frame, which is what it was built for.
+            route = None
+            wanted, error, how = pursue(body, seen, target, planner.spans,
+                                        start_from=held)
         # The search says where the joints should be; the rate limit says how
         # fast they may get there. Same place as everywhere else in this system.
         # OPTIONAL, because it is instrumentation. A planner has to decide --

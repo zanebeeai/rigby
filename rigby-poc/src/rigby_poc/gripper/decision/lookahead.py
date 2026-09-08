@@ -54,9 +54,16 @@ from .solver import _limits
 
 #: How many moves ahead to look. Three is where seeing the consequence of a
 #: move starts to pay: one is blind, two catches the move after the mistake,
-#: three catches the mistake. Measured cost is 32 us a node, so depth 3 with
-#: beam 6 is 3456 nodes and about 110 ms -- roughly 9 Hz, which is the rate the
-#: belief is refreshed at anyway.
+#: three catches the mistake.
+#:
+#: COST, measured rather than projected. Depth 3 with beam 6 expands about 2500
+#: poses, and a pose costs 16 us to write and run kinematics, 26 us to score,
+#: and 16 us to collision-check -- 41 us once something is being carried, since
+#: the payload box is tested against the furniture as well. That is roughly
+#: 150 ms a plan while approaching and 350 ms while carrying, so the run loop
+#: replans every sixth frame rather than every frame. An earlier version of this
+#: comment claimed 110 ms from a microbenchmark that left out the collision
+#: check it was there to pay for.
 DEPTH = 3
 #: How many partial routes to keep at each level.
 BEAM = 6
@@ -190,15 +197,19 @@ def foresee(body: Body, seen: Sensed, target: NumericTarget,
     blocked_now = sight.hits(payload) > TOUCH_M
 
     parts = _named(tuple(target.using))
-    # (score, blocked_depth, pose, first_move, path)
-    beam_now = [(here, 0.0, start.copy(),
-                 {"part": "-", "move": "hold", "amount": 0.0}, [])]
-    best = (here, 0.0, start.copy(),
-            {"part": "-", "move": "hold", "amount": 0.0}, [])
+    hold = {"part": "-", "move": "hold", "amount": 0.0}
+    # (route_score, deepest_overlap, route_end_pose, first_move,
+    #  FIRST_POSE, first_score, path)
+    #
+    # The first pose is carried separately because it is the only one that gets
+    # commanded. Plan three, execute one, plan again.
+    seed = (here, 0.0, start.copy(), hold, start.copy(), here, [])
+    beam_now = [seed]
+    best = seed
 
     for step in range(depth):
         grown = []
-        for score, blocked, pose, first, path in beam_now:
+        for score, blocked, pose, first, first_pose, first_score, path in beam_now:
             for part in parts:
                 for move in moves_for(part):
                     for amount in _AMOUNTS:
@@ -216,6 +227,8 @@ def foresee(body: Body, seen: Sensed, target: NumericTarget,
                                      "amount": float(amount)}
                         grown.append((cost, worst, trial.copy(),
                                       first if path else step_note,
+                                      first_pose if path else trial.copy(),
+                                      first_score if path else cost,
                                       path + [step_note]))
         if not grown:
             break
@@ -231,12 +244,27 @@ def foresee(body: Body, seen: Sensed, target: NumericTarget,
                 best = row
 
     sight.write(restore)
-    score, worst, pose, first, path = best
+    score, worst, _end_pose, first, first_pose, first_score, path = best
     note = dict(first)
     note["route"] = [f"{s['part']}/{s['move']}@{s['amount']:+.2f}"
                      for s in path[:depth]]
     note["clear"] = bool(worst <= TOUCH_M)
     note["deepest_overlap_mm"] = round(worst * 1000.0, 2)
+    note["route_reaches"] = round(float(score), 4)
     if blocked_now:
         note["already_touching"] = True
-    return pose, score, note
+    # THE FIRST MOVE, NOT THE DESTINATION. Returning the route's endpoint threw
+    # away the only thing the route was for. What gets commanded is a setpoint
+    # the arm slews toward in a straight line through joint space, and a
+    # straight line to the end of a three-move route is not that route -- the
+    # routes contain reversals, so it is not even close. Measured against
+    # greedy from the same pose, the endpoint was a 1.135 rad jump where one
+    # move was 0.733, and a chosen route read
+    # tilt_down@+0.60, tilt_up@-0.60, nudge_left@-0.12: down then up, executed
+    # as a single lunge across the middle. Nothing along that line had been
+    # collision-checked either, which is the safety half of the same mistake.
+    #
+    # Plan three moves, execute one, replan. The lookahead is what makes the
+    # first move a good one; it was never meant to be a trajectory to follow
+    # open-loop.
+    return first_pose, first_score, note

@@ -36,8 +36,15 @@ carries more than `sensed`, and the rest is small enough to audit by reading:
 
 Run it as a script; it prints a table and exits non-zero if anything lands in
 SIMULATOR or cannot be traced, so the question cannot quietly stop being asked.
-A non-zero exit today is CORRECT and expected: object_in_target is the grader
-and it is currently visible to the thing being graded.
+
+A non-zero exit today is CORRECT and expected, and no longer for the reason it
+first was. object_in_target -- the grader, computed from MuJoCo's true block
+pose -- has been removed from the payload. What trips the check now is
+seen.object_size on the old warm-blob sensing path, which returns the literal
+`(point, 0.025, 0.03)`: the block's exact half-extents, typed in. That path is
+still here because the offline corpus runs the phase controller with no model,
+so there is nobody to point at anything, and it cannot be deleted until the
+corpus has a way to seed the world without one.
 """
 
 from __future__ import annotations
@@ -84,8 +91,10 @@ WHERE_FROM = {
     "range_ahead_m": ("MEASURED", "rangefinder along the grasp axis"),
     "beam_finds_object": ("MEASURED", "the same rangefinder"),
     "holding": ("MEASURED", "both load cells under a commanded squeeze, plus "
-                "the finger encoders saying the jaws are open far enough to "
-                "contain what is believed held"),
+                "the finger encoders saying the jaws are not shut. Deliberately "
+                "does NOT consult the believed object size: that version cost "
+                "five corpus cases, because the size estimate is worst at close "
+                "range and a carried object is always at close range"),
     "pushing_n": ("MEASURED", "contact force on a part of the arm that should "
                   "carry no load; joint torque or motor current on real "
                   "hardware"),

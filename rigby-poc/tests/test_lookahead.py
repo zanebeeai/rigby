@@ -73,21 +73,50 @@ def test_open_bench_is_clear(scene):
     assert _overlap(sight, [0.0, 0.30, 0.76]) < -0.1
 
 
-def test_it_finds_a_better_route_than_one_move(scene):
+def test_the_route_reaches_further_than_one_move_can(scene):
     """Three moves ahead beats one, on the goal's own terms.
 
-    Not a claim about collisions -- just that searching a route rather than a
-    nudge reaches the number the planner asked for. Measured on the bench pose:
-    greedy 0.1076, foresight 0.0028 for hand_z_m.
+    Measured on the bench pose: one move gets hand_z_m to 0.1076, the route
+    gets it to 0.0028.
     """
     body, seen, sight = scene
     target = NumericTarget(metric="hand_z_m", value=1.0, set_at_s=0.0,
                            using=("move",))
     spans = target.spans(body, seen)
     _pose_g, greedy_error, _g = pursue(body, seen, target, spans)
-    _pose_f, look_error, note = foresee(body, seen, target, spans, sight=sight)
-    assert look_error < greedy_error
+    _pose_f, _first_error, note = foresee(body, seen, target, spans,
+                                          sight=sight)
+    assert note["route_reaches"] < greedy_error
     assert note["clear"] is True
+
+
+def test_it_commands_one_move_and_not_the_destination(scene):
+    """What gets returned is the FIRST step, which is the whole contract.
+
+    Returning the route's endpoint threw away the route: the arm slews to a
+    setpoint in a straight line, and a straight line to the end of a three-move
+    route is not that route -- the routes contain reversals, one of them
+    literally tilt_down@+0.60 then tilt_up@-0.60. Measured, the endpoint was a
+    1.135 rad jump where one move was 0.733, and nothing along that line had
+    been collision-checked.
+    """
+    body, seen, sight = scene
+    start = np.asarray(body.q())
+    for metric, value in (("palm_to_object_m", 0.045),
+                          ("pointing_at_object", 0.9),
+                          ("hand_x_m", 0.30)):
+        target = NumericTarget(metric=metric, value=value, set_at_s=0.0,
+                               using=("move",))
+        spans = target.spans(body, seen)
+        greedy_pose, _e, _g = pursue(body, seen, target, spans,
+                                     start_from=start)
+        look_pose, _f, _n = foresee(body, seen, target, spans,
+                                    start_from=start, sight=sight)
+        one_move = float(np.abs(greedy_pose[:4] - start[:4]).max())
+        commanded = float(np.abs(look_pose[:4] - start[:4]).max())
+        # One named move at one amplitude, from the same vocabulary greedy
+        # draws from -- so it cannot be dramatically further than greedy's.
+        assert commanded <= one_move * 1.5 + 1e-9, (metric, commanded, one_move)
 
 
 def test_it_reports_the_route_it_chose(scene):
