@@ -98,7 +98,7 @@ def _room_camera(document) -> str:
     declared = document["scene"].get("cameras", {})
     out = []
     for name in ("room", "corner_front_right", "corner_back_left",
-                 "corner_back_right"):
+                 "corner_back_right", "overhead"):
         doc = declared.get(name)
         if doc is None or "at" not in doc:
             continue
@@ -108,7 +108,16 @@ def _room_camera(document) -> str:
                          doc["looks_at"][1]], dtype=float)
         forward = at - eye
         forward = forward / np.linalg.norm(forward)
-        right = np.cross(forward, np.asarray([0.0, 0.0, 1.0]))
+        # A CAMERA POINTED STRAIGHT DOWN HAS NO "RIGHT" DERIVED THIS WAY.
+        # Crossing the view direction with world up is how you get a level
+        # horizon, and it degenerates to the zero vector exactly when the
+        # camera looks along that axis -- which the overhead camera nearly
+        # does. Falling back to another world axis there costs nothing and
+        # keeps a steep camera from rendering NaN.
+        reference = np.asarray([0.0, 0.0, 1.0])
+        if abs(float(np.dot(forward, reference))) > 0.99:
+            reference = np.asarray([0.0, 1.0, 0.0])
+        right = np.cross(forward, reference)
         right = right / np.linalg.norm(right)
         up = np.cross(-forward, right)
         out.append(

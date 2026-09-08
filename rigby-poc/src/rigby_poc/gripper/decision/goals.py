@@ -233,7 +233,7 @@ NEEDS_SIGHT = ("pointing_at_object", "palm_to_object_m", "object_in_grasp_m", "p
 #: Readable but not askable: outcomes and states, not handles. Naming an outcome
 #: as a target is naming the goal as its own method.
 OUTCOMES = ("grip_tip_spread_m",
-            "object_in_target", "holding", "object_seen",
+            "holding", "object_seen",
             "tip_force_left_n", "tip_force_right_n",
             "object_in_hand_view", "beam_finds_object",
             "object_between_jaws")
@@ -270,7 +270,18 @@ def readable(body: Body, seen: Sensed) -> dict[str, float]:
     out["beam_finds_object"] = float(beam_finds_object(body, seen))
     out["tip_force_left_n"] = round(float(seen.tip_force_left_n), 3)
     out["tip_force_right_n"] = round(float(seen.tip_force_right_n), 3)
-    out["object_in_target"] = float(task.object_in_target(body))
+    # object_in_target IS NOT HERE, AND THAT IS THE POINT. It is computed from
+    # body.block() -- MuJoCo's true block pose -- so it was the one piece of
+    # simulator truth in a payload that is otherwise cameras, encoders and load
+    # cells. Its own docstring said "NOT a control input ... keeping the scoring
+    # honest means keeping it OUT of the loop", and it was in the loop anyway:
+    # the grader was visible to the thing being graded.
+    #
+    # Whether the object is where the task wanted it is now the MODEL'S
+    # judgement, made from the overhead camera, and it reports that judgement
+    # as `placed`. object_in_target still exists and still reads the simulator,
+    # because something has to score the run -- it is just no longer allowed to
+    # tell the model the answer.
     out["holding"] = float(seen.holding())
     out["object_seen"] = float(seen.object_seen)
     return out

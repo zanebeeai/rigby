@@ -78,6 +78,7 @@ HOW TO REPLY -- one JSON object. Every field is optional except "why":
    "also":  [["<number>", <n>, <weight>], ...],
    "using": ["move"],
    "step_done": true|false,
+   "placed": true|false, "placed_why": "<what you can see that says so>",
    "why":   "<one sentence>"}
 
 Set "jaws" and a goal in the same reply when you mean both -- "open the jaws and
@@ -151,6 +152,24 @@ found. Point the hand down over the bench until object_seen becomes 1.
 WHAT THE TASK NEEDS, IN ORDER: find the block, open the jaws, get the hand
 around it, close the jaws, lift it clear, carry it over the bin high enough to
 clear the rim, then open the jaws to let go.
+
+YOU DECIDE WHEN IT IS DONE, AND YOU HAVE TO LOOK TO KNOW. Nothing tells you
+whether the object ended up where the task wanted it. Set "placed": true when
+you can SEE that it did, and say in "placed_why" what you can see that says so.
+
+The OVERHEAD camera is how. Every corner camera is stopped by the bin's near
+wall, so an object inside the bin is invisible to all four of them at once --
+measured, a block resting in the bin showed 496 pixels overhead and ZERO from
+every corner. The overhead view looks down into the bin, and it is the only
+view that can settle this.
+
+LOSING SIGHT OF SOMETHING IS NOT EVIDENCE THAT IT IS GONE, and it is not
+evidence you failed. When the tracker cannot see an item you are told so, and
+its position is the last one measured, going stale -- it is not a fresh
+reading. An earlier run released the block cleanly into the bin, lost sight of
+it at that exact instant because the corners cannot see inside, and spent its
+last eight decisions trying to grasp a stale position of a block that was
+already placed. Not holding something is not the same as not having placed it.
 """
 
 def _parts_table() -> str:
@@ -520,6 +539,10 @@ class Planner:
     identifications: list = field(default_factory=list, repr=False)
     _identified_at: float = field(default=-1e9, repr=False)
     _expand_tries: int = field(default=0, repr=False)
+    #: The model's own verdict that the task is done, and when it first said so.
+    #: Scored against the grader afterwards; never used to steer.
+    claims_placed: bool = field(default=False, repr=False)
+    claimed_placed_at: float = field(default=0.0, repr=False)
     #: HOW OFTEN EACH METRIC HAS BEEN ASKED FOR, over the whole run.
     #:
     #: This used to be counted by scanning the last eight remembered decisions,
@@ -1338,6 +1361,16 @@ class Planner:
              "text": f"CORNER camera, {PICK_W}x{PICK_H} -- the whole bench:"},
             {"type": "image_url", "image_url": {"url": "data:image/png;base64,"
              + _as_png(body.view(PICK_W, PICK_H, camera="room"))}},
+            # THE ONE VIEW THAT CAN SEE INTO THE BIN. Every corner camera is
+            # stopped by the near wall, so an object that has been placed
+            # disappears from all of them at once -- which is precisely when
+            # you most need to see it. Sent on every decision because whether
+            # the task is finished is now the model's judgement to make.
+            {"type": "text",
+             "text": f"OVERHEAD camera, {PICK_W}x{PICK_H} -- looking down into "
+                     "the bin. The only view that sees inside it:"},
+            {"type": "image_url", "image_url": {"url": "data:image/png;base64,"
+             + _as_png(body.view(PICK_W, PICK_H, camera="overhead"))}},
             {"type": "text",
              "text": f"GRIPPER camera, {GRIP_W}x{GRIP_H} -- what the hand is "
                      "pointed at, and what the machine segments:"},
@@ -1494,6 +1527,19 @@ class Planner:
         # block" has happened is a judgement about the world, not a threshold on
         # one number -- a goal can be reached while the step it belongs to has
         # not occurred.
+        # WHETHER THE TASK IS FINISHED IS NOW THE MODEL'S CALL. It used to be
+        # handed object_in_target, computed from MuJoCo's true block pose --
+        # the grader, shown to the thing being graded. That is gone, so the
+        # model has to look at the overhead camera and decide, and it says so
+        # here. The grader still runs; it just scores this claim instead of
+        # supplying it, which turns "did it work" into two numbers that can
+        # disagree: whether the block is in the bin, and whether the machine
+        # knew. In the run of 2026-09-06 those two would have disagreed for
+        # twenty seconds and eight decisions.
+        self.claims_placed = bool(parsed.get("placed", False))
+        if self.claims_placed and not self.claimed_placed_at:
+            self.claimed_placed_at = round(now, 2)
+
         was = self.step
         if bool(parsed.get("step_done")) and self.step < len(self.plan) - 1:
             self.step += 1
@@ -1554,6 +1600,8 @@ class Planner:
             "step": self.step, "step_was": was,
             "step_text": self.plan[self.step] if self.step < len(self.plan) else None,
             "step_done": bool(parsed.get("step_done")),
+            "placed": bool(parsed.get("placed", False)),
+            "placed_why": str(parsed.get("placed_why", ""))[:200],
             "primitive": primitive,
             "unmet": target.unmet(body, seen),
             "why": str(parsed.get("why", ""))[:200], "sensed": numbers,

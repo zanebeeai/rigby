@@ -90,6 +90,46 @@ WHERE_FROM = {
 
 TIP = ("segment_1_tip_", "segment_2_tip_", "segment_3_tip_")
 
+#: A field can be sourced from a percept and still be a lie, if the percept
+#: itself is a constant. This check exists because the first version of this
+#: audit missed exactly that: palm_to_object_m traces to seen.object_size, was
+#: classified PERCEIVED, and seen.object_size turned out to be the literal
+#: `(point, 0.025, 0.03)` on the corner path -- the block's true half-extents,
+#: typed in. Tracing one hop and stopping is how a leak survives an audit.
+def size_is_estimated(body, seen) -> tuple[bool, str]:
+    """Is the believed object size measured, or is it a typed-in constant?
+
+    Built two bodies with different blocks and asks the sensing path how big
+    each one is. A path that measures returns two different answers. A path
+    that knows returns the truth twice, and a path with a constant returns the
+    same wrong number twice.
+    """
+    from rigby_poc.gripper.sensing.gripper_camera import Senses, sense
+    from rigby_poc.gripper.physics.model import make as _make
+
+    answers = []
+    for half in (np.asarray([0.025, 0.025, 0.03]),
+                 np.asarray([0.045, 0.045, 0.02])):
+        other = _make(half, np.asarray([0.0, 0.30, 0.76]), table_top=0.72)
+        eyes = Senses()
+        look = sense(other, eyes, np.asarray(other.q()), 0.0, 0.0, 0.72)
+        answers.append((half, None if look.object_size is None
+                        else np.asarray(look.object_size)))
+    (h1, s1), (h2, s2) = answers
+    if s1 is None or s2 is None:
+        return True, "no size was produced, so nothing is asserted"
+    if np.allclose(s1, s2, atol=1e-6):
+        return False, (f"the same size {np.round(s1, 4).tolist()} is returned "
+                       f"for two different blocks -- it is a constant, not a "
+                       f"measurement")
+    exact = np.allclose(s1, h1, atol=1e-6) and np.allclose(s2, h2, atol=1e-6)
+    if exact:
+        return False, ("the size returned is EXACTLY the true half-extents for "
+                       "both blocks, which no camera can do")
+    return True, (f"two blocks give two answers, off by "
+                  f"{np.abs(s1 - h1).max() * 1000:.1f} and "
+                  f"{np.abs(s2 - h2).max() * 1000:.1f} mm -- estimated")
+
 
 def classify(name: str):
     if name in WHERE_FROM:
@@ -124,7 +164,14 @@ def main() -> int:
             print(f"    {name:<24} {askable:<13} {why}")
         print()
 
+    honest, note = size_is_estimated(body, seen)
+    print("  IS THE BELIEVED OBJECT SIZE MEASURED, OR KNOWN?")
+    print(f"    {'estimated' if honest else 'NOT MEASURED'}: {note}")
+    print()
+
     leaks = [n for n, _ in buckets.get("SIMULATOR", [])]
+    if not honest:
+        leaks.append("seen.object_size (a constant behind a PERCEIVED field)")
     unknown = [n for n, _ in buckets.get("UNCLASSIFIED", [])]
     print(f"  fields shown to the model: {len(numbers)}")
     print(f"  askable as goals:          {len(set(READABLE) & set(numbers))}")

@@ -14,9 +14,10 @@ decided what the scene contains and how to find it, and a new object needs a new
 word from a person.
 
 So nothing here is told what to look for. THE MODEL LOOKS AT THE PICTURES AND
-POINTS. It is given the four corner views at a stated size and reports, for each
-thing the task requires, the pixel it appears at in each view it can see it in.
-Four rays through four picks cross in one place, and that place is in metres.
+POINTS. It is given every room view at a stated size -- four corners and one
+steep overhead -- and reports, for each thing the task requires, the pixel it
+appears at in each view it can see it in. Rays through those picks cross in one
+place, and that place is in metres.
 
 Three things fall out of doing it this way:
 
@@ -42,8 +43,14 @@ from dataclasses import dataclass, field
 import numpy as np
 
 #: The cameras that watch the whole room. Any that can see a thing votes on it.
+#:
+#: `overhead` is not a fifth corner, it is a different elevation, and that is
+#: the point. The four corners stand on one circle at the same height, so they
+#: share a blind spot: measured with the block resting in the bin, all four
+#: reported ZERO pixels of it and the overhead reported 496. A ring of cameras
+#: cannot see into an open container no matter how many you add to the ring.
 CORNERS = ("room", "corner_front_right", "corner_back_left",
-           "corner_back_right")
+           "corner_back_right", "overhead")
 #: The size the corner views are rendered at. The model is told this number and
 #: its picks are in these pixels, so it is also the resolution the whole scene
 #: is understood at: a pick is only ever as precise as the pixel grid it is
@@ -60,6 +67,14 @@ PICK_W, PICK_H = 768, 576
 #: The hand camera, as the model sees it. Its own size because it is a
 #: different aspect and a different job -- what is between the jaws, close up.
 GRIP_W, GRIP_H = 640, 480
+#: What TRACKING renders at, between model calls. Deliberately smaller than the
+#: size the model points in, and deliberately a size that already exists so it
+#: costs no extra GL context. The model's picks need resolution because a pick
+#: is only as precise as its pixel grid; following a blob's centroid does not.
+#: Measured on the same learned look: 768x576 gives 3.4 mm at 179 ms a refresh,
+#: 320x240 gives 4.2 mm at 90 ms. Eight tenths of a millimetre is not worth
+#: halving the rate at which the belief can be corrected.
+TRACK_W, TRACK_H = 320, 240
 #: Half-width of the patch sampled around a pick to learn an item's look.
 _PATCH = 6
 #: Fewer matching pixels than this is noise, not a thing.
@@ -226,7 +241,7 @@ def from_picks(body, picks: dict, width: int = PICK_W, height: int = PICK_H):
     return point, miss, voters
 
 
-def frames(body, cameras=CORNERS) -> dict:
+def frames(body, cameras=CORNERS, width=TRACK_W, height=TRACK_H) -> dict:
     """Every corner view, rendered once.
 
     Kept separate because verifying a learned look re-tracks it four times over
@@ -236,13 +251,14 @@ def frames(body, cameras=CORNERS) -> dict:
     out = {}
     for name in cameras:
         try:
-            out[name] = body.view(PICK_W, PICK_H, camera=name)
+            out[name] = body.view(width, height, camera=name)
         except Exception:
             continue
     return out
 
 
-def track(body, look: Look, cameras=CORNERS, seen=None):
+def track(body, look: Look, cameras=CORNERS, seen=None,
+          width=TRACK_W, height=TRACK_H):
     """Where that look is now, from every camera that can still see it.
 
     This is what runs between model calls. It does not know what the thing is;
@@ -255,8 +271,9 @@ def track(body, look: Look, cameras=CORNERS, seen=None):
     wall from the other. The rays cross near the middle rather than at it, and
     the miss reports that as the disagreement it is.
     """
-    pictures = seen if seen is not None else frames(body, cameras)
-    rays, voters, pixels = [], [], 0
+    pictures = (seen if seen is not None
+                else frames(body, cameras, width, height))
+    rays, voters, pixels, spans = [], [], 0, []
     for name in cameras:
         image = pictures.get(name)
         if image is None:
@@ -265,14 +282,41 @@ def track(body, look: Look, cameras=CORNERS, seen=None):
         if found is None:
             continue
         rays.append(_ray_through(body, name, found["u"], found["v"],
-                                 PICK_W, PICK_H))
+                                 width, height))
         voters.append(name)
         pixels += found["pixels"]
+        spans.append((name, found))
     got = cross(rays)
     if got is None:
         return None
     point, miss = got
-    return point, miss, voters, pixels
+    return point, miss, voters, pixels, _size_from(body, point, spans,
+                                                   width, height)
+
+
+def _size_from(body, point, spans, width, height):
+    """Half-extents, from how big the thing looks at the range it was found.
+
+    The old estimate had to guess a range first, by meeting one ray with a
+    bench plane whose height was declared -- so the size inherited every error
+    in that assumption, and could not be computed at all for something off the
+    bench. Here the range is already known: the rays crossed. Apparent size at
+    a known distance is just similar triangles.
+
+    The camera with the most pixels of it wins, because that is the one seeing
+    it most squarely. The depth no single view can see is taken as the width it
+    can, which is what one view always has to do.
+    """
+    if not spans:
+        return None
+    name, found = max(spans, key=lambda row: row[1]["pixels"])
+    eye, _orient = body.camera_pose(name)
+    distance = float(np.linalg.norm(np.asarray(point) - eye))
+    focal = (height / 2.0) / float(
+        np.tan(np.radians(body.camera_fovy(name)) / 2.0))
+    half_wide = max((found["u1"] - found["u0"]) / 2.0 * distance / focal, 0.004)
+    half_tall = max((found["v1"] - found["v0"]) / 2.0 * distance / focal, 0.004)
+    return np.asarray([half_wide, half_wide, half_tall])
 
 
 @dataclass
@@ -296,6 +340,10 @@ class World:
     voters: dict = field(default_factory=dict)
     checks: dict = field(default_factory=dict)
     last_seen_s: dict = field(default_factory=dict)
+    #: Half-extents per item, from apparent size at the triangulated range.
+    size: dict = field(default_factory=dict)
+    #: Whether each item was visible at the most recent refresh.
+    visible: dict = field(default_factory=dict)
 
     def anchor(self, body, name: str, picks: dict, now: float) -> dict:
         """Take the model's word for what is where, and learn what it looks like.
@@ -332,7 +380,7 @@ class World:
         # Learn from the pixels the model actually gave, never from the
         # triangulated point reprojected -- that samples wherever the geometry
         # landed, which on a poor pick is bench.
-        pictures = frames(body)
+        pictures = frames(body, CORNERS, PICK_W, PICK_H)
         best, best_gap, tried = None, None, []
         for camera in voters:
             spot = picks[camera]
@@ -342,7 +390,10 @@ class World:
             candidate = learn(image, spot[0], spot[1], name=name, camera=camera)
             if candidate is None:
                 continue
-            followed = track(body, candidate, seen=pictures)
+            followed = track(body, candidate, seen=pictures,
+                             width=PICK_W, height=PICK_H)
+            if followed is not None and followed[4] is not None:
+                self.size.setdefault(name, followed[4])
             if followed is None:
                 tried.append({"from": camera, "verdict": "finds nothing"})
                 continue
@@ -375,6 +426,7 @@ class World:
         for name, look in self.looks.items():
             got = track(body, look, seen=pictures)
             if got is None:
+                self.visible[name] = False
                 report[name] = {
                     "seen_now": False,
                     "believed_xyz": self._round(self.belief.get(name)),
@@ -384,11 +436,14 @@ class World:
                             "was, and is getting older",
                 }
                 continue
-            point, miss, voters, pixels = got
+            point, miss, voters, pixels, size = got
+            if size is not None:
+                self.size[name] = size
             before = self.belief.get(name)
             gap = (float(np.linalg.norm(point - np.asarray(before)))
                    if before is not None else None)
             self._settle(name, point, miss, voters, now)
+            self.visible[name] = True
             report[name] = {
                 "seen_now": True,
                 "measured_xyz": [round(float(v), 4) for v in point],
@@ -438,6 +493,22 @@ class World:
     def at(self, name: str):
         got = self.belief.get(name)
         return None if got is None else np.asarray(got, dtype=float)
+
+    def believed(self, name: str):
+        """(where, how big, visible right now) -- what the metrics steer by.
+
+        Returns None when the item was never placed at all, which is different
+        from "not visible": a belief that exists and has gone stale is still
+        the best thing to act on, and the third value says which it is.
+        """
+        where = self.at(name)
+        if where is None:
+            return None
+        size = self.size.get(name)
+        if size is None:
+            return None
+        return where, np.asarray(size, dtype=float), bool(
+            self.visible.get(name, False))
 
     @staticmethod
     def _round(value):

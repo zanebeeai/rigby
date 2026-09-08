@@ -404,7 +404,7 @@
       "place_tolerance_m": 0.08
     },
     "cameras": {
-      "note": "Four corners and the hand. One corner view answers WHERE IS EVERYTHING, but only for the things that corner can see: the arm occludes the bench from some angles, the block hides behind the bin from others, and a single oblique view conflates sideways offset with depth -- which is why the planner reported the hand 'aligned' while it sat 4.4 cm to one side. Four corners disagree with each other, and a disagreement is information.",
+      "note": "Four corners at one elevation, one steep overhead, and the hand. One corner view answers WHERE IS EVERYTHING, but only for the things that corner can see: the arm occludes the bench from some angles, the block hides behind the bin from others, and a single oblique view conflates sideways offset with depth -- which is why the planner reported the hand 'aligned' while it sat 4.4 cm to one side. Four corners disagree with each other, and a disagreement is information. The corners share a weakness, though, being all at the same height: none can see into an open container. The overhead camera exists for exactly that.",
       "room": {
         "at": [
           -1.05,
@@ -465,6 +465,20 @@
         ],
         "fovy_deg": 52.0,
         "note": "The fourth corner. Sees the far side of anything the front corners see edge-on."
+      },
+      "overhead": {
+        "at": [
+          0.15,
+          2.05,
+          0.45
+        ],
+        "looks_at": [
+          0.14,
+          0.85,
+          0.14
+        ],
+        "fovy_deg": 62.0,
+        "note": "THE ONLY CAMERA THAT CAN SEE INTO THE BIN. The four corners all stand at the same height (up=1.42) around one circle, so they are four bearings on the same oblique elevation and every one of them is stopped by the bin's near wall: measured, the block vanished from all four the instant it was released into the bin, the belief froze at its last sighting, and the model spent its final eight decisions trying to re-grasp something it had already placed. This one looks down the bin's mouth at about 22 degrees off vertical -- inside the ~34 degrees the rim geometry allows -- so a placed object stays visible and placement becomes something that can be SEEN rather than read out of the simulator."
       }
     }
   },

@@ -439,10 +439,38 @@ def _locate(body: Body, camera: str, width: int, height: int, fovy: float,
 
 
 def sense(body: Body, eyes: Senses, commanded: np.ndarray, squeeze_n: float,
-          now: float, bench: float = 0.72) -> Sensed:
-    """One honest observation of the machine and its world."""
+          now: float, bench: float = 0.72, believed=None) -> Sensed:
+    """One honest observation of the machine and its world.
+
+    `believed` is (position, size, seen_now) from the identified world -- the
+    one built out of where the MODEL pointed and corrected by tracking what it
+    pointed at. When it is given it REPLACES the warm-blob estimate, and every
+    object-relative number in the vocabulary is then measured against the thing
+    the model named rather than against "the only warm thing on the bench".
+
+    That mattered more than it sounds. The identification path was built, wired
+    to the imagination the model reads, and left disconnected from the metrics
+    the model actually steers by -- so `palm_to_object_m` was still computed
+    from a segmenter that could not see the bin and knew what an object was by
+    a hardcoded colour test. The model identified the scene and then drove by a
+    different belief. This parameter is the join.
+
+    None keeps the old behaviour, which is what the offline corpus uses: it
+    runs the phase controller with no model, so there is nobody to point.
+    """
     q = np.asarray(body.q())
-    at, seen, size = eyes.look(body, now, bench)
+    if believed is not None:
+        at, size, seen = believed
+        if at is not None:
+            eyes.last_at = np.asarray(at, dtype=float)
+            eyes.last_size = np.asarray(size, dtype=float)
+            eyes.last_seen_s = now
+            eyes.fine_fix = True
+            eyes.seen_by = "identified world"
+        at, size = eyes.last_at, eyes.last_size
+        seen = bool(seen and at is not None)
+    else:
+        at, seen, size = eyes.look(body, now, bench)
 
     # Contact from the encoders alone. Being driven shut, having stopped, and
     # not being shut: three readings a stepper controller already has.

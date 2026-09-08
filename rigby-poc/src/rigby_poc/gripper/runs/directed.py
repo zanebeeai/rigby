@@ -167,6 +167,12 @@ def _ceiling() -> np.ndarray:
         + [float(document.get("finger_m_per_s", 0.07)) / 2.0] * 2)
 
 
+#: How often the identified world is re-measured, in frames. At 30 fps this is
+#: 10 Hz. Five camera renders cost about 90 ms, and a belief that is corrected
+#: ten times a second is corrected far faster than the arm can invalidate it.
+_WORLD_EVERY = 3
+
+
 def run(task: str = "put the orange block into the bin",
         seconds: float = 26.0, fps: int = 30, table_top: float = 0.72,
         planner: Planner | None = None, name: str = "directed-run",
@@ -208,7 +214,24 @@ def run(task: str = "put the orange block into the bin",
 
     for index in range(int(seconds * fps)):
         now = index / fps
-        seen = sense(body, eyes, held, squeeze, now, table_top)
+        # THE BELIEF THE MODEL BUILT IS THE BELIEF THE ARM STEERS BY. Until
+        # now these were two different pictures: the model identified the
+        # scene into `world`, was shown that world, and then every goal it set
+        # was measured against a separate warm-pixel estimate that could not
+        # see the bin and got the block's size from a hardcoded literal. The
+        # model reasoned about one world and drove another.
+        #
+        # Refreshed at 10 Hz rather than every frame because it costs 90 ms to
+        # look through five cameras and the answer does not change in 33 ms.
+        # Between refreshes the belief is held, which is what a belief is for.
+        if getattr(planner, "world", None) is not None and planner.world.looks:
+            if index % _WORLD_EVERY == 0:
+                planner.world.refresh(body, now)
+            believed = planner.world.believed(planner.figure or "block")
+        else:
+            believed = None
+        seen = sense(body, eyes, held, squeeze, now, table_top,
+                     believed=believed)
 
         if planner.due(body, seen, now):
             before = planner.held
