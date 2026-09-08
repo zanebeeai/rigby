@@ -120,8 +120,23 @@ Readable only once the block has been SEEN, and simply absent until then:
   object_above_rim_m  how far the held block's underside clears the rim
 
 READINGS, NOT GOALS -- steer something else instead: grip_tip_spread_m (the jaws
-are a state), object_in_target, holding, object_seen, object_between_jaws,
-tip_force_left_n, tip_force_right_n.
+are a state), holding, object_seen, object_between_jaws, tip_force_left_n,
+tip_force_right_n, pushing_n.
+
+  pushing_n   HOW HARD YOU ARE RUNNING INTO SOMETHING, in newtons, felt by a
+              part of the arm that should be carrying no load at all. On a
+              clean carry it is 0.00 and stays there for the whole run.
+              Anything above a newton or two means you are pressing on the
+              world -- a wall, the bench, the outside of the bin.
+
+              This is not a cost to trade off. It is a fact that whatever you
+              are currently trying is being physically prevented, and no amount
+              of pushing harder will finish it. A previous run drove the block
+              into the outside of the bin wall at 87 N, prised its own jaws
+              open, dropped the block, and went on issuing goals as though the
+              carry were going fine. BACK OFF AND COME AT IT DIFFERENTLY -- for
+              a container that means over the opening and then down, never
+              sideways at rim height.
 
 USING. Name "move" -- the whole arm -- and let the search pick which joint and
 which motion. Do not name individual joints: asked to bring the hand closer, an
@@ -434,8 +449,36 @@ def _load_env() -> bool:
     for candidate in (here.parents[4] / ".env", here.parents[5] / ".env"):
         if candidate.is_file():
             load_dotenv(candidate, override=False)
+            _unquote_env()
             return True
     return False
+
+
+#: Credentials that arrive by paste and are ruined by one stray character.
+_PASTED = ("OPENAI_API_KEY", "RIGBY_VLM_MODEL")
+
+
+def _unquote_env() -> None:
+    """Strip stray quotes and whitespace from pasted credentials.
+
+    python-dotenv strips quotes only when they MATCH. A key pasted as
+    `KEY=sk-proj-...-4A"` -- one trailing quote, no leading one -- is loaded
+    with the quote as part of the value, and the only symptom is a 401 that
+    reaches the run as "the model did not provide a usable goal". That cost a
+    whole run to diagnose: three model calls, zero of them counted, and a
+    progress message blaming the model for an authentication failure.
+
+    One character of cleanup here is cheaper than reading it in a stack trace.
+    """
+    import os
+
+    for name in _PASTED:
+        value = os.environ.get(name)
+        if not value:
+            continue
+        clean = value.strip().strip('"').strip("'").strip()
+        if clean != value:
+            os.environ[name] = clean
 
 
 def _as_png(pixels: np.ndarray, scale: int = 1) -> str:

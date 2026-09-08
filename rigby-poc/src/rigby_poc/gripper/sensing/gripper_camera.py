@@ -100,6 +100,26 @@ def _finger_floor() -> float:
     return 0.0
 
 
+#: Jaws closer together than this are shut on nothing. From the finger
+#: encoders, which are exact. Measured: fully shut reads 0.0070 m, and the
+#: narrowest block this machine is asked to pick up holds them at 0.050 m.
+#:
+#: THE FIRST VERSION OF THIS TEST ALSO COMPARED THE JAW GAP WITH THE BELIEVED
+#: OBJECT WIDTH, and cost five corpus cases. The comparison looks obviously
+#: right -- jaws at 7 mm cannot contain a 72 mm block -- and it leans on the
+#: one number that is worst exactly when it is consulted: this file's own
+#: docstring records that the size estimate degrades from 2-5 mm of error at a
+#: quarter of a metre to 25-35 mm at eleven centimetres, and an object being
+#: carried is closer than that. An inflated belief raises the gate above the
+#: real jaw gap and the machine decides it has dropped what it is holding.
+#: Every one of those five failures grasped and lifted correctly and then let
+#: go mid-carry.
+#:
+#: The encoder alone is enough for the failure this exists for. In the crash
+#: the jaws read 0.0070 m, and no estimate of anything was needed to know that
+#: nothing was between them.
+_JAWS_EMPTY_M = 0.010
+
 #: A pad is pressing on something above this, in newtons. Below it is solver
 #: noise and the weight of the finger resting against its own travel stop.
 _GRIP_N = 0.15
@@ -143,9 +163,15 @@ class Sensed:
     #: work out, and it is what says when looking is finished.
     belief_shift: float = 1.0
     looks: int = 0
+    #: How hard the machine is pressing on the world with a part that should be
+    #: carrying no load at all, and which part. Zero on a clean carry.
+    pushing_n: float = 0.0
+    pushing_with: str = ""
+    #: How far apart the pads are. Needed to tell a grip from a fistful of air.
+    jaw_opening_m: float = 0.0
 
     def holding(self) -> bool:
-        """Both pads pressing on something, measured.
+        """Both pads pressing on something THE RIGHT SIZE, measured.
 
         This was inferred from the encoders -- two fingers that will not close
         further while being told to close. The inference has a failure mode the
@@ -156,9 +182,22 @@ class Sensed:
 
         A load cell separates the two cases. Both pads must read real force.
         """
-        return (self.tip_force_left_n > _GRIP_N
+        if not (self.tip_force_left_n > _GRIP_N
                 and self.tip_force_right_n > _GRIP_N
-                and self.grip_effort_n > 1.0)
+                and self.grip_effort_n > 1.0):
+            return False
+        # A LOAD CELL IS BLIND TO WHAT IT TOUCHES, which is honest and is not
+        # enough. The block was crushed against the bin wall and popped out of
+        # the jaws; the fingers then closed to 7 mm on nothing while both pads
+        # went on reading 8-17 N against the bin. `holding` stayed true for 2.2
+        # seconds and the planner spent them repositioning a block that was
+        # lying on the rim.
+        #
+        # Two loaded pads on jaws that are SHUT is contact with the world, not
+        # a grip. The finger encoders settle it, and unlike the pads or the
+        # cameras they are exact -- see _JAWS_EMPTY_M for why nothing about the
+        # object's believed size belongs in this test.
+        return self.jaw_opening_m > _JAWS_EMPTY_M
 
 
 @dataclass
@@ -495,6 +534,7 @@ def sense(body: Body, eyes: Senses, commanded: np.ndarray, squeeze_n: float,
 
     left_n, right_n = body.tip_forces()
     reach, _struck = body.range_ahead()
+    press_n, press_with = body.obstruction()
     return Sensed(
         q=q,
         time_s=now,
@@ -507,6 +547,9 @@ def sense(body: Body, eyes: Senses, commanded: np.ndarray, squeeze_n: float,
         tip_force_left_n=float(left_n),
         tip_force_right_n=float(right_n),
         range_ahead_m=float(reach),
+        pushing_n=float(press_n),
+        pushing_with=str(press_with),
+        jaw_opening_m=float(body.opening()),
         seen_by=str(eyes.seen_by),
         fine_fix=bool(eyes.fine_fix),
         arm_stalled=arm_stalled,

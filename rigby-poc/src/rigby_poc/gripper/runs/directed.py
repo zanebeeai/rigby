@@ -21,7 +21,7 @@ import numpy as np
 
 from ..body.manifest import spec
 from ..decision.goals import readable
-from ..decision.greedy import pursue
+from ..decision.lookahead import Foresight, foresee
 from ..decision.pick_and_place import (
     object_above_rim_m,
     object_in_target,
@@ -140,6 +140,20 @@ def _thumbnail(body, camera: str, width: int = 192, height: int = 144) -> str:
             + base64.b64encode(buffer.getvalue()).decode("ascii"))
 
 
+def _said(planner, decision) -> str:
+    """What just happened, named accurately enough to act on."""
+    if getattr(planner, "held", None) is not None:
+        return (f"Model chose {planner.held.metric} = "
+                f"{planner.held.value:g}")
+    problem = (decision or {}).get("error") if isinstance(decision, dict) else None
+    if problem:
+        return f"The model could not be reached: {str(problem)[:140]}"
+    if not getattr(planner, "calls", 0):
+        return ("No model call has completed -- check the API key and the "
+                "model name before reading anything into the run")
+    return "The model replied without a usable goal"
+
+
 def _clip_shell(task: str, fps: int, table_top: float) -> dict[str, Any]:
     bin_doc = spec()["scene"]["bin"]
     return {
@@ -171,6 +185,12 @@ def _ceiling() -> np.ndarray:
 #: 10 Hz. Five camera renders cost about 90 ms, and a belief that is corrected
 #: ten times a second is corrected far faster than the arm can invalidate it.
 _WORLD_EVERY = 3
+#: How often to search for a route, in frames. Looking three moves ahead through
+#: five thousand poses costs about 350 ms while carrying something, so this
+#: cannot run every frame -- and does not need to: what it produces is a
+#: setpoint, and the arm spends the frames in between slewing toward it under
+#: the rate limits. Every sixth frame is 5 Hz.
+_PLAN_EVERY = 6
 
 
 def run(task: str = "put the orange block into the bin",
@@ -196,6 +216,8 @@ def run(task: str = "put the orange block into the bin",
     planner = planner or Planner(task=task)
 
     eyes = Senses()
+    sight = Foresight(body)
+    route = None
     held = np.asarray(body.q())
     squeeze = 0.0
     per_frame = max(1, int(round((1.0 / fps) / body.model.opt.timestep)))
@@ -246,16 +268,24 @@ def run(task: str = "put the orange block into the bin",
                 })
             planner.ask(body, seen, now,
                         ("reached it" if reached else note) if before else note)
+            # A NEW GOAL INVALIDATES THE ROUTE. The route is only the best way
+            # to reach the goal it was planned for; carrying one over to a
+            # different goal would mean the arm spending up to six frames
+            # driving toward something nobody asked for any more.
+            route = None
             if on_progress is not None:
                 decision = planner.transcript[-1] if planner.transcript else None
                 on_progress({
                     "kind": "model_decision",
                     "stage": "search",
-                    "message": (
-                        f"Model chose {planner.held.metric} = {planner.held.value:g}"
-                        if planner.held is not None
-                        else "The model did not provide a usable goal"
-                    ),
+                    # A CALL THAT NEVER HAPPENED IS NOT A MODEL THAT DECLINED.
+                    # An expired key produced three "The model did not provide
+                    # a usable goal" events and a model_calls count stuck at
+                    # zero, which reads as the model being unhelpful and is
+                    # actually a 401. The transcript had the real reason all
+                    # along; nothing surfaced it, and the run had to be
+                    # reproduced by hand to find out. Blame the right thing.
+                    "message": _said(planner, decision),
                     "model_calls": planner.calls,
                     "detail": decision,
                 })
@@ -301,8 +331,20 @@ def run(task: str = "put the orange block into the bin",
                 mujoco.mj_step(body.model, body.data)
             continue
 
-        wanted, error, how = pursue(body, seen, target, planner.spans,
-                                    start_from=held)
+        # A ROUTE, NOT A NUDGE. The greedy search this replaces scored one
+        # move ahead with no idea that anything was in the way, so a probe that
+        # drove the block into the outside of the bin wall scored as an
+        # improvement -- it was moving the block closer to the bin, and
+        # sideways through a wall is closer. Measured: 87 N through the plate
+        # until the contact prised the jaws open.
+        #
+        # Recomputed every _PLAN_EVERY frames rather than every frame, because
+        # what comes back is a setpoint and the arm takes several frames to
+        # slew to it anyway.
+        if index % _PLAN_EVERY == 0 or route is None:
+            route = foresee(body, seen, target, planner.spans,
+                            start_from=held, sight=sight)
+        wanted, error, how = route
         # The search says where the joints should be; the rate limit says how
         # fast they may get there. Same place as everywhere else in this system.
         # OPTIONAL, because it is instrumentation. A planner has to decide --

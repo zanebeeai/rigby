@@ -83,7 +83,12 @@ WHERE_FROM = {
     "tip_force_right_n": ("MEASURED", "fingertip load cell"),
     "range_ahead_m": ("MEASURED", "rangefinder along the grasp axis"),
     "beam_finds_object": ("MEASURED", "the same rangefinder"),
-    "holding": ("MEASURED", "both load cells under a commanded squeeze"),
+    "holding": ("MEASURED", "both load cells under a commanded squeeze, plus "
+                "the finger encoders saying the jaws are open far enough to "
+                "contain what is believed held"),
+    "pushing_n": ("MEASURED", "contact force on a part of the arm that should "
+                  "carry no load; joint torque or motor current on real "
+                  "hardware"),
     # --- the grader -------------------------------------------------------------
     "object_in_target": ("SIMULATOR", "body.block() -- MuJoCo's true block pose"),
 }

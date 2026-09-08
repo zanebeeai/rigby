@@ -232,7 +232,7 @@ NEEDS_SIGHT = ("pointing_at_object", "palm_to_object_m", "object_in_grasp_m", "p
 
 #: Readable but not askable: outcomes and states, not handles. Naming an outcome
 #: as a target is naming the goal as its own method.
-OUTCOMES = ("grip_tip_spread_m",
+OUTCOMES = ("grip_tip_spread_m", "pushing_n",
             "holding", "object_seen",
             "tip_force_left_n", "tip_force_right_n",
             "object_in_hand_view", "beam_finds_object",
@@ -268,6 +268,11 @@ def readable(body: Body, seen: Sensed) -> dict[str, float]:
     out["object_between_jaws"] = float(object_between_jaws(body, seen))
     out["object_in_hand_view"] = float(object_in_hand_view(body, seen))
     out["beam_finds_object"] = float(beam_finds_object(body, seen))
+    # WHAT THE MACHINE IS RUNNING INTO. Zero on a clean carry -- measured over
+    # 887 frames of one, the plate never touched anything at all. In the run
+    # that crashed it read 87 N while every other number said the carry was
+    # going fine, and nothing showed it to the planner.
+    out["pushing_n"] = round(float(seen.pushing_n), 2)
     out["tip_force_left_n"] = round(float(seen.tip_force_left_n), 3)
     out["tip_force_right_n"] = round(float(seen.tip_force_right_n), 3)
     # object_in_target IS NOT HERE, AND THAT IS THE POINT. It is computed from

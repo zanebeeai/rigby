@@ -526,6 +526,66 @@ class Body:
                     out[digit] = max(out.get(digit, 0.0), float(abs(force[0])))
         return out
 
+    #: THE PARTS THAT SHOULD NEVER BE CARRYING LOAD. The finger pads are
+    #: excluded on purpose: pressing on something is their job, and that force
+    #: is the grip, already reported by forces(). Everything else touching
+    #: anything at all is the world pushing back.
+    _SHOULD_BE_CLEAR = ("plate_geom", "base_hub", "seg1", "seg2", "seg3")
+
+    def pushing(self) -> dict[str, float]:
+        """What the machine is pressing on with something that is not a pad.
+
+        THE RUN THIS EXISTS FOR. The arm carried the block to rim height at the
+        bin's outer edge and swung the base sideways, crushing the block
+        against the outside of the bin wall through the plate at 87 N. The
+        contact levered the jaws open, the block popped out, and the fingers
+        closed on nothing -- while every number the planner could read said the
+        carry was going fine. The collision was the loudest event in the
+        simulation and the only part of the machine that could not perceive it
+        was the part deciding what to do next.
+
+        MEASURED, and the separation is total: across 887 frames of a carry
+        that worked, plate force was 0.00 N at the median, at the 90th
+        percentile AND at the maximum -- the plate simply never touches
+        anything during a clean carry. In the run that crashed it peaked at
+        87.13 N with five frames above 30 N.
+
+        Contacts through the BLOCK count. The obstruction here was the block
+        against the bin, felt through the plate, and a filter that skipped
+        anything touching the block would have missed the one case this was
+        written for. What matters is that a part which should be carrying no
+        load is carrying 87 N, not which object is on the other side of it.
+
+        This is not a privileged reading. Joint torque sensing and motor
+        current give a real arm the same information, and it is how a real arm
+        knows it has run into something.
+        """
+        out: dict[str, float] = {}
+        for index in range(self.data.ncon):
+            contact = self.data.contact[index]
+            names = {
+                mujoco.mj_id2name(self.model, mujoco.mjtObj.mjOBJ_GEOM,
+                                  contact.geom1),
+                mujoco.mj_id2name(self.model, mujoco.mjtObj.mjOBJ_GEOM,
+                                  contact.geom2),
+            }
+            mine = names & set(self._SHOULD_BE_CLEAR)
+            if not mine:
+                continue
+            force = np.zeros(6)
+            mujoco.mj_contactForce(self.model, self.data, index, force)
+            part = sorted(mine)[0]
+            out[part] = max(out.get(part, 0.0), float(abs(force[0])))
+        return out
+
+    def obstruction(self) -> tuple[float, str]:
+        """The hardest the machine is pressing with a part that should be clear."""
+        pressing = self.pushing()
+        if not pressing:
+            return 0.0, ""
+        part = max(pressing, key=lambda name: pressing[name])
+        return float(pressing[part]), part
+
     #: Every geom that is part of the hand itself.
     _OWN_GEOMS = ("left_geom", "right_geom", "plate_geom")
 
