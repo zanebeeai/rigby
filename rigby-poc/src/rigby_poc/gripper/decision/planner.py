@@ -63,6 +63,27 @@ _RELOOK_AFTER_S = 6.0
 #: How many times an instruction may be expanded before the run gives up on
 #: having a plan and decides from the sentence alone.
 _EXPAND_TRIES = 2
+#: How long to wait before asking again when there is no goal at all. Shorter
+#: than stuck_after_s, because having nothing to chase is more urgent than
+#: chasing something slowly -- and far longer than a frame.
+_RETRY_AFTER_S = 1.5
+#: Ways of saying the task is over. The field is `done`; the rest are spellings
+#: of the same claim, and refusing an obviously-meant answer on spelling has
+#: cost this project whole runs before.
+_DONE_KEYS = ("done", "finished", "complete", "completed", "task_done",
+              "placed")
+
+
+def _says_done(parsed: dict) -> bool:
+    """Did the model just say the task is over?"""
+    for key in _DONE_KEYS:
+        value = parsed.get(key)
+        if value is True:
+            return True
+        if isinstance(value, str) and value.strip().lower() in (
+                "true", "yes", "done", "finished", "complete"):
+            return True
+    return False
 #: The two searches the model may choose between.
 SEARCHES = ("direct", "ahead")
 #: Words that obviously mean one of them.
@@ -86,7 +107,7 @@ HOW TO REPLY -- one JSON object. Every field is optional except "why":
    "using": ["move"],
    "step_done": true|false,
    "search": "direct" | "ahead",
-   "placed": true|false, "placed_why": "<what you can see that says so>",
+   "done":  true, "done_why": "<what you can see that says the task is over>",
    "why":   "<one sentence>"}
 
 Set "jaws" and a goal in the same reply when you mean both -- "open the jaws and
@@ -206,15 +227,24 @@ WHAT THE TASK NEEDS, IN ORDER: find the block, open the jaws, get the hand
 around it, close the jaws, lift it clear, carry it over the bin high enough to
 clear the rim, then open the jaws to let go.
 
-YOU DECIDE WHEN IT IS DONE, AND YOU HAVE TO LOOK TO KNOW. Nothing tells you
-whether the object ended up where the task wanted it. Set "placed": true when
-you can SEE that it did, and say in "placed_why" what you can see that says so.
+YOU DECIDE WHEN THE TASK IS OVER, AND SAYING SO ENDS THE RUN. Nothing else
+will stop it. When the instruction you were given has been carried out, reply
 
-The OVERHEAD camera is how. Every corner camera is stopped by the bin's near
-wall, so an object inside the bin is invisible to all four of them at once --
-measured, a block resting in the bin showed 496 pixels overhead and ZERO from
-every corner. The overhead view looks down into the bin, and it is the only
-view that can settle this.
+    {"done": true, "done_why": "<what you can SEE that says so>"}
+
+and nothing further is asked. That reply needs no goal, no jaws, nothing else:
+there is nothing left to steer, which is the whole point of it.
+
+YOU HAVE TO LOOK TO KNOW. No number tells you whether the sentence was carried
+out -- that judgement is yours, from the pictures. If the task was to put
+something somewhere, the OVERHEAD camera is usually how: every corner camera is
+stopped by the near wall of a container, so an object inside one is invisible
+to all four at once, and measured, a block resting in the bin showed 496 pixels
+overhead and ZERO from every corner.
+
+DO NOT SAY IT IS DONE BECAUSE YOU ARE OUT OF IDEAS. "done" means you can see
+that it happened. Being stuck is a reason to try something different, and there
+is a separate way to say so: keep deciding.
 
 LOSING SIGHT OF SOMETHING IS NOT EVIDENCE THAT IT IS GONE, and it is not
 evidence you failed. When the tracker cannot see an item you are told so, and
@@ -620,15 +650,23 @@ class Planner:
     identifications: list = field(default_factory=list, repr=False)
     _identified_at: float = field(default=-1e9, repr=False)
     _expand_tries: int = field(default=0, repr=False)
-    #: The model's own verdict that the task is done, and when it first said so.
-    #: Scored against the grader afterwards; never used to steer.
     #: WHICH SEARCH TURNS THE GOAL INTO JOINT ANGLES, chosen by the model.
     #: Sticky: it stays as set until the model changes it, so a decision to
     #: look ahead while carrying something survives the next few goals rather
     #: than having to be repeated on each one.
     search: str = field(default="direct", repr=False)
-    claims_placed: bool = field(default=False, repr=False)
-    claimed_placed_at: float = field(default=0.0, repr=False)
+    #: THE MODEL'S OWN VERDICT THAT THE TASK IS OVER, and when it said so.
+    #: Not "placed" -- that was a pick-and-place word in a layer that is not
+    #: supposed to know what the task is, the same mistake as a carry_to_bin
+    #: primitive. Whether a sentence has been carried out is a judgement about
+    #: the world, and it is the model's to make for any sentence.
+    #:
+    #: Scored against a grader afterwards; never used to steer. The grader is
+    #: task-specific and lives in the evaluation, which is where knowing what
+    #: the task was is allowed.
+    finished: bool = field(default=False, repr=False)
+    finished_why: str = field(default="", repr=False)
+    finished_at: float = field(default=0.0, repr=False)
     #: HOW OFTEN EACH METRIC HAS BEEN ASKED FOR, over the whole run.
     #:
     #: This used to be counted by scanning the last eight remembered decisions,
@@ -878,6 +916,11 @@ class Planner:
 
     def due(self, body: Body, seen: Sensed, now: float) -> bool:
         """Time for a new decision: there is none, it is done, or it is stuck."""
+        # NOTHING TO DECIDE AFTER THE TASK IS OVER. Without this the model
+        # answers "it is finished" and is immediately asked what to do next,
+        # forever -- which is how a completed run spent 29 calls in 1.2 s.
+        if self.finished:
+            return False
         if self.doing:
             # No search to stall, so the only questions are whether the joints
             # got there and whether they have stopped trying.
@@ -893,7 +936,15 @@ class Planner:
                 return True
             return now - self._asked_at >= self.stuck_after_s
         if self.held is None:
-            return True
+            # A MISSING GOAL IS A REASON TO ASK, NOT A REASON TO ASK FOREVER.
+            # This returned True unconditionally and never looked at the clock,
+            # so any state with no goal asked once per FRAME. Measured: a
+            # close_jaws act cleared the goal at t=16.2, the model then replied
+            # "placed: true" with no target, that was refused for carrying no
+            # number, the goal stayed None -- and 29 of the run's 43 calls went
+            # in 1.2 seconds. The refusal path set _asked_at and reported
+            # "asked_again_after_s: 8.0"; nothing on this branch read it.
+            return self.calls == 0 or now - self._asked_at >= _RETRY_AFTER_S
         if self.calls >= self.max_calls:
             return False
         if self.held.reached(body, seen, self.spans):
@@ -1565,6 +1616,29 @@ class Planner:
             self._asked_at = now
             return self.held
 
+        # SAYING "IT IS DONE" IS AN ANSWER, NOT A MALFORMED GOAL. Placement is
+        # the model's judgement now -- object_in_target was taken out of the
+        # payload precisely so it would be -- and the model made that judgement
+        # correctly from the overhead camera: "the overhead camera clearly
+        # shows the orange block resting inside the green bin". The reply
+        # carried no `target`, because there is nothing left to steer, so it
+        # was refused as "not a number this body can be steered by" and asked
+        # again. Twenty-nine times. The machine had finished the task and the
+        # plumbing would not let it stop.
+        if _says_done(parsed):
+            self.finished = True
+            self.finished_why = (str(parsed.get("done_why", ""))
+                                 or str(parsed.get("why", "")))[:300]
+            self.finished_at = round(now, 2)
+            self.transcript.append({
+                "t": round(now, 2), "finished": True,
+                "finished_why": self.finished_why,
+                "jaws": self.jaws, "sensed": numbers,
+            })
+            self.held = None
+            self._asked_at = now
+            return None
+
         metric = str(parsed.get("target", ""))
         if metric not in READABLE:
             self.transcript.append(
@@ -1634,10 +1708,6 @@ class Planner:
                     self.search = name
                     break
 
-        self.claims_placed = bool(parsed.get("placed", False))
-        if self.claims_placed and not self.claimed_placed_at:
-            self.claimed_placed_at = round(now, 2)
-
         was = self.step
         if bool(parsed.get("step_done")) and self.step < len(self.plan) - 1:
             self.step += 1
@@ -1698,8 +1768,7 @@ class Planner:
             "step": self.step, "step_was": was,
             "step_text": self.plan[self.step] if self.step < len(self.plan) else None,
             "step_done": bool(parsed.get("step_done")),
-            "placed": bool(parsed.get("placed", False)),
-            "placed_why": str(parsed.get("placed_why", ""))[:200],
+            "finished": bool(self.finished),
             "primitive": primitive,
             "unmet": target.unmet(body, seen),
             "why": str(parsed.get("why", ""))[:200], "sensed": numbers,

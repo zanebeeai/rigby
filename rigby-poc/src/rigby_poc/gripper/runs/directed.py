@@ -256,6 +256,20 @@ def run(task: str = "put the orange block into the bin",
         seen = sense(body, eyes, held, squeeze, now, table_top,
                      believed=believed)
 
+        # THE MODEL ENDS ITS OWN RUN. Nothing else here knows what the task
+        # was, so nothing else here can know it is over -- and a run that
+        # cannot stop keeps issuing goals at a machine that has finished,
+        # which is what turned one completed placement into 29 wasted calls.
+        if getattr(planner, "finished", False):
+            if on_progress is not None:
+                on_progress({
+                    "kind": "model_decision", "stage": "done",
+                    "message": ("The model says the task is done: "
+                                + str(getattr(planner, "finished_why", ""))[:120]),
+                    "model_calls": planner.calls,
+                })
+            break
+
         if planner.due(body, seen, now):
             before = planner.held
             reached = before is not None and before.reached(body, seen,
