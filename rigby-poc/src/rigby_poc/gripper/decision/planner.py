@@ -212,6 +212,44 @@ NAME MORE THAN ONE NUMBER. Every metric is contested: approaching improves the
 distance and destroys the facing. Put what must not be lost in "also", weighted
 -- the number you chase at 1.0, the ones you protect at 0.3 to 0.6.
 
+THE SEARCH MOVES ONE PART PER STEP, AND THAT IS THE THING TO PLAN AROUND.
+It tries each named move of each part on its own and keeps whichever single one
+most improves your number. It never moves two joints together. So any goal that
+NEEDS two joints moving together cannot be reached by asking for it, however
+you weight it, and no amount of re-asking changes that.
+
+Reaching a point on the bench is exactly such a goal. The base swings the whole
+arm around a circle -- it changes x and y TOGETHER and cannot change one alone.
+The elbows change how far out along that direction the hand sits. So a hand
+position is a DIRECTION set by the base and a DISTANCE set by the elbows, and
+moving to a new point almost always needs both.
+
+Measured on this arm: from the hand at (0.00, 0.50, 1.06), asking for
+hand_x_m = 0.3 and letting the search work got x to 0.284 -- and left y at 0.44
+when the destination was y = 0.02. Adding hand_y_m = 0.02 to "also" at full
+weight moved y by four millimetres. The search was not ignoring you; it had no
+single move that improved both, so it reported a stall.
+
+SO BREAK IT UP YOURSELF, in this order:
+
+  1. Set the base angle so the arm points the right way, with "also" holding
+     hand_z_m where it is so the arm does not drop while it swings.
+  2. Fold or extend the elbows to set how far out the hand reaches, with
+     "also" holding base_deg so the direction you just set is not lost.
+  3. Adjust height last.
+
+Then READ hand_x_m and hand_y_m and correct. Do not ask for a base angle and
+hope: after each step the numbers tell you where the hand actually went.
+
+A STALL IS A REQUEST TO DECOMPOSE, NOT A DEAD END. "no move improves this
+number" almost always means the goal needs two joints at once. Answering it by
+naming yet another single metric produces the failure this is written from: one
+run answered five stalls with five raw base angles -- 140, -40, 0, 80, -40 --
+and swept the hand across seven tenths of a metre without ever arriving.
+
+driving_this_worsens is measured on this body at this pose and tells you which
+numbers fight each other right now. Read it before choosing what to protect.
+
 YOU BEGIN BLIND. Nothing object-relative can be read until the block has been
 found. Point the hand down over the bench until object_seen becomes 1.
 
