@@ -67,6 +67,10 @@ _EXPAND_TRIES = 2
 #: than stuck_after_s, because having nothing to chase is more urgent than
 #: chasing something slowly -- and far longer than a frame.
 _RETRY_AFTER_S = 1.5
+#: Pressing harder than this with a part that should carry no load means the
+#: arm is against something, not merely slow. A clean carry measured 0.00 N
+#: across 887 frames; the jams ran 52-157 N.
+_PINNED_N = 5.0
 #: Ways of saying the task is over. The field is `done`; the rest are spellings
 #: of the same claim, and refusing an obviously-meant answer on spelling has
 #: cost this project whole runs before.
@@ -899,14 +903,36 @@ class Planner:
             return True
         return bool((first - last) / first < self.plateau_fraction)
 
-    def stuck_because(self, now: float) -> str:
+    def stuck_because(self, now: float, seen: Sensed | None = None) -> str:
         """What KIND of stuck, in the terms a decision needs.
 
         A search that keeps picking `hold` has run out of moves that help, and
         no amount of patience will change that. A search still choosing moves
         while the number barely shifts is being pulled somewhere it cannot get
         to. The two want different answers.
+
+        AND BEING PINNED IS NEITHER OF THOSE. This used to explain every stall
+        in terms of the search -- "no move improves this number at all, the
+        search is out of options" -- while the arm was pressed against the bin
+        at 76 N. That is a search-theoretic answer to a physical question, and
+        it is not merely unhelpful, it points the wrong way: "the search is out
+        of options" invites naming a different joint, which is what the model
+        did fifteen times over twenty-eight seconds while pushing 52 to 86 N
+        and moving the block two centimetres.
+
+        The machine had both facts and never joined them. The force is a
+        reading and the stall is a reading; only together do they say "you
+        cannot move because something solid is in the way".
         """
+        if seen is not None and float(getattr(seen, "pushing_n", 0.0)) > _PINNED_N:
+            part = str(getattr(seen, "pushing_with", "") or "the arm")
+            return (f"YOU ARE PINNED. {part} is pressed against something at "
+                    f"{float(seen.pushing_n):.0f} N. No move improves the "
+                    f"number because the arm physically cannot go that way, so "
+                    f"naming a different joint or a different metric will not "
+                    f"help. Back off first -- give up ground in the direction "
+                    f"that is open, usually straight up -- and only then aim "
+                    f"for where you were trying to get to.")
         window = [row for row in self.trail
                   if row[0] >= now - self.plateau_window_s]
         if not window:
@@ -1380,7 +1406,7 @@ class Planner:
             "current_goal_waiting_on": ([] if self.held is None
                                         else self.held.unmet(body, seen)),
             "woken_because": self.woken_by or "first decision",
-            "search_says": self.stuck_because(now),
+            "search_says": self.stuck_because(now, seen),
             "error_now": (None if self.held is None or not self.trail
                           else round(self.trail[-1][1], 3)),
             "error_when_set": round(float(self._began), 3),
