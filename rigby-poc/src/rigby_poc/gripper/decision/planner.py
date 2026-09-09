@@ -137,8 +137,6 @@ Readable only once the block has been SEEN, and simply absent until then:
   palm_to_object_m    metres from the gripping surfaces to the block's surface
   object_in_grasp_m   metres from the block to the LINE BETWEEN THE PADS
   palm_facing         +1 square to the face approached, 0 edge-on
-  object_over_target_m  horizontal metres from what is held to the bin's middle
-  object_above_rim_m  how far the held block's underside clears the rim
 
 READINGS, NOT GOALS -- steer something else instead: grip_tip_spread_m (the jaws
 are a state), holding, object_seen, object_between_jaws, tip_force_left_n,
@@ -213,9 +211,30 @@ distance and destroys the facing. Put what must not be lost in "also", weighted
 YOU BEGIN BLIND. Nothing object-relative can be read until the block has been
 found. Point the hand down over the bench until object_seen becomes 1.
 
+PUTTING SOMETHING SOMEWHERE, WITHOUT A METRIC FOR IT. There is no number here
+that measures "over the bin" or "clear of the rim", on purpose: a vocabulary
+that knows what a bin is has already decided what the task is, and cannot state
+a different one. Two such numbers existed and were removed, one of them after it
+read NEGATIVE when the block was resting in the bin -- which is success -- and
+the run lifted it back out twice and dropped it on the bench.
+
+You do not need them, because you already know where things are. Your
+imagination carries the coordinates of everything you identified, including
+whatever the object is meant to end up in or on. While you are holding
+something it sits at the hand, so hand_x_m, hand_y_m and hand_z_m ARE where the
+held object is. Placing it is therefore:
+
+  drive hand_x_m and hand_y_m to the coordinates of the destination you can
+  see, keeping hand_z_m high enough to clear it, then lower hand_z_m, then open
+  the jaws.
+
+Read the destination's xyz out of your imagination and use those numbers. If it
+is a container, its rim is above its middle, so clear the rim on the way across
+and come down only once you are over the opening.
+
 WHAT THE TASK NEEDS, IN ORDER: find the block, open the jaws, get the hand
-around it, close the jaws, lift it clear, carry it over the bin high enough to
-clear the rim, then open the jaws to let go.
+around it, close the jaws, lift it clear, carry it across ABOVE everything,
+come down over the opening, then open the jaws to let go.
 
 YOU DECIDE WHEN THE TASK IS OVER, AND SAYING SO ENDS THE RUN. Nothing else
 will stop it. When the instruction you were given has been carried out, reply

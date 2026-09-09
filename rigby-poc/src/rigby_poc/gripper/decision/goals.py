@@ -138,8 +138,32 @@ READABLE = {
             / max(float(np.linalg.norm(
                 np.asarray(seen.object_at) - body.grasp_centre())), 1e-6)),
             -1.0, 1.0))),
-    "object_over_target_m": task.object_over_target_m,
-    "object_above_rim_m": task.object_above_rim_m,
+    # object_over_target_m AND object_above_rim_m ARE NOT HERE ANY MORE.
+    #
+    # They measured the held object against bin_of()["centre"] and
+    # bin_of()["rim"] -- which is to say, the vocabulary the model steers by
+    # knew there was a bin. That is a carry_to_bin primitive wearing a
+    # different hat: whoever wrote the metric had already decided what the task
+    # was, so a machine given a different sentence would find half its
+    # instruments meaningless and no way to say what it wanted instead.
+    #
+    # They also lied about the thing they were named for. object_above_rim_m
+    # goes NEGATIVE when the object is inside the bin, which is success, and a
+    # model reading it as "not yet clear" lifted the block back out -- twice --
+    # then dropped it on the bench. Its own words: "the block is held but is
+    # still below the bin rim, so raise the hand before releasing it", said
+    # while the block was sitting in the bin. A quantity standing in for a
+    # different quantity, which is this project's most expensive recurring bug.
+    #
+    # What replaces them is not a metric. The model perceives where the
+    # container is -- it identified it and the cameras track it -- and it can
+    # already drive hand_x_m, hand_y_m and hand_z_m, which are where the held
+    # object is. "Put it there" is now something the model expresses in
+    # coordinates it worked out, rather than something the vocabulary assumed.
+    #
+    # The functions still exist in decision/pick_and_place.py, because the
+    # offline phase controller is a task-specific controller and the grader has
+    # to know what the task was. Neither is the model's vocabulary.
 }
 
 #: The smallest a term's scale may be, per metric. Scaling by "how far this
@@ -169,7 +193,6 @@ _FLOOR = {
     "palm_to_object_m": 0.02, "object_in_grasp_m": 0.02,
     "palm_facing": 0.25,
     "pointing_at_object": 0.2,
-    "object_over_target_m": 0.03, "object_above_rim_m": 0.03,
 }
 
 #: Which numbers mean nothing until the object has been seen. The planner is
@@ -204,13 +227,6 @@ DESCRIBES: dict[str, str] = {
                         "metres. LOWER IS BETTER, 0 is touching.",
     "object_in_grasp_m": "how far the block is from the line between the pads, "
                          "metres. LOWER IS BETTER.",
-    "object_over_target_m": "how far the block is from being over the bin, "
-                            "metres, measured flat. LOWER IS BETTER.",
-    "object_above_rim_m": "how far the block is above the bin rim, metres. "
-                          "Positive is clear of the rim.",
-    "base_deg": "the turntable angle, degrees. A place.",
-    "segment_1_deg": "the first hinge, degrees. A place.",
-    "segment_2_deg": "the second hinge, degrees. A place.",
     "segment_3_deg": "the third hinge, degrees. A place.",
 }
 for _seg in ("segment_1", "segment_2", "segment_3"):
@@ -228,7 +244,7 @@ for _seg in ("segment_1", "segment_2", "segment_3"):
 BEST_AT_ONE = ("pointing_at_object", "palm_facing", "hand_pointing_down")
 
 NEEDS_SIGHT = ("pointing_at_object", "palm_to_object_m", "object_in_grasp_m", "palm_facing",
-               "object_over_target_m", "object_above_rim_m")
+               )
 
 #: Readable but not askable: outcomes and states, not handles. Naming an outcome
 #: as a target is naming the goal as its own method.

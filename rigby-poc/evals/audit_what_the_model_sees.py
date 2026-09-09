@@ -83,8 +83,14 @@ WHERE_FROM = {
     "object_in_hand_view": ("PERCEIVED", "the hand camera's frame"),
     "object_between_jaws": ("PERCEIVED", "seen.object_at against the pads"),
     # --- belief plus declared furniture ---------------------------------------
-    "object_over_target_m": ("DECLARED", "seen.object_at vs bin_of()['centre']"),
-    "object_above_rim_m": ("DECLARED", "seen.object_at vs bin_of()['rim']"),
+    # THIS CATEGORY IS EMPTY NOW, and that is the interesting part.
+    # object_over_target_m and object_above_rim_m measured the held object
+    # against bin_of()['centre'] and bin_of()['rim'], so the vocabulary the
+    # model steered by knew there was a bin -- a task recipe in the instrument
+    # list. Both were removed. Placing something is now expressed in
+    # coordinates the model perceives and drives hand_x/y/z_m toward. They are
+    # kept here so that reintroducing anything shaped like them is a visible
+    # change to this table rather than a quiet one.
     # --- real instruments ------------------------------------------------------
     "tip_force_left_n": ("MEASURED", "fingertip load cell"),
     "tip_force_right_n": ("MEASURED", "fingertip load cell"),
