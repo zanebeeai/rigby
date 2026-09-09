@@ -84,13 +84,6 @@ def _says_done(parsed: dict) -> bool:
                 "true", "yes", "done", "finished", "complete"):
             return True
     return False
-#: The two searches the model may choose between.
-SEARCHES = ("direct", "ahead")
-#: Words that obviously mean one of them.
-_SEARCH_WORDS = {
-    "ahead": ("ahead", "look", "route", "plan", "avoid", "obstacle"),
-    "direct": ("direct", "greedy", "fast", "simple", "quick"),
-}
 
 PLAN_PROMPT = """You are directing a robot arm with a two-finger parallel gripper.
 
@@ -106,7 +99,6 @@ HOW TO REPLY -- one JSON object. Every field is optional except "why":
    "also":  [["<number>", <n>, <weight>], ...],
    "using": ["move"],
    "step_done": true|false,
-   "search": "direct" | "ahead",
    "done":  true, "done_why": "<what you can see that says the task is over>",
    "why":   "<one sentence>"}
 
@@ -167,35 +159,33 @@ tip_force_right_n, pushing_n.
               a container that means over the opening and then down, never
               sideways at rim height.
 
-SEARCH -- HOW THE GOAL BECOMES JOINT ANGLES. You choose. It stays as you set it
-until you change it, so set it when the situation changes rather than on every
-reply.
+THE SEARCH IS BLIND TO OBSTACLES, AND YOU ARE NOT. What turns your goal into
+joint angles tries every named move once and takes whichever most improves the
+number. It has no idea anything is in the way: a move that drives straight
+through a wall scores exactly as well as one that goes around, because the wall
+is not in the number.
 
-  "direct"  Tries every named move once and takes whichever most improves the
-            number. Fast: about 6 to 20 ms. BLIND TO OBSTACLES -- it scores a
-            move that drives straight through a wall exactly as well as one
-            that does not, because the wall does not appear in the number.
+SO ROUTING AROUND THINGS IS YOUR JOB, and you are the only part of this system
+that can do it -- you can see the wall in the pictures and the search cannot.
+Break the movement into goals that are each safe on their own:
 
-  "ahead"   Searches routes three moves deep and throws away any route that
-            hits something, checking BOTH the arm and whatever it is carrying
-            against the room. Costs about 150 ms empty and 350 ms carrying, and
-            it plans three moves but executes one and replans.
+  lift clear of everything first, THEN move across, THEN come down.
 
-WHEN TO USE "ahead". Whenever something solid is near what you are moving --
-which above all means once you are CARRYING the object anywhere near the bin.
-The failure this exists for: the arm reached rim height two millimetres outside
-the bin's opening, so it was over the WALL, and "direct" then swung the base
-sideways because sideways was closer to the bin centre. It crushed the block
-against the wall at 87 N until the jaws were prised open and the block fell
-out. Every single move on the way there was an improvement to the number.
+Not "get the block over the bin" while it sits beside the bin at rim height.
+That asks for a straight line through the wall, and the search will happily
+drive into it. The failure this is written from: the arm reached rim height two
+millimetres outside the bin's opening -- so it was over the WALL -- and the
+next goal asked to close the horizontal distance. It crushed the block against
+the wall at 87 N until the jaws were prised open and the block fell out. Every
+move along the way improved the number it had been given.
 
-"direct" is fine in open space: crossing the bench, aiming, reaching down for
-something with nothing beside it. It is roughly twenty times cheaper, and being
-cheaper is worth something because the arm re-plans continuously.
-
-If pushing_n is not zero you are ALREADY against something. Switch to "ahead"
-and change what you are asking for; a search cannot route around an obstacle
-you are already pressing into.
+pushing_n IS HOW YOU KNOW. It is zero on a clean carry and stays zero for the
+whole run. Anything above a newton or two means you are pressing on something
+solid and whatever you are currently asking for is being physically prevented.
+Do not ask for it harder and do not try a different joint: BACK OFF, get clear
+in the direction that is open -- usually up -- and approach again from a place
+the straight line works from. One run spent twenty-six seconds at up to 157 N
+issuing eight different goals, and moved the block two centimetres.
 
 USING. Name "move" -- the whole arm -- and let the search pick which joint and
 which motion. Do not name individual joints: asked to bring the hand closer, an
@@ -650,11 +640,6 @@ class Planner:
     identifications: list = field(default_factory=list, repr=False)
     _identified_at: float = field(default=-1e9, repr=False)
     _expand_tries: int = field(default=0, repr=False)
-    #: WHICH SEARCH TURNS THE GOAL INTO JOINT ANGLES, chosen by the model.
-    #: Sticky: it stays as set until the model changes it, so a decision to
-    #: look ahead while carrying something survives the next few goals rather
-    #: than having to be repeated on each one.
-    search: str = field(default="direct", repr=False)
     #: THE MODEL'S OWN VERDICT THAT THE TASK IS OVER, and when it said so.
     #: Not "placed" -- that was a pick-and-place word in a layer that is not
     #: supposed to know what the task is, the same mistake as a carry_to_bin
@@ -1439,7 +1424,6 @@ class Planner:
             "sensed": numbers,
             "your_body_right_now": self.machine(body, seen),
             "jaws_are": self.jaws,
-            "search_is": self.search,
             "your_imagination": dict(self.imagination or {}),
             # WHAT YOU SAID WAS HERE, and what has become of each of those
             # things since. The planner used to be handed one position and no
@@ -1697,17 +1681,6 @@ class Planner:
         # disagree: whether the block is in the bin, and whether the machine
         # knew. In the run of 2026-09-06 those two would have disagreed for
         # twenty seconds and eight decisions.
-        asked_search = str(parsed.get("search", "")).strip().lower()
-        if asked_search in SEARCHES:
-            self.search = asked_search
-        elif asked_search:
-            # Near-misses are obvious in meaning and refusing them on spelling
-            # helps nobody -- the same lesson as "close_gripper" for the jaws.
-            for name, words in _SEARCH_WORDS.items():
-                if any(word in asked_search for word in words):
-                    self.search = name
-                    break
-
         was = self.step
         if bool(parsed.get("step_done")) and self.step < len(self.plan) - 1:
             self.step += 1
@@ -1777,7 +1750,6 @@ class Planner:
             # first question worth asking of a run that froze.
             "predicament": situation.get("predicament"),
             "jaws": self.jaws,
-            "search": self.search,
             "imagination": dict(self.imagination or {}),
             "imagination_confidence": round(self.imagination_confidence, 3),
             "aim": self.aim(body),

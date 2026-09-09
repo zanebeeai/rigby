@@ -22,7 +22,6 @@ import numpy as np
 from ..body.manifest import spec
 from ..decision.goals import readable
 from ..decision.greedy import pursue
-from ..decision.lookahead import Foresight, foresee
 from ..decision.pick_and_place import (
     object_above_rim_m,
     object_in_target,
@@ -186,12 +185,6 @@ def _ceiling() -> np.ndarray:
 #: 10 Hz. Five camera renders cost about 90 ms, and a belief that is corrected
 #: ten times a second is corrected far faster than the arm can invalidate it.
 _WORLD_EVERY = 3
-#: How often to search for a route, in frames. Looking three moves ahead through
-#: five thousand poses costs about 350 ms while carrying something, so this
-#: cannot run every frame -- and does not need to: what it produces is a
-#: setpoint, and the arm spends the frames in between slewing toward it under
-#: the rate limits. Every sixth frame is 5 Hz.
-_PLAN_EVERY = 6
 
 
 def run(task: str = "put the orange block into the bin",
@@ -217,8 +210,6 @@ def run(task: str = "put the orange block into the bin",
     planner = planner or Planner(task=task)
 
     eyes = Senses()
-    sight = Foresight(body)
-    route = None
     held = np.asarray(body.q())
     squeeze = 0.0
     per_frame = max(1, int(round((1.0 / fps) / body.model.opt.timestep)))
@@ -283,11 +274,6 @@ def run(task: str = "put the orange block into the bin",
                 })
             planner.ask(body, seen, now,
                         ("reached it" if reached else note) if before else note)
-            # A NEW GOAL INVALIDATES THE ROUTE. The route is only the best way
-            # to reach the goal it was planned for; carrying one over to a
-            # different goal would mean the arm spending up to six frames
-            # driving toward something nobody asked for any more.
-            route = None
             if on_progress is not None:
                 decision = planner.transcript[-1] if planner.transcript else None
                 on_progress({
@@ -346,33 +332,16 @@ def run(task: str = "put the orange block into the bin",
                 mujoco.mj_step(body.model, body.data)
             continue
 
-        # A ROUTE, NOT A NUDGE. The greedy search this replaces scored one
-        # move ahead with no idea that anything was in the way, so a probe that
-        # drove the block into the outside of the bin wall scored as an
-        # improvement -- it was moving the block closer to the bin, and
-        # sideways through a wall is closer. Measured: 87 N through the plate
-        # until the contact prised the jaws open.
-        #
-        # Recomputed every _PLAN_EVERY frames rather than every frame, because
-        # what comes back is a setpoint and the arm takes several frames to
-        # slew to it anyway.
-        # WHICH SEARCH IS THE MODEL'S CALL. "direct" is the one-move greedy
-        # search: fast, and blind to anything solid. "ahead" routes three moves
-        # and refuses the ones that hit something, for about twenty times the
-        # cost. The model sets it from what it can see, because whether there
-        # is a wall near what you are carrying is exactly the sort of thing a
-        # camera answers and a metric does not.
-        looking_ahead = getattr(planner, "search", "direct") == "ahead"
-        if looking_ahead:
-            if index % _PLAN_EVERY == 0 or route is None:
-                route = foresee(body, seen, target, planner.spans,
-                                start_from=held, sight=sight)
-            wanted, error, how = route
-        else:
-            # Cheap enough to run every frame, which is what it was built for.
-            route = None
-            wanted, error, how = pursue(body, seen, target, planner.spans,
-                                        start_from=held)
+        # ONE SEARCH. A second, obstacle-aware optimiser was built and then
+        # removed: the model can SEE the wall, and routing around it is a
+        # decision -- lift clear, then move across, then come down -- not a
+        # search problem. Handing that to a planner underneath meant the layer
+        # that could see the obstacle was not the layer avoiding it. Measured
+        # across three runs, the model never once chose the lookahead even at
+        # 157 N of contact, which is its own answer about where the reasoning
+        # belongs. It lives in git history at c72cba2 if that turns out wrong.
+        wanted, error, how = pursue(body, seen, target, planner.spans,
+                                    start_from=held)
         # The search says where the joints should be; the rate limit says how
         # fast they may get there. Same place as everywhere else in this system.
         # OPTIONAL, because it is instrumentation. A planner has to decide --
