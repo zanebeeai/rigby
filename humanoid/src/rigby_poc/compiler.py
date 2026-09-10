@@ -61,6 +61,7 @@ from .grasp import (
     grasp_finger_axis,
     grasp_palm_normal,
     hand_world,
+    hand_world as _grasp_hand_world,
     rotate_toward,
     rotation_toward,
     solve_hand_along,
@@ -4206,6 +4207,23 @@ def _compile_object_interaction(scene: SceneManifest, program: MotionProgram) ->
             [program.object_motion.direction_x, 0.0, program.object_motion.direction_z], dtype=float
         )
         push_approach /= max(float(np.linalg.norm(push_approach)), 1e-8)
+    # A throw or a place takes the block the way a grab does: the hand's own
+    # frame is put around it once (the seat) and the four phases that bring
+    # the hand to it are solved by orientation along a straight wrist path,
+    # not placed by a pivot and then cleared. The seat is solved against the
+    # trunk the first of those phases renders with.
+    seat_action = program.object_action in {ObjectAction.THROW, ObjectAction.PLACE}
+    grasp_block: Box | None = None
+    grasp_boxes: list[Box] = []
+    grasp_seat: Seat | None = None
+    grasp_hint: np.ndarray | None = None
+    if seat_action:
+        grasp_block = Box.from_scene_object(target_object)
+        grasp_boxes = [grasp_block]
+        support = scene.support_surface()
+        if support is not None:
+            grasp_boxes.append(Box.from_scene_object(support))
+        grasp_hint = elbow_hang(program.hand.value)
     for primitive in program.primitives:
         guided_action = program.object_action in {
             ObjectAction.PUSH,
@@ -4226,7 +4244,35 @@ def _compile_object_interaction(scene: SceneManifest, program: MotionProgram) ->
         start = current.copy()
         target = _object_interaction_arm_target(program, target_object, primitive.kind)
         shape = primitive.hand_shape or HandShape.OPEN
-        if primitive.kind == PrimitiveKind.RECOVER and program.object_action in {
+        seated = seat_action and primitive.kind in _INTERACTION_PATH_PHASES
+        if seated and grasp_block is not None and grasp_hint is not None:
+            trunk = current.copy()
+            trunk["chest"] = Quat(
+                y=math.sin(side * primitive.parameters.torso_participation * 0.08),
+                w=math.cos(primitive.parameters.torso_participation * 0.08),
+            )
+            grasp_trunk = {name: BonePose(rotation=rotation) for name, rotation in trunk.items()}
+            if grasp_seat is None:
+                _, grasp_seat, grasp_hint = solve_seat(
+                    grasp_trunk,
+                    program.hand.value,
+                    grasp_block,
+                    grasp_finger_axis(target_object, primitive),
+                    grasp_palm_normal(program.hand, target_object, primitive),
+                    grasp_hint,
+                    primitive.parameters,
+                )
+            target = Vec3(
+                x=float(grasp_seat.wrist[0]), y=float(grasp_seat.wrist[1]), z=float(grasp_seat.wrist[2])
+            )
+            arm = solve_hand_along(
+                grasp_trunk, program.hand.value, grasp_seat.wrist, grasp_seat.rotation, grasp_hint
+            )
+            fingers = hand_pose(program.hand, shape, primitive.parameters)
+            target_pose = trunk.copy()
+            target_pose.update(arm)
+            target_pose.update(fingers)
+        elif primitive.kind == PrimitiveKind.RECOVER and program.object_action in {
             ObjectAction.THROW,
             ObjectAction.PUSH,
             ObjectAction.PULL,
@@ -4456,7 +4502,7 @@ def _compile_object_interaction(scene: SceneManifest, program: MotionProgram) ->
             and primitive.kind == PrimitiveKind.RELEASE
             and attachment_world_offset is not None
         )
-        path_phase = (
+        path_phase = not seated and (
             (primitive.kind in _INTERACTION_PATH_PHASES and target is not None)
             or place_release
             or (
@@ -4484,6 +4530,11 @@ def _compile_object_interaction(scene: SceneManifest, program: MotionProgram) ->
             path_start = bone_world_position(start, f"{program.hand.value}Hand")
             path_elbow = bone_world_position(start, f"{program.hand.value}LowerArm")
             path_pole = bend_pole(program.hand, start, primitive.parameters)
+        grasp_path: tuple[np.ndarray, Rotation, np.ndarray] | None = None
+        if seated:
+            start_bones = {name: BonePose(rotation=rotation) for name, rotation in start.items()}
+            start_wrist, start_rotation = _grasp_hand_world(start_bones, program.hand.value)
+            grasp_path = (start_wrist, start_rotation, elbow_direction(start_bones, program.hand.value))
         phase_object_start_rotation = current_object_rotation
         # A placed object parts from the hand during release, on its own
         # path to the landing point; from then on it is a body to stay out of.
@@ -4522,7 +4573,32 @@ def _compile_object_interaction(scene: SceneManifest, program: MotionProgram) ->
                 for key in base
             }
             now = elapsed + progress * phase_duration_s
-            if path_phase and path_start is not None and path_end is not None:
+            if seated and grasp_seat is not None and grasp_path is not None and grasp_hint is not None:
+                # As the grab: the wrist travels a straight path (the reach is
+                # one eased arc up and over to the seat), the hand turns from
+                # where it started to the seat's orientation, and the arm is
+                # solved fresh each frame against the trunk being rendered,
+                # elbow pinned to its branch. At alpha=1 this is the
+                # keyframe's own solve, so the next phase blends from it.
+                start_wrist, start_rotation, start_elbow = grasp_path
+                if primitive.kind == PrimitiveKind.REACH:
+                    wrist_now = arc_path(
+                        start_wrist, grasp_seat.wrist, alpha, target_object.dimensions_m.y
+                    )
+                    hint_now = rotate_toward(start_elbow, grasp_hint, alpha)
+                else:
+                    wrist_now = start_wrist + (grasp_seat.wrist - start_wrist) * alpha
+                    hint_now = grasp_hint
+                rotation_now = rotation_toward(
+                    start_rotation, Rotation.from_matrix(grasp_seat.rotation), alpha
+                ).as_matrix()
+                path_arm = solve_hand_along(
+                    bones, program.hand.value, wrist_now, rotation_now, hint_now
+                )
+                bones.update({name: BonePose(rotation=rotation) for name, rotation in path_arm.items()})
+                if local_index == frame_count - 1:
+                    target_pose.update(path_arm)
+            elif path_phase and path_start is not None and path_end is not None:
                 if place_release:
                     # Setting down: the block goes to its landing point on its
                     # own schedule, and the hand keeps the hold it had on it
