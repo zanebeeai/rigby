@@ -105,12 +105,23 @@ that way; `humanoid/docs/testing.md` says how that is checked.
 
 ## Results and media
 
-A result that matters (a demo GIF, a recording, a benchmark table) goes in
-two places: the media under `docs/results/media/<set>/`, and an entry in
-`docs/results/build_manifest.py` saying where it came from, which command made
-it, and on which commit. Then regenerate the manifest and commit all three.
-Media under a few megabytes is fine in git; anything larger goes on a GitHub
-release and the manifest carries its URL and SHA-256.
+A demo that matters (a GIF, a recording, a rendered comparison) is registered
+on the branch that made it:
+
+```bash
+uv run python demos/tools/demo_tools.py add --title "..." --prompt "..." \
+  --tier any-robot --embodiment so101 --kind gif --how "<the command>" <media files>
+uv run python demos/tools/demo_tools.py build
+```
+
+`add` records who you are, the commit, the branch and the command; `build`
+regenerates `demos/index.html`, the static viewer everyone opens. Commit the
+entry, its media and the page together. CI validates every entry and its
+digests. One file per demo means two people registering demos on two
+branches never conflict. Files stay under 8 MB; a longer recording goes on
+a GitHub release with the URL in `notes`. `docs/RESULTS-ARCHITECTURE.md`
+is the design; `docs/results/` is the record of everything produced before
+the registry existed.
 
 ## Migrating a branch cut before the 27 Aug split
 

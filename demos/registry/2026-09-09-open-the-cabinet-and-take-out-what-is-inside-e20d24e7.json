@@ -1,0 +1,35 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-09-open-the-cabinet-and-take-out-what-is-inside-e20d24e7",
+  "title": "The cabinet: the arm finds the handle and closes on it, and the door does not open",
+  "prompt": "open the cabinet and take out what is inside",
+  "tier": "humanoid",
+  "embodiment": "gripper",
+  "kind": "video",
+  "who": "AngeloWhey",
+  "produced_at": "2026-09-09T00:00:00Z",
+  "source": {
+    "commit": "f00861d",
+    "branch": "grasp/auto-lift",
+    "dirty": false,
+    "how": "npm run dev --prefix frontend; open gripper.html?run=<id> and screen-record; recorder settings not committed"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "unfinished, kept because it is the honest state of it"
+  },
+  "notes": "Torque-driven three-segment gripper; runs in milestones/runs/*.json on the branch.",
+  "media": [
+    {
+      "path": "docs/results/media/gripper-milestones/videos--03-cabinet-attempt-not-working.webm",
+      "bytes": 2110737,
+      "sha256": "f57185baf74bebb60d6bf4c10152cf96f36837001d4f56f9a9e183bfd37f7464",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "gripper",
+    "ledger-import"
+  ]
+}

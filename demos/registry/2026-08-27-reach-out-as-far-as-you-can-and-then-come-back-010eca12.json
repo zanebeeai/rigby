@@ -1,0 +1,35 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-08-27-reach-out-as-far-as-you-can-and-then-come-back-010eca12",
+  "title": "zoo_hand_arm: reach out as far as you can and then come back",
+  "prompt": "reach out as far as you can and then come back",
+  "tier": "any-robot",
+  "embodiment": "zoo_hand_arm",
+  "kind": "gif",
+  "who": "zanebeeai",
+  "produced_at": "2026-08-27T00:00:00Z",
+  "source": {
+    "commit": "unrecorded",
+    "branch": "feat/general-package (rigby-poc-general)",
+    "dirty": false,
+    "how": "uv run python scripts/build_demos.py  # any-robot, pre-split layout; demo-manifest.json records no commit"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "2 certified primitive(s), tracking error 14.0 mm, 10 DOF"
+  },
+  "notes": "role-normalized hash 4ce0d7c789ad: the same words read the same way on every body.",
+  "media": [
+    {
+      "path": "docs/results/media/any-robot-zoo-demos/zoo_hand_arm-reach-out-as-far-as-you-can-and-then-come-ba.gif",
+      "bytes": 467634,
+      "sha256": "7065c044a3542d1875642b9790b881818c51928c23b918dabb199536e581798a",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "zoo",
+    "ledger-import"
+  ]
+}

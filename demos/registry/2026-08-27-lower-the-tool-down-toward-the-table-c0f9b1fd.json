@@ -1,0 +1,35 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-08-27-lower-the-tool-down-toward-the-table-c0f9b1fd",
+  "title": "zoo_dual_arm: lower the tool down toward the table",
+  "prompt": "lower the tool down toward the table",
+  "tier": "any-robot",
+  "embodiment": "zoo_dual_arm",
+  "kind": "gif",
+  "who": "zanebeeai",
+  "produced_at": "2026-08-27T00:00:00Z",
+  "source": {
+    "commit": "unrecorded",
+    "branch": "feat/general-package (rigby-poc-general)",
+    "dirty": false,
+    "how": "uv run python scripts/build_demos.py  # any-robot, pre-split layout; demo-manifest.json records no commit"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "1 certified primitive(s), tracking error 9.3 mm, 14 DOF"
+  },
+  "notes": "role-normalized hash 550ec7246e97: the same words read the same way on every body.",
+  "media": [
+    {
+      "path": "docs/results/media/any-robot-zoo-demos/zoo_dual_arm-lower-the-tool-down-toward-the-table.gif",
+      "bytes": 223849,
+      "sha256": "ac570a560ed086c3f3a6fb0cc79750a44eb68aa47aa9d4fcad8b922dfe95a25e",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "zoo",
+    "ledger-import"
+  ]
+}

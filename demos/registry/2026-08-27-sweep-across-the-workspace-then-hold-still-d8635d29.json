@@ -1,0 +1,35 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-08-27-sweep-across-the-workspace-then-hold-still-d8635d29",
+  "title": "zoo_long_arm: sweep across the workspace, then hold still",
+  "prompt": "sweep across the workspace, then hold still",
+  "tier": "any-robot",
+  "embodiment": "zoo_long_arm",
+  "kind": "gif",
+  "who": "zanebeeai",
+  "produced_at": "2026-08-27T00:00:00Z",
+  "source": {
+    "commit": "unrecorded",
+    "branch": "feat/general-package (rigby-poc-general)",
+    "dirty": false,
+    "how": "uv run python scripts/build_demos.py  # any-robot, pre-split layout; demo-manifest.json records no commit"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "2 certified primitive(s), tracking error 19.3 mm, 8 DOF"
+  },
+  "notes": "role-normalized hash 5630eb1e3d25: the same words read the same way on every body.",
+  "media": [
+    {
+      "path": "docs/results/media/any-robot-zoo-demos/zoo_long_arm-sweep-across-the-workspace,-then-hold-still.gif",
+      "bytes": 409284,
+      "sha256": "791db513029e78de31e349be3f57835048ba269fc23346d1b8d6323023fd92a8",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "zoo",
+    "ledger-import"
+  ]
+}
