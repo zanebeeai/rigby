@@ -367,7 +367,12 @@ class RobotRenderer {
   constructor(canvas, scene) {
     this.canvas = canvas;
     this.scene = scene;
-    const gl = canvas.getContext('webgl2', { antialias: true, alpha: true });
+    // preserveDrawingBuffer so a frame can be read back with toDataURL. The
+    // studio uses that to bake selection thumbnails out of the same renderer
+    // that draws the live viewer, rather than shipping a second pipeline or a
+    // folder of pre-rendered images that drift from the geometry.
+    const gl = canvas.getContext('webgl2',
+      { antialias: true, alpha: true, preserveDrawingBuffer: true });
     if (!gl) throw new Error('WebGL2 is unavailable in this browser');
     this.gl = gl;
 
@@ -661,10 +666,16 @@ function mountViewer(host, scene, options = {}) {
       const duration = state.track.duration_s || 0;
       if (state.time >= duration) {
         if (state.loop) state.time = 0;
-        else { state.time = duration; state.playing = false; }
+        else {
+          state.time = duration;
+          state.playing = false;
+          // Running off the end stops playback as surely as pressing pause, and
+          // the button has to say so.
+          if (state.onTime) state.onTime(state.time, false, sampleTrack(state.track, state.time));
+        }
       }
       pose = sampleTrack(state.track, state.time);
-      if (state.onTime) state.onTime(state.time, state.playing);
+      if (state.onTime) state.onTime(state.time, state.playing, pose);
       needsDraw = true;
     }
     if (needsDraw) {
@@ -684,27 +695,45 @@ function mountViewer(host, scene, options = {}) {
     scene,
     get time() { return state.time; },
     get playing() { return state.playing; },
+    get pose() { return pose; },
     get track() { return state.track; },
     setTrack(track) {
       state.track = track;
       state.time = 0;
       pose = track ? sampleTrack(track, 0) : rest.slice();
-      if (state.onTime) state.onTime(0, state.playing);
+      if (state.onTime) state.onTime(0, state.playing, pose);
       invalidate();
     },
     seek(time) {
       if (!state.track) return;
       state.time = Math.max(0, Math.min(state.track.duration_s || 0, time));
       pose = sampleTrack(state.track, state.time);
-      if (state.onTime) state.onTime(state.time, state.playing);
+      if (state.onTime) state.onTime(state.time, state.playing, pose);
       invalidate();
     },
-    play() { if (state.track) { state.playing = true; last = performance.now(); } },
-    pause() { state.playing = false; },
+    // Every transport change announces itself. The loop only reports while it
+    // is running, so pausing -- the one transition a play button most needs to
+    // hear -- was silent, and the button sat on the pause glyph until something
+    // else happened to redraw it.
+    play() {
+      if (!state.track) return;
+      state.playing = true;
+      last = performance.now();
+      if (state.onTime) state.onTime(state.time, true, pose);
+    },
+    pause() {
+      state.playing = false;
+      if (state.onTime) state.onTime(state.time, false, pose);
+    },
     toggle() { state.playing ? this.pause() : this.play(); },
     setSpeed(value) { state.speed = value; },
     setLoop(value) { state.loop = value; },
-    setPose(values) { pose = values.slice(); state.track = null; invalidate(); },
+    setPose(values) {
+      pose = values.slice();
+      state.track = null;
+      if (state.onTime) state.onTime(state.time, state.playing, pose);
+      invalidate();
+    },
     resetPose() { pose = rest.slice(); invalidate(); },
     frameCamera() {
       // Also the way back from a pan: recentres on the robot and restores the

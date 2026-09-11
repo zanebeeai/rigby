@@ -118,6 +118,7 @@ class RunTrace:
             "schema_version": "1.0",
             "trace_id": self.trace_id,
             "created_at": datetime.now(UTC).isoformat(timespec="seconds"),
+            "ran_at": datetime.now(UTC).isoformat(timespec="seconds"),
             "prompt": self.prompt,
             "robot_id": self.robot_id,
             "accepted": self.accepted,
@@ -137,9 +138,27 @@ class RunTrace:
             "provenance": {"base_tree": base_tree_fingerprint().as_dict()},
         }
         payload["content_sha256"] = content_hash(
-            {k: v for k, v in payload.items() if k != "created_at"}
+            {
+                k: v
+                for k, v in payload.items()
+                if k not in ("created_at", "ran_at")
+            }
         )
         return payload
+
+
+def _existing_created_at(path: Path) -> str | None:
+    """When this trace id was first written, from the copy already on disk.
+
+    First appearance, not last result: it is what keeps a rebuild from shuffling
+    every row to the top, and it is paired with ``ran_at``, which does move.
+    """
+
+    try:
+        value = json.loads(path.read_text(encoding="utf-8")).get("created_at")
+    except (OSError, ValueError):
+        return None
+    return value if isinstance(value, str) and value else None
 
 
 def _atomic_write(path: Path, payload: bytes) -> None:
@@ -177,9 +196,31 @@ class TraceStore:
             # contact probes above all -- went blank with the file still sitting
             # right there beside the trace.
             trace.clip = "clip.gif"
+        payload = trace.to_json()
+        # `created_at` is stamped fresh by `to_json`, which makes it the time of
+        # the most recent *write* rather than the time this run entered the
+        # studio. Every rebuild re-runs the same prompts, so that read collapsed
+        # the whole history onto the last build and left traces the build does
+        # not touch looking like the oldest things here -- backwards.
+        #
+        # Keyed on the path rather than on `content_sha256`, because the hash
+        # covers `elapsed_seconds` and that is wall-clock: it moves on every run,
+        # so a content test would never hold and nothing would ever be preserved.
+        # A trace id is one robot and one prompt, so first appearance of the path
+        # is the thing being dated.
+        prior = _existing_created_at(directory / "trace.json")
+        if prior is not None:
+            payload["created_at"] = prior
+        # `ran_at` is deliberately *not* carried forward. It is when the result
+        # sitting in this file was produced, and the file is replaced wholesale
+        # every time, so it has to move when the content does. Keeping one field
+        # for both facts dated a certified peace sign an hour before the schema
+        # that certifies it existed -- the stamp described the first attempt and
+        # the body described the latest one.
+
         _atomic_write(
             directory / "trace.json",
-            json.dumps(trace.to_json(), indent=2, sort_keys=True).encode("utf-8"),
+            json.dumps(payload, indent=2, sort_keys=True).encode("utf-8"),
         )
         return directory
 
@@ -219,6 +260,8 @@ class TraceStore:
                 {
                     "trace_id": trace_id,
                     "prompt": payload["prompt"],
+                    "created_at": payload.get("created_at"),
+                    "ran_at": payload.get("ran_at"),
                     "robot_id": payload["robot_id"],
                     "accepted": payload["accepted"],
                     "kind": payload.get("kind", "prompt"),

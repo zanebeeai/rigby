@@ -214,6 +214,17 @@ def _derive_sites(
         )
 
         if chain.kind in (EffectorKind.PARALLEL_JAW, EffectorKind.MULTIFINGER):
+            held = _grasp_point(graph, chain, base_qpos)
+            if held is not None:
+                sites.append(
+                    RobotSiteV1(
+                        name=f"{prefix}_grasp_point",
+                        body=attach_name,
+                        semantic=SiteSemantic.GRASP_POINT,
+                        position_m=_vec3(held),
+                        derivation="grasp_point.mid_gripping_surface.v1",
+                    )
+                )
             centre = _grasp_centre(graph, chain, base_qpos)
             sites.append(
                 RobotSiteV1(
@@ -292,6 +303,144 @@ def _grasp_centre(
         for member in chain.cluster.member_bodies
     ]
     centroid = np.mean(points, axis=0)
+
+    attach = chain.cluster.attach_body
+    attach_pos = np.array(data.xpos[attach], dtype=float)
+    attach_mat = np.array(data.xmat[attach], dtype=float).reshape(3, 3)
+    return attach_mat.T @ (centroid - attach_pos)
+
+
+GRASP_POINT_ALONG_FINGERS = 1.0
+"""How far along the fingers an object is taken to be held, from the members'
+own origins (0) to the point the aperture was sighted at (1).
+
+One, and measured rather than reasoned: the block sits 29 to 87 mm below the
+jaw midpoint at peak grip, which looks like the hand closing above it, but
+pulling the point back toward the origins makes things strictly worse (0.6 gives
+two holds, 0.3 and 0.0 give none). The offset is where the grip legitimately
+happens on a hand whose fingers hang below their own mounts."""
+
+
+MARKER_AGREEMENT_FRACTION = 0.5
+"""How far a declared tool centre may sit from the measured closing point,
+in multiples of the aperture, before it is treated as describing something
+other than where this hand holds things."""
+
+
+def _grasp_point(
+    graph: KinematicGraph, chain: ChainMeasurement, base_qpos: np.ndarray
+) -> "np.ndarray | None":
+    """Halfway along the gripping surfaces, in the attach body frame.
+
+    A member's origin sits on its joint, so the midpoint of the origins is the
+    root of the jaws. Its distal extreme is the fingertip. An object is held
+    between those, and the arm has to be told to put it there rather than at
+    either end.
+    """
+
+    model = graph.model
+    data = mujoco.MjData(model)
+    data.qpos[:] = base_qpos
+    for joint in chain.cluster.interior_joints:
+        low, high = measure.joint_range(model, joint)
+        data.qpos[int(model.jnt_qposadr[joint])] = (low + high) / 2.0
+    mujoco.mj_kinematics(model, data)
+
+    # Prefer the tool centre the author declared, when there is one.
+    #
+    # Real URDFs mark the grasp point with a massless, geomless link sitting
+    # between the jaws -- the Panda has one and so does the SO-ARM101, whose
+    # `gripper_frame_link` is 65 mm further out than anything this can derive.
+    # The closure test already knows these markers exist and steps around them;
+    # what it has never done is *read* one. A frame with no surface and no mass
+    # inside an effector cluster is not noise, it is the one place in the file
+    # where somebody wrote down where the hand holds things.
+    marker = None
+    for member in chain.cluster.member_bodies:
+        if graph.collidable_geoms_of_body(member):
+            continue
+        if float(model.body_mass[member]) > 1e-9:
+            continue
+        marker = member
+        break
+    # ...but only when it agrees with where the jaws are measured to meet.
+    #
+    # A declared marker is a claim, and claims can be about something else. The
+    # SO-ARM101's `gripper_frame_link` is a mounting frame on the housing, 85 mm
+    # -- nine tenths of an aperture -- from the point its jaws actually close
+    # on, and driving the block there buried 28 mm of housing in it while the
+    # moving jaw shut on nothing 41 mm away. The Panda's `panda_grasptarget`
+    # sits 0.28 apertures out and is exactly what it says it is. Half an
+    # aperture separates the two cases, and the measurement is what decides.
+    sighted_check = chain.closure.grasp_point_world
+    if marker is not None and sighted_check is not None:
+        span = chain.closure.grasp_aperture_m or chain.closure.open_distance_m
+        drift = float(
+            np.linalg.norm(
+                np.array(data.xpos[marker], dtype=float)
+                - np.array(sighted_check, dtype=float)
+            )
+        )
+        if span > 1e-9 and drift > MARKER_AGREEMENT_FRACTION * span:
+            marker = None
+
+    if marker is not None:
+        attach = chain.cluster.attach_body
+        attach_pos = np.array(data.xpos[attach], dtype=float)
+        attach_mat = np.array(data.xmat[attach], dtype=float).reshape(3, 3)
+        return attach_mat.T @ (
+            np.array(data.xpos[marker], dtype=float) - attach_pos
+        )
+
+    # Otherwise, the point the aperture was measured at. `measure_closure` sights
+    # across the gap between the opposing groups and records the midpoint of the
+    # widest clear span -- by construction the place an object of that width
+    # fits, which is exactly what this site is for. Deriving it instead from the
+    # members' roots and distal extremes leans on `_distal_axis`, and where that
+    # axis does not run along the fingers the midpoint lands off to one side:
+    # the KUKA's came out 18 mm above its own fingertips, so the arm put the
+    # block at bench level and closed above it.
+    sighted = chain.closure.grasp_point_world
+    if sighted is not None:
+        attach = chain.cluster.attach_body
+        attach_pos = np.array(data.xpos[attach], dtype=float)
+        attach_mat = np.array(data.xmat[attach], dtype=float).reshape(3, 3)
+        # Blended back toward the members' own origins. The sighted point is
+        # where the widest clear span is, and on a hand whose fingers splay as
+        # they open that is out at the tips -- driving it to the object put the
+        # block 29 to 87 mm below the jaw midpoint, past the fingertips on the
+        # long arm, so the jaws closed above it every time. Laterally it was
+        # centred to within 2 mm, which is what says the fault is how far along
+        # the fingers the point sits rather than where it sits between them.
+        roots = np.mean(
+            [
+                np.array(data.xpos[member], dtype=float)
+                for member in chain.cluster.member_bodies
+            ],
+            axis=0,
+        )
+        blended = roots + GRASP_POINT_ALONG_FINGERS * (
+            np.array(sighted, dtype=float) - roots
+        )
+        return attach_mat.T @ (blended - attach_pos)
+
+    axis = _distal_axis(graph, chain, data)
+    roots, extremes = [], []
+    for member in chain.cluster.member_bodies:
+        if not graph.collidable_geoms_of_body(member):
+            continue
+        position = np.array(data.xpos[member], dtype=float)
+        rotation = np.array(data.xmat[member], dtype=float).reshape(3, 3)
+        roots.append(position)
+        extremes.append(
+            position + rotation @ measure.farthest_geom_point(
+                graph, member, axis, base_qpos
+            )
+        )
+    if not roots:
+        return None
+
+    centroid = 0.5 * (np.mean(roots, axis=0) + np.mean(extremes, axis=0))
     attach = chain.cluster.attach_body
     attach_pos = np.array(data.xpos[attach], dtype=float)
     attach_mat = np.array(data.xmat[attach], dtype=float).reshape(3, 3)
@@ -424,8 +573,23 @@ def _build_scale(
         for joint, (role, _) in roles.items()
         if role is JointRole.MAJOR_POSITION and model.jnt_actfrclimited[joint]
     ]
+    # A robot that declares no efforts still has a mass, and that says more than
+    # a constant does.
+    #
+    # The fallback was a flat 10 g for every undeclared robot -- the same figure
+    # for the 85 g EEZYbotARM and a 69 kg industrial arm -- while the total mass
+    # sat measured two lines below. It is not a harmless default: it is the cap
+    # a world is fitted to, so the Beetlebot was handed blocks massing 10 g when
+    # its claws shut at 91 mm and the smallest object they can close on weighs
+    # 26 g in expanded polystyrene. It was being asked to pinch something it
+    # could never touch, and the reason was a number nobody measured. Carrying a
+    # few percent of your own mass is a real regularity in arms; the mass is a
+    # fact about this model.
+    total_mass = float(model.body_mass.sum())
     payload = (
-        max(0.01, min(efforts) / (9.81 * max(reach_radius, 1e-6))) if efforts else 0.01
+        max(0.01, min(efforts) / (9.81 * max(reach_radius, 1e-6)))
+        if efforts
+        else max(UNDECLARED_PAYLOAD_FRACTION * total_mass, 1e-4)
     )
 
     base_geoms = graph.geoms_of_body(graph.base_body)
@@ -465,6 +629,16 @@ def _velocity_limit(model: mujoco.MjModel, joint: int) -> float:
     # declared limit and which were assumed.
     low, high = measure.joint_range(model, joint)
     return max(1e-3, (high - low))
+
+
+UNDECLARED_PAYLOAD_FRACTION = 0.05
+"""What an arm that declares nothing is assumed to carry, as a fraction of its
+own mass.
+
+Checkable on the one robot in the fleet whose real specification is known: the
+KUKA masses 68.9 kg here, so this gives 3.4 kg, and a KR6 R900 carries 6 kg --
+the right order and conservative. The constant it replaces said 10 g for the
+same arm, wrong by a factor of three hundred."""
 
 
 def _self_collision_pairs(
@@ -858,7 +1032,11 @@ def _build_effector(
             tuple(member_names[index] for index in group)
             for group in chain.closure.opposition_groups
         )
-        aperture = max(chain.closure.open_distance_m, 1e-4)
+        # The ray-sighted opening is the graspable width; the sweep minimum is a
+        # lower bound on it and stands in when the sighting found nothing.
+        aperture = max(
+            chain.closure.grasp_aperture_m or chain.closure.open_distance_m, 1e-4
+        )
         return EffectorV1(
             name=f"{chain.chain_id}_effector",
             kind=chain.kind,
@@ -872,6 +1050,7 @@ def _build_effector(
             member_joints=member_joint_names,
             member_extends_toward_upper=member_extension,
             max_aperture_m=round(aperture, 6),
+            min_aperture_m=round(float(chain.closure.closed_distance_m), 6),
             closes_toward_upper=bool(chain.closure.drive_to_upper),
             site_names=site_names,
         )

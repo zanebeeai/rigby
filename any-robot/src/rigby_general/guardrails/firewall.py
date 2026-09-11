@@ -39,8 +39,51 @@ class FirewallRule(StrEnum):
     COGNITIVE = "capability.motion-only.v1"
     """Asking the system to explain or decide rather than to move."""
 
+    RELEASE = "capability.no-release-schema.v1"
+    """Letting go of a held object.
+
+    The closed class can express taking hold of something and carrying it, and
+    cannot express putting it down again. That asymmetry is a real gap in the
+    vocabulary rather than a property of any robot, so the refusal names the
+    missing schema instead of blaming the body.
+
+    It is a firewall rule rather than a planner miss because the generic motion
+    verbs happily swallow these phrasings: "let go" contains *go* and "put it
+    down" contains *put*, and both fall through to a reach that certifies. A
+    wrong motion reported as certified is worse than no motion at all."""
+
+    HELD_OBJECT = "capability.no-carried-state.v1"
+    """Constraining a later motion by something still being held.
+
+    A segment chain carries no notion of an object staying grasped across a
+    boundary, so "reach upwards while holding the block" reads as a bare reach
+    and the holding is silently dropped."""
+
 
 _RULES: tuple[tuple[FirewallRule, re.Pattern[str], str], ...] = (
+    (
+        FirewallRule.RELEASE,
+        re.compile(
+            r"\b(let go( of)?|release|drop|ungrasp|un-?grip|open the (gripper|jaw|hand)"
+            r"|set (it|the \w+) down|put (it|the \w+) down|place (it|the \w+) down"
+            r"|let (it|the \w+) go)\b",
+            re.IGNORECASE,
+        ),
+        "the closed class has no release schema: this system can express taking "
+        "hold of an object and carrying it, but not putting it down again",
+    ),
+    (
+        FirewallRule.HELD_OBJECT,
+        re.compile(
+            r"\bwhile (still )?(holding|carrying|gripping|grasping)\b"
+            r"|\b(holding|carrying) (it|the \w+),? (and|then)\b"
+            r"|\bwith the \w+ in (its|the) (grip|gripper|hand|jaws)\b",
+            re.IGNORECASE,
+        ),
+        "a segment carries no notion of an object still being held, so a motion "
+        "conditioned on holding one cannot be expressed without silently dropping "
+        "that condition",
+    ),
     (
         FirewallRule.LOCOMOTION,
         re.compile(

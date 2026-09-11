@@ -1,4 +1,5 @@
 from .admission import ObjectAdmission, admit_environment, admit_object
+from .fit import fit_world
 from .environment import (
     EnvironmentV1,
     FixtureV1,
@@ -13,6 +14,7 @@ from .environment import (
 from .block import GraspScene, block_height, block_qpos_address, build_grasp_scene
 
 __all__ = [
+    "fit_world",
     "object_qpos_address",
     "load_environment",
     "build_environment_model",
