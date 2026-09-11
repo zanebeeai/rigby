@@ -1,0 +1,73 @@
+{
+  "environment_id": "raised_shelf",
+  "description": "A 40 mm cube on a shelf 620 mm up and 460 mm out, above every mount here. No arm can descend onto it from rest; the approach has to climb first, which is a different path from the bench.",
+  "robot_mount_m": [
+    0,
+    0,
+    0
+  ],
+  "fixtures": [
+    {
+      "name": "shelf",
+      "size_m": [
+        0.18,
+        0.18,
+        0.012
+      ],
+      "position_m": [
+        0.46,
+        0.0,
+        0.608
+      ],
+      "rgba": [
+        0.32,
+        0.34,
+        0.38,
+        1.0
+      ]
+    },
+    {
+      "name": "post",
+      "size_m": [
+        0.03,
+        0.03,
+        0.31
+      ],
+      "position_m": [
+        0.46,
+        0.0,
+        0.31
+      ],
+      "rgba": [
+        0.28,
+        0.3,
+        0.34,
+        1.0
+      ]
+    }
+  ],
+  "objects": [
+    {
+      "name": "cube",
+      "size_m": [
+        0.02,
+        0.02,
+        0.02
+      ],
+      "mass_kg": 0.065,
+      "position_m": [
+        0.46,
+        0.0,
+        0.64
+      ],
+      "rgba": [
+        0.85,
+        0.45,
+        0.15,
+        1.0
+      ]
+    }
+  ],
+  "authored_for_reach_m": 0.6866,
+  "authored_for_aperture_m": 0.0533
+}

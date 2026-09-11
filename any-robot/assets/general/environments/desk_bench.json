@@ -1,0 +1,54 @@
+{
+  "environment_id": "desk_bench",
+  "description": "A 24 mm cube on a low bench 165 mm out. Authored to the smallest arm in the fleet -- a 32 mm jaw with a 245 mm reach -- so it is the one world every gripper here can attempt.",
+  "robot_mount_m": [
+    0,
+    0,
+    0
+  ],
+  "fixtures": [
+    {
+      "name": "bench",
+      "size_m": [
+        0.075,
+        0.075,
+        0.012
+      ],
+      "position_m": [
+        0.165,
+        0.0,
+        0.038000000000000006
+      ],
+      "rgba": [
+        0.32,
+        0.34,
+        0.38,
+        1.0
+      ]
+    }
+  ],
+  "objects": [
+    {
+      "name": "cube",
+      "size_m": [
+        0.012,
+        0.012,
+        0.012
+      ],
+      "mass_kg": 0.018,
+      "position_m": [
+        0.165,
+        0.0,
+        0.062
+      ],
+      "rgba": [
+        0.85,
+        0.45,
+        0.15,
+        1.0
+      ]
+    }
+  ],
+  "authored_for_reach_m": 0.2463,
+  "authored_for_aperture_m": 0.032
+}

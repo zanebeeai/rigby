@@ -1,0 +1,33 @@
+[build-system]
+requires = ["hatchling==1.27.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "rigby-core"
+version = "0.1.0"
+description = "Morphology-neutral Rigby foundation: contracts, hashing, artifact and job stores, motion compiler, controller"
+requires-python = ">=3.12,<3.13"
+# Deliberately narrow. Core carries no fastapi, no openai, no playwright and no
+# pillow: it is the tier both product stacks compile against, so every dependency
+# added here is one neither of them can refuse.
+dependencies = [
+  "mujoco==3.11.0",
+  "numpy==2.5.1",
+  "psycopg[binary,pool]==3.3.4",
+  "pydantic==2.13.4",
+  "scipy==1.18.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest==8.4.1",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/rigby_core"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-q"

@@ -6,7 +6,10 @@ name: Nightly
 # sys.monitoring backend instead of settrace, which is what makes it affordable
 # at all.
 #
-# The slow tier lands with the markers in PR 09b; this job gains `-m slow` then.
+# The slow tier landed with the markers and this job never gained `-m slow`, so
+# for months a bare `pytest` here selected `fast or medium` -- byte-identical to
+# what every PR already ran, making this job "CI again, with coverage" while the
+# slow tier ran in no automated context at all. Both selections run below.
 
 on:
   schedule:
@@ -22,7 +25,7 @@ jobs:
     timeout-minutes: 60
     defaults:
       run:
-        working-directory: rigby-poc
+        working-directory: humanoid
     env:
       COVERAGE_CORE: sysmon
     steps:
@@ -30,13 +33,123 @@ jobs:
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
-          cache-dependency-glob: rigby-poc/uv.lock
+          cache-dependency-glob: uv.lock
       - run: uv sync --extra dev
       - name: pytest with coverage
         run: uv run pytest --cov=rigby_poc --cov=evals --cov-report=term --cov-report=xml
+
+      # The slow tier. Never implied by a bare `pytest`, so this is the only
+      # place it runs: render, real browser, model calls, calibration, and the
+      # corpus compile-budget guard, which re-runs 13 test files in their own
+      # pytest sessions and cost 20% of every PR run while it sat in `medium`.
+      #
+      # Separate step, and it is allowed to go red. A compile-count regression
+      # should be visible the next morning rather than at the next release.
+      - name: the slow tier
+        env:
+          # Pure compute, no database. Measured at 97s locally, which is not a
+          # reason to leave it unrun -- it was gated behind an env var no
+          # workflow set, so the three-repeat drawer acceptance had never
+          # executed in CI at all.
+          RIGBY_TEST_LONG_ACCEPTANCE: '1'
+        run: uv run pytest -m slow
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: coverage-xml
-          path: rigby-poc/coverage.xml
+          path: humanoid/coverage.xml
           if-no-files-found: error
+
+  # RIGBY_TEST_POSTGRES and RIGBY_TEST_PROCESS_RESTART gated roughly 440 lines of
+  # tests that NO workflow set, so `rigby_core.postgres_jobs` and
+  # `rigby_v2.library.postgres` -- real production surface -- were untested in
+  # fact while appearing tested. This job sets them.
+  #
+  # Its own job, on ubuntu, because service containers do not exist on the macOS
+  # runner the coverage job needs. Same pgvector image as compose.v2.yaml, pinned
+  # by digest, so CI and a developer's local database cannot drift.
+  postgres:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: humanoid
+    services:
+      postgres:
+        image: pgvector/pgvector:0.8.2-pg18-trixie@sha256:b7337db8fe39d12fe8ecb0003c72680f24479813a744b43154eee6f2eab5a5f3
+        env:
+          POSTGRES_DB: rigby
+          POSTGRES_USER: rigby
+          POSTGRES_PASSWORD: rigby-local-only
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U rigby -d rigby"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 30
+    env:
+      # compose.v2.yaml publishes on 54329 to stay clear of a local postgres; a
+      # service container has the runner to itself, so 5432 is fine here.
+      RIGBY_V2_DATABASE_URL: postgresql://rigby:rigby-local-only@127.0.0.1:5432/rigby
+      RIGBY_TEST_POSTGRES: '1'
+      RIGBY_TEST_PROCESS_RESTART: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      # compose mounts db/init into docker-entrypoint-initdb.d; a service
+      # container cannot, because the checkout happens after it starts. Same
+      # file, applied by hand, so there is still exactly one schema definition.
+      - name: apply db/init
+        run: |
+          set -euo pipefail
+          PGPASSWORD=rigby-local-only psql \
+            -h 127.0.0.1 -p 5432 -U rigby -d rigby \
+            -v ON_ERROR_STOP=1 -f db/init/001_rigby_v2.sql
+
+      - run: uv sync --extra dev
+
+      # Named explicitly rather than by marker: these files are what the env
+      # vars above unlock, and a bare `-m slow` here would re-run the render and
+      # compile-budget work the macOS job already does.
+      # Two things have to be true for this job to mean anything, and neither is
+      # visible in an exit code: the env gates above must open, and the marker
+      # filter must not eat the files.
+      #
+      #   - `-m ''` overrides the `-m 'fast or medium'` in addopts. These files
+      #     are `slow`, so without it pytest DESELECTS every one, runs nothing
+      #     and exits 0. Run 33147680288 reported `...F [100%]`.
+      #   - The counts come from `--junit-xml`, not from the terminal. addopts
+      #     already carries `-q`, so passing `-q` again makes it `-qq` and pytest
+      #     prints no summary line at all -- run 33149474598 read "0 tests" off a
+      #     green run that had just passed all four. docs/testing.md opens with
+      #     this exact trap. Structured output cannot be quieted.
+      - name: the postgres-gated tests
+        run: |
+          set -euo pipefail
+          uv run pytest -rs -m '' --junit-xml=/tmp/pg.xml \
+            tests/test_v2_postgres_jobs.py \
+            tests/test_v2_postgres_library.py \
+            tests/test_v2_process_restart_acceptance.py
+
+          python3 - <<'PY'
+          import sys, xml.etree.ElementTree as ET
+
+          root = ET.parse("/tmp/pg.xml").getroot()
+          suite = root.find("testsuite") if root.tag == "testsuites" else root
+          ran = int(suite.get("tests", 0))
+          skipped = int(suite.get("skipped", 0))
+          print(f"::notice::postgres-gated tests executed: {ran} ({skipped} skipped)")
+
+          if skipped:
+              sys.exit(f"::error::{skipped} skipped -- an env gate did not open")
+          # One job-store test, two library tests, one process-restart test.
+          # Few but heavy: 736 lines between them. A FLOOR -- raise it when a
+          # test is added, never lower it to fit a filter.
+          if ran < 4:
+              sys.exit(f"::error::only {ran} ran; these three files carry 4")
+          PY

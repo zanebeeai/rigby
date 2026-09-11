@@ -1,0 +1,3495 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "rigby_poc.analysis.anatomy.authored_rom -- every value there is hand-authored with a source; only the expansion onto 52 bones is mechanical. tests/test_rom_table.py fails if this file and that module disagree.",
+  "source_kinds": {
+    "measured": "Derived from data. Requires n, derived_from, date, reference_frame.",
+    "invariant": "An implementation or anatomical contract, not a measurement. Requires rationale.",
+    "external": "Taken from a published table, rig asset or spec. Requires derived_from or cites.",
+    "provisional": "Explicitly unvalidated. Requires rationale. The value may be wrong."
+  },
+  "notes": {
+    "units": "degrees",
+    "frame": "typical_deg and max_deg are ANATOMICAL angles. The rest-relative bound is anatomical + the bone's rest offset, DERIVED at load time by rigby_poc.analysis.anatomy.neutral.rest_offset. It is deliberately not stored here: it is geometry rather than an authored value, and several offsets sit within 1e-5 deg of a rounding boundary, which made this file architecture-dependent. See plan 04 6.4.",
+    "mirroring": "flexion and abduction are preserved across sides; only twist negates. Authored once, applied to both.",
+    "enforceable": "'mutation_only' marks a bone compiler.py never assigns a rotation to on any path, so its limit can never fire from generated motion. Exercising it belongs to plan 06.",
+    "enforcement": "04b shipped every check report-only. 04c gates on `enforced`, set by rigby_poc.analysis.anatomy.authored_rom.is_enforced: the bound must be cited (external or invariant), the bone must be reachable from generation, and the bone must not be the root. Everything else stays report-only and reports its measurement."
+  },
+  "angular_rate_limits": {
+    "$comment": "Peak angular speed per joint class, deg/s. The envelope until now bounded only where a joint may be, never how fast it may get there, so a compiled clip could move a bone its whole range inside one frame and nothing in the manifests objected. Measured consequence: the hand crossed from preshape to contact fast enough to strike the block and send it 7 cm across the table before any finger had closed. A position envelope cannot express that, because every pose along the way was legal.",
+    "units": "degrees per second, applied to the anatomical DOF angle",
+    "source": {
+      "kind": "literature_typical",
+      "rationale": "Voluntary reaching speeds, not ballistic maxima. Humans can drive most of these joints far faster -- a thrown punch or a snapped finger is several times these numbers -- but a reach toward an object a hand is about to grasp is deliberate, and that is the motion being bounded. Values are placed proximal-slow to distal-fast, which is the ordering limb inertia imposes."
+    },
+    "classes": {
+      "spine": 110.0,
+      "clavicle": 120.0,
+      "shoulder": 170.0,
+      "elbow": 200.0,
+      "wrist": 240.0,
+      "thumb": 300.0,
+      "digit": 320.0,
+      "hip": 150.0,
+      "knee": 200.0,
+      "ankle": 200.0,
+      "toes": 250.0
+    },
+    "default_deg_per_s": 180.0
+  },
+  "limits": {
+    "hips": {
+      "joint_class": "spine",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -15.0,
+            15.0
+          ],
+          "max_deg": [
+            -30.0,
+            30.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "invariant",
+            "cites": [
+              "src/rigby_poc/compiler.py"
+            ],
+            "rationale": "hips is the skeleton root, not a joint. Its rotation is whole-body orientation, so an anatomical range does not apply; the bound is a wide sanity check only and must never be read as a pelvic-tilt limit",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -15.0,
+            15.0
+          ],
+          "max_deg": [
+            -30.0,
+            30.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "invariant",
+            "cites": [
+              "src/rigby_poc/compiler.py"
+            ],
+            "rationale": "root orientation, not a joint; see flexion",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -180.0,
+            180.0
+          ],
+          "max_deg": [
+            -180.0,
+            180.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "invariant",
+            "cites": [
+              "src/rigby_poc/compiler.py"
+            ],
+            "rationale": "root yaw is unbounded by anatomy -- a cartwheel legitimately reaches 180 deg",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "spine": {
+      "joint_class": "spine",
+      "enforceable": "mutation_only",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -8.0,
+            27.0
+          ],
+          "max_deg": [
+            -12.0,
+            35.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "thoracolumbar flexion 80 deg / extension 25 deg divided evenly across three trunk segments; no per-segment table exists, so the split is an assumption and the whole-trunk sum is the only validated quantity",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -12.0,
+            12.0
+          ],
+          "max_deg": [
+            -16.0,
+            16.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "thoracolumbar lateral flexion 35 deg divided across three segments",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -15.0,
+            15.0
+          ],
+          "max_deg": [
+            -20.0,
+            20.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "thoracolumbar rotation 45 deg divided across three segments",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "chest": {
+      "joint_class": "spine",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -8.0,
+            27.0
+          ],
+          "max_deg": [
+            -12.0,
+            35.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "thoracolumbar flexion 80 deg / extension 25 deg divided evenly across three trunk segments; no per-segment table exists, so the split is an assumption and the whole-trunk sum is the only validated quantity",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -12.0,
+            12.0
+          ],
+          "max_deg": [
+            -16.0,
+            16.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "thoracolumbar lateral flexion 35 deg divided across three segments",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -15.0,
+            15.0
+          ],
+          "max_deg": [
+            -20.0,
+            20.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "thoracolumbar rotation 45 deg divided across three segments",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "upperChest": {
+      "joint_class": "spine",
+      "enforceable": "mutation_only",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -8.0,
+            27.0
+          ],
+          "max_deg": [
+            -12.0,
+            35.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "thoracolumbar flexion 80 deg / extension 25 deg divided evenly across three trunk segments; no per-segment table exists, so the split is an assumption and the whole-trunk sum is the only validated quantity",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -12.0,
+            12.0
+          ],
+          "max_deg": [
+            -16.0,
+            16.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "thoracolumbar lateral flexion 35 deg divided across three segments",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -15.0,
+            15.0
+          ],
+          "max_deg": [
+            -20.0,
+            20.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "thoracolumbar rotation 45 deg divided across three segments",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "neck": {
+      "joint_class": "spine",
+      "enforceable": "mutation_only",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -30.0,
+            25.0
+          ],
+          "max_deg": [
+            -40.0,
+            32.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "cervical flexion 50 / extension 60 split between neck and head; the split is an assumption",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -22.0,
+            22.0
+          ],
+          "max_deg": [
+            -30.0,
+            30.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "cervical lateral flexion 45 deg split between neck and head",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -40.0,
+            40.0
+          ],
+          "max_deg": [
+            -50.0,
+            50.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "cervical rotation 80 deg split between neck and head",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "head": {
+      "joint_class": "spine",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -30.0,
+            25.0
+          ],
+          "max_deg": [
+            -40.0,
+            32.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "see neck",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -22.0,
+            22.0
+          ],
+          "max_deg": [
+            -30.0,
+            30.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "see neck",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -40.0,
+            40.0
+          ],
+          "max_deg": [
+            -50.0,
+            50.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "see neck",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "leftShoulder": {
+      "joint_class": "clavicle",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -10.0,
+            40.0
+          ],
+          "max_deg": [
+            -15.0,
+            50.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "scapular elevation ~40 deg / depression ~10 deg; the scapula is not a conventional goniometer joint and this rig moves it only via the shrug token",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -25.0,
+            25.0
+          ],
+          "max_deg": [
+            -35.0,
+            35.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "scapular protraction/retraction, approximate",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -15.0,
+            15.0
+          ],
+          "max_deg": [
+            -25.0,
+            25.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "scapular rotation, approximate",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "leftUpperArm": {
+      "joint_class": "shoulder",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -60.0,
+            180.0
+          ],
+          "max_deg": [
+            -70.0,
+            185.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "glenohumeral flexion 180 / extension 60. NOTE: measured from the T-pose rest, so this is horizontal flexion; the rest offset is applied by the loader",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -50.0,
+            180.0
+          ],
+          "max_deg": [
+            -60.0,
+            185.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "abduction 180 / adduction 50; rest offset is -89.7 deg, the T-pose itself",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -90.0,
+            90.0
+          ],
+          "max_deg": [
+            -95.0,
+            95.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "glenohumeral internal/external rotation 90/90",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "leftLowerArm": {
+      "joint_class": "elbow",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            0.0,
+            145.0
+          ],
+          "max_deg": [
+            -10.0,
+            150.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "elbow flexion 145 deg; hyperextension to -10 deg is within normal variation",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -5.0,
+            5.0
+          ],
+          "max_deg": [
+            -5.0,
+            5.0
+          ],
+          "hard_assert": true,
+          "enforced": true,
+          "source": {
+            "kind": "invariant",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "the elbow is a hinge and possesses no abduction; any off-axis excursion is a defect, not a range",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -80.0,
+            80.0
+          ],
+          "max_deg": [
+            -85.0,
+            85.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)",
+              "config/rig_profiles/mesh2motion-human-vrm1.json anatomical_limits.forearm_twist_rad",
+              "src/rigby_poc/primitives.py:143"
+            ],
+            "rationale": "pronation/supination is the radioulnar DOF carried on the forearm bone, not a hinge violation. The rig declares forearm_twist_rad 1.35 rad = 77.4 deg and MAX_FOREARM_TWIST_RAD 1.30; plan 04 3.3's sketch hard_asserted this at +-5 deg, which would have rejected every pronation the rig deliberately produces",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "leftHand": {
+      "joint_class": "wrist",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -70.0,
+            80.0
+          ],
+          "max_deg": [
+            -80.0,
+            90.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "wrist palmar flexion 80 / dorsiflexion 70",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -30.0,
+            20.0
+          ],
+          "max_deg": [
+            -35.0,
+            25.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "radial deviation 20 / ulnar deviation 30",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -10.0,
+            10.0
+          ],
+          "max_deg": [
+            -15.0,
+            15.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "config/rig_profiles/mesh2motion-human-vrm1.json anatomical_limits.wrist_twist_rad"
+            ],
+            "rationale": "the carpus barely rotates; forearm rotation carries it. The rig declares wrist_twist_rad 0.18 rad = 10.3 deg and shipped motion reaches 67 deg, so this bound is expected to fire -- see plan 04 6.4",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "rightShoulder": {
+      "joint_class": "clavicle",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -10.0,
+            40.0
+          ],
+          "max_deg": [
+            -15.0,
+            50.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "scapular elevation ~40 deg / depression ~10 deg; the scapula is not a conventional goniometer joint and this rig moves it only via the shrug token",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -25.0,
+            25.0
+          ],
+          "max_deg": [
+            -35.0,
+            35.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "scapular protraction/retraction, approximate",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -15.0,
+            15.0
+          ],
+          "max_deg": [
+            -25.0,
+            25.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "scapular rotation, approximate",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "rightUpperArm": {
+      "joint_class": "shoulder",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -60.0,
+            180.0
+          ],
+          "max_deg": [
+            -70.0,
+            185.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "glenohumeral flexion 180 / extension 60. NOTE: measured from the T-pose rest, so this is horizontal flexion; the rest offset is applied by the loader",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -50.0,
+            180.0
+          ],
+          "max_deg": [
+            -60.0,
+            185.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "abduction 180 / adduction 50; rest offset is -89.7 deg, the T-pose itself",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -90.0,
+            90.0
+          ],
+          "max_deg": [
+            -95.0,
+            95.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "glenohumeral internal/external rotation 90/90",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "rightLowerArm": {
+      "joint_class": "elbow",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            0.0,
+            145.0
+          ],
+          "max_deg": [
+            -10.0,
+            150.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "elbow flexion 145 deg; hyperextension to -10 deg is within normal variation",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -5.0,
+            5.0
+          ],
+          "max_deg": [
+            -5.0,
+            5.0
+          ],
+          "hard_assert": true,
+          "enforced": true,
+          "source": {
+            "kind": "invariant",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "the elbow is a hinge and possesses no abduction; any off-axis excursion is a defect, not a range",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -80.0,
+            80.0
+          ],
+          "max_deg": [
+            -85.0,
+            85.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)",
+              "config/rig_profiles/mesh2motion-human-vrm1.json anatomical_limits.forearm_twist_rad",
+              "src/rigby_poc/primitives.py:143"
+            ],
+            "rationale": "pronation/supination is the radioulnar DOF carried on the forearm bone, not a hinge violation. The rig declares forearm_twist_rad 1.35 rad = 77.4 deg and MAX_FOREARM_TWIST_RAD 1.30; plan 04 3.3's sketch hard_asserted this at +-5 deg, which would have rejected every pronation the rig deliberately produces",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "rightHand": {
+      "joint_class": "wrist",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -70.0,
+            80.0
+          ],
+          "max_deg": [
+            -80.0,
+            90.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "wrist palmar flexion 80 / dorsiflexion 70",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -30.0,
+            20.0
+          ],
+          "max_deg": [
+            -35.0,
+            25.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "radial deviation 20 / ulnar deviation 30",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -10.0,
+            10.0
+          ],
+          "max_deg": [
+            -15.0,
+            15.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "config/rig_profiles/mesh2motion-human-vrm1.json anatomical_limits.wrist_twist_rad"
+            ],
+            "rationale": "the carpus barely rotates; forearm rotation carries it. The rig declares wrist_twist_rad 0.18 rad = 10.3 deg and shipped motion reaches 67 deg, so this bound is expected to fire -- see plan 04 6.4",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "leftUpperLeg": {
+      "joint_class": "hip",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -30.0,
+            120.0
+          ],
+          "max_deg": [
+            -40.0,
+            130.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "hip flexion 120 with knee flexed / extension 30",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -30.0,
+            45.0
+          ],
+          "max_deg": [
+            -35.0,
+            50.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "abduction 45 / adduction 30",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -45.0,
+            45.0
+          ],
+          "max_deg": [
+            -50.0,
+            50.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "internal/external rotation 45/45",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "leftLowerLeg": {
+      "joint_class": "knee",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            0.0,
+            135.0
+          ],
+          "max_deg": [
+            -5.0,
+            145.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "knee flexion 135; hyperextension to -5 deg is within normal variation",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -5.0,
+            5.0
+          ],
+          "max_deg": [
+            -5.0,
+            5.0
+          ],
+          "hard_assert": true,
+          "enforced": true,
+          "source": {
+            "kind": "invariant",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "the knee is a hinge and possesses no abduction; valgus/varus excursion is a defect",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -10.0,
+            30.0
+          ],
+          "max_deg": [
+            -15.0,
+            35.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "tibial axial rotation, ~10 deg internal and more external in flexion. NOT a hinge violation: lane groundtruth measured 9.0 deg on a legitimate turn, which plan 04 3.3's sketch would have rejected",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "leftFoot": {
+      "joint_class": "ankle",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -20.0,
+            50.0
+          ],
+          "max_deg": [
+            -25.0,
+            55.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "plantarflexion 50 positive / dorsiflexion 20 negative",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -15.0,
+            35.0
+          ],
+          "max_deg": [
+            -20.0,
+            40.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "eversion 15 / inversion 35",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -10.0,
+            10.0
+          ],
+          "max_deg": [
+            -15.0,
+            15.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "the talocrural joint has little axial rotation; bound is approximate",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "leftToes": {
+      "joint_class": "toes",
+      "enforceable": "mutation_only",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -70.0,
+            40.0
+          ],
+          "max_deg": [
+            -80.0,
+            45.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "metatarsophalangeal flexion 40 / extension 70",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -10.0,
+            10.0
+          ],
+          "max_deg": [
+            -15.0,
+            15.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "approximate",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -5.0,
+            5.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "approximate",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "rightUpperLeg": {
+      "joint_class": "hip",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -30.0,
+            120.0
+          ],
+          "max_deg": [
+            -40.0,
+            130.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "hip flexion 120 with knee flexed / extension 30",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -30.0,
+            45.0
+          ],
+          "max_deg": [
+            -35.0,
+            50.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "abduction 45 / adduction 30",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -45.0,
+            45.0
+          ],
+          "max_deg": [
+            -50.0,
+            50.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "internal/external rotation 45/45",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "rightLowerLeg": {
+      "joint_class": "knee",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            0.0,
+            135.0
+          ],
+          "max_deg": [
+            -5.0,
+            145.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "knee flexion 135; hyperextension to -5 deg is within normal variation",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -5.0,
+            5.0
+          ],
+          "max_deg": [
+            -5.0,
+            5.0
+          ],
+          "hard_assert": true,
+          "enforced": true,
+          "source": {
+            "kind": "invariant",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "the knee is a hinge and possesses no abduction; valgus/varus excursion is a defect",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -30.0,
+            10.0
+          ],
+          "max_deg": [
+            -35.0,
+            15.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "tibial axial rotation, ~10 deg internal and more external in flexion. NOT a hinge violation: lane groundtruth measured 9.0 deg on a legitimate turn, which plan 04 3.3's sketch would have rejected",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "rightFoot": {
+      "joint_class": "ankle",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -20.0,
+            50.0
+          ],
+          "max_deg": [
+            -25.0,
+            55.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "plantarflexion 50 positive / dorsiflexion 20 negative",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -15.0,
+            35.0
+          ],
+          "max_deg": [
+            -20.0,
+            40.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "eversion 15 / inversion 35",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -10.0,
+            10.0
+          ],
+          "max_deg": [
+            -15.0,
+            15.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "the talocrural joint has little axial rotation; bound is approximate",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "rightToes": {
+      "joint_class": "toes",
+      "enforceable": "mutation_only",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -70.0,
+            40.0
+          ],
+          "max_deg": [
+            -80.0,
+            45.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "metatarsophalangeal flexion 40 / extension 70",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -10.0,
+            10.0
+          ],
+          "max_deg": [
+            -15.0,
+            15.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "approximate",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -5.0,
+            5.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "approximate",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "leftThumbMetacarpal": {
+      "joint_class": "thumb",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -60.0,
+            60.0
+          ],
+          "max_deg": [
+            -75.0,
+            75.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)",
+              "config/rig_profiles/mesh2motion-human-vrm1.json grip_presets.crate_grip"
+            ],
+            "rationale": "PROVISIONAL, and not merely for want of data. The thumb has no non-arbitrary anatomical-position direction, so no rest offset can be derived and no published thumb column transfers. Worse, the rig's own crate_grip preset drives all three thumb segments about an axis that decomposes to pure abduction with a zero flexion component -- so a thumb flexion limit would constrain a DOF the rig's authored grip never uses. It is not established that flexion is the right DOF to limit here at all. Bounds are wide rest-relative sanity checks.",
+            "reference_frame": "none -- no anatomical neutral exists for this entity"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -60.0,
+            60.0
+          ],
+          "max_deg": [
+            -75.0,
+            75.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)",
+              "config/rig_profiles/mesh2motion-human-vrm1.json grip_presets.crate_grip"
+            ],
+            "rationale": "PROVISIONAL, and not merely for want of data. The thumb has no non-arbitrary anatomical-position direction, so no rest offset can be derived and no published thumb column transfers. Worse, the rig's own crate_grip preset drives all three thumb segments about an axis that decomposes to pure abduction with a zero flexion component -- so a thumb flexion limit would constrain a DOF the rig's authored grip never uses. It is not established that flexion is the right DOF to limit here at all. Bounds are wide rest-relative sanity checks.",
+            "reference_frame": "none -- no anatomical neutral exists for this entity"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -60.0,
+            60.0
+          ],
+          "max_deg": [
+            -75.0,
+            75.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)",
+              "config/rig_profiles/mesh2motion-human-vrm1.json grip_presets.crate_grip"
+            ],
+            "rationale": "PROVISIONAL, and not merely for want of data. The thumb has no non-arbitrary anatomical-position direction, so no rest offset can be derived and no published thumb column transfers. Worse, the rig's own crate_grip preset drives all three thumb segments about an axis that decomposes to pure abduction with a zero flexion component -- so a thumb flexion limit would constrain a DOF the rig's authored grip never uses. It is not established that flexion is the right DOF to limit here at all. Bounds are wide rest-relative sanity checks.",
+            "reference_frame": "none -- no anatomical neutral exists for this entity"
+          }
+        }
+      }
+    },
+    "leftThumbProximal": {
+      "joint_class": "thumb",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -60.0,
+            60.0
+          ],
+          "max_deg": [
+            -75.0,
+            75.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)",
+              "config/rig_profiles/mesh2motion-human-vrm1.json grip_presets.crate_grip"
+            ],
+            "rationale": "PROVISIONAL, and not merely for want of data. The thumb has no non-arbitrary anatomical-position direction, so no rest offset can be derived and no published thumb column transfers. Worse, the rig's own crate_grip preset drives all three thumb segments about an axis that decomposes to pure abduction with a zero flexion component -- so a thumb flexion limit would constrain a DOF the rig's authored grip never uses. It is not established that flexion is the right DOF to limit here at all. Bounds are wide rest-relative sanity checks.",
+            "reference_frame": "none -- no anatomical neutral exists for this entity"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -60.0,
+            60.0
+          ],
+          "max_deg": [
+            -75.0,
+            75.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)",
+              "config/rig_profiles/mesh2motion-human-vrm1.json grip_presets.crate_grip"
+            ],
+            "rationale": "PROVISIONAL, and not merely for want of data. The thumb has no non-arbitrary anatomical-position direction, so no rest offset can be derived and no published thumb column transfers. Worse, the rig's own crate_grip preset drives all three thumb segments about an axis that decomposes to pure abduction with a zero flexion component -- so a thumb flexion limit would constrain a DOF the rig's authored grip never uses. It is not established that flexion is the right DOF to limit here at all. Bounds are wide rest-relative sanity checks.",
+            "reference_frame": "none -- no anatomical neutral exists for this entity"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -60.0,
+            60.0
+          ],
+          "max_deg": [
+            -75.0,
+            75.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)",
+              "config/rig_profiles/mesh2motion-human-vrm1.json grip_presets.crate_grip"
+            ],
+            "rationale": "PROVISIONAL, and not merely for want of data. The thumb has no non-arbitrary anatomical-position direction, so no rest offset can be derived and no published thumb column transfers. Worse, the rig's own crate_grip preset drives all three thumb segments about an axis that decomposes to pure abduction with a zero flexion component -- so a thumb flexion limit would constrain a DOF the rig's authored grip never uses. It is not established that flexion is the right DOF to limit here at all. Bounds are wide rest-relative sanity checks.",
+            "reference_frame": "none -- no anatomical neutral exists for this entity"
+          }
+        }
+      }
+    },
+    "leftThumbDistal": {
+      "joint_class": "thumb",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -60.0,
+            60.0
+          ],
+          "max_deg": [
+            -75.0,
+            75.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)",
+              "config/rig_profiles/mesh2motion-human-vrm1.json grip_presets.crate_grip"
+            ],
+            "rationale": "PROVISIONAL, and not merely for want of data. The thumb has no non-arbitrary anatomical-position direction, so no rest offset can be derived and no published thumb column transfers. Worse, the rig's own crate_grip preset drives all three thumb segments about an axis that decomposes to pure abduction with a zero flexion component -- so a thumb flexion limit would constrain a DOF the rig's authored grip never uses. It is not established that flexion is the right DOF to limit here at all. Bounds are wide rest-relative sanity checks.",
+            "reference_frame": "none -- no anatomical neutral exists for this entity"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -60.0,
+            60.0
+          ],
+          "max_deg": [
+            -75.0,
+            75.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)",
+              "config/rig_profiles/mesh2motion-human-vrm1.json grip_presets.crate_grip"
+            ],
+            "rationale": "PROVISIONAL, and not merely for want of data. The thumb has no non-arbitrary anatomical-position direction, so no rest offset can be derived and no published thumb column transfers. Worse, the rig's own crate_grip preset drives all three thumb segments about an axis that decomposes to pure abduction with a zero flexion component -- so a thumb flexion limit would constrain a DOF the rig's authored grip never uses. It is not established that flexion is the right DOF to limit here at all. Bounds are wide rest-relative sanity checks.",
+            "reference_frame": "none -- no anatomical neutral exists for this entity"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -60.0,
+            60.0
+          ],
+          "max_deg": [
+            -75.0,
+            75.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)",
+              "config/rig_profiles/mesh2motion-human-vrm1.json grip_presets.crate_grip"
+            ],
+            "rationale": "PROVISIONAL, and not merely for want of data. The thumb has no non-arbitrary anatomical-position direction, so no rest offset can be derived and no published thumb column transfers. Worse, the rig's own crate_grip preset drives all three thumb segments about an axis that decomposes to pure abduction with a zero flexion component -- so a thumb flexion limit would constrain a DOF the rig's authored grip never uses. It is not established that flexion is the right DOF to limit here at all. Bounds are wide rest-relative sanity checks.",
+            "reference_frame": "none -- no anatomical neutral exists for this entity"
+          }
+        }
+      }
+    },
+    "leftIndexProximal": {
+      "joint_class": "digit",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -20.0,
+            90.0
+          ],
+          "max_deg": [
+            -30.0,
+            100.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "metacarpophalangeal flexion 90 deg; MCP hyperextension to 20-30 deg is normal and common",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -20.0,
+            20.0
+          ],
+          "max_deg": [
+            -25.0,
+            25.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "radial/ulnar deviation at the MCP, ~20 deg",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -5.0,
+            5.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "finger axial rotation is passive and small; bound is approximate",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "leftIndexIntermediate": {
+      "joint_class": "digit",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -5.0,
+            110.0
+          ],
+          "max_deg": [
+            -10.0,
+            120.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "proximal interphalangeal flexion 110 deg, slight hyperextension",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -10.0,
+            10.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": true,
+          "enforced": true,
+          "source": {
+            "kind": "invariant",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "the interphalangeal joints are hinges and possess no deviation",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -5.0,
+            5.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "finger axial rotation is passive and small; bound is approximate",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "leftIndexDistal": {
+      "joint_class": "digit",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -10.0,
+            80.0
+          ],
+          "max_deg": [
+            -15.0,
+            90.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "distal interphalangeal flexion 80 deg, hyperextension to 10 deg",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -10.0,
+            10.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": true,
+          "enforced": true,
+          "source": {
+            "kind": "invariant",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "the interphalangeal joints are hinges and possess no deviation",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -5.0,
+            5.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "finger axial rotation is passive and small; bound is approximate",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "leftMiddleProximal": {
+      "joint_class": "digit",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -20.0,
+            90.0
+          ],
+          "max_deg": [
+            -30.0,
+            100.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "metacarpophalangeal flexion 90 deg; MCP hyperextension to 20-30 deg is normal and common",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -20.0,
+            20.0
+          ],
+          "max_deg": [
+            -25.0,
+            25.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "radial/ulnar deviation at the MCP, ~20 deg",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -5.0,
+            5.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "finger axial rotation is passive and small; bound is approximate",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "leftMiddleIntermediate": {
+      "joint_class": "digit",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -5.0,
+            110.0
+          ],
+          "max_deg": [
+            -10.0,
+            120.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "proximal interphalangeal flexion 110 deg, slight hyperextension",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -10.0,
+            10.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": true,
+          "enforced": true,
+          "source": {
+            "kind": "invariant",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "the interphalangeal joints are hinges and possess no deviation",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -5.0,
+            5.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "finger axial rotation is passive and small; bound is approximate",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "leftMiddleDistal": {
+      "joint_class": "digit",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -10.0,
+            80.0
+          ],
+          "max_deg": [
+            -15.0,
+            90.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "distal interphalangeal flexion 80 deg, hyperextension to 10 deg",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -10.0,
+            10.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": true,
+          "enforced": true,
+          "source": {
+            "kind": "invariant",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "the interphalangeal joints are hinges and possess no deviation",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -5.0,
+            5.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "finger axial rotation is passive and small; bound is approximate",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "leftRingProximal": {
+      "joint_class": "digit",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -20.0,
+            90.0
+          ],
+          "max_deg": [
+            -30.0,
+            100.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "metacarpophalangeal flexion 90 deg; MCP hyperextension to 20-30 deg is normal and common",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -20.0,
+            20.0
+          ],
+          "max_deg": [
+            -25.0,
+            25.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "radial/ulnar deviation at the MCP, ~20 deg",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -5.0,
+            5.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "finger axial rotation is passive and small; bound is approximate",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "leftRingIntermediate": {
+      "joint_class": "digit",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -5.0,
+            110.0
+          ],
+          "max_deg": [
+            -10.0,
+            120.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "proximal interphalangeal flexion 110 deg, slight hyperextension",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -10.0,
+            10.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": true,
+          "enforced": true,
+          "source": {
+            "kind": "invariant",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "the interphalangeal joints are hinges and possess no deviation",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -5.0,
+            5.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "finger axial rotation is passive and small; bound is approximate",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "leftRingDistal": {
+      "joint_class": "digit",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -10.0,
+            80.0
+          ],
+          "max_deg": [
+            -15.0,
+            90.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "distal interphalangeal flexion 80 deg, hyperextension to 10 deg",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -10.0,
+            10.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": true,
+          "enforced": true,
+          "source": {
+            "kind": "invariant",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "the interphalangeal joints are hinges and possess no deviation",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -5.0,
+            5.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "finger axial rotation is passive and small; bound is approximate",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "leftLittleProximal": {
+      "joint_class": "digit",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -20.0,
+            90.0
+          ],
+          "max_deg": [
+            -30.0,
+            100.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "metacarpophalangeal flexion 90 deg; MCP hyperextension to 20-30 deg is normal and common",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -20.0,
+            20.0
+          ],
+          "max_deg": [
+            -25.0,
+            25.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "radial/ulnar deviation at the MCP, ~20 deg",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -5.0,
+            5.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "finger axial rotation is passive and small; bound is approximate",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "leftLittleIntermediate": {
+      "joint_class": "digit",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -5.0,
+            110.0
+          ],
+          "max_deg": [
+            -10.0,
+            120.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "proximal interphalangeal flexion 110 deg, slight hyperextension",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -10.0,
+            10.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": true,
+          "enforced": true,
+          "source": {
+            "kind": "invariant",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "the interphalangeal joints are hinges and possess no deviation",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -5.0,
+            5.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "finger axial rotation is passive and small; bound is approximate",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "leftLittleDistal": {
+      "joint_class": "digit",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -10.0,
+            80.0
+          ],
+          "max_deg": [
+            -15.0,
+            90.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "distal interphalangeal flexion 80 deg, hyperextension to 10 deg",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -10.0,
+            10.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": true,
+          "enforced": true,
+          "source": {
+            "kind": "invariant",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "the interphalangeal joints are hinges and possess no deviation",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -5.0,
+            5.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "finger axial rotation is passive and small; bound is approximate",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "rightThumbMetacarpal": {
+      "joint_class": "thumb",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -60.0,
+            60.0
+          ],
+          "max_deg": [
+            -75.0,
+            75.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)",
+              "config/rig_profiles/mesh2motion-human-vrm1.json grip_presets.crate_grip"
+            ],
+            "rationale": "PROVISIONAL, and not merely for want of data. The thumb has no non-arbitrary anatomical-position direction, so no rest offset can be derived and no published thumb column transfers. Worse, the rig's own crate_grip preset drives all three thumb segments about an axis that decomposes to pure abduction with a zero flexion component -- so a thumb flexion limit would constrain a DOF the rig's authored grip never uses. It is not established that flexion is the right DOF to limit here at all. Bounds are wide rest-relative sanity checks.",
+            "reference_frame": "none -- no anatomical neutral exists for this entity"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -60.0,
+            60.0
+          ],
+          "max_deg": [
+            -75.0,
+            75.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)",
+              "config/rig_profiles/mesh2motion-human-vrm1.json grip_presets.crate_grip"
+            ],
+            "rationale": "PROVISIONAL, and not merely for want of data. The thumb has no non-arbitrary anatomical-position direction, so no rest offset can be derived and no published thumb column transfers. Worse, the rig's own crate_grip preset drives all three thumb segments about an axis that decomposes to pure abduction with a zero flexion component -- so a thumb flexion limit would constrain a DOF the rig's authored grip never uses. It is not established that flexion is the right DOF to limit here at all. Bounds are wide rest-relative sanity checks.",
+            "reference_frame": "none -- no anatomical neutral exists for this entity"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -60.0,
+            60.0
+          ],
+          "max_deg": [
+            -75.0,
+            75.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)",
+              "config/rig_profiles/mesh2motion-human-vrm1.json grip_presets.crate_grip"
+            ],
+            "rationale": "PROVISIONAL, and not merely for want of data. The thumb has no non-arbitrary anatomical-position direction, so no rest offset can be derived and no published thumb column transfers. Worse, the rig's own crate_grip preset drives all three thumb segments about an axis that decomposes to pure abduction with a zero flexion component -- so a thumb flexion limit would constrain a DOF the rig's authored grip never uses. It is not established that flexion is the right DOF to limit here at all. Bounds are wide rest-relative sanity checks.",
+            "reference_frame": "none -- no anatomical neutral exists for this entity"
+          }
+        }
+      }
+    },
+    "rightThumbProximal": {
+      "joint_class": "thumb",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -60.0,
+            60.0
+          ],
+          "max_deg": [
+            -75.0,
+            75.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)",
+              "config/rig_profiles/mesh2motion-human-vrm1.json grip_presets.crate_grip"
+            ],
+            "rationale": "PROVISIONAL, and not merely for want of data. The thumb has no non-arbitrary anatomical-position direction, so no rest offset can be derived and no published thumb column transfers. Worse, the rig's own crate_grip preset drives all three thumb segments about an axis that decomposes to pure abduction with a zero flexion component -- so a thumb flexion limit would constrain a DOF the rig's authored grip never uses. It is not established that flexion is the right DOF to limit here at all. Bounds are wide rest-relative sanity checks.",
+            "reference_frame": "none -- no anatomical neutral exists for this entity"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -60.0,
+            60.0
+          ],
+          "max_deg": [
+            -75.0,
+            75.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)",
+              "config/rig_profiles/mesh2motion-human-vrm1.json grip_presets.crate_grip"
+            ],
+            "rationale": "PROVISIONAL, and not merely for want of data. The thumb has no non-arbitrary anatomical-position direction, so no rest offset can be derived and no published thumb column transfers. Worse, the rig's own crate_grip preset drives all three thumb segments about an axis that decomposes to pure abduction with a zero flexion component -- so a thumb flexion limit would constrain a DOF the rig's authored grip never uses. It is not established that flexion is the right DOF to limit here at all. Bounds are wide rest-relative sanity checks.",
+            "reference_frame": "none -- no anatomical neutral exists for this entity"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -60.0,
+            60.0
+          ],
+          "max_deg": [
+            -75.0,
+            75.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)",
+              "config/rig_profiles/mesh2motion-human-vrm1.json grip_presets.crate_grip"
+            ],
+            "rationale": "PROVISIONAL, and not merely for want of data. The thumb has no non-arbitrary anatomical-position direction, so no rest offset can be derived and no published thumb column transfers. Worse, the rig's own crate_grip preset drives all three thumb segments about an axis that decomposes to pure abduction with a zero flexion component -- so a thumb flexion limit would constrain a DOF the rig's authored grip never uses. It is not established that flexion is the right DOF to limit here at all. Bounds are wide rest-relative sanity checks.",
+            "reference_frame": "none -- no anatomical neutral exists for this entity"
+          }
+        }
+      }
+    },
+    "rightThumbDistal": {
+      "joint_class": "thumb",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -60.0,
+            60.0
+          ],
+          "max_deg": [
+            -75.0,
+            75.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)",
+              "config/rig_profiles/mesh2motion-human-vrm1.json grip_presets.crate_grip"
+            ],
+            "rationale": "PROVISIONAL, and not merely for want of data. The thumb has no non-arbitrary anatomical-position direction, so no rest offset can be derived and no published thumb column transfers. Worse, the rig's own crate_grip preset drives all three thumb segments about an axis that decomposes to pure abduction with a zero flexion component -- so a thumb flexion limit would constrain a DOF the rig's authored grip never uses. It is not established that flexion is the right DOF to limit here at all. Bounds are wide rest-relative sanity checks.",
+            "reference_frame": "none -- no anatomical neutral exists for this entity"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -60.0,
+            60.0
+          ],
+          "max_deg": [
+            -75.0,
+            75.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)",
+              "config/rig_profiles/mesh2motion-human-vrm1.json grip_presets.crate_grip"
+            ],
+            "rationale": "PROVISIONAL, and not merely for want of data. The thumb has no non-arbitrary anatomical-position direction, so no rest offset can be derived and no published thumb column transfers. Worse, the rig's own crate_grip preset drives all three thumb segments about an axis that decomposes to pure abduction with a zero flexion component -- so a thumb flexion limit would constrain a DOF the rig's authored grip never uses. It is not established that flexion is the right DOF to limit here at all. Bounds are wide rest-relative sanity checks.",
+            "reference_frame": "none -- no anatomical neutral exists for this entity"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -60.0,
+            60.0
+          ],
+          "max_deg": [
+            -75.0,
+            75.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)",
+              "config/rig_profiles/mesh2motion-human-vrm1.json grip_presets.crate_grip"
+            ],
+            "rationale": "PROVISIONAL, and not merely for want of data. The thumb has no non-arbitrary anatomical-position direction, so no rest offset can be derived and no published thumb column transfers. Worse, the rig's own crate_grip preset drives all three thumb segments about an axis that decomposes to pure abduction with a zero flexion component -- so a thumb flexion limit would constrain a DOF the rig's authored grip never uses. It is not established that flexion is the right DOF to limit here at all. Bounds are wide rest-relative sanity checks.",
+            "reference_frame": "none -- no anatomical neutral exists for this entity"
+          }
+        }
+      }
+    },
+    "rightIndexProximal": {
+      "joint_class": "digit",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -20.0,
+            90.0
+          ],
+          "max_deg": [
+            -30.0,
+            100.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "metacarpophalangeal flexion 90 deg; MCP hyperextension to 20-30 deg is normal and common",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -20.0,
+            20.0
+          ],
+          "max_deg": [
+            -25.0,
+            25.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "radial/ulnar deviation at the MCP, ~20 deg",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -5.0,
+            5.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "finger axial rotation is passive and small; bound is approximate",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "rightIndexIntermediate": {
+      "joint_class": "digit",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -5.0,
+            110.0
+          ],
+          "max_deg": [
+            -10.0,
+            120.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "proximal interphalangeal flexion 110 deg, slight hyperextension",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -10.0,
+            10.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": true,
+          "enforced": true,
+          "source": {
+            "kind": "invariant",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "the interphalangeal joints are hinges and possess no deviation",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -5.0,
+            5.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "finger axial rotation is passive and small; bound is approximate",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "rightIndexDistal": {
+      "joint_class": "digit",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -10.0,
+            80.0
+          ],
+          "max_deg": [
+            -15.0,
+            90.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "distal interphalangeal flexion 80 deg, hyperextension to 10 deg",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -10.0,
+            10.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": true,
+          "enforced": true,
+          "source": {
+            "kind": "invariant",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "the interphalangeal joints are hinges and possess no deviation",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -5.0,
+            5.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "finger axial rotation is passive and small; bound is approximate",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "rightMiddleProximal": {
+      "joint_class": "digit",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -20.0,
+            90.0
+          ],
+          "max_deg": [
+            -30.0,
+            100.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "metacarpophalangeal flexion 90 deg; MCP hyperextension to 20-30 deg is normal and common",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -20.0,
+            20.0
+          ],
+          "max_deg": [
+            -25.0,
+            25.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "radial/ulnar deviation at the MCP, ~20 deg",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -5.0,
+            5.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "finger axial rotation is passive and small; bound is approximate",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "rightMiddleIntermediate": {
+      "joint_class": "digit",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -5.0,
+            110.0
+          ],
+          "max_deg": [
+            -10.0,
+            120.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "proximal interphalangeal flexion 110 deg, slight hyperextension",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -10.0,
+            10.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": true,
+          "enforced": true,
+          "source": {
+            "kind": "invariant",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "the interphalangeal joints are hinges and possess no deviation",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -5.0,
+            5.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "finger axial rotation is passive and small; bound is approximate",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "rightMiddleDistal": {
+      "joint_class": "digit",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -10.0,
+            80.0
+          ],
+          "max_deg": [
+            -15.0,
+            90.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "distal interphalangeal flexion 80 deg, hyperextension to 10 deg",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -10.0,
+            10.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": true,
+          "enforced": true,
+          "source": {
+            "kind": "invariant",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "the interphalangeal joints are hinges and possess no deviation",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -5.0,
+            5.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "finger axial rotation is passive and small; bound is approximate",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "rightRingProximal": {
+      "joint_class": "digit",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -20.0,
+            90.0
+          ],
+          "max_deg": [
+            -30.0,
+            100.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "metacarpophalangeal flexion 90 deg; MCP hyperextension to 20-30 deg is normal and common",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -20.0,
+            20.0
+          ],
+          "max_deg": [
+            -25.0,
+            25.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "radial/ulnar deviation at the MCP, ~20 deg",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -5.0,
+            5.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "finger axial rotation is passive and small; bound is approximate",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "rightRingIntermediate": {
+      "joint_class": "digit",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -5.0,
+            110.0
+          ],
+          "max_deg": [
+            -10.0,
+            120.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "proximal interphalangeal flexion 110 deg, slight hyperextension",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -10.0,
+            10.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": true,
+          "enforced": true,
+          "source": {
+            "kind": "invariant",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "the interphalangeal joints are hinges and possess no deviation",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -5.0,
+            5.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "finger axial rotation is passive and small; bound is approximate",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "rightRingDistal": {
+      "joint_class": "digit",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -10.0,
+            80.0
+          ],
+          "max_deg": [
+            -15.0,
+            90.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "distal interphalangeal flexion 80 deg, hyperextension to 10 deg",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -10.0,
+            10.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": true,
+          "enforced": true,
+          "source": {
+            "kind": "invariant",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "the interphalangeal joints are hinges and possess no deviation",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -5.0,
+            5.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "finger axial rotation is passive and small; bound is approximate",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "rightLittleProximal": {
+      "joint_class": "digit",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -20.0,
+            90.0
+          ],
+          "max_deg": [
+            -30.0,
+            100.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "metacarpophalangeal flexion 90 deg; MCP hyperextension to 20-30 deg is normal and common",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -20.0,
+            20.0
+          ],
+          "max_deg": [
+            -25.0,
+            25.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "radial/ulnar deviation at the MCP, ~20 deg",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -5.0,
+            5.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "finger axial rotation is passive and small; bound is approximate",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "rightLittleIntermediate": {
+      "joint_class": "digit",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -5.0,
+            110.0
+          ],
+          "max_deg": [
+            -10.0,
+            120.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "proximal interphalangeal flexion 110 deg, slight hyperextension",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -10.0,
+            10.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": true,
+          "enforced": true,
+          "source": {
+            "kind": "invariant",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "the interphalangeal joints are hinges and possess no deviation",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -5.0,
+            5.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "finger axial rotation is passive and small; bound is approximate",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    },
+    "rightLittleDistal": {
+      "joint_class": "digit",
+      "enforceable": "generation",
+      "dofs": {
+        "flexion": {
+          "typical_deg": [
+            -10.0,
+            80.0
+          ],
+          "max_deg": [
+            -15.0,
+            90.0
+          ],
+          "hard_assert": false,
+          "enforced": true,
+          "source": {
+            "kind": "external",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "distal interphalangeal flexion 80 deg, hyperextension to 10 deg",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "abduction": {
+          "typical_deg": [
+            -10.0,
+            10.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": true,
+          "enforced": true,
+          "source": {
+            "kind": "invariant",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "the interphalangeal joints are hinges and possess no deviation",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        },
+        "twist": {
+          "typical_deg": [
+            -5.0,
+            5.0
+          ],
+          "max_deg": [
+            -10.0,
+            10.0
+          ],
+          "hard_assert": false,
+          "enforced": false,
+          "source": {
+            "kind": "provisional",
+            "cites": [
+              "AAOS/AMA standard joint range-of-motion tables (adult, active range)"
+            ],
+            "rationale": "finger axial rotation is passive and small; bound is approximate",
+            "reference_frame": "anatomical neutral; rest offset from rigby_poc.analysis.anatomy.neutral.rest_offset"
+          }
+        }
+      }
+    }
+  }
+}

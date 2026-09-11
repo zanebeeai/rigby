@@ -1,0 +1,113 @@
+{
+  "environment_id": "pallet_cell",
+  "description": "An industrial cell at industrial scale: a pallet deck at 400 mm carrying a 64 mm tote and a 150 mm crate, and a bin at 1.35 m that nothing here can reach. Authored for a metre-class arm, which means the desktop robots meet it as an honest wall rather than a scaled-down toy.",
+  "robot_mount_m": [
+    0,
+    0,
+    0
+  ],
+  "fixtures": [
+    {
+      "name": "pallet_deck",
+      "size_m": [
+        0.28,
+        0.34,
+        0.02
+      ],
+      "position_m": [
+        0.66,
+        0.0,
+        0.38
+      ],
+      "rgba": [
+        0.34,
+        0.3,
+        0.26,
+        1.0
+      ]
+    },
+    {
+      "name": "far_bin_stand",
+      "size_m": [
+        0.16,
+        0.16,
+        0.02
+      ],
+      "position_m": [
+        1.35,
+        0.0,
+        0.38
+      ],
+      "rgba": [
+        0.3,
+        0.32,
+        0.36,
+        1.0
+      ]
+    }
+  ],
+  "objects": [
+    {
+      "name": "tote",
+      "size_m": [
+        0.032,
+        0.032,
+        0.05
+      ],
+      "mass_kg": 0.4,
+      "position_m": [
+        0.6,
+        -0.12,
+        0.45
+      ],
+      "rgba": [
+        0.85,
+        0.45,
+        0.15,
+        1.0
+      ]
+    },
+    {
+      "name": "crate",
+      "size_m": [
+        0.075,
+        0.075,
+        0.075
+      ],
+      "mass_kg": 2.2,
+      "position_m": [
+        0.7,
+        0.14,
+        0.475
+      ],
+      "rgba": [
+        0.3,
+        0.45,
+        0.75,
+        1.0
+      ]
+    },
+    {
+      "name": "far_carton",
+      "size_m": [
+        0.035,
+        0.035,
+        0.05
+      ],
+      "mass_kg": 0.5,
+      "position_m": [
+        1.35,
+        0.0,
+        0.45
+      ],
+      "rgba": [
+        0.7,
+        0.25,
+        0.3,
+        1.0
+      ]
+    }
+  ],
+  "authored_for_reach_m": 2.0149,
+  "authored_for_aperture_m": 0.2
+}

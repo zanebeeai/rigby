@@ -8,24 +8,32 @@ dist/
 *.egg-info/
 .coverage
 .playwright-mcp/
-rigby-poc/results/
-rigby-poc/tmp/
-rigby-poc/.ruff_cache/
-rigby-poc/docs/plans/
-rigby-poc/artifacts-v2/
-rigby-poc/frontend/.vite/
+_build/
 
-# rigby-poc-general: everything a script can regenerate, plus the one thing
+# humanoid: everything a run or a script regenerates.
+humanoid/results/
+humanoid/tmp/
+humanoid/.ruff_cache/
+humanoid/docs/plans/
+humanoid/artifacts-v2/
+humanoid/frontend/.vite/
+
+# any-robot: everything a script can regenerate, plus the one thing
 # licence terms forbid committing.
-rigby-poc-general/results/
-rigby-poc-general/robots/
-rigby-poc-general/docs/media/
-rigby-poc-general/.ruff_cache/
-rigby-poc-general/frontend/.vite/
-rigby-poc-general/*.log
-rigby-poc-general/MUJOCO_LOG.TXT
+any-robot/results/
+any-robot/robots/
+any-robot/docs/media/
+any-robot/.ruff_cache/
+any-robot/frontend/.vite/
+any-robot/*.log
+any-robot/MUJOCO_LOG.TXT
 # Third-party robot descriptions are fetched at setup time and pinned by commit.
 # Reference-only, per rigby_v2/rigging/references.py -- never vendored here.
-rigby-poc-general/assets/general/exotic/
-_build/
-rigby-poc/frontend/.vite/
+any-robot/assets/general/exotic/
+# Same policy for the operator's own hardware: the KUKA meshes belong to
+# ROS-Industrial and the uHand model is regenerated deterministically by
+# scripts/build_irl.py, so neither needs to live in the history.
+any-robot/assets/general/irl/
+
+# Local agent worktrees and scratch
+.claude/worktrees/

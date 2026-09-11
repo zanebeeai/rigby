@@ -1,0 +1,35 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-09-pick-up-the-block-and-put-it-in-the-bin-038f846b",
+  "title": "Pick-and-place seen through the corner camera with the wrist camera inset",
+  "prompt": "pick up the block and put it in the bin",
+  "tier": "humanoid",
+  "embodiment": "gripper",
+  "kind": "video",
+  "who": "AngeloWhey",
+  "produced_at": "2026-09-09T00:00:00Z",
+  "source": {
+    "commit": "f00861d",
+    "branch": "grasp/auto-lift",
+    "dirty": false,
+    "how": "npm run dev --prefix frontend; open gripper.html?run=<id> and screen-record; recorder settings not committed"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "the inset is the image the controller segments, frame for frame"
+  },
+  "notes": "Torque-driven three-segment gripper; runs in milestones/runs/*.json on the branch.",
+  "media": [
+    {
+      "path": "docs/results/media/gripper-milestones/videos--gripper-two-cameras.webm",
+      "bytes": 1772745,
+      "sha256": "c58eb2950a7249f37713a277561c097dd12175e001c04167c7e5b3a4ac49e80b",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "gripper",
+    "ledger-import"
+  ]
+}

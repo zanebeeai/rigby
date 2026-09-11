@@ -1,0 +1,310 @@
+from __future__ import annotations
+
+import math
+
+import numpy as np
+import pytest
+from scipy.spatial.transform import Rotation
+
+from evals.capture import phase_sampling_points
+from evals.flywheel import (
+    _motion_hash,
+    apply_recipe,
+    candidate_recipe_pool,
+    candidate_recipes,
+    compare_perceptual_descriptors,
+    motion_perceptual_descriptor,
+    select_diverse_candidate_batch,
+    single_sample_baseline_index,
+)
+from rigby_poc.analysis.gesture import (
+    _full_hand_visible,
+    arm_landmarks,
+    ego_camera,
+    quality_reference,
+    rest_ego_camera_position,
+)
+from rigby_poc.analysis.rig import EGO_EYE_OFFSET_M, EGO_NEUTRAL_GAZE, identity_bones
+from rigby_poc.compiler import compile_motion
+from rigby_poc.kinematics import rig_kinematics
+from rigby_poc.models import (
+    ClipFrame,
+    CompileRequest,
+    Hand,
+    Intent,
+    PlanRequest,
+    PrimitiveKind,
+    default_scene,
+)
+from rigby_poc.planner import plan_motion
+
+#: compiles, corpus, pipeline or subprocess -- see docs/testing.md
+pytestmark = pytest.mark.medium
+
+
+def _left_hook():
+    scene = default_scene()
+    program = plan_motion(
+        PlanRequest(text="throw a left hook", scene=scene, provider="offline")
+    ).program
+    return scene, program
+
+
+def test_left_hook_expands_to_dynamic_strike_primitives() -> None:
+    _, program = _left_hook()
+    assert program.intent is Intent.STRIKE
+    assert program.hand is Hand.LEFT
+    assert program.strike_type and program.strike_type.value == "hook"
+    assert [item.kind for item in program.primitives] == [
+        PrimitiveKind.GUARD,
+        PrimitiveKind.LOAD,
+        PrimitiveKind.STRIKE,
+        PrimitiveKind.FOLLOW_THROUGH,
+        PrimitiveKind.RECOVER,
+    ]
+
+
+def test_supported_strike_family_compiles_for_both_hands() -> None:
+    scene = default_scene()
+    for name in ("hook", "jab", "cross", "uppercut"):
+        for hand in ("left", "right"):
+            prompt = f"throw a {hand} {name}"
+            program = plan_motion(
+                PlanRequest(text=prompt, scene=scene, provider="offline")
+            ).program
+            clip = compile_motion(
+                CompileRequest(scene=scene, program=program, persist=False)
+            )
+            assert program.intent is Intent.STRIKE
+            assert program.strike_type and program.strike_type.value == name
+            assert clip.success, (prompt, clip.failure)
+            assert clip.metrics["structural_valid"] is True
+            assert clip.metrics["active_hand_visibility_fraction"] == 1.0
+
+
+def test_left_hook_compiles_as_visible_curved_bent_elbow_motion() -> None:
+    scene, program = _left_hook()
+    clip = compile_motion(CompileRequest(scene=scene, program=program, persist=False))
+    assert clip.success, clip.failure
+    assert clip.metrics["structural_valid"] is True
+    assert clip.metrics["active_hand_visibility_fraction"] == 1.0
+    assert clip.metrics["self_collision_frames"] == 0
+    # The `strike_*_excursion` metrics are read from the rig's own world
+    # shoulder/elbow/wrist pivots, so they describe the path the wrist travels
+    # through the world -- including the part of the swing the trunk carries.
+    # The independent full-FK block below pins that equivalence rather than
+    # merely restating it.
+    assert clip.metrics["strike_wrist_path_length_m"] > 0.20
+    assert clip.metrics["strike_lateral_excursion_m"] > 0.08
+    assert 70.0 <= clip.metrics["impact_elbow_angle_deg"] <= 120.0
+    assert min(clip.metrics["normalized_finger_curls"].values()) > 0.65
+
+    strike_range = next(
+        (float(item["start_s"]), float(item["end_s"]))
+        for item in clip.metrics["phase_ranges_s"]
+        if item["kind"] == "strike"
+    )
+    kinematics = rig_kinematics()
+    node_of = {name: index for index, name in kinematics.canonical_by_node.items()}
+    wrist_index = node_of["leftHand"]
+    chest_index = node_of["chest"]
+    wrists = []
+    chest_yaws = []
+    for frame in clip.frames:
+        matrices = kinematics.world_matrices(frame.bones)
+        forward = matrices[chest_index][:3, :3] @ np.array([0.0, 0.0, 1.0])
+        chest_yaws.append(math.degrees(math.atan2(forward[0], forward[2])))
+        if strike_range[0] - 1e-8 <= frame.time_s <= strike_range[1] + 1e-8:
+            wrists.append(matrices[wrist_index][:3, 3].copy())
+    world_path_m = float(
+        sum(np.linalg.norm(second - first) for first, second in zip(wrists, wrists[1:]))
+    )
+    world_lateral_m = float(max(w[0] for w in wrists) - min(w[0] for w in wrists))
+    assert world_path_m > 0.25
+    assert world_lateral_m > 0.20
+    # The metrics ARE this world path: `hand_metrics` reads the same pivots out
+    # of the same forward kinematics. Pinning the equivalence here is what keeps
+    # the excursions from silently drifting back into the chest frame, where
+    # they measured the arm relative to a torso that is itself turning.
+    assert clip.metrics["strike_wrist_path_length_m"] == pytest.approx(world_path_m, rel=1e-12)
+    assert clip.metrics["strike_lateral_excursion_m"] == pytest.approx(world_lateral_m, rel=1e-12)
+    # The trunk throws the hook with the arm: the chest visibly rotates
+    # through the swing. This is the vocabulary this change adds; losing it
+    # regresses the hook back to an arm-only punch.
+    assert max(chest_yaws) - min(chest_yaws) > 20.0
+
+    descriptor = motion_perceptual_descriptor(clip, Hand.LEFT)
+    assert descriptor["recovery_endpoint_wrist_error_m"] < 1e-6
+    assert descriptor["recovery_endpoint_hand_error_rad"] < 1e-6
+    assert len([item for item in descriptor["samples"] if item["phase"] == "strike"]) == 3
+
+
+def test_five_hook_candidates_are_valid_and_perceptually_distinct() -> None:
+    scene, program = _left_hook()
+    descriptors = []
+    recipes = candidate_recipes(program.primitives[0].parameters, program.intent)
+    assert len(recipes) == 5
+    for index, recipe in enumerate(recipes, start=1):
+        candidate = apply_recipe(program, recipe, seed_offset=index)
+        clip = compile_motion(CompileRequest(scene=scene, program=candidate, persist=False))
+        assert clip.success, (recipe.name, clip.failure)
+        assert clip.metrics["structural_valid"] is True
+        descriptors.append(motion_perceptual_descriptor(clip, candidate.hand))
+    for index, first in enumerate(descriptors):
+        for second in descriptors[index + 1 :]:
+            assert compare_perceptual_descriptors(first, second)["perceptually_distinct"]
+
+
+@pytest.mark.parametrize(
+    "prompt",
+    (
+        "throw a right jab",
+        "throw a left cross",
+        "throw a right uppercut",
+    ),
+)
+def test_generalized_adaptive_pool_supplies_five_way_strike_batch(prompt: str) -> None:
+    scene = default_scene()
+    program = plan_motion(
+        PlanRequest(text=prompt, scene=scene, provider="offline")
+    ).program
+    candidates = []
+    baseline_index = single_sample_baseline_index(prompt)
+    baseline_result_id = f"candidate-{baseline_index}"
+    audit = {}
+    selected = []
+    for index, recipe in enumerate(
+        candidate_recipe_pool(program.primitives[0].parameters, program.intent),
+        start=1,
+    ):
+        candidate_program = apply_recipe(program, recipe, seed_offset=index)
+        clip = compile_motion(
+            CompileRequest(scene=scene, program=candidate_program, persist=False)
+        )
+        candidates.append(
+            {
+                "candidate_index": index,
+                "recipe": {"name": recipe.name},
+                "result_id": f"candidate-{index}",
+                "compile_success": clip.success,
+                "structural_valid": clip.metrics.get("structural_valid"),
+                "motion_sha256": _motion_hash(clip),
+                "perceptual_descriptor": motion_perceptual_descriptor(
+                    clip, candidate_program.hand
+                ),
+            }
+        )
+        selected, audit = select_diverse_candidate_batch(
+            candidates,
+            baseline_result_id=baseline_result_id,
+        )
+        if audit.get("all_pairs_above_threshold"):
+            break
+
+    assert len(selected) == 5
+    assert audit["status"] == "complete"
+    assert audit["all_pairs_above_threshold"] is True
+    assert len({item["motion_sha256"] for item in selected}) == 5
+    assert all(item["compile_success"] and item["structural_valid"] for item in selected)
+
+
+def test_strike_evidence_samples_guard_arc_impact_follow_through_and_recovery() -> None:
+    scene, program = _left_hook()
+    clip = compile_motion(CompileRequest(scene=scene, program=program, persist=False))
+    points = phase_sampling_points({"clip": clip.model_dump(mode="json")})
+    labels = {str(item["label"]) for item in points}
+    assert {
+        "guard_ready",
+        "load_ready",
+        "strike_early",
+        "strike_midpoint",
+        "impact_pose",
+        "follow_through_late",
+        "recover_end",
+    } <= labels
+
+
+def test_the_ego_camera_reproduces_the_renderer_at_the_rest_pose() -> None:
+    """At rest the camera must land exactly where the renderer puts it.
+
+    ``computeEgoCameraPose`` rotates the eye offset by the head *delta* -- the
+    current rotation against the rest one -- which is the identity at the rest
+    pose, so the offset composes in world axes there. Getting that wrong by
+    rotating with the rest head block instead moves the camera about 1 cm and
+    drops every strike below the visibility floor, so this pins the composition
+    rather than merely the arithmetic.
+    """
+
+    kinematics = rig_kinematics()
+    head = kinematics.world_matrices(identity_bones())[kinematics.node_by_canonical["head"]]
+
+    position, forward = ego_camera(head[:3, 3], np.eye(3), EGO_EYE_OFFSET_M)
+
+    assert np.allclose(position, head[:3, 3] + EGO_EYE_OFFSET_M, atol=1e-12, rtol=0.0)
+    assert np.allclose(position, rest_ego_camera_position(), atol=1e-12, rtol=0.0)
+    expected_forward = np.array([0.0, -0.65, 1.0])
+    expected_forward /= np.linalg.norm(expected_forward)
+    assert np.allclose(forward, expected_forward, atol=1e-12, rtol=0.0)
+
+
+def test_a_sub_pixel_margin_does_not_decide_the_visibility_verdict() -> None:
+    """The floor, asserted where it actually bites.
+
+    The compiler places the hand at the visibility limit by construction, so at
+    frame 0 of every strike the wrist sits a hundredth of a pixel from the
+    frustum edge. Before the floor, which side of the edge it landed on was
+    decided by whether the eye offset had been rounded -- a 0.024 mm difference,
+    0.028 px of a 1600x900 capture. This asserts the verdict is stable across a
+    perturbation an order of magnitude larger than that drift, and that a clip
+    which is genuinely out of view is still rejected.
+    """
+
+    scene = default_scene()
+    program = plan_motion(
+        PlanRequest(text="throw a left hook", scene=scene, provider="offline")
+    ).program
+    clip = compile_motion(CompileRequest(scene=scene, program=program, persist=False))
+
+    assert clip.metrics["active_hand_visibility_fraction"] == 1.0
+
+    contract = quality_reference()["camera_contract"]
+    _, _, wrist, hand_world = arm_landmarks(clip.frames[0], program.hand)
+    camera = rest_ego_camera_position()
+
+    # Half a pixel of nudge, straight down the vertical axis the margin is on.
+    # Well inside the floor, and an order of magnitude past the rounding drift.
+    depth = float(np.dot(wrist - camera, EGO_NEUTRAL_GAZE))
+    pixel = 2.0 * math.tan(math.radians(float(contract["vertical_fov_deg"])) / 2.0) * depth
+    pixel /= float(contract["height_px"])
+    for sign in (+1.0, -1.0):
+        nudged = wrist + np.array([0.0, sign * pixel * 0.5, 0.0])
+        assert _full_hand_visible(nudged, hand_world, contract), sign
+
+    # A metre out of frame is still out of frame.
+    assert not _full_hand_visible(
+        wrist + np.array([1.0, 0.0, 0.0]), hand_world, contract
+    )
+
+
+def test_the_rig_hand_block_carries_the_same_axes_the_visibility_check_reads() -> None:
+    """Licenses reading ``hand_world`` straight off the world matrix.
+
+    ``_full_hand_visible`` treats the hand rotation's local +Y as the finger
+    axis and +X as the palm axis. Those are the reconstruction's conventions, so
+    substituting the source rig's own hand block is only sound if the two agree.
+    They do, at the rest pose, to well under a microradian -- no re-basing onto
+    the rest quaternions is needed. If this ever fails, the world-true visibility
+    sampler is measuring a hand span about the wrong axes.
+    """
+
+    kinematics = rig_kinematics()
+    bones = identity_bones()
+    frame = ClipFrame(time_s=0.0, bones=bones)
+    matrices = kinematics.world_matrices(bones)
+
+    for hand in (Hand.LEFT, Hand.RIGHT):
+        _, _, _, reconstructed = arm_landmarks(frame, hand)
+        block = matrices[kinematics.node_by_canonical[f"{hand.value}Hand"]][:3, :3]
+        from_rig = Rotation.from_matrix(block)
+
+        assert (reconstructed.inv() * from_rig).magnitude() < 1e-6, hand

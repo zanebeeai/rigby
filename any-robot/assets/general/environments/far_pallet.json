@@ -1,0 +1,54 @@
+{
+  "environment_id": "far_pallet",
+  "description": "A 90 mm crate on a pallet a metre out. Too wide for every jaw here but the largest, and too far for most. Authored so that the refusals outnumber the successes, because that is also a result.",
+  "robot_mount_m": [
+    0,
+    0,
+    0
+  ],
+  "fixtures": [
+    {
+      "name": "pallet",
+      "size_m": [
+        0.26,
+        0.26,
+        0.012
+      ],
+      "position_m": [
+        1.0,
+        0.0,
+        0.08800000000000001
+      ],
+      "rgba": [
+        0.4,
+        0.34,
+        0.26,
+        1.0
+      ]
+    }
+  ],
+  "objects": [
+    {
+      "name": "crate",
+      "size_m": [
+        0.045,
+        0.045,
+        0.045
+      ],
+      "mass_kg": 0.42,
+      "position_m": [
+        1.0,
+        0.0,
+        0.14500000000000002
+      ],
+      "rgba": [
+        0.72,
+        0.55,
+        0.22,
+        1.0
+      ]
+    }
+  ],
+  "authored_for_reach_m": 1.4925,
+  "authored_for_aperture_m": 0.12
+}

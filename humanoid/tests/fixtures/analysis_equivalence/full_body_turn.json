@@ -1,0 +1,736 @@
+{
+  "compiler_metrics": {
+    "airborne_frame_count": 0,
+    "body_actions": [
+      "turn",
+      "hold"
+    ],
+    "discontinuities": 0,
+    "final_balanced_leg_error_rad": 0.6748726481682247,
+    "final_foot_ground_error_m": 2.316101361195949e-06,
+    "final_root_vertical_speed_m_s": 7.993605777301156e-14,
+    "final_root_yaw_deg": 180.0,
+    "final_support_center_offset_m": 0.051977547604601555,
+    "finger_assertions": {},
+    "fixed_root_foot_max_rotation_delta_rad": 3.141592653589793,
+    "foot_drift_m": 0.0,
+    "ground_height_m": 0.015200535123664238,
+    "ground_penetration_m": 0.0,
+    "hold_duration_s": 0.0,
+    "horizontal_pose_requested": false,
+    "joint_limit_violations": 0,
+    "lift_height_m": 0.0,
+    "lost_table_contact": true,
+    "max_angular_acceleration_rad_s2": 15.505565456809315,
+    "max_angular_jerk_rad_s3": 463.4576057217489,
+    "max_angular_velocity_rad_s": 4.446586278995794,
+    "max_frame_rotation_delta_rad": 0.15022250942552873,
+    "max_penetration_m": 0.0,
+    "max_support_foot_slide_per_frame_m": 2.312686389637834e-07,
+    "max_support_foot_target_error_m": 1.8682887433268163e-06,
+    "maximum_foot_clearance_m": 0.0349590971875347,
+    "minimum_nonfoot_body_clearance_m": 0.4653699637302814,
+    "nan_count": 0,
+    "opposing_contacts": false,
+    "palm_relative_slip_m": 0.0,
+    "phase_ranges_s": [
+      {
+        "action": "turn",
+        "end_s": 1.25,
+        "kind": "body",
+        "label": "turn_1",
+        "start_s": 0.0
+      },
+      {
+        "action": "hold",
+        "end_s": 2.25,
+        "kind": "recover",
+        "label": "settle_to_balanced_stance",
+        "start_s": 1.25
+      }
+    ],
+    "quaternion_norm_max_error": 2.220446049250313e-16,
+    "requested_body_cycles": 1.0,
+    "root_displacement_m": 0.0,
+    "root_drift_m": 1.022706919151517e-11,
+    "root_motion_enabled": true,
+    "root_path_length_m": 0.0,
+    "root_vertical_max_m": -0.0750000000011083,
+    "root_vertical_min_m": -0.07500000001348364,
+    "safety_derivation": "computed over every frame/local delta quaternion and authored hips translation; root motion is explicitly enabled",
+    "structural_failures": [],
+    "structural_valid": true,
+    "support_contact_fraction": 1.0,
+    "unresolved_non_hand_collisions": 0,
+    "vertical_drift_m": 0.0,
+    "weld_used": false
+  },
+  "expected_metrics": {
+    "airborne_frame_count": 0,
+    "discontinuities": 0,
+    "final_balanced_leg_error_rad": 0.6748726481682247,
+    "final_foot_ground_error_m": 2.316101361195949e-06,
+    "final_root_vertical_speed_m_s": 7.993605777301156e-14,
+    "final_root_yaw_deg": 180.0,
+    "final_support_center_offset_m": 0.051977547604601555,
+    "fixed_root_foot_max_rotation_delta_rad": 3.141592653589793,
+    "foot_drift_m": 0.0,
+    "ground_height_m": 0.015200535123664238,
+    "ground_penetration_m": 0.0,
+    "horizontal_pose_requested": false,
+    "joint_limit_violations": 0,
+    "max_angular_acceleration_rad_s2": 15.505565456809315,
+    "max_angular_jerk_rad_s3": 463.4576057217489,
+    "max_angular_velocity_rad_s": 4.446586278995794,
+    "max_frame_rotation_delta_rad": 0.15022250942552873,
+    "max_support_foot_slide_per_frame_m": 2.312686389637834e-07,
+    "max_support_foot_target_error_m": 1.8682887433268163e-06,
+    "maximum_foot_clearance_m": 0.0349590971875347,
+    "minimum_nonfoot_body_clearance_m": 0.4653699637302814,
+    "nan_count": 0,
+    "quaternion_norm_max_error": 2.220446049250313e-16,
+    "requested_body_cycles": 1.0,
+    "root_displacement_m": 0.0,
+    "root_drift_m": 1.022706919151517e-11,
+    "root_path_length_m": 0.0,
+    "root_vertical_max_m": -0.0750000000011083,
+    "root_vertical_min_m": -0.07500000001348364,
+    "safety_derivation": "computed over every frame/local delta quaternion and authored hips translation; root motion is explicitly enabled",
+    "structural_failures": [],
+    "structural_valid": true,
+    "support_contact_fraction": 1.0
+  },
+  "frame_count": 68,
+  "id": "full_body_turn",
+  "intent": "full_body",
+  "program": {
+    "assertions": [
+      {
+        "name": "bounded_root_motion",
+        "threshold": null
+      },
+      {
+        "name": "balanced_support",
+        "threshold": null
+      },
+      {
+        "name": "ground_clearance",
+        "threshold": null
+      }
+    ],
+    "hand": "right",
+    "hands": [],
+    "intent": "full_body",
+    "motion_profile": null,
+    "object_action": null,
+    "object_motion": null,
+    "primitives": [
+      {
+        "body": {
+          "action": "turn",
+          "climb_direction": "up",
+          "cycles": 1.0,
+          "direction_x": 0.0,
+          "direction_z": 1.0,
+          "distance_m": 0.0,
+          "height_m": 0.0,
+          "intensity": 0.65,
+          "lead_side": "right",
+          "obstacle_clearance_m": 0.0,
+          "obstacle_mode": "none",
+          "obstacle_object_id": null,
+          "path_lateral_offset_m": 0.0,
+          "pose": {
+            "head_pitch_deg": 0.0,
+            "head_roll_deg": 0.0,
+            "head_yaw_deg": 0.0,
+            "left_ankle_pitch_deg": 0.0,
+            "left_foot_lift_m": 0.0,
+            "left_foot_shift_x_m": 0.0,
+            "left_foot_shift_z_m": 0.0,
+            "left_hip_pitch_deg": 0.0,
+            "left_hip_roll_deg": 0.0,
+            "left_knee_flexion_deg": 0.0,
+            "left_shoulder_elevation_deg": 0.0,
+            "lock_feet": true,
+            "pelvis_pitch_deg": 0.0,
+            "pelvis_roll_deg": 0.0,
+            "pelvis_yaw_deg": 0.0,
+            "right_ankle_pitch_deg": 0.0,
+            "right_foot_lift_m": 0.0,
+            "right_foot_shift_x_m": 0.0,
+            "right_foot_shift_z_m": 0.0,
+            "right_hip_pitch_deg": 0.0,
+            "right_hip_roll_deg": 0.0,
+            "right_knee_flexion_deg": 0.0,
+            "right_shoulder_elevation_deg": 0.0,
+            "root_drop_m": 0.0,
+            "root_shift_x_m": 0.0,
+            "root_shift_z_m": 0.0,
+            "support_mode": "feet",
+            "torso_pitch_deg": 0.0,
+            "torso_roll_deg": 0.0,
+            "torso_yaw_deg": 0.0
+          },
+          "raise_arms_overhead": false,
+          "rotation_axis": "pitch",
+          "rotation_degrees": 0.0,
+          "rotation_mode": "floor",
+          "support_object_id": null,
+          "turn_degrees": 180.0
+        },
+        "effectors": [],
+        "gaze_target": null,
+        "hand_shape": null,
+        "intra_hand_contact": null,
+        "kind": "body",
+        "label": "turn_1",
+        "object_id": null,
+        "parameters": {
+          "arm_depth": 0.0,
+          "arm_height": 0.0,
+          "axial_rotation_amplitude": 0.0,
+          "crouch_depth_m": 0.0,
+          "duration_s": 1.25,
+          "easing": 0.72,
+          "elbow_swivel": 0.0,
+          "finger_curl": 0.0,
+          "finger_splay": 0.0,
+          "grip_force": 0.75,
+          "hold_duration_s": 1.0,
+          "index_curl": 0.0,
+          "lateral_offset": 0.0,
+          "lift_height_m": 0.1,
+          "little_curl": 0.0,
+          "middle_curl": 0.0,
+          "path_arc": 0.0,
+          "ring_curl": 0.0,
+          "thumb_curl": 0.0,
+          "thumb_opposition": 0.75,
+          "torso_participation": 0.2,
+          "trajectory_amplitude_m": 0.0,
+          "trajectory_cycles": 0.0,
+          "weight_shift_m": 0.0,
+          "wrist_flourish": 0.0,
+          "wrist_pitch": 0.0,
+          "wrist_roll": 0.0,
+          "wrist_shake_amplitude": 0.0,
+          "wrist_shake_cycles": 0.0,
+          "wrist_yaw": 0.0
+        },
+        "socket_id": null,
+        "trajectory": null,
+        "trajectory_plane": null
+      },
+      {
+        "body": {
+          "action": "hold",
+          "climb_direction": "up",
+          "cycles": 0.0,
+          "direction_x": 0.0,
+          "direction_z": 1.0,
+          "distance_m": 0.0,
+          "height_m": 0.0,
+          "intensity": 0.0,
+          "lead_side": "right",
+          "obstacle_clearance_m": 0.0,
+          "obstacle_mode": "none",
+          "obstacle_object_id": null,
+          "path_lateral_offset_m": 0.0,
+          "pose": {
+            "head_pitch_deg": 0.0,
+            "head_roll_deg": 0.0,
+            "head_yaw_deg": 0.0,
+            "left_ankle_pitch_deg": 0.0,
+            "left_foot_lift_m": 0.0,
+            "left_foot_shift_x_m": 0.0,
+            "left_foot_shift_z_m": 0.0,
+            "left_hip_pitch_deg": 0.0,
+            "left_hip_roll_deg": 0.0,
+            "left_knee_flexion_deg": 0.0,
+            "left_shoulder_elevation_deg": 0.0,
+            "lock_feet": true,
+            "pelvis_pitch_deg": 0.0,
+            "pelvis_roll_deg": 0.0,
+            "pelvis_yaw_deg": 0.0,
+            "right_ankle_pitch_deg": 0.0,
+            "right_foot_lift_m": 0.0,
+            "right_foot_shift_x_m": 0.0,
+            "right_foot_shift_z_m": 0.0,
+            "right_hip_pitch_deg": 0.0,
+            "right_hip_roll_deg": 0.0,
+            "right_knee_flexion_deg": 0.0,
+            "right_shoulder_elevation_deg": 0.0,
+            "root_drop_m": 0.0,
+            "root_shift_x_m": 0.0,
+            "root_shift_z_m": 0.0,
+            "support_mode": "feet",
+            "torso_pitch_deg": 0.0,
+            "torso_roll_deg": 0.0,
+            "torso_yaw_deg": 0.0
+          },
+          "raise_arms_overhead": false,
+          "rotation_axis": "pitch",
+          "rotation_degrees": 0.0,
+          "rotation_mode": "floor",
+          "support_object_id": null,
+          "turn_degrees": 0.0
+        },
+        "effectors": [],
+        "gaze_target": null,
+        "hand_shape": null,
+        "intra_hand_contact": null,
+        "kind": "recover",
+        "label": "settle_to_balanced_stance",
+        "object_id": null,
+        "parameters": {
+          "arm_depth": 0.0,
+          "arm_height": 0.0,
+          "axial_rotation_amplitude": 0.0,
+          "crouch_depth_m": 0.0,
+          "duration_s": 0.6,
+          "easing": 0.84,
+          "elbow_swivel": 0.0,
+          "finger_curl": 0.0,
+          "finger_splay": 0.0,
+          "grip_force": 0.75,
+          "hold_duration_s": 1.0,
+          "index_curl": 0.0,
+          "lateral_offset": 0.0,
+          "lift_height_m": 0.1,
+          "little_curl": 0.0,
+          "middle_curl": 0.0,
+          "path_arc": 0.0,
+          "ring_curl": 0.0,
+          "thumb_curl": 0.0,
+          "thumb_opposition": 0.75,
+          "torso_participation": 0.2,
+          "trajectory_amplitude_m": 0.0,
+          "trajectory_cycles": 0.0,
+          "weight_shift_m": 0.0,
+          "wrist_flourish": 0.0,
+          "wrist_pitch": 0.0,
+          "wrist_roll": 0.0,
+          "wrist_shake_amplitude": 0.0,
+          "wrist_shake_cycles": 0.0,
+          "wrist_yaw": 0.0
+        },
+        "socket_id": null,
+        "trajectory": null,
+        "trajectory_plane": null
+      }
+    ],
+    "schema_version": "1.0",
+    "seed": 0,
+    "source_text": "turn around",
+    "steps": [],
+    "strike_type": null,
+    "unsupported_reason": null
+  },
+  "prompt": "turn around",
+  "scene": {
+    "fps": 30,
+    "objects": [
+      {
+        "dimensions_m": {
+          "x": 0.06,
+          "y": 0.08,
+          "z": 0.06
+        },
+        "friction": 1.2,
+        "id": "block",
+        "kind": "block",
+        "mass_kg": 0.25,
+        "sockets": [
+          {
+            "approach_normal": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": -1.0
+            },
+            "grasp_span_m": 0.06,
+            "id": "front_center",
+            "role": "grasp",
+            "supports_body_weight": false,
+            "transform": {
+              "rotation": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "translation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": -0.03
+              }
+            }
+          }
+        ],
+        "transform": {
+          "rotation": {
+            "w": 1.0,
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "translation": {
+            "x": 0.0,
+            "y": 1.05,
+            "z": 0.29
+          }
+        }
+      },
+      {
+        "dimensions_m": {
+          "x": 0.46,
+          "y": 2.1,
+          "z": 0.08
+        },
+        "friction": 0.9,
+        "id": "ladder",
+        "kind": "ladder",
+        "mass_kg": 18.0,
+        "sockets": [
+          {
+            "approach_normal": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": -1.0
+            },
+            "grasp_span_m": 0.04,
+            "id": "rung_1",
+            "role": "climb_contact",
+            "supports_body_weight": true,
+            "transform": {
+              "rotation": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "translation": {
+                "x": 0.0,
+                "y": -0.82,
+                "z": -0.05
+              }
+            }
+          },
+          {
+            "approach_normal": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": -1.0
+            },
+            "grasp_span_m": 0.04,
+            "id": "rung_2",
+            "role": "climb_contact",
+            "supports_body_weight": true,
+            "transform": {
+              "rotation": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "translation": {
+                "x": 0.0,
+                "y": -0.615,
+                "z": -0.05
+              }
+            }
+          },
+          {
+            "approach_normal": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": -1.0
+            },
+            "grasp_span_m": 0.04,
+            "id": "rung_3",
+            "role": "climb_contact",
+            "supports_body_weight": true,
+            "transform": {
+              "rotation": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "translation": {
+                "x": 0.0,
+                "y": -0.41,
+                "z": -0.05
+              }
+            }
+          },
+          {
+            "approach_normal": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": -1.0
+            },
+            "grasp_span_m": 0.04,
+            "id": "rung_4",
+            "role": "climb_contact",
+            "supports_body_weight": true,
+            "transform": {
+              "rotation": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "translation": {
+                "x": 0.0,
+                "y": -0.20499999999999996,
+                "z": -0.05
+              }
+            }
+          },
+          {
+            "approach_normal": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": -1.0
+            },
+            "grasp_span_m": 0.04,
+            "id": "rung_5",
+            "role": "climb_contact",
+            "supports_body_weight": true,
+            "transform": {
+              "rotation": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "translation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": -0.05
+              }
+            }
+          },
+          {
+            "approach_normal": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": -1.0
+            },
+            "grasp_span_m": 0.04,
+            "id": "rung_6",
+            "role": "climb_contact",
+            "supports_body_weight": true,
+            "transform": {
+              "rotation": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "translation": {
+                "x": 0.0,
+                "y": 0.20499999999999996,
+                "z": -0.05
+              }
+            }
+          },
+          {
+            "approach_normal": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": -1.0
+            },
+            "grasp_span_m": 0.04,
+            "id": "rung_7",
+            "role": "climb_contact",
+            "supports_body_weight": true,
+            "transform": {
+              "rotation": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "translation": {
+                "x": 0.0,
+                "y": 0.41000000000000003,
+                "z": -0.05
+              }
+            }
+          },
+          {
+            "approach_normal": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": -1.0
+            },
+            "grasp_span_m": 0.04,
+            "id": "rung_8",
+            "role": "climb_contact",
+            "supports_body_weight": true,
+            "transform": {
+              "rotation": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "translation": {
+                "x": 0.0,
+                "y": 0.6149999999999999,
+                "z": -0.05
+              }
+            }
+          },
+          {
+            "approach_normal": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": -1.0
+            },
+            "grasp_span_m": 0.04,
+            "id": "rung_9",
+            "role": "climb_contact",
+            "supports_body_weight": true,
+            "transform": {
+              "rotation": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "translation": {
+                "x": 0.0,
+                "y": 0.82,
+                "z": -0.05
+              }
+            }
+          }
+        ],
+        "transform": {
+          "rotation": {
+            "w": 1.0,
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "translation": {
+            "x": 0.0,
+            "y": 1.05,
+            "z": 0.58
+          }
+        }
+      },
+      {
+        "dimensions_m": {
+          "x": 0.22,
+          "y": 0.1,
+          "z": 0.1
+        },
+        "friction": 1.2,
+        "id": "hurdle",
+        "kind": "hurdle",
+        "mass_kg": 4.0,
+        "sockets": [
+          {
+            "approach_normal": {
+              "x": 0.0,
+              "y": 1.0,
+              "z": 0.0
+            },
+            "grasp_span_m": 0.1,
+            "id": "top_center",
+            "role": "support",
+            "supports_body_weight": false,
+            "transform": {
+              "rotation": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "translation": {
+                "x": 0.0,
+                "y": 0.05,
+                "z": 0.0
+              }
+            }
+          }
+        ],
+        "transform": {
+          "rotation": {
+            "w": 1.0,
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "translation": {
+            "x": 0.0,
+            "y": 0.07,
+            "z": 0.55
+          }
+        }
+      },
+      {
+        "dimensions_m": {
+          "x": 1.05,
+          "y": 0.055,
+          "z": 0.72
+        },
+        "friction": 0.9,
+        "id": "table",
+        "kind": "table",
+        "mass_kg": 25.0,
+        "sockets": [
+          {
+            "approach_normal": {
+              "x": 0.0,
+              "y": 1.0,
+              "z": 0.0
+            },
+            "grasp_span_m": 0.1,
+            "id": "top_center",
+            "role": "support",
+            "supports_body_weight": false,
+            "transform": {
+              "rotation": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "translation": {
+                "x": 0.0,
+                "y": 0.0275,
+                "z": 0.0
+              }
+            }
+          }
+        ],
+        "transform": {
+          "rotation": {
+            "w": 1.0,
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "translation": {
+            "x": 0.0,
+            "y": 0.9825,
+            "z": 0.5
+          }
+        }
+      }
+    ],
+    "reachable_radius_m": 0.72,
+    "rig": {
+      "asset_uri": "assets/models/human-male.glb",
+      "fixed_root": true,
+      "id": "mesh2motion-human-vrm1",
+      "profile_uri": "config/rig_profiles/mesh2motion-human-vrm1.json"
+    },
+    "schema_version": "1.0"
+  }
+}

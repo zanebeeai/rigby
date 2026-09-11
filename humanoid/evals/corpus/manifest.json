@@ -1,0 +1,1196 @@
+{
+  "cases": [
+    {
+      "body_actions": [],
+      "expected_structural_valid": true,
+      "family": "composite",
+      "hand_shapes": [],
+      "id": "composite-beckon-right",
+      "intent": "composite",
+      "must_fail": [],
+      "notes": "Right-hand mirror of composite-wave-left; the laterality pair plan 10 section 2.2 calls minimal distance.",
+      "object_actions": [],
+      "source_prompt": "beckon someone over with your right hand",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "cycle",
+        "right",
+        "single-hand-composite"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": true,
+      "family": "composite",
+      "hand_shapes": [],
+      "id": "composite-clap-twice",
+      "intent": "composite",
+      "must_fail": [],
+      "notes": "Two-hand composite built from MOVE alone: the only composite case with no CYCLE primitive.",
+      "object_actions": [],
+      "source_prompt": "clap your hands together twice",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "both-hands",
+        "converging",
+        "no-cycle-primitive"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": true,
+      "family": "composite",
+      "hand_shapes": [],
+      "id": "composite-travel-forearms",
+      "intent": "composite",
+      "must_fail": [],
+      "notes": "Richest metric block in the corpus: parallel-forearm, travel-wheel and semantic-cycle checks.",
+      "object_actions": [],
+      "source_prompt": "roll your forearms around eachother repeatedly, as if you are indicating the \"travel\" foul in basketball",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "both-hands",
+        "cycle",
+        "parallel-forearm",
+        "trajectory-circle"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": true,
+      "family": "composite",
+      "hand_shapes": [],
+      "id": "composite-wave-left",
+      "intent": "composite",
+      "must_fail": [],
+      "notes": "Single-hand composite path, distinct from the two-hand cycle case.",
+      "object_actions": [],
+      "source_prompt": "wave hello with your left hand",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "left",
+        "single-hand-composite"
+      ]
+    },
+    {
+      "body_actions": [
+        "crouch",
+        "hold",
+        "jump",
+        "pose"
+      ],
+      "expected_structural_valid": true,
+      "family": "full_body",
+      "hand_shapes": [],
+      "id": "fullbody-burpee-cycle",
+      "intent": "full_body",
+      "must_fail": [],
+      "notes": "Four BodyActions and the plank support mode in one case; the slowest case to compile.",
+      "object_actions": [],
+      "source_prompt": "do three burpees",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "crouch",
+        "jump",
+        "multi-action",
+        "plank",
+        "pose"
+      ]
+    },
+    {
+      "body_actions": [
+        "hold",
+        "rotate"
+      ],
+      "expected_structural_valid": true,
+      "family": "full_body",
+      "hand_shapes": [],
+      "id": "fullbody-cartwheel",
+      "intent": "full_body",
+      "must_fail": [],
+      "notes": "Cartwheel rotation mode; floor and airborne modes are deferred to 03b.",
+      "object_actions": [],
+      "source_prompt": "do a cartwheel",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "rotate",
+        "rotation-cartwheel"
+      ]
+    },
+    {
+      "body_actions": [
+        "dance",
+        "hold"
+      ],
+      "expected_structural_valid": true,
+      "family": "full_body",
+      "hand_shapes": [],
+      "id": "fullbody-dance",
+      "intent": "full_body",
+      "must_fail": [],
+      "notes": null,
+      "object_actions": [],
+      "source_prompt": "do a little dance",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "cycles",
+        "dance"
+      ]
+    },
+    {
+      "body_actions": [
+        "hold",
+        "kick"
+      ],
+      "expected_structural_valid": true,
+      "family": "full_body",
+      "hand_shapes": [],
+      "id": "fullbody-kick-right",
+      "intent": "full_body",
+      "must_fail": [],
+      "notes": "BodyAction.KICK; single-support balance with a free swinging leg.",
+      "object_actions": [],
+      "source_prompt": "kick with your right foot",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "kick",
+        "single-support"
+      ]
+    },
+    {
+      "body_actions": [
+        "climb"
+      ],
+      "expected_structural_valid": true,
+      "family": "full_body",
+      "hand_shapes": [],
+      "id": "fullbody-ladder-climb",
+      "intent": "full_body",
+      "must_fail": [],
+      "notes": "Only case that consumes a climb-contact affordance socket.",
+      "object_actions": [],
+      "source_prompt": "climb up the ladder",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "affordance",
+        "climb",
+        "support-object"
+      ]
+    },
+    {
+      "body_actions": [
+        "hold",
+        "run"
+      ],
+      "expected_structural_valid": true,
+      "family": "full_body",
+      "hand_shapes": [],
+      "id": "fullbody-run-forward",
+      "intent": "full_body",
+      "must_fail": [],
+      "notes": "BodyAction.RUN; the gait path at its highest cadence.",
+      "object_actions": [],
+      "source_prompt": "run forward",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "flight-phase",
+        "gait",
+        "run"
+      ]
+    },
+    {
+      "body_actions": [
+        "hold",
+        "pose"
+      ],
+      "expected_structural_valid": true,
+      "family": "full_body",
+      "hand_shapes": [],
+      "id": "fullbody-shrug-shoulders",
+      "intent": "full_body",
+      "must_fail": [],
+      "notes": "The only case that moves leftShoulder/rightShoulder. Without it the clavicle joint class has n=0 and cannot be calibrated at all; planner.py's 'shrug' token is the only route to BodyPoseTarget.left_shoulder_elevation_deg.",
+      "object_actions": [],
+      "source_prompt": "shrug your shoulders",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "clavicle",
+        "pose",
+        "shoulder-elevation"
+      ]
+    },
+    {
+      "body_actions": [
+        "hold",
+        "step"
+      ],
+      "expected_structural_valid": true,
+      "family": "full_body",
+      "hand_shapes": [],
+      "id": "fullbody-step-over-hurdle",
+      "intent": "full_body",
+      "must_fail": [],
+      "notes": "Only case exercising obstacle traversal.",
+      "object_actions": [],
+      "source_prompt": "step over the hurdle with your right foot",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "clearance",
+        "obstacle-over",
+        "step"
+      ]
+    },
+    {
+      "body_actions": [
+        "hold",
+        "turn"
+      ],
+      "expected_structural_valid": true,
+      "family": "full_body",
+      "hand_shapes": [],
+      "id": "fullbody-turn-left",
+      "intent": "full_body",
+      "must_fail": [],
+      "notes": "BodyAction.TURN; the only case with a large final root yaw.",
+      "object_actions": [],
+      "source_prompt": "turn around to your left",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "turn",
+        "yaw"
+      ]
+    },
+    {
+      "body_actions": [
+        "hold",
+        "walk"
+      ],
+      "expected_structural_valid": true,
+      "family": "full_body",
+      "hand_shapes": [],
+      "id": "fullbody-walk-forward",
+      "intent": "full_body",
+      "must_fail": [],
+      "notes": "BodyAction.WALK; the gait path with sustained root travel.",
+      "object_actions": [],
+      "source_prompt": "walk forward four steps",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "gait",
+        "root-travel",
+        "walk"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": true,
+      "family": "gesture",
+      "hand_shapes": [
+        "fist",
+        "open"
+      ],
+      "id": "gesture-fist-right",
+      "intent": "gesture",
+      "must_fail": [],
+      "notes": "HandShape.FIST outside a strike, where it is a held shape rather than an impact pose.",
+      "object_actions": [],
+      "source_prompt": "clench your right hand into a fist",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "fist",
+        "right"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": true,
+      "family": "gesture",
+      "hand_shapes": [
+        "hang_ten",
+        "open"
+      ],
+      "id": "gesture-hangten-shake-right",
+      "intent": "gesture",
+      "must_fail": [],
+      "notes": "The flagship demo prompt; only case with a SHAKE primitive and a forearm-twist reserve.",
+      "object_actions": [],
+      "source_prompt": "Throw up a \"hang-ten\" sign with your right hand, there should be a swift motion up to the main position wherein the middle three fingers are as contracted as possible, the wrist should then shake rapidly back and forth a few times, before returning to default",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "dexterity",
+        "hang-ten",
+        "right",
+        "shake"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": true,
+      "family": "gesture",
+      "hand_shapes": [
+        "open",
+        "peace"
+      ],
+      "id": "gesture-peace-left",
+      "intent": "gesture",
+      "must_fail": [],
+      "notes": "HandShape.PEACE; the only two-finger extension in the corpus.",
+      "object_actions": [],
+      "source_prompt": "make a peace sign with your left hand",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "left",
+        "peace",
+        "two-finger"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": true,
+      "family": "gesture",
+      "hand_shapes": [
+        "open",
+        "pinch"
+      ],
+      "id": "gesture-pinch-left",
+      "intent": "gesture",
+      "must_fail": [],
+      "notes": "HandShape.PINCH outside the grab lifecycle, where it is a transient contact pose.",
+      "object_actions": [],
+      "source_prompt": "pinch your thumb and index fingertip together with your left hand",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "left",
+        "pinch",
+        "precision-grip"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": true,
+      "family": "gesture",
+      "hand_shapes": [
+        "open",
+        "point"
+      ],
+      "id": "gesture-point-right",
+      "intent": "gesture",
+      "must_fail": [],
+      "notes": "HandShape.POINT. Note the prompt must not name a scene object: planner.py:3940 excludes a block/cube/box mention from the gesture branch, so 'point at the block' resolves UNSUPPORTED.",
+      "object_actions": [],
+      "source_prompt": "point straight ahead with your right index finger",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "index-extension",
+        "point",
+        "right"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": true,
+      "family": "gesture",
+      "hand_shapes": [
+        "hang_ten",
+        "open"
+      ],
+      "id": "gesture-shaka-playful-left",
+      "intent": "gesture",
+      "must_fail": [],
+      "notes": "planner_supported.json s12; mean human score 4.0 in config/motion_quality_reference.json.",
+      "object_actions": [],
+      "source_prompt": "With your left hand, make a balanced relaxed shaka high and extended, drawn inward. Pitch the wrist down, yaw it outward, and roll it counterclockwise.",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "hang-ten",
+        "human-rated",
+        "left",
+        "review-fixture-s12"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": true,
+      "family": "gesture",
+      "hand_shapes": [
+        "hang_ten",
+        "open"
+      ],
+      "id": "gesture-shaka-playful-right",
+      "intent": "gesture",
+      "must_fail": [],
+      "notes": "planner_supported.json s09; mean human score 4.5 in config/motion_quality_reference.json.",
+      "object_actions": [],
+      "source_prompt": "With your right hand, make a balanced playful shaka at chest height and a natural reach, drawn inward. Pitch the wrist up, yaw it outward, and roll it clockwise.",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "hang-ten",
+        "human-rated",
+        "review-fixture-s09",
+        "right"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": true,
+      "family": "gesture",
+      "hand_shapes": [
+        "open",
+        "thumbs_up"
+      ],
+      "id": "gesture-thumbsup-right",
+      "intent": "gesture",
+      "must_fail": [],
+      "notes": "HandShape.THUMBS_UP.",
+      "object_actions": [],
+      "source_prompt": "give a thumbs up with your right hand",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "right",
+        "thumbs-up"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": true,
+      "family": "grasp",
+      "hand_shapes": [
+        "fist",
+        "open",
+        "pinch"
+      ],
+      "id": "grasp-block-left",
+      "intent": "grab",
+      "must_fail": [],
+      "notes": "Left-hand mirror of the grasp lifecycle; the solver runs per hand.",
+      "object_actions": [],
+      "source_prompt": "grab the block with your left hand",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "contact",
+        "left",
+        "mujoco"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": true,
+      "family": "grasp",
+      "hand_shapes": [
+        "fist",
+        "open",
+        "pinch"
+      ],
+      "id": "grasp-block-overhead",
+      "intent": "grab",
+      "must_fail": [],
+      "notes": "0.70 m lift rather than 0.12 m, and 165 contacts against the table case's 85.",
+      "object_actions": [],
+      "source_prompt": "pick up the block and hold it above your head",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "contact",
+        "mujoco",
+        "overhead-lift",
+        "right"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": true,
+      "family": "grasp",
+      "hand_shapes": [
+        "fist",
+        "open",
+        "pinch"
+      ],
+      "id": "grasp-block-table",
+      "intent": "grab",
+      "must_fail": [],
+      "notes": "The pickup demo prompt; Intent.GRAB runs simulate_grasp inside compilation.",
+      "object_actions": [],
+      "source_prompt": "pick up the block on the table",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "contact",
+        "flagship",
+        "mujoco",
+        "right"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": false,
+      "family": "known_bad",
+      "hand_shapes": [],
+      "id": "knownbad-composite-overhead-out-of-view",
+      "intent": "composite",
+      "must_fail": [
+        "hand_visibility"
+      ],
+      "notes": "Fails on the unmodified prompt with no overrides at all: raising both hands overhead leaves the 94-degree egocentric FOV.",
+      "object_actions": [],
+      "source_prompt": "open both hands and raise them overhead",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "hand-visibility",
+        "natural-failure",
+        "no-overrides"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": false,
+      "family": "known_bad",
+      "hand_shapes": [],
+      "id": "knownbad-eigenvalues-unsupported",
+      "intent": "unsupported",
+      "must_fail": [],
+      "notes": "Intent.UNSUPPORTED: no motion to gate, so the check is the planner's refusal itself. The only case with zero frames.",
+      "object_actions": [],
+      "source_prompt": "compute the eigenvalues of this matrix",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "planner-refusal",
+        "unsupported",
+        "zero-frames"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": false,
+      "family": "known_bad",
+      "hand_shapes": [
+        "hang_ten",
+        "open"
+      ],
+      "id": "knownbad-gesture-out-of-view",
+      "intent": "gesture",
+      "must_fail": [
+        "hand_visibility"
+      ],
+      "notes": "The flagship gesture driven low, near and inboard until the active hand leaves frame.",
+      "object_actions": [],
+      "source_prompt": "Throw up a \"hang-ten\" sign with your right hand, there should be a swift motion up to the main position wherein the middle three fingers are as contracted as possible, the wrist should then shake rapidly back and forth a few times, before returning to default",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "hand-visibility",
+        "overrides"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": false,
+      "family": "known_bad",
+      "hand_shapes": [
+        "fist",
+        "open",
+        "pinch"
+      ],
+      "id": "knownbad-sequence-throw-then-catch",
+      "intent": "sequence",
+      "must_fail": [
+        "carried_object_step"
+      ],
+      "notes": "Both steps are individually valid; the bridge between them teleports the block 1.38 m against a 0.08 m reference. No overrides.",
+      "object_actions": [
+        "catch",
+        "throw"
+      ],
+      "source_prompt": "throw the block then catch the block",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "carried-object-step",
+        "natural-failure",
+        "no-overrides",
+        "sequence"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": false,
+      "family": "known_bad",
+      "hand_shapes": [
+        "fist",
+        "open"
+      ],
+      "id": "knownbad-strike-hyperfast",
+      "intent": "strike",
+      "must_fail": [
+        "angular_acceleration",
+        "angular_jerk"
+      ],
+      "notes": "A jab compressed into 0.05 s: over the acceleration and jerk ceilings but still under the velocity one.",
+      "object_actions": [],
+      "source_prompt": "throw a left jab",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [
+        "jab"
+      ],
+      "tags": [
+        "angular-acceleration",
+        "angular-jerk",
+        "overrides"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": false,
+      "family": "known_bad",
+      "hand_shapes": [],
+      "id": "knownbad-travel-hyperfast",
+      "intent": "composite",
+      "must_fail": [
+        "angular_velocity",
+        "angular_acceleration",
+        "angular_jerk"
+      ],
+      "notes": "The only case over all three kinematic ceilings, and the only one failing them on both arms at once.",
+      "object_actions": [],
+      "source_prompt": "roll your forearms around eachother repeatedly, as if you are indicating the \"travel\" foul in basketball",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "angular-acceleration",
+        "angular-jerk",
+        "angular-velocity",
+        "both-hands",
+        "overrides"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": true,
+      "family": "object_interaction",
+      "hand_shapes": [
+        "fist",
+        "open",
+        "pinch"
+      ],
+      "id": "object-catch-left",
+      "intent": "object_interaction",
+      "must_fail": [],
+      "notes": "ObjectAction.CATCH; the only case with a catch_intercept_error_m metric.",
+      "object_actions": [
+        "catch"
+      ],
+      "source_prompt": "catch the block with your left hand",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "catch",
+        "intercept",
+        "left"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": true,
+      "family": "object_interaction",
+      "hand_shapes": [
+        "fist",
+        "open",
+        "pinch"
+      ],
+      "id": "object-drop-right",
+      "intent": "object_interaction",
+      "must_fail": [],
+      "notes": "ObjectAction.DROP; the shortest object travel at 0.08 m. Runs simulate_grasp.",
+      "object_actions": [
+        "drop"
+      ],
+      "source_prompt": "drop the block",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "drop",
+        "release",
+        "right"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": true,
+      "family": "object_interaction",
+      "hand_shapes": [
+        "fist",
+        "open",
+        "pinch"
+      ],
+      "id": "object-handoff-to-left",
+      "intent": "object_interaction",
+      "must_fail": [],
+      "notes": "ObjectAction.HANDOFF; the only case with two attached hands and an attachment-slip pair.",
+      "object_actions": [
+        "handoff"
+      ],
+      "source_prompt": "pass the block to your left hand",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "both-hands",
+        "dual-contact",
+        "handoff"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": true,
+      "family": "object_interaction",
+      "hand_shapes": [
+        "fist",
+        "open",
+        "pinch"
+      ],
+      "id": "object-place-gently",
+      "intent": "object_interaction",
+      "must_fail": [],
+      "notes": "ObjectAction.PLACE, and the only case resolving ObjectInteractionStyle.TOSS.",
+      "object_actions": [
+        "place"
+      ],
+      "source_prompt": "place the block down gently",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "place",
+        "right",
+        "toss-style"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": true,
+      "family": "object_interaction",
+      "hand_shapes": [
+        "fist",
+        "open",
+        "pinch"
+      ],
+      "id": "object-pull-toward",
+      "intent": "object_interaction",
+      "must_fail": [],
+      "notes": "ObjectAction.PULL; the only case with a negative travel direction.",
+      "object_actions": [
+        "pull"
+      ],
+      "source_prompt": "pull the block toward you",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "negative-z",
+        "pull",
+        "right"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": true,
+      "family": "object_interaction",
+      "hand_shapes": [
+        "open"
+      ],
+      "id": "object-push-forward",
+      "intent": "object_interaction",
+      "must_fail": [],
+      "notes": "ObjectAction.PUSH; support-plane travel with the object never leaving the table.",
+      "object_actions": [
+        "push"
+      ],
+      "source_prompt": "push the block forward",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "push",
+        "right",
+        "support-plane"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": true,
+      "family": "object_interaction",
+      "hand_shapes": [
+        "open"
+      ],
+      "id": "object-roll-across",
+      "intent": "object_interaction",
+      "must_fail": [],
+      "notes": "ObjectAction.ROLL; the only case with object_measured_roll_turns.",
+      "object_actions": [
+        "roll"
+      ],
+      "source_prompt": "roll the block across the table",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "right",
+        "roll",
+        "rolling-angle"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": true,
+      "family": "object_interaction",
+      "hand_shapes": [
+        "open"
+      ],
+      "id": "object-spin-in-place",
+      "intent": "object_interaction",
+      "must_fail": [],
+      "notes": "ObjectAction.SPIN; the only case with object_measured_support_spin_turns.",
+      "object_actions": [
+        "spin"
+      ],
+      "source_prompt": "spin the block on the table",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "right",
+        "spin",
+        "support-spin"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": true,
+      "family": "object_interaction",
+      "hand_shapes": [
+        "fist",
+        "open",
+        "pinch"
+      ],
+      "id": "object-throw-far",
+      "intent": "object_interaction",
+      "must_fail": [],
+      "notes": "ObjectAction.THROW at the 1.60 m far distance and the 0.65 m lofted apex. Runs simulate_grasp.",
+      "object_actions": [
+        "throw"
+      ],
+      "source_prompt": "throw the block far and high with your right hand",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "ballistic",
+        "overhand",
+        "right",
+        "throw"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": true,
+      "family": "sequence",
+      "hand_shapes": [
+        "fist",
+        "open",
+        "pinch"
+      ],
+      "id": "sequence-grab-then-wave",
+      "intent": "sequence",
+      "must_fail": [],
+      "notes": "The only sequence bridging the MuJoCo grasp path into a composite step.",
+      "object_actions": [],
+      "source_prompt": "pick up the block and then wave",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "cross-path",
+        "grab-then-gesture",
+        "sequence"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": true,
+      "family": "sequence",
+      "hand_shapes": [
+        "fist",
+        "open",
+        "pinch"
+      ],
+      "id": "sequence-push-then-pull",
+      "intent": "sequence",
+      "must_fail": [],
+      "notes": "Object state survives the step boundary: the block pushed in step one is the block pulled in step two.",
+      "object_actions": [
+        "pull",
+        "push"
+      ],
+      "source_prompt": "push the block forward then pull the block toward you",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "object-continuity",
+        "sequence",
+        "two-object-steps"
+      ]
+    },
+    {
+      "body_actions": [
+        "hold",
+        "pose"
+      ],
+      "expected_structural_valid": true,
+      "family": "sequence",
+      "hand_shapes": [],
+      "id": "sequence-wave-then-pushup",
+      "intent": "sequence",
+      "must_fail": [],
+      "notes": "Bridges the composite path into the full-body path; 242 frames, the longest case in the corpus.",
+      "object_actions": [],
+      "source_prompt": "wave hello and then do a push-up",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [],
+      "tags": [
+        "gesture-then-fullbody",
+        "longest",
+        "sequence"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": true,
+      "family": "strike",
+      "hand_shapes": [
+        "fist",
+        "open"
+      ],
+      "id": "strike-cross-right",
+      "intent": "strike",
+      "must_fail": [],
+      "notes": "StrikeType.CROSS; the longest strike at 119 frames.",
+      "object_actions": [],
+      "source_prompt": "throw a right cross",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [
+        "cross"
+      ],
+      "tags": [
+        "cross",
+        "linear-path",
+        "longest-strike",
+        "right"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": true,
+      "family": "strike",
+      "hand_shapes": [
+        "fist",
+        "open"
+      ],
+      "id": "strike-hook-right",
+      "intent": "strike",
+      "must_fail": [],
+      "notes": "StrikeType.HOOK; completes StrikeType with jab, uppercut and cross.",
+      "object_actions": [],
+      "source_prompt": "throw a right hook",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [
+        "hook"
+      ],
+      "tags": [
+        "curved-path",
+        "hook",
+        "right"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": true,
+      "family": "strike",
+      "hand_shapes": [
+        "fist",
+        "open"
+      ],
+      "id": "strike-jab-left",
+      "intent": "strike",
+      "must_fail": [],
+      "notes": null,
+      "object_actions": [],
+      "source_prompt": "throw a left jab",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [
+        "jab"
+      ],
+      "tags": [
+        "jab",
+        "left",
+        "linear-path"
+      ]
+    },
+    {
+      "body_actions": [],
+      "expected_structural_valid": true,
+      "family": "strike",
+      "hand_shapes": [
+        "fist",
+        "open"
+      ],
+      "id": "strike-uppercut-right",
+      "intent": "strike",
+      "must_fail": [],
+      "notes": null,
+      "object_actions": [],
+      "source_prompt": "throw a right uppercut",
+      "source_seed": null,
+      "storage": "program_and_clip",
+      "strike_types": [
+        "uppercut"
+      ],
+      "tags": [
+        "right",
+        "uppercut",
+        "vertical-path"
+      ]
+    }
+  ],
+  "compiler_version": "rigby-compiler-0.4.0",
+  "coverage": {
+    "body_action": {
+      "covered": [
+        "climb",
+        "crouch",
+        "dance",
+        "hold",
+        "jump",
+        "kick",
+        "pose",
+        "rotate",
+        "run",
+        "step",
+        "turn",
+        "walk"
+      ],
+      "deferred": {}
+    },
+    "hand_shape": {
+      "covered": [
+        "fist",
+        "hang_ten",
+        "open",
+        "peace",
+        "pinch",
+        "point",
+        "thumbs_up"
+      ],
+      "deferred": {}
+    },
+    "intent": {
+      "covered": [
+        "composite",
+        "full_body",
+        "gesture",
+        "grab",
+        "object_interaction",
+        "sequence",
+        "strike",
+        "unsupported"
+      ],
+      "deferred": {}
+    },
+    "object_action": {
+      "covered": [
+        "catch",
+        "drop",
+        "handoff",
+        "place",
+        "pull",
+        "push",
+        "roll",
+        "spin",
+        "throw"
+      ],
+      "deferred": {}
+    },
+    "strike_type": {
+      "covered": [
+        "cross",
+        "hook",
+        "jab",
+        "uppercut"
+      ],
+      "deferred": {}
+    }
+  },
+  "schema_version": "1.1",
+  "storage_policy": "program_and_clip"
+}

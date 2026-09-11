@@ -1,0 +1,731 @@
+"""Gesture-layer structural quality metrics.
+
+Moved verbatim from ``rigby_poc.quality``, which now re-exports this module so
+existing call sites keep working. Nothing here touches generation state: every
+function reads a finished clip.
+"""
+
+from __future__ import annotations
+
+import json
+import math
+from collections.abc import Iterable
+from dataclasses import dataclass
+from functools import cache
+from typing import Any
+
+import numpy as np
+from scipy.spatial.transform import Rotation
+
+from ..kinematics import arm_calibration, rig_kinematics
+from ..models import ClipFrame, Hand, HandShape
+from ..primitives import shoulder_position
+from .context import AnalysisContext
+from .contract import (
+    ANATOMY,
+    SIGNAL,
+    CheckResult,
+    count_check,
+    lower_bound_check,
+    upper_bound_check,
+)
+from .rig import EGO_EYE_OFFSET_M, EGO_NEUTRAL_GAZE, PROJECT_ROOT, identity_bones
+
+QUALITY_REFERENCE = PROJECT_ROOT / "config" / "motion_quality_reference.json"
+
+@cache
+def rest_ego_camera_position() -> np.ndarray:
+    """The ego camera's world position at the rest head pose, derived not frozen.
+
+    ``EGO_EYE_OFFSET_M`` composed onto the rig's *measured* rest head position,
+    which is what ``frontend/src/camera.ts`` does. This replaces a frozen literal
+    that carried the same sum with the head position rounded to four decimals:
+    that rounding put the implied offset 0.024 mm from the renderer's, which is
+    0.028 px of a 1600x900 capture and decided
+    ``active_hand_visibility_fraction`` at frame 0 of every strike and gesture
+    clip. See :func:`_full_hand_visible` for why a sub-pixel margin no longer
+    decides anything.
+
+    Only the fallback path needs it -- callers with a skeleton to hand get a
+    head-carried camera per frame. Cached because it is one rest-pose evaluation
+    and the fallback must not add a forward-kinematics pass per call.
+    """
+
+    kinematics = rig_kinematics()
+    head = kinematics.world_matrices(identity_bones())[
+        kinematics.node_by_canonical["head"]
+    ]
+    # No rotation by the rest head block. ``computeEgoCameraPose`` rotates the
+    # offset by the head *delta* -- current rotation against rest -- which is the
+    # identity at the rest pose, so the offset composes in world axes here.
+    return head[:3, 3] + EGO_EYE_OFFSET_M
+
+
+def quality_reference() -> dict[str, Any]:
+    return json.loads(QUALITY_REFERENCE.read_text(encoding="utf-8"))
+
+
+def _angle(rotation: Rotation) -> float:
+    return float(rotation.magnitude())
+
+
+def swing_twist_angles(quaternion_xyzw: Iterable[float], axis: Iterable[float]) -> tuple[float, float]:
+    """Decompose a local rotation into swing and signed twist magnitudes."""
+    value = np.asarray(list(quaternion_xyzw), dtype=float)
+    value /= max(float(np.linalg.norm(value)), 1e-12)
+    axis_value = np.asarray(list(axis), dtype=float)
+    axis_value /= max(float(np.linalg.norm(axis_value)), 1e-12)
+    projected = axis_value * float(np.dot(value[:3], axis_value))
+    twist_value = np.asarray([projected[0], projected[1], projected[2], value[3]], dtype=float)
+    twist_norm = float(np.linalg.norm(twist_value))
+    if twist_norm < 1e-12:
+        twist = Rotation.identity()
+    else:
+        twist = Rotation.from_quat(twist_value / twist_norm)
+    full = Rotation.from_quat(value)
+    swing = full * twist.inv()
+    signed_twist = _angle(twist)
+    if float(np.dot(twist.as_rotvec(), axis_value)) < 0.0:
+        signed_twist *= -1.0
+    return _angle(swing), signed_twist
+
+
+def arm_landmarks(frame: ClipFrame, hand: Hand) -> tuple[np.ndarray, np.ndarray, np.ndarray, Rotation]:
+    prefix = hand.value
+    calibration = arm_calibration(prefix)
+    shoulder = np.asarray(shoulder_position(hand).as_list(), dtype=float)
+    upper_delta = Rotation.from_quat(frame.bones[f"{prefix}UpperArm"].rotation.as_list())
+    lower_delta = Rotation.from_quat(frame.bones[f"{prefix}LowerArm"].rotation.as_list())
+    upper_world = Rotation.from_quat(calibration.upper_rest_world_xyzw) * upper_delta
+    lower_base = upper_world * Rotation.from_quat(calibration.lower_rest_local_xyzw)
+    lower_world = lower_base * lower_delta
+    elbow = shoulder + upper_world.apply([0.0, calibration.upper_length_m, 0.0])
+    wrist = elbow + lower_world.apply([0.0, calibration.lower_length_m, 0.0])
+    hand_world = (
+        lower_world
+        * Rotation.from_quat(calibration.hand_rest_local_xyzw)
+        * Rotation.from_quat(frame.bones[f"{prefix}Hand"].rotation.as_list())
+    )
+    return shoulder, elbow, wrist, hand_world
+
+
+def world_arm_landmarks(
+    ctx: AnalysisContext, index: int, hand: Hand
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, Rotation]:
+    """Shoulder, elbow, wrist and hand orientation in world, for one frame.
+
+    ``arm_landmarks`` rebuilds the arm from a fixed rest shoulder and five rest
+    constants, so it cannot see the trunk: what it returns is the arm measured
+    relative to the chest. Since strikes distribute their yaw over the spine,
+    chest and upperChest, that is the wrong frame for anything projected onto a
+    world axis -- a world lateral excursion read there is the arm's excursion
+    across a torso that is itself turning.
+
+    The rig already carries the answer: the ``*UpperArm``, ``*LowerArm`` and
+    ``*Hand`` pivots are the shoulder, elbow and wrist, so this reads them out
+    of the frame's world matrices instead of reconstructing them. Taking the
+    context and a frame index rather than a :class:`ClipFrame` is deliberate --
+    it makes the function unable to evaluate forward kinematics of its own, so
+    it costs nothing beyond the one pass per frame the context already memoises.
+
+    ``arm_landmarks`` stays as-is and stays the answer for generation (the
+    compiler places carried objects with it) and for hand-local attachment
+    offsets, neither of which wants a world frame.
+    """
+
+    prefix = hand.value
+    matrices = ctx.world_matrices(index)
+    node = ctx.kinematics.node_by_canonical
+    hand_matrix = matrices[node[f"{prefix}Hand"]]
+    return (
+        matrices[node[f"{prefix}UpperArm"]][:3, 3].copy(),
+        matrices[node[f"{prefix}LowerArm"]][:3, 3].copy(),
+        hand_matrix[:3, 3].copy(),
+        Rotation.from_matrix(hand_matrix[:3, :3]),
+    )
+
+
+def ego_camera(
+    head_position: np.ndarray, head_delta: np.ndarray, eye_offset: np.ndarray
+) -> tuple[np.ndarray, np.ndarray]:
+    """The ego camera pose the frontend actually renders, for one frame.
+
+    Mirrors ``frontend/src/camera.ts::computeEgoCameraPose``: the eye offset and
+    the neutral gaze are head-local, so both are carried by the head's animation
+    delta -- its world rotation relative to the rest one -- and the eye offset is
+    then hung off wherever the head has moved to.
+
+    ``eye_offset`` is passed in rather than read from the module constant so it
+    is carried into *this* skeleton's rest head frame by the caller (see
+    :attr:`AnalysisContext.rest_head_transform`), which is what lets an injected
+    rig produce its own camera rather than the default rig's.
+
+    Only the position and the forward axis come back. The frontend sets
+    ``camera.up = (0, 1, 0)`` before ``lookAt``, so the camera does not roll with
+    the head and the frustum's right/up axes are rebuilt from world up by the
+    caller.
+    """
+
+    position = head_position + head_delta @ eye_offset
+    forward = head_delta @ EGO_NEUTRAL_GAZE
+    return position, forward / np.linalg.norm(forward)
+
+
+@dataclass(frozen=True)
+class WorldHandSample:
+    """One frame's hand and camera, both measured in world.
+
+    Bundled rather than passed as four parallel dicts because the two halves are
+    only correct together: a world-true wrist judged by the rest-pose camera, or
+    a head-carried camera judged against a chest-frame wrist, is half a fix, and
+    on the two out-of-view corpus cases the two errors currently cancel.
+    """
+
+    wrist: np.ndarray
+    hand_world: Rotation
+    camera_position: np.ndarray
+    camera_forward: np.ndarray
+
+
+def world_hand_samples(
+    ctx: AnalysisContext, hand: Hand, presentation_ranges: list[tuple[float, float]]
+) -> dict[int, WorldHandSample]:
+    """World wrist, hand orientation and ego camera for every sampled frame.
+
+    Keyed by index into ``ctx.frames``. Built only over the presentation window
+    because those are the only frames :func:`evaluate_gesture_structure` judges
+    for visibility, so a gesture clip pays forward kinematics for the frames it
+    actually samples rather than all of them.
+    """
+
+    indices = ctx.indices_in(presentation_ranges)
+    if not indices:
+        # A clip with no presentation window samples nothing, so it should not
+        # pay even the rest-pose evaluation. ``strike_shake_echo`` is such a
+        # clip: a STRIKE program whose only primitive is a SHAKE.
+        return {}
+    head_node = ctx.kinematics.node_by_canonical["head"]
+    _, rest_head_rotation = ctx.rest_head_transform
+    eye_offset = EGO_EYE_OFFSET_M
+    samples: dict[int, WorldHandSample] = {}
+    for index in indices:
+        head = ctx.world_matrices(index)[head_node]
+        head_delta = head[:3, :3] @ rest_head_rotation.T
+        position, forward = ego_camera(head[:3, 3], head_delta, eye_offset)
+        _, _, wrist, hand_world = world_arm_landmarks(ctx, index, hand)
+        samples[index] = WorldHandSample(wrist, hand_world, position, forward)
+    return samples
+
+
+#: The torso capsule's vertical extent in the rig's rest-world frame.
+_TORSO_CAPSULE_Y_M = (1.01, 1.48)
+
+
+def _torso_cross_section(point: np.ndarray) -> bool:
+    # Conservative torso capsule in the calibrated rig's X/Z cross-section.
+    # The arms are permitted to pass in front of the chest, but not through it.
+    normalized = (float(point[0]) / 0.19) ** 2 + ((float(point[2]) + 0.015) / 0.145) ** 2
+    return normalized < 1.0
+
+
+def _inside_torso(point: np.ndarray) -> bool:
+    """The rest-world torso capsule -- the geometric definition, unchanged.
+
+    Takes a point in the rig's rest-world frame. The carried check below maps
+    world points back into each torso carrier's rest frame and asks this same
+    cross-section question slice by slice, so this function stays the single
+    home of the capsule's literals and is exact at the rest pose.
+    """
+
+    low, high = _TORSO_CAPSULE_Y_M
+    return low <= float(point[1]) <= high and _torso_cross_section(point)
+
+
+#: The bones that carry the capsule, hips upward. The strike trunk yaw is
+#: graded across spine/chest/upperChest and root motion will translate the
+#: hips, so no single bone can carry the whole capsule rigidly: each carries
+#: the slice between its own rest pivot height and the next carrier's.
+_TORSO_CAPSULE_CARRIERS = ("hips", "spine", "chest", "upperChest")
+
+
+@cache
+def _torso_capsule_bands() -> tuple[tuple[str, float, float, np.ndarray], ...]:
+    """``(bone, band_low, band_high, rest_world_matrix)`` per capsule slice.
+
+    The capsule's y-range is partitioned at the carriers' rest pivot heights
+    (hips 0.9167, spine 1.0174, chest 1.1405, upperChest 1.2817), clamped to
+    the range: the hips carry the thin band below the spine pivot and the
+    upperChest slice runs to the capsule top. At the rest pose the union of
+    carried slices is exactly the fixed capsule.
+
+    The rest world matrices are composed here from the parent chain directly
+    rather than through ``RigKinematics.world_matrices`` on purpose: that
+    funnel is counted per case by the forward-kinematics equality guard, and a
+    module-level cache firing through it would add one pass to whichever case
+    runs first -- a count that depends on test order is not an equality.
+    """
+
+    kinematics = rig_kinematics()
+    node = kinematics.node_by_canonical
+
+    def rest_world(index: int) -> np.ndarray:
+        matrix = kinematics.rest[index].matrix(None, None)
+        parent = kinematics.parents.get(index)
+        return matrix if parent is None else rest_world(parent) @ matrix
+
+    rest = {bone: rest_world(node[bone]) for bone in _TORSO_CAPSULE_CARRIERS}
+    pivots = [float(rest[bone][1, 3]) for bone in _TORSO_CAPSULE_CARRIERS]
+    low, high = _TORSO_CAPSULE_Y_M
+    bands: list[tuple[str, float, float, np.ndarray]] = []
+    last = len(_TORSO_CAPSULE_CARRIERS) - 1
+    for index, bone in enumerate(_TORSO_CAPSULE_CARRIERS):
+        band_low = low if index == 0 else max(low, pivots[index])
+        band_high = high if index == last else min(high, pivots[index + 1])
+        if band_high <= band_low:
+            continue
+        bands.append((bone, band_low, band_high, rest[bone]))
+    return tuple(bands)
+
+
+def _torso_carry(
+    matrices: list[np.ndarray], node: dict[str, int]
+) -> tuple[tuple[float, float, np.ndarray], ...]:
+    """Per-slice world-to-rest maps for one frame's torso pose.
+
+    For each capsule slice, ``rest_world @ inverse(current_world)`` maps a
+    world-frame point back into the carrier's rest frame, where the capsule
+    literals are defined. Rigid inverse rather than ``np.linalg.inv`` because
+    the matrices are rotations plus translations and nothing else.
+    """
+
+    carries: list[tuple[float, float, np.ndarray]] = []
+    for bone, band_low, band_high, rest_matrix in _torso_capsule_bands():
+        current = matrices[node[bone]]
+        rotation = current[:3, :3]
+        inverse = np.eye(4)
+        inverse[:3, :3] = rotation.T
+        inverse[:3, 3] = -rotation.T @ current[:3, 3]
+        carries.append((band_low, band_high, rest_matrix @ inverse))
+    return tuple(carries)
+
+
+def _inside_torso_carried(
+    point: np.ndarray, carries: tuple[tuple[float, float, np.ndarray], ...]
+) -> bool:
+    homogeneous = np.asarray([point[0], point[1], point[2], 1.0], dtype=float)
+    for band_low, band_high, carry in carries:
+        mapped = carry @ homogeneous
+        if band_low <= float(mapped[1]) <= band_high and _torso_cross_section(mapped):
+            return True
+    return False
+
+
+def _arm_self_collision(
+    shoulder: np.ndarray,
+    elbow: np.ndarray,
+    wrist: np.ndarray,
+    carries: tuple[tuple[float, float, np.ndarray], ...],
+) -> bool:
+    samples: list[np.ndarray] = []
+    # Ignore the proximal upper-arm section that begins on the torso surface.
+    # The shoulder joint starts inside the torso mesh. Samples before the
+    # midpoint falsely classify a naturally adducted upper arm (as used by
+    # the travel signal) as penetrating the chest even when its elbow and
+    # complete forearm remain in front of the torso surface.
+    for alpha in np.linspace(0.55, 1.0, 5):
+        samples.append(shoulder * (1.0 - alpha) + elbow * alpha)
+    for alpha in np.linspace(0.0, 1.0, 7):
+        samples.append(elbow * (1.0 - alpha) + wrist * alpha)
+    return any(_inside_torso_carried(point, carries) for point in samples)
+
+
+def _full_hand_visible(
+    wrist: np.ndarray,
+    hand_world: Rotation,
+    contract: dict[str, Any],
+    hand_shape: HandShape | None = None,
+    *,
+    camera_position: np.ndarray | None = None,
+    camera_forward: np.ndarray | None = None,
+) -> bool:
+    # The camera the head actually carries, when the caller can supply it.
+    # Falling back to the rest pose keeps the frontend-matching literal for
+    # callers with no skeleton to hand -- the corruption harness, which mutates
+    # bones after the clip compiles, and the synthetic partial-bone frames in
+    # the check tests. ``EGO_NEUTRAL_GAZE`` is the same normalised (0, -0.65, 1)
+    # this function used to build inline, so that path is unchanged bit for bit.
+    position = rest_ego_camera_position() if camera_position is None else camera_position
+    forward = EGO_NEUTRAL_GAZE if camera_forward is None else camera_forward
+    world_up = np.asarray([0.0, 1.0, 0.0], dtype=float)
+    right = np.cross(forward, world_up)
+    right /= np.linalg.norm(right)
+    up = np.cross(right, forward)
+    up /= np.linalg.norm(up)
+
+    relative = wrist - position
+    depth = float(np.dot(relative, forward))
+    if depth <= 0.015:
+        return False
+    horizontal = float(np.dot(relative, right))
+    vertical = float(np.dot(relative, up))
+    half_vertical = math.tan(math.radians(float(contract["vertical_fov_deg"])) / 2.0) * depth
+    half_horizontal = half_vertical * float(contract["aspect_ratio"])
+
+    # A shaka is wider along the local finger axis than a closed hand.  Project
+    # that span into camera X/Y so the complete silhouette, not only the wrist,
+    # must remain inside the frustum.
+    local_finger = hand_world.apply([0.0, 1.0, 0.0])
+    local_palm = hand_world.apply([1.0, 0.0, 0.0])
+    finger_half_span = 0.060 if hand_shape == HandShape.FIST else 0.095
+    palm_half_span = 0.050 if hand_shape == HandShape.FIST else 0.055
+    radius_x = abs(float(np.dot(local_finger, right))) * finger_half_span + abs(
+        float(np.dot(local_palm, right))
+    ) * palm_half_span
+    radius_y = abs(float(np.dot(local_finger, up))) * finger_half_span + abs(
+        float(np.dot(local_palm, up))
+    ) * palm_half_span
+    radius_x = max(radius_x, float(contract["hand_visibility_radius_m"]) * 0.55)
+    radius_y = max(radius_y, float(contract["hand_visibility_radius_m"]) * 0.55)
+
+    # One pixel of the evidence image, at this depth. Not a tuned tolerance: the
+    # resolving power of the instrument this check models. It exists to predict
+    # what a grader sees in a `width_px` x `height_px` render, so a verdict taken
+    # below one pixel is a claim the rendered evidence cannot carry either way.
+    #
+    # Measured, on the clip that forced it: at frame 0 of every strike and gesture
+    # the hand sits within 0.03 px of the frustum edge, because the compiler
+    # places it at the visibility limit by construction. Without this floor the
+    # published fraction is decided by which of two copies of the eye offset was
+    # rounded -- a 0.024 mm difference, 0.028 px. With it, the same answer comes
+    # back either way.
+    #
+    # It cannot rescue a clip that is genuinely out of view, and that is measured
+    # rather than argued: `knownbad-gesture-out-of-view` reaches 68.9 px outside
+    # the frustum and `knownbad-composite-overhead-out-of-view` 266.9 px, against
+    # a floor of one. Stated in pixels rather than metres so it stays correct as
+    # depth changes instead of meaning something different at every distance.
+    pixel = 2.0 * half_vertical / float(contract["height_px"])
+    return (
+        abs(horizontal) + radius_x <= half_horizontal + pixel
+        and abs(vertical) + radius_y <= half_vertical + pixel
+    )
+
+
+def _angular_kinematics(frames: list[ClipFrame], bone_names: list[str]) -> tuple[float, float, float]:
+    if len(frames) < 4:
+        return 0.0, 0.0, 0.0
+    times = np.asarray([frame.time_s for frame in frames], dtype=float)
+    velocities: list[float] = []
+    velocity_times: list[float] = []
+    for index, (first, second) in enumerate(zip(frames, frames[1:])):
+        delta_t = max(float(times[index + 1] - times[index]), 1e-8)
+        maximum = 0.0
+        for name in bone_names:
+            a = Rotation.from_quat(first.bones[name].rotation.as_list())
+            b = Rotation.from_quat(second.bones[name].rotation.as_list())
+            maximum = max(maximum, _angle(a.inv() * b) / delta_t)
+        velocities.append(maximum)
+        velocity_times.append((times[index + 1] + times[index]) / 2.0)
+    accelerations: list[float] = []
+    acceleration_times: list[float] = []
+    for index, (first, second) in enumerate(zip(velocities, velocities[1:])):
+        delta_t = max(velocity_times[index + 1] - velocity_times[index], 1e-8)
+        accelerations.append(abs(second - first) / delta_t)
+        acceleration_times.append((velocity_times[index + 1] + velocity_times[index]) / 2.0)
+    jerks: list[float] = []
+    for index, (first, second) in enumerate(zip(accelerations, accelerations[1:])):
+        delta_t = max(acceleration_times[index + 1] - acceleration_times[index], 1e-8)
+        jerks.append(abs(second - first) / delta_t)
+    return (
+        max(velocities, default=0.0),
+        max(accelerations, default=0.0),
+        max(jerks, default=0.0),
+    )
+
+
+def _oscillation_summary(values: list[float]) -> tuple[float, float]:
+    """Return measured cycles and peak amplitude for a signed joint channel."""
+    amplitude = max((abs(value) for value in values), default=0.0)
+    if amplitude < 1e-4:
+        return 0.0, amplitude
+    threshold = max(1e-4, amplitude * 0.15)
+    signs: list[int] = []
+    for value in values:
+        if abs(value) < threshold:
+            continue
+        sign = 1 if value > 0.0 else -1
+        if not signs or signs[-1] != sign:
+            signs.append(sign)
+    return len(signs) / 2.0, amplitude
+
+
+def shake_joint_oscillation_metrics(
+    frames: list[ClipFrame],
+    hand: Hand,
+    shake_ranges: list[tuple[float, float]],
+) -> dict[str, float]:
+    """Measure which physical joint actually carries the authored shake.
+
+    Values come from frame rotations, not planner parameters. This matters for
+    adversarial clips that move an oscillation from the lower arm to the hand.
+    """
+    selected = [
+        frame
+        for frame in frames
+        if any(start - 1e-8 <= frame.time_s <= end + 1e-8 for start, end in shake_ranges)
+    ]
+    if len(selected) < 3:
+        return {
+            "forearm_rotation_cycles": 0.0,
+            "forearm_rotation_amplitude_rad": 0.0,
+            "wrist_flexion_cycles": 0.0,
+            "wrist_flexion_amplitude_rad": 0.0,
+            "wrist_deviation_cycles": 0.0,
+            "wrist_deviation_amplitude_rad": 0.0,
+        }
+
+    prefix = hand.value
+    lower_name = f"{prefix}LowerArm"
+    hand_name = f"{prefix}Hand"
+    lower_baseline = Rotation.from_quat(selected[0].bones[lower_name].rotation.as_list())
+    hand_baseline = Rotation.from_quat(selected[0].bones[hand_name].rotation.as_list())
+    forearm: list[float] = []
+    wrist_flexion: list[float] = []
+    wrist_deviation: list[float] = []
+    for frame in selected:
+        lower = Rotation.from_quat(frame.bones[lower_name].rotation.as_list())
+        lower_relative = lower_baseline.inv() * lower
+        _, lower_twist = swing_twist_angles(lower_relative.as_quat(), [0.0, 1.0, 0.0])
+        forearm.append(lower_twist)
+
+        current_hand = Rotation.from_quat(frame.bones[hand_name].rotation.as_list())
+        hand_rotvec = (hand_baseline.inv() * current_hand).as_rotvec()
+        wrist_flexion.append(float(hand_rotvec[0]))
+        wrist_deviation.append(float(hand_rotvec[2]))
+
+    forearm_cycles, forearm_amplitude = _oscillation_summary(forearm)
+    flexion_cycles, flexion_amplitude = _oscillation_summary(wrist_flexion)
+    deviation_cycles, deviation_amplitude = _oscillation_summary(wrist_deviation)
+    return {
+        "forearm_rotation_cycles": forearm_cycles,
+        "forearm_rotation_amplitude_rad": forearm_amplitude,
+        "wrist_flexion_cycles": flexion_cycles,
+        "wrist_flexion_amplitude_rad": flexion_amplitude,
+        "wrist_deviation_cycles": deviation_cycles,
+        "wrist_deviation_amplitude_rad": deviation_amplitude,
+    }
+
+
+def evaluate_gesture_structure(
+    frames: list[ClipFrame],
+    hand: Hand,
+    presentation_ranges: list[tuple[float, float]],
+    hand_shape: HandShape | None = None,
+    *,
+    world_samples: dict[int, WorldHandSample] | None = None,
+    ctx: AnalysisContext | None = None,
+) -> dict[str, Any]:
+    """Structural quality for one hand over a finished clip.
+
+    Pass ``ctx`` -- the :class:`AnalysisContext` whose ``frames`` are the frames
+    under evaluation -- and self-collision reads the arm pivots and the torso
+    carriers out of the context's memoised per-frame world matrices, so the
+    check costs no additional forward kinematics. Without it, each frame's
+    hierarchy is evaluated directly from its bones; that path exists for the
+    same callers as the visibility fallback below and pays real FK per frame.
+
+    Pass ``world_samples`` -- :func:`world_hand_samples` over the same frames and
+    the same presentation ranges -- and visibility is judged with the wrist and
+    hand orientation the rig actually has in world, against the camera the head
+    actually carries. Without it the sampler falls back to the reconstructed,
+    chest-relative arm and the rest-pose camera.
+
+    That fallback is load-bearing, not a convenience: ``evals/corruptions.py``
+    mutates frame bones *after* the clip compiles, so any context-derived world
+    data would describe the pre-corruption clip, and the synthetic partial-bone
+    frames in ``tests/test_analysis_checks.py`` have no context at all. Both
+    still get the pre-existing answer.
+
+    ``world_samples`` is keyword-only because eight call sites outside this
+    package pass ``frames``, ``hand`` and ``presentation_ranges`` positionally
+    and one passes ``hand_shape`` as a fourth positional argument.
+    """
+
+    if ctx is not None and len(ctx.frames) != len(frames):
+        raise ValueError(
+            "ctx.frames must be the frames under evaluation -- a context built "
+            "from different frames would read pre-mutation world data"
+        )
+    reference = quality_reference()
+    limits = reference["hard_limits"]
+    contract = reference["camera_contract"]
+    kinematics = ctx.kinematics if ctx is not None else rig_kinematics()
+    node = kinematics.node_by_canonical
+    prefix = hand.value
+    swing_values: list[float] = []
+    twist_values: list[float] = []
+    forearm_twist_values: list[float] = []
+    collisions = 0
+    visible: list[bool] = []
+    for index, frame in enumerate(frames):
+        swing, twist = swing_twist_angles(frame.bones[f"{prefix}Hand"].rotation.as_list(), [0.0, 1.0, 0.0])
+        swing_values.append(swing)
+        twist_values.append(abs(twist))
+        _, forearm_twist = swing_twist_angles(
+            frame.bones[f"{prefix}LowerArm"].rotation.as_list(), [0.0, 1.0, 0.0]
+        )
+        forearm_twist_values.append(abs(forearm_twist))
+        # Self-collision in world: the arm pivots and the torso capsule in one
+        # shared frame. The old check reconstructed the arm on a fixed rest
+        # shoulder -- the upperChest-carried frame -- and tested it against a
+        # capsule fixed in world: two different frames, wrong by the 2.9 cm the
+        # hips drift inside the chest frame under a graded trunk yaw, and wrong
+        # by the whole crouch the moment root motion translates the pelvis.
+        # The capsule is carried per torso bone now, so pelvis motion moves the
+        # torso and its capsule together.
+        matrices = (
+            ctx.world_matrices(index)
+            if ctx is not None
+            else kinematics.world_matrices(frame.bones)
+        )
+        collisions += int(
+            _arm_self_collision(
+                matrices[node[f"{prefix}UpperArm"]][:3, 3],
+                matrices[node[f"{prefix}LowerArm"]][:3, 3],
+                matrices[node[f"{prefix}Hand"]][:3, 3],
+                _torso_carry(matrices, node),
+            )
+        )
+        if any(start - 1e-8 <= frame.time_s <= end + 1e-8 for start, end in presentation_ranges):
+            sample = world_samples.get(index) if world_samples is not None else None
+            if sample is None:
+                # The visibility fallback stays on the chest-frame arm and the
+                # rest-pose camera deliberately: G6b kept that pairing because
+                # its two errors partly cancel and the post-compile mutation
+                # path depends on it. Only self-collision moved to world.
+                _, _, wrist, hand_world = arm_landmarks(frame, hand)
+                visible.append(_full_hand_visible(wrist, hand_world, contract, hand_shape))
+            else:
+                visible.append(
+                    _full_hand_visible(
+                        sample.wrist,
+                        sample.hand_world,
+                        contract,
+                        hand_shape,
+                        camera_position=sample.camera_position,
+                        camera_forward=sample.camera_forward,
+                    )
+                )
+
+    velocity, acceleration, jerk = _angular_kinematics(
+        frames, [f"{prefix}UpperArm", f"{prefix}LowerArm", f"{prefix}Hand"]
+    )
+    max_swing = max(swing_values, default=0.0)
+    max_twist = max(twist_values, default=0.0)
+    max_forearm_twist = max(forearm_twist_values, default=0.0)
+    visibility_fraction = sum(visible) / len(visible) if visible else 0.0
+    wrist_violations = sum(
+        swing > float(limits["wrist_swing_rad"]) + 1e-8
+        or twist > float(limits["wrist_twist_rad"]) + 1e-8
+        for swing, twist in zip(swing_values, twist_values)
+    )
+    failures: list[str] = []
+    if wrist_violations:
+        failures.append(f"{wrist_violations} wrist swing/twist limit violations")
+    if max_forearm_twist > float(limits["forearm_twist_rad"]) + 1e-8:
+        failures.append(f"forearm twist {max_forearm_twist:.3f} rad exceeds calibrated limit")
+    if collisions:
+        failures.append(f"self collision detected in {collisions} frames")
+    if visibility_fraction < float(limits["minimum_active_hand_visibility_fraction"]) - 1e-8:
+        failures.append(f"active hand visibility is {visibility_fraction:.3f}")
+    for label, value, key in (
+        ("angular velocity", velocity, "angular_velocity_rad_s"),
+        ("angular acceleration", acceleration, "angular_acceleration_rad_s2"),
+        ("angular jerk", jerk, "angular_jerk_rad_s3"),
+    ):
+        if value > float(limits[key]) + 1e-8:
+            failures.append(f"{label} {value:.3f} exceeds calibrated limit {limits[key]:.3f}")
+    return {
+        "structural_valid": not failures,
+        "structural_failures": failures,
+        "wrist_swing_twist_limit_violations": wrist_violations,
+        "max_wrist_swing_rad": max_swing,
+        "max_wrist_twist_rad": max_twist,
+        "max_forearm_twist_rad": max_forearm_twist,
+        "self_collision_frames": collisions,
+        "active_hand_visibility_fraction": visibility_fraction,
+        "active_hand_visibility_samples": len(visible),
+        "max_angular_velocity_rad_s": velocity,
+        "max_angular_acceleration_rad_s2": acceleration,
+        "max_angular_jerk_rad_s3": jerk,
+        "quality_reference_schema": reference["schema_version"],
+        "quality_reference_source": reference["source"],
+        "quality_limits": limits,
+        "full_fov_camera_contract": contract,
+    }
+
+
+def gesture_structure_checks(structure: dict[str, Any]) -> list[CheckResult]:
+    """Report one ``evaluate_gesture_structure`` result as addressable checks.
+
+    Same thresholds, same tolerances and same order as the ``structural_failures``
+    list the function itself builds; this is a typed view of it, not a second
+    opinion.
+    """
+
+    limits = structure["quality_limits"]
+    return [
+        count_check(
+            "anatomy.wrist.swing_twist_limit",
+            ANATOMY,
+            int(structure["wrist_swing_twist_limit_violations"]),
+            detail="wrist swing/twist limit violations",
+        ),
+        upper_bound_check(
+            "anatomy.forearm.twist",
+            ANATOMY,
+            float(structure["max_forearm_twist_rad"]),
+            float(limits["forearm_twist_rad"]),
+            tolerance=1e-8,
+            detail="forearm twist exceeds the calibrated limit",
+        ),
+        count_check(
+            "anatomy.arm.self_collision",
+            ANATOMY,
+            int(structure["self_collision_frames"]),
+            detail="self collision frames",
+        ),
+        lower_bound_check(
+            "contract.camera.active_hand_visibility",
+            SIGNAL,
+            float(structure["active_hand_visibility_fraction"]),
+            float(limits["minimum_active_hand_visibility_fraction"]),
+            tolerance=1e-8,
+            scale=1.0,
+            detail="active hand leaves the egocentric frustum",
+        ),
+        upper_bound_check(
+            "signal.angular.velocity",
+            SIGNAL,
+            float(structure["max_angular_velocity_rad_s"]),
+            float(limits["angular_velocity_rad_s"]),
+            tolerance=1e-8,
+            detail="angular velocity exceeds the calibrated limit",
+        ),
+        upper_bound_check(
+            "signal.angular.acceleration",
+            SIGNAL,
+            float(structure["max_angular_acceleration_rad_s2"]),
+            float(limits["angular_acceleration_rad_s2"]),
+            tolerance=1e-8,
+            detail="angular acceleration exceeds the calibrated limit",
+        ),
+        upper_bound_check(
+            "signal.angular.jerk",
+            SIGNAL,
+            float(structure["max_angular_jerk_rad_s3"]),
+            float(limits["angular_jerk_rad_s3"]),
+            tolerance=1e-8,
+            detail="angular jerk exceeds the calibrated limit",
+        ),
+    ]

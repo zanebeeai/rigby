@@ -1,0 +1,896 @@
+{
+  "schema_version": "1.0",
+  "generated_on": "2026-09-10",
+  "generated_from_commit": "0a3c6e2",
+  "sets": [
+    {
+      "id": "humanoid-runs-aug07-12",
+      "title": "Humanoid result archive (rigby-poc/results)",
+      "tracked": false,
+      "period": "2026-08-07 to 2026-08-12",
+      "produced_by": "The humanoid app (`uv run rigby-humanoid`, then `POST /api/v1/pipeline-runs`, or the CLI in `rigby_poc`) writes one immutable six-digit directory per compiled clip: request.json, scene.json, program.json, clip.json, metrics.json, provenance.json, animation.glb. `acceptance-runs/` holds the blinded gesture review runs; `autonomous-goal-audit.json` is the gate summary. See the README inside the directory.",
+      "code": "The `rigby-poc` layout that became `humanoid/` on 27 Aug (commit 2d39970). provenance.json records `compiler_version` but not a commit; the compiler versions present date the runs to the 0.1.0 to 0.4.0 compilers of early Aug.",
+      "location": "rigby-poc/results",
+      "present": true,
+      "stats": {
+        "files": 61102,
+        "bytes": 13827043678,
+        "oldest": "2026-08-07",
+        "newest": "2026-08-12",
+        "media_count": 21183,
+        "media_by_ext": {
+          ".glb": 6259,
+          ".png": 14924
+        }
+      },
+      "facts": {
+        "numbered_runs": 6449,
+        "first_id": "000001-throw-up-a-hang-ten-sign",
+        "last_id": "006447-clap-your-hands",
+        "planner_models": {
+          "compile-only/none": 5447,
+          "offline/rule-planner-v1": 589,
+          "openai/gpt-5.6-luna": 319,
+          "offline/rule-planner-v3": 56,
+          "openai/gpt-5.6-terra": 28,
+          "offline/rule-planner-v5": 10
+        },
+        "compiler_versions": {
+          "rigby-compiler-0.1.0": 5576,
+          "rigby-compiler-0.3.0": 733,
+          "rigby-compiler-0.4.0": 109,
+          "rigby-compiler-0.2.0": 31
+        },
+        "accepted_or_structural_valid": 985,
+        "rejected_or_structural_invalid": 164,
+        "runs_without_verdict": 5300,
+        "runs_with_glb": 6257,
+        "runs_with_evidence_pngs": 0,
+        "acceptance_runs": [
+          "000001",
+          "000002",
+          "000003",
+          "000004",
+          "000005",
+          "000006",
+          "000007",
+          "000008",
+          "000009",
+          "000010",
+          "000011",
+          "000012",
+          "000013",
+          "000014",
+          "000015",
+          "000016",
+          "000017",
+          "000018",
+          "000019",
+          "index.json"
+        ],
+        "autonomous_goal_audit": {
+          "status": "pass",
+          "gates": {
+            "calibrated_autonomous_judge": "pass",
+            "gesture_pipeline_smoke": "pass",
+            "pickup_pipeline_smoke": "pass"
+          }
+        },
+        "named_sets": [
+          "acceptance-runs",
+          "capture-lifecycle-smoke",
+          "complex-hang-ten-v1",
+          "complex-hang-ten-v2",
+          "complex-hangten-pilot-v1",
+          "complex-hangten-pilot-v2-pronation",
+          "complex-hangten-pilot-v3-pronation-safe",
+          "complex-hangten-pronation-revision-review",
+          "complex-hangten-structural-sweep-v4",
+          "dexterous-inspection",
+          "flywheel-runs",
+          "full-body-smoke",
+          "grounded-smoke",
+          "handoff-smoke",
+          "heldout-flywheel",
+          "judge-calibration",
+          "judge-evidence",
+          "judge-model-pilot",
+          "object-interaction-smoke",
+          "pickup-final-visual-smoke",
+          "pickup-openai-visual-smoke",
+          "pickup-palm-visual-smoke",
+          "pickup-visual-smoke",
+          "pipeline-runs",
+          "pose-smoke",
+          "sequence-smoke",
+          "stateful-sequence-smoke"
+        ]
+      },
+      "media": []
+    },
+    {
+      "id": "humanoid-release-evidence",
+      "title": "Humanoid v2 release evidence and benchmarks (rigby-poc/artifacts-v2)",
+      "tracked": false,
+      "period": "2026-08-11 to 2026-08-12",
+      "produced_by": "`rigby_v2.release` and `rigby_v2.release_ops` (now under humanoid/src/rigby_v2): each requirement in `release-evidence/manifest.json` is a JSON artefact with its SHA-256. The `supported-live-model-authority-canary-*` runs are the 11 Aug live-model canaries (`run-config.json` names the pipeline id and case ids).",
+      "code": "rigby_v2 as tracked by PR 9 (the v2 runtime), pre-rename.",
+      "location": "rigby-poc/artifacts-v2",
+      "present": true,
+      "stats": {
+        "files": 197,
+        "bytes": 71876934,
+        "oldest": "2026-08-11",
+        "newest": "2026-08-11",
+        "media_count": 0,
+        "media_by_ext": {}
+      },
+      "facts": {
+        "top_level": [
+          "benchmarks",
+          "library",
+          "objects",
+          "release-evidence",
+          "supported-communicative-canary",
+          "supported-live-model-authority-canary-20260811",
+          "supported-live-model-authority-canary-20260811-v2"
+        ],
+        "release_evidence": {
+          "adversarial_benchmark_100": "pass",
+          "database_backup_restore": "pass",
+          "dependency_lock_audit": "pass",
+          "deterministic_replay": "pass",
+          "fresh_machine_install": "pass",
+          "fresh_machine_preflight": "pass",
+          "license_dataset_review": "pass",
+          "migration_replay": "pass",
+          "operator_dry_run": "pass",
+          "performance_p95": "pass",
+          "startup_readiness": "pass",
+          "wheel_smoke": "pass"
+        },
+        "benchmarks": [
+          "final-integrated"
+        ]
+      },
+      "media": []
+    },
+    {
+      "id": "mjco-sim-workspace",
+      "title": "MuJoCo production workspace (rigby-mjco-sim)",
+      "tracked": false,
+      "period": "2026-08-12 to 2026-08-18",
+      "produced_by": "A standalone workspace (own pyproject and uv.lock) whose README calls it 'the clean local-first Rigby production workspace'. `artifacts-v2/` holds the button, drawer, bimanual-grasp and calibration-readiness experiments of 13-17 Aug; `docs/` holds the skinned-avatar SDF probes and the visual-parity audit; `visual/generate_demo_media.py` renders the viewer traces.",
+      "code": "Its `rigby_v2` package is the ancestor of what PR 9 tracked, but a large part of this tree exists in no commit (counted below). It is not in git history at all.",
+      "location": "rigby-mjco-sim",
+      "present": true,
+      "stats": {
+        "files": 372396,
+        "bytes": 15494481017,
+        "oldest": "1980-01-01",
+        "newest": "2026-08-18",
+        "media_count": 20487,
+        "media_by_ext": {
+          ".mp4": 238,
+          ".png": 18954,
+          ".gif": 1221,
+          ".glb": 9,
+          ".jpg": 65
+        }
+      },
+      "facts": {
+        "artifacts_v2": [
+          "acceptance (2026-08-14)",
+          "allowed-query (2026-08-13)",
+          "benchmark-readiness (2026-08-14)",
+          "benchmark-route-coverage (2026-08-14)",
+          "benchmarks (2026-08-18)",
+          "bimanual-grasp-diag (2026-08-13)",
+          "bimanual-grasp-fresh-raised-ik (2026-08-13)",
+          "bimanual-grasp-pedestal-static (2026-08-13)",
+          "bimanual-grasp-preflight (2026-08-13)",
+          "bimanual-grasp-preflight-2 (2026-08-13)",
+          "bimanual-grasp-preflight-3 (2026-08-13)",
+          "bimanual-grasp-preflight-4 (2026-08-13)",
+          "bimanual-grasp-preflight-5 (2026-08-13)",
+          "bimanual-grasp-preflight-6 (2026-08-13)",
+          "button-contact-v2 (2026-08-14)",
+          "button-ego-last.png (2026-08-13)",
+          "button-exact-five-goal7 (2026-08-14)",
+          "button-exact-five-goal7-execution (2026-08-14)",
+          "button-exact-five-goal7-sequential-v2 (2026-08-14)",
+          "button-exact-five-goal7-sequential-v3 (2026-08-14)",
+          "button-exact-five-goal7-sequential-v4 (2026-08-14)",
+          "button-exact-five-goal7-static-cas (2026-08-14)",
+          "button-exact-five-goal7-v2 (2026-08-14)",
+          "button-exact-five-readiness (2026-08-14)",
+          "button-orbit-last.png (2026-08-13)",
+          "button-pairwise-human-review-goal9 (2026-08-14)",
+          "calibration-readiness (2026-08-14)",
+          "contact-alignment-audit (2026-08-14)",
+          "contact-collider-engine (2026-08-18)",
+          "contact-geometry-admission-1 (2026-08-13)",
+          "contact-integrity-audit (2026-08-14)",
+          "current-readiness (2026-08-13)",
+          "current-readiness-configured (2026-08-13)",
+          "current-readiness-truthful (2026-08-13)",
+          "diagnostic-replays (2026-08-14)",
+          "ergonomic-case-query (2026-08-13)",
+          "ergonomic-one-hand-static-1 (2026-08-13)",
+          "exact-skin-button-demo (2026-08-18)",
+          "fresh-rag-bootstrap (2026-08-13)",
+          "fresh-rag-drawer (2026-08-13)",
+          "geom-query (2026-08-13)",
+          "interaction-media-fresh (2026-08-13)",
+          "legacy-quarantine (2026-08-13)",
+          "matrix-temp (2026-08-13)",
+          "objects (2026-08-12)",
+          "one-hand-width-calibration-1 (2026-08-13)",
+          "power-grasp-manifold-1 (2026-08-13)",
+          "power-grasp-manifold-2 (2026-08-13)",
+          "power-grasp-surface-1 (2026-08-13)",
+          "power-grasp-surface-2 (2026-08-13)",
+          "power-grasp-surface-3 (2026-08-13)",
+          "production-hand-tool-contact-v2 (2026-08-14)",
+          "production-hand-tool-lift-strike-preflight (2026-08-13)",
+          "production-small-bottle (2026-08-14)",
+          "production-small-bottle-contact-v2 (2026-08-14)",
+          "production-small-bottle-thumb-opposition-v2 (2026-08-14)",
+          "production-two-handed-object-authorized-preflight (2026-08-13)",
+          "production-two-handed-object-clamp-dwell-preflight (2026-08-13)",
+          "production-two-handed-object-clamp-dwell-static (2026-08-13)",
+          "production-two-handed-object-reauthorized-preflight (2026-08-13)",
+          "production-two-handed-object-static (2026-08-13)",
+          "production-two-handed-object-static-final (2026-08-13)",
+          "production-two-handed-object-static-final2 (2026-08-13)",
+          "production-two-handed-object-static-v2 (2026-08-13)",
+          "pytest-two-handed-20260813a (2026-08-14)",
+          "reachability-conditioned-contact-1 (2026-08-13)",
+          "reachability-conditioned-contact-2 (2026-08-13)",
+          "regression (2026-08-14)",
+          "regression-temp (2026-08-13)",
+          "release-evidence (2026-08-15)",
+          "surface-normal-palm-1 (2026-08-13)",
+          "two-handed-object-work (2026-08-14)",
+          "width-neutral-query (2026-08-13)"
+        ],
+        "docs": [
+          "exact-skinned-dispatch-architecture-v5.md",
+          "migration",
+          "native-exact-skinned-avatar-sdf-probe-v2.md",
+          "native-exact-skinned-avatar-sdf-probe-v3.md",
+          "native-exact-skinned-segment-sdf-probe.md",
+          "tagged-owner-collision-dispatch-probe-v4.md",
+          "v2",
+          "visual-parity-audit.json",
+          "visual-parity.md"
+        ],
+        "python_files_checked": 1903,
+        "python_files_in_no_commit": 1770
+      },
+      "media": []
+    },
+    {
+      "id": "humanoid-demo-gifs",
+      "title": "Humanoid README demo GIFs (humanoid/docs/media)",
+      "tracked": true,
+      "period": "2026-08-27",
+      "produced_by": "`cd humanoid; uv run python -m evals.render_demo_gif <result_id> docs/media/<name>.gif` against a running app on :8000 (8 FPS sample, 480 px ego and orbit panels, 96-colour GIF via FFmpeg). `render_comparison_gif.py` made the before/after strip. `demo-manifest.json` records the result id, prompt, planner and clip length per GIF.",
+      "code": "demo-manifest.json says compiler commit d0dbc86 (27 Aug, feat/strike-torso-cross merge).",
+      "location": "humanoid/docs/media",
+      "present": true,
+      "stats": {
+        "files": 7,
+        "bytes": 3309246,
+        "oldest": "2026-08-28",
+        "newest": "2026-08-28",
+        "media_count": 6,
+        "media_by_ext": {
+          ".gif": 6
+        }
+      },
+      "facts": {
+        "demo_manifest_keys": [
+          "capture",
+          "comparisons",
+          "compiler_commit",
+          "demos",
+          "generated_on",
+          "schema_version"
+        ],
+        "demos": [
+          {
+            "file": "left-hook.gif",
+            "result_id": "001055-throw-a-left-hook",
+            "prompt": "throw a left hook",
+            "planner_model": "rule-planner-v1",
+            "duration_s": 3.3833
+          },
+          {
+            "file": "right-jab.gif",
+            "result_id": "001056-throw-a-right-jab",
+            "prompt": "throw a right jab",
+            "planner_model": "rule-planner-v1",
+            "duration_s": 3.15
+          },
+          {
+            "file": "step-over-hurdle.gif",
+            "result_id": "000619-step-over-the-hurdle-with-your-right-foot",
+            "prompt": "step over the hurdle with your right foot",
+            "planner_model": "rule-planner-v1",
+            "duration_s": 2.55
+          },
+          {
+            "file": "hang-ten.gif",
+            "result_id": "000620-throw-up-a-hang-ten-sign-with-your-right-hand-th",
+            "prompt": "Throw up a \"hang-ten\" sign with your right hand, there should be a swift motion up to the main position wherein the middle three fingers are as contracted as possible, the wrist should then shake rapidly back and forth a few times, before returning to default",
+            "planner_model": "rule-planner-v1",
+            "duration_s": 2.0405
+          },
+          {
+            "file": "finger-count.gif",
+            "result_id": "000621-use-your-right-thumb-to-one-by-one-count-each-of",
+            "prompt": "use your right thumb to one by one count each of the fingers on your right hand (while looking at it)",
+            "planner_model": "rule-planner-v1",
+            "duration_s": 4.3
+          }
+        ],
+        "comparisons": [
+          {
+            "file": "arm-fix-throw-comparison.gif",
+            "prompt": "throw the block far and high with your right hand"
+          }
+        ],
+        "compiler_commit": "d0dbc86",
+        "generated_on": "2026-08-27"
+      },
+      "media": [
+        {
+          "file": "humanoid/docs/media/arm-fix-throw-comparison.gif",
+          "bytes": 934635,
+          "sha256": "5a2f601647fb5bc9aab848e97db82e45cfa613987b81ed125ee4755803007891",
+          "source": "humanoid/docs/media/arm-fix-throw-comparison.gif"
+        },
+        {
+          "file": "humanoid/docs/media/finger-count.gif",
+          "bytes": 424935,
+          "sha256": "fcd9af30cdb6a19186890ef4fd74804f3d12a5a2e221ab6d1af5b14839159422",
+          "source": "humanoid/docs/media/finger-count.gif"
+        },
+        {
+          "file": "humanoid/docs/media/hang-ten.gif",
+          "bytes": 252193,
+          "sha256": "867a450e8d4e804bbfbdef6619406173afc8ec623db852ffea8c8f157d755c64",
+          "source": "humanoid/docs/media/hang-ten.gif"
+        },
+        {
+          "file": "humanoid/docs/media/left-hook.gif",
+          "bytes": 719628,
+          "sha256": "b41bd98021d1a9a3f7252c83f884aff8261cfeac487ca0a61abcc11224e70609",
+          "source": "humanoid/docs/media/left-hook.gif"
+        },
+        {
+          "file": "humanoid/docs/media/right-jab.gif",
+          "bytes": 644938,
+          "sha256": "9f8ef7ad891c06034deffdcd7167ffbe02a0d588a540a5b007efa9ac6fa6aad0",
+          "source": "humanoid/docs/media/right-jab.gif"
+        },
+        {
+          "file": "humanoid/docs/media/step-over-hurdle.gif",
+          "bytes": 329998,
+          "sha256": "363b81bdebc0120da4be65d2e01978276dd52c4ad19f52dc6d21071a06d1d371",
+          "source": "humanoid/docs/media/step-over-hurdle.gif"
+        }
+      ]
+    },
+    {
+      "id": "humanoid-calibration-evidence",
+      "title": "Judge calibration evidence (humanoid/docs/evidence, humanoid/evals/corpus)",
+      "tracked": true,
+      "period": "2026-08-16 to 2026-09-07",
+      "produced_by": "`10f-calibration-report.md` and `frozen-judge-calibration.json` come from the calibration campaign driver (`humanoid/evals`, PRs 4, 6, 8 and the 10f2 campaign merge 880735c). The golden corpus under `humanoid/evals/corpus/cases` is blessed by the corpus CLI; `expected.json` per case carries the digest of the blessed clip.",
+      "code": "Tracked on main; every change is in git history.",
+      "location": "humanoid/docs/evidence",
+      "present": true,
+      "stats": {
+        "files": 2,
+        "bytes": 10353,
+        "oldest": "2026-08-28",
+        "newest": "2026-08-28",
+        "media_count": 0,
+        "media_by_ext": {}
+      },
+      "media": []
+    },
+    {
+      "id": "any-robot-zoo-aug24-27",
+      "title": "Any-robot zoo trials, first pass (rigby-generalized-urdf/results)",
+      "tracked": false,
+      "period": "2026-08-24 to 2026-08-27",
+      "produced_by": "`uv run python scripts/run_trials.py` (every gripper against every authored world), the contact probe in `rigby_general.contact`, and plain prompts through `rigby_general.run`. One `trace.json` per `<robot>--<prompt>` directory.",
+      "code": "The `rigby-poc-general` package before it became `any-robot/` (PR 10, PR 12). trace.json provenance hashes the rigby_v2 base tree it ran against (114 files).",
+      "location": "rigby-generalized-urdf/results",
+      "present": true,
+      "stats": {
+        "files": 229,
+        "bytes": 76229014,
+        "oldest": "2026-08-25",
+        "newest": "2026-08-28",
+        "media_count": 36,
+        "media_by_ext": {
+          ".gif": 36
+        }
+      },
+      "facts": {
+        "traces": 151,
+        "kinds": {
+          "contact_probe": 16,
+          "prompt": 55,
+          "environment_trial": 80
+        },
+        "accepted": 31,
+        "rejected": 120,
+        "failure_codes": {
+          "object_too_wide": 33,
+          "unafforded_schema": 24,
+          "object_out_of_reach": 12,
+          "grasp_not_achieved": 11,
+          "object_not_lifted": 10,
+          "no_gripper": 8,
+          "object_inside_reach_hole": 8,
+          "unreachable_object": 8,
+          "ungroundable": 2,
+          "deterministic_gate_failed": 1,
+          "object_dropped": 1,
+          "unsupported_morphology": 1,
+          "excessive_penetration": 1
+        },
+        "robots": {
+          "uhand2": 20,
+          "zoo_jaw_arm": 17,
+          "kuka_kr6": 15,
+          "panda": 14,
+          "zoo_compact_arm": 13,
+          "zoo_dual_arm": 13,
+          "zoo_hand_arm": 13,
+          "zoo_long_arm": 13,
+          "eezybotarm_mk1": 5,
+          "beetlebot": 4,
+          "iiwa7": 4,
+          "kuka_lwr": 4,
+          "makerpro_5dof": 4,
+          "so101": 4,
+          "so101_undeclared": 4,
+          "zoo_tool_arm": 4
+        },
+        "created": [
+          "2026-08-27",
+          "2026-08-28"
+        ],
+        "code_base_trees": {
+          "rigby_v2@0effceae5518": 151
+        },
+        "top_level_files": [
+          "intake.json",
+          "studio.html",
+          "trials.json"
+        ]
+      },
+      "media": []
+    },
+    {
+      "id": "any-robot-zoo-demos",
+      "title": "Any-robot zoo demo GIFs and grasp report (rigby-generalized-urdf/docs/media)",
+      "tracked": false,
+      "period": "2026-08-24 to 2026-08-27",
+      "produced_by": "`uv run python scripts/build_demos.py` renders the same plain-language prompts on several zoo robots and writes `demo-manifest.json` with the role-normalized schema hash beside each clip (one prompt, one meaning, many bodies). `uv run python scripts/grasp_report.py --render` writes `grasp-report.json`.",
+      "code": "rigby-poc-general at PR 10 to PR 12; the manifest does not record a commit.",
+      "location": "rigby-generalized-urdf/docs/media",
+      "present": true,
+      "stats": {
+        "files": 15,
+        "bytes": 5643988,
+        "oldest": "2026-08-25",
+        "newest": "2026-08-25",
+        "media_count": 13,
+        "media_by_ext": {
+          ".gif": 13
+        }
+      },
+      "facts": {
+        "demo_manifest_keys": [
+          "clips",
+          "schema_invariance",
+          "schema_version",
+          "shared_prompt"
+        ],
+        "clips": [
+          {
+            "gif": "zoo_compact_arm-reach-out-as-far-as-you-can-and-then-come-ba.gif",
+            "robot_id": "zoo_compact_arm",
+            "prompt": "reach out as far as you can and then come back",
+            "certified_primitives_used": 2,
+            "tracking_error_m": 0.006391
+          },
+          {
+            "gif": "zoo_compact_arm-reach-out-quickly,-just-a-little.gif",
+            "robot_id": "zoo_compact_arm",
+            "prompt": "reach out quickly, just a little",
+            "certified_primitives_used": 1,
+            "tracking_error_m": 0.008704
+          },
+          {
+            "gif": "zoo_dual_arm-reach-out-as-far-as-you-can-and-then-come-ba.gif",
+            "robot_id": "zoo_dual_arm",
+            "prompt": "reach out as far as you can and then come back",
+            "certified_primitives_used": 2,
+            "tracking_error_m": 0.012952
+          },
+          {
+            "gif": "zoo_dual_arm-lower-the-tool-down-toward-the-table.gif",
+            "robot_id": "zoo_dual_arm",
+            "prompt": "lower the tool down toward the table",
+            "certified_primitives_used": 1,
+            "tracking_error_m": 0.009275
+          },
+          {
+            "gif": "zoo_hand_arm-reach-out-as-far-as-you-can-and-then-come-ba.gif",
+            "robot_id": "zoo_hand_arm",
+            "prompt": "reach out as far as you can and then come back",
+            "certified_primitives_used": 2,
+            "tracking_error_m": 0.013999
+          },
+          {
+            "gif": "zoo_hand_arm-trace-a-big-circle.gif",
+            "robot_id": "zoo_hand_arm",
+            "prompt": "trace a big circle",
+            "certified_primitives_used": 1,
+            "tracking_error_m": 0.019283
+          },
+          {
+            "gif": "zoo_jaw_arm-reach-out-as-far-as-you-can-and-then-come-ba.gif",
+            "robot_id": "zoo_jaw_arm",
+            "prompt": "reach out as far as you can and then come back",
+            "certified_primitives_used": 2,
+            "tracking_error_m": 0.016125
+          },
+          {
+            "gif": "zoo_jaw_arm-wave-three-times.gif",
+            "robot_id": "zoo_jaw_arm",
+            "prompt": "wave three times",
+            "certified_primitives_used": 1,
+            "tracking_error_m": 0.018388
+          },
+          {
+            "gif": "zoo_long_arm-reach-out-as-far-as-you-can-and-then-come-ba.gif",
+            "robot_id": "zoo_long_arm",
+            "prompt": "reach out as far as you can and then come back",
+            "certified_primitives_used": 2,
+            "tracking_error_m": 0.016507
+          },
+          {
+            "gif": "zoo_long_arm-sweep-across-the-workspace,-then-hold-still.gif",
+            "robot_id": "zoo_long_arm",
+            "prompt": "sweep across the workspace, then hold still",
+            "certified_primitives_used": 2,
+            "tracking_error_m": 0.019312
+          },
+          {
+            "gif": "zoo_tool_arm-reach-out-as-far-as-you-can-and-then-come-ba.gif",
+            "robot_id": "zoo_tool_arm",
+            "prompt": "reach out as far as you can and then come back",
+            "certified_primitives_used": 2,
+            "tracking_error_m": 0.012174
+          },
+          {
+            "gif": "zoo_tool_arm-sweep-slowly-across-in-front-of-you.gif",
+            "robot_id": "zoo_tool_arm",
+            "prompt": "sweep slowly across in front of you",
+            "certified_primitives_used": 1,
+            "tracking_error_m": 0.01597
+          }
+        ],
+        "grasp_attempts": 5,
+        "grasp_certified": 1,
+        "grasp_by_robot": {
+          "zoo_compact_arm": "object_not_lifted, excessive_penetration",
+          "zoo_dual_arm": "object_dropped, excessive_penetration",
+          "zoo_hand_arm": "grasp_not_achieved, object_dropped",
+          "zoo_jaw_arm": "object_not_lifted",
+          "zoo_long_arm": "certified"
+        }
+      },
+      "media": [
+        {
+          "file": "media/any-robot-zoo-demos/zoo_compact_arm-reach-out-as-far-as-you-can-and-then-come-ba.gif",
+          "bytes": 587885,
+          "sha256": "977e85b12d95468543e78c36a38904cdfdae2308741a57da69715a3b2d8ab5b9",
+          "source": "C:/Users/hocke/OneDrive/Documents/GitHub/rigby/rigby-generalized-urdf/docs/media/zoo_compact_arm-reach-out-as-far-as-you-can-and-then-come-ba.gif"
+        },
+        {
+          "file": "media/any-robot-zoo-demos/zoo_compact_arm-reach-out-quickly,-just-a-little.gif",
+          "bytes": 524910,
+          "sha256": "46658272c1804a16c4fca0f5cafc9fe3df2544c4cf7257be03a9ddf633e95fdc",
+          "source": "C:/Users/hocke/OneDrive/Documents/GitHub/rigby/rigby-generalized-urdf/docs/media/zoo_compact_arm-reach-out-quickly,-just-a-little.gif"
+        },
+        {
+          "file": "media/any-robot-zoo-demos/zoo_dual_arm-lower-the-tool-down-toward-the-table.gif",
+          "bytes": 223849,
+          "sha256": "ac570a560ed086c3f3a6fb0cc79750a44eb68aa47aa9d4fcad8b922dfe95a25e",
+          "source": "C:/Users/hocke/OneDrive/Documents/GitHub/rigby/rigby-generalized-urdf/docs/media/zoo_dual_arm-lower-the-tool-down-toward-the-table.gif"
+        },
+        {
+          "file": "media/any-robot-zoo-demos/zoo_dual_arm-reach-out-as-far-as-you-can-and-then-come-ba.gif",
+          "bytes": 260478,
+          "sha256": "3cc5d9f94df43a0d413636bec2a73289fb5653ac369cdad7b509c2d4ee2b3c24",
+          "source": "C:/Users/hocke/OneDrive/Documents/GitHub/rigby/rigby-generalized-urdf/docs/media/zoo_dual_arm-reach-out-as-far-as-you-can-and-then-come-ba.gif"
+        },
+        {
+          "file": "media/any-robot-zoo-demos/zoo_hand_arm-reach-out-as-far-as-you-can-and-then-come-ba.gif",
+          "bytes": 467634,
+          "sha256": "7065c044a3542d1875642b9790b881818c51928c23b918dabb199536e581798a",
+          "source": "C:/Users/hocke/OneDrive/Documents/GitHub/rigby/rigby-generalized-urdf/docs/media/zoo_hand_arm-reach-out-as-far-as-you-can-and-then-come-ba.gif"
+        },
+        {
+          "file": "media/any-robot-zoo-demos/zoo_hand_arm-trace-a-big-circle.gif",
+          "bytes": 477178,
+          "sha256": "5a289467d92bb2f329e96225aa9eb4f797f681392a3ca9e1d8bc7c72a292770d",
+          "source": "C:/Users/hocke/OneDrive/Documents/GitHub/rigby/rigby-generalized-urdf/docs/media/zoo_hand_arm-trace-a-big-circle.gif"
+        },
+        {
+          "file": "media/any-robot-zoo-demos/zoo_jaw_arm-reach-out-as-far-as-you-can-and-then-come-ba.gif",
+          "bytes": 408995,
+          "sha256": "053d5fa530a2d5bdf2a9f2558316d30ecfd6e7e6075b50333f4ff2bd240306e8",
+          "source": "C:/Users/hocke/OneDrive/Documents/GitHub/rigby/rigby-generalized-urdf/docs/media/zoo_jaw_arm-reach-out-as-far-as-you-can-and-then-come-ba.gif"
+        },
+        {
+          "file": "media/any-robot-zoo-demos/zoo_jaw_arm-wave-three-times.gif",
+          "bytes": 407011,
+          "sha256": "0ab37cf17993623a5fdc184ebae693977062290c4f1ac913948df389c487b2b9",
+          "source": "C:/Users/hocke/OneDrive/Documents/GitHub/rigby/rigby-generalized-urdf/docs/media/zoo_jaw_arm-wave-three-times.gif"
+        },
+        {
+          "file": "media/any-robot-zoo-demos/zoo_long_arm-pick-up-the-block.gif",
+          "bytes": 713844,
+          "sha256": "5c5498229b76caa0dfad574a22610cffd9efb97775e05a38382c4e880a4d52ce",
+          "source": "C:/Users/hocke/OneDrive/Documents/GitHub/rigby/rigby-generalized-urdf/docs/media/zoo_long_arm-pick-up-the-block.gif"
+        },
+        {
+          "file": "media/any-robot-zoo-demos/zoo_long_arm-reach-out-as-far-as-you-can-and-then-come-ba.gif",
+          "bytes": 394621,
+          "sha256": "167e3f039dead028c18792aee561312827354829fd89945c4428988496f1f6cf",
+          "source": "C:/Users/hocke/OneDrive/Documents/GitHub/rigby/rigby-generalized-urdf/docs/media/zoo_long_arm-reach-out-as-far-as-you-can-and-then-come-ba.gif"
+        },
+        {
+          "file": "media/any-robot-zoo-demos/zoo_long_arm-sweep-across-the-workspace,-then-hold-still.gif",
+          "bytes": 409284,
+          "sha256": "791db513029e78de31e349be3f57835048ba269fc23346d1b8d6323023fd92a8",
+          "source": "C:/Users/hocke/OneDrive/Documents/GitHub/rigby/rigby-generalized-urdf/docs/media/zoo_long_arm-sweep-across-the-workspace,-then-hold-still.gif"
+        },
+        {
+          "file": "media/any-robot-zoo-demos/zoo_tool_arm-reach-out-as-far-as-you-can-and-then-come-ba.gif",
+          "bytes": 393062,
+          "sha256": "c3209522bcc03bce3b4094b747439b07b17fa5bedf7188ffa744c1e0c0522d62",
+          "source": "C:/Users/hocke/OneDrive/Documents/GitHub/rigby/rigby-generalized-urdf/docs/media/zoo_tool_arm-reach-out-as-far-as-you-can-and-then-come-ba.gif"
+        },
+        {
+          "file": "media/any-robot-zoo-demos/zoo_tool_arm-sweep-slowly-across-in-front-of-you.gif",
+          "bytes": 363793,
+          "sha256": "700bd61fa28495c52ced1c04b7bcb451885d6923bc1b486d33e1f937a76e2610",
+          "source": "C:/Users/hocke/OneDrive/Documents/GitHub/rigby/rigby-generalized-urdf/docs/media/zoo_tool_arm-sweep-slowly-across-in-front-of-you.gif"
+        },
+        {
+          "file": "media/any-robot-zoo-demos/demo-manifest.json",
+          "bytes": 9523,
+          "sha256": "c01ebb30f554441777e8ef66ef8af3c181da687b714113dcb78ea8718f5b2ac3",
+          "source": "C:/Users/hocke/OneDrive/Documents/GitHub/rigby/rigby-generalized-urdf/docs/media/demo-manifest.json"
+        },
+        {
+          "file": "media/any-robot-zoo-demos/grasp-report.json",
+          "bytes": 1921,
+          "sha256": "26bd364b3d7166077453d45ef4528b91bfa3c6f0ffc97f18f1ee33fb03999187",
+          "source": "C:/Users/hocke/OneDrive/Documents/GitHub/rigby/rigby-generalized-urdf/docs/media/grasp-report.json"
+        }
+      ]
+    },
+    {
+      "id": "any-robot-environments-aug27-28",
+      "title": "Any-robot environment trials and IRL robots (any-robot/results)",
+      "tracked": false,
+      "period": "2026-08-27 to 2026-08-28",
+      "produced_by": "`uv run python scripts/run_trials.py` over the six authored worlds (bench_jig, desk_bench, far_pallet, pallet_cell, raised_shelf, work_table) after the tier split, plus contact probes and prompts on the bench robots (KUKA KR6/LWR, iiwa7, uHand2, EEZYbotARM MK1, Beetlebot, SO-101). `scripts/build_studio.py` and `scripts/export_viewer.py` render any of them.",
+      "code": "any-robot on the feat/environments-and-contact line (PR 12, PR 14, and the six 28 Aug commits merged as PR 21). trace.json provenance hashes the rigby_core base tree (19 files).",
+      "location": "any-robot/results",
+      "present": true,
+      "stats": {
+        "files": 363,
+        "bytes": 219039949,
+        "oldest": "2026-08-28",
+        "newest": "2026-08-28",
+        "media_count": 42,
+        "media_by_ext": {
+          ".gif": 42
+        }
+      },
+      "facts": {
+        "traces": 241,
+        "kinds": {
+          "environment_trial": 152,
+          "contact_probe": 16,
+          "prompt": 73
+        },
+        "accepted": 78,
+        "rejected": 163,
+        "failure_codes": {
+          "unafforded_schema": 32,
+          "grasp_not_achieved": 24,
+          "object_inside_reach_hole": 21,
+          "unreachable_object": 17,
+          "object_too_wide": 17,
+          "object_not_lifted": 16,
+          "unsupported_morphology": 5,
+          "object_out_of_reach": 5,
+          "object_dropped": 5,
+          "scene_not_buildable": 5,
+          "object_too_narrow": 4,
+          "no_gripper": 4,
+          "object_not_carried": 3,
+          "object_not_named": 1,
+          "deterministic_gate_failed": 1,
+          "excessive_penetration": 1,
+          "joint_limit_violation": 1,
+          "ungroundable": 1
+        },
+        "robots": {
+          "eezybotarm_mk1": 28,
+          "zoo_jaw_arm": 25,
+          "uhand2": 21,
+          "kuka_kr6": 17,
+          "beetlebot": 15,
+          "panda": 15,
+          "so101": 15,
+          "so101_undeclared": 15,
+          "zoo_long_arm": 15,
+          "iiwa7": 14,
+          "kuka_lwr": 14,
+          "zoo_compact_arm": 13,
+          "zoo_dual_arm": 13,
+          "zoo_hand_arm": 13,
+          "makerpro_5dof": 4,
+          "zoo_tool_arm": 4
+        },
+        "created": [
+          "2026-08-27",
+          "2026-08-28"
+        ],
+        "code_base_trees": {
+          "rigby_core@19622b3502d7": 241
+        },
+        "top_level_files": [
+          "intake.json",
+          "studio.html",
+          "trials.json"
+        ]
+      },
+      "media": []
+    },
+    {
+      "id": "gripper-milestones",
+      "title": "Gripper milestones and recordings (Angelo, branch grasp/auto-lift)",
+      "tracked": "on the branch only",
+      "period": "2026-08-27 to 2026-09-09",
+      "produced_by": "Each `milestones/runs/<name>.json` is a complete `gripper_clip_v1` recording (every frame's joint poses, link geometry, block pose, contact forces, penetration) from the torque-driven gripper controller in `rigby_poc.gripper` and `rigby_poc.closed_loop`, played by `frontend/public/static/gripper.html?clip=<name>` under `npm run dev --prefix frontend`. The `.webm` files are screen recordings of that viewer; the branch commits no recorder script, so the exact capture settings are Angelo's to state. `RESULTS.txt` is the placed/lift/penetration table.",
+      "code": "PR 19 (grasp/auto-lift); rebased copy on the new base is grasp/auto-lift-on-main.",
+      "location": "origin/grasp/auto-lift:rigby-poc",
+      "present": true,
+      "facts": {
+        "tip": "f00861db5f72404221fc6d92a63250c89e5569ac 2026-09-10 fix(serve): one BLAS thread, set before numpy loads",
+        "files": 27,
+        "bytes": 26532983,
+        "results_table": [
+          "run                             placed    lift_cm   pen_mm  frames",
+          "------------------------------------------------------------------",
+          "gripper-behind-the-reach        False        0.00    0.000     780",
+          "gripper-centre-as-tuned         True        28.86    0.036     780",
+          "gripper-far-centred             True        29.73    0.215     780",
+          "gripper-left-and-far            True        32.12    0.344     780",
+          "gripper-left                    True        28.60    0.265     780",
+          "gripper-narrow-block            True        29.28    0.056     780",
+          "gripper-near-centred            True        28.58    0.057     780",
+          "gripper-off-the-scan-grid       True        28.69    0.316     780",
+          "gripper-right-and-near          True        28.94    0.315     780",
+          "gripper-right                   True        28.62    0.290     780",
+          "gripper-run                     True        28.86    0.036     420",
+          "gripper-tall-thin-block         True        25.51    0.034     780",
+          "gripper-wide-block              True        28.44    0.047     780"
+        ]
+      },
+      "media": [
+        {
+          "file": "media/gripper-milestones/milestones--README.md",
+          "bytes": 4812,
+          "sha256": "2857eaaf60a575a10b48b64de72b63475fe3963d29cca46dc5170336c24e5c52",
+          "source": "rigby-poc\\milestones\\README.md"
+        },
+        {
+          "file": "media/gripper-milestones/milestones--RESULTS.txt",
+          "bytes": 1005,
+          "sha256": "186e95296f8a39d91ee2af78989b915ac25433e703283905759851d2276b7a8b",
+          "source": "rigby-poc\\milestones\\RESULTS.txt"
+        },
+        {
+          "file": "media/gripper-milestones/milestones--SENSING-BOUNDARY.txt",
+          "bytes": 528,
+          "sha256": "09ef9e1607b8512a09850f6c27ed68233337713f42a6601e5e2b79a91035b8a9",
+          "source": "rigby-poc\\milestones\\SENSING-BOUNDARY.txt"
+        },
+        {
+          "file": "media/gripper-milestones/milestones--fridge-filmstrip.png",
+          "bytes": 425695,
+          "sha256": "e96620a0347cff83b4382b91d6e7b7dbb176d4cc8781e136956ae16356becc72",
+          "source": "rigby-poc\\milestones\\fridge-filmstrip.png"
+        },
+        {
+          "file": "media/gripper-milestones/milestones--two-cam-check.png",
+          "bytes": 142572,
+          "sha256": "5dcd27d3238db789802c9f9466158e35d0492f8e5549b179bf12fbd7e7249a2d",
+          "source": "rigby-poc\\milestones\\two-cam-check.png"
+        },
+        {
+          "file": "media/gripper-milestones/milestones--view-room.png",
+          "bytes": 132807,
+          "sha256": "9b7a9182b1510f289b8f7a4a95258907c92f73216a9e57ea508b6f0acc37e256",
+          "source": "rigby-poc\\milestones\\view-room.png"
+        },
+        {
+          "file": "media/gripper-milestones/milestones--view-wrist.png",
+          "bytes": 503,
+          "sha256": "d73102ce878643f508c58225fb20b873f8db6d331811e8584dc8ceee36a8f21f",
+          "source": "rigby-poc\\milestones\\view-wrist.png"
+        },
+        {
+          "file": "media/gripper-milestones/milestones--wrist-view.png",
+          "bytes": 973,
+          "sha256": "9347fe86f6b448518e30d671057b4ece3e7f2cf3906488168f63736a4c990bc0",
+          "source": "rigby-poc\\milestones\\wrist-view.png"
+        },
+        {
+          "file": "media/gripper-milestones/videos--01-lift-and-place-known-positions.webm",
+          "bytes": 1538062,
+          "sha256": "bdd1469e8f43b9e1eb15cbf09eecacdc3a6ec47ab6d448cb794e07729bd96415",
+          "source": "rigby-poc\\videos\\01-lift-and-place-known-positions.webm"
+        },
+        {
+          "file": "media/gripper-milestones/videos--02-lift-and-place-camera-only.webm",
+          "bytes": 1708626,
+          "sha256": "eb6354d98eab6f0fe4ef66665b3a23f2480b8fdbd4e324282fb0fe4a1441e3fd",
+          "source": "rigby-poc\\videos\\02-lift-and-place-camera-only.webm"
+        },
+        {
+          "file": "media/gripper-milestones/videos--03-cabinet-attempt-not-working.webm",
+          "bytes": 2110737,
+          "sha256": "f57185baf74bebb60d6bf4c10152cf96f36837001d4f56f9a9e183bfd37f7464",
+          "source": "rigby-poc\\videos\\03-cabinet-attempt-not-working.webm"
+        },
+        {
+          "file": "media/gripper-milestones/videos--README.md",
+          "bytes": 2820,
+          "sha256": "9a0f08fd2fe2b94c64bc329cdbf783528dc98690243ea17e20c0742bfc41758b",
+          "source": "rigby-poc\\videos\\README.md"
+        },
+        {
+          "file": "media/gripper-milestones/videos--gripper-two-cameras.webm",
+          "bytes": 1772745,
+          "sha256": "c58eb2950a7249f37713a277561c097dd12175e001c04167c7e5b3a4ac49e80b",
+          "source": "rigby-poc\\videos\\gripper-two-cameras.webm"
+        },
+        {
+          "file": "media/gripper-milestones/videos--gripper-vlm-directed.webm",
+          "bytes": 2661444,
+          "sha256": "9ac71f5d74debd7f09fe871e0ad1b2ede7202d09f19dbf78775677941a82cdfc",
+          "source": "rigby-poc\\videos\\gripper-vlm-directed.webm"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-09-pick-up-the-block-and-put-it-in-the-bin-81d831a1",
+  "title": "Pick the block off the bench and place it in the bin, object pose read from the simulator",
+  "prompt": "pick up the block and put it in the bin",
+  "tier": "humanoid",
+  "embodiment": "gripper",
+  "kind": "video",
+  "who": "AngeloWhey",
+  "produced_at": "2026-09-09T00:00:00Z",
+  "source": {
+    "commit": "f00861d",
+    "branch": "grasp/auto-lift",
+    "dirty": false,
+    "how": "npm run dev --prefix frontend; open gripper.html?run=<id> and screen-record; recorder settings not committed"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "placed, 28.9 cm peak lift, 0.036 mm deepest penetration; the reference that proves the arm can do the task"
+  },
+  "notes": "Torque-driven three-segment gripper; runs in milestones/runs/*.json on the branch.",
+  "media": [
+    {
+      "path": "docs/results/media/gripper-milestones/videos--01-lift-and-place-known-positions.webm",
+      "bytes": 1538062,
+      "sha256": "bdd1469e8f43b9e1eb15cbf09eecacdc3a6ec47ab6d448cb794e07729bd96415",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "gripper",
+    "ledger-import"
+  ]
+}

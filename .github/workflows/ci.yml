@@ -7,7 +7,7 @@ name: CI
 # The suite is hermetic: it needs no server, no browser, no API key and no
 # network. Verified by running it in full with OPENAI_API_KEY unset and every
 # AF_INET/AF_INET6 socket raising on construction. Do not add secrets to this
-# workflow -- see rigby-poc/docs/testing.md.
+# workflow -- see humanoid/docs/testing.md.
 
 on:
   push:
@@ -54,7 +54,7 @@ jobs:
             '${{ github.event.pull_request.base.sha }}' \
             '${{ github.event.pull_request.head.sha }}')
           printf 'changed files:\n%s\n' "$changed"
-          if printf '%s\n' "$changed" | grep -qE '^(rigby-poc/(src|evals|config|tests|frontend)/|rigby-poc/(pyproject\.toml|uv\.lock|acceptance_criteria\.yaml)$|\.github/)'; then
+          if printf '%s\n' "$changed" | grep -qE '^(humanoid/(src|evals|config|tests|frontend)/|core/|any-robot/(src|tests)/|humanoid/(pyproject\.toml|acceptance_criteria\.yaml)$|uv\.lock$|pyproject\.toml$|\.github/)'; then
             echo 'os=["macos-latest","windows-latest"]' >> "$GITHUB_OUTPUT"
             echo "code changed -- Windows included"
           else
@@ -69,94 +69,91 @@ jobs:
       matrix:
         os: ${{ fromJSON(needs.select-platforms.outputs.os) }}
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 30
+    # 30 was not headroom, it was the failure mode: every main run from
+    # 33092603029 onward ended "The operation was canceled" at 30m1x on Windows.
+    # The suite is smaller now; this is a hang detector, not a budget.
+    #
+    # 45 became the failure mode too: main's Windows job took 38m38s on
+    # 33321402181, and on PR #20 it completed in 44m14s once (2389 passed) and
+    # was cancelled at 76% and at 74% on the two runs beside it. The macOS
+    # job took 29m. 60 keeps the hang detector a hang detector.
+    timeout-minutes: 60
     defaults:
       run:
-        working-directory: rigby-poc
+        working-directory: humanoid
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
-          cache-dependency-glob: rigby-poc/uv.lock
+          cache-dependency-glob: uv.lock
       - run: uv sync --extra dev
 
-      # The fast tier is the eval-iteration loop. This step REPORTS its duration
-      # every run and fails only above a deliberately loose ceiling.
+      # ONE run. `addopts` is `-m 'fast or medium'`, so the fast tier is a subset
+      # of this and running `pytest -m fast` first re-ran all 703 of its tests to
+      # produce a single number. The conftest hooks record that number as a
+      # by-product instead -- summed `fast` test duration plus collection, which
+      # is what the separate run's wall clock was measuring.
       #
-      # Plan 09 SS5 asks for a 30s failing budget. That number has never been
-      # measured on a controlled machine and cannot be: locally the same 291
-      # tests took 25.6s, 33.5s, 43.6s, 44.9s and 42.6s depending on how many of
-      # the six worktrees happened to be compiling. Shipping a 30s assertion on
-      # an unvalidated number would make main red for load rather than for rot.
+      # No secret is set for this step, deliberately. If the suite ever needs
+      # one, tests/test_invocations.py fails first and says why.
+      - name: pytest
+        env:
+          RIGBY_TIER_REPORT: ${{ runner.temp }}/tier.json
+        run: uv run pytest
+
+      # The rot ceiling, read from the run above rather than from a second one.
       #
-      # So: the runner is dedicated, its number is the trustworthy one, and it is
-      # printed every run so the trend is visible. The ceiling catches genuine
-      # rot -- a compile or a corpus load entering the tier costs minutes, not
-      # seconds -- without tripping on runner variance. Tighten it to the real
-      # budget once a few runs have established the baseline. Recorded in
-      # rigby-poc/docs/testing.md as provisional.
+      # It exists because the fast tier is the eval-iteration loop and a compile,
+      # a corpus load or a subprocess entering it costs minutes rather than
+      # seconds. It has fired for real: a module-level corpus compile in
+      # test_corpus_known_bad.py was paid at COLLECTION on every invocation --
+      # `-m fast` included, which then deselected every test in that file -- and
+      # took the tier to 131s. Collection is therefore inside the measurement.
       #
       # macOS only: a wall-clock budget on the Windows runner, which is roughly
       # 4x slower for reasons unrelated to what the tier contains, is a platform
       # tripwire wearing a performance gate's costume.
-      - name: measure the fast tier
+      - name: the fast tier has acquired nothing expensive
         if: matrix.os == 'macos-latest'
+        shell: bash
         run: |
-          start=$(date +%s)
-          uv run pytest -m fast
-          elapsed=$(( $(date +%s) - start ))
-          echo "::notice::fast tier: ${elapsed}s on a dedicated runner"
+          set -euo pipefail
+          report="${RUNNER_TEMP}/tier.json"
+          test -f "$report" || {
+            echo "::error::no tier report at $report -- the conftest hook did not run"
+            exit 1
+          }
+          cat "$report"
+          elapsed=$(python3 -c "import json,sys;print(int(json.load(open(sys.argv[1]))['fast_tier_seconds']))" "$report")
+          collect=$(python3 -c "import json,sys;print(json.load(open(sys.argv[1]))['collect_seconds'])" "$report")
+          echo "::notice::fast tier: ${elapsed}s (collection ${collect}s) on a dedicated runner"
           if [ "$elapsed" -gt 90 ]; then
             echo "::error::fast tier took ${elapsed}s, over the 90s rot ceiling."
             echo "Something expensive entered the tier -- a compile, a corpus load"
-            echo "or a subprocess. Classify by input, not by duration, and do not"
-            echo "demote a file to medium to fit. See rigby-poc/docs/testing.md."
+            echo "or a subprocess. Check collection first: module-level work is paid"
+            echo "even by the tests it is then deselected for. Classify by input, not"
+            echo "by duration, and do not demote a file to medium to fit."
+            echo "See humanoid/docs/testing.md."
             exit 1
           fi
-        shell: bash
-
-      # No secret is set for this step, deliberately. If the suite ever needs
-      # one, tests/test_invocations.py fails first and says why.
-      - name: pytest
-        run: uv run pytest
 
   frontend:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     defaults:
       run:
-        working-directory: rigby-poc/frontend
+        working-directory: humanoid/frontend
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: npm
-          cache-dependency-path: rigby-poc/frontend/package-lock.json
+          cache-dependency-path: humanoid/frontend/package-lock.json
       - run: npm ci
       - run: npm test
       - run: npm run build
-
-  # config/camera.v1.json is the source for every value shared across the
-  # Python/TypeScript boundary. A stale generated file means evidence captured at
-  # one FOV judged against the contract for another, so it fails the build rather
-  # than diverging quietly. Plan 08 SS3.3.
-  generated-sources:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    defaults:
-      run:
-        working-directory: rigby-poc
-    steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v5
-        with:
-          enable-cache: true
-          cache-dependency-glob: rigby-poc/uv.lock
-      - run: uv sync --extra dev
-      - name: frontend/src/generated/camera.ts is not stale
-        run: uv run python -m evals.generate_camera_ts --check
 
   # Cross-ISA hashes can only be contributed by a machine of that ISA, and every
   # developer here is on darwin-arm64. This job runs the corpus bless on Windows
@@ -168,20 +165,26 @@ jobs:
   # artifact. The actual cross-platform assertion is in the pytest job above and
   # that one is allowed to go red.
   windows-corpus-hashes:
-    needs: select-platforms
-    if: contains(needs.select-platforms.outputs.os, 'windows')
+    # `workflow_dispatch` only, as of the test-suite trim. This job asserts
+    # nothing -- it is `continue-on-error` at the JOB level, so its conclusion
+    # cannot affect the workflow's, and its whole output is an artifact that a
+    # human merges into evals/corpus by hand. Running a 30-minute Windows job on
+    # every code PR to produce a file nobody reads on that PR is the definition
+    # of a job that should be asked for rather than paid for. Run it from the
+    # Actions tab when you are about to bless a cross-ISA column.
+    if: github.event_name == 'workflow_dispatch'
     runs-on: windows-latest
     continue-on-error: true
     timeout-minutes: 30
     defaults:
       run:
-        working-directory: rigby-poc
+        working-directory: humanoid
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
-          cache-dependency-glob: rigby-poc/uv.lock
+          cache-dependency-glob: uv.lock
       - run: uv sync --extra dev
 
       - name: bless the corpus for this platform
@@ -202,5 +205,62 @@ jobs:
         if: always()
         with:
           name: corpus-hashes-win32-amd64
-          path: rigby-poc/evals/corpus/cases/**/expected.json
+          path: humanoid/evals/corpus/cases/**/expected.json
           if-no-files-found: warn
+
+  # core/ is the tier both product stacks compile against, so it is verified on
+  # its own and not only through its consumers. The neutrality guard lives here:
+  # if anything in core/ grows an import of rigby_v2, rigby_poc or rigby_general,
+  # this job goes red rather than the coupling being rediscovered a year later.
+  core:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: core
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+      - run: uv sync --extra dev
+      - run: uv run pytest
+
+  # demos/ is the shared record of what the project can do, one JSON file per
+  # demo plus its media, and a static viewer generated from them. Three people
+  # add to it from three branches, so the only thing that keeps it coherent is
+  # this job: every entry carries the fields the schema names, every media file
+  # exists and still matches the digest recorded for it, nothing under media/
+  # is orphaned, and the committed index.html is the one the registry renders.
+  # Plain Python, no dependency, seconds to run.
+  demos:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python demos/tools/demo_tools.py validate
+      - run: python demos/tools/demo_tools.py build --check
+
+  # any-robot/ had no CI at all before the split: every job in this workflow set
+  # `working-directory: humanoid`, so 12.6k lines and 128 tracked files were
+  # verified by nothing. Ubuntu only for now -- unlike humanoid this tier has no
+  # established cross-platform contract to protect, and adding one it does not
+  # have would be a tripwire rather than a gate.
+  any-robot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: any-robot
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+      - run: uv sync --extra dev
+      - run: uv run pytest

@@ -1,0 +1,35 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-08-27-reach-out-quickly-just-a-little-5fbf3e4d",
+  "title": "zoo_compact_arm: reach out quickly, just a little",
+  "prompt": "reach out quickly, just a little",
+  "tier": "any-robot",
+  "embodiment": "zoo_compact_arm",
+  "kind": "gif",
+  "who": "zanebeeai",
+  "produced_at": "2026-08-27T00:00:00Z",
+  "source": {
+    "commit": "unrecorded",
+    "branch": "feat/general-package (rigby-poc-general)",
+    "dirty": false,
+    "how": "uv run python scripts/build_demos.py  # any-robot, pre-split layout; demo-manifest.json records no commit"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "1 certified primitive(s), tracking error 8.7 mm, 6 DOF"
+  },
+  "notes": "role-normalized hash 76c55a66bec9: the same words read the same way on every body.",
+  "media": [
+    {
+      "path": "docs/results/media/any-robot-zoo-demos/zoo_compact_arm-reach-out-quickly,-just-a-little.gif",
+      "bytes": 524910,
+      "sha256": "46658272c1804a16c4fca0f5cafc9fe3df2544c4cf7257be03a9ddf633e95fdc",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "zoo",
+    "ledger-import"
+  ]
+}

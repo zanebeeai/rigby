@@ -1,0 +1,561 @@
+"""The equivalence harness: analysis output must match the compiler exactly.
+
+Three independent assertions per case, and they fail for different reasons:
+
+* ``compiler_metrics`` — the whole of ``ClipResult.metrics`` against a baseline
+  frozen *before* PR 02b began moving metric blocks out of ``compiler.py``.
+  This is the gate on the extraction itself. Moving a block into
+  ``rigby_poc.analysis`` must not change a single digit of what the compiler
+  emits, and this assertion is the only one that can prove it, because the
+  other two compare the analyzer against a compiler that has already been
+  changed;
+* against ``clip.metrics`` from the same run — proves the analyzer agrees with
+  the compiler *today*, and can never go stale;
+* against the frozen ``expected_metrics`` — pins the analysis layer's own
+  output, which grows as each path is ported.
+
+The fixture is a stand-in for the golden corpus (plan 03). When that lands it
+supersedes ``tests/fixtures/analysis_equivalence/``.
+"""
+
+from __future__ import annotations
+
+import json
+import socket
+import sys
+import time
+from collections.abc import Callable
+from pathlib import Path
+
+import pytest
+
+from rigby_poc import analysis
+from rigby_poc.kinematics import RigKinematics
+from rigby_poc.analysis.equivalence import owned_metric_keys, required_metric_keys
+from rigby_poc.compiler import compile_motion
+from rigby_poc.models import (
+    CompileRequest,
+    Hand,
+    MotionProgram,
+    ParameterOverrides,
+    SceneManifest,
+)
+
+# Every analysis test compiles a clip or reads one (plan 09 §3.3 tiering).
+pytestmark = pytest.mark.medium
+
+
+
+FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "analysis_equivalence"
+sys.path.insert(0, str(FIXTURE_DIR))
+from freeze import architecture_key  # noqa: E402
+
+_INDEX = json.loads((FIXTURE_DIR / "index.json").read_text(encoding="utf-8"))
+CASE_IDS: list[str] = _INDEX["cases"]
+BLESSED_ARCHITECTURE: str = _INDEX["blessed_architecture"]
+
+# Both frozen snapshots are exact floats, so they are statements about the
+# machine that produced them and nothing more. Measured on this fixture,
+# darwin-arm64 and a Windows x86-64 runner disagree by up to 56 ulps on
+# max_angular_jerk_rad_s3 — different libm transcendentals, different FMA
+# contraction, different numpy and scipy SIMD kernels. Nothing in the code under
+# test is wrong when that happens.
+#
+# The alternative to skipping is a relative tolerance near 1e-13, and that costs
+# more than it buys: this harness caught a deliberate 1e-15 perturbation of the
+# compiler during 02b, which is exactly the size of error a bad extraction
+# produces. A gate loose enough to be portable would not have caught it. So the
+# comparisons stay exact and run only where they mean something; bless another
+# architecture by running freeze.py on it.
+#
+# What still runs everywhere is the assertion that matters most on a foreign
+# machine: analysis output against the compiler *in the same process*. Both
+# sides then see the same libm, so an extraction that broke on Windows alone
+# would still be caught on Windows.
+exact_snapshot = pytest.mark.skipif(
+    architecture_key() != BLESSED_ARCHITECTURE,
+    reason=(
+        f"snapshot blessed on {BLESSED_ARCHITECTURE}, running on "
+        f"{architecture_key()}; exact float comparison is architecture-local"
+    ),
+)
+
+
+# Metric keys the compiler gained after the baseline was frozen, with why.
+# Each one is authoring intent that no post-hoc pass can invert out of a clip,
+# so persisting it is what lets the analysis layer reproduce the metrics that
+# compare achieved motion against what was commanded (plan 02 §1.4).
+#
+# BEFORE YOU ADD ONE: an added key is a 47-case GOLDEN CORPUS re-bless, in lane
+# `groundtruth`'s territory, on byte-identical motion.
+#
+# `evals/corpus/hashing.py:45` takes `metrics_sha256` over the **whole** metrics
+# dict, so a key nothing had before moves the digest for every case whatever its
+# value -- `test_corpus_determinism` goes red on all 47 while the frames are
+# unchanged. This declaration is the cheap half: it satisfies the equivalence
+# fixture below and buys nothing from the corpus.
+#
+# That asymmetry is a signpost pointing the wrong way, which is why the warning
+# is here rather than only in TRACKING. 04e published `root_drift_limit_m` for
+# good reasons -- to carry a bound beside its measurement -- and turned all 47
+# corpus cases red; it now derives the bound instead and adds no key. If you
+# need a value at check time and not in the published clip, derive it from the
+# program the way `analysis.safety.root_drift_limit_m` does.
+ADDED_COMPILER_KEYS: dict[str, str] = {
+    "support_constraints": (
+        "commanded ankle position per constrained frame; feeds "
+        "max_support_foot_target_error_m, max_support_foot_slide_per_frame_m "
+        "and support_contact_fraction"
+    ),
+    "presentation_ranges_s": (
+        "the composite presentation window, which opens at a fraction of each "
+        "phase's authored duration; phase_ranges_s stores running sums, so "
+        "re-deriving it moves the window by an ulp (plan 02 §1.5)"
+    ),
+    "climb_support_constraints": (
+        "commanded per-limb climb support targets; feeds "
+        "climb_support_target_max_error_m and climb_three_point_support_fraction"
+    ),
+}
+
+
+def _canonical(value: object) -> str:
+    return json.dumps(value, sort_keys=True, ensure_ascii=False)
+
+
+def _load_case(case_id: str) -> dict:
+    return json.loads((FIXTURE_DIR / f"{case_id}.json").read_text(encoding="utf-8"))
+
+
+def _compile_case(case: dict):
+    scene = SceneManifest.model_validate(case["scene"])
+    program = MotionProgram.model_validate(case["program"])
+    clip = compile_motion(
+        CompileRequest(scene=scene, program=program, persist=False)
+    )
+    return scene, program, clip
+
+
+@exact_snapshot
+@pytest.mark.parametrize("case_id", CASE_IDS)
+def test_compiler_metrics_match_the_pre_extraction_baseline(case_id: str) -> None:
+    """``compiler.py`` must emit the same numbers it did before the move.
+
+    PR 02 is an extraction, not a redesign: every metric block that moves into
+    ``rigby_poc.analysis`` has to leave ``ClipResult.metrics`` byte-identical.
+    The baseline in each fixture file was frozen from the compiler before 02b
+    touched it, and ``freeze.py`` refuses to overwrite it without an explicit
+    ``--rebless-compiler``.
+
+    A key may be *added* — 02b persists the commanded IK support targets, which
+    are authoring intent no post-hoc pass can recover — but every addition has
+    to be declared in ``ADDED_COMPILER_KEYS`` below, and nothing already frozen
+    may move.
+    """
+
+    case = _load_case(case_id)
+    baseline = case["compiler_metrics"]
+    _, _, clip = _compile_case(case)
+
+    for key in sorted(baseline):
+        assert key in clip.metrics, f"{case_id}: the compiler stopped emitting {key!r}"
+        assert _canonical(clip.metrics[key]) == _canonical(baseline[key]), (
+            f"{case_id}: {key!r} moved during the extraction. This is a move, not "
+            "a redesign — find the cause rather than re-blessing the baseline."
+        )
+
+    added = sorted(set(clip.metrics) - set(baseline))
+    undeclared = [key for key in added if key not in ADDED_COMPILER_KEYS]
+    assert not undeclared, (
+        f"{case_id}: the compiler grew undeclared metric keys {undeclared}; add "
+        "them to ADDED_COMPILER_KEYS with the reason they cannot be derived"
+    )
+
+
+@pytest.mark.parametrize("case_id", CASE_IDS)
+def test_analysis_matches_the_compiler_for_every_frozen_case(case_id: str) -> None:
+    case = _load_case(case_id)
+    scene, program, clip = _compile_case(case)
+
+    assert clip.frames, f"{case_id}: compiled to zero frames"
+    result = analysis.analyze(clip, program, scene)
+
+    for key in sorted(result):
+        assert key in clip.metrics, (
+            f"{case_id}: analysis produced {key!r}, which the compiler does not emit"
+        )
+        assert _canonical(result[key]) == _canonical(clip.metrics[key]), (
+            f"{case_id}: {key!r} differs between analysis and the compiler"
+        )
+
+
+@exact_snapshot
+@pytest.mark.parametrize("case_id", CASE_IDS)
+def test_analysis_output_is_byte_identical_to_the_frozen_fixture(
+    case_id: str,
+) -> None:
+    case = _load_case(case_id)
+    scene, program, clip = _compile_case(case)
+
+    result = analysis.analyze(clip, program, scene)
+
+    assert _canonical(result) == _canonical(case["expected_metrics"]), (
+        f"{case_id}: analysis output drifted from the frozen fixture. If a metric "
+        "definition changed deliberately, regenerate with "
+        "`uv run python tests/fixtures/analysis_equivalence/freeze.py`."
+    )
+
+
+@pytest.mark.parametrize("case_id", CASE_IDS)
+def test_analysis_owns_exactly_the_declared_key_set(case_id: str) -> None:
+    case = _load_case(case_id)
+    scene, program, clip = _compile_case(case)
+
+    keys = set(analysis.analyze(clip, program, scene))
+
+    unexpected = sorted(keys - owned_metric_keys(program))
+    assert not unexpected, (
+        f"{case_id}: analysis emitted undeclared keys {unexpected}; add them to "
+        "rigby_poc.analysis.equivalence"
+    )
+    dropped = sorted(required_metric_keys(program) - keys)
+    assert not dropped, (
+        f"{case_id}: analysis silently stopped producing {dropped}"
+    )
+
+
+def test_the_declared_additions_are_still_additions() -> None:
+    """Every key in ``ADDED_COMPILER_KEYS`` must be absent from every baseline.
+
+    The declaration only means something while the key is genuinely outside the
+    frozen set. A re-bless that absorbs the added keys leaves this module's
+    ``undeclared`` assertion computing over an empty difference — passing, and
+    passing for the reason it exists to catch — while ``ADDED_COMPILER_KEYS``
+    silently becomes documentation of nothing.
+
+    That is not hypothetical: the first run of 08d's re-bless did exactly this,
+    folding `support_constraints` and `climb_support_constraints` into the
+    baseline as **19,558 lines** of per-frame IK targets, as a side effect of a
+    0.469 mm change to one shoulder origin. Nobody reviews a diff that size.
+    ``freeze.py --rebless-compiler`` now preserves the baseline's key set; this
+    is the assertion that says so, on the fixture rather than on the tool.
+    """
+
+    for case_id in CASE_IDS:
+        baseline = _load_case(case_id)["compiler_metrics"]
+        assert baseline, f"{case_id}: empty baseline asserts nothing"
+        absorbed = sorted(set(ADDED_COMPILER_KEYS) & set(baseline))
+        assert not absorbed, (
+            f"{case_id}: {absorbed} are declared in ADDED_COMPILER_KEYS but are "
+            "in the frozen baseline, so the declaration no longer describes "
+            "anything. A re-bless updates values, never the key set."
+        )
+
+
+def test_the_fixture_covers_every_supported_intent() -> None:
+    intents = {_load_case(case_id)["intent"] for case_id in CASE_IDS}
+
+    assert intents == {
+        "gesture",
+        "grab",
+        "strike",
+        "composite",
+        "full_body",
+        "object_interaction",
+        "sequence",
+    }
+
+
+def test_the_fixture_exercises_every_owned_metric_family() -> None:
+    """Every family in the ownership ledger must be non-empty somewhere.
+
+    Without this a family could quietly emit nothing for all fourteen cases and
+    the equivalence assertions above would still pass.
+    """
+
+    from rigby_poc.analysis import equivalence
+
+    families = {
+        "safety": equivalence.SAFETY_KEYS,
+        "angular": equivalence.ANGULAR_KEYS,
+        "gesture_structure": equivalence.GESTURE_STRUCTURE_KEYS,
+        "shake": equivalence.SHAKE_KEYS,
+        "contact": equivalence.CONTACT_KEYS,
+        "semantic_cycle": equivalence.SEMANTIC_KEYS,
+        "parallel_forearm": equivalence.PARALLEL_FOREARM_KEYS,
+    }
+    seen: set[str] = set()
+    for case_id in CASE_IDS:
+        seen |= set(_load_case(case_id)["expected_metrics"])
+
+    uncovered = sorted(name for name, keys in families.items() if not keys <= seen)
+    assert not uncovered, f"no fixture case exercises: {uncovered}"
+
+
+def test_analysis_needs_no_network(monkeypatch: pytest.MonkeyPatch) -> None:
+    """``analyze`` must run with no server, no browser and no API key."""
+
+    case = _load_case("composite_travel_foul")
+    scene, program, clip = _compile_case(case)
+
+    def refuse(*args: object, **kwargs: object) -> None:
+        raise AssertionError("analysis opened a socket")
+
+    monkeypatch.setattr(socket, "socket", refuse)
+    monkeypatch.setattr(socket, "create_connection", refuse)
+    for name in ("OPENAI_API_KEY", "ANTHROPIC_API_KEY"):
+        monkeypatch.delenv(name, raising=False)
+
+    assert analysis.analyze(clip, program, scene)
+
+
+#: Forward-kinematics evaluations a case may make beyond one per clip frame.
+#:
+#: The default is 2, and both are real non-clip poses rather than slack: the
+#: The forward-kinematics SHAPE of each case, measured, not bounded.
+#:
+#: An upper bound of ``len(frames) + slack`` cannot do this job. Paths that
+#: evaluate the hierarchy on a *subset* of frames carry slack equal to the frames
+#: they skip -- measured on this tree, ``sequence_catch_then_turn`` had 178 free
+#: passes, ``object_throw_forward`` 130, ``grab_block_right`` 100 -- so a literal
+#: doubling of those paths' per-frame work stayed green. The guard was in the
+#: right place and still unable to fire.
+#:
+#: So each case declares its shape and the assertion is an equality:
+#:   ``("none", n)``      the path evaluates no clip frames; expect exactly n.
+#:   ``("per_frame", n)`` one pass per clip frame plus n non-clip poses -- the
+#:                        ground-plane neutral pose and the identity rest-head
+#:                        pose. Written against ``len(clip.frames)`` rather than
+#:                        a literal so a platform that compiles a different frame
+#:                        count fails for a real reason, not an arithmetic one.
+#:   ``("windowed", n)``  the path samples a sub-range; expect exactly n.
+#:                        ``strike_left_hook`` is the strike window, 23 of 99.
+#:
+#: G6b raised six of these. The head-carried ego camera evaluates the hierarchy
+#: once per SAMPLED presentation frame, so the three gesture cases and
+#: ``strike_left_hook`` go from no forward kinematics to their presentation
+#: window, and the two composite cases gain the identity rest-head pose. Those
+#: are the real cost of carrying the camera on the head and they are declared
+#: here rather than absorbed: under the old upper bound all six were invisible.
+#:
+#: Equality is deliberate in both directions. Too many passes is a check that
+#: stopped reading ``AnalysisContext``; too few is coverage that quietly went
+#: away. Update these numbers when a change legitimately moves them, and say so.
+#: The carried-capsule change (G6c) moved five more. Self-collision now reads
+#: the arm pivots and torso carriers from world matrices on every frame, so the
+#: three gesture cases and ``strike_left_hook`` go from their presentation
+#: window to one pass per clip frame plus the rest-head pose, and
+#: ``strike_shake_echo`` -- which has no presentation window and therefore no
+#: rest-head evaluation -- goes from none to exactly one pass per frame.
+_FK_SHAPES: dict[str, tuple[str, int]] = {
+    "gesture_shaka_right": ("per_frame", 1),
+    "gesture_open_palm": ("per_frame", 1),
+    "gesture_point_right": ("per_frame", 1),
+    "strike_left_hook": ("per_frame", 1),
+    "strike_shake_echo": ("per_frame", 0),
+    "grab_block_right": ("none", 0),
+    "composite_travel_foul": ("per_frame", 1),
+    "composite_finger_count_gaze": ("per_frame", 1),
+    "composite_wave": ("per_frame", 1),
+    "full_body_walk": ("per_frame", 1),
+    "full_body_wave_while_walking": ("per_frame", 1),
+    "full_body_climb": ("per_frame", 1),
+    "object_throw_forward": ("none", 0),
+    "object_handoff": ("none", 0),
+    "sequence_catch_then_turn": ("none", 0),
+    "full_body_jumping_jack": ("per_frame", 1),
+    "full_body_burpee": ("per_frame", 1),
+    "full_body_squat": ("per_frame", 1),
+    "full_body_lunge": ("per_frame", 1),
+    "full_body_single_leg_balance": ("per_frame", 1),
+    "full_body_sit_up": ("per_frame", 1),
+    "full_body_crawl": ("per_frame", 1),
+    "full_body_push_up": ("per_frame", 1),
+    "full_body_dance": ("per_frame", 1),
+    "full_body_cartwheel": ("per_frame", 1),
+    "full_body_floor_roll": ("per_frame", 1),
+    "full_body_obstacle_over": ("per_frame", 1),
+    "full_body_obstacle_around": ("per_frame", 1),
+    "full_body_plank": ("per_frame", 1),
+    "full_body_lie_supine": ("per_frame", 1),
+    "full_body_kick": ("per_frame", 1),
+    "full_body_turn": ("per_frame", 1),
+    "full_body_run": ("per_frame", 1),
+    "full_body_crouch": ("per_frame", 1),
+}
+
+
+@pytest.mark.parametrize("case_id", CASE_IDS)
+def test_forward_kinematics_is_evaluated_once_per_frame(case_id: str) -> None:
+    """The invariant ``AnalysisContext`` exists to provide, asserted structurally.
+
+    Every check that needs world data reads it from the context, so the per-frame
+    hierarchy pass runs once no matter how many checks there are. A check that
+    evaluates the hierarchy itself instead adds a whole second pass, and that is
+    the specific regression the wall-clock bound below was really protecting
+    against. Writing this test found three checks already doing it — semantic
+    cycle, parallel forearm and intra-hand contact — worth ~40% of the whole-body
+    path and ~70% of composite travel.
+
+    Counted at ``RigKinematics.world_matrices``, which is the single funnel: it is
+    the only place the hierarchy is actually walked, and ``canonical_positions``,
+    ``fingertip_positions``, ``canonical_world_rotation``, ``solve_leg`` and
+    ``solve_arm`` all go through it. Counting a level up — at
+    ``canonical_positions``, as this test used to — leaves a hole: a check that
+    reaches for ``canonical_world_rotation`` or ``fingertip_positions`` per frame
+    doubles the forward-kinematics work while the guard stays green, because
+    those two call ``world_matrices`` directly. The other three accessors are
+    still counted, but only as diagnostics, so a failure can name the route that
+    caused the excess.
+
+    The assertion is an equality against :data:`_FK_SHAPES`, not an upper bound.
+    An upper bound of one pass per clip frame is vacuous on every path that
+    samples a subset of frames, and those are most of them: it left 178 free
+    passes on the sequence case and 130 on the object case, so a doubling there
+    was invisible. Equality catches a doubling on every path, and catches lost
+    coverage too.
+
+    This says the same thing without a stopwatch. It has no platform exposure, it
+    fails for the right reason, and it names the function to fix. That matters
+    because the timing bound's headroom turns out to be thin: the heaviest path is
+    ~72 ms locally against a 300 ms bound, and the only cross-platform anchor
+    anyone has measured is a whole-suite 4.2x on Windows CI, which would put it at
+    ~305 ms. A guard whose usable band is under 3x wide is a bet dressed as a
+    test, so the bet is confined to the machine it was measured on and the
+    structural claim runs everywhere.
+    """
+
+    case = _load_case(case_id)
+    scene, program, clip = _compile_case(case)
+
+    counts = {
+        "world_matrices": 0,
+        "canonical_positions": 0,
+        "fingertip_positions": 0,
+        "canonical_world_rotation": 0,
+    }
+    originals = {name: getattr(RigKinematics, name) for name in counts}
+
+    def counter(name: str) -> Callable[..., object]:
+        original = originals[name]
+
+        def counting(self: RigKinematics, *args: object, **kwargs: object) -> object:
+            counts[name] += 1
+            return original(self, *args, **kwargs)
+
+        return counting
+
+    for name in counts:
+        setattr(RigKinematics, name, counter(name))
+    try:
+        analysis.analyze(clip, program, scene)
+    finally:
+        for name, original in originals.items():
+            setattr(RigKinematics, name, original)
+
+    shape, count = _FK_SHAPES[case_id]
+    expected = count if shape in {"none", "windowed"} else len(clip.frames) + count
+    routes = ", ".join(f"{name}={counts[name]}" for name in sorted(counts))
+    assert counts["world_matrices"] == expected, (
+        f"{case_id}: {counts['world_matrices']} forward-kinematics passes for "
+        f"{len(clip.frames)} frames, expected {expected} ({shape}). More means a "
+        "check is evaluating the hierarchy instead of reading AnalysisContext; "
+        "fewer means coverage went away. Routes: {routes}."
+    ).replace("{routes}", routes)
+
+
+@exact_snapshot
+def test_analysis_stays_within_an_order_of_magnitude_of_its_budget() -> None:
+    """A catastrophic-regression ceiling, and deliberately nothing tighter.
+
+    **This assertion runs on darwin-arm64 only.** It carries ``@exact_snapshot``,
+    so on any other architecture it skips and asserts nothing. A green suite
+    elsewhere says nothing about how long analysis took there — reading the
+    number below as a verified property of the layer everywhere would be the
+    same "present but not derived from what it claims" mistake this cycle has
+    found in a dozen places.
+
+    Plan 02 §5 targets 100 ms for a 125-frame clip. The heaviest path now costs
+    ~225 ms: composite analysis owns the per-hand gesture-structure fold from
+    02c onwards, which ``analyze`` did not do before. The target is missed and
+    the honest number is recorded in the plan rather than hidden behind a bound
+    that happens to pass.
+
+    A tighter assertion than this one cannot be made to hold, and the reason is
+    measured rather than assumed. In isolation the path is stable to 1.08x
+    across ten runs. Inside the full suite, with five worktrees compiling
+    concurrently on one machine, the same work exceeded 300 ms and turned red.
+    Platform was the exposure lane `anatomy` predicted; contention on the
+    *blessed* machine got there first.
+
+    So this catches an order-of-magnitude regression and nothing finer.
+    ``test_forward_kinematics_is_evaluated_once_per_frame`` is the real guard:
+    it asserts the property that actually matters -- one world-position pass
+    per frame regardless of check count -- and it has neither platform nor
+    contention exposure. When the ``kinematics.py`` vectorisation lands, this
+    number should fall by roughly half and the budget can be revisited then.
+    """
+
+    case = _load_case("composite_travel_foul")
+    scene, program, clip = _compile_case(case)
+    trimmed = clip.model_copy(update={"frames": clip.frames[:125]})
+
+    analysis.analyze(trimmed, program, scene)  # warm the rig cache
+    samples = []
+    for _ in range(5):
+        start = time.perf_counter()
+        analysis.analyze(trimmed, program, scene)
+        samples.append((time.perf_counter() - start) * 1000.0)
+    elapsed_ms = min(samples)
+
+    assert elapsed_ms < 2000.0, (
+        f"analysis took {elapsed_ms:.1f} ms for 125 frames, an order of "
+        "magnitude over the ~225 ms this path costs. Something structural "
+        "changed; start with test_forward_kinematics_is_evaluated_once_per_frame."
+    )
+
+
+def test_a_stored_result_must_be_read_through_apply_overrides(tmp_path: Path) -> None:
+    """``store.py`` persists the pre-override program, so reading it is a trap.
+
+    ``artifacts.load_analysis_inputs`` applies the overrides; reading
+    ``program.json`` directly analyses a program the clip was never compiled
+    from.
+    """
+
+    from rigby_poc.analysis.artifacts import load_analysis_inputs
+    from rigby_poc.store import ResultStore
+
+    case = _load_case("gesture_shaka_right")
+    scene = SceneManifest.model_validate(case["scene"])
+    program = MotionProgram.model_validate(case["program"])
+    assert program.hand == Hand.RIGHT
+    request = CompileRequest(
+        scene=scene,
+        program=program,
+        parameter_overrides=ParameterOverrides(hand=Hand.LEFT, duration_s=1.75),
+    )
+    clip = compile_motion(request)
+
+    result_id = ResultStore(root=tmp_path).persist(request, clip)
+    result_dir = tmp_path / result_id
+
+    persisted = MotionProgram.model_validate_json(
+        (result_dir / "program.json").read_text(encoding="utf-8")
+    )
+    loaded_clip, effective_program, effective_scene = load_analysis_inputs(result_dir)
+
+    assert persisted.hand == Hand.RIGHT, "store no longer persists the raw program"
+    assert effective_program.hand == Hand.LEFT
+
+    from_effective = analysis.analyze(
+        loaded_clip, effective_program, effective_scene
+    )
+    from_persisted = analysis.analyze(loaded_clip, persisted, effective_scene)
+
+    for key in from_effective:
+        assert _canonical(from_effective[key]) == _canonical(clip.metrics[key])
+    assert _canonical(from_persisted) != _canonical(from_effective), (
+        "analysing the persisted pre-override program agreed with the effective "
+        "one; the trap is real but this case no longer demonstrates it"
+    )

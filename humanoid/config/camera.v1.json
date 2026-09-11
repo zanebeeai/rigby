@@ -1,0 +1,106 @@
+{
+  "schema_version": "1.0",
+  "$comment": "The single source for every value shared across the Python/TypeScript boundary. frontend/src/generated/camera.ts is GENERATED from this file by evals/generate_camera_ts.py -- do not hand-edit the generated file. Plan 08 SS3.3.",
+  "camera": {
+    "ego_vertical_fov_deg": {
+      "value": 94.0,
+      "unit": "deg",
+      "source": {
+        "kind": "invariant",
+        "cites": [
+          "acceptance_criteria.yaml autonomous_pipeline.egocentric_full_fov_deg",
+          "config/motion_quality_reference.json camera_contract.vertical_fov_deg",
+          "evals/capture.py CAPTURE_FOV_DEG",
+          "frontend/src/capture.ts EGO_FOV_DEG",
+          "frontend/src/scene.ts egoCamera",
+          "src/rigby_poc/judge.py the snapshot contract"
+        ],
+        "rationale": "The published egocentric capture contract. Evidence must show the complete FOV uncropped, so judge.py rejects a snapshot that does not carry it. Six hand-maintained copies before this file."
+      }
+    },
+    "capture_width_px": {
+      "value": 1600,
+      "unit": "px",
+      "source": {
+        "kind": "invariant",
+        "cites": [
+          "config/motion_quality_reference.json camera_contract.width_px",
+          "evals/capture.py CAPTURE_WIDTH",
+          "frontend/src/capture.ts WIDTH",
+          "src/rigby_poc/judge.py the snapshot contract",
+          "evals/autonomous_goal_audit.py"
+        ],
+        "rationale": "Uncropped source frame width. judge.py raises if a snapshot does not preserve it."
+      }
+    },
+    "capture_height_px": {
+      "value": 900,
+      "unit": "px",
+      "source": {
+        "kind": "invariant",
+        "cites": [
+          "config/motion_quality_reference.json camera_contract.height_px",
+          "evals/capture.py CAPTURE_HEIGHT",
+          "frontend/src/capture.ts HEIGHT",
+          "src/rigby_poc/judge.py the snapshot contract"
+        ],
+        "rationale": "Uncropped source frame height. 1600x900 is exactly 16:9."
+      }
+    },
+    "ego_neutral_gaze": {
+      "value": [
+        0.0,
+        -0.65,
+        1.0
+      ],
+      "unit": "unit vector, application frame (Y-up, forward +Z), normalised at use",
+      "source": {
+        "kind": "external",
+        "cites": [
+          "frontend/src/camera.ts NEUTRAL_GAZE",
+          "src/rigby_poc/analysis/rig.py EGO_NEUTRAL_GAZE",
+          "src/rigby_poc/analysis/gesture.py"
+        ],
+        "derived_from": "the calibrated head pose of the mesh2motion VRM rig",
+        "rationale": "Neutral egocentric gaze direction. The downward -0.65 component is the head's rest pitch, not a camera choice; both sides normalise before use, so the stored vector is deliberately un-normalised to keep the authored ratio legible."
+      }
+    },
+    "hand_visibility_radius_m": {
+      "value": 0.095,
+      "unit": "m",
+      "source": {
+        "kind": "provisional",
+        "cites": [
+          "config/motion_quality_reference.json camera_contract.hand_visibility_radius_m"
+        ],
+        "rationale": "Half-span used to decide whether the acting hand is fully inside the egocentric frame. Ported verbatim; no derivation is recorded anywhere in the repository."
+      }
+    },
+    "ego_eye_offset_m": {
+      "value": [
+        0.0,
+        0.04,
+        0.11
+      ],
+      "unit": "m, head-local (Y-up, forward +Z)",
+      "source": {
+        "kind": "external",
+        "cites": [
+          "frontend/src/camera.ts NEUTRAL_EYE_OFFSET",
+          "src/rigby_poc/analysis/gesture.py"
+        ],
+        "derived_from": "the ego camera the evidence renderer actually places, relative to the head it is parented to",
+        "rationale": "The eye offset the renderer uses to hang the ego camera off the head. It is the fifth camera value and the last to be migrated: the other four reached the frontend by generation while this one stayed hand-typed on BOTH sides, and the two copies diverged. The analysis side had folded it into a rest-head position rounded to four decimals, which put its implied offset 0.024 mm from this value -- 0.028 px of a 1600x900 capture, and enough to decide active_hand_visibility_fraction at frame 0 of every strike and gesture clip, because the compiler places the hand at the visibility limit by construction. The renderer is the authority: the check exists to predict what a grader sees in the rendered evidence, so the constant the renderer uses is the definition rather than one opinion of two."
+      },
+      "supersedes": {
+        "key": "src/rigby_poc/analysis/gesture.py _REST_EGO_CAMERA_POSITION",
+        "value": [
+          0.0,
+          1.6085,
+          0.12140000000000001
+        ],
+        "why": "A rest-head position rounded to four decimals with the offset already added, so the offset could not be read back out or compared against the renderer's."
+      }
+    }
+  }
+}

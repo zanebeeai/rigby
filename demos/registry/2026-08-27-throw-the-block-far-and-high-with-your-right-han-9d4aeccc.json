@@ -1,0 +1,36 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-08-27-throw-the-block-far-and-high-with-your-right-han-9d4aeccc",
+  "title": "Before and after: the humeral-roll fix",
+  "prompt": "throw the block far and high with your right hand",
+  "tier": "humanoid",
+  "embodiment": "mesh2motion-human-vrm1",
+  "kind": "gif",
+  "who": "tpypan",
+  "produced_at": "2026-08-27T00:00:00Z",
+  "source": {
+    "commit": "bb9c7c7..3b76f3f",
+    "branch": "main",
+    "dirty": false,
+    "how": "cd humanoid && uv run python -m evals.render_comparison_gif <before-result> <after-result> docs/media/arm-fix-throw-comparison.gif --view orbit"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "Pre-fix peak elbow abduction 130.6 deg (rightLowerArm, t=2.65s); post-fix under 4 deg at solver keyframes."
+  },
+  "notes": "program source evals/corpus/cases/object-throw-far.",
+  "media": [
+    {
+      "path": "humanoid/docs/media/arm-fix-throw-comparison.gif",
+      "bytes": 934635,
+      "sha256": "5a2f601647fb5bc9aab848e97db82e45cfa613987b81ed125ee4755803007891",
+      "role": "comparison"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "readme",
+    "comparison",
+    "ledger-import"
+  ]
+}
