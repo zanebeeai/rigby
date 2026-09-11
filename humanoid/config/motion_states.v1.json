@@ -1,0 +1,76 @@
+{
+  "schema_version": "1.0",
+  "$comment": "A state controller for object-directed motion. Each state names the body regions actually being solved, the regions that are held inert, the inspection gates that mean anything in that state, and what the head should be watching. Without this, every gate runs in every state and every repair proposal is compiled: the inspector re-checks digit opposition while the arm is still in transit, and spends a full simulation proving that fingers which have not moved still have not moved. Scoping both the gates and the repair proposals to the active regions is the difference between a candidate costing one simulation and costing a dozen.",
+  "applies_to_intents": ["grab"],
+  "default_gaze": "forward",
+  "states": {
+    "reach": {
+      "order": 0,
+      "goal": "bring the effector near the object without touching it",
+      "active_regions": ["arm", "forearm"],
+      "inert_regions": ["wrist", "palm", "digits"],
+      "gates": [],
+      "gaze": "object",
+      "rationale": "Nothing is in contact yet, so no contact gate can fail informatively. The digits are held at their approach shape; repairing them here changes a pose that the close state is about to overwrite."
+    },
+    "preshape": {
+      "order": 1,
+      "goal": "form the approach hand shape while still clear of the object",
+      "active_regions": ["wrist", "palm", "digits"],
+      "inert_regions": ["arm"],
+      "gates": ["palm_surface_orientation"],
+      "gaze": "object",
+      "rationale": "The arm has arrived and is held; the hand is what changes. Palm orientation is checkable here because the wrist is solved, and catching it now is cheaper than discovering it after contact."
+    },
+    "contact": {
+      "order": 2,
+      "goal": "place the rendered palm at the object's grasp socket",
+      "active_regions": ["arm", "forearm", "wrist"],
+      "inert_regions": ["digits"],
+      "gates": ["object_socket_alignment", "palm_surface_orientation"],
+      "gaze": "object",
+      "rationale": "This is where placement is decided, so this is where placement is checked. The digits are still open and cannot be at fault for a placement error."
+    },
+    "close": {
+      "order": 3,
+      "goal": "close the digits around the object",
+      "active_regions": ["digits"],
+      "inert_regions": ["arm", "forearm", "wrist"],
+      "gates": ["digit_chain_and_opposition"],
+      "gaze": "grasp",
+      "rationale": "The one state where the digits are the thing being solved, and the one state where the head should be looking at the hand rather than the object: the grasp is what is being formed, and a head that watches the object cannot see whether the fingers closed around it."
+    },
+    "lift": {
+      "order": 4,
+      "goal": "raise the object along its specified path",
+      "active_regions": ["arm", "forearm"],
+      "inert_regions": ["digits"],
+      "gates": ["embodied_contact_dynamics"],
+      "gaze": "object",
+      "rationale": "The grip is formed and must be held, not re-solved. A digit repair during lift changes the grasp that is currently carrying the object, which is how a candidate that was holding the block drops it."
+    },
+    "hold": {
+      "order": 5,
+      "goal": "keep the object stable at the lifted pose",
+      "active_regions": [],
+      "inert_regions": ["arm", "forearm", "wrist", "digits"],
+      "gates": ["embodied_contact_dynamics"],
+      "gaze": "object",
+      "rationale": "Nothing is being solved; the state exists to be measured. Contact dynamics over this window is what distinguishes a grasp from a moment of luck during the lift."
+    },
+    "recover": {
+      "order": 6,
+      "goal": "return to rest, releasing or retaining as the command specified",
+      "active_regions": ["arm", "forearm"],
+      "inert_regions": [],
+      "gates": ["embodied_contact_dynamics"],
+      "gaze": "forward",
+      "rationale": "The head returns to a neutral gaze because the task is over. Contact dynamics still runs: releasing an object is a physical event and an object left frozen in midair fails here."
+    }
+  },
+  "gaze_targets": {
+    "object": "the Figure of the motion situation -- the object being acted on",
+    "grasp": "the acting hand's palm centre, so the closing grip is in view",
+    "forward": "the rig's neutral egocentric gaze"
+  }
+}

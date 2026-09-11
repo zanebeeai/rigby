@@ -1,4 +1,7 @@
 import * as THREE from "three";
+
+//: One aperture per finger: thumb-index, thumb-middle, thumb-ring, thumb-little.
+const APERTURE_QUADS = 4;
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import {
@@ -112,6 +115,7 @@ export interface RenderProvenance {
   asset_error: string | null;
 }
 
+
 export class RigbyScene {
   private readonly scene = new THREE.Scene();
   private readonly renderer: THREE.WebGLRenderer;
@@ -133,6 +137,10 @@ export class RigbyScene {
   private restRotations = new Map<string, THREE.Quaternion>();
   private restPositions = new Map<string, THREE.Vector3>();
   private headBone: THREE.Object3D | null = null;
+  private apertureFill: THREE.Mesh | null = null;
+  private apertureEdges: THREE.LineSegments | null = null;
+  private apertureVisible = true;
+  private apertureSide: "left" | "right" = "right";
   private readonly strictAssets: boolean;
   private readonly deterministicRender: boolean;
   private assetUrl: string | null = null;
@@ -245,6 +253,71 @@ export class RigbyScene {
     this.table.receiveShadow = true;
     this.table.visible = false;
     this.taskEnvironment.add(this.table);
+
+    // Four opposition apertures, one per finger: the thumb against the index,
+    // the middle, the ring and the little, each spanning its own quad.
+    //
+    // This used to draw one quad against the four fingers averaged into a
+    // virtual finger, and that average is not a hand. It reports a middling
+    // number for a hand gripping firmly with two fingers and missing with two,
+    // and it hides the thing that actually decides the grasp: at a closed fist
+    // the four tip spans are 8.6, 7.2, 5.9 and 5.9 cm, so against a 6 cm block
+    // some fingers cannot reach it while others are driven straight through it.
+    // Averaged into one shape that is invisible. Drawn separately it is the
+    // first thing you see.
+    const APERTURE_COLORS = [0x4ea1ff, 0x5ce6a8, 0xffc25c, 0xff7ba6];
+    const apertureGeometry = new THREE.BufferGeometry();
+    apertureGeometry.setAttribute(
+      "position",
+      new THREE.BufferAttribute(new Float32Array(APERTURE_QUADS * 4 * 3), 3),
+    );
+    const apertureColors = new Float32Array(APERTURE_QUADS * 4 * 3);
+    const apertureIndex: number[] = [];
+    for (let q = 0; q < APERTURE_QUADS; q += 1) {
+      const c = new THREE.Color(APERTURE_COLORS[q]);
+      for (let v = 0; v < 4; v += 1) {
+        apertureColors.set([c.r, c.g, c.b], (q * 4 + v) * 3);
+      }
+      const o = q * 4;
+      apertureIndex.push(o, o + 1, o + 2, o, o + 2, o + 3);
+    }
+    apertureGeometry.setAttribute(
+      "color",
+      new THREE.BufferAttribute(apertureColors, 3),
+    );
+    apertureGeometry.setIndex(apertureIndex);
+    this.apertureFill = new THREE.Mesh(
+      apertureGeometry,
+      new THREE.MeshBasicMaterial({
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.24,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+      }),
+    );
+    this.apertureFill.renderOrder = 3;
+    this.scene.add(this.apertureFill);
+
+    const edgeGeometry = new THREE.BufferGeometry();
+    edgeGeometry.setAttribute(
+      "position",
+      new THREE.BufferAttribute(new Float32Array(APERTURE_QUADS * 4 * 2 * 3), 3),
+    );
+    const edgeColors = new Float32Array(APERTURE_QUADS * 4 * 2 * 3);
+    for (let q = 0; q < APERTURE_QUADS; q += 1) {
+      const c = new THREE.Color(APERTURE_COLORS[q]);
+      for (let v = 0; v < 8; v += 1) {
+        edgeColors.set([c.r, c.g, c.b], (q * 8 + v) * 3);
+      }
+    }
+    edgeGeometry.setAttribute("color", new THREE.BufferAttribute(edgeColors, 3));
+    this.apertureEdges = new THREE.LineSegments(
+      edgeGeometry,
+      new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.95 }),
+    );
+    this.apertureEdges.renderOrder = 4;
+    this.scene.add(this.apertureEdges);
     this.scene.add(this.taskEnvironment);
 
     const key = new THREE.DirectionalLight(0xffe2c5, 3.4);
@@ -389,6 +462,11 @@ export class RigbyScene {
     this.table.visible = this.table.visible && this.supportSurfacePresent;
   }
 
+  /** Draw the aperture for whichever hand is acting. */
+  setApertureSide(side: "left" | "right"): void {
+    this.apertureSide = side;
+  }
+
   setObjectId(objectId: string | null | undefined): void {
     this.objectId = objectId || "block";
   }
@@ -450,6 +528,91 @@ export class RigbyScene {
     this.ladder.position.set(...params.position);
   }
 
+
+  /** Where a digit's tip actually is.
+   *
+   *  The rig's distal bone is the last *joint*, not the fingertip, so its own
+   *  origin sits a phalanx short of the end. The GLB carries `_04_leaf` tips for
+   *  exactly this; fall back to extending the distal bone if one is missing.
+   */
+  private tipPosition(distalName: string, leafName: string): THREE.Vector3 | null {
+    const leaf = this.boneLookup.get(leafName);
+    if (leaf) {
+      leaf.updateWorldMatrix(true, false);
+      return leaf.getWorldPosition(new THREE.Vector3());
+    }
+    const distal = this.boneLookup.get(distalName);
+    if (!distal) return null;
+    distal.updateWorldMatrix(true, false);
+    return distal.getWorldPosition(new THREE.Vector3());
+  }
+
+  private bonePosition(name: string): THREE.Vector3 | null {
+    const bone = this.boneLookup.get(name.toLowerCase());
+    if (!bone) return null;
+    bone.updateWorldMatrix(true, false);
+    return bone.getWorldPosition(new THREE.Vector3());
+  }
+
+  /** Redraw the opposition quad from the pose currently on the skeleton.
+   *
+   *  Computed here rather than shipped per frame from the compiler: the
+   *  renderer already holds the posed rig, so deriving it locally cannot drift
+   *  out of sync with what is on screen -- which is the whole property this
+   *  visualisation exists to make checkable.
+   */
+  private updateAperture(side: "left" | "right"): void {
+    // The two rays whose dot product decides whether this is a grip.
+    //
+    // The four aperture quads used to be drawn here, and they described the
+    // hand's internal geometry rather than whether it could hold anything: a
+    // hand scores well on them while its thumb and index point past each other
+    // and enclose nothing. What matters is each fingertip extended along its
+    // last bone -- parallel and opposite, a dot product of -1, is a C; near 0
+    // is two blades that never meet.
+    if (!this.apertureFill || !this.apertureEdges) return;
+    const s = side === "left" ? "l" : "r";
+    const thumbTip = this.tipPosition(`${side}ThumbDistal`, `thumb_04_leaf_${s}`);
+    const thumbBase = this.bonePosition(`${side}ThumbProximal`);
+    const indexTip = this.tipPosition(`${side}IndexDistal`, `index_04_leaf_${s}`);
+    const indexBase = this.bonePosition(`${side}IndexIntermediate`);
+
+    const visible =
+      this.apertureVisible && !!thumbTip && !!thumbBase && !!indexTip && !!indexBase;
+    this.apertureFill.visible = false;
+    this.apertureEdges.visible = visible;
+    if (!visible || !thumbTip || !thumbBase || !indexTip || !indexBase) return;
+
+    // Each ray leaves its tip along the direction of the last bone, drawn long
+    // enough to show whether the two would ever meet.
+    const RAY_M = 0.09;
+    const thumbDir = thumbTip.clone().sub(thumbBase).normalize();
+    const indexDir = indexTip.clone().sub(indexBase).normalize();
+    const thumbEnd = thumbTip.clone().add(thumbDir.clone().multiplyScalar(RAY_M));
+    const indexEnd = indexTip.clone().add(indexDir.clone().multiplyScalar(RAY_M));
+
+    const segments = [
+      thumbTip, thumbEnd,
+      indexTip, indexEnd,
+      // The chord between the tips, so the gap between the rays is visible.
+      thumbTip, indexTip,
+    ];
+    const edge = this.apertureEdges.geometry.getAttribute("position") as THREE.BufferAttribute;
+    const last = segments[segments.length - 1] as THREE.Vector3;
+    for (let i = 0; i < edge.count; i += 1) {
+      const point = segments[i] ?? last;
+      edge.setXYZ(i, point.x, point.y, point.z);
+    }
+    edge.needsUpdate = true;
+    this.apertureEdges.geometry.computeBoundingSphere();
+  }
+
+  setApertureVisible(visible: boolean): void {
+    this.apertureVisible = visible;
+    if (this.apertureFill) this.apertureFill.visible = visible;
+    if (this.apertureEdges) this.apertureEdges.visible = visible;
+  }
+
   applyFrame(frame: MotionFrame | null, contacts: ContactEvent[] = []): void {
     const nextRootOffset = new THREE.Vector3();
     for (const [canonical, restRotation] of this.restRotations) {
@@ -509,6 +672,9 @@ export class RigbyScene {
     this.socketMarker.position.copy(activeObject.position);
     this.socketMarker.position.z -= this.blockParams.depth * 0.51;
     if (this.debugVisible) this.renderContacts(contacts);
+    // After the skeleton has been posed, so the quad reflects this frame.
+    this.avatarRoot.updateMatrixWorld(true);
+    this.updateAperture(this.apertureSide);
   }
 
   private renderContacts(contacts: ContactEvent[]): void {

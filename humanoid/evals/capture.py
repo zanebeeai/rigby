@@ -5,6 +5,7 @@ import base64
 import hashlib
 import json
 import math
+import os
 import re
 import struct
 import sys
@@ -16,6 +17,7 @@ from typing import Any, Protocol
 from urllib.parse import quote, urlencode
 from urllib.request import Request, urlopen
 
+from playwright.sync_api import Error as PlaywrightError
 from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 from playwright.sync_api import sync_playwright
 from rigby_poc.models import ClipFrame, Hand
@@ -27,6 +29,46 @@ CAPTURE_WIDTH = 1600
 CAPTURE_HEIGHT = 900
 CAPTURE_FOV_DEG = 94.0
 SAFE_RESULT_ID = re.compile(r"^[a-zA-Z0-9-]+$")
+
+
+def _launch_capture_browser(chromium: Any) -> tuple[Any, str]:
+    """Launch a Chromium browser for capture, and say which one it was.
+
+    Pinning ``channel="chrome"`` makes evidence capture fail outright on a
+    machine that has Edge, or Playwright's own Chromium, but not Google Chrome
+    -- and installing Chrome needs Administrator, which is a hard stop rather
+    than an inconvenience for anyone running the UI locally.
+
+    The channel is still recorded, but it is now the channel that actually
+    launched rather than the one that was requested. A hardcoded provenance
+    string is worse than a missing one: it says Chrome produced evidence that
+    Edge produced. ``RIGBY_CAPTURE_BROWSER_CHANNEL`` forces a specific channel
+    when a run needs one exact browser.
+    """
+    configured = os.getenv("RIGBY_CAPTURE_BROWSER_CHANNEL", "").strip()
+    candidates: list[str | None] = []
+    for channel in ([configured] if configured else []) + ["chrome", "msedge", None]:
+        if channel not in candidates:
+            candidates.append(channel)
+
+    failures: list[str] = []
+    for channel in candidates:
+        options: dict[str, Any] = {"headless": True}
+        if channel is not None:
+            options["channel"] = channel
+        try:
+            return chromium.launch(**options), channel or "playwright-chromium"
+        except PlaywrightError as error:
+            text = str(error).strip()
+            failures.append(
+                f"{channel or 'playwright-chromium'}: "
+                f"{text.splitlines()[0] if text else 'launch failed'}"
+            )
+    attempted = ", ".join(c or "playwright-chromium" for c in candidates)
+    raise RuntimeError(
+        f"Could not launch a browser for evidence capture. Tried {attempted}. "
+        + "; ".join(failures)
+    )
 
 
 def motion_diagnostics(payload: dict[str, Any]) -> dict[str, Any]:
@@ -1891,7 +1933,7 @@ def capture_session(
     the browser launch that workaround costs.
     """
     with sync_playwright() as playwright:
-        browser = playwright.chromium.launch(channel="chrome", headless=True)
+        browser, browser_channel = _launch_capture_browser(playwright.chromium)
         context = browser.new_context(
             viewport={"width": CAPTURE_WIDTH, "height": CAPTURE_HEIGHT},
             device_scale_factor=1,
@@ -1902,7 +1944,7 @@ def capture_session(
                 page,
                 base_url=base_url,
                 browser_version=str(getattr(browser, "version", "")),
-                browser_channel="chrome",
+                browser_channel=browser_channel,
                 deterministic_render=deterministic_render,
                 strategy=strategy,
                 screenshot_source=screenshot_source,

@@ -319,6 +319,11 @@ export interface PipelineRun {
   status: "queued" | "running" | "completed" | "unsupported" | "no_acceptable_candidate" | "failed";
   stage: string;
   winner_result_id?: string | null;
+  /** Closest candidate when nothing passed, so a rejection can still be watched. */
+  inspection_result_id?: string | null;
+  inspection_reason?: string | null;
+  /** Every candidate this run wrote, passing or not. */
+  candidate_result_ids?: string[];
   trace_url?: string | null;
   error?: { type?: string; message?: string } | null;
   events: PipelineEvent[];
@@ -365,6 +370,9 @@ export interface SceneManifest {
   }>;
   fps: number;
   reachable_radius_m: number;
+  /** World height of the surface objects rest on. Declared by the scene so the
+   *  renderer and the physics model cannot disagree about where the table is. */
+  support_height_m?: number;
 }
 
 export const DEFAULT_PARAMETERS: MotionParameters = {

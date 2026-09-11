@@ -103,6 +103,10 @@ from .models import (
     Transform,
     Vec3,
 )
+from .features import angular_rate_limit_enabled, grab_gaze_enabled
+from .gaze_controller import aim_gaze
+from .motion_limits import RateLimitReport, limit_angular_rate
+from .motion_states import state_for_primitive
 from .physics import PhysicsOutcome, simulate_grasp
 from .primitives import (
     MAX_WRIST_TWIST_RAD,
@@ -6276,7 +6280,7 @@ def compile_motion(request: CompileRequest) -> ClipResult:
             * shake_primitive.parameters.wrist_shake_amplitude
         )
 
-    for primitive in program.primitives:
+    for primitive_index, primitive in enumerate(program.primitives):
         start = current.copy()
         start_root = current_root
         if strike_root_enabled:
@@ -6598,6 +6602,33 @@ def compile_motion(request: CompileRequest) -> ClipResult:
                     )
                     for name, rotation in solved.items():
                         pose[name] = BonePose(rotation=rotation)
+
+            if program.intent == Intent.GRAB and target_object is not None and grab_gaze_enabled():
+                # Closed loop, per frame, against the pose this frame actually
+                # has. A one-shot aim per phase cannot correct for what the arm
+                # and torso do afterwards, and using the head bone alone stalls
+                # ~23 degrees short: head flexion is bounded at 25/-30 in
+                # rom.v1.json and a block on a table needs more. Neck and head
+                # solved together as a chain reach what neither reaches alone.
+                # enumerate, not list.index: two primitives with identical
+                # parameters compare equal, and index() would return the first
+                # of them, silently assigning both the same state.
+                gaze_state = state_for_primitive(
+                    program, primitive_index, primitive.kind.value
+                )
+                gaze_kind = gaze_state.gaze if gaze_state else "object"
+                if gaze_kind != "forward":
+                    if gaze_kind == "grasp":
+                        aim_at = rig_kinematics().canonical_positions(pose)[
+                            f"{program.hand.value}Hand"
+                        ]
+                    else:
+                        aim_at = np.asarray(
+                            target_object.transform.translation.as_list()
+                        )
+                    for bone, rotation in aim_gaze(pose, aim_at).bones.items():
+                        pose[bone] = BonePose(rotation=rotation)
+
             now = elapsed + local_index / fps
             objects: dict[str, Transform] = {}
             for item in scene.objects:
@@ -6617,8 +6648,26 @@ def compile_motion(request: CompileRequest) -> ClipResult:
         final_shape = shape
         elapsed += phase_duration_s
 
+    # Speed is bounded before anything reads the clip. The ROM envelope says
+    # where a bone may be and says nothing about how fast it may get there, and
+    # the gap between those is where the approach strike lived: every pose in it
+    # was legal, the order was not.
+    #
+    # Strikes are exempt, and the exemption is the point rather than a let-off.
+    # The ceilings are voluntary reaching speeds; a jab is ballistic and exceeds
+    # them by design, so clamping one is not enforcing anatomy but contradicting
+    # it. Applied blindly it also quietly repaired
+    # ``knownbad-strike-hyperfast`` -- a corpus case whose whole job is to be
+    # over the jerk ceiling so the detector can be seen to fire. A limiter that
+    # disarms the tests for the thing it limits is worse than no limiter.
+    if program.intent is Intent.STRIKE or not angular_rate_limit_enabled():
+        rate_report = RateLimitReport(0, 0.0, 0.0, (), 0.0)
+    else:
+        frames, rate_report = limit_angular_rate(frames)
+
     metrics = _base_metrics()
     metrics["phase_ranges_s"] = phase_ranges
+    metrics["angular_rate"] = rate_report.to_dict()
     if physics is not None:
         metrics.update(physics.metrics)
     # The measurement pass lives in ``analysis.hand`` from 02c onwards. What
@@ -6639,6 +6688,17 @@ def compile_motion(request: CompileRequest) -> ClipResult:
     # this path and the post-hoc analyzer cannot disagree.
     root_policy = _root_drift_policy(program)
     if program.intent == Intent.GRAB:
+        if target_object is not None:
+            # Half the target's bounding diagonal: the largest distance a point
+            # on its surface can be from its centre. Published here because the
+            # compiler is the only layer holding the scene, and read by
+            # ``analysis.embodiment`` to decide whether a rendered hand could
+            # be touching the object it is reported to be carrying.
+            dimensions = target_object.dimensions_m
+            metrics["carried_object_id"] = target_object.id
+            metrics["carried_object_contact_radius_m"] = 0.5 * float(
+                np.linalg.norm([dimensions.x, dimensions.y, dimensions.z])
+            )
         structural_failures: list[str] = []
         if physics is None or not physics.success:
             structural_failures.append("physical grasp gates did not pass")

@@ -1,0 +1,112 @@
+{
+  "schema_version": "1.0",
+  "skill": "grab",
+  "aliases": [
+    "grab",
+    "pick up",
+    "take",
+    "lift",
+    "grasp"
+  ],
+  "$comment": "How to PLAN a grab, not how to execute one. The planner recognises the task, loads this template, and turns each stage into a Talmy product with a goal the body can sense. Execution stays with the per-frame selector: a template says what must become true and in what order, never which primitive to run at 1.4 s. Skills are uploadable because of that split -- a new template teaches planning without touching the controller.",
+  "figure_role": "the object being taken",
+  "stages": [
+    {
+      "name": "reach the object",
+      "path": "TO",
+      "motion": "MOVE",
+      "acts_with": [
+        "arm",
+        "gaze"
+      ],
+      "goal": "hand_within",
+      "goal_params": {
+        "distance_m": 0.02
+      },
+      "allows": [
+        "stand_off",
+        "reach_to",
+        "look_at_object",
+        "look_at_hand"
+      ],
+      "note": "Get there. Presentation and shape belong to the grab, not here: split across two stages the rotate and the reach each undid the other, the hand oscillating between 5 and 9 cm with neither stage ever completing. The distance is to the object's SURFACE, not its centre: 5 cm from the centre of a 6 cm block is 2 cm inside it."
+    },
+    {
+      "name": "grab: orient the hand and make the Cs until it touches",
+      "path": "AT",
+      "motion": "BEL",
+      "manner": "GRASPED",
+      "acts_with": [
+        "arm",
+        "digits",
+        "gaze"
+      ],
+      "goal": "thumb_and_finger_touch",
+      "goal_params": {
+        "min_force_n": 0.3,
+        "fingers": 1
+      },
+      "allows": [
+        "grip",
+        "place_thumb",
+        "thumb_oppose_index",
+        "thumb_oppose_middle",
+        "thumb_flex",
+        "thumb_rotate_in",
+        "curl_index",
+        "curl_middle",
+        "curl_ring",
+        "curl_little",
+        "reach_to",
+        "look_at_hand"
+      ],
+      "note": "Orienting the hand and forming the Cs are one act. It ends when the THUMB and at least one finger are both touching, because contact is the only signal that cannot be satisfied by a pose reaching nothing."
+    },
+    {
+      "name": "close and hold",
+      "path": "AT",
+      "motion": "BEL",
+      "manner": "GRASPED",
+      "acts_with": [
+        "arm",
+        "digits"
+      ],
+      "goal": "opposition_pairs",
+      "goal_params": {
+        "pairs": 1,
+        "min_force_n": 1.0
+      },
+      "allows": [
+        "grip",
+        "close_hand",
+        "look_at_hand"
+      ],
+      "note": "Only once it is already touching. Squeezing before contact is a shove, which is what moved the block across the table in every early run."
+    },
+    {
+      "name": "lift the object clear",
+      "path": "OFF",
+      "motion": "MOVE",
+      "acts_with": [
+        "arm",
+        "digits"
+      ],
+      "goal": "figure_raised",
+      "goal_params": {
+        "height_m": 0.12
+      },
+      "allows": [
+        "lift",
+        "grip",
+        "look_at_hand"
+      ],
+      "note": "The only stage that asks the OBJECT to move."
+    }
+  ],
+  "$allows_comment": "Which actions suit each stage. The stage already said which PARTS it acts with; this says which coordinated actions make sense for its goal, because the two are not the same. 'Bring the hand near the object' acts with the arm and its goal is to stop 12 cm short -- and 'reach_to' also acts with the arm and aims the fingertips AT the object. Offered both, the selector chose reach_to at full magnitude from a metre away and drove the hand through the block, which ended on the floor 178 cm from where it started. The goal forbade what the menu allowed. orient_palm was removed from every stage: audited against each goal it moved none of them by any amount, because turning the wrist carries the thumb and fingers together and their arrangement relative to each other is what these goals measure. place_thumb replaces it -- the thumb is what decides whether a pair is possible.",
+  "direction": {
+    "thumb": "inward",
+    "$comment": "How a grab is performed, not merely what it must achieve. The thumb rotates INWARD across the palm toward the fingers it will oppose, and only then does the hand grip. This is the motion a hand makes touching thumb to little finger, and it is what makes a grip possible rather than a push. Stated as a direction because a score alone does not capture it: searching for the best-placed thumb picked poses that carried it outward at the moment the fingers arrived, which looks on screen exactly like the hand opening as it should be closing."
+  },
+  "$removed_stage": "The 'open the aperture around the object' stage was removed. Its goal was an angle between the thumb-finger quads and the palm, which is a number about the hand's internal geometry rather than about holding anything: it could be satisfied by a hand whose fingers point past each other and enclose nothing, and satisfying it consumed whole runs. Forming the C IS the shaping step; nothing else needs to happen before gripping."
+}

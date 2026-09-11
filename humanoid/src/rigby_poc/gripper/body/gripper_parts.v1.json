@@ -1,0 +1,126 @@
+{
+  "schema_version": "1.0",
+  "$comment": "Per-part movement vocabulary for the gripper, in the same schema as config/body_parts.v1.json. A move value is a SIGNED FRACTION of that joint's declared range: +1.0 is the positive limit, -1.0 the negative one. A move therefore cannot name an out-of-range pose, and the limits and the vocabulary cannot disagree.",
+  "generated_from": "gripper.v1.json",
+  "value_convention": {
+    "units": "fraction of the joint's declared range",
+    "positive": "value * range[1]",
+    "negative": "abs(value) * range[0]",
+    "range": [
+      -1.0,
+      1.0
+    ]
+  },
+  "$why_named_moves": "A planner can ask for 'fold the elbow'. It cannot usefully ask for 'joint 2, minus 0.3 radians', and a search told to try every joint at every magnitude spends its time on motions no one wants. Naming the moves is what makes the vocabulary something to reason in rather than a number line.",
+  "parts": [
+    "base",
+    "segment_1",
+    "segment_2",
+    "segment_3",
+    "gripper"
+  ],
+  "move_sets": {
+    "base": {
+      "hold": {},
+      "neutral": {
+        "base": 0.0
+      },
+      "swing_left": {
+        "base": 0.45
+      },
+      "swing_right": {
+        "base": -0.45
+      },
+      "nudge_left": {
+        "base": 0.12
+      },
+      "nudge_right": {
+        "base": -0.12
+      }
+    },
+    "segment_1": {
+      "hold": {},
+      "neutral": {
+        "segment_1": 0.0
+      },
+      "raise": {
+        "segment_1": 0.5
+      },
+      "lower": {
+        "segment_1": -0.5
+      },
+      "raise_a_little": {
+        "segment_1": 0.15
+      },
+      "lower_a_little": {
+        "segment_1": -0.15
+      }
+    },
+    "segment_2": {
+      "hold": {},
+      "neutral": {
+        "segment_2": 0.0
+      },
+      "fold": {
+        "segment_2": 0.5
+      },
+      "extend": {
+        "segment_2": -0.5
+      },
+      "fold_a_little": {
+        "segment_2": 0.15
+      },
+      "extend_a_little": {
+        "segment_2": -0.15
+      }
+    },
+    "segment_3": {
+      "hold": {},
+      "neutral": {
+        "segment_3": 0.0
+      },
+      "tilt_down": {
+        "segment_3": -0.5
+      },
+      "tilt_up": {
+        "segment_3": 0.5
+      },
+      "tilt_down_a_little": {
+        "segment_3": -0.15
+      },
+      "tilt_up_a_little": {
+        "segment_3": 0.15
+      }
+    },
+    "gripper": {
+      "hold": {},
+      "open": {
+        "finger_left": 1.0,
+        "finger_right": 1.0
+      },
+      "close": {
+        "finger_left": 0.0,
+        "finger_right": 0.0
+      },
+      "open_a_little": {
+        "finger_left": 0.35,
+        "finger_right": 0.35
+      },
+      "close_a_little": {
+        "finger_left": 0.12,
+        "finger_right": 0.12
+      }
+    }
+  },
+  "$why_these_names": "base, segment_1, segment_2, segment_3, gripper. The arm was described as a shoulder, an elbow and a wrist, which claimed three different kinds of joint. It has three IDENTICAL hinges on parallel axes above a yaw turntable, and naming them after human anatomy invited both the model and the reader to expect behaviour the mechanism does not have -- a wrist that rolls, a shoulder that abducts. Numbering them says what is actually there and says the segments are interchangeable.",
+  "packages": {
+    "move": [
+      "base",
+      "segment_1",
+      "segment_2",
+      "segment_3"
+    ]
+  },
+  "$why_packages": "What the planner names is a PACKAGE -- everything that moves the hand through space, or the fingers -- and the search is free inside it. Naming parts one at a time asked the planner to know which hinge does what, and it does not: told to bring the hand in, it named the last hinge alone, which changes where the hand points and not how far it reaches, so nothing could fold the middle segment and the arm stayed stretched out past the block for a whole run. That is a fact about the mechanism, and the mechanism should answer it. With five parts there is nothing to win by choosing between them and a whole run to lose by choosing wrong. A hand with twenty joints would be a different argument.",
+  "$why_no_gripper_package": "The fingers are a STATE, not a search. Leaving a `gripper` package on the menu offered the planner a control that the run loop discards -- it named it, the search moved the fingers in its probe, and the jaw state overwrote the result every frame."
+}

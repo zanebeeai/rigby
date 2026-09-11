@@ -13,6 +13,7 @@ import numpy as np
 from scipy.spatial.transform import Rotation
 
 from evals.capture import capture_result_frames
+from rigby_poc.embodied_inspector import run_embodied_master_controller
 from rigby_poc.compiler import PROJECT_ROOT, compile_motion
 from rigby_poc.judge import RepairPatch, VLMJudge, write_judge_record
 from rigby_poc.kinematics import rig_kinematics
@@ -2116,6 +2117,51 @@ def _run_best_of_five(
             )
             request = CompileRequest(scene=scene, program=program, persist=True)
             clip = compile_motion(request)
+
+            # Diagnose the miss before judging it. The five-candidate loop
+            # repairs blindly -- it regenerates the whole program and hopes --
+            # so five candidates fail the same way five times. The inspector
+            # measures the compiled mesh, names the region at fault (arm
+            # placement, wrist orientation, digit closure), changes only that
+            # region, recompiles and re-measures. Deterministic and local: no
+            # model call is spent on any of it.
+            (
+                program,
+                clip,
+                master_inspection,
+                master_callback_events,
+            ) = run_embodied_master_controller(
+                program,
+                clip,
+                scene,
+                lambda candidate_program: compile_motion(
+                    CompileRequest(scene=scene, program=candidate_program, persist=False)
+                ),
+            )
+            if master_callback_events:
+                request = CompileRequest(scene=scene, program=program, persist=True)
+            for callback in master_callback_events:
+                _progress(
+                    progress_callback,
+                    "embodied_master_callback",
+                    "structural_checks",
+                    (
+                        f"The {str(callback.get('target_body_region', '')).replace('_', ' ')} "
+                        "was regenerated and the posed mesh was inspected again."
+                    ),
+                    round=round_index + 1,
+                    candidate_index=candidate_index,
+                    **callback,
+                )
+            clip = clip.model_copy(
+                update={
+                    "metrics": {
+                        **clip.metrics,
+                        "embodied_master_inspection": master_inspection,
+                        "embodied_master_callbacks": master_callback_events,
+                    }
+                }
+            )
             provenance = clip.provenance.model_copy(
                 update={
                     "planner_provider": outcome.provider,
@@ -2696,6 +2742,30 @@ def _run_best_of_five(
         trace["status"] = "winner_selected"
     else:
         trace["status"] = "no_acceptable_candidate"
+        # A rejection the user cannot watch is indistinguishable from the
+        # pipeline breaking. Nominate the closest candidate that actually
+        # compiled so the failure is inspectable, and label it as a failure so
+        # it can never be mistaken for a winner.
+        inspectable = [
+            candidate
+            for round_record in trace.get("rounds", [])
+            for candidate in round_record.get("candidates", [])
+            if candidate.get("result_id") and candidate.get("compile_success") is not None
+        ]
+        if inspectable:
+            def _closeness(candidate: dict) -> tuple:
+                return (
+                    bool(candidate.get("compile_success")),
+                    -len(candidate.get("structural_failures") or []),
+                )
+
+            nominee = max(inspectable, key=_closeness)
+            trace["inspection_result_id"] = nominee["result_id"]
+            trace["inspection_reason"] = (
+                "; ".join(nominee.get("structural_failures") or [])
+                or "no candidate satisfied the acceptance gates"
+            )
+            trace["inspection_compile_success"] = bool(nominee.get("compile_success"))
     _write_trace(trace_path, trace)
     _progress(
         progress_callback,
@@ -2704,10 +2774,17 @@ def _run_best_of_five(
         (
             "The final animation is ready."
             if trace.get("winner_result_id")
-            else "The pipeline finished without an acceptable animation."
+            else (
+                "No candidate passed. Showing the closest one so the failure is "
+                "visible: " + str(trace.get("inspection_reason", ""))
+                if trace.get("inspection_result_id")
+                else "The pipeline finished without an acceptable animation."
+            )
         ),
         status=trace["status"],
         winner_result_id=trace.get("winner_result_id"),
+        inspection_result_id=trace.get("inspection_result_id"),
+        inspection_reason=trace.get("inspection_reason"),
         trace_path=str(trace_path),
     )
     return trace_path

@@ -1,0 +1,837 @@
+RIGBY WORK LOG -- eval/embodiment-truthfulness
+==============================================
+
+Last updated: 2026-08-26
+Branch:       eval/embodiment-truthfulness  (branched from origin/main, NOT from
+              angel/pick-up-box)
+Worktree:     C:\Users\angel\Rigby-mainwork
+PR:           https://github.com/zanebeeai/rigby/pull/11
+Base:         origin/main @ 4dc978f
+Local server: http://127.0.0.1:8011   (angel/pick-up-box still serves :8010)
+
+SECURITY AND COST
+-----------------
+- .env is gitignored in both worktrees and was never committed. Verified with
+  git check-ignore; git reports zero env entries.
+- One paid API call this session: a single planner call (gpt-5.6-luna, 7.1 s).
+  Everything else -- physics, calibration, inspection, fitting -- is local and
+  deterministic and cost nothing.
+- A GitHub token was read from the git credential helper to open the PR through
+  the API (gh is not authenticated). It was written to a scratchpad file to pass
+  between commands and deleted immediately after.
+
+WHY THIS BRANCH EXISTS
+----------------------
+angel/pick-up-box is 152 commits behind origin/main and carries an embodiment
+architecture main does not have. main has an evaluation pipeline that branch does
+not. Rather than merge, this branch takes main as the base and ports across only
+what is defensible, one reviewable piece at a time.
+
+
+===============================================================================
+PART 1 -- COMMITTED AND PUSHED (PR #11)
+===============================================================================
+
+27b0e61  feat(analysis): check that the rendered hand touched the object it carried
+0f8a7d3  feat(body-parts): a movement vocabulary written in the ROM envelope's units
+ef66961  fix(capture): launch a browser that exists rather than pinning Google Chrome
+
+1.1 THE RENDER-CONTACT CHECK
+----------------------------
+Finding, measured on main's own shipped pickup: the clip reports success, raises
+the block 0.142 m, and in ALL 59 frames where the block is airborne every
+rendered hand landmark is farther from it than half its own bounding diagonal
+(0.0583 m). At the worst frame the nearest landmark of the entire hand is
+0.1342 m away. The proxy gripper closes and lifts; the humanoid never touches it.
+
+Nothing existing could see this. analysis.contact compares fingertip to
+fingertip, analysis.objects reads the object's own trajectory, and the physics
+metrics describe the proxy's internal state.
+
+The check discriminates rather than always failing -- the property that makes it
+worth shipping:
+
+    plan                     carried  untouched  nearest landmark  verdict
+    gpt-5.6-luna                  71          0          0.0440 m  pass
+    offline heuristic             59         59          0.0780 m  fail
+
+Shipped report-only: wired into validate() so it reaches the typed check surface,
+but it does not touch structural_valid, so no accept decision changes. Same model
+04b used for ROM. Registered in evals/mutations/checks.py with its measured
+denominator (3 of 47 corpus cases; it returns skip, not pass, where no carry was
+claimed).
+
+1.2 THE BODY-PART MOVEMENT VOCABULARY
+-------------------------------------
+rom.v1.json says how far each of the rig's 156 DOFs may rotate. It does not say
+what any of them are for. The capability description that did exist -- FINGERS,
+SEGMENTS, HAND_SHAPES -- is Python literals: 297 of the 307 float literals in
+primitives.py are invisible to test_no_hardcoded_thresholds by construction,
+because that guard is AST-defined as a literal in a comparison and hand-shape
+curls live in dict values.
+
+config/body_parts.v1.json, generated from rom.v1.json by
+scripts/generate_body_parts.py: 30 parts covering all 52 bones, 304 named moves,
+8 timed sequences. Each finger is one part rather than three hidden segments.
+
+The decision that makes the two halves agree: a move is a SIGNED FRACTION of a
+DOF's own ROM range, never an angle. {"flexion": 0.6} is 60% of the way to that
+joint's typical flexion limit, so an out-of-range pose is unnameable rather than
+merely rejected.
+
+Rotations compose through analysis.anatomy.frame.compose -- the same anatomical
+frames rom_checks decomposes with -- and the round trip is asserted over every
+move, so the vocabulary cannot drift into a different basis and be bounds-checked
+afterwards.
+
+Validation caught a real gap: clavicle, elbow, knee, ankle and toes each had a
+DOF with a ROM entry and NO move that could reach it. The catalog now refuses to
+load in that state; all 30 parts reach all three DOFs.
+
+1.3 THE CAPTURE BROWSER
+-----------------------
+channel="chrome" made evidence capture fail outright on a machine with Edge but
+no Chrome, and playwright install chrome needs Administrator -- a hard stop, not
+an inconvenience. Now tries chrome, then msedge, then bundled Chromium, with
+RIGBY_CAPTURE_BROWSER_CHANNEL to force one. The recorded provenance is the
+channel that ACTUALLY launched: with a fallback in place the old hardcoded
+browser_channel="chrome" would state that Chrome produced evidence Edge produced.
+Verified launching msedge 151.0.4129.107.
+
+Note: angel/pick-up-box had already solved this. Porting it was strictly better
+than installing anything, and it should have been checked before proposing a
+Chrome install.
+
+
+===============================================================================
+PART 2 -- ON THE BRANCH, NOT YET COMMITTED
+===============================================================================
+
+2.1 THE MOCAP VELOCITY DISCOVERY  (the most important finding of the session)
+----------------------------------------------------------------------------
+    mocap body moved 0.05 m per 2 ms step (= 25 m/s of apparent motion)
+      cvel MuJoCo reports for the MOCAP body : [0. 0. 0. 0. 0. 0.]
+      cvel MuJoCo reports for a FREE body    : [0. 0. 0. 0. 0. -0.0981]
+
+A mocap body reports ZERO velocity however fast it is teleported. Contact
+tangential velocity is computed from cvel, so a mocap surface is permanently
+stationary to the friction solver: it can resist an object sliding but can never
+carry one. A hand built from mocap bodies can only move an object by caging it.
+
+Proven on an otherwise identical two-jaw gripper:
+
+    jaws driven as        lift        opposing contact   hold contacts
+    mocap                 0.0000 m    0.00               table only
+    welded dynamic        0.1080 m    1.00               both jaws, 450/450
+
+This invalidates the earlier diagnosis. "The grasp does not close" was measuring
+a simulation structurally incapable of a friction grasp. Those rejected
+candidates were failing a gate the rig could not pass regardless of the motion.
+
+2.2 THE DRIVE FIX
+-----------------
+Collision bodies are now dynamic bodies welded to mocap targets, not mocap bodies
+themselves. The weld is hand-to-target and never hand-to-object; the block keeps
+its free joint and is moved only by contact.
+
+Second bug found doing it: MuJoCo captures a weld's relative pose AT COMPILE
+TIME, so bodies declared away from the origin track their targets at exactly that
+offset forever.
+
+    palm tracking error before relpose fix : 1010.00 mm  (= the support height)
+    after pinning relpose to identity      :    0.544 mm mean, 4.138 mm max
+                                               (during close / lift / hold)
+
+Well inside the 1-3 mm interference a grip needs.
+
+Provenance states this honestly: object_weld_used=False still holds, with
+tracking_weld_used=True recorded alongside rather than hiding behind a bare
+weld_used=False.
+
+2.3 BONE-DRIVEN PHYSICS PORTED FROM angel/pick-up-box
+-----------------------------------------------------
+simulate_embodied_grasp: 16 collision bodies (one palm, three segments per digit)
+whose transforms are recomputed every step from the exact compiled bones the
+renderer draws. No cartesian_hand, no gripper actuator, no copied proxy grasp.
+
+Grab compilation is now two-pass: author the humanoid armature first, then drive
+MuJoCo from those frames and copy the free-body trajectory back. Previously
+physics ran BEFORE the hand was posed at all -- the object's motion was decided
+before the thing supposedly moving it existed.
+
+Opposition is measured from real contact normals (antiparallel within cos <=
+-0.70, both carrying >= 0.05 N) rather than from "the thumb is touching and at
+least one finger is touching". The old rule rejected valid palm-opposed power
+grasps and accepted a thumb resting on an object with nothing opposing it.
+
+Contact compliance softened from solref 0.004 to 0.010. Under a near-rigid model
+the discretised approach crossed its millimetre of clearance inside one 2 ms step
+and the object was launched by a 128 N impulse instead of being gripped. A 10 ms
+time constant models the compliance of skin and soft tissue.
+
+2.4 THE ENVIRONMENT HAD THREE AUTHORITIES
+-----------------------------------------
+    table top      source
+    1.010 m        physics, synthesised from the block's own underside
+    1.0125 m       renderer, hardcoded BoxGeometry in scene.ts
+    (absent)       the scene manifest, which is meant to be the source of truth
+
+And the object sets did not match: ladder and hurdle are solid on screen and do
+not exist to the simulator; table and floor are load-bearing in physics and
+absent from the manifest.
+
+Fixed: SceneManifest.support_height_m = 1.01, read by both. The renderer now
+positions the table by its TOP surface, so the block no longer rests 2.5 mm
+inside the table it stands on.
+
+2.5 THE EMBODIED MASTER INSPECTOR, PORTED
+-----------------------------------------
+Measures the compiled mesh, names the region at fault, changes only that region,
+recompiles, re-measures. Deterministic; no model call.
+
+    BEFORE   object_socket_alignment  fail  right_arm  sev=1.415
+             -> "translate its wrist target so the rendered palm, not merely the
+                 IK wrist, reaches the object socket"
+    3 callbacks: right_arm, right_arm, right_digits
+    AFTER    object_socket_alignment    pass  right_arm
+             palm_surface_orientation   pass  right_wrist
+             digit_chain_and_opposition pass  right_digits
+             embodied_contact_dynamics  fail  right_digits  sev=2.432
+
+Three geometry stages repaired; the failure moved DOWN the hierarchy to physics.
+
+The architecture_route gate reads program.body_part_plan, which main's model does
+not have. It reports skip rather than fail: a gate failing for a stage never
+attempted would route every repair to whole_body and starve the arm, wrist and
+digit stages that actually diagnose things.
+
+2.6 TALMY MOTION SITUATIONS
+---------------------------
+Source: Talmy, "Semantics and Syntax of Motion" (1975), pp. 181-238, read from
+the PDF in Downloads. A motion situation partitions into FIGURE, GROUND, PATH and
+MOTION -- a closed verb set of MOVE and BEL, where a located state is the
+limiting case. MANNER enters from outside and adjoins the verb, giving Mm.
+
+This inverts the pipeline's direction of travel. Today the compiler authors body
+motion and the object's trajectory is whatever falls out; nothing states what the
+object was SUPPOSED to do. A motion situation states exactly that.
+
+config/talmy_paths.v1.json -- the closed set: OFF, ONTO, INTO, TO, AWAY_FROM,
+ACROSS, DOWN, AT. Closed by construction because that is Talmy's actual claim.
+
+    'pick up box'                  -> N(block) V(MOVE+GRASPED) Pl(OFF)
+    'hold the block'               -> N(block) V(BEL+GRASPED) Pl(AT)
+    'put the block on the ladder'  -> N(block) V(MOVE) Pl(ONTO) N(ladder)
+    'wave hello'                   -> None
+
+Building the contour caught a bug in the first version: ONTO targeted 2.14 m, the
+top of the ladder's BOUNDING BOX. It now resolves through the ladder's declared
+weight-bearing sockets to a rung at 1.91 m. The scene already said where it
+affords support.
+
+Scoring the current pickup against its own specification:
+
+    the block must rise    0.1200 m
+    it actually moved      0.2828 m
+    endpoint error         0.3072 m
+    block y: 1.0500 -> peak 1.0604 -> end 1.0500
+    lateral drift          0.2828 m
+
+The block ends at its STARTING HEIGHT, 28 cm sideways. The hand swats it off the
+table.
+
+2.7 CONTOUR FITTING
+-------------------
+contour_fit.py -- a pattern search descending the contour loss. Pattern search
+because the objective is not differentiable (an infinitesimal parameter change
+can flip whether a contact happens at all) and because the budget is tens of
+evaluations, not thousands: one evaluation is a full compile plus a full MuJoCo
+pass.
+
+    loss 0.5485 -> 0.3709   (32% reduction, 36 evaluations, 197 s)
+    lateral knock-off 0.283 m -> 0.172 m
+
+Safety properties, asserted: never returns worse than baseline, respects budget,
+reports exhaustion as exhaustion rather than convergence, stays in bounds,
+deterministic.
+
+It will not solve the grasp. No setting of six knobs makes a hand that drives
+20 mm into the block lift it.
+
+2.8 THE MOTION STATE CONTROLLER
+-------------------------------
+config/motion_states.v1.json -- seven states, each naming what it solves, what it
+holds inert, which gates mean anything there, and where to look.
+
+    0. reach     solves arm,forearm        gates -                          gaze object
+    1. preshape  solves wrist,palm,digits  gates palm_surface_orientation   gaze object
+    2. contact   solves arm,forearm,wrist  gates socket_alignment, palm     gaze object
+    3. close     solves digits             gates digit_chain_and_opposition gaze grasp
+    4. lift      solves arm,forearm        gates embodied_contact_dynamics  gaze object
+    5. hold      solves -                  gates embodied_contact_dynamics  gaze object
+    6. recover   solves arm,forearm        gates embodied_contact_dynamics  gaze forward
+
+Repairs are scoped to the region the failing state actually solves:
+
+    before: 45-94 s per candidate
+    after:  16 s, 3 compiles -- same callbacks, same final verdict
+
+Roughly 4x. But the correctness half matters more: during lift the digits are
+inert BECAUSE THEY ARE HOLDING THE OBJECT. The old controller would re-solve them
+there, changing the grip that is at that moment carrying the block.
+
+Safety property, in code and tests: scoping may NEVER empty the repair set. A
+filter that turns a fixable candidate into an unfixable one costs more than the
+simulations it saves.
+
+2.9 THE GAZE CONTROLLER
+-----------------------
+Finding: gaze is wired in compiler._compile_composite and NOWHERE ELSE. The grab
+path had no head, neck or gaze handling at all -- through an entire pickup the
+head sat in its idle pose, and the one moment worth watching, the fingers
+closing, was never in view.
+
+gaze_controller.py solves neck and head as a two-link chain, closed-loop against
+the pose each frame actually has, splitting error between the joints in
+proportion to remaining ROM.
+
+    gaze error  28.1 deg -> 9.1 deg   (saturated=True)
+
+The earlier one-shot aim stalled at 23.5 deg for a structural reason: head
+flexion is bounded at 25/-30 deg and a block on a table needs more. Neck and head
+together reach what neither reaches alone. saturated=True is honest -- even the
+pair cannot fully reach a target that low without the spine, which no state
+solves.
+
+Every angle is in the same flexion/abduction/twist DOFs the move vocabulary uses
+and clamped to the same rom.v1.json bounds.
+
+2.10 PLANNER-CHOSEN STATES
+--------------------------
+MotionProgram.motion_states -- one state name per primitive, chosen by the
+planner, validated against the closed catalog.
+
+    default (catalog)        first  9.0  mid  9.1  last 56.8
+    bot: never look away     first  9.0  mid  9.1  last  9.1
+    bot: never look at it    first 56.8  mid 56.8  last 56.8
+    invented state rejected: True
+
+The SEQUENCE is the planner's; what a state MEANS stays a reviewed property of
+the catalog. A planner that could invent states could invent one that gates
+nothing.
+
+Two bugs caught building it:
+- program.primitives.index(primitive): equal primitives compare equal, so two
+  identical phases both got the first one's state. Now indexed by position.
+- The corpus round-trip broke -- 47 committed cases lacked the new field. They
+  were re-blessed rather than the guard weakened, and the first pass missed that
+  MotionProgram nests itself in `steps`, so 4 sequence cases needed a second
+  recursive pass.
+
+2.11 SMALLER FIXES
+------------------
+- MuJoCo njmax/nconmax, removed in 3.x, replaced with an explicit memory pool.
+  The legacy attributes request a large fixed allocation that fails as "engine
+  error: Could not allocate memory" under memory pressure, which surfaced as
+  intermittent failures in unrelated tests.
+- The pipeline dropped every failing candidate, so a truthful rejection was
+  indistinguishable from the pipeline breaking. It now nominates the closest
+  compiled candidate for inspection, and every candidate card in the UI is
+  clickable. Candidates are written to disk whether or not they pass; filtering
+  decides what is SELECTED, not what exists.
+
+
+===============================================================================
+PART 3 -- MEASURED COMPARISON AGAINST origin/main
+===============================================================================
+
+Both run on the identical prompt, measuring the distance from the humanoid
+palm/fingertips -- computed from the exact bones the renderer draws -- to the
+block transform stored in that same frame.
+
+    metric                       origin/main        this branch
+    clip.success                 True               False (grasp_unstable)
+    reported lift                0.1424 m           0.0013 m
+    render/physics coupled       False              True
+    cartesian hand proxy         yes                no
+    collision bodies from bones  0                  16
+    min palm-to-block            0.0385 m           0.0910 m
+    min fingertip-to-block       0.0500 m           0.0335 m
+    airborne frames              59                 0
+    airborne but untouched       59 of 59 (100%)    n/a
+
+main is better at reporting success and at palm placement. This branch is better
+at telling the truth and at fingertip proximity. main's success is not a real
+pickup, so its lift figure is not comparable.
+
+Taken from main into this branch: approach standoffs made transient (main carries
+none; this branch had a permanent 0.060 m lateral and 0.024 m palm offset that
+were added as calibration space and never calibrated). And the GRAB palm
+orientation sign was MEASURED rather than assumed:
+
+    Vec3(x=+side)  fingertip 0.0335 m   <- adopted, better than main's 0.0500 m
+    None           fingertip 0.0753 m
+    Vec3(x=-side)  fingertip 0.0958 m   <- what the checkpoint had. Backwards.
+
+
+===============================================================================
+PART 4 -- CURRENT STATE, HONESTLY
+===============================================================================
+
+WHAT WORKS
+- The render is the simulation. 16 collision bodies driven by rendered bones.
+- Collision bodies carry velocity, so friction can transmit (0.544 mm tracking).
+- The head tracks the object and switches to the grasp while closing.
+- The inspector diagnoses the region at fault and repairs only that region.
+- The object's required path is stated, and departures from it are measured.
+- 56 tests passing across states, gaze, Talmy, contour fitting, body parts,
+  corpus format.
+
+WHAT DOES NOT WORK
+- The humanoid grasp still fails. embodied_contact_dynamics, sev 2.432,
+  max_penetration 0.0206 m. The hand is no longer missing the block; it drives
+  INTO it. That is a different and more tractable problem than before, and it is
+  the first result where the failure means what it says.
+
+KNOWN BROKEN
+- tests/test_render_contact_plausible.py::test_untouched_carried_frame_ledger_only_falls
+  now fails legitimately. It asserts clip.success on the shipped pickup, which
+  was true under the Cartesian proxy and is false under coupled physics. Its
+  premise is gone, not its logic. It needs rewriting against the new contract.
+- The full suite has NOT been run end to end since the physics coupling. Expect
+  more failures of the same class: main's pickup tests assert the proxy's
+  success.
+
+NOT BUILT
+- The gripper embodiment. What exists is a scratchpad probe proving the physics
+  (actuated jaws lift 0.108 m, opposing ratio 1.00). No manifests, no compiler
+  branch, no renderer, no UI selector. The user asked for constraint and move
+  manifests for it, matching the humanoid's rom.v1.json / body_parts.v1.json
+  pair. Deferred in favour of the Talmy work.
+- The gripper is likely to pass where the humanoid does not: two flat opposing
+  pads with high friction give force closure by construction.
+
+
+===============================================================================
+PART 5 -- WHAT TO DO NEXT
+===============================================================================
+
+1. Run the full suite and get the real failure count before committing anything
+   else. At least one failure is known and more are expected.
+2. Rewrite the ledger test against the coupled-physics contract.
+3. Commit the uncommitted work in reviewable pieces. Suggested order: drive fix
+   and bone-driven physics; scene-owned support; inspector; state controller and
+   gaze; Talmy and contour fitting.
+4. The humanoid grasp's remaining failure is 20.6 mm of penetration. The approach
+   drives the hand into the block rather than around it. This is an approach-path
+   problem, not a grip-force problem.
+5. Build the gripper embodiment with its manifests. It is the positive control:
+   if it passes, the gates are calibrated rather than unreachable.
+6. Consider closed-loop closure: simulate through contact, read the object's
+   actual pose, re-solve the digit curls, repeat. The contour loss is already the
+   objective this would minimise.
+
+DO NOT
+- Do not restore the Cartesian proxy or weaken a gate to make the pickup green.
+  The physics now reports the truth.
+- Do not merge origin/main into angel/pick-up-box. That branch stays separate by
+  explicit instruction.
+
+===============================================================================
+2026-08-28 -- IT PICKS THE BLOCK UP.  branch grasp/auto-lift
+===============================================================================
+
+19.99 cm of lift, held. Two opposing pairs through the carry, thumb at 10 N
+against index at 9.3, every fingertip measured outside the block by at least
+4.5 mm. Reproducible. src/rigby_poc/scripted_grasp.py is the controller, and it
+has no model in the loop on purpose -- it separates two questions this project
+confounded for months: whether the BODY can grasp, and whether the selector
+chooses well. If it stops lifting after a change, that change broke the body.
+
+Six things had to be true at once, each found by measuring rather than arguing:
+
+1. The thumb closes by ADDUCTION, not flexion. This manifest has recorded it
+   from the start -- the thumb is the one chain where the authored asset and the
+   anatomical frame disagree, and the rig's own crate_grip preset adducts.
+   Closed on its flexion axis the thumb curled without crossing to the fingers.
+2. Closure is an absolute, ROM-clamped target, not a delta composed per frame.
+   Composing wound up against the rate limiter: opening 8 cm to 19, digits
+   anti-parallel -- a hand turning itself inside out while nominally closing.
+3. A digit already carrying load stops; the others keep coming. What
+   underactuated hands do mechanically, and why they conform to objects they
+   were never sized for.
+4. Closing stops at the object's own width plus 12 mm. Force alone does not say
+   so: the digits read 1-2 N against a 6 N target, kept closing to 4.86 cm
+   around a 6.0 cm block, and squeezed it out sideways.
+5. The digit welds are springs (solref 0.012, solimp 0.88 0.97). Stiffer and
+   they drive through the object -- the thumb reached 13.8 mm INSIDE the block
+   and reported 13.85 N of "grip" that was the solver objecting to penetration.
+   Softer and the block's own weight levers them open mid-lift.
+6. The approach standoff is 1.5 cm, not 4. The palm pad sits at the knuckles
+   with the digits reaching most of a hand beyond it, so the standoff decides
+   how far INTO the opening the object lands. At 4 cm the block sat out by the
+   fingertips and closing pushed it away.
+
+THE PATTERN WORTH KEEPING
+
+Nearly every failure this project has had was a control or a goal that could not
+do what its name promised, and the cost was always the same shape: the selector
+picks it, correctly, because the situation looks like what the name describes,
+and the run is spent. orient_palm took 11 of 26 decisions in 000488 and moved
+nothing -- it had already been banned per stage for that, and walked back in the
+moment the menu stopped being restricted. thumb_oppose_index took 10 of 26 in
+000489 while the C measure sat pinned at its dead value. reach_to took 14 of 26
+in 000492 with the block 34 cm away and out of reach.
+
+evals/control_authority.py measures this directly: signed authority of every
+primitive over every metric. Run it after touching a primitive. A control that
+cannot move a number is worse than a missing one.
+
+WHAT IS NOT DONE
+
+- Generality. It lifts 1 of 7 configurations. Contact and opposing pairs form in
+  every one, but only the fitted position carries; the constants were fitted
+  against a 6 cm block in one place. A stability gate and a re-approach on
+  escape were tried and made it worse; both were reverted rather than compounded.
+- The model. The body can grasp; the selector still does not get there. In
+  000495 it wrote a correct five-step plan and then spent 19 of 22 calls among
+  place_thumb, thumb_home and sweep_thumb, never once calling close_grip. Seven
+  primitives and three metrics have since been retired for measured cause.
+
+-------------------------------------------------------------------------------
+2026-08-28, later -- WHAT THE SELECTOR STILL DOES NOT DO
+-------------------------------------------------------------------------------
+
+The body grasps and lifts. The selector does not, and six runs on the fixed body
+say the gap is not comprehension. Its plans have been correct for five runs
+running: 000498 restated the open-grip definition unprompted, blade failure mode
+included, with object_in_grasp_m <= 0.02 as its own done_when.
+
+  000495  19 of 22 calls on place_thumb, thumb_home, sweep_thumb. Never closed.
+  000496  Reached 5.9 cm from a grasp, turned to thumb_opposition, drifted to
+          14.6. Block moved 5.79 cm -- the best-behaved run recorded.
+  000497  close_grip never called. Six calls on level_wrist, which at that pose
+          is in the top-four movers of no metric at all, while object_in_grasp_m
+          read 0.016: the object was already inside the opening.
+  000499  close_grip called twice, the first time ever. Lift +1.83 cm. Closed at
+          object_in_grasp_m 0.044 and put 11.4 N on the thumb with NO finger
+          loaded -- the thumb caught the object, the fingers passed beside it.
+  000500  Told 0.025 was the threshold, it never closed at all: waited for a
+          number it could not reach and pushed the block 48 cm.
+
+The shape of it: the model prepares until the clock runs out with the object
+already in its hand. Prompt changes move which primitive absorbs the calls --
+orient_palm, then thumb_oppose_index, then reach_to, then level_wrist -- without
+changing that. Naming a hard threshold made it worse, not better; 871eaa4 states
+both failure modes with their costs instead.
+
+WHAT I WOULD TRY NEXT, IN ORDER
+
+1. Standing targets rather than actions. The model gets ~22 decisions in 14 s,
+   about one per 0.64 s; the scripted controller commits to closing within 1.5 s
+   of arriving and then needs closure every frame. The target machinery already
+   drives greedy at 30 Hz and the model has barely used it -- two of twenty-two
+   calls in 000496. A close held as a standing target is the shape that fits.
+2. Cadence tied to phase, not to distance. Approaching wants a decision a
+   second; the two seconds where a grasp forms want far more, and they get the
+   same.
+3. Only then, more prompt. Six rounds of it have not moved the outcome.
+
+
+-------------------------------------------------------------------------------
+2026-08-28, later still -- THE MODEL PICKS IT UP.  run 000511
+-------------------------------------------------------------------------------
+
+31.64 cm of lift, carried for 2.8 seconds, by the VLM rather than the scripted
+controller. Sustained 13-19 N across three opposing digits, every fingertip
+outside the block by at least 3.6 mm. It grasps and it lifts.
+
+    t=4.8  lift@0.20   thumb 14.2  index  6.7  middle 6.2   y 1.0605
+    t=5.1  lift@0.20   thumb 19.6  index 10.1  middle 10.8  y 1.1206
+    t=6.5  lift@0.15   thumb 14.6  index 13.0               y 1.3664
+
+It puts the block down again by the end of the fourteen seconds, so this is a
+lift and a carry, not yet a completed place.
+
+WHAT CLOSED THE GAP, AND IT WAS NOT PROMPTING
+
+Six runs of prompt edits moved nothing. What moved it was making the BODY refuse
+motions whose only available outcome was to undo what had been achieved. Seven
+of them, each found by watching a completed grasp being destroyed:
+
+  move_to stops on contact             the arm drove the hand through the block,
+                                       thumb 18.9 mm inside, 80 N reported
+  move_to stops while holding          approaching what you hold drives the hand
+                                       through it (000508)
+  move_to stops when the object moves  force never crossed 2.5 N while the
+                                       approach shoved the block 9.5 cm (000510)
+  close_grip declines beyond 0.038 m   closing on an off-centre object can only
+                                       push it (000506, 12 cm in 0.3 s)
+  close_grip stops at the object width solids do not compress (4.86 cm around a
+                                       6.0 cm block, squeezed out sideways)
+  open_grip and sweeps decline while   opening a hand that holds something is
+  holding                              how you put it down (000503, 000507)
+  lift below 8 N squeezes instead      a grip that is present is not a grip that
+                                       carries (000509, dropped at 5.6 N)
+
+The through-line: at one decision every three tenths of a second the model
+cannot be responsible for what must be true continuously. Every one of these was
+a correct choice for a hand in a slightly different state, and nothing
+distinguished the states. A body that refuses the impossible needs no discipline
+from the thing deciding.
+
+Two sensing fixes belong with them. Force is the wrong sensor for 'am I pushing
+it' -- object_velocity had been in Sensing since the day a still frame could not
+tell a resting block from a sliding one, and the approach never read it. And a
+request that cannot be honoured is now answered rather than swallowed: a goal on
+a retired metric used to report 'reached' on the frame it was set and wake the
+model immediately, which cost eight consecutive wasted calls in 000502.
+
+STILL OPEN
+
+- The block is put down again before the run ends. Holding to the end, or
+  placing deliberately, is not done.
+- Generality is untested since the guards went in. The scripted baseline lifted
+  1 of 7 configurations before them; it is worth re-measuring now.
+- The scripted baseline is 16.54 cm, down from 19.99, because squeeze-before-
+  lift delays the raise. It is a real cost and probably worth tuning back.
+
+
+-------------------------------------------------------------------------------
+2026-08-28 -- CORRECTION: THE GRASP PENETRATES. THE LIFTS ARE NOT VALID.
+-------------------------------------------------------------------------------
+
+Angelo saw a finger inside the box in the render and asked for the physics to be
+checked. He is right and every penetration check I ran today was measuring the
+wrong thing.
+
+I measured fingertip JOINT ORIGINS against the block. The physics collides
+CAPSULES along each segment, with radii of 6.5 mm and 7.5 mm, so a finger's
+middle can be buried while its tip origin reads clear. Measured properly, against
+the capsules the solver actually uses:
+
+    scripted baseline, 16.54 cm lift   deepest -18.2 mm
+    run 000511, the VLM's 31.64 cm     deepest  -7.5 mm  (index_2 and index_3)
+
+Eighteen millimetres is a third of the way through a 60 mm block. The claims of
+"verified, every fingertip outside the block by 4.5 mm" are wrong, and I made
+them twice.
+
+WHY IT PENETRATES, AND WHY TUNING DOES NOT FIX IT
+
+The digits are dynamic bodies welded to commanded poses. The weld pulls a digit
+to whatever angle it was given; contact pushes back; the equilibrium sits inside
+the object. The holding force IS that overlap. So:
+
+    squeeze 6 N                    -7.5 mm, lifts
+    squeeze 11 N                  -12.2 mm, lifts
+    contact stiffened             -22.6 mm, lifts   (tunnelling, not stiffness)
+    commanded pose stopped at
+      the surface                  -3.3 mm, NO LIFT
+
+Every attempt trades penetration against carrying force, because in this
+actuation model they are the same quantity. There is no setting that both grips
+and stays outside.
+
+One real defect was found on the way: _SQUEEZE_FORCE_N was 6 N while
+_CARRY_FORCE_N was 8, so the closure refused to produce the force the lift was
+waiting for and lifts happened only on dynamic overshoots. Correcting it to
+6/5 made things worse (-17.7 mm, dropped), which means the working configuration
+depends on that mismatch. That is not a design, it is a coincidence being relied
+upon.
+
+WHAT WOULD ACTUALLY FIX IT
+
+Torque-controlled digits. Drive the finger joints with actuators that apply a
+force against whatever they meet, instead of welding them to a pose and letting
+the object argue with the weld. Then grip force is commanded directly and
+contact depth is whatever the surface allows -- which is what a grasp is. The
+compliant welds added today were half of this idea and the half that does not
+resolve it.
+
+Until then: the lifts are real motions of the simulation and are NOT valid
+grasps. Do not quote 19.99 or 31.64 cm as a grasp result.
+
+
+DO NOT
+- Do not push this branch or merge it. It stays local by explicit instruction.
+- Do not tune scripted_grasp.py to make a configuration pass. It is the control,
+  not the product; if it needs tuning per scene it has stopped being a control.
+
+-------------------------------------------------------------------------------
+2026-08-31 -- GRIPPER LIVE-RUN DASHBOARD (CODEX HANDOFF)
+-------------------------------------------------------------------------------
+
+Started a separate worktree at C:\Users\angel\Rigby-codex-gripper-ui on branch
+codex/gripper-live-ui, based on Claude's grasp/auto-lift commit 47d6445. Claude's
+active Rigby-mainwork worktree was not modified.
+
+The old gripper replay page is now a persistent live-run dashboard:
+
+- Prompt input, examples, explicit model-call warning, and a ten-call default cap.
+- Each attempt runs in an isolated subprocess and persists request, state, events,
+  worker logs, and replay frames below results/gripper-runs.
+- The browser follows the actual MuJoCo body/object frames at 5 Hz while the run
+  is active, then replays the full 30 fps clip when it finishes.
+- The decision trace shows model-call start/decision events and the latest numeric
+  target, body part, named primitive, progress, and physical measurements.
+- Run history survives refresh and can reopen completed, failed, or aborted runs.
+- Abort terminates the run subprocess (including after an API reload via its PID),
+  not merely the browser animation.
+- A startup marker prevents a fast child process from racing the API's initial
+  state write. Clips are served through a validated API route, including when a
+  custom run directory is configured.
+- Switching between runs now clears a prior replay if the newly selected run has
+  not produced frames, preventing stale gripper state from being mislabelled LIVE.
+
+The directed runner now serializes the actual simulated links, jaw pads, plate,
+block pose/quaternion, contact forces, opening, target distances, visibility,
+holding state, penetration, chosen target/part/move, and error. Its progress hook
+does not add model calls. Also corrected an existing Python scope bug caused by
+an in-function `import mujoco.viewer` shadowing the top-level mujoco module.
+
+Verification:
+
+- 36 relevant Python tests passed, including an API-free MuJoCo streaming run and
+  a persistent/real-abort contract.
+- 33 frontend tests passed.
+- TypeScript and the production Vite build passed.
+- Browser-tested empty state, history, a 45-frame physical replay, switching away
+  from a clip, and an abort that killed a dedicated offline helper process.
+- No model/API calls were made. Monetary API cost: $0.00.
+- Browser fixtures lived only in a temporary Windows directory and are not part of
+  the branch.
+
+END OF LOG
+
+
+================================================================================
+PERCEIVING THE SCENE INSTEAD OF BEING TOLD ABOUT IT (2026-09-04)
+================================================================================
+
+Question that started it: how do four corner cameras not see the bin, and was
+the bin in the imagination space?
+
+Answer: nothing had ever tried. The segmenter looked for "the only warm thing on
+a blue-grey bench", which finds the block and nothing else, and the imagination
+held exactly one key -- block_xyz. The bin was declared furniture read from the
+manifest. The machine knew where it was because a file said so.
+
+THE ARM WAS A GHOST.
+
+  seg1, seg2, seg3 and base_hub carried no contype or conaffinity, so both
+  defaulted to 0, which in MuJoCo means "collides with nothing". The arm passed
+  through the bin and through the bench; only the plate and the pads were ever
+  stopped by anything. Given contype=8 conaffinity=1 they are now solid against
+  the bin and the table and deliberately not against the block, the hand, or
+  each other.
+
+  That fix then broke the arm the other way. The pedestal the arm is bolted to
+  carried the furniture mask, so the links began fighting their own mount:
+  28.6 mm of permanent penetration at base_hub, 22 mm at seg1, 0.35 rad of joint
+  drift in 1500 steps while commanded to hold still. The pedestal is now
+  contype=4, which keeps it solid to the block and the hand and takes it out of
+  the links' way. At rest: 0 contacts, drift below 1e-5 rad.
+
+THE BIN COULD NOT HAVE BEEN SEGMENTED, AND THAT WAS MEASURED FIRST.
+
+  Painted blue-grey like the bench, across the four corner cameras:
+
+      camera              BIN lum        TABLE lum      BIN b-r   TABLE b-r
+      room                66.9 +- 24.1   78.4 +- 27.0   15.7      15.3
+      corner_front_right  88.3 +- 29.1   86.8 +- 31.0   20.9      15.5
+      corner_back_left    57.5 +- 19.3   72.1 +- 24.2   13.8      12.7
+      corner_back_right   63.8 +- 27.8   79.0 +- 25.9   14.6      14.8
+
+  Overlapping distributions in both statistics. No threshold separates them. The
+  bin is now green (0.16 0.62 0.30), which is what workcells actually do to a
+  container a vision system has to find. Nothing in the code knows that.
+
+WHAT REPLACED THE SEGMENTER: sensing/landmarks.py
+
+  A first attempt gave the model a vocabulary of colour words and let it choose
+  "orange" and "green". That is the same mistake one layer up -- whoever writes
+  the vocabulary has already decided what the scene contains.
+
+  So the model is told nothing about what to look for. It is shown the four
+  corner views at a stated size, reads the task, and reports which things the
+  task requires and the pixel each appears at in each view. Rays through those
+  picks cross, and the crossing is in metres. How far they miss is measured.
+
+  The appearance is LEARNED from the patch under each pick, so the item can be
+  followed at 30 Hz between model calls. Nobody wrote down that the block is
+  orange; it is orange because that is what was under the place the model
+  pointed at.
+
+  THE LEARNED LOOK IS VERIFIED BEFORE IT IS KEPT. A pick a few pixels off the
+  object samples the bench behind it, and the tracker then follows the bench
+  forever while the belief drifts and nothing complains. Measured: a look
+  learned on the object put the belief 2 mm from the block and 17 mm from the
+  bin; one learned off the edge put it 220-357 mm out. The patch's own coherence
+  does NOT separate these -- it read 0.09 on a good look and 0.95 on a bad one.
+  What separates them is tracking with the candidate and checking where it
+  lands, so every camera the model pointed with proposes a look, each is tried,
+  and one that does not lead back to the anchor is refused outright. The
+  position survives; only the appearance is dropped.
+
+THE IMAGINATION IS NOW COMPARED AND CORRECTED, NOT REBUILT.
+
+  It used to be recomputed from scratch each call and kept nothing, which means
+  there was no belief to contradict: a picture that is discarded cannot be found
+  to have been wrong, and cannot get better either. Every decision is now
+  preceded by measuring each item again, reporting measured_xyz against
+  believed_xyz and the gap between them, and moving the belief toward the
+  measurement by as much as the cameras' agreement earns.
+
+  The declared bin is reported beside the perceived one. The goal metrics still
+  measure against the manifest, and cameras_vs_declared_bin_m came out at
+  17.8 mm, so the planner is shown the discrepancy rather than having it chosen
+  for it silently.
+
+RESOLUTION. Corner views 480x360 -> 768x576, hand camera to the model
+  320x240 -> 640x480. Distinct render sizes went from four to four, NOT five:
+  identification, tracking, and the corner picture sent with each decision now
+  share one size instead of being two near-identical ones. Every distinct size
+  costs a GL context and this codebase has gone black from exhausting them.
+
+  Measured effect, picks jittered to stand for imprecise pointing:
+
+      pick jitter    block anchor       block belief   bin belief
+      480x360        20.5/21.4/36.1 mm  2.3 mm         16.8 mm
+      768x576        10.8/12.3/20.9 mm  1.4 mm         17.5 mm
+
+  At 480x360 a 15 px sloppy pick got its look refused; at 768x576 it is learned
+  correctly. The bin's residual ~17 mm is not resolution -- it is that each ray
+  runs through the centroid of the bin surface THAT camera can see rather than
+  through the middle of the bin, and the miss reports it.
+
+A BUG FOUND WHILE VERIFYING, AND IT WAS EXPENSIVE.
+
+  expand()'s empty-reply branch had been copied from ask() and kept the names
+  its new scope does not have: it read `now`, which expand() has no parameter
+  for, and returned self.held, which is a goal and not a plan. The bare except
+  swallowed the NameError, so a truncated expansion was logged as
+  "error: name 'now' is not defined" and became an empty plan -- and an empty
+  plan is exactly the condition ask() expands on, so it re-expanded on EVERY
+  call for the rest of the run. A token-budget overrun turned into an unbounded
+  spend, silently. Fixed, and expansion is now capped at two attempts, after
+  which the run decides from the instruction itself.
+
+VERIFICATION. 32 tests, all passing, no model calls, $0.00:
+  - tests/test_landmarks.py (7 new): the bin is perceived at all; both items
+    from one mechanism that names neither; looking again corrects a sloppy pick;
+    a look that finds the bench is refused; one camera is a direction not a
+    position; disagreeing picks report a large miss; an unseen item keeps its
+    stale belief and says so.
+  - tests/test_gripper_solidity.py (14 new): every link solid against bin and
+    bench, ghost to its own mount, the hand unchanged, and an arm told to hold
+    still that touches nothing and does not drift.
+  - tests/test_gripper_squeeze.py (7) and tests/test_directed_control.py (4)
+    unchanged and still passing.
+
+NOT DONE, and deliberately: the frozen corpus has not been re-run. Making the
+arm solid is exactly the kind of change that has twice cost corpus cases this
+session, and the 11/12 baseline should be re-measured before any of this is
+trusted in a run.
+
+END OF SECTION

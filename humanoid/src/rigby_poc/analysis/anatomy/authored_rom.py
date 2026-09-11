@@ -285,6 +285,21 @@ def build_document() -> OrderedDict:
             enforceable="'mutation_only' marks a bone compiler.py never assigns a rotation to on any path, so its limit can never fire from generated motion. Exercising it belongs to plan 06.",
             enforcement="04b shipped every check report-only. 04c gates on `enforced`, set by rigby_poc.analysis.anatomy.authored_rom.is_enforced: the bound must be cited (external or invariant), the bone must be reachable from generation, and the bone must not be the root. Everything else stays report-only and reports its measurement.",
         ),
+        angular_rate_limits=OrderedDict(
+            [
+                ("$comment", "Peak angular speed per joint class, deg/s. The envelope until now bounded only where a joint may be, never how fast it may get there, so a compiled clip could move a bone its whole range inside one frame and nothing in the manifests objected. Measured consequence: the hand crossed from preshape to contact fast enough to strike the block and send it 7 cm across the table before any finger had closed. A position envelope cannot express that, because every pose along the way was legal."),
+                ("units", "degrees per second, applied to the anatomical DOF angle"),
+                ("source", OrderedDict(
+                    kind="literature_typical",
+                    rationale="Voluntary reaching speeds, not ballistic maxima. Humans can drive most of these joints far faster -- a thrown punch or a snapped finger is several times these numbers -- but a reach toward an object a hand is about to grasp is deliberate, and that is the motion being bounded. Values are placed proximal-slow to distal-fast, which is the ordering limb inertia imposes.",
+                )),
+                ("classes", OrderedDict(
+                    spine=110.0, clavicle=120.0, shoulder=170.0, elbow=200.0, wrist=240.0,
+                    thumb=300.0, digit=320.0, hip=150.0, knee=200.0, ankle=200.0, toes=250.0,
+                )),
+                ("default_deg_per_s", 180.0),
+            ]
+        ),
         limits=limits)
 
 

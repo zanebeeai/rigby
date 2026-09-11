@@ -10,6 +10,7 @@ from fastapi.staticfiles import StaticFiles
 
 from . import __version__
 from .compiler import PROJECT_ROOT, RIG_PROFILE, apply_overrides, compile_motion
+from .gripper_runs import GripperRunRequest, GripperRunStore
 from .models import (
     CompileRequest,
     CompileResponse,
@@ -25,6 +26,7 @@ from .store import ResultStore
 
 store = ResultStore()
 pipeline_runs = PipelineRunStore()
+gripper_runs = GripperRunStore()
 app = FastAPI(title="Rigby POC API", version=__version__)
 app.add_middleware(
     CORSMiddleware,
@@ -113,6 +115,41 @@ def pipeline_detail(run_id: str) -> dict[str, object]:
     detail = pipeline_runs.get(run_id)
     if detail is None:
         raise HTTPException(status_code=404, detail="pipeline run not found")
+    return detail
+
+
+@app.post("/api/v1/gripper-runs", status_code=202)
+def start_gripper_run(request: GripperRunRequest) -> dict[str, object]:
+    """Start one isolated, persistent VLM-directed gripper attempt."""
+    return gripper_runs.start(request)
+
+
+@app.get("/api/v1/gripper-runs")
+def list_gripper_runs() -> dict[str, object]:
+    return {"runs": gripper_runs.list()}
+
+
+@app.get("/api/v1/gripper-runs/{run_id}")
+def gripper_run_detail(run_id: str) -> dict[str, object]:
+    detail = gripper_runs.get(run_id)
+    if detail is None:
+        raise HTTPException(status_code=404, detail="gripper run not found")
+    return detail
+
+
+@app.get("/api/v1/gripper-runs/{run_id}/clip")
+def gripper_run_clip(run_id: str) -> FileResponse:
+    clip = gripper_runs.clip_path(run_id)
+    if clip is None:
+        raise HTTPException(status_code=404, detail="gripper run clip not found")
+    return FileResponse(clip, media_type="application/json")
+
+
+@app.post("/api/v1/gripper-runs/{run_id}/abort")
+def abort_gripper_run(run_id: str) -> dict[str, object]:
+    detail = gripper_runs.abort(run_id)
+    if detail is None:
+        raise HTTPException(status_code=404, detail="gripper run not found")
     return detail
 
 

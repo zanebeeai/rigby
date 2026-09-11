@@ -155,6 +155,10 @@ def test_only_the_clip_contract_checks_reach_every_case(
         # (airborne frames are legitimate there) and on the zero-frame case,
         # a measurement everywhere else.
         "physics.contact.ground_support",
+        # Emitted on all 47 for the same reason: a skip on the 44 cases that
+        # never lift anything and on the zero-frame case, a measurement on the
+        # three that carry a block. Its measured denominator is three.
+        "physics.contact.render_plausible",
         "physics.ground.penetration",
         "signal.activity.dead_limb",
         "signal.smoothness.sparc",

@@ -214,6 +214,18 @@ class Finding:
 #: recorded count is asserted exactly, so a waived file cannot quietly acquire a
 #: new bare rate.
 WAIVERS: dict[str, dict[str, Any]] = {
+    "humanoid/milestones/README.md": {
+        "findings": 2,
+        "reason": (
+            "The gripper milestones page cites ALOHA's published 80-90% task rate "
+            "(arXiv 2304.13705) as the standard held to, and states the wrist "
+            "camera's 8% size error as a sensor property. Neither is a rate this "
+            "project measured, so neither has an n or a baseline of ours to state; "
+            "the page's own results table carries placed/lift/penetration per run."
+        ),
+        "owner": "grasp/auto-lift (AngeloWhey)",
+        "retires_in": "a milestones page that cites the ALOHA n beside the rate",
+    },
     "humanoid/docs/evidence/frozen-judge-calibration.json": {
         "findings": 6,
         "reason": (

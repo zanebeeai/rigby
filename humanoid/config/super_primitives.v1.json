@@ -1,0 +1,219 @@
+{
+  "schema_version": "1.0",
+  "$comment": "Super primitives: a named action that fires a group of lower-level body-part moves on an intended schedule, where every step carries the sensor reading that decides whether it actually happened. The schedule and the acceptance criterion belong together -- a grasp is not 'the fingers reached these angles', it is 'the thumb was loaded before the fingers closed'. Splitting those apart is how a hand that formed a perfect shape around nothing got reported as a grasp.",
+  "sensor_kinds": {
+    "none": "The step is a positioning move with nothing to verify yet.",
+    "force": "Contact normal force on named digits, read from the simulated contacts. This is the finger's own sense of touch: it can only report a load that actually existed.",
+    "vision": "Where the head was looking and how far off-axis, read from the compiled gaze. A step that cannot be seen cannot be visually verified, and says so rather than passing by default."
+  },
+  "super_primitives": {
+    "grab": {
+      "aliases": [
+        "grab",
+        "pick up",
+        "take",
+        "lift",
+        "grasp"
+      ],
+      "description": "Power grasp: the object is enclosed between the digits and the palm.",
+      "requires_object": true,
+      "sequence": "grip_power",
+      "release_sequence": "release",
+      "steps": [
+        {
+          "at": 0.0,
+          "label": "open",
+          "sensor": {
+            "kind": "none"
+          },
+          "note": "Positioning only. No contact is expected, and a contact here means the approach swept through the object instead of around it.",
+          "moves": {
+            "thumb": "reposition"
+          }
+        },
+        {
+          "at": 0.25,
+          "label": "preshape",
+          "sensor": {
+            "kind": "vision",
+            "watch": "object",
+            "max_off_axis_deg": 35.0
+          },
+          "note": "The object must be in view before the hand commits to a shape for it.",
+          "moves": {
+            "thumb": "oppose_ring"
+          }
+        },
+        {
+          "at": 0.45,
+          "label": "thumb_anchor",
+          "sensor": {
+            "kind": "force",
+            "digits": [
+              "thumb"
+            ],
+            "min_normal_n": 0.4,
+            "require_all": true
+          },
+          "note": "The thumb must be loaded FIRST. Index and middle reaching a free object before the thumb push it out of the hand, which is the specific failure this ordering exists to prevent.",
+          "moves": {
+            "thumb": "oppose_ring"
+          }
+        },
+        {
+          "at": 0.7,
+          "label": "close_fingers",
+          "sensor": {
+            "kind": "force",
+            "digits": [
+              "index",
+              "middle",
+              "ring",
+              "little"
+            ],
+            "min_normal_n": 0.3,
+            "minimum_count": 2,
+            "require_opposition": true
+          },
+          "note": "At least two opposing fingers loaded while the thumb anchor holds.",
+          "moves": {
+            "thumb": "oppose_ring"
+          }
+        },
+        {
+          "at": 1.0,
+          "label": "secure",
+          "sensor": {
+            "kind": "force",
+            "digits": [
+              "thumb",
+              "index",
+              "middle",
+              "ring",
+              "little"
+            ],
+            "min_normal_n": 0.5,
+            "minimum_count": 3,
+            "require_opposition": true
+          },
+          "note": "Enough load, on enough digits, in opposition, to carry the object's weight through a lift.",
+          "moves": {
+            "thumb": "oppose_little"
+          }
+        }
+      ]
+    },
+    "pinch": {
+      "aliases": [
+        "pinch",
+        "pick up carefully",
+        "precision grasp",
+        "nip"
+      ],
+      "description": "Precision grasp: thumb pad against index pad, the rest clear.",
+      "requires_object": true,
+      "sequence": "grip_precision",
+      "release_sequence": "release",
+      "steps": [
+        {
+          "at": 0.0,
+          "label": "open",
+          "sensor": {
+            "kind": "none"
+          },
+          "note": "Positioning only. No contact is expected: a load here means the pads closed before they were around anything, which for a pinch is a poke.",
+          "moves": {
+            "thumb": "reposition"
+          }
+        },
+        {
+          "at": 0.4,
+          "label": "approach_pads",
+          "sensor": {
+            "kind": "vision",
+            "watch": "grasp",
+            "max_off_axis_deg": 30.0
+          },
+          "note": "A pinch is small and the head must be watching the hand, not the object: at this scale the difference between contact and near-miss is not visible from the object's centre.",
+          "moves": {
+            "thumb": "oppose_index"
+          }
+        },
+        {
+          "at": 0.75,
+          "label": "pad_contact",
+          "sensor": {
+            "kind": "force",
+            "digits": [
+              "thumb",
+              "index"
+            ],
+            "min_normal_n": 0.25,
+            "require_all": true,
+            "require_opposition": true
+          },
+          "note": "Both pads loaded and opposed. A pinch with one pad loaded is a poke.",
+          "moves": {
+            "thumb": "oppose_index"
+          }
+        },
+        {
+          "at": 1.0,
+          "label": "secure",
+          "sensor": {
+            "kind": "force",
+            "digits": [
+              "thumb",
+              "index"
+            ],
+            "min_normal_n": 0.4,
+            "require_all": true,
+            "require_opposition": true
+          },
+          "note": "Lower force than a power grasp on purpose: a precision grasp that squeezes like a power grasp crushes what it is holding.",
+          "moves": {
+            "thumb": "oppose_index"
+          }
+        }
+      ]
+    },
+    "release": {
+      "aliases": [
+        "release",
+        "let go",
+        "drop",
+        "put down"
+      ],
+      "description": "Open every digit and give the object up.",
+      "requires_object": true,
+      "sequence": "release",
+      "release_sequence": null,
+      "steps": [
+        {
+          "at": 0.0,
+          "label": "held",
+          "sensor": {
+            "kind": "force",
+            "digits": [
+              "thumb"
+            ],
+            "min_normal_n": 0.2,
+            "require_all": true
+          },
+          "note": "Releasing presupposes holding. A release that starts with nothing in the hand did not happen."
+        },
+        {
+          "at": 1.0,
+          "label": "clear",
+          "sensor": {
+            "kind": "force",
+            "digits": [],
+            "max_normal_n": 0.05
+          },
+          "note": "No digit still loaded. The inverse criterion: this step passes on the ABSENCE of force."
+        }
+      ]
+    }
+  },
+  "$moves_comment": "'moves' names the body-part move each step commands, from body_parts.v1.json's move_sets. A power grasp opposes the thumb across the finger group rather than at any one finger, so grab holds oppose_ring through closure and tightens to oppose_little to secure; a pinch is thumb-pad to index-pad, so it uses oppose_index throughout. Both start from 'reposition', which carries the thumb clear of the approach corridor -- the thumb's own shafts striking the object on the way in was what knocked it away before any finger closed."
+}

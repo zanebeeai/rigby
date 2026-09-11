@@ -64,6 +64,13 @@ EMITTED_BY_CASES: Mapping[str, int] = {
     "physics.ground.penetration": 47,
     "signal.activity.dead_limb": 47,
     "signal.smoothness.sparc": 47,
+    # Emitted on every case like its physics siblings: a measurement on the
+    # three object cases that lift something, an explicit `skip` on the other
+    # 44 and on the zero-frame case. The count here is emission, as for every
+    # other id in this table; the measured denominator for a detection rate
+    # on this axis is three, and quoting one against forty-seven is the
+    # guard-denominator mistake test_mutation_check_registry names.
+    "physics.contact.render_plausible": 47,
     "signal.angular.acceleration": 14,
     "signal.angular.jerk": 14,
     "signal.angular.velocity": 14,

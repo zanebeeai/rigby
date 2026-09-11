@@ -1,0 +1,372 @@
+{
+  "schema_version": "1.0",
+  "$comment": "The closed set of deep PATH morphemes, after Talmy, 'Semantics and Syntax of Motion' (1975), pp. 181-238. Talmy's central claim about PATH is that it is drawn from a CLOSED set while FIGURE and GROUND are drawn from open sets of noun phrases -- so this file is a fixed vocabulary by construction, not a list that grows with each new prompt. Each entry says how the Figure must be situated with respect to the Ground, and that is what a contour is generated from.",
+  "source": {
+    "kind": "external",
+    "cites": [
+      "Talmy, L. (1975) Semantics and Syntax of Motion, pp. 181-238",
+      "docs: the FIGURE / GROUND / PATH / MOTION partition is stated on p. 181"
+    ],
+    "rationale": "The partition and the closed-set property are taken from the source. The metric parameters attached to each morpheme are ours: the source is a semantic theory and carries no distances."
+  },
+  "motion_verbs": {
+    "MOVE": "translational motion of the Figure with respect to the Ground",
+    "BEL": "the Figure is located with respect to the Ground; a located state is the limiting case of MOTION"
+  },
+  "reference_frames": {
+    "ground_surface": "the Ground's supporting face, resolved from its bounding box",
+    "ground_centre": "the Ground's centroid",
+    "world_up": "scene +Y"
+  },
+  "paths": {
+    "OFF": {
+      "aliases": [
+        "pick up",
+        "lift",
+        "raise",
+        "take",
+        "grab",
+        "off",
+        "off of"
+      ],
+      "motion": "MOVE",
+      "requires_ground": false,
+      "description": "The Figure separates from its supporting Ground and rises.",
+      "contour": {
+        "kind": "separate_and_rise",
+        "clearance_m": 0.12,
+        "waypoints": [
+          {
+            "at": 0.0,
+            "offset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "note": "at rest on the Ground"
+          },
+          {
+            "at": 0.35,
+            "offset": [
+              0.0,
+              0.02,
+              0.0
+            ],
+            "note": "break contact"
+          },
+          {
+            "at": 1.0,
+            "offset": [
+              0.0,
+              0.12,
+              0.0
+            ],
+            "note": "clear of the Ground"
+          }
+        ]
+      }
+    },
+    "ONTO": {
+      "aliases": [
+        "put on",
+        "place on",
+        "set on",
+        "onto",
+        "on top of",
+        "on"
+      ],
+      "motion": "MOVE",
+      "requires_ground": true,
+      "description": "The Figure comes to rest on the Ground's supporting face.",
+      "contour": {
+        "kind": "arc_to_surface",
+        "arc_height_m": 0.1,
+        "waypoints": [
+          {
+            "at": 0.0,
+            "offset": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "at": 0.5,
+            "offset": [
+              0.0,
+              0.1,
+              0.0
+            ],
+            "note": "clear the Ground's edge"
+          },
+          {
+            "at": 1.0,
+            "offset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "note": "resting on the surface"
+          }
+        ]
+      }
+    },
+    "INTO": {
+      "aliases": [
+        "put in",
+        "into",
+        "insert",
+        "drop in",
+        "in"
+      ],
+      "motion": "MOVE",
+      "requires_ground": true,
+      "description": "The Figure ends within the Ground's interior.",
+      "contour": {
+        "kind": "arc_to_interior",
+        "arc_height_m": 0.12,
+        "waypoints": [
+          {
+            "at": 0.0,
+            "offset": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "at": 0.55,
+            "offset": [
+              0.0,
+              0.12,
+              0.0
+            ]
+          },
+          {
+            "at": 1.0,
+            "offset": [
+              0.0,
+              -0.02,
+              0.0
+            ]
+          }
+        ]
+      }
+    },
+    "TO": {
+      "aliases": [
+        "move to",
+        "bring to",
+        "to",
+        "toward",
+        "towards"
+      ],
+      "motion": "MOVE",
+      "requires_ground": true,
+      "description": "The Figure ends adjacent to the Ground without contacting it.",
+      "contour": {
+        "kind": "approach",
+        "standoff_m": 0.05,
+        "waypoints": [
+          {
+            "at": 0.0,
+            "offset": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "at": 1.0,
+            "offset": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        ]
+      }
+    },
+    "AWAY_FROM": {
+      "aliases": [
+        "move away",
+        "away from",
+        "remove from",
+        "take from"
+      ],
+      "motion": "MOVE",
+      "requires_ground": true,
+      "description": "The Figure ends farther from the Ground than it began.",
+      "contour": {
+        "kind": "recede",
+        "distance_m": 0.2,
+        "waypoints": [
+          {
+            "at": 0.0,
+            "offset": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "at": 1.0,
+            "offset": [
+              0.0,
+              0.05,
+              0.0
+            ]
+          }
+        ]
+      }
+    },
+    "ACROSS": {
+      "aliases": [
+        "across",
+        "over",
+        "past"
+      ],
+      "motion": "MOVE",
+      "requires_ground": true,
+      "description": "The Figure traverses the Ground from one side to the other.",
+      "contour": {
+        "kind": "traverse",
+        "clearance_m": 0.08,
+        "waypoints": [
+          {
+            "at": 0.0,
+            "offset": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "at": 0.5,
+            "offset": [
+              0.0,
+              0.08,
+              0.0
+            ]
+          },
+          {
+            "at": 1.0,
+            "offset": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        ]
+      }
+    },
+    "DOWN": {
+      "aliases": [
+        "put down",
+        "lower",
+        "set down",
+        "down",
+        "drop",
+        "release"
+      ],
+      "motion": "MOVE",
+      "requires_ground": false,
+      "description": "The Figure descends to its supporting Ground.",
+      "contour": {
+        "kind": "descend",
+        "drop_m": 0.12,
+        "waypoints": [
+          {
+            "at": 0.0,
+            "offset": [
+              0.0,
+              0.12,
+              0.0
+            ]
+          },
+          {
+            "at": 1.0,
+            "offset": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        ]
+      }
+    },
+    "AT": {
+      "aliases": [
+        "hold",
+        "keep",
+        "at",
+        "stay"
+      ],
+      "motion": "BEL",
+      "requires_ground": false,
+      "description": "A located site. Talmy's limiting case of a PATH; the contour is a single point held over time.",
+      "contour": {
+        "kind": "site",
+        "waypoints": [
+          {
+            "at": 0.0,
+            "offset": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "at": 1.0,
+            "offset": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "manners": {
+    "GRASPED": {
+      "aliases": [
+        "grab",
+        "grip",
+        "hold",
+        "carry",
+        "pick up"
+      ],
+      "note": "The Figure is under continuous contact control by an effector.",
+      "requires_contact": true
+    },
+    "PUSHED": {
+      "aliases": [
+        "push",
+        "shove",
+        "slide"
+      ],
+      "note": "The Figure is driven by contact but not enclosed.",
+      "requires_contact": true
+    },
+    "THROWN": {
+      "aliases": [
+        "throw",
+        "toss",
+        "lob"
+      ],
+      "note": "Contact ends before the Path does; the Figure is ballistic thereafter.",
+      "requires_contact": false
+    },
+    "DROPPED": {
+      "aliases": [
+        "drop",
+        "release",
+        "let go"
+      ],
+      "note": "Contact ends and the Figure falls under gravity alone.",
+      "requires_contact": false
+    }
+  },
+  "$alias_note": "Aliases are matched on word boundaries and the LONGEST match wins, so 'put down' resolves to DOWN rather than to ONTO's 'on'. Single prepositions are listed because English separates the verb from its path morpheme -- 'put the block on the ladder' has no contiguous 'put on'."
+}

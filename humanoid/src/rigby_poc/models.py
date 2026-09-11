@@ -3,7 +3,7 @@ from __future__ import annotations
 from enum import StrEnum
 from typing import Annotated, Any
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_serializer, model_validator
 
 
 class Contract(BaseModel):
@@ -340,6 +340,25 @@ class SceneManifest(Contract):
     objects: list[SceneObject] = Field(min_length=1)
     fps: Annotated[int, Field(ge=24, le=60)] = 30
     reachable_radius_m: Annotated[float, Field(gt=0.3, le=1.0)] = 0.72
+    #: World height of the surface scene objects rest on.
+    #:
+    #: Declared here because it was previously invented twice and agreed
+    #: nowhere: physics synthesised a table from whichever object it happened to
+    #: be simulating, and the renderer drew one at a hardcoded 1.0125 m. Two
+    #: authorities for one surface is how a block ends up resting 2.5 mm inside
+    #: the table it is standing on.
+    support_height_m: Annotated[float, Field(ge=0.0, le=2.0)] = 1.01
+
+    @model_serializer(mode="wrap")
+    def _without_default_support_height(self, handler):
+        # A scene that declares no support height serializes exactly as it did
+        # before the field existed: the corpus freezes every case's scene on
+        # disk and rebuilds it byte for byte, and the frozen files predate the
+        # field. A scene that names a height keeps it.
+        data = handler(self)
+        if isinstance(data, dict) and data.get("support_height_m") == 1.01:
+            data.pop("support_height_m", None)
+        return data
 
     @model_validator(mode="after")
     def unique_objects(self) -> "SceneManifest":
@@ -766,6 +785,45 @@ class MotionProgram(Contract):
     assertions: list[AssertionSpec] = Field(default_factory=list, max_length=32)
     seed: int = Field(default=0, ge=0, le=2**31 - 1)
     unsupported_reason: str | None = Field(default=None, max_length=300)
+    #: The state each primitive runs in, chosen by the planner.
+    #:
+    #: One name per primitive, drawn from ``config/motion_states.v1.json``. The
+    #: vocabulary is closed on purpose: the planner decides the *sequence* --
+    #: which states a command needs and in what order -- while what a state
+    #: means (what it solves, what it holds, what it checks, where it looks)
+    #: stays a reviewed property of the catalog. A planner that could invent
+    #: states could invent one that gates nothing.
+    #:
+    #: Empty means "fall back to the state whose name matches the primitive
+    #: kind", which is what every program did before this field existed.
+    motion_states: list[str] = Field(default_factory=list, max_length=48)
+
+    @model_serializer(mode="wrap")
+    def _without_empty_motion_states(self, handler):
+        # A program that names no states serializes exactly as it did before
+        # the field existed. The corpus stores every case's program on disk
+        # and checks it round-trips byte for byte; the field is a planner
+        # decision, and "no decision" is the absence of the key, not `[]`.
+        data = handler(self)
+        if isinstance(data, dict) and not data.get("motion_states"):
+            data.pop("motion_states", None)
+        return data
+
+    @model_validator(mode="after")
+    def motion_states_are_known_and_aligned(self) -> "MotionProgram":
+        if not self.motion_states:
+            return self
+        from .motion_states import states as _known_states
+
+        unknown = sorted(set(self.motion_states) - set(_known_states()))
+        if unknown:
+            raise ValueError(f"unknown motion states: {unknown}")
+        if len(self.motion_states) != len(self.primitives):
+            raise ValueError(
+                "motion_states must name one state per primitive "
+                f"({len(self.motion_states)} states, {len(self.primitives)} primitives)"
+            )
+        return self
 
     @model_validator(mode="after")
     def intent_consistent(self) -> "MotionProgram":

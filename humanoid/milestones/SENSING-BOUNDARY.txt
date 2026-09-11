@@ -1,0 +1,9 @@
+what the machine is allowed to know
+
+  joint positions   encoders, exact
+  object position   one wrist camera, only while in view, with error
+  object size       the same camera, estimated once seen
+  contact           driven shut, stopped, and not shut -- encoders, no force sensor
+  grip effort       motor command, not a load cell
+  bin position      known a priori: it is fixed furniture, not a percept
+  NOT available     true object pose, true object size, contact force, anything about the object while it is out of view

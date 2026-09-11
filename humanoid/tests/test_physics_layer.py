@@ -36,6 +36,9 @@ PHYSICS_IDS = frozenset(
         # contact is lost entirely. Skips on free-root programs and on the
         # zero-frame case, like its siblings.
         "physics.contact.ground_support",
+        # The render-contact agreement check: does the rendered hand touch the
+        # object the physics says it carried. Report-only, never a gate.
+        "physics.contact.render_plausible",
     }
 )
 
