@@ -315,6 +315,11 @@ def render_page(entries: list[dict]) -> str:
   <fieldset><legend>Tier</legend><div id="f-tier"></div></fieldset>
   <fieldset><legend>Kind</legend><div id="f-kind"></div></fieldset>
   <fieldset><legend>Embodiment</legend><div id="f-emb"></div></fieldset>
+  <fieldset><legend>Make a new one</legend>
+    <p><a href="http://127.0.0.1:8000" target="_blank" rel="noopener">Motion Studio</a> (humanoid, port 8000): prompt, generate, then <em>Save as demo</em> beside Export GLB.</p>
+    <p><a href="http://127.0.0.1:8020" target="_blank" rel="noopener">Any-robot studio</a> (port 8020): prompt any ingested robot or upload a URDF, then <em>Save as demo</em> under the preview.</p>
+    <p>Both stamp who asked, the commit and the branch. Commit the entry under <code>demos/</code> on your branch and it merges with the code that made it.</p>
+  </fieldset>
   <p><a href="../docs/results/index.html">The results ledger</a> covers everything produced before this registry existed.</p>
 </aside>
 <main class="main">

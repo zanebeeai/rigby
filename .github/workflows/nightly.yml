@@ -20,8 +20,14 @@ permissions:
   contents: read
 
 jobs:
+  # Linux, since 11 Sep 2026. This job ran on macOS every night at 10x the
+  # Linux rate, which with the macOS PR matrix exhausted the account's
+  # included minutes a week into the month and left every job refused. The
+  # slow tier needs a browser; the ubuntu image ships Chrome. What Linux
+  # cannot verify is the cross-platform contract, and that has its own job
+  # below, once a week.
   coverage:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     timeout-minutes: 60
     defaults:
       run:
@@ -59,6 +65,51 @@ jobs:
           name: coverage-xml
           path: humanoid/coverage.xml
           if-no-files-found: error
+
+  # The cross-platform contract, once a week. macOS is the primary development
+  # platform and Windows is where CRLF, path length and MuJoCo drift have bitten
+  # before, so both still run the humanoid suite -- on Sundays, or whenever
+  # this workflow is dispatched by hand, which is the cheapest cadence that
+  # still catches a platform regression inside a week. A tiny Linux job decides
+  # the day so that no 10x runner is started just to find out it is Tuesday.
+  pick-day:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    outputs:
+      cross_platform: ${{ steps.day.outputs.cross_platform }}
+    steps:
+      - id: day
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ "$(date -u +%u)" = "7" ]; then
+            echo "cross_platform=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "cross_platform=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  cross-platform:
+    needs: pick-day
+    if: needs.pick-day.outputs.cross_platform == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: humanoid
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+      - run: uv sync --extra dev
+      - name: pytest
+        env:
+          RIGBY_TIER_REPORT: ${{ runner.temp }}/tier.json
+        run: uv run pytest
 
   # RIGBY_TEST_POSTGRES and RIGBY_TEST_PROCESS_RESTART gated roughly 440 lines of
   # tests that NO workflow set, so `rigby_core.postgres_jobs` and
