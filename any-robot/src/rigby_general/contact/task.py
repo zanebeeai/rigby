@@ -39,7 +39,18 @@ PHYSICS_HZ = 240
 # Clearance above the object's top face at which the approach hovers, as a
 # multiple of the object's own height. Far enough that a swing into position
 # cannot clip it, close enough that the descent is short.
-HOVER_FACTION = 2.0
+#
+# The descent is where the object gets hit: the hand covers this height in a
+# fixed share of the schedule, so hovering higher means arriving faster, and
+# arriving faster means 33 N through a 1.6 g block that then leaves the hand.
+# Lowering it is the one lever on impact that does not slow the whole motion --
+# stretching the descent phase instead costs holds (0.28 of the schedule holds
+# thirty-one, 0.36 twenty-four) and so does slowing the trajectory globally.
+# Swept: 1.75 holds thirty-seven of the authored worlds and is the first
+# setting where the three-fingered hand holds anything at all; 1.5 thirty-six,
+# 1.4 and 1.6 and 2.0 thirty-five, 1.3 thirty-four, 3.0 thirty-three, 1.0
+# thirty-two.
+HOVER_FACTION = 1.75
 
 # How far a bystanding object may be nudged before the attempt counts as having
 # disturbed the world. A tenth of its own span: perceptible, but not so tight
@@ -48,8 +59,17 @@ BYSTANDER_TOLERANCE_FRACTION = 0.10
 
 # Authored objects sit where their world puts them, generally low with the
 # envelope to spare, so the lift can afford to clear the required height by a
-# margin rather than only just. Measured: 1 of 13 held at 2.5, 3 of 13 at 5.0.
-AUTHORED_LIFT_FRACTION = 5.0
+# margin rather than only just. Re-swept against the current suite: 2.5 holds
+# thirty-one of the authored worlds, 1.5 and 4.0 twenty-nine each.
+AUTHORED_LIFT_FRACTION = 2.5
+"""How far above the object the lift is commanded, in its own half-extents.
+
+Commanding a *bigger* lift makes fewer of them succeed, which is not obvious
+until measured: the gate asks for 0.8 of the object's size, and a lift target
+far above that leaves the reachable shell, so the waypoint is clamped back down
+and the arm spends the retreat fighting a target it cannot follow. Swept against
+the authored worlds: 2.5 and 1.8 hold twenty-three, 3.2 holds twenty-two, 5.0
+nineteen and 10.0 sixteen."""
 
 
 @dataclass(frozen=True, slots=True)

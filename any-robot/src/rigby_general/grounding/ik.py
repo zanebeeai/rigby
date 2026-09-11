@@ -30,7 +30,14 @@ import numpy as np
 
 DEFAULT_TOLERANCE_M = 0.004
 MAX_ITERATIONS = 140
-DAMPING = 0.06
+DAMPING = 0.02
+"""Damped-least-squares damping.
+
+Swept against the contact suites rather than chosen: 0.06 holds three of the
+authored worlds, 0.02 holds four, and 0.035, 0.01 and 0.005 all come out behind.
+Damping is what keeps the step finite near a singularity, and too much of it
+turns a reachable waypoint into a residual the solver never closes -- which is
+what `unreachable_object` was on arms that can plainly reach the block."""
 MAX_STEP_RAD = 0.25
 NULL_SPACE_GAIN = 0.25
 

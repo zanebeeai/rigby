@@ -170,12 +170,65 @@ class WorkspaceFrame:
             return point
         return self.origin + offset * (limit / distance)
 
+    def clamp_rising(self, point: np.ndarray, *, margin: float = 0.95) -> np.ndarray:
+        """Pull a point inside reach by giving up radius before height.
+
+        ``clamp`` scales the whole offset, so a target outside the envelope comes
+        back *down* as well as in. For a lift that is the wrong trade: the height
+        is the thing being demonstrated and the radius is free, and an arm asked
+        to raise something it is already holding draws it inward rather than
+        setting it back down. A block near the reach limit -- which is where an
+        authored world tends to put it -- had its lift target scaled back to
+        almost the height it started at, and the attempt then failed
+        `object_not_lifted` while holding the block perfectly well.
+
+        Keeps the requested height and takes the furthest radius along the same
+        bearing that reach allows, falling back to ``clamp`` only when no radius
+        at that height is reachable -- the case where the height itself is out of
+        range, and giving up radius cannot buy it back.
+        """
+
+        point = np.asarray(point, dtype=float)
+        offset = point - self.origin
+        horizontal = np.array([offset[0], offset[1], 0.0])
+        radius = float(np.linalg.norm(horizontal))
+        if radius < 1e-9 or self.contains(point, margin=margin):
+            return point if radius >= 1e-9 else self.clamp(point, margin=margin)
+
+        direction = horizontal / radius
+        rise = np.array([0.0, 0.0, offset[2]])
+        low, high = 0.0, radius
+        best: "np.ndarray | None" = None
+        for _ in range(32):
+            middle = 0.5 * (low + high)
+            candidate = self.origin + direction * middle + rise
+            if self.contains(candidate, margin=margin):
+                best = candidate
+                low = middle
+            else:
+                high = middle
+        return best if best is not None else self.clamp(point, margin=margin)
+
     def contains(self, point: np.ndarray, *, margin: float = 1.0) -> bool:
+        """Inside the reachable shell -- outside it *and* outside the hole.
+
+        This tested only the outer bound, so a point in the arm's own inner
+        hole -- the volume too close in for it to fold into -- reported as
+        reachable. The workspace is a shell, not a ball: `inner_reach` is
+        measured alongside `directional_reach` for exactly this reason, and
+        `object_inside_reach_hole` exists as a refusal because the hole is real.
+        Every caller asking "can the arm be here" was getting yes for a region
+        it cannot occupy, which is why clamping a path into the envelope left
+        the unreachable points untouched and the solver went on failing on them.
+        """
+
         offset = np.asarray(point, dtype=float) - self.origin
+        distance = float(np.linalg.norm(offset))
         azimuth, elevation = self.bearing_of(point)
+        if distance < self.inner_reach(azimuth, elevation) - 1e-9:
+            return False
         return bool(
-            float(np.linalg.norm(offset))
-            <= margin * self.directional_reach(azimuth, elevation) + 1e-9
+            distance <= margin * self.directional_reach(azimuth, elevation) + 1e-9
         )
 
 
