@@ -76,6 +76,20 @@ def admit_object(
     reach = frame.directional_reach(azimuth, elevation) * REACH_USABLE_FRACTION
     near = frame.inner_reach(azimuth, elevation)
 
+    shut = effector.min_aperture_m
+    if shut is not None and shut > 0.0 and span < shut:
+        return ObjectAdmission(
+            item.name,
+            False,
+            f"the jaw shuts to {shut * 1000:.0f} mm and the object is only "
+            f"{span * 1000:.0f} mm across",
+            "object_too_narrow",
+            distance_m=round(distance, 4),
+            reach_limit_m=round(reach, 4),
+            span_m=round(span, 4),
+            aperture_m=round(aperture, 4),
+        )
+
     if span * APERTURE_MARGIN > aperture:
         return ObjectAdmission(
             item.name,

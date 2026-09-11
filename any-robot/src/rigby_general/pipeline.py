@@ -14,6 +14,8 @@ is load-bearing:
 
 from __future__ import annotations
 
+import mujoco
+import numpy as np
 from dataclasses import dataclass, replace
 from pathlib import Path
 
@@ -50,6 +52,73 @@ class IngestedRobot:
     @property
     def robot_id(self) -> str:
         return self.manifest.rig_id
+
+
+STRUCTURAL_OVERLAP_SAMPLES = (0.0, 0.25, 0.5, 0.75, 1.0)
+"""Where along each joint's range a parent-child overlap is re-checked."""
+
+
+def _structural_overlaps(
+    model: mujoco.MjModel,
+) -> tuple[tuple[str, str], ...]:
+    """Parent-child pairs authored inside one another, which no pose can undo.
+
+    The exclusion set was measured for guarding IK, and there dropping adjacent
+    links is right: they meet at the joint, and listing them would drown the
+    real signal. Physics needs the opposite question asked. The SO-ARM101's
+    shoulder is authored 26 mm inside the base it turns on, and the only joint
+    between them is a vertical pan -- rotating it cannot separate them, so the
+    penetration is there at every configuration the arm can adopt. Nothing
+    excluded it, so the solver spent all 5252 steps of every attempt pushing
+    them apart: the controller demanded 3.2 kN*m against a 10 N*m limit,
+    clipped on 1262 of 1441 steps, and the hand tracked 131 degrees behind a
+    path whose own IK residual was one millimetre.
+
+    A pair that overlaps at *every* configuration of the joints between them is
+    a fact about the upload, not about the motion, which is the same test the
+    non-adjacent pairs already get.
+    """
+
+    from .morphology.measure import joint_range, neutral_qpos
+
+    data = mujoco.MjData(model)
+    rest = neutral_qpos(model)
+    geoms: dict[int, list[int]] = {}
+    for geom in range(model.ngeom):
+        if int(model.geom_contype[geom]) or int(model.geom_conaffinity[geom]):
+            geoms.setdefault(int(model.geom_bodyid[geom]), []).append(geom)
+
+    found: list[tuple[str, str]] = []
+    for body in range(1, model.nbody):
+        parent = int(model.body_parentid[body])
+        if parent == 0 or not geoms.get(body) or not geoms.get(parent):
+            continue
+        joints = [
+            int(model.body_jntadr[body]) + offset
+            for offset in range(int(model.body_jntnum[body]))
+        ]
+        samples = []
+        for fraction in STRUCTURAL_OVERLAP_SAMPLES:
+            data.qpos[:] = rest
+            for joint in joints:
+                low, high = joint_range(model, joint)
+                data.qpos[int(model.jnt_qposadr[joint])] = low + fraction * (
+                    high - low
+                )
+            mujoco.mj_kinematics(model, data)
+            samples.append(
+                min(
+                    float(mujoco.mj_geomDistance(model, data, one, other, 1.0, None))
+                    for one in geoms[body]
+                    for other in geoms[parent]
+                )
+            )
+        if samples and max(samples) < 0.0:
+            first = mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_BODY, body)
+            second = mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_BODY, parent)
+            if first and second:
+                found.append(tuple(sorted((first, second))))
+    return tuple(sorted(set(found)))
 
 
 def ingest_robot(source_path: Path, *, robot_id: str | None = None) -> IngestedRobot:
@@ -135,7 +204,7 @@ def _measure(loaded) -> IngestedRobot:
     finalized = finalize(
         loaded,
         morphology,
-        ungateable_pairs=tuple(
+        ungateable_pairs=_structural_overlaps(loaded.model) + tuple(
             (subject.split("|", 1)[0], subject.split("|", 1)[1])
             for subject in (note.subject for note in authored_overlaps)
             if "|" in subject

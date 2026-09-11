@@ -36,9 +36,15 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+import math
+
 import mujoco
 import numpy as np
+
 from rigby_core.simulation.controller import ControlTarget
+
+from ..morphology import measure
+
 
 
 # Chosen from a measured sweep across the zoo, not from a rule of thumb. Raising
@@ -48,6 +54,19 @@ from rigby_core.simulation.controller import ControlTarget
 # more than a quarter. 10 Hz keeps omega*dt near 0.26 and lands between the two.
 DEFAULT_NATURAL_FREQUENCY_HZ = 14.0
 DEFAULT_DAMPING_RATIO = 1.2
+
+TRACKING_REFERENCE_RAD = 0.05
+"""The tracking error a joint should be able to answer without clipping.
+
+About three degrees. Swept against the authored worlds at the 6 Hz floor: 0.05
+holds thirty-four, 0.1 thirty, 0.3 twenty-eight."""
+
+MIN_BANDWIDTH_RAD_S = 2.0 * np.pi * 6.0
+"""However weak an arm measures, a floor on how slack its tracking may go.
+
+Without one the EEZYbotARM -- 0.176 N*m of SG90 -- is slowed until it cannot
+hold what it has picked up, losing all three of its holds while the Panda gains
+two. Swept: a 6 Hz floor holds thirty-four, 9 Hz thirty-three, 4 Hz thirty-one."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -101,15 +120,55 @@ class ComputedTorqueController:
 
         self._dofs = np.asarray(dofs, dtype=int)
         self._qpos_adr = np.asarray(qpos_adr, dtype=int)
-        self._force_low = np.asarray(model.actuator_forcerange[:, 0], dtype=float)
-        self._force_high = np.asarray(model.actuator_forcerange[:, 1], dtype=float)
-        self._limited = np.asarray(model.actuator_forcelimited, dtype=bool)
+        self._force_low = np.array(model.actuator_forcerange[:, 0], dtype=float)
+        self._force_high = np.array(model.actuator_forcerange[:, 1], dtype=float)
+        self._limited = np.array(model.actuator_forcelimited, dtype=bool)
+
+        # The bandwidth an arm can actually back up, not the same number for
+        # every arm.
+        #
+        # 14 Hz was swept across the zoo and is right for the bodies it was
+        # swept on. It is not a property of the controller, though; it is a
+        # claim about the actuators, and `omega**2 * I * error` is the torque
+        # that claim costs. On the SO-ARM101 -- 0.63 kg, 10 N*m declared -- it
+        # cost 242 N*m, twenty-four times what the arm has. The controller
+        # clipped on 1290 of 1441 steps, tracked 139 degrees behind, and closed
+        # on air 183 mm from a block admission had already confirmed reachable.
+        # Clamping then feeds itself: the clip causes the lag, the lag raises
+        # the demand, and the demand clips harder.
+        #
+        # So the gain is priced against the torque available. Only downward: an
+        # arm that can back 14 Hz keeps it.
+        self.omega = self.config.omega
+        reference = np.zeros(model.nv, dtype=float)
+        probe = mujoco.MjData(model)
+        probe.qpos[:] = measure.neutral_qpos(model)
+        mujoco.mj_forward(model, probe)
+        probe.qvel[:] = 0.0
+        for index, dof in enumerate(self._dofs):
+            if not self._limited[index]:
+                continue
+            ceiling = abs(float(self._force_high[index]))
+            if ceiling <= 0.0:
+                continue
+            probe.qacc[:] = 0.0
+            probe.qacc[int(dof)] = 1.0
+            mujoco.mj_rne(model, probe, 0, reference)
+            inertia = abs(float(reference[int(dof)]))
+            if inertia <= 1e-12:
+                continue
+            affordable = math.sqrt(
+                ceiling / (inertia * TRACKING_REFERENCE_RAD)
+            )
+            self.omega = min(self.omega, max(affordable, MIN_BANDWIDTH_RAD_S))
+        probe.qacc[:] = 0.0
+
         self.last_demand = np.zeros(model.nu, dtype=float)
         """Torque asked for on the last ``compute``, before clamping."""
 
     def compute(self, data: mujoco.MjData, target: ControlTarget) -> np.ndarray:
         model = self._model
-        omega = self.config.omega
+        omega = self.omega
         damping = 2.0 * self.config.damping_ratio * omega
 
         position_error = np.zeros(model.nv, dtype=float)

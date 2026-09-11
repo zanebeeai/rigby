@@ -26,7 +26,7 @@ ZOO_ROOT = Path(__file__).resolve().parents[1] / "assets" / "general" / "zoo"
 # The one gripper that currently completes a certified pick. Kept as a named
 # constant so the day another joins it, this file needs one line changed rather
 # than a rewrite.
-CERTIFIED_GRASPER = "zoo_long_arm"
+CERTIFIED_GRASPER = "zoo_compact_arm"
 
 
 def setup_robot(robot_id: str):
@@ -47,7 +47,7 @@ def setup_robot(robot_id: str):
 
 @pytest.fixture(scope="module")
 def jaw():
-    return setup_robot("zoo_jaw_arm")
+    return setup_robot("zoo_hand_arm")
 
 
 # --------------------------------------------------------------------------
@@ -175,11 +175,13 @@ def test_a_certified_grasp_holds_a_real_object() -> None:
 def test_the_gates_actually_reject_a_failed_grasp() -> None:
     """The suite would be worthless if every attempt certified.
 
-    Four of the five grippers currently fail, and the gates name which claim
-    failed rather than reporting a generic error.
+    Two of the five grippers currently fail, and the gates name which claim
+    failed rather than reporting a generic error. The robot named here is one of
+    them; the compact and jaw arms both used to be and now certify, which is the
+    direction this is supposed to move in.
     """
 
-    robot, effector, frame, scene = setup_robot("zoo_compact_arm")
+    robot, effector, frame, scene = setup_robot("zoo_hand_arm")
     result = attempt_grasp(robot.manifest, scene, effector, frame)
 
     assert not result.certified

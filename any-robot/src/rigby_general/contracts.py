@@ -179,6 +179,15 @@ class SiteSemantic(StrEnum):
 
     TIP = "tip"
     GRASP_CENTER = "grasp_center"
+    GRASP_POINT = "grasp_point"
+    """Where the gripping surfaces actually meet an object.
+
+    Distinct from ``GRASP_CENTER``, which is the origin the workspace frame and
+    every scene placement are derived from. Those were one site, and it sat on
+    the members' own origins -- their joints, the root of the jaws. Driving that
+    to an object leaves the object at the base of the fingers, or under them on a
+    long-fingered hand. Moving it would have moved every reach envelope and
+    every authored world with it, so the two jobs are now two sites."""
     CONTACT = "contact"
     JOINT = "joint"
     BASE = "base"
@@ -275,6 +284,15 @@ class EffectorV1(Contract):
     """Member groups that must oppose one another for a stable grasp."""
 
     max_aperture_m: float | None = Field(default=None, gt=0.0)
+
+    min_aperture_m: float | None = Field(default=None)
+    """How far apart the gripping surfaces still are when the hand is shut.
+
+    An opening has two ends and only the wide one was recorded. Some hands do
+    not close to nothing: the Beetlebot's claws stop 91 mm apart, so nothing
+    narrower than that can be pinched however far the joints travel, and the
+    trials handed it 39 mm blocks eight times over. May be negative, for
+    fingers that interleave past one another."""
 
     closes_toward_upper: bool = True
     """Which end of the grip joints' range closes this gripper.

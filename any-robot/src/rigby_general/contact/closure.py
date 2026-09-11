@@ -34,6 +34,7 @@ import mujoco
 import numpy as np
 
 from ..contracts import EffectorV1, RobotAssetManifestV1
+from ..morphology import measure
 
 
 class GripState(StrEnum):
@@ -41,6 +42,23 @@ class GripState(StrEnum):
     CLOSING = "closing"
     HOLDING = "holding"
     RELEASING = "releasing"
+
+
+TRAVEL_MARGIN = 4.0
+"""How much more than the bare minimum a finger is driven with while it travels.
+
+Enough to cover damping and stiction the model does not carry; not so much that
+the finger arrives as a hammer."""
+
+TRAVEL_ACCELERATION = 2.0
+"""Reference angular acceleration, rad/s^2, for sizing the inertial term."""
+
+UNDECLARED_CEILING_MARGIN = 40.0
+"""Stand-in ceiling, in multiples of the measured travel torque, for a joint
+that declares no actuator limit at all.
+
+Generous -- a grip legitimately needs far more than it takes to move the finger
+-- but finite, which is the whole point."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -82,7 +100,7 @@ class ClosureConfig:
     start means a light object never gets gripped at all, because 0.6 N will not
     move a jaw that needs 5 N to travel."""
 
-    grip_safety_factor: float = 8.0
+    grip_safety_factor: float = 80.0
     """Multiplier on the statically required force.
 
     Static equilibrium is the floor, not the answer. The lift accelerates the
@@ -103,6 +121,17 @@ class ClosureConfig:
 
     min_contact_force_n: float = 0.005
     release_force_fraction: float = 0.25
+    hold_release_s: float = 0.10
+    """How long opposition must stay lost before a grip is treated as gone.
+
+    Contact force through a lift is not smooth: the object shifts a little in
+    the jaws, a normal dips under the detection threshold for a step or two, and
+    without any hysteresis the controller reads that as "no longer holding",
+    goes back to CLOSING and advances the fingers into an object it already has.
+    Measured on the compact arm, a single attempt flipped state six times and
+    spent 20 steps holding; the block was gripped and then worried loose. A grip
+    ends when the object is gone, not when one reading dips."""
+
     hold_duration_s: float = 0.15
     max_penetration_m: float = 0.004
 
@@ -164,10 +193,63 @@ class ClosureController:
         }
         self._groups = effector.opposition_groups
 
+        opposing_count = max(len(effector.opposition_groups), 2)
+        payload_kg = float(manifest.morphology.scale.payload_kg)
+
+        # What it takes to *move the finger*, measured from the mechanism.
+        #
+        # Gravity and the joint's own inertia are facts about this hand and are
+        # already in the model, so they can be asked instead of assumed.
+        probe = mujoco.MjData(model)
+        probe.qpos[:] = measure.neutral_qpos(model)
+        mujoco.mj_forward(model, probe)
+        probe.qvel[:] = 0.0
+        # One joint at a time. Accelerating every degree of freedom at once adds
+        # the coupling between them, which a finger closing on its own never
+        # pays: it inflated the travel force enough to cost three holds and put
+        # the jaw arm through its block.
+        probe.qacc[:] = 0.0
+        gravity = np.zeros(model.nv, dtype=float)
+        mujoco.mj_rne(model, probe, 1, gravity)
+        loaded = np.zeros(model.nv, dtype=float)
+        needed = 0.0
+        for joint in self._joints:
+            dof = int(model.jnt_dofadr[joint])
+            probe.qacc[:] = 0.0
+            probe.qacc[dof] = TRAVEL_ACCELERATION
+            mujoco.mj_rne(model, probe, 1, loaded)
+            inertial = abs(float(loaded[dof] - gravity[dof]))
+            needed = max(needed, abs(float(gravity[dof])) + inertial)
+        probe.qacc[:] = 0.0
+
+        # Where nothing is declared, the ceiling is measured rather than
+        # invented or abandoned. Substituting 1.0 capped these grippers at half
+        # a newton; removing the cap entirely let them squeeze without bound and
+        # the solver blew up -- 14 kN of contact through 52 mm of penetration on
+        # the Beetlebot. What the mechanism can be asked for is a fact about it,
+        # and the same reading that sizes the travel force bounds this too.
+        # ...and consistent with what the same robot is credited with carrying.
+        #
+        # Two fallbacks for undeclared hardware disagreed. Payload comes from
+        # the robot's own mass, so the Beetlebot is credited with 97 g; the grip
+        # ceiling came from the torque needed to swing its claws, which gave it
+        # 0.05 N. A world fitted to the first is impossible for the second: it
+        # was handed a 104 mm, 97 g block, asked for 27 N of squeeze, allowed
+        # 0.016 N, and never touched the object once in 1441 steps. A hand that
+        # can carry a payload can hold it.
+        carried = (
+            self.config.grip_safety_factor
+            * float(payload_kg)
+            * 9.81
+            / max(1.4 * opposing_count, 1e-6)
+        ) / max(self.config.actuator_ceiling_fraction, 1e-6)
+        undeclared = max(
+            needed * UNDECLARED_CEILING_MARGIN, carried, 1e-6
+        )
         forces = [
             float(abs(model.jnt_actfrcrange[joint][1]))
             if model.jnt_actfrclimited[joint]
-            else 1.0
+            else undeclared
             for joint in self._joints
         ]
         self._limits = np.array(forces, dtype=float)
@@ -194,8 +276,17 @@ class ClosureController:
             self.config.min_contact_force_n,
             self.config.contact_detection_fraction * self.squeeze_force_n,
         )
+        # A fraction of the declared limit is a fraction of a number nobody
+        # checked: the SO-ARM101 declares effort="10" on every joint and the
+        # 5-DOF SG90 arm declares 1000, so the "gentle" travel force came out
+        # hundreds of newtons and the jaws batted the block across the cell --
+        # 34 kN of contact and 129 m of carry offset on one attempt. The
+        # declared limit still caps it: an actuator cannot exceed itself.
         self.closing_force_n = float(
-            self.config.closing_force_fraction * weakest
+            min(
+                max(needed * TRAVEL_MARGIN, self.config.min_contact_force_n),
+                self.config.closing_force_fraction * weakest,
+            )
         )
 
         # Which end of each joint's range closes the gripper -- measured during
@@ -211,6 +302,7 @@ class ClosureController:
 
         self._closure = 0.0
         self._held_for = 0.0
+        self._lost_for = 0.0
         self.state = GripState.OPEN
         # Where the fingers have been *told* to be. Advances while closing,
         # freezes the moment opposition is found, and is what the tracking loop
@@ -297,7 +389,14 @@ class ClosureController:
             self.state = GripState.RELEASING
             self._held_for = 0.0
             self._commanded = np.array(self._open_end, dtype=float)
-        elif opposition:
+        elif opposition or (
+            self.state is GripState.HOLDING
+            and self._lost_for < self.config.hold_release_s
+        ):
+            if opposition:
+                self._lost_for = 0.0
+            else:
+                self._lost_for += dt
             self.state = GripState.HOLDING
             self._held_for += dt
             # Frozen: the object is where the fingers stopped, and commanding
@@ -305,6 +404,7 @@ class ClosureController:
         else:
             self.state = GripState.CLOSING
             self._held_for = 0.0
+            self._lost_for = 0.0
             span = self._closed_end - self._open_end
             step = self.config.closure_rate_per_s * dt * span
             self._commanded = self._commanded + step
@@ -312,7 +412,6 @@ class ClosureController:
             self._commanded = np.where(
                 beyond > 0.0, self._closed_end, self._commanded
             )
-
         # Reported rather than commanded: with force control the fingers sit
         # wherever the object stopped them, and that is the measurement.
         span = self._closed_end - self._open_end

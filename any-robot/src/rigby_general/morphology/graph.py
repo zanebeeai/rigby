@@ -177,12 +177,53 @@ class KinematicGraph:
         clusters: list[EffectorCluster] = []
         for attach, leaves in grouped.items():
             members = tuple(sorted(leaves, key=lambda i: self.body_names[i]))
+            # A gripper does not have to close against another leaf. Very common
+            # designs drive one jaw against a fixed jaw carried on the palm --
+            # the SO-ARM101's `gripper_link` holds its static jaw and its only
+            # leaves are the moving jaw and a frame marker, so the closure test
+            # saw one surface, abstained, and reported a real jaw gripper as a
+            # rigid tool tip. Admitting the attach body as a member lets the
+            # opposition be measured where it actually is.
+            #
+            # Only when the leaves cannot supply two surfaces on their own, so a
+            # cluster that already closes is untouched, and only when the attach
+            # body has a surface to oppose with. Nothing is asserted by adding
+            # it: closure still has to be *measured*, and a palm that does not
+            # converge on anything fails the same travel and monotonicity tests
+            # every other candidate faces.
             interior = tuple(
                 joint
                 for body in self.subtree(attach)
                 if body != attach
                 for joint in self.joints_of_body(body)
             )
+            solid = [body for body in members if self.collidable_geoms_of_body(body)]
+            # ...and only where a bounded joint actually drives one of *these*
+            # members against the palm. `interior` spans the whole subtree below
+            # the attachment, which on a wrist that carries both a camera and a
+            # hand hands the camera's cluster the hand's grip joints: the long
+            # arm's wrist camera is a lone rigid leaf, and admitting its mount on
+            # the strength of joints that do not move it turned a measured
+            # sensor into a tool tip, taking the SENSOR capability off the only
+            # robot in the fleet that has one. Walking leaf-to-attachment asks
+            # the narrower question -- can this member be driven at all.
+            grippable = False
+            for leaf in members:
+                body = leaf
+                while body not in (0, attach):
+                    if any(
+                        bool(self.model.jnt_limited[joint])
+                        for joint in self.joints_of_body(body)
+                    ):
+                        grippable = True
+                        break
+                    body = self.parent(body)
+                if grippable:
+                    break
+            if len(solid) < 2 and grippable and self.collidable_geoms_of_body(attach):
+                members = tuple(
+                    sorted((*members, attach), key=lambda i: self.body_names[i])
+                )
             clusters.append(
                 EffectorCluster(
                     attach_body=attach,
