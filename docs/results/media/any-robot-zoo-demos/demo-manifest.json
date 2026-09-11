@@ -1,0 +1,275 @@
+{
+  "clips": [
+    {
+      "certified_primitives_used": 2,
+      "dof": 6,
+      "duration_s": 29.8,
+      "effectors": [
+        "parallel_jaw"
+      ],
+      "frames": 90,
+      "gif": "zoo_compact_arm-reach-out-as-far-as-you-can-and-then-come-ba.gif",
+      "prompt": "reach out as far as you can and then come back",
+      "reach_radius_m": 0.385,
+      "render_seconds": 3.6,
+      "robot_id": "zoo_compact_arm",
+      "role_normalized_hash": "4ce0d7c789ad63c07b8657fd9359ac0ed26a39f2bbf04010a8008f5b7f2e5678",
+      "schema_keys": [
+        "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+        "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+      ],
+      "tracking_error_m": 0.006391
+    },
+    {
+      "certified_primitives_used": 1,
+      "dof": 6,
+      "duration_s": 11.57,
+      "effectors": [
+        "parallel_jaw"
+      ],
+      "frames": 90,
+      "gif": "zoo_compact_arm-reach-out-quickly,-just-a-little.gif",
+      "prompt": "reach out quickly, just a little",
+      "reach_radius_m": 0.385,
+      "render_seconds": 2.2,
+      "robot_id": "zoo_compact_arm",
+      "role_normalized_hash": "76c55a66bec9c90cfeed07a87633a6c27d14626bfca46e8c6e312a67576b21c1",
+      "schema_keys": [
+        "path:to.point.neutral.straight|primary_effector->base|proximal.point|absolute"
+      ],
+      "tracking_error_m": 0.008704
+    },
+    {
+      "certified_primitives_used": 2,
+      "dof": 14,
+      "duration_s": 40.03,
+      "effectors": [
+        "parallel_jaw",
+        "parallel_jaw"
+      ],
+      "frames": 90,
+      "gif": "zoo_dual_arm-reach-out-as-far-as-you-can-and-then-come-ba.gif",
+      "prompt": "reach out as far as you can and then come back",
+      "reach_radius_m": 1.326253,
+      "render_seconds": 3.7,
+      "robot_id": "zoo_dual_arm",
+      "role_normalized_hash": "4ce0d7c789ad63c07b8657fd9359ac0ed26a39f2bbf04010a8008f5b7f2e5678",
+      "schema_keys": [
+        "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+        "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+      ],
+      "tracking_error_m": 0.012952
+    },
+    {
+      "certified_primitives_used": 1,
+      "dof": 14,
+      "duration_s": 26.5,
+      "effectors": [
+        "parallel_jaw",
+        "parallel_jaw"
+      ],
+      "frames": 90,
+      "gif": "zoo_dual_arm-lower-the-tool-down-toward-the-table.gif",
+      "prompt": "lower the tool down toward the table",
+      "reach_radius_m": 1.326253,
+      "render_seconds": 3.0,
+      "robot_id": "zoo_dual_arm",
+      "role_normalized_hash": "550ec7246e972178dd2bf17e6644cbe9b24ec9a69f97b2369bf6f34351b53f18",
+      "schema_keys": [
+        "path:to.surface.neutral.straight|primary_effector->world_ground|medial.point|absolute"
+      ],
+      "tracking_error_m": 0.009275
+    },
+    {
+      "certified_primitives_used": 2,
+      "dof": 10,
+      "duration_s": 49.61,
+      "effectors": [
+        "multifinger"
+      ],
+      "frames": 90,
+      "gif": "zoo_hand_arm-reach-out-as-far-as-you-can-and-then-come-ba.gif",
+      "prompt": "reach out as far as you can and then come back",
+      "reach_radius_m": 1.37002,
+      "render_seconds": 4.4,
+      "robot_id": "zoo_hand_arm",
+      "role_normalized_hash": "4ce0d7c789ad63c07b8657fd9359ac0ed26a39f2bbf04010a8008f5b7f2e5678",
+      "schema_keys": [
+        "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+        "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+      ],
+      "tracking_error_m": 0.013999
+    },
+    {
+      "certified_primitives_used": 1,
+      "dof": 10,
+      "duration_s": 33.08,
+      "effectors": [
+        "multifinger"
+      ],
+      "frames": 90,
+      "gif": "zoo_hand_arm-trace-a-big-circle.gif",
+      "prompt": "trace a big circle",
+      "reach_radius_m": 1.37002,
+      "render_seconds": 3.6,
+      "robot_id": "zoo_hand_arm",
+      "role_normalized_hash": "d3efbbe29159ef935d5318feadb3be0ecf37e08ef3114671930ba50ec2b30d0d",
+      "schema_keys": [
+        "path:via.axis.neutral.circular|primary_effector->gravity_axis|medial.point|absolute"
+      ],
+      "tracking_error_m": 0.019283
+    },
+    {
+      "certified_primitives_used": 2,
+      "dof": 8,
+      "duration_s": 47.6,
+      "effectors": [
+        "parallel_jaw"
+      ],
+      "frames": 90,
+      "gif": "zoo_jaw_arm-reach-out-as-far-as-you-can-and-then-come-ba.gif",
+      "prompt": "reach out as far as you can and then come back",
+      "reach_radius_m": 1.32,
+      "render_seconds": 4.1,
+      "robot_id": "zoo_jaw_arm",
+      "role_normalized_hash": "4ce0d7c789ad63c07b8657fd9359ac0ed26a39f2bbf04010a8008f5b7f2e5678",
+      "schema_keys": [
+        "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+        "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+      ],
+      "tracking_error_m": 0.016125
+    },
+    {
+      "certified_primitives_used": 1,
+      "dof": 8,
+      "duration_s": 54.0,
+      "effectors": [
+        "parallel_jaw"
+      ],
+      "frames": 90,
+      "gif": "zoo_jaw_arm-wave-three-times.gif",
+      "prompt": "wave three times",
+      "reach_radius_m": 1.32,
+      "render_seconds": 4.3,
+      "robot_id": "zoo_jaw_arm",
+      "role_normalized_hash": "6316951473c4e8a5f8a8f865cedd269c57ce6d9d09bdc554de60cf2deee3e0c2",
+      "schema_keys": [
+        "path:via.point.neutral.oscillating|primary_effector->base|medial.point|absolute"
+      ],
+      "tracking_error_m": 0.018388
+    },
+    {
+      "certified_primitives_used": 2,
+      "dof": 8,
+      "duration_s": 67.65,
+      "effectors": [
+        "sensor",
+        "parallel_jaw"
+      ],
+      "frames": 90,
+      "gif": "zoo_long_arm-reach-out-as-far-as-you-can-and-then-come-ba.gif",
+      "prompt": "reach out as far as you can and then come back",
+      "reach_radius_m": 2.05,
+      "render_seconds": 5.0,
+      "robot_id": "zoo_long_arm",
+      "role_normalized_hash": "4ce0d7c789ad63c07b8657fd9359ac0ed26a39f2bbf04010a8008f5b7f2e5678",
+      "schema_keys": [
+        "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+        "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+      ],
+      "tracking_error_m": 0.016507
+    },
+    {
+      "certified_primitives_used": 2,
+      "dof": 8,
+      "duration_s": 69.13,
+      "effectors": [
+        "sensor",
+        "parallel_jaw"
+      ],
+      "frames": 90,
+      "gif": "zoo_long_arm-sweep-across-the-workspace,-then-hold-still.gif",
+      "prompt": "sweep across the workspace, then hold still",
+      "reach_radius_m": 2.05,
+      "render_seconds": 5.2,
+      "robot_id": "zoo_long_arm",
+      "role_normalized_hash": "5630eb1e3d251b5d3b229e8876ed090a91f86077ed41e46f8ed1d4a0630e76b3",
+      "schema_keys": [
+        "path:via.line.neutral.straight|primary_effector->base|medial.point|absolute",
+        "stative:hold|primary_effector->base|medial.point|absolute"
+      ],
+      "tracking_error_m": 0.019312
+    },
+    {
+      "certified_primitives_used": 2,
+      "dof": 5,
+      "duration_s": 52.48,
+      "effectors": [
+        "tool_tip"
+      ],
+      "frames": 90,
+      "gif": "zoo_tool_arm-reach-out-as-far-as-you-can-and-then-come-ba.gif",
+      "prompt": "reach out as far as you can and then come back",
+      "reach_radius_m": 1.18,
+      "render_seconds": 4.1,
+      "robot_id": "zoo_tool_arm",
+      "role_normalized_hash": "4ce0d7c789ad63c07b8657fd9359ac0ed26a39f2bbf04010a8008f5b7f2e5678",
+      "schema_keys": [
+        "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+        "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+      ],
+      "tracking_error_m": 0.012174
+    },
+    {
+      "certified_primitives_used": 1,
+      "dof": 5,
+      "duration_s": 40.84,
+      "effectors": [
+        "tool_tip"
+      ],
+      "frames": 90,
+      "gif": "zoo_tool_arm-sweep-slowly-across-in-front-of-you.gif",
+      "prompt": "sweep slowly across in front of you",
+      "reach_radius_m": 1.18,
+      "render_seconds": 3.5,
+      "robot_id": "zoo_tool_arm",
+      "role_normalized_hash": "3f8503f4e0fe358be2967f4133ce738dd5c0cff6adbbe2b11d73218917d016b1",
+      "schema_keys": [
+        "path:via.line.neutral.straight|primary_effector->base|medial.point|absolute"
+      ],
+      "tracking_error_m": 0.01597
+    }
+  ],
+  "schema_invariance": {
+    "lower the tool down toward the table": {
+      "distinct_readings": 1,
+      "robots": 1
+    },
+    "reach out as far as you can and then come back": {
+      "distinct_readings": 1,
+      "robots": 1
+    },
+    "reach out quickly, just a little": {
+      "distinct_readings": 1,
+      "robots": 1
+    },
+    "sweep across the workspace, then hold still": {
+      "distinct_readings": 1,
+      "robots": 1
+    },
+    "sweep slowly across in front of you": {
+      "distinct_readings": 1,
+      "robots": 1
+    },
+    "trace a big circle": {
+      "distinct_readings": 1,
+      "robots": 1
+    },
+    "wave three times": {
+      "distinct_readings": 1,
+      "robots": 1
+    }
+  },
+  "schema_version": "1.0",
+  "shared_prompt": "reach out as far as you can and then come back"
+}
