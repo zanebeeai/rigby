@@ -106,6 +106,7 @@ app.innerHTML = `
           <span aria-hidden="true">◫</span> Results
         </button>
         <button class="button button-primary" id="export" disabled>Export GLB</button>
+        <button class="button button-secondary" id="save-demo" disabled title="Register this result in demos/ with who asked, the commit and the branch">Save as demo</button>
       </div>
     </header>
 
@@ -235,6 +236,7 @@ const ui = {
   promptCount: element<HTMLElement>("#prompt-count"),
   generate: element<HTMLButtonElement>("#generate"),
   export: element<HTMLButtonElement>("#export"),
+  saveDemo: element<HTMLButtonElement>("#save-demo"),
   handedness: element<HTMLSelectElement>("#handedness"),
   controls: element<HTMLElement>("#parameter-controls"),
   runIcon: element<HTMLElement>("#run-icon"),
@@ -929,6 +931,7 @@ function renderClip(): void {
   ui.timeline.max = String(duration);
   ui.totalTime.textContent = formatTime(duration);
   ui.export.disabled = !clip?.id || clip.id === "local-demo" || clip.status === "failed";
+  ui.saveDemo.disabled = !clip?.id || clip.id === "local-demo";
   currentTime = Math.min(currentTime, duration);
   renderMetrics();
   updateFrame();
@@ -1241,6 +1244,18 @@ ui.export.addEventListener("click", async () => {
     showToast(errorMessage(error), "error");
   } finally {
     ui.export.disabled = Boolean(clip.failure) || !clip.id || clip.id === "local-demo";
+  }
+});
+
+ui.saveDemo.addEventListener("click", async () => {
+  if (!clip?.id || clip.id === "local-demo") return;
+  ui.saveDemo.disabled = true;
+  try {
+    const saved = await api.registerDemo(clip.id);
+    showToast(`Saved ${saved.registry} as ${saved.who} on ${saved.source.branch}. Commit it with the code.`);
+  } catch (error) {
+    showToast(errorMessage(error), "error");
+    ui.saveDemo.disabled = false;
   }
 });
 

@@ -12,6 +12,8 @@ the values themselves.
 
 from __future__ import annotations
 
+import json
+
 import re
 
 import os
@@ -582,6 +584,79 @@ def create_app(settings: GeneralSettings | None = None) -> FastAPI:
         if path is None:
             raise HTTPException(status_code=404, detail="this result has no clip")
         return FileResponse(path, media_type="image/gif")
+
+    @app.post("/api/v3/results/{trace_id}/demo", status_code=201)
+    def register_demo(
+        trace_id: str, payload: dict[str, Any] | None = Body(default=None)
+    ) -> dict[str, Any]:
+        """Put this result in the shared demo registry (`demos/` at the repo root).
+
+        The entry records who asked (the machine's git identity, or ``who`` in
+        the body), the commit and branch the server is running from, the
+        prompt, the robot and the outcome, and copies the clip in beside it.
+        Registering is the cheap half; committing the entry is the person's.
+        """
+
+        from rigby_core.demos import DemoSpec, find_repo_root, register, write_index
+
+        try:
+            trace = traces.load(trace_id)
+        except (KeyError, ValueError) as error:
+            raise HTTPException(status_code=404, detail=f"unknown result: {trace_id}") from error
+        clip = traces.clip_path(trace_id)
+        if clip is None:
+            raise HTTPException(status_code=409, detail="this result has no clip to register")
+        try:
+            root = find_repo_root(resolved.project_root)
+        except FileNotFoundError as error:
+            raise HTTPException(status_code=503, detail=str(error)) from error
+        body = payload or {}
+        prompt = str(trace.get("prompt", ""))
+        robot_id = str(trace.get("robot_id", ""))
+        failure = trace.get("failure") or {}
+        if trace.get("accepted"):
+            grasp = trace.get("grasp") or {}
+            summary = "accepted"
+            if grasp.get("certified"):
+                summary += (
+                    f", lifted {float(grasp['lift_height_m']) * 100:.1f} cm,"
+                    f" penetration {float(grasp['penetration_m']) * 1000:.2f} mm"
+                )
+            outcome = {"state": "ok", "text": summary}
+        else:
+            text = f"{failure.get('code', 'refused')}: {failure.get('detail', '')}"
+            outcome = {"state": "failed", "text": text.strip(": ")}
+        how = body.get("how") or (
+            "uv run rigby-general; POST /api/v3/runs "
+            + json.dumps({"prompt": prompt, "robot_id": robot_id})
+        )
+        spec = DemoSpec(
+            title=str(body.get("title") or f"{robot_id}: {prompt}"),
+            prompt=prompt,
+            tier="any-robot",
+            embodiment=robot_id,
+            kind="gif",
+            how=str(how),
+            files=[clip],
+            who=body.get("who") or None,
+            produced_at=trace.get("ran_at") or trace.get("created_at"),
+            outcome=outcome,
+            notes=str(body.get("notes", "")),
+            tags=["any-robot", str(trace.get("kind", "prompt")), f"trace:{trace_id}"],
+        )
+        try:
+            entry_path = register(spec, root)
+        except ValueError as error:
+            raise HTTPException(status_code=422, detail=str(error)) from error
+        write_index(root)
+        entry = json.loads(entry_path.read_text(encoding="utf-8"))
+        return {
+            "id": entry["id"],
+            "registry": entry_path.relative_to(root).as_posix(),
+            "who": entry["who"],
+            "source": entry["source"],
+            "index": "demos/index.html",
+        }
 
     @app.get("/", include_in_schema=False)
     def studio() -> FileResponse:

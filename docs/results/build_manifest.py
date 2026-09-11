@@ -645,8 +645,8 @@ def main() -> int:
     parser.add_argument("--sets", nargs="*", help="rebuild only these set ids; the rest are reused from manifest.json")
     args = parser.parse_args()
     manifest = build(copy=not args.no_copy, only=set(args.sets) if args.sets else None)
-    (HERE / "manifest.json").write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    (HERE / "RESULTS-MANIFEST.md").write_text(render_md(manifest) + "\n", encoding="utf-8")
+    (HERE / "manifest.json").write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
+    (HERE / "RESULTS-MANIFEST.md").write_text(render_md(manifest) + "\n", encoding="utf-8", newline="\n")
     for e in manifest["sets"]:
         state = "absent" if not e.get("present") else (f"{e['stats']['files']} files" if "stats" in e else f"{e['facts']['files']} files")
         print(f"{e['id']:36s} {state}", file=sys.stderr)

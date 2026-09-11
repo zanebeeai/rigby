@@ -43,7 +43,7 @@ def entry(*, title, prompt, tier, embodiment, kind, who, produced, commit, branc
         "source": {"commit": commit, "branch": branch, "dirty": False, "how": how},
         "outcome": outcome, "notes": notes, "media": media, "payload": None, "tags": list(tags),
     }
-    out.write_text(json.dumps(e, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    out.write_text(json.dumps(e, indent=2, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
     return True
 
 

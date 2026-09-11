@@ -355,8 +355,10 @@ function mountRunPreview(body) {
   }
   // Reference the run's own scene rather than the robot's bare one.
   host.innerHTML = playerMarkup(
-    body.robot_id, '', 'env|' + runSceneRef(body.trace_id));
+    body.robot_id, '', 'env|' + runSceneRef(body.trace_id)) + demoBarMarkup(body.trace_id);
   mountPending();
+  const bar = host.querySelector('[data-save-demo]');
+  if (bar) bar.addEventListener('click', () => void saveDemo(body.trace_id, bar));
   const node = host.querySelector('[data-viewer]');
   if (node && node._handle) {
     node._handle.setTrack(body.track);
@@ -539,5 +541,33 @@ function wireHome() {
   const field = document.getElementById('home-prompt');
   if (field) {
     field.onkeydown = (e) => { if (e.key === 'Enter') submitPrompt(); };
+  }
+}
+
+
+/* Every run worth keeping is one click from the shared registry. The server
+   writes demos/registry/<id>.json with who asked, the commit, the branch and
+   the command, copies the clip beside it and regenerates demos/index.html;
+   committing the three is the person's own act, on their own branch. */
+function demoBarMarkup(traceId) {
+  return `<div class="demo-bar">
+    <button type="button" class="demo-save" data-save-demo="${traceId}">Save as demo</button>
+    <span class="demo-status" data-demo-status></span>
+  </div>`;
+}
+
+async function saveDemo(traceId, button) {
+  const status = button.parentElement.querySelector('[data-demo-status]');
+  button.disabled = true;
+  status.textContent = 'registering\u2026';
+  try {
+    const response = await fetch(`${API_BASE}/api/v3/results/${encodeURIComponent(traceId)}/demo`, {
+      method: 'POST', mode: 'cors', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+    const body = await response.json();
+    if (!response.ok) throw new Error(body.detail || response.statusText);
+    status.textContent = `saved ${body.registry} as ${body.who} on ${body.source.branch}; commit it with the code`;
+  } catch (error) {
+    status.textContent = `not saved: ${error.message}`;
+    button.disabled = false;
   }
 }

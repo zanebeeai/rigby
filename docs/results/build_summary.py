@@ -434,7 +434,7 @@ def main() -> int:
     a = ap.parse_args()
     manifest = json.loads((HERE / "manifest.json").read_text(encoding="utf-8"))
     a.out.parent.mkdir(parents=True, exist_ok=True)
-    a.out.write_text(render(manifest, a.media_prefix), encoding="utf-8")
+    a.out.write_text(render(manifest, a.media_prefix), encoding="utf-8", newline="\n")
     print(a.out)
     return 0
 
