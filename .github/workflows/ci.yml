@@ -227,6 +227,24 @@ jobs:
       - run: uv sync --extra dev
       - run: uv run pytest
 
+  # demos/ is the shared record of what the project can do, one JSON file per
+  # demo plus its media, and a static viewer generated from them. Three people
+  # add to it from three branches, so the only thing that keeps it coherent is
+  # this job: every entry carries the fields the schema names, every media file
+  # exists and still matches the digest recorded for it, nothing under media/
+  # is orphaned, and the committed index.html is the one the registry renders.
+  # Plain Python, no dependency, seconds to run.
+  demos:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python demos/tools/demo_tools.py validate
+      - run: python demos/tools/demo_tools.py build --check
+
   # any-robot/ had no CI at all before the split: every job in this workflow set
   # `working-directory: humanoid`, so 12.6k lines and 128 tracked files were
   # verified by nothing. Ubuntu only for now -- unlike humanoid this tier has no

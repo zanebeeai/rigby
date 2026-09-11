@@ -1,0 +1,35 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-08-27-wave-three-times-51daed39",
+  "title": "zoo_jaw_arm: wave three times",
+  "prompt": "wave three times",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "gif",
+  "who": "zanebeeai",
+  "produced_at": "2026-08-27T00:00:00Z",
+  "source": {
+    "commit": "unrecorded",
+    "branch": "feat/general-package (rigby-poc-general)",
+    "dirty": false,
+    "how": "uv run python scripts/build_demos.py  # any-robot, pre-split layout; demo-manifest.json records no commit"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "1 certified primitive(s), tracking error 18.4 mm, 8 DOF"
+  },
+  "notes": "role-normalized hash 6316951473c4: the same words read the same way on every body.",
+  "media": [
+    {
+      "path": "docs/results/media/any-robot-zoo-demos/zoo_jaw_arm-wave-three-times.gif",
+      "bytes": 407011,
+      "sha256": "0ab37cf17993623a5fdc184ebae693977062290c4f1ac913948df389c487b2b9",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "zoo",
+    "ledger-import"
+  ]
+}

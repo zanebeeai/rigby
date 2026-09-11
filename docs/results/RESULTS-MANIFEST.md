@@ -1,6 +1,6 @@
 # Results manifest
 
-Generated 2026-09-10 from commit `f4c7cb2` by `docs/results/build_manifest.py`. One section per place results were ever written, in the order the work happened. Locations marked *untracked* are the residue the 27 Aug tier split left in the checkout; they exist on the machine that ran the experiments and nowhere else, which is the reason this file exists. Media copied into `docs/results/media/` carries its SHA-256 so a copy can be checked against its source.
+Generated 2026-09-10 from commit `0a3c6e2` by `docs/results/build_manifest.py`. One section per place results were ever written, in the order the work happened. Locations marked *untracked* are the residue the 27 Aug tier split left in the checkout; they exist on the machine that ran the experiments and nowhere else, which is the reason this file exists. Media copied into `docs/results/media/` carries its SHA-256 so a copy can be checked against its source.
 
 | set | location | tracked | period | files | size | media |
 |---|---|---|---|---|---|---|

@@ -1,0 +1,35 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-08-27-trace-a-big-circle-b1e38f95",
+  "title": "zoo_hand_arm: trace a big circle",
+  "prompt": "trace a big circle",
+  "tier": "any-robot",
+  "embodiment": "zoo_hand_arm",
+  "kind": "gif",
+  "who": "zanebeeai",
+  "produced_at": "2026-08-27T00:00:00Z",
+  "source": {
+    "commit": "unrecorded",
+    "branch": "feat/general-package (rigby-poc-general)",
+    "dirty": false,
+    "how": "uv run python scripts/build_demos.py  # any-robot, pre-split layout; demo-manifest.json records no commit"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "1 certified primitive(s), tracking error 19.3 mm, 10 DOF"
+  },
+  "notes": "role-normalized hash d3efbbe29159: the same words read the same way on every body.",
+  "media": [
+    {
+      "path": "docs/results/media/any-robot-zoo-demos/zoo_hand_arm-trace-a-big-circle.gif",
+      "bytes": 477178,
+      "sha256": "5a289467d92bb2f329e96225aa9eb4f797f681392a3ca9e1d8bc7c72a292770d",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "zoo",
+    "ledger-import"
+  ]
+}

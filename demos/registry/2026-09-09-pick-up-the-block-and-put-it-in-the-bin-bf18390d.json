@@ -1,0 +1,35 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-09-pick-up-the-block-and-put-it-in-the-bin-bf18390d",
+  "title": "A VLM names the numbers, a greedy search chases them",
+  "prompt": "pick up the block and put it in the bin",
+  "tier": "humanoid",
+  "embodiment": "gripper",
+  "kind": "video",
+  "who": "AngeloWhey",
+  "produced_at": "2026-09-09T00:00:00Z",
+  "source": {
+    "commit": "f00861d",
+    "branch": "grasp/auto-lift",
+    "dirty": false,
+    "how": "npm run dev --prefix frontend; open gripper.html?run=<id> and screen-record; recorder settings not committed"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "model-directed run recorded as the model saw it"
+  },
+  "notes": "Torque-driven three-segment gripper; runs in milestones/runs/*.json on the branch.",
+  "media": [
+    {
+      "path": "docs/results/media/gripper-milestones/videos--gripper-vlm-directed.webm",
+      "bytes": 2661444,
+      "sha256": "9ac71f5d74debd7f09fe871e0ad1b2ede7202d09f19dbf78775677941a82cdfc",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "gripper",
+    "ledger-import"
+  ]
+}

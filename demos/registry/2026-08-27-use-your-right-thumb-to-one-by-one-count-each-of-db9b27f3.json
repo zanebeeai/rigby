@@ -1,0 +1,35 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-08-27-use-your-right-thumb-to-one-by-one-count-each-of-db9b27f3",
+  "title": "use your right thumb to one by one count each of the fingers…",
+  "prompt": "use your right thumb to one by one count each of the fingers on your right hand (while looking at it)",
+  "tier": "humanoid",
+  "embodiment": "mesh2motion-human-vrm1",
+  "kind": "gif",
+  "who": "zanebeeai",
+  "produced_at": "2026-08-27T00:00:00Z",
+  "source": {
+    "commit": "d0dbc86",
+    "branch": "main",
+    "dirty": false,
+    "how": "cd humanoid && uv run python -m evals.render_demo_gif 000621-use-your-right-thumb-to-one-by-one-count-each-of docs/media/finger-count.gif"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "composite, 4.3 s at 30 fps, offline/rule-planner-v1 seed 0"
+  },
+  "notes": "result id 000621-use-your-right-thumb-to-one-by-one-count-each-of in the humanoid archive (rigby-poc/results).",
+  "media": [
+    {
+      "path": "humanoid/docs/media/finger-count.gif",
+      "bytes": 424935,
+      "sha256": "fcd9af30cdb6a19186890ef4fd74804f3d12a5a2e221ab6d1af5b14839159422",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "readme",
+    "ledger-import"
+  ]
+}

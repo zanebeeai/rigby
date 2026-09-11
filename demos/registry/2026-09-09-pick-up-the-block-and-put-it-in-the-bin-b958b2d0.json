@@ -1,0 +1,35 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-09-pick-up-the-block-and-put-it-in-the-bin-b958b2d0",
+  "title": "The same task with one wrist camera as the only percept",
+  "prompt": "pick up the block and put it in the bin",
+  "tier": "humanoid",
+  "embodiment": "gripper",
+  "kind": "video",
+  "who": "AngeloWhey",
+  "produced_at": "2026-09-09T00:00:00Z",
+  "source": {
+    "commit": "f00861d",
+    "branch": "grasp/auto-lift",
+    "dirty": false,
+    "how": "npm run dev --prefix frontend; open gripper.html?run=<id> and screen-record; recorder settings not committed"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "placed; 9 of 12 placements and sizes across the sweep; second look brings 38 mm error to 7 mm"
+  },
+  "notes": "Torque-driven three-segment gripper; runs in milestones/runs/*.json on the branch.",
+  "media": [
+    {
+      "path": "docs/results/media/gripper-milestones/videos--02-lift-and-place-camera-only.webm",
+      "bytes": 1708626,
+      "sha256": "eb6354d98eab6f0fe4ef66665b3a23f2480b8fdbd4e324282fb0fe4a1441e3fd",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "gripper",
+    "ledger-import"
+  ]
+}
