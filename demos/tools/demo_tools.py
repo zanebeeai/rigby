@@ -206,7 +206,7 @@ def cmd_build(a: argparse.Namespace) -> int:
             return 1
         print("demos/index.html is current", file=sys.stderr)
         return 0
-    PAGE.write_text(page, encoding="utf-8")
+    PAGE.write_text(page, encoding="utf-8", newline="\n")
     print(PAGE.relative_to(ROOT).as_posix())
     return 0
 

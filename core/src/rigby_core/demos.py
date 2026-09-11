@@ -184,7 +184,7 @@ def register(spec: DemoSpec, root: Path | None = None) -> Path:
         "tags": list(spec.tags),
     }
     out = registry / f"{did}.json"
-    out.write_text(json.dumps(entry, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    out.write_text(json.dumps(entry, indent=2, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
     return out
 
 
@@ -336,5 +336,5 @@ def render_index(root: Path) -> str:
 def write_index(root: Path) -> Path:
     """Regenerate demos/index.html; the apps call this after registering."""
     out = root / "demos" / "index.html"
-    out.write_text(render_index(root), encoding="utf-8")
+    out.write_text(render_index(root), encoding="utf-8", newline="\n")
     return out
