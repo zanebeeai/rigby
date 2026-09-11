@@ -14,6 +14,11 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
+    inputs:
+      cross_platform:
+        description: "Also run the humanoid suite on macOS and Windows (10x and 2x the minutes)"
+        type: boolean
+        default: false
 
 # A PR run supersedes its own earlier runs, so a force-push cancels the stale one.
 # A push to main must NEVER be cancelled: with six lanes merging every few minutes
@@ -29,10 +34,18 @@ permissions:
   contents: read
 
 jobs:
-  # 09 §6.2, resolved 2026-08-24: Windows runs on main and on any PR touching
-  # src/, evals/, config/, tests/, frontend/ or the workflow itself. A
-  # documentation-only PR skips it rather than paying roughly double for nothing.
-  # macOS always runs -- it is the primary development platform.
+  # Linux by default, everywhere. This workflow used to run the humanoid suite
+  # on macOS for every push and PR and on Windows for every code change, and
+  # the nightly ran coverage on macOS too. GitHub bills macOS minutes at 10x
+  # and Windows at 2x, so a private repository with three thousand included
+  # Linux minutes a month ran out on 7 September and every job after that was
+  # refused with a billing notice; for four days nothing was verified at all.
+  #
+  # A Linux run of the whole suite costs about twenty minutes at 1x. The
+  # cross-platform contract still matters (a hundred Windows failures once hid
+  # behind CRLF checkouts), so macOS and Windows still run: once a week from
+  # the nightly workflow, and whenever someone asks for them here with the
+  # `cross_platform` input. Docs-only pull requests skip the suite entirely.
   select-platforms:
     runs-on: ubuntu-latest
     outputs:
@@ -45,9 +58,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ github.event.inputs.cross_platform }}" = "true" ]; then
+            echo 'os=["ubuntu-latest","macos-latest","windows-latest"]' >> "$GITHUB_OUTPUT"
+            echo "asked for the cross-platform matrix"
+            exit 0
+          fi
           if [ "${{ github.event_name }}" != "pull_request" ]; then
-            echo 'os=["macos-latest","windows-latest"]' >> "$GITHUB_OUTPUT"
-            echo "not a pull request -- running the full matrix"
+            echo 'os=["ubuntu-latest"]' >> "$GITHUB_OUTPUT"
+            echo "push or dispatch -- Linux"
             exit 0
           fi
           changed=$(git diff --name-only \
@@ -55,15 +73,16 @@ jobs:
             '${{ github.event.pull_request.head.sha }}')
           printf 'changed files:\n%s\n' "$changed"
           if printf '%s\n' "$changed" | grep -qE '^(humanoid/(src|evals|config|tests|frontend)/|core/|any-robot/(src|tests)/|humanoid/(pyproject\.toml|acceptance_criteria\.yaml)$|uv\.lock$|pyproject\.toml$|\.github/)'; then
-            echo 'os=["macos-latest","windows-latest"]' >> "$GITHUB_OUTPUT"
-            echo "code changed -- Windows included"
+            echo 'os=["ubuntu-latest"]' >> "$GITHUB_OUTPUT"
+            echo "code changed -- Linux"
           else
-            echo 'os=["macos-latest"]' >> "$GITHUB_OUTPUT"
-            echo "docs-only change -- Windows skipped (09 §6.2)"
+            echo 'os=[]' >> "$GITHUB_OUTPUT"
+            echo "docs-only change -- the humanoid suite is skipped"
           fi
 
   python:
     needs: select-platforms
+    if: needs.select-platforms.outputs.os != '[]'
     strategy:
       fail-fast: false
       matrix:
