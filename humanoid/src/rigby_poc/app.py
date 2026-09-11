@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import Body, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -103,6 +103,81 @@ def result_animation(result_id: str) -> FileResponse:
     if path is None:
         raise HTTPException(status_code=404, detail="result not found")
     return FileResponse(path, media_type="model/gltf-binary", filename="animation.glb")
+
+
+def _demo_repo_root() -> Path:
+    """The checkout whose demos/ registry a saved result goes into.
+
+    A function rather than a constant so a test can point it at a scratch
+    checkout instead of writing into the real registry.
+    """
+
+    from rigby_core.demos import find_repo_root
+
+    return find_repo_root(PROJECT_ROOT)
+
+
+@app.post("/api/v1/results/{result_id}/demo", status_code=201)
+def register_result_demo(result_id: str, payload: dict[str, object] | None = Body(default=None)) -> dict[str, object]:
+    """Put a compiled result in the shared demo registry (`demos/` at the repo root).
+
+    The entry carries the clip itself as a `humanoid-bones-v1` payload, so the
+    registry viewer can replay it once its bone player exists, plus who asked
+    (the machine's git identity, or ``who`` in the body), the commit and branch
+    this server runs from, the prompt, and the planner that answered it. A GIF
+    is not rendered here: that needs a browser and the capture page, which is
+    `evals.render_demo_gif`'s job; add its output to the entry afterwards.
+    """
+
+    from rigby_core.demos import DemoSpec, find_repo_root, register, write_index
+
+    folder = store.root / result_id
+    if not folder.is_dir() or folder.parent.resolve() != store.root.resolve():
+        raise HTTPException(status_code=404, detail="result not found")
+    clip_path = folder / "clip.json"
+    if not clip_path.is_file():
+        raise HTTPException(status_code=409, detail="this result has no clip.json to register")
+    try:
+        root = _demo_repo_root()
+    except FileNotFoundError as error:
+        raise HTTPException(status_code=503, detail=str(error)) from error
+    body: dict[str, object] = payload or {}
+    program = json.loads((folder / "program.json").read_text(encoding="utf-8"))
+    provenance = json.loads((folder / "provenance.json").read_text(encoding="utf-8")) if (folder / "provenance.json").is_file() else {}
+    metrics = json.loads((folder / "metrics.json").read_text(encoding="utf-8")) if (folder / "metrics.json").is_file() else {}
+    clip = json.loads(clip_path.read_text(encoding="utf-8"))
+    prompt = str(program.get("source_text") or body.get("prompt") or result_id)
+    verdict = metrics.get("accepted", metrics.get("structural_valid"))
+    outcome = None
+    if verdict is not None:
+        outcome = {"state": "ok" if verdict else "failed", "text": "accepted" if verdict else "rejected by the structural gates"}
+    planner = f"{provenance.get('planner_provider', '?')}/{provenance.get('planner_model', '?')}"
+    spec = DemoSpec(
+        title=str(body.get("title") or prompt[:72]),
+        prompt=prompt,
+        tier="humanoid",
+        embodiment=str(provenance.get("rig_id") or RIG_PROFILE.get("id", "mesh2motion-human-vrm1")),
+        kind="humanoid-bones-v1",
+        how=str(body.get("how") or f"uv run rigby-humanoid; POST /api/v1/pipeline-runs {json.dumps({'prompt': prompt})} -> result {result_id} ({planner}, seed {provenance.get('seed', 0)})"),
+        payload=clip_path,
+        who=str(body["who"]) if body.get("who") else None,
+        outcome=outcome,
+        notes=str(body.get("notes") or f"{clip.get('fps')} fps, {clip.get('duration_s')} s, planner {planner}"),
+        tags=["humanoid", f"result:{result_id}", str(program.get("intent", ""))],
+    )
+    try:
+        entry_path = register(spec, root)
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+    write_index(root)
+    entry = json.loads(entry_path.read_text(encoding="utf-8"))
+    return {
+        "id": entry["id"],
+        "registry": entry_path.relative_to(root).as_posix(),
+        "who": entry["who"],
+        "source": entry["source"],
+        "index": "demos/index.html",
+    }
 
 
 @app.post("/api/v1/pipeline-runs", status_code=202)

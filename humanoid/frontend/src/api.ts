@@ -96,6 +96,10 @@ export const api = {
     throw new ApiError("Export completed without a downloadable artifact.", undefined, payload);
   },
 
+  async registerDemo(resultId: string): Promise<DemoRegistration> {
+    return json<DemoRegistration>(`/api/v1/results/${encodeURIComponent(resultId)}/demo`, post({}));
+  },
+
   async startPipeline(body: PipelineRunRequest): Promise<PipelineRun> {
     return json<PipelineRun>("/api/v1/pipeline-runs", post(body));
   },
@@ -114,4 +118,13 @@ export function errorMessage(error: unknown): string {
     }
   }
   return error instanceof Error ? error.message : "An unexpected error occurred.";
+}
+
+/** What the server says after it wrote a registry entry for a result. */
+export interface DemoRegistration {
+  id: string;
+  registry: string;
+  who: string;
+  source: { commit: string; branch: string; dirty: boolean; how: string };
+  index: string;
 }

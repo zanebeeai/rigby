@@ -76,6 +76,13 @@ Two layers, deliberately separate.
 - **CI guards it.** The `demos` job validates every entry, checks every
   media digest, refuses orphans, and fails if `index.html` was not
   regenerated. Seconds, no dependencies, runs on every PR.
+- **The apps register results directly.** Motion Studio's *Save as demo*
+  (`POST /api/v1/results/{id}/demo`) registers a compiled result with its
+  `clip.json` as a `humanoid-bones-v1` payload; the any-robot studio's
+  (`POST /api/v3/results/{trace_id}/demo`) registers a run with its GIF.
+  Both go through `rigby_core.demos.register`, the one implementation the
+  command line also uses, so a demo made from a frontend carries the same
+  who, commit, branch and command as one added by hand.
 
 The 23 entries seeded from the ledger show the shape: 13 zoo clips by
 Zane, 6 README demos by Zane and Tony, 5 gripper recordings by Angelo, each

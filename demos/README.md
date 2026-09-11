@@ -37,6 +37,25 @@ the two agree.
 Keep a file under 8 MB and an entry under 24 MB. A longer recording goes on a
 GitHub release; put its URL in `notes` and a still frame in `media`.
 
+## From the apps
+
+Both frontends register a result without leaving the page:
+
+- **Motion Studio** (`uv run rigby-humanoid`, http://127.0.0.1:8000): the
+  **Save as demo** button beside Export GLB calls
+  `POST /api/v1/results/{id}/demo`. The entry carries the result's
+  `clip.json` as a `humanoid-bones-v1` payload, the prompt, the planner and
+  seed, and the verdict.
+- **any-robot studio** (`uv run rigby-general`, then the studio page): the
+  **Save as demo** button under a run's preview calls
+  `POST /api/v3/results/{trace_id}/demo`. The entry carries the run's
+  `clip.gif`, the prompt, the robot and the accept/refuse outcome.
+
+Both stamp who asked from the machine's git identity (or `who` in the
+request body), the commit and branch the server is running from, and
+whether the tree was dirty, then regenerate `index.html`. What they do not
+do is commit: that stays a person's act, on their own branch.
+
 ## What CI checks
 
 The `demos` job runs `validate` and `build --check`: every entry has the
