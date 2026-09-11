@@ -127,6 +127,14 @@ http.server 8765` at the repository root and open
 http://127.0.0.1:8765/demos/index.html. The viewer's sidebar links to both
 studios for making new demos.
 
+All three at once, from the repository root, each in its own terminal:
+
+```bash
+uv run --directory humanoid rigby-humanoid          # Motion Studio, http://127.0.0.1:8000
+uv run --directory any-robot rigby-general          # any-robot studio, http://127.0.0.1:8020
+uv run python -m http.server 8765 --bind 127.0.0.1  # the viewer, http://127.0.0.1:8765/demos/index.html
+```
+
 ## 5. Making, registering and sharing a demo
 
 A demo is a prompt, a body, a result, and who asked. Register one either
