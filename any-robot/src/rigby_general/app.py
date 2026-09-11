@@ -12,6 +12,8 @@ the values themselves.
 
 from __future__ import annotations
 
+import re
+
 import os
 from typing import Any, Mapping
 
@@ -110,6 +112,221 @@ def _register_bundled_robots(registry: RobotRegistry, settings: GeneralSettings)
             except Exception:  # noqa: BLE001 - a refused model simply is not offered
                 continue
 
+
+
+_MANIPULATION = re.compile(
+    r"\b(pick (it|that|the \w+)? ?up|pick up|grasp|grab|take hold of|lift|"
+    r"grip (it|that|the))\b",
+    re.IGNORECASE,
+)
+"""Requests a world can actually answer.
+
+Narrow on purpose. A world changes what "pick up the cube" means -- there is a
+specific cube, at a measured distance, of a measured width -- and changes
+nothing at all about what "trace a circle" means, which is why only the first
+is routed away from the schema pipeline.
+"""
+
+
+def _object_for(environment, prompt: str):
+    """The object the sentence names, or the only one there is.
+
+    Matching on the name the world gave it. A prompt that names none and a world
+    that holds exactly one are unambiguous together; a prompt that names none
+    against several is not, and says so rather than picking.
+    """
+
+    lowered = prompt.lower()
+    named = [item for item in environment.objects if item.name.lower() in lowered]
+    if named:
+        return named[0], None
+    if len(environment.objects) == 1:
+        return environment.objects[0], None
+    return None, (
+        f"{environment.environment_id} holds "
+        + ", ".join(item.name for item in environment.objects)
+        + " -- name which one to pick up"
+    )
+
+
+def _run_in_world(record, prompt, environment_id, robot_id, settings, traces):
+    """Admit, build, attempt, gate -- the path an authored world exists for.
+
+    Each step records what it decided whether or not it refused, so a refusal
+    here reads like every other refusal in the system: the stage that stopped
+    it and the measurement it stopped on.
+    """
+
+    import mujoco
+    from pathlib import Path
+
+    from .contact.grasp import attempt_grasp
+    from .contact.task import build_task_scene
+    from .grounding.grounder import figure_site_for
+    from .grounding.workspace import build_workspace_frame
+    from .scenes import admit_object, load_environment
+    from .scenes.fit import fit_world
+    from .trace import RunTrace
+    from .viewer import build_scene, sample_track
+
+    trace = RunTrace(prompt=prompt, robot_id=robot_id, kind="environment_trial")
+    from .run import _robot_summary
+
+    trace.robot = _robot_summary(record.manifest)
+
+    def finish(status_code: int = 201):
+        traces.write(trace)
+        return {
+            "trace_id": trace.trace_id,
+            "accepted": bool(trace.accepted),
+            "failure_stage": (trace.failure or {}).get("stage"),
+            "prompt": prompt,
+            "robot_id": robot_id,
+            "environment": environment_id,
+            "trace": trace.to_json(),
+        }
+
+    try:
+        environment = load_environment(environment_id)
+    except Exception as error:  # noqa: BLE001 - an unknown world is a bad request
+        raise HTTPException(
+            status_code=404, detail=f"unknown environment: {environment_id!r}"
+        ) from error
+
+    grippers = record.manifest.morphology.grasping_effectors
+    if not grippers:
+        trace.record("effector", "refused", 0.0, "this robot has no gripper")
+        trace.failure = {
+            "stage": "effector",
+            "code": "no_gripper",
+            "detail": f"{robot_id} has no effector whose members were measured to close",
+        }
+        return finish()
+    effector = grippers[0]
+
+    item, ambiguous = _object_for(environment, prompt)
+    if item is None:
+        trace.record("admission", "refused", 0.0, ambiguous or "no such object")
+        trace.failure = {
+            "stage": "admission",
+            "code": "object_not_named",
+            "detail": ambiguous or "no such object",
+        }
+        return finish()
+
+    model = mujoco.MjModel.from_xml_path(str(record.model_path))
+    chain = next(
+        c for c in record.manifest.morphology.chains if c.chain_id == effector.chain_id
+    )
+    frame = build_workspace_frame(
+        model,
+        record.manifest.morphology,
+        chain,
+        figure_site=figure_site_for(record.manifest, effector.chain_id),
+    )
+
+    # Sized to this arm, the same way the trial runner sizes it. A world
+    # authored for a metre-class arm asks nothing of a 240 mm one -- every
+    # object refuses on distance and the arm is never tested -- and the console
+    # showing a different answer from the studio for the same pairing is worse
+    # than either answer alone.
+    # fit_world reads a model and a measured scale off one object, which the
+    # registry record does not carry in that shape -- it keeps the compiled MJCF
+    # on disk. A small adapter is honest here; copying the fit to take a second
+    # shape is how the two implementations drifted apart in the first place.
+    class _FitView:
+        def __init__(self, record, model):
+            self.manifest = record.manifest
+            self.morphology = record.manifest.morphology
+            self.finalized = type("F", (), {"model": model})()
+
+    try:
+        environment = fit_world(environment, _FitView(record, model), effector, frame)
+        item = environment.object_by_name(item.name)
+    except Exception as error:  # noqa: BLE001 - fall back to the authored size
+        trace.record("fit", "refused", 0.0, f"left at authored size: {error}")
+
+    admission = admit_object(record.manifest, effector, frame, item)
+    trace.trial = {
+        "environment": environment_id,
+        "description": environment.description,
+        "object": item.name,
+        "object_span_m": round(item.span_m, 4),
+        "object_mass_kg": round(item.mass_kg, 4),
+        "admission": admission.as_dict(),
+    }
+    trace.record(
+        "admission",
+        "ok" if admission.admitted else "refused",
+        0.0,
+        admission.reason or "",
+        **{k: v for k, v in admission.as_dict().items() if isinstance(v, (int, float))},
+    )
+    if not admission.admitted:
+        trace.failure = {
+            "stage": "admission",
+            "code": admission.code,
+            "detail": admission.reason or "",
+        }
+        return finish()
+
+    try:
+        scene = build_task_scene(
+            record.manifest,
+            _model_xml(record),
+            environment,
+            item.name,
+            asset_root=Path(record.model_path).parent,
+        )
+    except Exception as error:  # noqa: BLE001 - report, do not hide
+        trace.record("scene", "refused", 0.0, str(error)[:300])
+        trace.failure = {
+            "stage": "scene",
+            "code": "scene_not_buildable",
+            "detail": str(error)[:300],
+        }
+        return finish()
+    trace.record("scene", "ok", 0.0, f"{environment_id} built around {robot_id}")
+
+    result = attempt_grasp(record.manifest, scene, effector, frame)
+    trace.accepted = bool(result.certified)
+    trace.grasp = {
+        "lift_height_m": round(result.lift_height_m, 5),
+        "carry_offset_m": round(result.carry_offset_m, 5),
+        "max_penetration_m": round(result.max_penetration_m, 6),
+    }
+    if result.certified:
+        trace.record(
+            "grasp_gates", "ok", 0.0,
+            f"held and lifted {result.lift_height_m * 1000:.0f} mm",
+        )
+    else:
+        first = result.violations[0]
+        trace.record("grasp_gates", "refused", 0.0, first.detail[:300])
+        trace.failure = {
+            "stage": "grasp_gates",
+            "code": first.code,
+            "detail": first.detail[:300],
+        }
+
+    payload = finish()
+    # The world, the robot in it, and the attempt -- watchable where it was asked.
+    try:
+        payload["scene"] = build_scene(scene.model)
+        payload["rest_qpos"] = [float(v) for v in scene.model.qpos0]
+        if result.qpos is not None and len(result.qpos):
+            payload["track"] = sample_track(result.times_s, result.qpos)
+    except Exception as error:  # noqa: BLE001 - a preview is not the result
+        payload["preview_error"] = f"{type(error).__name__}: {error}"
+    return payload
+
+
+def _model_xml(record) -> str:
+    """The stored MJCF for a registered robot."""
+
+    from pathlib import Path
+
+    return Path(record.model_path).read_text(encoding="utf-8")
 
 def create_app(settings: GeneralSettings | None = None) -> FastAPI:
     resolved = settings or GeneralSettings.from_env()
@@ -275,6 +492,7 @@ def create_app(settings: GeneralSettings | None = None) -> FastAPI:
                 detail="both `prompt` and `robot_id` are required",
             )
 
+        environment_id = str(payload.get("environment") or "").strip()
         record = _load(robot_id)
         library = PrimitiveLibrary(resolved.robot_root)
         # The record keeps the compiled MJCF on disk rather than in memory, so
@@ -283,6 +501,17 @@ def create_app(settings: GeneralSettings | None = None) -> FastAPI:
         import mujoco
 
         model = mujoco.MjModel.from_xml_path(str(record.model_path))
+
+        # A world was chosen, and the request is one a world can answer. Run the
+        # path that world exists for rather than the free-space pipeline, which
+        # has no object to reach for and would refuse for want of a contact
+        # primitive -- a true statement about the library and a misleading one
+        # about the robot.
+        if environment_id and _MANIPULATION.search(prompt):
+            return _run_in_world(
+                record, prompt, environment_id, robot_id, resolved, traces
+            )
+
         try:
             result = answer(
                 prompt,
@@ -303,7 +532,13 @@ def create_app(settings: GeneralSettings | None = None) -> FastAPI:
             ) from error
 
         traces.write(result.trace)
-        return {
+
+        # Everything needed to watch it, not merely to read about it. The
+        # rollout is already in hand -- certification simulated it -- so the
+        # only work here is resampling it to something a browser can play. A
+        # refused run has no rollout and says so by omitting the track rather
+        # than returning an empty one.
+        payload: dict[str, Any] = {
             "trace_id": result.trace.trace_id,
             "accepted": bool(result.accepted),
             "failure_stage": result.failure_stage,
@@ -311,6 +546,19 @@ def create_app(settings: GeneralSettings | None = None) -> FastAPI:
             "robot_id": robot_id,
             "trace": result.trace.to_json(),
         }
+        try:
+            from .viewer import build_scene, sample_track
+
+            payload["scene"] = build_scene(model)
+            payload["rest_qpos"] = [float(v) for v in model.qpos0]
+            if result.certification is not None:
+                rollout = result.certification.trace
+                payload["track"] = sample_track(rollout.times_s, rollout.qpos)
+        except Exception as error:  # noqa: BLE001 - a preview is not the result
+            # The verdict stands whether or not it can be drawn. Losing the
+            # picture must not lose the answer.
+            payload["preview_error"] = f"{type(error).__name__}: {error}"
+        return payload
 
     @app.get("/api/v3/results")
     def list_results() -> dict[str, Any]:

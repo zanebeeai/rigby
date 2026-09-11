@@ -34,6 +34,29 @@ BLOCK_DENSITY = 320.0
 SUPPORT_MARGIN = 0.004
 
 OBJECT_BODY = "scene_block"
+CONTACT_WIDTH_M = 0.001
+"""How deep the contact softening zone runs before the constraint goes hard.
+
+Swept in both directions and this is the peak: 0.003 holds thirty-three, 0.006
+thirty-two, 0.012 twenty-eight, and going harder is no better -- 0.0005 and
+0.0002 both hold thirty-four."""
+
+CONTACT_TIMECONST_S = 0.002
+"""Contact time constant, in seconds.
+
+Below what MuJoCo asks for, knowingly. The models integrate at 2 ms, so the
+documented floor is 4 ms, and these contacts are half that. Softening to the
+floor costs holds -- 0.003 holds thirty-six, 0.004 thirty-five, 0.005
+thirty-three, 0.0084 twenty-six and 0.03 two -- because a grip needs the
+contact stiff enough that the object does not sink into the jaws. Stepping
+faster instead, so the floor comes down to meet it, does not help either
+(480 Hz holds twenty-eight, 960 Hz twenty-nine), and neither does an implicit
+integrator, which leaves the one-gram block on the SO-ARM101 launched to
+exactly the same millimetre. Stiff and technically under-resolved is measurably
+the best of these, and the residual instability is real: a 1.5 g block between
+the jaws of a 0.6 kg arm still takes 77 N and ends up at -9.3 m."""
+
+
 OBJECT_GEOM = "scene_block_geom"
 SUPPORT_GEOM = "scene_support_geom"
 OBJECT_SITE = "scene_block_center"
@@ -89,6 +112,31 @@ def _reachable_placement(
     )
 
 
+def _exclude_authored_overlaps(root, manifest) -> None:
+    """Stop simulating contacts between parts authored inside one another.
+
+    Ingest already measures which body pairs are intersecting as delivered and
+    records them, and the self-collision gate already declines to judge them --
+    a pair whose hulls overlap at every configuration is a fact about the upload,
+    not about the motion. The physics was never told: those geoms still generate
+    contact, so a gripper whose jaw is seated 20 mm inside the palm that carries
+    its servo spends the whole attempt fighting itself, and no grasp survives it.
+    The SO-ARM101 and the Beetlebot are both built that way.
+
+    Excluding the same pairs from contact that are already excluded from the gate
+    applies one policy consistently rather than inventing a second one.
+    """
+
+    pairs = getattr(manifest, "adjacent_collision_exclusions", ()) or ()
+    if not pairs:
+        return
+    contact = root.find("contact")
+    if contact is None:
+        contact = ET.SubElement(root, "contact")
+    for first, second in pairs:
+        ET.SubElement(contact, "exclude", body1=str(first), body2=str(second))
+
+
 def build_grasp_scene(
     manifest: RobotAssetManifestV1,
     base_xml: str,
@@ -122,6 +170,7 @@ def build_grasp_scene(
     )
 
     root = ET.fromstring(base_xml)
+    _exclude_authored_overlaps(root, manifest)
     worldbody = root.find("worldbody")
     if worldbody is None:  # pragma: no cover - every compiled model has one
         raise RigbyGeneralError(
@@ -138,8 +187,8 @@ def build_grasp_scene(
         name=SUPPORT_GEOM,
         type="box",
         size=f"{half_extent * 6:.6f} {half_extent * 6:.6f} {SUPPORT_MARGIN:.6f}",
-        solref="0.002 1",
-        solimp="0.95 0.99 0.001",
+        solref=f"{CONTACT_TIMECONST_S} 1",
+        solimp=f"0.95 0.99 {CONTACT_WIDTH_M}",
         pos=f"0 0 {-SUPPORT_MARGIN:.6f}",
         rgba="0.35 0.35 0.4 1",
     )
@@ -166,8 +215,11 @@ def build_grasp_scene(
         # it. Tightening the reference time constant is the honest fix: it makes
         # the block behave like the rigid body it is meant to be, rather than
         # loosening the gate to accept a soft one.
-        solref="0.002 1",
-        solimp="0.95 0.99 0.001",
+        solref=f"{CONTACT_TIMECONST_S} 1",
+        solimp=f"0.95 0.99 {CONTACT_WIDTH_M}",
+        # Same reason as the authored world: with equal priority the softer geom
+        # decides, and that was the robot's own jaw rather than this block.
+        priority="1",
     )
     ET.SubElement(block, "site", name=OBJECT_SITE, pos="0 0 0", size="0.002")
 

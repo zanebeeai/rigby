@@ -26,6 +26,18 @@ SWEEP_STEPS = 9
 CLOSURE_DISTANCE_CEILING = 1.0
 CLOSURE_MIN_TRAVEL_M = 5e-4
 CLOSURE_MONOTONE_TOLERANCE = 1.02
+SIGHTED_CLOSURE_MIN_FRACTION = 0.25
+
+WITNESS_SEARCH_M = 10.0
+"""How far apart two surfaces may be and still be asked where they meet."""
+"""How much of its own opening a sighted gap must give up to count as a grip.
+
+An absolute threshold is meaningless for this measure. Any two bodies with a
+joint between them show *some* change in the clear span across a sweep, so half a
+millimetre admitted the KUKA iiwa's bare wrist (4.5 mm out of 158) and a cart on
+a rail as grippers. A gripper gives up most of its opening; a wrist that happens
+to swing gives up a few percent of a gap that was never a grasp.
+"""
 
 # A joint counts as carrying the tip somewhere if it moves it at least this
 # fraction of the robot's own reach. Relative, not absolute, so a 0.30 m desktop
@@ -57,6 +69,26 @@ class ClosureEvidence:
     member_directions: tuple[tuple[float, float, float], ...]
     opposition_groups: tuple[tuple[int, ...], ...]
     """Member indices, split into the two sides that face each other."""
+
+    grasp_point_world: tuple[float, float, float] | None = None
+    """Where the aperture was measured, in world coordinates at the open pose.
+
+    An object sized from the aperture belongs where that aperture is."""
+
+    grasp_aperture_m: float = 0.0
+    """How much room there is between the opposing sides, where an object sits.
+
+    Distinct from ``open_distance_m``, which is the narrowest gap *anywhere*
+    between two member bodies. Those are the same number on parallel plates and
+    are not the same number on anything hinged: a jaw pivoted at its base keeps
+    its closest surfaces at the pivot, where opening moves nothing, so the global
+    minimum reports the hinge gap rather than the opening. The EEZYbotARM
+    measures 10 mm that way with its tips 49 mm apart, and is then refused every
+    object in every world -- including a 24 mm cube in the one bench authored so
+    that every gripper here could attempt it.
+
+    Zero when it could not be measured, in which case the caller falls back.
+    """
 
 
 REST_RELAXATION_STEPS = 50
@@ -348,6 +380,133 @@ def _min_surface_distance(
     return best
 
 
+
+def _first_hit_distance(
+    model: mujoco.MjModel,
+    data: mujoco.MjData,
+    origin: np.ndarray,
+    direction: np.ndarray,
+    expected: frozenset[int],
+) -> float | None:
+    """Distance to the first geometry along ``direction``, if it is ``expected``.
+
+    Requiring the hit to land on the side being sighted is what keeps the
+    measurement honest. Without it a ray that slips past the edge of a jaw flies
+    on and strikes the forearm, or the floor, and reports that gap as the
+    opening -- the Panda measured 201 mm that way, against a hand that opens 80.
+    A sightline that misses the jaw has not measured the jaw.
+    """
+
+    norm = float(np.linalg.norm(direction))
+    if norm < 1e-9:
+        return None
+    geomid = np.zeros(1, dtype=np.int32)
+    distance = mujoco.mj_ray(
+        model,
+        data,
+        np.ascontiguousarray(origin, dtype=float),
+        np.ascontiguousarray(direction / norm, dtype=float),
+        None,
+        1,
+        -1,
+        geomid,
+    )
+    if distance < 0 or int(geomid[0]) not in expected:
+        return None
+    return float(distance)
+
+
+def grasp_aperture(
+    graph: "KinematicGraph",
+    data: mujoco.MjData,
+    member_bodies: tuple[int, ...],
+    opposition_groups: tuple[tuple[int, ...], ...],
+) -> tuple[float, "np.ndarray | None"]:
+    """Measure the opening the way the number is used: what fits between them.
+
+    Stand at the midpoint between the two opposing sides and look at each of
+    them. The room between the surfaces those two sightlines land on is the
+    widest thing that can sit there. That is a measurement rather than a rule,
+    so it needs to know nothing about whether the members slide, pivot, or curl,
+    and it reduces to the plate separation when the members *are* plates.
+
+    ``data`` must already be at the open pose.
+    """
+
+    if len(opposition_groups) != 2:
+        return 0.0, None
+
+    # Sight from the middle of the *geometry*, not the body origins. A body
+    # origin sits on its joint, so on a hinged jaw the origins are the two
+    # pivots and the midpoint between them lands back at the hinge -- measuring
+    # the very gap this exists to stop measuring. Geom centroids sit on the jaws
+    # themselves, where an object is held.
+    centres = []
+    side_geoms: list[frozenset[int]] = []
+    for group in opposition_groups:
+        side_geoms.append(
+            frozenset(
+                geom
+                for index in group
+                if 0 <= index < len(member_bodies)
+                for geom in graph.collidable_geoms_of_body(member_bodies[index])
+            )
+        )
+        points = [
+            np.array(data.geom_xpos[geom], dtype=float)
+            for index in group
+            if 0 <= index < len(member_bodies)
+            for geom in graph.collidable_geoms_of_body(member_bodies[index])
+        ]
+        if not points:
+            return 0.0, None
+        centres.append(np.mean(points, axis=0))
+
+    axis = centres[1] - centres[0]
+    span = float(np.linalg.norm(axis))
+    if span < 1e-9:
+        return 0.0, None
+    axis = axis / span
+    middle = (centres[0] + centres[1]) / 2.0
+
+    # One sightline through the middle is enough for plates, which are parallel
+    # everywhere, and wrong for anything that curls. A hand's opposing groups
+    # average out to somewhere near the palm, and the single line from there
+    # crosses a finger edge-on rather than the opening: the uHand measured 31 mm
+    # against a 73 mm sweep, which would have refused it the 50 mm ball its own
+    # bench was authored to present. So sample a patch across the gap and take
+    # the widest clear span, which is what "what fits" means. Plates give the
+    # same answer everywhere on the patch and are unaffected.
+    first = np.cross(axis, (0.0, 0.0, 1.0))
+    if float(np.linalg.norm(first)) < 1e-6:
+        first = np.cross(axis, (0.0, 1.0, 0.0))
+    first = first / float(np.linalg.norm(first))
+    second = np.cross(axis, first)
+
+    radius = 0.5 * span
+    widest = 0.0
+    widest_at: np.ndarray | None = None
+    for u in (-1.0, -0.5, 0.0, 0.5, 1.0):
+        for v in (-1.0, -0.5, 0.0, 0.5, 1.0):
+            origin = middle + radius * (u * first + v * second)
+            forward = _first_hit_distance(
+                graph.model, data, origin, axis, side_geoms[1]
+            )
+            backward = _first_hit_distance(
+                graph.model, data, origin, -axis, side_geoms[0]
+            )
+            if forward is None or backward is None:
+                continue
+            clear = float(forward + backward)
+            if clear > widest:
+                widest = clear
+                # Midway between the two surfaces the sightline landed on. This
+                # is the point the aperture is an aperture *at*, so it is also
+                # where an object of that width has to be put.
+                widest_at = origin + axis * (forward - backward) / 2.0
+    return widest, widest_at
+
+
 def measure_closure(
     graph: KinematicGraph,
     member_bodies: tuple[int, ...],
@@ -374,6 +533,15 @@ def measure_closure(
     if len(member_bodies) < 2 or not interior_joints:
         return empty
 
+    # A joint with no limits has no closed configuration, so it cannot be a grip
+    # joint: there is no pose at which it holds rather than passes through.
+    # Without this a cart on a rail measures as a 900 mm parallel jaw, its pole
+    # swinging freely through the cart and duly "converging" on it. Every real
+    # grip joint in the fleet is limited; a free hinge is a mechanism, not a
+    # hand. One bounded joint is enough to be worth measuring.
+    if not any(bool(model.jnt_limited[joint]) for joint in interior_joints):
+        return empty
+
     geoms = [graph.collidable_geoms_of_body(body) for body in member_bodies]
     # Members with no collidable geometry are frames, not parts. Real URDFs are
     # full of them -- a massless link marking the tool centre point sits right
@@ -392,7 +560,26 @@ def measure_closure(
     data = mujoco.MjData(model)
     ranges = {joint: joint_range(model, joint) for joint in interior_joints}
 
-    def evaluate(fraction: float) -> tuple[float, list[np.ndarray]]:
+    # Candidates are *surface* pairs, not body pairs. Taking the minimum over a
+    # body's whole surface finds wherever two members are closest, and on real
+    # hardware that is the mount rather than the grip: the SO-ARM101's moving
+    # jaw is seated 20 mm inside the hull of the palm that carries its servo, so
+    # the body-level minimum is a constant negative number, never converges, and
+    # the gripper reads as not closing. The pair that converges has to be chosen
+    # at the resolution the geometry is actually authored at.
+    candidates = [
+        (first, second, geom_first, geom_second)
+        for position, first in enumerate(solid)
+        for second in solid[position + 1 :]
+        for geom_first in geoms[first]
+        for geom_second in geoms[second]
+    ]
+    if not candidates:
+        return empty
+
+    scratch = np.zeros(6, dtype=float)
+
+    def evaluate(fraction: float) -> tuple[list[float], list[np.ndarray]]:
         data.qpos[:] = base_qpos
         for joint in interior_joints:
             low, high = ranges[joint]
@@ -400,9 +587,17 @@ def measure_closure(
         mujoco.mj_kinematics(model, data)
         mujoco.mj_collision(model, data)
         distances = [
-            _min_surface_distance(model, data, geoms[first], geoms[second])
-            for position, first in enumerate(solid)
-            for second in solid[position + 1 :]
+            float(
+                mujoco.mj_geomDistance(
+                    model,
+                    data,
+                    geom_first,
+                    geom_second,
+                    CLOSURE_DISTANCE_CEILING,
+                    scratch,
+                )
+            )
+            for _, _, geom_first, geom_second in candidates
         ]
         positions = [np.array(data.xpos[body], dtype=float) for body in member_bodies]
         return distances, positions
@@ -423,15 +618,12 @@ def measure_closure(
     # tracked across the sweep and the one that converges most is the one the
     # measurement is taken from. A two-jaw gripper has exactly one pair, so this
     # is the number it always was.
-    pairs = [
-        (first, second)
-        for position, first in enumerate(solid)
-        for second in solid[position + 1 :]
-    ]
+    pairs = [(first, second) for first, second, _, _ in candidates]
     raw = [evaluate(step / (SWEEP_STEPS - 1)) for step in range(SWEEP_STEPS)]
     series = np.array([values for values, _ in raw], dtype=float)
     convergence = series[0] - series[-1]
     pair = int(np.argmax(np.abs(convergence))) if convergence.size else 0
+
     samples = [(float(values[pair]), positions) for values, positions in raw]
     distances = [value for value, _ in samples]
 
@@ -477,6 +669,100 @@ def measure_closure(
             (0.0, 0.0, 0.0) if norm < 1e-9 else tuple(float(v) for v in delta / norm)
         )
 
+    groups = (
+        _opposition_groups(tuple(directions), open_positions, pairs[pair])
+        if closes
+        else ()
+    )
+
+    # Last resort, and only for two surfaces: watch the *gap* instead of the
+    # bodies. Convex collision hulls can overlap for the whole sweep on hardware
+    # that grips perfectly well -- the SO-ARM101's moving jaw is seated inside
+    # the hull of the palm carrying its servo, so every surface pair between
+    # them is a constant negative number and convergence is unmeasurable. The
+    # opening between them is not: sight across it at each step and watch it
+    # shrink. Restricted to the two-surface case because that is where the sides
+    # are unambiguous; a hand's grouping is what the convergence test is for.
+    sighted_open: float | None = None
+    # The permissive path asks for more: every joint bounded, not merely one.
+    bounded = interior_joints and all(
+        bool(model.jnt_limited[joint]) for joint in interior_joints
+    )
+    if not closes and len(solid) == 2 and bounded:
+        candidate_groups = ((solid[0],), (solid[1],))
+        spans = []
+        for step in range(SWEEP_STEPS):
+            evaluate(step / (SWEEP_STEPS - 1))
+            spans.append(
+                grasp_aperture(graph, data, member_bodies, candidate_groups)[0]
+            )
+        if all(span > 0.0 for span in spans):
+            # Judge from the widest point outward, not end to end. A sightline
+            # tracks the opening while the jaw swings through it and then catches
+            # the far face once it swings past, so the series rises and falls:
+            # the SO-ARM101 reads 26 mm closed, opens to 94, and reports 29 at
+            # the very last sample with the jaw right past the sightline. What
+            # is being asked is whether the gap closes, and the answer is read
+            # from the widest configuration down to the narrow end.
+            peak = int(np.argmax(spans))
+            best: tuple[float, bool, float, float] | None = None
+            for end, forward in ((0, False), (len(spans) - 1, True)):
+                if end == peak:
+                    continue
+                step = 1 if end > peak else -1
+                walk = spans[peak : end + step : step] if step > 0 else spans[peak::step]
+                shrinks = all(
+                    later <= earlier * CLOSURE_MONOTONE_TOLERANCE + 1e-9
+                    for earlier, later in zip(walk, walk[1:])
+                )
+                travel = walk[0] - walk[-1]
+                # Both directions off the peak can shrink; the grip is the one
+                # that shrinks *most*. Taking whichever was tested first gave
+                # the Beetlebot a 4 mm stroke when its jaws travel 46.
+                enough = travel > CLOSURE_MIN_TRAVEL_M and (
+                    travel >= SIGHTED_CLOSURE_MIN_FRACTION * walk[0]
+                )
+                if shrinks and enough:
+                    if best is None or travel > best[0]:
+                        best = (travel, forward, walk[0], walk[-1])
+            if best is not None:
+                closes = True
+                monotone = True
+                _, drive_to_upper, open_distance, closed_distance = best
+                groups = candidate_groups
+                sighted_open = open_distance
+
+    # Re-pose at the open end before sighting across the gap: `evaluate` left
+    # `data` wherever the sweep last put it, which is the closed end half the
+    # time, and an aperture measured with the jaws shut is zero.
+    aperture = 0.0
+    grasp_point: np.ndarray | None = None
+    if closes and sighted_open is not None:
+        # The sighted path already measured the opening, at the widest pose
+        # rather than at a limit. Re-posing to an end would re-measure the very
+        # artifact the peak anchoring exists to step around.
+        aperture = sighted_open
+        # ...but it still owes a point. This branch set the aperture and left
+        # `grasp_point` as None, while its twin below set both, so every
+        # effector measured through the sighted path came out with an opening
+        # and nowhere to hold: the SO-ARM101 reported a 94 mm aperture and no
+        # grasp point at all, fell back to the tool centre its URDF declares,
+        # and drove that into the block -- 28 mm of housing inside the object
+        # before the jaws had closed.
+        evaluate(0.0 if drive_to_upper else 1.0)
+        _, grasp_point = grasp_aperture(graph, data, member_bodies, groups)
+        if grasp_point is None:
+            grasp_point = _witness_midpoint(
+                graph, data, groups, evaluate, drive_to_upper
+            )
+    elif closes:
+        evaluate(0.0 if drive_to_upper else 1.0)
+        aperture, grasp_point = grasp_aperture(graph, data, member_bodies, groups)
+        if grasp_point is None:
+            grasp_point = _witness_midpoint(
+                graph, data, groups, evaluate, drive_to_upper
+            )
+
     return ClosureEvidence(
         closes=closes,
         open_distance_m=open_distance,
@@ -484,12 +770,76 @@ def measure_closure(
         monotone=monotone,
         drive_to_upper=drive_to_upper,
         member_directions=tuple(directions),
-        opposition_groups=(
-            _opposition_groups(tuple(directions), open_positions, pairs[pair])
-            if closes
-            else ()
+        opposition_groups=groups,
+        grasp_aperture_m=aperture,
+        grasp_point_world=(
+            tuple(float(v) for v in grasp_point) if grasp_point is not None else None
         ),
     )
+
+
+def _witness_midpoint(
+    graph: "KinematicGraph",
+    data: mujoco.MjData,
+    groups: tuple,
+    evaluate,
+    drive_to_upper: bool,
+) -> "np.ndarray | None":
+    """Halfway between the two surfaces that actually converge.
+
+    Where sighting finds no clear line -- a housing whose hull swallows its own
+    jaw, so no ray leaves one member and lands on the other -- the closest
+    approach between the opposing groups still says where they meet.
+
+    The *closest* pair is not the right pair, though. A hinged jaw is nearest
+    its housing at the pivot, and on the SO-ARM101 those two surfaces overlap by
+    22 mm at every jaw angle: taking the global minimum put the grasp point
+    inside the mechanism, and the arm pressed 1 kN through a 10 g block trying
+    to reach it. The pair that grips is the pair that *closes* -- open the hand,
+    shut it, and keep whichever surfaces gave up the most distance.
+    """
+
+    if len(groups) < 2:
+        return None
+    model = graph.model
+    pairs = [
+        (one, other)
+        for first in groups[0]
+        for second in groups[1]
+        for one in graph.collidable_geoms_of_body(first)
+        for other in graph.collidable_geoms_of_body(second)
+    ]
+    if not pairs:
+        return None
+
+    open_fraction = 0.0 if drive_to_upper else 1.0
+    segment = np.zeros(6, dtype=float)
+
+    evaluate(open_fraction)
+    opened = [
+        float(mujoco.mj_geomDistance(model, data, a, b, WITNESS_SEARCH_M, None))
+        for a, b in pairs
+    ]
+    evaluate(1.0 - open_fraction)
+    shut = [
+        float(mujoco.mj_geomDistance(model, data, a, b, WITNESS_SEARCH_M, None))
+        for a, b in pairs
+    ]
+
+    best_index, best_travel = None, 0.0
+    for index, (start, end) in enumerate(zip(opened, shut)):
+        if start <= 0.0 or start >= WITNESS_SEARCH_M:
+            continue
+        travel = start - end
+        if travel > best_travel:
+            best_index, best_travel = index, travel
+    if best_index is None:
+        return None
+
+    evaluate(open_fraction)
+    one, other = pairs[best_index]
+    mujoco.mj_geomDistance(model, data, one, other, WITNESS_SEARCH_M, segment)
+    return (segment[:3] + segment[3:]) / 2.0
 
 
 def _opposition_groups(

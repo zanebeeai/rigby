@@ -19,8 +19,8 @@ from rigby_general.trace import TraceStore
 
 ZOO_ROOT = Path(__file__).resolve().parents[1] / "assets" / "general" / "zoo"
 
-CERTIFIED_GRASPER = "zoo_long_arm"
-FAILING_GRASPER = "zoo_compact_arm"
+CERTIFIED_GRASPER = "zoo_compact_arm"
+FAILING_GRASPER = "zoo_hand_arm"
 NO_GRIPPER = "zoo_tool_arm"
 
 

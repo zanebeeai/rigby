@@ -13,15 +13,18 @@ millimetres.
 from __future__ import annotations
 
 import argparse
+import gc
 import json
 import time
 from pathlib import Path
 
 from rigby_general.contact.grasp import attempt_grasp
 from rigby_general.contact.task import build_task_scene, bystander_motion
+from rigby_general.scenes.environment import MIN_BLOCK_DENSITY
 from rigby_general.grounding.grounder import figure_site_for
 from rigby_general.grounding.workspace import build_workspace_frame
 from rigby_general.pipeline import ingest_robot
+from rigby_general.scenes.fit import fit_world
 from rigby_general.scenes import (
     admit_object,
     available_environments,
@@ -75,6 +78,7 @@ def main() -> int:
     # One scene per robot-and-world; the objects in it differ only by which one
     # is being attempted, so the geometry is shared across its attempts.
     exported: dict[str, dict] = {}
+    pending: dict[str, tuple] = {}
 
     prepared = {}
     sources = discover()
@@ -105,9 +109,16 @@ def main() -> int:
     rows: list[dict] = []
     names = arguments.environment or list(available_environments())
     for environment_id in names:
-        environment = load_environment(environment_id)
+        authored = load_environment(environment_id)
         print(f"\n=== {environment_id} ===")
         for robot_id, (robot, effector, frame) in sorted(prepared.items()):
+            # Put the same *task* to each body, in its own units. A world
+            # written in metres is a world written for one size of robot, and
+            # this fleet spans 0.21 m to 2.05 m of reach: 87 of 120 pairings
+            # were turned away for reach or aperture before anything moved.
+            # Scaling by the robot's own measured reach and jaw opening asks
+            # every arm the question the world was written to ask.
+            environment = fit_world(authored, robot, effector, frame)
             for item in environment.objects:
                 admission = admit_object(robot.manifest, effector, frame, item)
                 row = {
@@ -246,14 +257,10 @@ def main() -> int:
                         {
                             "environment": environment_id,
                             "robot_id": robot_id,
-                            "scene": build_scene(scene.model),
-                            "rest_qpos": [
-                                round(float(v), 7)
-                                for v in scene.model.qpos0
-                            ],
                             "attempts": [],
                         },
                     )
+                    pending[key] = (environment, item.name, robot_id)
                     entry["attempts"].append(
                         {
                             "trace_id": trace.trace_id,
@@ -273,17 +280,60 @@ def main() -> int:
                     + (f"  (disturbed {', '.join(nudged)})" if nudged else "")
                 )
                 rows.append(row)
+                # Let each scene go before compiling the next one.
+                #
+                # Every pairing compiles a fresh model, and the SO-ARM101's
+                # carries 10.5 MB of mesh. Held by a reference cycle until the
+                # collector happened to run, they stacked up until MuJoCo could
+                # not allocate a model at all -- and the failures landed on that
+                # robot's own trials, so it was asked for a different number of
+                # pairings depending on how much memory was free. The attempted
+                # count wandered between 74 and 87 run to run. Results that
+                # depend on that are not results.
+                scene = None
+                result = None
+                gc.collect()
 
     arguments.out.parent.mkdir(parents=True, exist_ok=True)
     arguments.out.write_text(json.dumps(rows, indent=1), encoding="utf-8")
 
+    # Geometry is exported only once every trial has run.
+    #
+    # Interleaved, it competed with the physics for memory and the physics lost:
+    # `build_scene` pulls every mesh into Python lists, and while that was
+    # happening MuJoCo could not always allocate the next model. The failures
+    # landed on the robot with the largest meshes, so the SO-ARM101 variants
+    # were asked for a different number of pairings depending on how much memory
+    # happened to be free -- 74 to 87, run to run, while `--no-viewer` sat
+    # steady. Measurement first, then pictures of it.
     for key, entry in exported.items():
+        environment, item_name, robot_id = pending[key]
+        robot, effector, _frame = prepared[robot_id]
+        try:
+            scene = build_task_scene(
+                robot.manifest,
+                robot.mjcf_xml,
+                environment,
+                item_name,
+                asset_root=sources[robot_id].parent,
+            )
+        except Exception as error:  # noqa: BLE001 - a picture is not a result
+            print(f"{'':18} !! viewer scene {key}: {type(error).__name__}: {error}")
+            continue
+        entry["scene"] = build_scene(scene.model)
+        entry["rest_qpos"] = [round(float(v), 7) for v in scene.model.qpos0]
         (viewer_root / f"{key}.json").write_text(
             json.dumps(entry, separators=(",", ":")), encoding="utf-8"
         )
+        entry.pop("scene", None)
+        entry.pop("rest_qpos", None)
+        scene = None
+        gc.collect()
     if exported:
         size = sum(
-            (viewer_root / f"{k}.json").stat().st_size for k in exported
+            (viewer_root / f"{k}.json").stat().st_size
+            for k in exported
+            if (viewer_root / f"{k}.json").is_file()
         ) / 1024
         print(f"{len(exported)} playable scenes ({size:.0f} KB) -> {viewer_root}")
 

@@ -71,6 +71,7 @@ function playerMarkup(robotId, trackRef, sceneRef) {
   <div class="player" data-viewer="${vesc(robotId)}" data-track="${vesc(trackRef || '')}"
        data-scene="${vesc(sceneRef || '')}">
     <div class="viewer-host"></div>
+    <div class="dof-panel"></div>
     <div class="transport">
       <button class="tbtn" data-act="play" title="Play / pause">&#9654;</button>
       <input class="scrub" type="range" min="0" max="1000" value="0" step="1">
@@ -89,6 +90,85 @@ function playerMarkup(robotId, trackRef, sceneRef) {
   </div>`;
 }
 
+// -- live readouts -----------------------------------------------------------
+
+/* One row per actuated degree of freedom, driven by the same callback that
+   drives the clock. The bar is the joint's position inside its own measured
+   range, so a wrist that travels 3 degrees and a rail that travels 300 mm read
+   the same way: proportion of what this joint can do. */
+function dofPanelMarkup(scene) {
+  const joints = (scene && scene.joints) || [];
+  if (!joints.length) return '';
+  const rows = joints.map((j, i) => {
+    const lim = j.limited && j.range
+      ? `${fmtJoint(j, j.range[0])} … ${fmtJoint(j, j.range[1])}`
+      : 'unlimited';
+    return `<div class="dof" data-dof="${i}">
+      <div class="dof-name mono">${vesc(j.name)}</div>
+      <div class="dof-track"><div class="dof-fill"></div><div class="dof-rest"></div></div>
+      <div class="dof-val mono">—</div>
+      <div class="dof-lim mono">${vesc(lim)}</div>
+    </div>`;
+  }).join('');
+  return `<div class="dofs">
+    <div class="dof-head">
+      <span>degrees of freedom &middot; ${joints.length}</span>
+      <span class="dof-hint">live, against each joint's measured range</span>
+    </div>
+    ${rows}
+  </div>`;
+}
+
+/* Hinges read in degrees, slides in millimetres. Showing radians and metres
+   would be faithful to the model and useless to a person watching a hand. */
+function fmtJoint(joint, value) {
+  if (joint.type === 'slide') return (value * 1000).toFixed(0) + ' mm';
+  return (value * 180 / Math.PI).toFixed(0) + '\u00B0';
+}
+
+function updateDofs(panel, scene, pose) {
+  if (!panel || !pose) return;
+  const joints = (scene && scene.joints) || [];
+  panel.querySelectorAll('.dof').forEach((row) => {
+    const j = joints[Number(row.dataset.dof)];
+    if (!j) return;
+    const value = pose[j.qposadr];
+    if (value === undefined) return;
+    const lo = j.limited && j.range ? j.range[0] : -Math.PI;
+    const hi = j.limited && j.range ? j.range[1] : Math.PI;
+    const span = (hi - lo) || 1;
+    const pct = Math.max(0, Math.min(100, ((value - lo) / span) * 100));
+    const fill = row.querySelector('.dof-fill');
+    if (fill) fill.style.width = pct.toFixed(2) + '%';
+    const out = row.querySelector('.dof-val');
+    if (out) out.textContent = fmtJoint(j, value);
+    // A joint sitting still is not the same as one that never moves; dim the
+    // ones that are not currently changing rather than hiding them.
+    row.classList.toggle('moving', Math.abs(value - (row._last ?? value)) > 1e-5);
+    row._last = value;
+  });
+}
+
+/* The tree marks whichever segment owns the clock. The phase ids are
+   `phase_<n>` for segment n, so the mapping is the index rather than a lookup
+   that could drift from it. */
+function highlightSegment(time) {
+  const bars = document.querySelectorAll('.timeline .phase');
+  let activeIndex = -1;
+  bars.forEach((bar) => {
+    const start = Number(bar.dataset.start);
+    const end = Number(bar.dataset.end);
+    if (time >= start && time < end) {
+      const seek = bar.getAttribute('title') || '';
+      const m = seek.match(/phase_(\d+)/);
+      if (m) activeIndex = Number(m[1]);
+    }
+  });
+  document.querySelectorAll('.segs .seg').forEach((seg, i) => {
+    seg.classList.toggle('running', i === activeIndex);
+  });
+}
+
 function mountPending() {
   VIEWERS.length = 0;
   document.querySelectorAll('[data-viewer]').forEach((node) => {
@@ -98,6 +178,9 @@ function mountPending() {
     const scene = source.scene;
     const host = node.querySelector('.viewer-host');
 
+    const dofPanel = node.querySelector('.dof-panel');
+    if (dofPanel) dofPanel.innerHTML = dofPanelMarkup(scene);
+
     const clock = node.querySelector('.clock');
     const scrub = node.querySelector('.scrub');
     const playBtn = node.querySelector('[data-act="play"]');
@@ -105,7 +188,9 @@ function mountPending() {
 
     const handle = mountViewer(host, scene, {
       rest: source.rest,
-      onTime: (time, playing) => {
+      onTime: (time, playing, pose) => {
+        updateDofs(dofPanel, scene, pose);
+        highlightSegment(time);
         const track = handle && handle.track;
         const duration = track ? track.duration_s : 0;
         if (clock) {
