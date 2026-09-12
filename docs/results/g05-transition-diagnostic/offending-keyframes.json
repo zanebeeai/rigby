@@ -1,0 +1,66 @@
+{
+  "scope": "Frozen G01 dual-arm scalar quintic inputs; four neighbors each, no model or planner required",
+  "source_prompt": "reach out as far as you can and then come back",
+  "cases": [
+    {
+      "case": "return",
+      "source_joint": "left_joint_4",
+      "joint_limits_rad": [
+        -2.85,
+        2.85
+      ],
+      "neighboring_keyframes": [
+        {
+          "authored_time_s": 16.761898,
+          "position_rad": 2.5438834937360357
+        },
+        {
+          "authored_time_s": 18.036707,
+          "position_rad": 2.826298357833412
+        },
+        {
+          "authored_time_s": 19.573017,
+          "position_rad": 2.8492995289416974
+        },
+        {
+          "authored_time_s": 20.932593,
+          "position_rad": 2.785737628574271
+        }
+      ],
+      "expected_maximum_rad": 2.867910593797897,
+      "expected_maximum_authored_time_s": 18.708756677032206,
+      "input_generation": "grounder.ground -> ik.solve_site_path -> _joint_keyframes; recovery reverses those configurations",
+      "interpolation": "JointTrackSeries central-difference knot velocities and zero-acceleration QuinticSegment"
+    },
+    {
+      "case": "recovery",
+      "source_joint": "left_joint_4",
+      "joint_limits_rad": [
+        -2.85,
+        2.85
+      ],
+      "neighboring_keyframes": [
+        {
+          "authored_time_s": 42.658325,
+          "position_rad": 2.785737628574271
+        },
+        {
+          "authored_time_s": 44.017016,
+          "position_rad": 2.8492995289416974
+        },
+        {
+          "authored_time_s": 45.440577,
+          "position_rad": 2.826298357833412
+        },
+        {
+          "authored_time_s": 46.29629,
+          "position_rad": 2.5438834937360357
+        }
+      ],
+      "expected_maximum_rad": 2.8721782580550217,
+      "expected_maximum_authored_time_s": 44.843332450964326,
+      "input_generation": "grounder.ground -> ik.solve_site_path -> _joint_keyframes; recovery reverses those configurations",
+      "interpolation": "JointTrackSeries central-difference knot velocities and zero-acceleration QuinticSegment"
+    }
+  ]
+}
