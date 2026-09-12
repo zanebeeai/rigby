@@ -1,0 +1,88 @@
+{
+  "admissible_tip_bodies": [
+    "tool"
+  ],
+  "capability_reason": "Single rigid tool has no movable opposing contact surfaces; tool contact is possible but self-contained grip is not established.",
+  "configuration": {
+    "position_x": 0.0,
+    "position_y": 0.0
+  },
+  "expected_effector_kind": "tool_tip",
+  "expected_grasp_capability": false,
+  "expected_positioning_dof": 2,
+  "fixture_id": "rigid_tool",
+  "geometry": [
+    {
+      "body": "tool",
+      "box_centre_local_m": [
+        0.0,
+        0.0,
+        0.025
+      ],
+      "box_size_m": [
+        0.012,
+        0.012,
+        0.05
+      ]
+    }
+  ],
+  "palm_origin_world_m": [
+    0.0,
+    0.0,
+    0.15
+  ],
+  "points": {
+    "base": {
+      "body": "base",
+      "independent_derivation": "URDF root coordinate origin",
+      "local_m": [
+        0,
+        0,
+        0
+      ],
+      "semantics": [
+        "base"
+      ],
+      "world_m": [
+        0,
+        0,
+        0
+      ]
+    },
+    "tool_tip": {
+      "body": "tool",
+      "independent_derivation": "Centre of +Z extreme face: local 0.025 + 0.050/2; world 0.150 + 0.040 + 0.050",
+      "local_m": [
+        0,
+        0,
+        0.05
+      ],
+      "semantics": [
+        "tip"
+      ],
+      "world_m": [
+        0,
+        0,
+        0.24
+      ]
+    },
+    "wrist": {
+      "body": "palm",
+      "independent_derivation": "0.070 + 0.040 + 0.040 m mount translations",
+      "local_m": [
+        0,
+        0,
+        0
+      ],
+      "semantics": [
+        "joint"
+      ],
+      "world_m": [
+        0,
+        0,
+        0.15
+      ]
+    }
+  },
+  "position_tolerance_m": 0.001
+}

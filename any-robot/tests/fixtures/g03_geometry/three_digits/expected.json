@@ -1,0 +1,238 @@
+{
+  "admissible_tip_bodies": [
+    "digit_left_low",
+    "digit_left_high",
+    "digit_right"
+  ],
+  "configuration": {
+    "digit_left_high_close": 0.01,
+    "digit_left_low_close": 0.01,
+    "digit_right_close": 0.01,
+    "position_x": 0.0,
+    "position_y": 0.0
+  },
+  "expected_effector_kind": "multifinger",
+  "expected_grasp_capability": true,
+  "expected_opposition_groups": [
+    [
+      "digit_left_low",
+      "digit_left_high"
+    ],
+    [
+      "digit_right"
+    ]
+  ],
+  "expected_positioning_dof": 2,
+  "fixture_id": "three_digits",
+  "geometry": [
+    {
+      "body": "digit_left_low",
+      "box_centre_local_m": [
+        0.0,
+        0.0,
+        0.015
+      ],
+      "box_size_m": [
+        0.008,
+        0.012,
+        0.03
+      ]
+    },
+    {
+      "body": "digit_left_high",
+      "box_centre_local_m": [
+        0.0,
+        0.0,
+        0.015
+      ],
+      "box_size_m": [
+        0.008,
+        0.012,
+        0.03
+      ]
+    },
+    {
+      "body": "digit_right",
+      "box_centre_local_m": [
+        0.0,
+        0.0,
+        0.015
+      ],
+      "box_size_m": [
+        0.008,
+        0.036,
+        0.03
+      ]
+    }
+  ],
+  "gripping_region": {
+    "all_contacts_normals_opposed": true,
+    "allowed_center_y_interval_m": [
+      -0.003,
+      0.003
+    ],
+    "allowed_center_z_interval_m": [
+      0.189,
+      0.201
+    ],
+    "aperture_equation_m": "2 * (0.027 - q - 0.008/2)",
+    "claim": "kinematic fit and closing contact feasibility only; dynamic retention/lift and force closure are unproven",
+    "contact_aperture_m": 0.02,
+    "contact_configuration": {
+      "digit_left_high_close": 0.013,
+      "digit_left_low_close": 0.013,
+      "digit_right_close": 0.013,
+      "position_x": 0.0,
+      "position_y": 0.0
+    },
+    "contact_q_equation_m": "0.027 - 0.008/2 - 0.020/2 = 0.013",
+    "half_stroke_aperture_m": 0.026,
+    "maximum_aperture_m": 0.046,
+    "maximum_clearance_center_world_m": [
+      0.0,
+      0.0,
+      0.195
+    ],
+    "minimum_aperture_m": 0.006,
+    "region_centre": {
+      "body": "palm",
+      "independent_derivation": "Mid-plane of opposing X faces; centre of their symmetric Y/Z overlapping support rectangles",
+      "local_m": [
+        0,
+        0,
+        0.045
+      ],
+      "semantics": [
+        "grasp_point"
+      ],
+      "world_m": [
+        0,
+        0,
+        0.195
+      ]
+    },
+    "target_box_size_m": [
+      0.02,
+      0.03,
+      0.018
+    ],
+    "target_centre_world_m": [
+      0.0,
+      0.0,
+      0.195
+    ]
+  },
+  "palm_origin_world_m": [
+    0.0,
+    0.0,
+    0.15
+  ],
+  "points": {
+    "base": {
+      "body": "base",
+      "independent_derivation": "URDF root coordinate origin",
+      "local_m": [
+        0,
+        0,
+        0
+      ],
+      "semantics": [
+        "base"
+      ],
+      "world_m": [
+        0,
+        0,
+        0
+      ]
+    },
+    "digit_left_high_distal": {
+      "body": "digit_left_high",
+      "independent_derivation": "Centre of +Z extreme face at half-stroke: palm Z 0.150 + joint Z 0.030 + box centre 0.015 + half-length 0.015",
+      "local_m": [
+        0,
+        0,
+        0.03
+      ],
+      "semantics": [
+        "contact",
+        "tip_if_selected"
+      ],
+      "world_m": [
+        -0.017,
+        0.012,
+        0.21
+      ]
+    },
+    "digit_left_low_distal": {
+      "body": "digit_left_low",
+      "independent_derivation": "Centre of +Z extreme face at half-stroke: palm Z 0.150 + joint Z 0.030 + box centre 0.015 + half-length 0.015",
+      "local_m": [
+        0,
+        0,
+        0.03
+      ],
+      "semantics": [
+        "contact",
+        "tip_if_selected"
+      ],
+      "world_m": [
+        -0.017,
+        -0.012,
+        0.21
+      ]
+    },
+    "digit_right_distal": {
+      "body": "digit_right",
+      "independent_derivation": "Centre of +Z extreme face at half-stroke: palm Z 0.150 + joint Z 0.030 + box centre 0.015 + half-length 0.015",
+      "local_m": [
+        0,
+        0,
+        0.03
+      ],
+      "semantics": [
+        "contact",
+        "tip_if_selected"
+      ],
+      "world_m": [
+        0.017,
+        0.0,
+        0.21
+      ]
+    },
+    "joint_origin_centroid": {
+      "body": "palm",
+      "independent_derivation": "Arithmetic centroid of physical digit joint origins at half-stroke; distinct from the opposing-face gripping-region centre",
+      "local_m": [
+        -0.005666666666666667,
+        0,
+        0.03
+      ],
+      "semantics": [
+        "grasp_center"
+      ],
+      "world_m": [
+        -0.005666666666666667,
+        0,
+        0.18
+      ]
+    },
+    "wrist": {
+      "body": "palm",
+      "independent_derivation": "0.070 + 0.040 + 0.040 m mount translations",
+      "local_m": [
+        0,
+        0,
+        0
+      ],
+      "semantics": [
+        "joint"
+      ],
+      "world_m": [
+        0,
+        0,
+        0.15
+      ]
+    }
+  },
+  "position_tolerance_m": 0.001
+}

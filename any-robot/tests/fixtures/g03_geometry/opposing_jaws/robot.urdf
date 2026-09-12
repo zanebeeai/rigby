@@ -1,0 +1,154 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot name="opposing_jaws">
+  <link name="base">
+    <inertial>
+      <origin xyz="0 0 0.02" rpy="0 0 0" />
+      <mass value="0.8" />
+      <inertia ixx="0.0003466666666666666" iyy="0.0003466666666666666" izz="0.00048" ixy="0" ixz="0" iyz="0" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0.02" rpy="0 0 0" />
+      <geometry>
+        <box size="0.059999999999999998 0.059999999999999998 0.040000000000000001" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.02" rpy="0 0 0" />
+      <geometry>
+        <box size="0.059999999999999998 0.059999999999999998 0.040000000000000001" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="slide_x">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="0.25" />
+      <inertia ixx="3.385416666666667e-05" iyy="4.1666666666666665e-05" izz="5.885416666666667e-05" ixy="0" ixz="0" iyz="0" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.040000000000000001 0.035000000000000003 0.02" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.040000000000000001 0.035000000000000003 0.02" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="slide_y">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="0.2" />
+      <inertia ixx="2.7083333333333335e-05" iyy="3.3333333333333335e-05" izz="4.708333333333334e-05" ixy="0" ixz="0" iyz="0" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.040000000000000001 0.035000000000000003 0.02" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.040000000000000001 0.035000000000000003 0.02" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="palm">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="0.1" />
+      <inertia ixx="2.416666666666667e-05" iyy="3.3333333333333335e-05" izz="5.083333333333334e-05" ixy="0" ixz="0" iyz="0" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.059999999999999998 0.050000000000000003 0.02" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.059999999999999998 0.050000000000000003 0.02" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="position_x" type="prismatic">
+    <parent link="base" />
+    <child link="slide_x" />
+    <origin xyz="0 0 0.070000000000000007" rpy="0 0 0" />
+    <axis xyz="1 0 0" />
+    <limit lower="-0.05" upper="0.05" effort="25" velocity="0.1" />
+    <dynamics damping="0.1" friction="0" />
+  </joint>
+  <joint name="position_y" type="prismatic">
+    <parent link="slide_x" />
+    <child link="slide_y" />
+    <origin xyz="0 0 0.040000000000000001" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
+    <limit lower="-0.05" upper="0.05" effort="25" velocity="0.1" />
+    <dynamics damping="0.1" friction="0" />
+  </joint>
+  <joint name="palm_mount" type="fixed">
+    <parent link="slide_y" />
+    <child link="palm" />
+    <origin xyz="0 0 0.040000000000000001" rpy="0 0 0" />
+  </joint>
+  <link name="jaw_left">
+    <inertial>
+      <origin xyz="0 0 0.014999999999999999" rpy="0 0 0" />
+      <mass value="0.02" />
+      <inertia ixx="3e-06" iyy="1.6066666666666668e-06" izz="1.6066666666666668e-06" ixy="0" ixz="0" iyz="0" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0.014999999999999999" rpy="0 0 0" />
+      <geometry>
+        <box size="0.0080000000000000002 0.029999999999999999 0.029999999999999999" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.014999999999999999" rpy="0 0 0" />
+      <geometry>
+        <box size="0.0080000000000000002 0.029999999999999999 0.029999999999999999" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="jaw_left_close" type="prismatic">
+    <parent link="palm" />
+    <child link="jaw_left" />
+    <origin xyz="-0.027 0 0.029999999999999999" rpy="0 0 0" />
+    <axis xyz="1 0 0" />
+    <limit lower="0" upper="0.02" effort="25" velocity="0.1" />
+    <dynamics damping="0.1" friction="0" />
+  </joint>
+  <link name="jaw_right">
+    <inertial>
+      <origin xyz="0 0 0.014999999999999999" rpy="0 0 0" />
+      <mass value="0.02" />
+      <inertia ixx="3e-06" iyy="1.6066666666666668e-06" izz="1.6066666666666668e-06" ixy="0" ixz="0" iyz="0" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0.014999999999999999" rpy="0 0 0" />
+      <geometry>
+        <box size="0.0080000000000000002 0.029999999999999999 0.029999999999999999" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.014999999999999999" rpy="0 0 0" />
+      <geometry>
+        <box size="0.0080000000000000002 0.029999999999999999 0.029999999999999999" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="jaw_right_close" type="prismatic">
+    <parent link="palm" />
+    <child link="jaw_right" />
+    <origin xyz="0.027 0 0.029999999999999999" rpy="0 0 0" />
+    <axis xyz="-1 0 0" />
+    <limit lower="0" upper="0.02" effort="25" velocity="0.1" />
+    <dynamics damping="0.1" friction="0" />
+  </joint>
+</robot>

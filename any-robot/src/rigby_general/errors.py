@@ -30,8 +30,14 @@ class GeneralFailureCode(StrEnum):
     DEGENERATE_INERTIA = "degenerate_inertia"
     """A body carries non-finite or non-positive mass or inertia."""
 
+    INVALID_JOINT_LIMIT = "invalid_joint_limit"
+    """A declared joint range or velocity/effort bound is invalid."""
+
     UNSUPPORTED_MORPHOLOGY = "unsupported_morphology"
     """A floating base or a topology outside the supported classes."""
+
+    UNSUPPORTED_COUPLING = "unsupported_coupling"
+    """Source joint coupling cannot yet be preserved by measurement/control."""
 
     NO_EFFECTOR = "no_effector"
     """No chain terminates in anything that could act on the world."""
