@@ -4,7 +4,7 @@
   "goal_catalog": "docs/research/rigby-verifiable-goals.json",
   "goal_catalog_sha256": "3672ebf5fa10ff4216fa0213499d5988281f2ebbc611500e8526afe6e618b250",
   "started_at_utc": "2026-09-12T02:34:49.841258+00:00",
-  "current_goal": "G00",
+  "current_goal": "G01",
   "overall_status": "active",
   "authorization": {
     "commits_and_pull_requests": true,
@@ -18,7 +18,7 @@
     {
       "id": "G00",
       "title": "Establish the executable baseline and protect existing capabilities",
-      "status": "verified_locally",
+      "status": "complete",
       "criteria": [
         {
           "id": "G00.A01",
@@ -56,16 +56,27 @@
       "commits": [
         "dfeab15617770b86bb2369f1929cfac6e0654aca",
         "59b93a81d4c2430ca3e8e06b7d30674c97918cae",
-        "eb690937a5fa30ee132dbf260815fc459d7efc2c"
+        "eb690937a5fa30ee132dbf260815fc459d7efc2c",
+        "b92a2d82573419bacc7dcd73ac889b439e8349fe"
       ],
-      "pull_requests": [],
+      "pull_requests": [
+        "https://github.com/zanebeeai/rigby/pull/27"
+      ],
       "supported_scope": "Executable baseline and explicit acceptance gaps only; no new robot manipulation capability.",
-      "integration_status": "baseline_evidence_commit_and_pr_next"
+      "integration_status": "open_pr_ci_infrastructure_blocked",
+      "completed_at_utc": "2026-09-12T02:47:24.113913+00:00",
+      "integration_blocker": {
+        "run_id": 34668561762,
+        "head_commit": "b92a2d82573419bacc7dcd73ac889b439e8349fe",
+        "annotation": "The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the Billing & plans section in your settings",
+        "action_owner": "Repository/account owner",
+        "action": "Restore GitHub Actions billing/allowance, then rerun CI. No workflow bypass or merge performed."
+      }
     },
     {
       "id": "G01",
       "title": "Make every major result replayable and visually inspectable",
-      "status": "planned",
+      "status": "in_progress",
       "criteria": [
         {
           "id": "G01.A01",
@@ -97,7 +108,8 @@
       "assessment_complete": false,
       "capability_supported": false,
       "commits": [],
-      "pull_requests": []
+      "pull_requests": [],
+      "work_basis": "Independent replay implementation will branch from origin/main; G00 changes do not alter the runtime interfaces it uses. Rebase onto merged G00 before integrating G01."
     },
     {
       "id": "G02",
@@ -1114,8 +1126,8 @@
   ],
   "milestones": [],
   "next_actions": [
-    "Commit and open the G00 baseline PR; inspect CI and merge when required checks are green.",
-    "Implement G01 evidence bundles and full-duration actual-state replay videos after baseline integration."
+    "Implement and verify G01 replay evidence from origin/main without depending on the unmerged baseline changes.",
+    "Rerun PR 27 CI once account access is restored; merge only after required checks pass."
   ],
-  "updated_at_utc": "2026-09-12T02:42:17.330717+00:00"
+  "updated_at_utc": "2026-09-12T02:47:24.161958+00:00"
 }
