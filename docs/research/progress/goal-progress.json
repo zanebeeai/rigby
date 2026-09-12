@@ -4,7 +4,7 @@
   "goal_catalog": "docs/research/rigby-verifiable-goals.json",
   "goal_catalog_sha256": "3672ebf5fa10ff4216fa0213499d5988281f2ebbc611500e8526afe6e618b250",
   "started_at_utc": "2026-09-12T02:34:49.841258+00:00",
-  "current_goal": "G02",
+  "current_goal": "G03",
   "overall_status": "active",
   "authorization": {
     "commits_and_pull_requests": true,
@@ -128,39 +128,54 @@
     {
       "id": "G02",
       "title": "Freeze task contracts, observation boundaries and benchmark protocol",
-      "status": "planned",
+      "status": "complete",
       "criteria": [
         {
           "id": "G02.A01",
           "requirement": "Implement separate strict fixed-world and capability-normalized modes. A mutation test proves strict mode rejects world fitting and undocumented semantic substitutions.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": ["docs/results/g02-report.md", "docs/results/g02-validation.json", "any-robot/tests/test_benchmark_world.py"]
         },
         {
           "id": "G02.A02",
           "requirement": "Hash resolved non-robot geometry, object dynamics, placements, lighting, goals, physics, start-zone rules and sensor policy; the fixed-world hash remains identical across robot swaps. Declared robot-mounted sensor transforms live in the body manifest.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": ["docs/results/g02-release/world-conformance.json", "docs/results/g02-release/worlds", "docs/results/g02-release/bodies", "any-robot/tests/test_benchmark_world.py"]
         },
         {
           "id": "G02.A03",
           "requirement": "Register root goals, dwell times, attempt/time budgets, perturbation distributions, feasibility rules, metrics and split policy before scored runs. Do not inspect existing sealed holdout identities.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": ["any-robot/assets/general/research-protocols/transfer-bench-v1-r1/benchmark-protocol.v1.json", "any-robot/assets/general/research-protocols/transfer-bench-v1-r1/feasibility-rules.v1.json", "any-robot/assets/general/research-protocols/transfer-bench-v1-r1/registration.json", "docs/results/g02-acceptance-crosswalk.json"]
         },
         {
           "id": "G02.A04",
           "requirement": "Keep simulator ground truth in an independent evaluator. Access tests prove the acting policy cannot read privileged evaluator fields; fully observed planning is a separately labeled baseline.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": ["core/tests/test_observations.py", "any-robot/tests/test_benchmark_evaluator.py", "any-robot/tests/test_benchmark_runner.py", "docs/results/g02-core-tests.xml", "docs/results/g02-anyrobot-tests.xml"]
         }
       ],
       "demo_requirement": null,
       "demo_status": "not_required",
-      "assessment_complete": false,
-      "capability_supported": false,
-      "commits": [],
-      "pull_requests": []
+      "assessment_complete": true,
+      "capability_supported": true,
+      "commits": ["faaa8e2e938b5c9ca7875a258b81b967dd1b8131", "ca4f4b5fc5e7439771a56227f0cdc8e28ea0d42c"],
+      "pull_requests": ["https://github.com/zanebeeai/rigby/pull/29"],
+      "completed_at_utc": "2026-09-12T04:34:32+00:00",
+      "evidence_worktree": "C:/Users/hocke/GitHub/rigby-g02",
+      "supported_scope": "Registered fixed-world/normalized benchmark contracts, resolved-model invariance and trusted-policy observation API separation. No manipulation, locomotion, VLM, hierarchy, unseen-body or robustness claim; all twelve probes unscored.",
+      "local_validation": {"anyrobot_passed": 337, "core_passed": 112, "core_observation_cases": 52, "core_known_windows_test_deferred_to_PR27": 1, "registered_public_variants": 140, "body_world_comparisons": 840, "sensor_policy_probes": 12, "evidence_payloads_verified": 248, "tamper_payloads_detected": 4, "existing_acceptance_requirements_preserved": 16, "generation_calls": 0},
+      "review_resolution": "Independent review reproduced false release from force-bearing margin contacts and success after a non-grid-aligned simulation deadline. Both fixed and covered by real MuJoCo regressions before final artifacts. Release semantics amended in a new registration, preserving the original unscored draft. Reviewer finished; no active subagents remain.",
+      "release_index_sha256": "4f0088702fbc4c845838f62fafff62c4ac8a1de53ce380d2f728bba567752303",
+      "integration_status": "open_pr_ci_infrastructure_blocked",
+      "integration_blocker": {
+        "run_id": 34673352496,
+        "head_commit": "ca4f4b5fc5e7439771a56227f0cdc8e28ea0d42c",
+        "annotation": "The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the Billing & plans section in your settings",
+        "action_owner": "Repository/account owner",
+        "action": "Restore GitHub Actions billing/allowance, then rerun CI. No workflow bypass or merge performed."
+      },
+      "work_basis": "Independent branch from origin/main, not stacked on G00/G01. Local criteria verified; merge after green CI. G01 physical replay integration, a shared retry-budget ledger, a preregistered independent feasibility roster and confirmatory split custody remain prerequisites to research scoring."
     },
     {
       "id": "G03",
@@ -1141,8 +1156,9 @@
   ],
   "milestones": [],
   "next_actions": [
-    "Implement G02 fixed-world and observation contracts on an independent origin/main branch.",
-    "Rerun PR 27 and PR 28 CI once account access is restored; integrate only after required checks pass."
+    "Pursue G03 body capability derivation, independent geometry validation, 120 zoo renaming/permutation checks and the body-inspection gallery.",
+    "Rerun PR 27, PR 28 and PR 29 CI once account access is restored; integrate only after required checks pass.",
+    "Before any scored benchmark, integrate G01 replay, freeze independent feasibility/trial rosters, and enforce shared retry budgets."
   ],
-  "updated_at_utc": "2026-09-12T03:39:48+00:00"
+  "updated_at_utc": "2026-09-12T04:34:32+00:00"
 }
