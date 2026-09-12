@@ -1,0 +1,35 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-12-reach-out-as-far-as-you-can-and-then-come-back-d3a975ec",
+  "title": "G01 zoo_long_arm: success",
+  "prompt": "reach out as far as you can and then come back",
+  "tier": "any-robot",
+  "embodiment": "zoo_long_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-12T03:34:56.267501+00:00",
+  "source": {
+    "commit": "2770b0e5e4",
+    "branch": "codex/replay-evidence",
+    "dirty": false,
+    "how": "cd .. && uv run --package rigby-general python -m rigby_general.evidence suite --out any-robot/results/g01-reproduce --render"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "Existing free-space gates pass; actual/reference clocks differ."
+  },
+  "notes": "Full actual-state episode; see docs/results/g01-report.md and g01-release/index.json. Physical manifest SHA-256: 9fdd13becb2342bfb0b003a2ac2c76d1ac05c4f889d471709d26284733b4733b. No object-manipulation, locomotion or robustness claim.",
+  "media": [
+    {
+      "path": "docs/results/g01-release/zoo_long_arm/media/episode.mp4",
+      "bytes": 211699,
+      "sha256": "c46b3d4606b80b6ebfbe91936bd3a0aa081e44e74d5533054b107e212f5aff3e",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G01",
+    "physical-replay"
+  ]
+}
