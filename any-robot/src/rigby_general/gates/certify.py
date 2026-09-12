@@ -28,6 +28,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import StrEnum
+import math
 
 import mujoco
 import numpy as np
@@ -35,9 +36,6 @@ from rigby_core.motion.trajectory import CandidateTrajectoryV1
 
 from ..contracts import RobotAssetManifestV1
 from .control import ComputedTorqueController, ControllerConfig
-
-
-PHYSICS_HZ = 240
 
 
 class GateCode(StrEnum):
@@ -154,7 +152,23 @@ def simulate(
     *,
     site_name: str | None = None,
 ) -> RolloutTrace:
-    """Roll the planned trajectory forward under the certified controller."""
+    """Follow the reference on the model's native physics clock.
+
+    The last sample is the first native tick at or after the reference end
+    (up to floating-point rounding), so an off-grid endpoint may add less
+    than one physics timestep. Recorded times are actual ``MjData.time``;
+    the model timestep and authored reference duration are never rewritten.
+    """
+
+    dt = float(model.opt.timestep)
+    if not math.isfinite(dt) or dt <= 0:
+        raise ValueError("The model physics timestep must be finite and positive")
+    if float(trajectory.times_s[0]) != 0:
+        raise ValueError("Certification trajectories must begin at time zero")
+    duration = float(trajectory.times_s[-1])
+    # Avoid an extra whole tick when a nominal integer ratio rounds one ULP
+    # upward (e.g. 0.07 / 0.01). Never relabel the actual simulated endpoint.
+    steps = max(1, math.ceil(math.nextafter(duration / dt, -math.inf)))
 
     controller = ComputedTorqueController(model, ControllerConfig())
     data = mujoco.MjData(model)
@@ -188,10 +202,6 @@ def simulate(
         if first_id >= 0 and second_id >= 0:
             adjacency.add((min(first_id, second_id), max(first_id, second_id)))
 
-    duration = float(trajectory.times_s[-1])
-    steps = max(1, int(round(duration * PHYSICS_HZ)))
-    dt = 1.0 / PHYSICS_HZ
-
     times = np.zeros(steps + 1, dtype=float)
     qpos = np.zeros((steps + 1, model.nq), dtype=float)
     qvel = np.zeros((steps + 1, model.nv), dtype=float)
@@ -202,11 +212,20 @@ def simulate(
     contacts: set[tuple[str, str]] = set()
 
     scratch = mujoco.MjData(model)
+    observed = mujoco.MjData(model)
 
     for step in range(steps + 1):
-        now = min(step * dt, duration)
+        now = float(data.time)
         target = trajectory.sample(now)
         command = controller.compute(data, target)
+
+        # mj_step updates qpos before all cached positions/contacts are
+        # refreshed. Measure on a separate positional reconstruction so the
+        # reported geometry matches this timestamp without altering the live
+        # solver state or warm-start values.
+        observed.qpos[:] = data.qpos
+        observed.time = data.time
+        mujoco.mj_fwdPosition(model, observed)
 
         times[step] = now
         qpos[step] = data.qpos
@@ -220,17 +239,17 @@ def simulate(
             mujoco.mj_kinematics(model, scratch)
             tracking[step] = float(
                 np.linalg.norm(
-                    np.array(scratch.site_xpos[site_id]) - np.array(data.site_xpos[site_id])
+                    np.array(scratch.site_xpos[site_id]) - np.array(observed.site_xpos[site_id])
                 )
             )
 
         base_drift = max(
             base_drift,
-            float(np.linalg.norm(np.array(data.xpos[base_id], dtype=float) - base_start)),
+            float(np.linalg.norm(np.array(observed.xpos[base_id], dtype=float) - base_start)),
         )
 
-        for index in range(data.ncon):
-            contact = data.contact[index]
+        for index in range(observed.ncon):
+            contact = observed.contact[index]
             first = int(model.geom_bodyid[contact.geom1])
             second = int(model.geom_bodyid[contact.geom2])
             pair = (min(first, second), max(first, second))
