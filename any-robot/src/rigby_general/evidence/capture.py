@@ -71,6 +71,8 @@ def source_provenance() -> tuple[dict, bytes]:
     return {
         "commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
         "working_tree_dirty": bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT)),
+        "tracked_patch_sha256": hashlib.sha256(subprocess.check_output(["git", "diff", "HEAD", "--binary"], cwd=ROOT)).hexdigest(),
+        "package_snapshot_sha256": hashlib.sha256(stream.getvalue()).hexdigest(),
         "package_source_sha256": hashes,
         "python": sys.version, "platform": platform.platform(), "machine": platform.machine(),
         "dependencies": {name: importlib.metadata.version(name) for name in ("mujoco", "numpy", "scipy", "pydantic", "pillow")},
@@ -122,18 +124,24 @@ def capture_canonical(robot_id: str, destination: Path, *, fault: bool = False) 
         xml = ET.tostring(tree, encoding="unicode")
         model = mujoco.MjModel.from_xml_string(xml)
 
+    reference_hashes = [
+        PhysicsRecord({name: getattr(r.trajectory, name) for name in ("times_s", "qpos", "qvel", "qacc")}).content_hash()
+        if r.trajectory is not None else None for r in runs
+    ]
+    if len(set(reference_hashes)) != 1:
+        raise ValueError("Independent prompt runs produced different reference data")
     physical, rollouts, replay_reports = [], [], []
-    for _ in range(REPEATS):
+    for repeat_run in runs:
         recorder = PhysicsRecorder(model)
-        if run.trajectory is None:
+        if repeat_run.trajectory is None:
             data = mujoco.MjData(model)
             data.qpos[:] = manifest.rest_qpos
             mujoco.mj_forward(model, data)
             recorder.capture(data, np.zeros(model.nu), control_time_s=0.0)
         else:
             rollouts.append(simulate(
-                model, manifest, run.trajectory,
-                site_name=run.bound.grounded.figure_sites[0], recorder=recorder,
+                model, manifest, repeat_run.trajectory,
+                site_name=repeat_run.bound.grounded.figure_sites[0], recorder=recorder,
             ))
         record = recorder.finish()
         physical.append(record)
@@ -149,9 +157,10 @@ def capture_canonical(robot_id: str, destination: Path, *, fault: bool = False) 
     if not fault and rollouts:
         if status == "success" and not run.accepted:
             raise ValueError("Recorded success conflicts with the pipeline result")
-        for name in ("qpos", "qvel", "ctrl", "demand"):
-            if not np.array_equal(getattr(rollouts[0], name), getattr(run.certification.trace, name)):
-                raise ValueError(f"The observer changed the original pipeline's {name}")
+        for repeat_run, rollout in zip(runs, rollouts, strict=True):
+            for name in ("qpos", "qvel", "ctrl", "demand"):
+                if not np.array_equal(getattr(rollout, name), getattr(repeat_run.certification.trace, name)):
+                    raise ValueError(f"The observer changed the corresponding prompt run's {name}")
 
     provenance, source_archive = source_provenance()
     world = {
@@ -207,7 +216,13 @@ def capture_canonical(robot_id: str, destination: Path, *, fault: bool = False) 
         "trace.npz": physical[0].to_bytes(),
         "controller.json": json_bytes({"class": "rigby_general.gates.control.ComputedTorqueController", "config": asdict(ControllerConfig())}),
         "reference.json": json_bytes(run.trajectory.payload() if run.trajectory else None),
-        "repeats.json": json_bytes({"count": REPEATS, "physical_hashes": hashes, "agree": repeated, "recorded_control_replays": replay_reports, "tolerance": {"absolute": 0.0, "relative": 0.0}}),
+        "repeats.json": json_bytes({
+            "count": REPEATS, "physical_hashes": hashes, "agree": repeated,
+            "independent_prompt_runs": True, "one_recording_per_prompt_run": True,
+            "reference_data_hashes": reference_hashes,
+            "pipeline_trace_hashes": [r.certification.trace.content_hash() if r.certification else None for r in runs],
+            "recorded_control_replays": replay_reports, "tolerance": {"absolute": 0.0, "relative": 0.0},
+        }),
         "source.json": json_bytes(provenance), "source.zip": source_archive,
         "uv.lock": (ROOT / "uv.lock").read_bytes(),
     }
@@ -225,7 +240,7 @@ def capture_canonical(robot_id: str, destination: Path, *, fault: bool = False) 
     }
     destination.parent.mkdir(parents=True, exist_ok=True)
     digest = write_bundle(destination, payloads, metadata)
-    return {"bundle": str(destination), "sha256": digest, **metadata}
+    return {"bundle": destination.as_posix(), "sha256": digest, **metadata}
 
 
 def replay_bundle(root: Path, expected_digest: str | None = None) -> dict:

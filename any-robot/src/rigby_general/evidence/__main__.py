@@ -7,9 +7,11 @@ import json
 from pathlib import Path
 
 from rigby_core.evidence import verify_bundle
+from rigby_core.evidence_archive import unpack_bundle
 
 from .capture import ROOT, capture_canonical, json_bytes, replay_bundle
 from .render import render_bundle
+from .release import publish_release
 
 
 def main() -> int:
@@ -30,6 +32,14 @@ def main() -> int:
     suite.add_argument("--out", type=Path, required=True)
     suite.add_argument("--render", action="store_true")
     suite.add_argument("--fault-robot", help="Public body for the injected diagnostic; defaults to the first listed body")
+    release = commands.add_parser("release")
+    release.add_argument("suite", type=Path)
+    release.add_argument("--out", type=Path, required=True)
+    unpack = commands.add_parser("unpack")
+    unpack.add_argument("archive", type=Path)
+    unpack.add_argument("--out", type=Path, required=True)
+    unpack.add_argument("--archive-sha256", required=True)
+    unpack.add_argument("--expected-sha256", required=True)
     args = parser.parse_args()
     if args.command == "capture":
         result = capture_canonical(args.robot_id, args.out, fault=args.fault)
@@ -40,6 +50,10 @@ def main() -> int:
         result = replay_bundle(args.bundle, args.expected_sha256)
     elif args.command == "render":
         result = render_bundle(args.bundle, args.out, expected_digest=args.expected_sha256, fps=args.fps)
+    elif args.command == "release":
+        result = publish_release(args.suite, args.out)
+    elif args.command == "unpack":
+        result = {"manifest_sha256": unpack_bundle(args.archive, args.out, archive_sha256=args.archive_sha256, expected_digest=args.expected_sha256)}
     else:
         args.out.mkdir(parents=True, exist_ok=False)
         rows = []
@@ -57,11 +71,14 @@ def main() -> int:
             if args.render:
                 row["media"] = render_bundle(physical, args.out / label / "media", expected_digest=row["sha256"])
             rows.append(row)
-            print(json.dumps(row), flush=True)
+            print(json.dumps({"case": label, "outcome": row["outcome"], "physics_duration_s": row["simulation_duration_s"], "sha256": row["sha256"]}), flush=True)
             (args.out / "index.json").write_bytes(json_bytes({"goal": "G01", "complete": False, "cases": rows}))
         result = {"goal": "G01", "complete": True, "cases": rows}
         (args.out / "index.json").write_bytes(json_bytes(result))
-    print(json.dumps(result, indent=2))
+    if args.command in {"suite", "release"}:
+        print(json.dumps({"goal": "G01", "cases": len(result["cases"]), "out": args.out.as_posix()}, indent=2))
+    else:
+        print(json.dumps(result, indent=2))
     return 1 if result.get("agrees") is False else 0
 
 

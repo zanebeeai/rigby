@@ -66,6 +66,8 @@ def _label(frame: Image.Image, metadata: dict, time_s: float, *, preview: str | 
     qualifier = "ZERO ACTUATOR GAIN: INJECTED FAILURE" if metadata["fault"] else "Canonical reach/return | free-space baseline"
     if not metadata["fault"] and metadata.get("reference_clock_matches_physics") is False:
         qualifier = f"Reach/return | {metadata['reference_duration_s']:.2f}s reference / {metadata['simulation_duration_s']:.2f}s physics | CLOCKS DIFFER"
+    if metadata.get("refusal_reason"):
+        qualifier = metadata["refusal_reason"]
     draw.text((12, 29), qualifier, fill="white", font=font)
     detail = preview or "FULL EPISODE | real-time playback | recorded physical states"
     if status == "PRE EXECUTION REFUSAL":
@@ -91,7 +93,11 @@ def render_bundle(root: Path, destination: Path, *, expected_digest: str | None 
     indices, video_times = frame_schedule(record.arrays["time_s"], fps)
     preview_indices = set(np.linspace(0, len(indices) - 1, min(PREVIEW_LIMIT, len(indices))).astype(int).tolist())
     preview_frames = []
-    metadata = manifest["metadata"]
+    metadata = dict(manifest["metadata"])
+    outcome = json.loads((root / "outcome.json").read_bytes())
+    if outcome.get("refusal"):
+        refusal = outcome["refusal"]
+        metadata["refusal_reason"] = f"{refusal['code']}: {refusal['detail']}"[:105]
     source = json.loads((root / "source.json").read_bytes())
     if source["dependencies"]["mujoco"] != mujoco.__version__:
         raise ValueError("MJB rendering requires the recorded MuJoCo version")
@@ -171,6 +177,7 @@ def render_bundle(root: Path, destination: Path, *, expected_digest: str | None 
             "presentation_lighting": {"headlight_ambient": 0.7, "diffuse": 0.8, "specular": 0.2},
             "task_camera_tracks_recorded_site": task_site,
             "presentation_views_are_policy_observations": False,
+            "renderer_source_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         }
         rendered_digest = write_bundle(destination, payloads, media_metadata)
-    return {"bundle": str(destination), "sha256": rendered_digest, **media_metadata}
+    return {"bundle": destination.as_posix(), "sha256": rendered_digest, **media_metadata}
