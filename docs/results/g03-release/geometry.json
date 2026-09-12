@@ -1,0 +1,239 @@
+[
+  {
+    "all_required_label_semantics_present": true,
+    "effector_classes": [
+      "tool_tip"
+    ],
+    "fixture": "rigid_tool",
+    "independent_label_sha256": "ad1ffe3d90c9164117b1ed2b49db16a9b52964acaf9433721cb5d62964a1a79d",
+    "max_site_error_m": 2.7755575615628914e-17,
+    "position_tolerance_m": 0.001,
+    "sites": [
+      {
+        "error_m": 0.0,
+        "label": "base",
+        "position_world_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "semantic": "base",
+        "site": "robot_base"
+      },
+      {
+        "error_m": 2.7755575615628914e-17,
+        "label": "tool_tip",
+        "position_world_m": [
+          0.0,
+          0.0,
+          0.24000000000000002
+        ],
+        "semantic": "tip",
+        "site": "body_0003_tip"
+      },
+      {
+        "error_m": 2.7755575615628914e-17,
+        "label": "wrist",
+        "position_world_m": [
+          0.0,
+          0.0,
+          0.15000000000000002
+        ],
+        "semantic": "joint",
+        "site": "body_0003_wrist"
+      }
+    ],
+    "source_sha256": "a3ae2a04e6f74d491c49f7606cb54ae4bd784f5058ca8bb9b4e163f74c1f4016"
+  },
+  {
+    "all_required_label_semantics_present": true,
+    "effector_classes": [
+      "parallel_jaw"
+    ],
+    "fixture": "opposing_jaws",
+    "independent_label_sha256": "29ae833bf138f66ea8f4227d06b89b7f8c32e5a415ff6927199cedf3ba7c6348",
+    "max_site_error_m": 2.7758252528941366e-17,
+    "position_tolerance_m": 0.001,
+    "sites": [
+      {
+        "error_m": 0.0,
+        "label": "base",
+        "position_world_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "semantic": "base",
+        "site": "robot_base"
+      },
+      {
+        "error_m": 2.7755575615628914e-17,
+        "label": "jaw_right_distal",
+        "position_world_m": [
+          0.017,
+          0.0,
+          0.21000000000000002
+        ],
+        "semantic": "tip",
+        "site": "body_0003_tip"
+      },
+      {
+        "error_m": 2.7758252528941366e-17,
+        "label": "gripping_region",
+        "position_world_m": [
+          0.0,
+          -3.854941057726238e-19,
+          0.19499999999999998
+        ],
+        "semantic": "grasp_point",
+        "site": "body_0003_grasp_point"
+      },
+      {
+        "error_m": 2.7755575615628914e-17,
+        "label": "joint_origin_centroid",
+        "position_world_m": [
+          0.0,
+          0.0,
+          0.18000000000000002
+        ],
+        "semantic": "grasp_center",
+        "site": "body_0003_grasp_center"
+      },
+      {
+        "error_m": 2.7755575615628914e-17,
+        "label": "jaw_right_distal",
+        "position_world_m": [
+          0.017,
+          0.0,
+          0.21000000000000002
+        ],
+        "semantic": "contact",
+        "site": "body_0003_contact_0"
+      },
+      {
+        "error_m": 2.7755575615628914e-17,
+        "label": "jaw_left_distal",
+        "position_world_m": [
+          -0.017,
+          0.0,
+          0.21000000000000002
+        ],
+        "semantic": "contact",
+        "site": "body_0003_contact_1"
+      },
+      {
+        "error_m": 2.7755575615628914e-17,
+        "label": "wrist",
+        "position_world_m": [
+          0.0,
+          0.0,
+          0.15000000000000002
+        ],
+        "semantic": "joint",
+        "site": "body_0003_wrist"
+      }
+    ],
+    "source_sha256": "0c1dc2094a67f0bc9675dbeb01a50fcc84b85e4009166a36e1eb6532ed43352d"
+  },
+  {
+    "all_required_label_semantics_present": true,
+    "effector_classes": [
+      "multifinger"
+    ],
+    "fixture": "three_digits",
+    "independent_label_sha256": "bc278fd17cebfd703c8fd13e9a7cddee4c0d1aead1a160ba6175e731cf504486",
+    "max_site_error_m": 2.7761598307598603e-17,
+    "position_tolerance_m": 0.001,
+    "sites": [
+      {
+        "error_m": 0.0,
+        "label": "base",
+        "position_world_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "semantic": "base",
+        "site": "robot_base"
+      },
+      {
+        "error_m": 2.7755575615628914e-17,
+        "label": "digit_right_distal",
+        "position_world_m": [
+          0.017,
+          0.0,
+          0.21000000000000002
+        ],
+        "semantic": "tip",
+        "site": "body_0003_tip"
+      },
+      {
+        "error_m": 2.7761598307598603e-17,
+        "label": "gripping_region",
+        "position_world_m": [
+          0.0,
+          5.782411586589357e-19,
+          0.19499999999999998
+        ],
+        "semantic": "grasp_point",
+        "site": "body_0003_grasp_point"
+      },
+      {
+        "error_m": 2.7755575615628914e-17,
+        "label": "joint_origin_centroid",
+        "position_world_m": [
+          -0.005666666666666667,
+          0.0,
+          0.18000000000000002
+        ],
+        "semantic": "grasp_center",
+        "site": "body_0003_grasp_center"
+      },
+      {
+        "error_m": 2.7755575615628914e-17,
+        "label": "digit_right_distal",
+        "position_world_m": [
+          0.017,
+          0.0,
+          0.21000000000000002
+        ],
+        "semantic": "contact",
+        "site": "body_0003_contact_0"
+      },
+      {
+        "error_m": 2.7755575615628914e-17,
+        "label": "digit_left_low_distal",
+        "position_world_m": [
+          -0.017,
+          -0.012,
+          0.21000000000000002
+        ],
+        "semantic": "contact",
+        "site": "body_0003_contact_1"
+      },
+      {
+        "error_m": 2.7755575615628914e-17,
+        "label": "digit_left_high_distal",
+        "position_world_m": [
+          -0.017,
+          0.012,
+          0.21000000000000002
+        ],
+        "semantic": "contact",
+        "site": "body_0003_contact_2"
+      },
+      {
+        "error_m": 2.7755575615628914e-17,
+        "label": "wrist",
+        "position_world_m": [
+          0.0,
+          0.0,
+          0.15000000000000002
+        ],
+        "semantic": "joint",
+        "site": "body_0003_wrist"
+      }
+    ],
+    "source_sha256": "aee23cce0d1882617ed005dcddeebfeea836936d032e4e6a334269846d0f8f3a"
+  }
+]
