@@ -33,8 +33,9 @@ Two further consequences shape the code:
   Figure, Motion, Path and Ground plus the co-events Manner and Cause, and notes
   that English states Path and Manner separately ("run *in*", "limp *across*").
   So this authors `Figure x Path x Ground x Manner`, never "wave" or "pick up" --
-  and a closed inventory of 25 schema bindings yields 40-56 certified primitives
-  per robot without anyone writing one.
+  and a closed inventory of 26 schema bindings generates body-specific
+  candidates. Certification yield depends on the body, region and compiler
+  version; it is measured rather than implied by the inventory size.
 - **Semantics live at segment boundaries.** Tversky & Lee found route directions
   and sketch maps share one skeleton: segments punctuated by reorientations, with
   detail concentrated at the action points. So a program is a segment chain, the
@@ -47,15 +48,21 @@ diverge, the semantic layer has leaked body knowledge and the design is wrong.
 
 ## Status
 
-Working end to end on six robots, from URDF to rendered motion:
+The current supported scope is fixed-base arms/bimanual platforms and admitted
+dexterous effectors. Floating-base locomotion is not certified by this package.
+The September 11 review ran all 299 then-existing tests and freshly baked two
+exact free-space segments on each zoo body. All 12 segments certified, but their
+complete reach/return composition passed on five bodies: the dual arm exceeded
+a joint limit at composition. This is a remaining execution gap, even though the
+semantic reading agreed on all six bodies.
 
 | | |
 | --- | --- |
-| Ingest and morphology | complete |
-| Schema inventory and grounder | complete |
-| Bake and certified primitive library | complete, free-space schemas |
-| Prompt path (recognizer, binder, gates) | complete |
-| Benchmark, audit, demos | complete |
+| Ingest and morphology | implemented for admitted fixed-base morphologies |
+| Schema inventory and grounder | implemented closed vocabulary; 26 entries |
+| Bake and certified primitive library | free-space schemas; feasibility varies by body/region |
+| Prompt path (recognizer, binder, gates) | implemented; composition and coverage gaps remain |
+| Benchmark, audit, demos | partial measurement; deferred acceptance requirements are not passes |
 | Contact and grasp primitives | **partial** -- see below |
 
 ### Where contact actually stands
@@ -67,27 +74,35 @@ closure loop, opposition detection driven by the measured opposition groups, and
 five gates -- `grasp_not_achieved`, `object_not_lifted`, `object_dropped`,
 `excessive_penetration`, `hidden_weld`.
 
-Not yet working: reliable grasping across the whole zoo. One of five grippers
-completes a certified pick end to end (`zoo_long_arm`: 73 mm block, lifted
-104 mm, 38 N grip, 3 mm penetration, no weld). The other four fail on gates that
-name exactly what went wrong:
+The fresh September 11 sweep passes on three of five gripper-bearing bodies.
+It uses a different object size and mass for each body. This is a
+capability-normalized probe, not a same-world transfer benchmark:
 
-| robot | outcome |
-| --- | --- |
-| `zoo_jaw_arm` | grip slips during the lift; block rises 15 mm of a required 38 mm |
-| `zoo_compact_arm` | 11 mm penetration and no lift -- the smallest arm, where contact stiffness dominates |
-| `zoo_hand_arm` | the tripod never closes to opposition; the block is knocked away |
-| `zoo_dual_arm` | over-grips at 291 N, lifts 208 mm, then drops |
+| robot | measured lift | outcome |
+| --- | --- | --- |
+| `zoo_compact_arm` | 41.3 mm | accepted; 5.0 N grip, 0.47 mm penetration |
+| `zoo_jaw_arm` | 113.6 mm | accepted; 25.4 N grip, 0.55 mm penetration |
+| `zoo_long_arm` | 173.3 mm | accepted; 35.5 N grip, 0.49 mm penetration |
+| `zoo_hand_arm` | 27.0 mm | object dropped / not carried |
+| `zoo_dual_arm` | 77.2 mm | object dropped / not carried |
 
-`scripts/grasp_report.py` reproduces the table. Contact-bearing *schemas*
-(`approach_to_contact`, `transport_object`, `press`) remain unafforded in the
-inventory and are still correctly refused, because a certified library needs a
-grasp that works on the body being asked, not on one of five.
+`scripts/grasp_report.py` reproduces this kind of probe. The frozen review
+measurements are in [grasp-report.json](../docs/research/grasp-report.json).
+Contact-bearing schemas are excluded from the ordinary free-space prompt path.
+The studio's environment route has a separate contact-task path; it fits world
+geometry, object placement and payload to the selected body. Keep that behavior
+explicit when comparing robots.
 
-The honest read is that this is the hard part, and that
-`rigby-mjco-sim/src/rigby_v2/motion/grip_feedback.py` -- several hundred lines of
-tuned closure logic for a *single* certified hand -- is the measure of how much
-work a reliable general version is. Every demo below is free-space motion.
+Collision results apply to the model's declared collision masks and exclusions.
+Ingest records inseparable overlapping links as exclusions from the general
+self-collision gate. The separate humanoid gripper also filters contact pairs:
+its arm segments collide with the table/bin, but not the block or one another.
+Neither route establishes unrestricted whole-body collision safety.
+
+Repeated deterministic simulation verifies repeatability, not robustness.
+Current claims, evidence limitations and the execution goals are recorded in
+[the research review](../docs/research/rigby-capability-review-and-research-plan.md)
+and [the goal catalog](../docs/research/rigby-verifiable-goals-and-order.md).
 
 ## The zoo
 
@@ -99,9 +114,9 @@ morphology analyser that only ever sees one shape of arm learns nothing:
 | `zoo_tool_arm` | 5 | rigid tool tip | 1.18 m | development |
 | `zoo_jaw_arm` | 6 + 2 | parallel jaw | 1.32 m | development |
 | `zoo_hand_arm` | 7 + 3 | three-finger hand | 1.37 m | development |
-| `zoo_dual_arm` | 2x(5+2) | two jaws | 1.26 m | development |
-| `zoo_compact_arm` | 4 + 2 | parallel jaw | 0.39 m | **held out** |
-| `zoo_long_arm` | 6 + 2 | jaw + wrist camera | 2.05 m | **held out** |
+| `zoo_dual_arm` | 2x(5+2) | two jaws | 1.33 m | development |
+| `zoo_compact_arm` | 4 + 2 | parallel jaw | 0.39 m | historical holdout; now inspected |
+| `zoo_long_arm` | 6 + 2 | jaw + wrist camera | 2.05 m | historical holdout; now inspected |
 
 Reach spans a factor of five. They are real `.urdf` files ingested through
 exactly the path an upload takes, with primitive geometry only, so the suite runs

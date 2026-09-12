@@ -257,17 +257,19 @@ contact_scope:
     opposition groups, and five gates: grasp_not_achieved, object_not_lifted,
     object_dropped, excessive_penetration, hidden_weld.
   measured: >-
-    One of five grippers completes a certified pick (zoo_long_arm: 73 mm block,
-    lifted 104 mm, 38 N grip, 3 mm penetration, no equality constraint). The
-    other four fail on named gates -- slipped grip, no lift, over-grip then drop,
-    and a tripod that never reaches opposition. `scripts/grasp_report.py`
-    reproduces the table.
+    The September 11, 2026 review and G00 rerun certify three of five
+    body-scaled grasp probes: compact, jaw, and long arms. Dual and multifinger
+    arms fail object_dropped/object_not_carried. The recorded measurements are
+    docs/research/grasp-report.json at the repository root; the fresh G00
+    reproduction is docs/research/progress/g00-results/grasp-report.json.
+    These are deterministic capability-normalized trials, not fixed-world
+    transfer or robustness results. scripts/grasp_report.py reproduces them.
   not_admitted: >-
     Contact-bearing schemas remain unafforded in the sealed inventory and are
     still refused, because a certified library needs a grasp that works on the
-    body being asked rather than on one body in five. Admitting them at a 20 per
-    cent success rate would put uncertifiable primitives in the library and make
-    every coverage number above meaningless.
+    body being asked. The ordinary prompt path still excludes them. The
+    studio's fitted-world route invokes a separate contact-task executor; its
+    measurements must not be combined with free-space library coverage.
 
 release_rule: >-
   release_allowed is true only when every measured requirement above passes. A
