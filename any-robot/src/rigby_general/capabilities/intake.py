@@ -154,7 +154,7 @@ def ingest_capability_body(source_path: Path) -> CapabilityBody:
         if model_source.exists():
             raise ModelIngestError(GeneralFailureCode.UNSAFE_ASSET, "An asset collides with the normalized source filename")
         model_source.write_text(canonical.xml, encoding="utf-8", newline="\n")
-        robot = ingest_robot(model_source, robot_id="body_"+package[:16])
+        robot = ingest_robot(model_source, robot_id="body_"+package[:16], legacy_name_hints=False)
     facts, capabilities = _facts(robot, tree)
     manifest = BodyCapabilityManifestV1(source_urdf_sha256=canonical.source_sha256,
         canonical_urdf_sha256=canonical.canonical_sha256, package_sha256=package, assets=assets,

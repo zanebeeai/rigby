@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import json
+import gzip
 from pathlib import Path
+import tempfile
 
 import mujoco
 import numpy as np
@@ -29,7 +31,10 @@ def capture_inspection(source: Path, destination: Path, *, title: str | None = N
     (destination / "canonical.urdf").write_text(body.canonical.xml, encoding="utf-8", newline="\n")
     (destination / "runtime.xml").write_text(body.robot.mjcf_xml, encoding="utf-8", newline="\n")
     model = body.robot.finalized.model
-    mujoco.mj_saveModel(model, str(destination / "model.mjb"))
+    with tempfile.TemporaryDirectory(prefix="g03-model-") as temporary:
+        binary = Path(temporary) / "model.mjb"
+        mujoco.mj_saveModel(model, str(binary))
+        (destination / "model.mjb.gz").write_bytes(gzip.compress(binary.read_bytes(), compresslevel=6, mtime=0))
     data = mujoco.MjData(model)
     # These samples visualize the approximate kinematic envelope, not a
     # collision-free, dynamically reachable or physically certified workspace.
@@ -59,6 +64,13 @@ def capture_inspection(source: Path, destination: Path, *, title: str | None = N
     return metadata
 
 
+def _load_model(root: Path):
+    with tempfile.TemporaryDirectory(prefix="g03-model-") as temporary:
+        binary = Path(temporary) / "model.mjb"
+        binary.write_bytes(gzip.decompress((root / "model.mjb.gz").read_bytes()))
+        return mujoco.MjModel.from_binary_path(str(binary))
+
+
 def verify_inspection(root: Path) -> dict:
     recorded = json.loads((root / "payloads.json").read_bytes())
     for name, digest in recorded.items():
@@ -71,7 +83,7 @@ def verify_inspection(root: Path) -> dict:
         raise ValueError("Capability hash does not match the inspection")
     if metadata["mujoco_version"] != mujoco.__version__:
         raise ValueError("Use the recorded MuJoCo version to load its binary model")
-    model = mujoco.MjModel.from_binary_path(str(root / "model.mjb"))
+    model = _load_model(root)
     data = mujoco.MjData(model)
     with np.load(root / "inspection.npz", allow_pickle=False) as samples:
         error = 0.0
@@ -102,7 +114,7 @@ def render_inspection(root: Path, destination: Path) -> dict:
         raise ValueError("Choose a new render destination")
     metadata = json.loads((root / "inspection.json").read_bytes())
     manifest = BodyCapabilityManifestV1.model_validate_json((root / "body-manifest.json").read_bytes())
-    model = mujoco.MjModel.from_binary_path(str(root / "model.mjb"))
+    model = _load_model(root)
     data = mujoco.MjData(model)
     with np.load(root / "inspection.npz", allow_pickle=False) as samples:
         data.qpos[:] = samples["rest_qpos"]

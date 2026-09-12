@@ -249,6 +249,18 @@ def test_archived_inspection_replays_without_source_and_detects_tampering(tmp_pa
         verify_inspection(destination)
 
 
+def test_structural_profile_never_executes_legacy_source_name_classification(monkeypatch):
+    import importlib
+    analysis = importlib.import_module("rigby_general.morphology.analyze")
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("Source-name classification must not execute in the structural profile")
+
+    monkeypatch.setattr(analysis, "_looks_like_a_sensor", forbidden)
+    body = ingest_capability_body(FIXTURES / "rigid_tool/robot.urdf")
+    assert [e.kind.value for e in body.robot.morphology.effectors] == ["tool_tip"]
+
+
 @pytest.mark.parametrize("name", ("iiwa7", "kuka_lwr", "so101"))
 def test_three_available_third_party_descriptions_have_explicit_assumptions(name, third_party):
     body = ingest_capability_body(third_party / name / "robot.urdf")
