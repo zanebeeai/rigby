@@ -45,6 +45,26 @@ PER_ROBOT_PROMPTS: dict[str, tuple[str, ...]] = {
 }
 
 
+def schema_invariance(
+    entries: list[dict[str, object]],
+) -> dict[str, dict[str, int]]:
+    """Count bodies independently of the number of semantic readings.
+
+    Six bodies sharing one reading is the intended result, not one body.
+    Multiple recordings of a body must not increase the body count either.
+    """
+    robots: dict[str, set[str]] = {}
+    readings: dict[str, set[str]] = {}
+    for entry in entries:
+        prompt = str(entry["prompt"])
+        robots.setdefault(prompt, set()).add(str(entry["robot_id"]))
+        readings.setdefault(prompt, set()).add(str(entry["role_normalized_hash"]))
+    return {
+        prompt: {"robots": len(robots[prompt]), "distinct_readings": len(hashes)}
+        for prompt, hashes in readings.items()
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--library", type=Path, default=ROOT / "robots")
@@ -143,10 +163,7 @@ def main() -> int:
                 f"{len(frames):>3}f  -> {path.name}"
             )
 
-    invariance = {
-        prompt: {"robots": len(hashes), "distinct_readings": len(hashes)}
-        for prompt, hashes in shared_hashes.items()
-    }
+    invariance = schema_invariance(entries)
     manifest = {
         "schema_version": "1.0",
         "shared_prompt": SHARED_PROMPT,
@@ -155,7 +172,9 @@ def main() -> int:
     }
     manifest_path = arguments.out / "demo-manifest.json"
     manifest_path.write_text(
-        json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        json.dumps(manifest, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+        newline="\n",
     )
 
     print(f"\n{len(entries)} clips -> {arguments.out}")
