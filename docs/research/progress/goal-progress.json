@@ -4,7 +4,7 @@
   "goal_catalog": "docs/research/rigby-verifiable-goals.json",
   "goal_catalog_sha256": "3672ebf5fa10ff4216fa0213499d5988281f2ebbc611500e8526afe6e618b250",
   "started_at_utc": "2026-09-12T02:34:49.841258+00:00",
-  "current_goal": "G03",
+  "current_goal": "G05",
   "overall_status": "active",
   "authorization": {
     "commits_and_pull_requests": true,
@@ -82,39 +82,73 @@
           "id": "G01.A01",
           "requirement": "Create the evidence-bundle contract described below and a single runner that can simulate, verify, render, and re-render recorded trajectories offline.",
           "status": "verified",
-          "evidence": ["docs/results/g01-report.md", "docs/results/g01-validation.json"]
+          "evidence": [
+            "docs/results/g01-report.md",
+            "docs/results/g01-validation.json"
+          ]
         },
         {
           "id": "G01.A02",
           "requirement": "Demonstrate one success, one runtime failure and one pre-execution refusal; tampering with a trace, model, world or outcome file is detected.",
           "status": "verified",
-          "evidence": ["docs/results/g01-report.md", "docs/results/g01-validation.json", "docs/results/g01-release/index.json"]
+          "evidence": [
+            "docs/results/g01-report.md",
+            "docs/results/g01-validation.json",
+            "docs/results/g01-release/index.json"
+          ]
         },
         {
           "id": "G01.A03",
           "requirement": "Re-run the six-body canonical prompt three times under pinned dependencies; compare deterministic state/action data while excluding run IDs and wall-clock metadata. Declare any required numerical tolerance before evaluation.",
           "status": "verified",
-          "evidence": ["docs/results/g01-validation.json", "docs/results/g01-repeat-regression-tests.xml", "docs/results/g01-release/index.json"]
+          "evidence": [
+            "docs/results/g01-validation.json",
+            "docs/results/g01-repeat-regression-tests.xml",
+            "docs/results/g01-release/index.json"
+          ]
         },
         {
           "id": "G01.A04",
           "requirement": "MP4/WebM contains the full episode at real-time playback with timestamps; GIFs are explicitly labeled summaries. Verify that the existing 90-frame render cap cannot silently replace a full-duration video.",
           "status": "verified",
-          "evidence": ["docs/results/g01-report.md", "docs/results/g01-validation.json", "docs/results/g01-release/index.json"]
+          "evidence": [
+            "docs/results/g01-report.md",
+            "docs/results/g01-validation.json",
+            "docs/results/g01-release/index.json"
+          ]
         }
       ],
       "demo_requirement": "D01: baseline success/failure replay, plus a six-body GIF preview and full-duration videos.",
       "demo_status": "verified",
       "assessment_complete": true,
       "capability_supported": true,
-      "commits": ["2bdb57273615c4099cf64b317ea7855f52eaa89f", "2770b0e5e4a631326947b8ac18520f7085c43132", "ebaa67505afc10607962b62b761d33c17c63c5da"],
-      "pull_requests": ["https://github.com/zanebeeai/rigby/pull/28"],
+      "commits": [
+        "2bdb57273615c4099cf64b317ea7855f52eaa89f",
+        "2770b0e5e4a631326947b8ac18520f7085c43132",
+        "ebaa67505afc10607962b62b761d33c17c63c5da"
+      ],
+      "pull_requests": [
+        "https://github.com/zanebeeai/rigby/pull/28"
+      ],
       "completed_at_utc": "2026-09-12T03:39:48+00:00",
       "evidence_worktree": "C:/Users/hocke/GitHub/rigby-g01",
       "supported_scope": "Portable full-state recording/replay and complete video evidence for the six-body free-space baseline: five gate successes, one compilation refusal, one declared runtime failure. No manipulation, locomotion, VLM or robustness claim.",
-      "local_validation": {"anyrobot_unique_passed": 308, "core_unique_passed": 179, "core_windows_symlink_skips": 2, "core_known_windows_test_deferred_to_PR27": 1, "archives_verified": 7, "tamper_payloads_detected": 4, "full_video_frames": 1634, "generation_calls": 0},
+      "local_validation": {
+        "anyrobot_unique_passed": 308,
+        "core_unique_passed": 179,
+        "core_windows_symlink_skips": 2,
+        "core_known_windows_test_deferred_to_PR27": 1,
+        "archives_verified": 7,
+        "tamper_payloads_detected": 4,
+        "full_video_frames": 1634,
+        "generation_calls": 0
+      },
       "review_resolution": "Final review found three recordings shared the first prompt reference. Fixed to record each independent prompt run, persist reference/pipeline hashes and compare every observed certification trace. A changed second run is rejected by a regression test. Entire seven-case suite and media regenerated at 2770b0e; final audit passed.",
-      "demo_evidence": ["docs/results/g01-release/six-body-preview.gif", "docs/results/g01-release/index.json", "demos/index.html"],
+      "demo_evidence": [
+        "docs/results/g01-release/six-body-preview.gif",
+        "docs/results/g01-release/index.json",
+        "demos/index.html"
+      ],
       "integration_status": "open_pr_ci_infrastructure_blocked",
       "integration_blocker": {
         "run_id": 34670926133,
@@ -134,37 +168,74 @@
           "id": "G02.A01",
           "requirement": "Implement separate strict fixed-world and capability-normalized modes. A mutation test proves strict mode rejects world fitting and undocumented semantic substitutions.",
           "status": "verified",
-          "evidence": ["docs/results/g02-report.md", "docs/results/g02-validation.json", "any-robot/tests/test_benchmark_world.py"]
+          "evidence": [
+            "docs/results/g02-report.md",
+            "docs/results/g02-validation.json",
+            "any-robot/tests/test_benchmark_world.py"
+          ]
         },
         {
           "id": "G02.A02",
           "requirement": "Hash resolved non-robot geometry, object dynamics, placements, lighting, goals, physics, start-zone rules and sensor policy; the fixed-world hash remains identical across robot swaps. Declared robot-mounted sensor transforms live in the body manifest.",
           "status": "verified",
-          "evidence": ["docs/results/g02-release/world-conformance.json", "docs/results/g02-release/worlds", "docs/results/g02-release/bodies", "any-robot/tests/test_benchmark_world.py"]
+          "evidence": [
+            "docs/results/g02-release/world-conformance.json",
+            "docs/results/g02-release/worlds",
+            "docs/results/g02-release/bodies",
+            "any-robot/tests/test_benchmark_world.py"
+          ]
         },
         {
           "id": "G02.A03",
           "requirement": "Register root goals, dwell times, attempt/time budgets, perturbation distributions, feasibility rules, metrics and split policy before scored runs. Do not inspect existing sealed holdout identities.",
           "status": "verified",
-          "evidence": ["any-robot/assets/general/research-protocols/transfer-bench-v1-r1/benchmark-protocol.v1.json", "any-robot/assets/general/research-protocols/transfer-bench-v1-r1/feasibility-rules.v1.json", "any-robot/assets/general/research-protocols/transfer-bench-v1-r1/registration.json", "docs/results/g02-acceptance-crosswalk.json"]
+          "evidence": [
+            "any-robot/assets/general/research-protocols/transfer-bench-v1-r1/benchmark-protocol.v1.json",
+            "any-robot/assets/general/research-protocols/transfer-bench-v1-r1/feasibility-rules.v1.json",
+            "any-robot/assets/general/research-protocols/transfer-bench-v1-r1/registration.json",
+            "docs/results/g02-acceptance-crosswalk.json"
+          ]
         },
         {
           "id": "G02.A04",
           "requirement": "Keep simulator ground truth in an independent evaluator. Access tests prove the acting policy cannot read privileged evaluator fields; fully observed planning is a separately labeled baseline.",
           "status": "verified",
-          "evidence": ["core/tests/test_observations.py", "any-robot/tests/test_benchmark_evaluator.py", "any-robot/tests/test_benchmark_runner.py", "docs/results/g02-core-tests.xml", "docs/results/g02-anyrobot-tests.xml"]
+          "evidence": [
+            "core/tests/test_observations.py",
+            "any-robot/tests/test_benchmark_evaluator.py",
+            "any-robot/tests/test_benchmark_runner.py",
+            "docs/results/g02-core-tests.xml",
+            "docs/results/g02-anyrobot-tests.xml"
+          ]
         }
       ],
       "demo_requirement": null,
       "demo_status": "not_required",
       "assessment_complete": true,
       "capability_supported": true,
-      "commits": ["faaa8e2e938b5c9ca7875a258b81b967dd1b8131", "ca4f4b5fc5e7439771a56227f0cdc8e28ea0d42c"],
-      "pull_requests": ["https://github.com/zanebeeai/rigby/pull/29"],
+      "commits": [
+        "faaa8e2e938b5c9ca7875a258b81b967dd1b8131",
+        "ca4f4b5fc5e7439771a56227f0cdc8e28ea0d42c"
+      ],
+      "pull_requests": [
+        "https://github.com/zanebeeai/rigby/pull/29"
+      ],
       "completed_at_utc": "2026-09-12T04:34:32+00:00",
       "evidence_worktree": "C:/Users/hocke/GitHub/rigby-g02",
       "supported_scope": "Registered fixed-world/normalized benchmark contracts, resolved-model invariance and trusted-policy observation API separation. No manipulation, locomotion, VLM, hierarchy, unseen-body or robustness claim; all twelve probes unscored.",
-      "local_validation": {"anyrobot_passed": 337, "core_passed": 112, "core_observation_cases": 52, "core_known_windows_test_deferred_to_PR27": 1, "registered_public_variants": 140, "body_world_comparisons": 840, "sensor_policy_probes": 12, "evidence_payloads_verified": 248, "tamper_payloads_detected": 4, "existing_acceptance_requirements_preserved": 16, "generation_calls": 0},
+      "local_validation": {
+        "anyrobot_passed": 337,
+        "core_passed": 112,
+        "core_observation_cases": 52,
+        "core_known_windows_test_deferred_to_PR27": 1,
+        "registered_public_variants": 140,
+        "body_world_comparisons": 840,
+        "sensor_policy_probes": 12,
+        "evidence_payloads_verified": 248,
+        "tamper_payloads_detected": 4,
+        "existing_acceptance_requirements_preserved": 16,
+        "generation_calls": 0
+      },
       "review_resolution": "Independent review reproduced false release from force-bearing margin contacts and success after a non-grid-aligned simulation deadline. Both fixed and covered by real MuJoCo regressions before final artifacts. Release semantics amended in a new registration, preserving the original unscored draft. Reviewer finished; no active subagents remain.",
       "release_index_sha256": "4f0088702fbc4c845838f62fafff62c4ac8a1de53ce380d2f728bba567752303",
       "integration_status": "open_pr_ci_infrastructure_blocked",
@@ -180,39 +251,106 @@
     {
       "id": "G03",
       "title": "Derive a body capability contract automatically",
-      "status": "planned",
+      "status": "complete",
       "criteria": [
         {
           "id": "G03.A01",
           "requirement": "Ingest all six zoo bodies and at least three available valid third-party descriptions without robot-ID, joint-name or link-name branches in shared control code.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "docs/results/g03-release/audit.json",
+            "docs/results/g03-release/static-scan.json",
+            "any-robot/tests/fixtures/g03_third_party/provenance.json",
+            "any-robot/tests/test_body_capabilities.py"
+          ]
         },
         {
           "id": "G03.A02",
           "requirement": "On an independently checked geometry fixture, derive sites within 1 mm, classify all declared effectors correctly, and identify capability/limit/inertia problems by typed error; separately retain existing sealed-label accuracy requirements.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "docs/results/g03-release/geometry.json",
+            "docs/results/g03-release/independent-geometry.json",
+            "docs/results/g03-release/contact-feasibility.json",
+            "any-robot/tests/fixtures/g03_geometry/label-freeze.json",
+            "docs/results/g03-any-robot-tests.xml"
+          ]
         },
         {
           "id": "G03.A03",
           "requirement": "Record geometry, actuation, contact and sensor assumptions with provenance and uncertainty. Unknown grip, suction, rolling or balance ability must not be inferred from appearance alone.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "docs/results/g03-release/bodies",
+            "any-robot/src/rigby_general/capabilities/contracts.py",
+            "any-robot/src/rigby_general/capabilities/intake.py",
+            "docs/results/g03-report.md"
+          ]
         },
         {
           "id": "G03.A04",
           "requirement": "Joint/link renaming and ordering changes preserve capabilities and transform-equivalent motion; include at least 20 renamings/permutations per zoo body.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "docs/results/g03-release/invariance.json",
+            "docs/results/g03-release/invariance",
+            "docs/results/g03-release/uploaded-model-equivalence.json",
+            "docs/results/verify_g03_release.py"
+          ]
         }
       ],
       "demo_requirement": "D03: automated body inspection gallery showing inferred chains, effectors, workspace and named unsupported capabilities.",
-      "demo_status": "pending",
-      "assessment_complete": false,
-      "capability_supported": false,
-      "commits": [],
-      "pull_requests": []
+      "demo_status": "verified",
+      "assessment_complete": true,
+      "capability_supported": true,
+      "commits": [
+        "a1cfd75d30f8949ad2fc46049b3f32a0402942cb",
+        "1efdd8c75ea5d799abbeba7b1eb924d96f3eed1c",
+        "7e1da38328e65d865b07130d33b5ee4d56e748d5"
+      ],
+      "pull_requests": [
+        "https://github.com/zanebeeai/rigby/pull/30"
+      ],
+      "completed_at_utc": "2026-09-12T05:29:17.531851+00:00",
+      "evidence_worktree": "C:/Users/hocke/GitHub/rigby-g03",
+      "supported_scope": "Evidence-qualified rigid fixed-base URDF intake with structural identities, explicit source-name classification bypass, preserved aliases, qualified geometry/actuation/contact/sensor facts and replayable kinematic inspection. No physical grasp, locomotion, hardware sensor, universal controller or unseen-topology performance claim.",
+      "demo_evidence": [
+        "docs/results/g03-release/index.html",
+        "docs/results/g03-release/media",
+        "docs/results/g03-validation.json"
+      ],
+      "local_validation": {
+        "anyrobot_passed": 328,
+        "final_compressed_archive_targeted_passed": 1,
+        "zoo_bodies": 6,
+        "admitted_unchanged_third_party_descriptions": 3,
+        "upstream_meshes_verified": 41,
+        "independent_geometry_fixtures": 3,
+        "derived_sites_verified": 18,
+        "site_error_max_m": 2.7761598307598603e-17,
+        "name_order_permutations": 120,
+        "inspection_gifs": 12,
+        "inspection_frames": 720,
+        "exact_kinematic_sample_replays": 1536,
+        "payloads_verified": 518,
+        "tamper_mutations_refused": 3,
+        "byte_identical_full_gif_rerender": true,
+        "generation_calls": 0,
+        "scored_physical_task_trials": 0,
+        "existing_acceptance_requirements_preserved": 16
+      },
+      "review_resolution": "Independent audit found legacy name-dependent arm/tip selection, 19.09 mm grasp-centre errors, inverted limits, a centroid inside a central obstacle, overstated continuous-joint bounds and a missing-contact test loophole. General fixes verified against unchanged independent fixture labels. Reviewer completed and has no running processes.",
+      "release_index_sha256": "c9702384ce8e16085b143c1fbefc01a1e71f2be676e193a6cfac3483cf4464bf",
+      "integration_status": "open_pr_ci_infrastructure_blocked",
+      "integration_blocker": {
+        "run_id": 34675642519,
+        "head_commit": "7e1da38328e65d865b07130d33b5ee4d56e748d5",
+        "check_run_id": 103504908652,
+        "annotation": "The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the 'Billing & plans' section in your settings",
+        "action_owner": "Repository/account owner",
+        "action": "Restore GitHub Actions billing/allowance, then rerun CI. No workflow bypass or merge performed."
+      },
+      "work_basis": "Independent branch from current origin/main, not stacked on G00-G02. New experiments must use ingest_capability_body; default legacy studio/API has not been migrated. Existing sealed-label accuracy requirements remain unchanged. Coupled/floating-base/sensor extensions need their own runtime support."
     },
     {
       "id": "G04",
@@ -255,7 +393,13 @@
       "id": "G05",
       "title": "Close the six-body free-space composition gap",
       "status": "planned",
-      "discovered_prerequisites": [{"finding": "Reference clock 240 Hz differs from zoo MuJoCo timestep 0.002 s (500 Hz); existing timing/velocity claims require re-evaluation.", "evidence": "docs/results/g01-report.md (PR 28)", "required_action": "Use actual physics time consistently, preserve existing physical limits, and independently justify any physically required duration increase before G05 scoring. Do not redefine a slower result as passing by changing timestamps."}],
+      "discovered_prerequisites": [
+        {
+          "finding": "Reference clock 240 Hz differs from zoo MuJoCo timestep 0.002 s (500 Hz); existing timing/velocity claims require re-evaluation.",
+          "evidence": "docs/results/g01-report.md (PR 28)",
+          "required_action": "Use actual physics time consistently, preserve existing physical limits, and independently justify any physically required duration increase before G05 scoring. Do not redefine a slower result as passing by changing timestamps."
+        }
+      ],
       "criteria": [
         {
           "id": "G05.A01",
@@ -535,7 +679,7 @@
           "evidence": []
         }
       ],
-      "demo_requirement": "D12: missing skill \u2192 failed attempts \u2192 acquired execution \u2192 reuse, with search budget and an uninterrupted final trial.",
+      "demo_requirement": "D12: missing skill → failed attempts → acquired execution → reuse, with search budget and an uninterrupted final trial.",
       "demo_status": "pending",
       "assessment_complete": false,
       "capability_supported": false,
@@ -734,7 +878,7 @@
       "criteria": [
         {
           "id": "G18.A01",
-          "requirement": "Execute approach object \u2192 stabilize \u2192 acquire \u2192 move while holding \u2192 place \u2192 return, with the same root contract on the three bodies.",
+          "requirement": "Execute approach object → stabilize → acquire → move while holding → place → return, with the same root contract on the three bodies.",
           "status": "pending",
           "evidence": []
         },
@@ -882,7 +1026,7 @@
       "criteria": [
         {
           "id": "G22.A01",
-          "requirement": "Freeze candidate code, seeds, feasible/infeasible task map and independent labels before confirmatory evaluation; use a 6\u201310-body, 6-task-family, 20-seed pilot to choose and register the final sample design.",
+          "requirement": "Freeze candidate code, seeds, feasible/infeasible task map and independent labels before confirmatory evaluation; use a 6–10-body, 6-task-family, 20-seed pilot to choose and register the final sample design.",
           "status": "pending",
           "evidence": []
         },
@@ -1156,9 +1300,10 @@
   ],
   "milestones": [],
   "next_actions": [
-    "Pursue G03 body capability derivation, independent geometry validation, 120 zoo renaming/permutation checks and the body-inspection gallery.",
-    "Rerun PR 27, PR 28 and PR 29 CI once account access is restored; integrate only after required checks pass.",
-    "Before any scored benchmark, integrate G01 replay, freeze independent feasibility/trial rosters, and enforce shared retry budgets."
+    "Pursue the G05 reference/physics clock correction and frozen six-body free-space primitive/composition trials; require the structural capability profile and G01 replay when integrated.",
+    "Restore GitHub Actions billing/allowance and rerun PRs 27-30; merge only after required checks are green.",
+    "Before scored manipulation benchmarks, integrate G01/G02/G03, independent task/body feasibility and trial rosters, and a shared retry/time-budget ledger.",
+    "Preserve all 30 goals and their frozen criteria; G04 independent language validation and later judge/learning/mobility tracks remain in scope."
   ],
-  "updated_at_utc": "2026-09-12T04:34:32+00:00"
+  "updated_at_utc": "2026-09-12T05:29:17.531851+00:00"
 }
