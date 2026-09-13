@@ -1,0 +1,1228 @@
+{
+  "schema": "g04.confusion.v1",
+  "offline": {
+    "errors": [
+      {
+        "case_id": "C002",
+        "family": "extent",
+        "prompt": "reach out a little",
+        "error": "manner:{}->{'amplitude': -1}",
+        "expected": [
+          {
+            "segment_id": "s0",
+            "entry_id": "reach_to_point",
+            "remove": "proximal",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ],
+        "actual": [
+          {
+            "segment_id": "s0",
+            "entry_id": "reach_to_point",
+            "remove": "proximal",
+            "manner": {
+              "amplitude": -1
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      {
+        "case_id": "C008",
+        "family": "entry",
+        "prompt": "come down onto the table over an arc",
+        "error": "entry:arc_to_surface->descend_to_surface",
+        "expected": [
+          {
+            "segment_id": "s0",
+            "entry_id": "arc_to_surface",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ],
+        "actual": [
+          {
+            "segment_id": "s0",
+            "entry_id": "descend_to_surface",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      {
+        "case_id": "C015",
+        "family": "entry",
+        "prompt": "arc across the workspace",
+        "error": "entry:traverse_line_arced->traverse_line",
+        "expected": [
+          {
+            "segment_id": "s0",
+            "entry_id": "traverse_line_arced",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ],
+        "actual": [
+          {
+            "segment_id": "s0",
+            "entry_id": "traverse_line",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      {
+        "case_id": "C034",
+        "family": "posture",
+        "prompt": "three fingers up",
+        "error": "repetition_count:None->3",
+        "expected": [
+          {
+            "segment_id": "s0",
+            "entry_id": "configure_effector",
+            "remove": "adjacent",
+            "manner": {},
+            "repetition_count": null,
+            "posture": "opposed:3.extended.flexed.flexed",
+            "quantities": []
+          }
+        ],
+        "actual": [
+          {
+            "segment_id": "s0",
+            "entry_id": "configure_effector",
+            "remove": "adjacent",
+            "manner": {},
+            "repetition_count": 3,
+            "posture": "opposed:3.extended.flexed.flexed",
+            "quantities": []
+          }
+        ]
+      },
+      {
+        "case_id": "L004",
+        "family": "paraphrase",
+        "prompt": "go all the way out",
+        "error": "entry:reach_to_edge->reach_to_point",
+        "expected": [
+          {
+            "segment_id": "s0",
+            "entry_id": "reach_to_edge",
+            "remove": "distal",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ],
+        "actual": [
+          {
+            "segment_id": "s0",
+            "entry_id": "reach_to_point",
+            "remove": "distal",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      {
+        "case_id": "L005",
+        "family": "paraphrase",
+        "prompt": "extend fully",
+        "error": "entry:reach_to_edge->reach_to_point",
+        "expected": [
+          {
+            "segment_id": "s0",
+            "entry_id": "reach_to_edge",
+            "remove": "distal",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ],
+        "actual": [
+          {
+            "segment_id": "s0",
+            "entry_id": "reach_to_point",
+            "remove": "distal",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      {
+        "case_id": "L009",
+        "family": "paraphrase",
+        "prompt": "pull back a little",
+        "error": "manner:{}->{'amplitude': -1}",
+        "expected": [
+          {
+            "segment_id": "s0",
+            "entry_id": "retract_from_point",
+            "remove": "proximal",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ],
+        "actual": [
+          {
+            "segment_id": "s0",
+            "entry_id": "retract_from_point",
+            "remove": "proximal",
+            "manner": {
+              "amplitude": -1
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      {
+        "case_id": "L031",
+        "family": "minimal_contrast",
+        "prompt": "reach out just a little",
+        "error": "manner:{}->{'amplitude': -1}",
+        "expected": [
+          {
+            "segment_id": "s0",
+            "entry_id": "reach_to_point",
+            "remove": "proximal",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ],
+        "actual": [
+          {
+            "segment_id": "s0",
+            "entry_id": "reach_to_point",
+            "remove": "proximal",
+            "manner": {
+              "amplitude": -1
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      {
+        "case_id": "L032",
+        "family": "minimal_contrast",
+        "prompt": "reach out a long way",
+        "error": "remove:distal->medial",
+        "expected": [
+          {
+            "segment_id": "s0",
+            "entry_id": "reach_to_point",
+            "remove": "distal",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ],
+        "actual": [
+          {
+            "segment_id": "s0",
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      {
+        "case_id": "L043",
+        "family": "minimal_contrast",
+        "prompt": "give a little wave",
+        "error": "remove:medial->proximal",
+        "expected": [
+          {
+            "segment_id": "s0",
+            "entry_id": "oscillate_about_point",
+            "remove": "medial",
+            "manner": {
+              "amplitude": -1
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ],
+        "actual": [
+          {
+            "segment_id": "s0",
+            "entry_id": "oscillate_about_point",
+            "remove": "proximal",
+            "manner": {
+              "amplitude": -1
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      {
+        "case_id": "L046",
+        "family": "minimal_contrast",
+        "prompt": "arc across",
+        "error": "entry:traverse_line_arced->traverse_line",
+        "expected": [
+          {
+            "segment_id": "s0",
+            "entry_id": "traverse_line_arced",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ],
+        "actual": [
+          {
+            "segment_id": "s0",
+            "entry_id": "traverse_line",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      {
+        "case_id": "L051",
+        "family": "negation",
+        "prompt": "don't wave, just reach out",
+        "error": "entry:reach_to_point->oscillate_about_point",
+        "expected": [
+          {
+            "segment_id": "s0",
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ],
+        "actual": [
+          {
+            "segment_id": "s0",
+            "entry_id": "oscillate_about_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      {
+        "case_id": "L052",
+        "family": "negation",
+        "prompt": "reach out but do not go all the way",
+        "error": "remove:medial->distal",
+        "expected": [
+          {
+            "segment_id": "s0",
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ],
+        "actual": [
+          {
+            "segment_id": "s0",
+            "entry_id": "reach_to_point",
+            "remove": "distal",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      {
+        "case_id": "L053",
+        "family": "negation",
+        "prompt": "do not move",
+        "error": "entry:hold_still->reach_to_point",
+        "expected": [
+          {
+            "segment_id": "s0",
+            "entry_id": "hold_still",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ],
+        "actual": [
+          {
+            "segment_id": "s0",
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      {
+        "case_id": "L054",
+        "family": "negation",
+        "prompt": "wave, but not quickly",
+        "error": "manner:{}->{'speed': 1}",
+        "expected": [
+          {
+            "segment_id": "s0",
+            "entry_id": "oscillate_about_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ],
+        "actual": [
+          {
+            "segment_id": "s0",
+            "entry_id": "oscillate_about_point",
+            "remove": "medial",
+            "manner": {
+              "speed": 1
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      {
+        "case_id": "L056",
+        "family": "negation",
+        "prompt": "no waving; hold still",
+        "error": "entry:hold_still->oscillate_about_point",
+        "expected": [
+          {
+            "segment_id": "s0",
+            "entry_id": "hold_still",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ],
+        "actual": [
+          {
+            "segment_id": "s0",
+            "entry_id": "oscillate_about_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      {
+        "case_id": "L057",
+        "family": "negation",
+        "prompt": "reach out, not too far",
+        "error": "remove:medial->distal",
+        "expected": [
+          {
+            "segment_id": "s0",
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ],
+        "actual": [
+          {
+            "segment_id": "s0",
+            "entry_id": "reach_to_point",
+            "remove": "distal",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      {
+        "case_id": "L058",
+        "family": "negation",
+        "prompt": "don't pick it up, just touch it",
+        "error": "entry:approach_to_contact->transport_object",
+        "expected": [
+          {
+            "segment_id": "s0",
+            "entry_id": "approach_to_contact",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ],
+        "actual": [
+          {
+            "segment_id": "s0",
+            "entry_id": "transport_object",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      {
+        "case_id": "L059",
+        "family": "negation",
+        "prompt": "never mind the circle, sweep across instead",
+        "error": "entry:traverse_line->circle_axis",
+        "expected": [
+          {
+            "segment_id": "s0",
+            "entry_id": "traverse_line",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ],
+        "actual": [
+          {
+            "segment_id": "s0",
+            "entry_id": "circle_axis",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      {
+        "case_id": "L061",
+        "family": "negation",
+        "prompt": "lower it, but not all the way down",
+        "error": "remove:medial->distal",
+        "expected": [
+          {
+            "segment_id": "s0",
+            "entry_id": "descend_to_surface",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ],
+        "actual": [
+          {
+            "segment_id": "s0",
+            "entry_id": "descend_to_surface",
+            "remove": "distal",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      {
+        "case_id": "L066",
+        "family": "ambiguous_deixis",
+        "prompt": "move it away",
+        "error": "entry:move_away->reach_to_point",
+        "expected": [
+          {
+            "segment_id": "s0",
+            "entry_id": "move_away",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ],
+        "actual": [
+          {
+            "segment_id": "s0",
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      {
+        "case_id": "L068",
+        "family": "ambiguous_deixis",
+        "prompt": "back away from it",
+        "error": "entry:move_away->retract_from_point",
+        "expected": [
+          {
+            "segment_id": "s0",
+            "entry_id": "move_away",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ],
+        "actual": [
+          {
+            "segment_id": "s0",
+            "entry_id": "retract_from_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      {
+        "case_id": "L072",
+        "family": "ambiguous_deixis",
+        "prompt": "reach toward me",
+        "error": "entry:move_toward->reach_to_point",
+        "expected": [
+          {
+            "segment_id": "s0",
+            "entry_id": "move_toward",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ],
+        "actual": [
+          {
+            "segment_id": "s0",
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      {
+        "case_id": "L074",
+        "family": "explicit_quantity",
+        "prompt": "reach out five centimetres",
+        "error": "repetition_count:None->5",
+        "expected": [
+          {
+            "segment_id": "s0",
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": [
+              {
+                "text": "five centimetres",
+                "value_m": 0.05
+              }
+            ]
+          }
+        ],
+        "actual": [
+          {
+            "segment_id": "s0",
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": 5,
+            "posture": null,
+            "quantities": [
+              {
+                "text": "five centimetres",
+                "value_m": 0.05
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "case_id": "L085",
+        "family": "explicit_quantity",
+        "prompt": "reach out a bit",
+        "error": "remove:proximal->medial",
+        "expected": [
+          {
+            "segment_id": "s0",
+            "entry_id": "reach_to_point",
+            "remove": "proximal",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ],
+        "actual": [
+          {
+            "segment_id": "s0",
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      {
+        "case_id": "L086",
+        "family": "explicit_quantity",
+        "prompt": "reach out roughly five centimetres",
+        "error": "repetition_count:None->5",
+        "expected": [
+          {
+            "segment_id": "s0",
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {
+              "precision": -1
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": [
+              {
+                "text": "five centimetres",
+                "value_m": 0.05
+              }
+            ]
+          }
+        ],
+        "actual": [
+          {
+            "segment_id": "s0",
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {
+              "precision": -1
+            },
+            "repetition_count": 5,
+            "posture": null,
+            "quantities": [
+              {
+                "text": "five centimetres",
+                "value_m": 0.05
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "case_id": "L110",
+        "family": "sequence",
+        "prompt": "reach out as far as you can before returning",
+        "error": "segment_count:2->1",
+        "expected": [
+          {
+            "segment_id": "s0",
+            "entry_id": "reach_to_edge",
+            "remove": "distal",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          },
+          {
+            "segment_id": "s1",
+            "entry_id": "retract_from_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ],
+        "actual": [
+          {
+            "segment_id": "s0",
+            "entry_id": "reach_to_edge",
+            "remove": "distal",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      {
+        "case_id": "L112",
+        "family": "sequence",
+        "prompt": "trace a circle, then trace it again",
+        "error": "segment_count:2->1",
+        "expected": [
+          {
+            "segment_id": "s0",
+            "entry_id": "circle_axis",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          },
+          {
+            "segment_id": "s1",
+            "entry_id": "circle_axis",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ],
+        "actual": [
+          {
+            "segment_id": "s0",
+            "entry_id": "circle_axis",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      }
+    ],
+    "entry_matrix": {
+      "reach_to_point": {
+        "reach_to_point": 42,
+        "oscillate_about_point": 1
+      },
+      "reach_to_edge": {
+        "reach_to_edge": 5,
+        "reach_to_point": 2
+      },
+      "swing_to_point": {
+        "swing_to_point": 1
+      },
+      "descend_to_surface": {
+        "descend_to_surface": 8
+      },
+      "arc_to_surface": {
+        "descend_to_surface": 1
+      },
+      "enter_volume": {
+        "enter_volume": 1
+      },
+      "retract_from_point": {
+        "retract_from_point": 12
+      },
+      "retract_from_surface": {
+        "retract_from_surface": 9
+      },
+      "move_away": {
+        "move_away": 3,
+        "reach_to_point": 1,
+        "retract_from_point": 1
+      },
+      "move_toward": {
+        "move_toward": 5,
+        "reach_to_point": 1
+      },
+      "traverse_line": {
+        "traverse_line": 7,
+        "circle_axis": 1
+      },
+      "traverse_line_arced": {
+        "traverse_line": 2
+      },
+      "circle_axis": {
+        "circle_axis": 7
+      },
+      "oscillate_about_point": {
+        "oscillate_about_point": 27
+      },
+      "oscillate_along_line": {
+        "oscillate_along_line": 4
+      },
+      "draw_hither": {
+        "draw_hither": 3
+      },
+      "push_thither": {
+        "push_thither": 3
+      },
+      "transport_object": {
+        "transport_object": 5
+      },
+      "hand_across": {
+        "hand_across": 4
+      },
+      "track_with_gaze": {
+        "track_with_gaze": 3
+      },
+      "orient_effector": {
+        "orient_effector": 3
+      },
+      "hold_still": {
+        "hold_still": 6,
+        "reach_to_point": 1,
+        "oscillate_about_point": 1
+      },
+      "configure_effector": {
+        "configure_effector": 14
+      },
+      "approach_to_contact": {
+        "transport_object": 1
+      }
+    },
+    "by_error": {
+      "refusal_instead_of_reading:unafforded_schema": 9,
+      "manner:{}->{'amplitude': -1}": 3,
+      "remove:medial->distal": 3,
+      "entry:traverse_line_arced->traverse_line": 2,
+      "entry:reach_to_edge->reach_to_point": 2,
+      "repetition_count:None->5": 2,
+      "segment_count:2->1": 2,
+      "entry:arc_to_surface->descend_to_surface": 1,
+      "repetition_count:None->3": 1,
+      "remove:distal->medial": 1,
+      "remove:medial->proximal": 1,
+      "entry:reach_to_point->oscillate_about_point": 1,
+      "entry:hold_still->reach_to_point": 1,
+      "manner:{}->{'speed': 1}": 1,
+      "entry:hold_still->oscillate_about_point": 1,
+      "entry:approach_to_contact->transport_object": 1,
+      "entry:traverse_line->circle_axis": 1,
+      "entry:move_away->reach_to_point": 1,
+      "entry:move_away->retract_from_point": 1,
+      "entry:move_toward->reach_to_point": 1,
+      "remove:proximal->medial": 1
+    }
+  },
+  "model": {
+    "errors": [
+      {
+        "case_id": "L003",
+        "family": "paraphrase",
+        "prompt": "put your hand out there",
+        "error": "remove:distal->medial",
+        "expected": [
+          {
+            "segment_id": "s0",
+            "entry_id": "reach_to_point",
+            "remove": "distal",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ],
+        "actual": [
+          {
+            "segment_id": "s0",
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      {
+        "case_id": "L057",
+        "family": "negation",
+        "prompt": "reach out, not too far",
+        "error": "remove:medial->proximal",
+        "expected": [
+          {
+            "segment_id": "s0",
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ],
+        "actual": [
+          {
+            "segment_id": "s0",
+            "entry_id": "reach_to_point",
+            "remove": "proximal",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      {
+        "case_id": "L066",
+        "family": "ambiguous_deixis",
+        "prompt": "move it away",
+        "error": "entry:move_away->push_thither",
+        "expected": [
+          {
+            "segment_id": "s0",
+            "entry_id": "move_away",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ],
+        "actual": [
+          {
+            "segment_id": "s0",
+            "entry_id": "push_thither",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      {
+        "case_id": "L072",
+        "family": "ambiguous_deixis",
+        "prompt": "reach toward me",
+        "error": "entry:move_toward->reach_to_point",
+        "expected": [
+          {
+            "segment_id": "s0",
+            "entry_id": "move_toward",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ],
+        "actual": [
+          {
+            "segment_id": "s0",
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      {
+        "case_id": "L084",
+        "family": "explicit_quantity",
+        "prompt": "reach out about 5 cm",
+        "error": "manner:{'precision': -1}->{}",
+        "expected": [
+          {
+            "segment_id": "s0",
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {
+              "precision": -1
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": [
+              {
+                "text": "5 cm",
+                "value_m": 0.05
+              }
+            ]
+          }
+        ],
+        "actual": [
+          {
+            "segment_id": "s0",
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": [
+              {
+                "text": "5 cm",
+                "value_m": 0.05
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "case_id": "L094",
+        "family": "manner",
+        "prompt": "reach out really slowly",
+        "error": "manner:{'speed': -1}->{'speed': -2}",
+        "expected": [
+          {
+            "segment_id": "s0",
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {
+              "speed": -1
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ],
+        "actual": [
+          {
+            "segment_id": "s0",
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {
+              "speed": -2
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      }
+    ],
+    "entry_matrix": {
+      "reach_to_point": {
+        "reach_to_point": 43
+      },
+      "reach_to_edge": {
+        "reach_to_edge": 7
+      },
+      "swing_to_point": {
+        "swing_to_point": 1
+      },
+      "descend_to_surface": {
+        "descend_to_surface": 8
+      },
+      "arc_to_surface": {
+        "arc_to_surface": 1
+      },
+      "enter_volume": {
+        "enter_volume": 1
+      },
+      "retract_from_point": {
+        "retract_from_point": 14
+      },
+      "retract_from_surface": {
+        "retract_from_surface": 9
+      },
+      "move_away": {
+        "move_away": 4,
+        "push_thither": 1
+      },
+      "move_toward": {
+        "move_toward": 6,
+        "reach_to_point": 1
+      },
+      "traverse_line": {
+        "traverse_line": 8
+      },
+      "traverse_line_arced": {
+        "traverse_line_arced": 2
+      },
+      "circle_axis": {
+        "circle_axis": 8
+      },
+      "oscillate_about_point": {
+        "oscillate_about_point": 27
+      },
+      "oscillate_along_line": {
+        "oscillate_along_line": 4
+      },
+      "pass_through_point": {
+        "pass_through_point": 1
+      },
+      "draw_hither": {
+        "draw_hither": 4
+      },
+      "push_thither": {
+        "push_thither": 3
+      },
+      "approach_to_contact": {
+        "approach_to_contact": 2
+      },
+      "transport_object": {
+        "transport_object": 5
+      },
+      "hand_across": {
+        "hand_across": 4
+      },
+      "track_with_gaze": {
+        "track_with_gaze": 4
+      },
+      "orient_effector": {
+        "orient_effector": 3
+      },
+      "hold_still": {
+        "hold_still": 8
+      },
+      "press": {
+        "press": 2
+      },
+      "configure_effector": {
+        "configure_effector": 15
+      }
+    },
+    "by_error": {
+      "remove:distal->medial": 1,
+      "remove:medial->proximal": 1,
+      "entry:move_away->push_thither": 1,
+      "entry:move_toward->reach_to_point": 1,
+      "manner:{'precision': -1}->{}": 1,
+      "manner:{'speed': -1}->{'speed': -2}": 1
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "cost_usd": 0.0003574,
+  "created_at_utc": "2026-09-13T17:29:04.851168+00:00",
+  "key": "9267d011aa1bdbb5b78f932918090c287431348bc0807bcc9472344db1eef46e",
+  "model": "gpt-4.1-nano-2025-04-14",
+  "prompt": "open your hand",
+  "purpose": "select:gpt-4.1-nano",
+  "reply": {
+    "segments": [
+      {
+        "clause": "open your hand",
+        "entry_id": "configure_effector",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": {
+          "group": "opposed",
+          "opposing": "flexed",
+          "remainder": "flexed",
+          "selected": "extended",
+          "selected_count": 0
+        },
+        "quantities": [],
+        "remove": "adjacent"
+      }
+    ],
+    "unsupported_reason": "no motion in inventory matches 'open your hand'"
+  },
+  "requested_model": "gpt-4.1-nano",
+  "schema_sha256": "9d83406652cf48179ff407f9ffe7f29d943d29109ee800c7036f9fb62ca4c5fd",
+  "system_sha256": "32cb644ff94921917cbb30d7260c0c2d07d81329ff07d2afa7a1aac64f3c1af8",
+  "transport": "openai",
+  "usage": {
+    "completion_tokens": 115,
+    "estimated": false,
+    "prompt_tokens": 3114
+  }
+}

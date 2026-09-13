@@ -1,0 +1,45 @@
+{
+  "cost_usd": 0.0002975,
+  "created_at_utc": "2026-09-13T17:17:45.194145+00:00",
+  "key": "9955289f06ef77c684734139422c526e2121c0546959217bed0d17657b25b154",
+  "model": "gpt-4.1-nano-2025-04-14",
+  "prompt": "make a fist",
+  "purpose": "select:gpt-4.1-nano",
+  "reply": {
+    "segments": [
+      {
+        "clause": "make a fist",
+        "entry_id": "configure_effector",
+        "manner": {
+          "amplitude": 0,
+          "effort": 1,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": {
+          "group": "opposed",
+          "opposing": "flexed",
+          "remainder": "flexed",
+          "selected": "flexed",
+          "selected_count": 0
+        },
+        "quantities": [],
+        "remove": "adjacent"
+      }
+    ],
+    "unsupported_reason": null
+  },
+  "requested_model": "gpt-4.1-nano",
+  "schema_sha256": "5901b440dee4f3fc08a28479a2692d25f65af7930a1198721ec0af934a451473",
+  "system_sha256": "3d079750c0b00547748e68e38d2ddff75914b6583ee60fd9d49c2f82cb880153",
+  "transport": "openai",
+  "usage": {
+    "completion_tokens": 108,
+    "estimated": false,
+    "prompt_tokens": 2543
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "cost_usd": 0.0014805,
+  "created_at_utc": "2026-09-13T17:44:14.584113+00:00",
+  "key": "4c9369b9319dbc49d55ea3febe40a07934783b23085af88f5af79261b697f450",
+  "model": "gpt-5-mini-2025-08-07",
+  "prompt": "reach out then come back",
+  "purpose": "select:gpt-5-mini@low",
+  "reply": {
+    "segments": [
+      {
+        "clause": "reach out",
+        "entry_id": "reach_to_point",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": null,
+        "quantities": [],
+        "remove": "medial"
+      },
+      {
+        "clause": "come back",
+        "entry_id": "retract_from_point",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": null,
+        "quantities": [],
+        "remove": "medial"
+      }
+    ],
+    "unsupported_reason": null
+  },
+  "requested_model": "gpt-5-mini@low",
+  "schema_sha256": "9d83406652cf48179ff407f9ffe7f29d943d29109ee800c7036f9fb62ca4c5fd",
+  "system_sha256": "5e8011d65a799d4783416edd6ea4e9a4a1acd0b9177228ef032b31ac2682083d",
+  "transport": "openai",
+  "usage": {
+    "completion_tokens": 323,
+    "estimated": false,
+    "prompt_tokens": 3338
+  }
+}

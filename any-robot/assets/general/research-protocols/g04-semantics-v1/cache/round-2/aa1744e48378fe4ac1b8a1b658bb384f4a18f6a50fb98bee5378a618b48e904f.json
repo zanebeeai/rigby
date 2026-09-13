@@ -1,0 +1,45 @@
+{
+  "cost_usd": 0.00023060000000000002,
+  "created_at_utc": "2026-09-13T17:28:26.332962+00:00",
+  "key": "aa1744e48378fe4ac1b8a1b658bb384f4a18f6a50fb98bee5378a618b48e904f",
+  "model": "gpt-5-nano-2025-08-07",
+  "prompt": "reach far out, then come back halfway",
+  "purpose": "select:gpt-5-nano",
+  "reply": {
+    "segments": [
+      {
+        "clause": "reach far out, then come back halfway",
+        "entry_id": "reach_to_point",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": null,
+        "quantities": [
+          {
+            "text": "far out",
+            "unit": "mm",
+            "value": 0
+          }
+        ],
+        "remove": "distal"
+      }
+    ],
+    "unsupported_reason": "The request contains no explicit segment markers. It appears to contain a single segment that names a known motion: reach_to_point with a distal remove and an implied large distance, but the system requires explicit numeric distance or a clear quantity. As written, there is no exact quantity in the required format. toggling to quantitative entry is not possible without a numeric distance."
+  },
+  "requested_model": "gpt-5-nano",
+  "schema_sha256": "9d83406652cf48179ff407f9ffe7f29d943d29109ee800c7036f9fb62ca4c5fd",
+  "system_sha256": "32cb644ff94921917cbb30d7260c0c2d07d81329ff07d2afa7a1aac64f3c1af8",
+  "transport": "openai",
+  "usage": {
+    "completion_tokens": 187,
+    "estimated": false,
+    "prompt_tokens": 3116
+  }
+}

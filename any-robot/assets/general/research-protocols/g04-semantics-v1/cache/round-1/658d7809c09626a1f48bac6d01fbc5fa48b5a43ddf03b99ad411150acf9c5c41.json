@@ -1,0 +1,62 @@
+{
+  "cost_usd": 0.00048779999999999993,
+  "created_at_utc": "2026-09-13T17:18:53.030120+00:00",
+  "key": "658d7809c09626a1f48bac6d01fbc5fa48b5a43ddf03b99ad411150acf9c5c41",
+  "model": "gpt-4o-mini-2024-07-18",
+  "prompt": "make a peace sign",
+  "purpose": "select:gpt-4o-mini",
+  "reply": {
+    "segments": [
+      {
+        "clause": "make a peace sign",
+        "entry_id": "configure_effector",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": {
+          "group": "opposed",
+          "opposing": "flexed",
+          "remainder": "flexed",
+          "selected": "extended",
+          "selected_count": 2
+        },
+        "quantities": [],
+        "remove": "adjacent"
+      },
+      {
+        "clause": "make a peace sign",
+        "entry_id": "hold_still",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": null,
+        "quantities": [],
+        "remove": "adjacent"
+      }
+    ],
+    "unsupported_reason": null
+  },
+  "requested_model": "gpt-4o-mini",
+  "schema_sha256": "5901b440dee4f3fc08a28479a2692d25f65af7930a1198721ec0af934a451473",
+  "system_sha256": "3d079750c0b00547748e68e38d2ddff75914b6583ee60fd9d49c2f82cb880153",
+  "transport": "openai",
+  "usage": {
+    "completion_tokens": 177,
+    "estimated": false,
+    "prompt_tokens": 2544
+  }
+}

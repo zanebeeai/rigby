@@ -1,0 +1,45 @@
+{
+  "cost_usd": 0.0008730000000000001,
+  "created_at_utc": "2026-09-13T17:20:33.964325+00:00",
+  "key": "1763612d9fc0cf2736d8243c76efc68bed17663c3f4c373b1b609a6f6a76a81c",
+  "model": "gpt-5-mini-2025-08-07",
+  "prompt": "three fingers up",
+  "purpose": "select:gpt-5-mini",
+  "reply": {
+    "segments": [
+      {
+        "clause": "three fingers up",
+        "entry_id": "configure_effector",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": {
+          "group": "opposed",
+          "opposing": "flexed",
+          "remainder": "flexed",
+          "selected": "extended",
+          "selected_count": 3
+        },
+        "quantities": [],
+        "remove": "adjacent"
+      }
+    ],
+    "unsupported_reason": null
+  },
+  "requested_model": "gpt-5-mini",
+  "schema_sha256": "5901b440dee4f3fc08a28479a2692d25f65af7930a1198721ec0af934a451473",
+  "system_sha256": "3d079750c0b00547748e68e38d2ddff75914b6583ee60fd9d49c2f82cb880153",
+  "transport": "openai",
+  "usage": {
+    "completion_tokens": 119,
+    "estimated": false,
+    "prompt_tokens": 2540
+  }
+}

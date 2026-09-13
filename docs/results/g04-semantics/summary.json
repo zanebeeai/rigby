@@ -1,0 +1,517 @@
+{
+  "schema": "g04.summary.v1",
+  "started_at_utc": "2026-09-13T17:46:16.914326+00:00",
+  "finished_at_utc": "2026-09-13T17:51:38.433626+00:00",
+  "commit": "3038d06a565136b84976a7ab5891c615dbb5f665",
+  "fixture_registration": "c517454cd8f8c5cd96cdc70ee7ffc2b90c9b64dd5fae9ac72528f046edd5a32b",
+  "model": "gpt-4.1",
+  "label_provenance": "internal",
+  "offline": {
+    "by_kind": {
+      "canonical": {
+        "cases": 60,
+        "exact": 53,
+        "exact_fraction": 0.8833,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [
+          "entry:arc_to_surface->descend_to_surface",
+          "entry:traverse_line_arced->traverse_line",
+          "manner:{}->{'amplitude': -1}",
+          "refusal_instead_of_reading:unafforded_schema",
+          "repetition_count:None->3"
+        ],
+        "stopped": 0
+      },
+      "language": {
+        "cases": 120,
+        "exact": 90,
+        "exact_fraction": 0.75,
+        "prohibited_cases": 27,
+        "prohibited_rejected": 17,
+        "errors": [
+          "entry:approach_to_contact->transport_object",
+          "entry:hold_still->oscillate_about_point",
+          "entry:hold_still->reach_to_point",
+          "entry:move_away->reach_to_point",
+          "entry:move_away->retract_from_point",
+          "entry:move_toward->reach_to_point",
+          "entry:reach_to_edge->reach_to_point",
+          "entry:reach_to_point->oscillate_about_point",
+          "entry:traverse_line->circle_axis",
+          "entry:traverse_line_arced->traverse_line",
+          "manner:{}->{'amplitude': -1}",
+          "manner:{}->{'speed': 1}",
+          "refusal_instead_of_reading:unafforded_schema",
+          "remove:distal->medial",
+          "remove:medial->distal",
+          "remove:medial->proximal",
+          "remove:proximal->medial",
+          "repetition_count:None->5",
+          "segment_count:2->1"
+        ],
+        "stopped": 0
+      }
+    },
+    "by_family": {
+      "ambiguous_deixis": {
+        "cases": 10,
+        "exact": 5,
+        "exact_fraction": 0.5,
+        "prohibited_cases": 1,
+        "prohibited_rejected": 1,
+        "errors": [
+          "entry:move_away->reach_to_point",
+          "entry:move_away->retract_from_point",
+          "entry:move_toward->reach_to_point",
+          "refusal_instead_of_reading:unafforded_schema"
+        ],
+        "stopped": 0
+      },
+      "amplitude": {
+        "cases": 3,
+        "exact": 3,
+        "exact_fraction": 1.0,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [],
+        "stopped": 0
+      },
+      "effort": {
+        "cases": 2,
+        "exact": 2,
+        "exact_fraction": 1.0,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [],
+        "stopped": 0
+      },
+      "entry": {
+        "cases": 23,
+        "exact": 18,
+        "exact_fraction": 0.7826,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [
+          "entry:arc_to_surface->descend_to_surface",
+          "entry:traverse_line_arced->traverse_line",
+          "refusal_instead_of_reading:unafforded_schema"
+        ],
+        "stopped": 0
+      },
+      "explicit_quantity": {
+        "cases": 20,
+        "exact": 17,
+        "exact_fraction": 0.85,
+        "prohibited_cases": 1,
+        "prohibited_rejected": 1,
+        "errors": [
+          "remove:proximal->medial",
+          "repetition_count:None->5"
+        ],
+        "stopped": 0
+      },
+      "extent": {
+        "cases": 3,
+        "exact": 2,
+        "exact_fraction": 0.6667,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [
+          "manner:{}->{'amplitude': -1}"
+        ],
+        "stopped": 0
+      },
+      "frame": {
+        "cases": 2,
+        "exact": 2,
+        "exact_fraction": 1.0,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [],
+        "stopped": 0
+      },
+      "manner": {
+        "cases": 12,
+        "exact": 11,
+        "exact_fraction": 0.9167,
+        "prohibited_cases": 1,
+        "prohibited_rejected": 1,
+        "errors": [
+          "refusal_instead_of_reading:unafforded_schema"
+        ],
+        "stopped": 0
+      },
+      "minimal_contrast": {
+        "cases": 20,
+        "exact": 15,
+        "exact_fraction": 0.75,
+        "prohibited_cases": 12,
+        "prohibited_rejected": 11,
+        "errors": [
+          "entry:traverse_line_arced->traverse_line",
+          "manner:{}->{'amplitude': -1}",
+          "refusal_instead_of_reading:unafforded_schema",
+          "remove:distal->medial",
+          "remove:medial->proximal"
+        ],
+        "stopped": 0
+      },
+      "negation": {
+        "cases": 12,
+        "exact": 3,
+        "exact_fraction": 0.25,
+        "prohibited_cases": 12,
+        "prohibited_rejected": 3,
+        "errors": [
+          "entry:approach_to_contact->transport_object",
+          "entry:hold_still->oscillate_about_point",
+          "entry:hold_still->reach_to_point",
+          "entry:reach_to_point->oscillate_about_point",
+          "entry:traverse_line->circle_axis",
+          "manner:{}->{'speed': 1}",
+          "remove:medial->distal"
+        ],
+        "stopped": 0
+      },
+      "paraphrase": {
+        "cases": 30,
+        "exact": 25,
+        "exact_fraction": 0.8333,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [
+          "entry:reach_to_edge->reach_to_point",
+          "manner:{}->{'amplitude': -1}",
+          "refusal_instead_of_reading:unafforded_schema"
+        ],
+        "stopped": 0
+      },
+      "posture": {
+        "cases": 6,
+        "exact": 5,
+        "exact_fraction": 0.8333,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [
+          "repetition_count:None->3"
+        ],
+        "stopped": 0
+      },
+      "precision": {
+        "cases": 2,
+        "exact": 2,
+        "exact_fraction": 1.0,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [],
+        "stopped": 0
+      },
+      "repetition": {
+        "cases": 4,
+        "exact": 4,
+        "exact_fraction": 1.0,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [],
+        "stopped": 0
+      },
+      "sequence": {
+        "cases": 17,
+        "exact": 15,
+        "exact_fraction": 0.8824,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [
+          "segment_count:2->1"
+        ],
+        "stopped": 0
+      },
+      "smoothness": {
+        "cases": 2,
+        "exact": 2,
+        "exact_fraction": 1.0,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [],
+        "stopped": 0
+      },
+      "speed": {
+        "cases": 4,
+        "exact": 4,
+        "exact_fraction": 1.0,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [],
+        "stopped": 0
+      },
+      "unsupported": {
+        "cases": 8,
+        "exact": 8,
+        "exact_fraction": 1.0,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [],
+        "stopped": 0
+      }
+    }
+  },
+  "model_planner": {
+    "by_kind": {
+      "canonical": {
+        "cases": 60,
+        "exact": 60,
+        "exact_fraction": 1.0,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [],
+        "stopped": 0
+      },
+      "language": {
+        "cases": 120,
+        "exact": 114,
+        "exact_fraction": 0.95,
+        "prohibited_cases": 27,
+        "prohibited_rejected": 27,
+        "errors": [
+          "entry:move_away->push_thither",
+          "entry:move_toward->reach_to_point",
+          "manner:{'precision': -1}->{}",
+          "manner:{'speed': -1}->{'speed': -2}",
+          "remove:distal->medial",
+          "remove:medial->proximal"
+        ],
+        "stopped": 0
+      }
+    },
+    "by_family": {
+      "ambiguous_deixis": {
+        "cases": 10,
+        "exact": 8,
+        "exact_fraction": 0.8,
+        "prohibited_cases": 1,
+        "prohibited_rejected": 1,
+        "errors": [
+          "entry:move_away->push_thither",
+          "entry:move_toward->reach_to_point"
+        ],
+        "stopped": 0
+      },
+      "amplitude": {
+        "cases": 3,
+        "exact": 3,
+        "exact_fraction": 1.0,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [],
+        "stopped": 0
+      },
+      "effort": {
+        "cases": 2,
+        "exact": 2,
+        "exact_fraction": 1.0,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [],
+        "stopped": 0
+      },
+      "entry": {
+        "cases": 23,
+        "exact": 23,
+        "exact_fraction": 1.0,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [],
+        "stopped": 0
+      },
+      "explicit_quantity": {
+        "cases": 20,
+        "exact": 19,
+        "exact_fraction": 0.95,
+        "prohibited_cases": 1,
+        "prohibited_rejected": 1,
+        "errors": [
+          "manner:{'precision': -1}->{}"
+        ],
+        "stopped": 0
+      },
+      "extent": {
+        "cases": 3,
+        "exact": 3,
+        "exact_fraction": 1.0,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [],
+        "stopped": 0
+      },
+      "frame": {
+        "cases": 2,
+        "exact": 2,
+        "exact_fraction": 1.0,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [],
+        "stopped": 0
+      },
+      "manner": {
+        "cases": 12,
+        "exact": 11,
+        "exact_fraction": 0.9167,
+        "prohibited_cases": 1,
+        "prohibited_rejected": 1,
+        "errors": [
+          "manner:{'speed': -1}->{'speed': -2}"
+        ],
+        "stopped": 0
+      },
+      "minimal_contrast": {
+        "cases": 20,
+        "exact": 20,
+        "exact_fraction": 1.0,
+        "prohibited_cases": 12,
+        "prohibited_rejected": 12,
+        "errors": [],
+        "stopped": 0
+      },
+      "negation": {
+        "cases": 12,
+        "exact": 11,
+        "exact_fraction": 0.9167,
+        "prohibited_cases": 12,
+        "prohibited_rejected": 12,
+        "errors": [
+          "remove:medial->proximal"
+        ],
+        "stopped": 0
+      },
+      "paraphrase": {
+        "cases": 30,
+        "exact": 29,
+        "exact_fraction": 0.9667,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [
+          "remove:distal->medial"
+        ],
+        "stopped": 0
+      },
+      "posture": {
+        "cases": 6,
+        "exact": 6,
+        "exact_fraction": 1.0,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [],
+        "stopped": 0
+      },
+      "precision": {
+        "cases": 2,
+        "exact": 2,
+        "exact_fraction": 1.0,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [],
+        "stopped": 0
+      },
+      "repetition": {
+        "cases": 4,
+        "exact": 4,
+        "exact_fraction": 1.0,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [],
+        "stopped": 0
+      },
+      "sequence": {
+        "cases": 17,
+        "exact": 17,
+        "exact_fraction": 1.0,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [],
+        "stopped": 0
+      },
+      "smoothness": {
+        "cases": 2,
+        "exact": 2,
+        "exact_fraction": 1.0,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [],
+        "stopped": 0
+      },
+      "speed": {
+        "cases": 4,
+        "exact": 4,
+        "exact_fraction": 1.0,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [],
+        "stopped": 0
+      },
+      "unsupported": {
+        "cases": 8,
+        "exact": 8,
+        "exact_fraction": 1.0,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [],
+        "stopped": 0
+      }
+    }
+  },
+  "stopped": null,
+  "fallback_used": false,
+  "agreement": {
+    "offline": {
+      "cases": 60,
+      "all_agree": 53,
+      "applicable_body_cases": 302
+    },
+    "model": {
+      "cases": 60,
+      "all_agree": 60,
+      "applicable_body_cases": 302
+    }
+  },
+  "spend": {
+    "totals": {
+      "calls_logged": 637,
+      "paid_calls": 117,
+      "cached_hits": 520,
+      "mock_calls": 0,
+      "prompt_tokens_paid": 390873,
+      "completion_tokens_paid": 10752,
+      "dollars": 0.867762
+    },
+    "budget": {
+      "hard_ceiling_usd": 20.0,
+      "soft_cap_usd": 18.0,
+      "spent_before_usd": 1.7,
+      "spent_here_usd": 0.867762,
+      "paid_calls": 117
+    },
+    "planner": {
+      "model": "gpt-4.1",
+      "transport": "openai",
+      "calls": 637,
+      "cached_hits": 520,
+      "paid_calls": 117,
+      "prompt_tokens": 390873,
+      "completion_tokens": 10752,
+      "dollars": 0.867762,
+      "fallback_used": false,
+      "stopped": null
+    }
+  },
+  "grounding": {
+    "offline": {
+      "cases": 20,
+      "accepted": 17
+    },
+    "model": {
+      "cases": 20,
+      "accepted": 17
+    }
+  }
+}

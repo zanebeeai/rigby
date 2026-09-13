@@ -274,6 +274,7 @@ def _waypoints(
     binding: _Binding,
     inventory: SchemaInventory,
     manner: magnitudes.ResolvedManner,
+    requested_distance_m: float | None = None,
 ) -> list[np.ndarray]:
     """The point sequence a schema describes, in world coordinates.
 
@@ -309,6 +310,26 @@ def _waypoints(
         radius_fraction=fraction, azimuth_deg=azimuth, elevation_deg=elevation
     )
 
+    if requested_distance_m is not None and (
+        motion.contour is not Contour.STRAIGHT
+        or motion.conformation is not Conformation.POINT
+        or motion.vector not in (PathVector.TO, PathVector.FROM, PathVector.TOWARD, PathVector.AWAY)
+    ):
+        # A stated distance is a displacement along a straight path to, from,
+        # toward or away from a point. On a wave, a circle, a sweep or a
+        # boundary it would have to become an amplitude, a radius or a span,
+        # and reading it as one of those silently is the substitution this
+        # layer exists to refuse. It is refused here, typed, and reported as
+        # unsupported coverage rather than dropped.
+        raise GroundingError(
+            f"{segment.segment_id}: a stated distance applies to a straight motion to, from, "
+            f"toward or away from a point; {motion.canonical_key} would have to read it as "
+            "an amplitude or a span, which nobody asked for",
+            schema_key=motion.canonical_key,
+            measurement="quantity_unsupported",
+            details={"requested_m": float(requested_distance_m), "segment_id": segment.segment_id},
+        )
+
     if motion.contour is Contour.OSCILLATING:
         return _oscillation_waypoints(frame, fraction, azimuth, elevation, manner, motion)
     if motion.contour is Contour.CIRCULAR:
@@ -317,6 +338,37 @@ def _waypoints(
         return _line_waypoints(frame, fraction, azimuth, elevation, motion)
 
     start, end = _endpoints_for_vector(frame, motion.vector, anchor, fraction, azimuth, elevation)
+    if requested_distance_m is not None:
+        # The stated distance is travelled from where the effector begins,
+        # along the bearing the qualitative reading would have taken. The
+        # qualitative remove is a region of the body's reach measured from
+        # the chain root; a stated distance is a displacement of the effector.
+        # Both are kept distinct on purpose: the first is what "a little"
+        # means to this body, the second is what "5 cm" means to anybody.
+        direction = np.asarray(end, dtype=float) - np.asarray(start, dtype=float)
+        length = float(np.linalg.norm(direction))
+        if length < 1e-9:
+            raise GroundingError(
+                f"{segment.segment_id} has no bearing to travel a stated distance along",
+                schema_key=motion.canonical_key,
+                measurement="quantity_unsupported",
+                details={"requested_m": float(requested_distance_m), "segment_id": segment.segment_id},
+            )
+        exact_end = np.asarray(start, dtype=float) + direction / length * float(requested_distance_m)
+        if not frame.contains(exact_end, margin=1.02):
+            raise GroundingError(
+                f"{segment.segment_id}: the stated {requested_distance_m * 100:.1f} cm ends "
+                f"{float(np.linalg.norm(exact_end - frame.origin)):.3f} m from the chain root, "
+                "outside what this body was measured to reach along that bearing",
+                schema_key=motion.canonical_key,
+                measurement="quantity_beyond_reach",
+                details={
+                    "requested_m": float(requested_distance_m),
+                    "qualitative_travel_m": length,
+                    "segment_id": segment.segment_id,
+                },
+            )
+        end = exact_end
 
     if motion.contour is Contour.ARCED:
         midpoint = (start + end) / 2.0
@@ -646,8 +698,17 @@ def ground(
     seed: int = 0,
     contact_scene: bool = False,
     duration_scale: float = 1.0,
+    requested_distances_m: dict[str, float] | None = None,
 ) -> GroundedProgram:
     """Ground a body-neutral program against one robot. No model call.
+
+    ``requested_distances_m`` maps a segment id to a distance the request
+    stated in so many words ("5 cm"): that segment's endpoint is placed
+    exactly that far from where the effector starts, along the bearing the
+    segment's qualitative reading would have taken, and refused typed if
+    that point is outside what the body was measured to reach. A distance
+    nobody stated never enters here; the qualitative remove grounds
+    body-relatively as before.
 
     ``duration_scale`` stretches every segment uniformly. The analytic velocity
     margin below gets the timing close, but the closed-loop response overshoots
@@ -716,7 +777,7 @@ def ground(
         )
         fastest = max(fastest, resolved.speed_mps)
 
-        points = _waypoints(segment, binding, inventory, resolved)
+        points = _waypoints(segment, binding, inventory, resolved, requested_distance_m=(requested_distances_m or {}).get(segment.segment_id))
         for point in points:
             if not binding.frame.contains(point, margin=1.02):
                 azimuth, elevation = binding.frame.bearing_of(point)

@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-reach-out-as-far-as-you-can-bae1b255",
+  "title": "D04: 'reach out as far as you can' on zoo_long_arm",
+  "prompt": "reach out as far as you can",
+  "tier": "any-robot",
+  "embodiment": "zoo_long_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T18:04:07Z",
+  "source": {
+    "commit": "3038d06a56",
+    "branch": "feat/g04-semantics",
+    "dirty": true,
+    "how": "python any-robot/scripts/g04_d04_media.py --out docs/results/g04-d04 --local any-robot/results/g04-d04 --model <selected model>"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: read as reach_to_edge remove=distal, no stated quantity; effector travelled 223.0 cm (109% of a 2.05 m reach) in 31.46 s of physics."
+  },
+  "notes": "See docs/results/g04-report.md. One prompt read once, body-neutrally, by the model planner (the reply served from the committed cache), grounded by this body's own measured reach, executed on native physics with the recorder and rendered from recorded states at real-time playback; the banner carries the reading's entry and remove, the stated quantity or its absence, the effector's measured travel from its start on every frame, the reach fraction and the reading's hash; frames.json beside the MP4 maps every frame to its recorded sample.",
+  "media": [
+    {
+      "path": "docs/results/g04-d04/zoo_long_arm/edge/media/episode.mp4",
+      "bytes": 218666,
+      "sha256": "64da30fab3988bd28f35cd232a3a55ee67d06c15b3ad44a1d53c8b9d0a3f0496",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g04-d04/zoo_long_arm/edge/media/preview.gif",
+      "bytes": 783598,
+      "sha256": "41eadcde0c4b646231b8e9462d9cd1bc63d626df69217f55207f4cc71eb789c1",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G04",
+    "D04",
+    "edge",
+    "zoo_long_arm",
+    "success"
+  ]
+}

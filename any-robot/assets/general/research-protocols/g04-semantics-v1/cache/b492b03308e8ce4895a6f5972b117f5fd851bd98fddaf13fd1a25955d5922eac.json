@@ -1,0 +1,68 @@
+{
+  "cost_usd": 0.001771,
+  "created_at_utc": "2026-09-13T17:44:39.179255+00:00",
+  "key": "b492b03308e8ce4895a6f5972b117f5fd851bd98fddaf13fd1a25955d5922eac",
+  "model": "gpt-5-mini-2025-08-07",
+  "prompt": "make a fist then open your hand",
+  "purpose": "select:gpt-5-mini@low",
+  "reply": {
+    "segments": [
+      {
+        "clause": "make a fist",
+        "entry_id": "configure_effector",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": {
+          "group": "opposed",
+          "opposing": "flexed",
+          "remainder": "flexed",
+          "selected": "extended",
+          "selected_count": 0
+        },
+        "quantities": [],
+        "remove": "adjacent"
+      },
+      {
+        "clause": "open your hand",
+        "entry_id": "configure_effector",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": {
+          "group": "opposed",
+          "opposing": "extended",
+          "remainder": "extended",
+          "selected": "extended",
+          "selected_count": 0
+        },
+        "quantities": [],
+        "remove": "adjacent"
+      }
+    ],
+    "unsupported_reason": null
+  },
+  "requested_model": "gpt-5-mini@low",
+  "schema_sha256": "9d83406652cf48179ff407f9ffe7f29d943d29109ee800c7036f9fb62ca4c5fd",
+  "system_sha256": "5e8011d65a799d4783416edd6ea4e9a4a1acd0b9177228ef032b31ac2682083d",
+  "transport": "openai",
+  "usage": {
+    "completion_tokens": 468,
+    "estimated": false,
+    "prompt_tokens": 3340
+  }
+}

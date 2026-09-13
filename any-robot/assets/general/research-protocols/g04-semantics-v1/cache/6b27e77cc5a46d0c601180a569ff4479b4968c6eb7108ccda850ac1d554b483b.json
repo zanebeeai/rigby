@@ -1,0 +1,45 @@
+{
+  "cost_usd": 0.007528,
+  "created_at_utc": "2026-09-13T17:45:16.200755+00:00",
+  "key": "6b27e77cc5a46d0c601180a569ff4479b4968c6eb7108ccda850ac1d554b483b",
+  "model": "gpt-4.1-2025-04-14",
+  "prompt": "point with one finger",
+  "purpose": "select:gpt-4.1",
+  "reply": {
+    "segments": [
+      {
+        "clause": "point with one finger",
+        "entry_id": "configure_effector",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": {
+          "group": "opposed",
+          "opposing": "flexed",
+          "remainder": "flexed",
+          "selected": "extended",
+          "selected_count": 1
+        },
+        "quantities": [],
+        "remove": "adjacent"
+      }
+    ],
+    "unsupported_reason": null
+  },
+  "requested_model": "gpt-4.1",
+  "schema_sha256": "9d83406652cf48179ff407f9ffe7f29d943d29109ee800c7036f9fb62ca4c5fd",
+  "system_sha256": "5e8011d65a799d4783416edd6ea4e9a4a1acd0b9177228ef032b31ac2682083d",
+  "transport": "openai",
+  "usage": {
+    "completion_tokens": 106,
+    "estimated": false,
+    "prompt_tokens": 3340
+  }
+}

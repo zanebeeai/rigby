@@ -1,0 +1,56 @@
+{
+  "cost_usd": 0.007452,
+  "created_at_utc": "2026-09-13T17:36:51.248390+00:00",
+  "key": "084b43d60f0a5162e8dfc5eedb36d9bb3479f96cb87d583b12a53f2a95b053ad",
+  "model": "gpt-4.1-2025-04-14",
+  "prompt": "look at it then move toward it",
+  "purpose": "select:gpt-4.1",
+  "reply": {
+    "segments": [
+      {
+        "clause": "look at it",
+        "entry_id": "track_with_gaze",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": null,
+        "quantities": [],
+        "remove": "medial"
+      },
+      {
+        "clause": "move toward it",
+        "entry_id": "move_toward",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": null,
+        "quantities": [],
+        "remove": "medial"
+      }
+    ],
+    "unsupported_reason": null
+  },
+  "requested_model": "gpt-4.1",
+  "schema_sha256": "9d83406652cf48179ff407f9ffe7f29d943d29109ee800c7036f9fb62ca4c5fd",
+  "system_sha256": "32cb644ff94921917cbb30d7260c0c2d07d81329ff07d2afa7a1aac64f3c1af8",
+  "transport": "openai",
+  "usage": {
+    "completion_tokens": 152,
+    "estimated": false,
+    "prompt_tokens": 3118
+  }
+}

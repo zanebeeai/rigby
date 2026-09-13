@@ -78,6 +78,9 @@ class RunTrace:
     robot: dict[str, Any] = field(default_factory=dict)
     schema_program: dict[str, Any] | None = None
     role_normalized_hash: str | None = None
+    requested_quantities: list[dict[str, Any]] = field(default_factory=list)
+    """Distances the request stated in so many words, kept beside the metric-free program."""
+    planner: dict[str, Any] = field(default_factory=dict)
     bindings: list[dict[str, Any]] = field(default_factory=list)
     grounded: dict[str, Any] | None = None
     certification: dict[str, Any] | None = None
@@ -128,6 +131,8 @@ class RunTrace:
             "stages": [stage.to_json() for stage in self.stages],
             "schema_program": self.schema_program,
             "role_normalized_hash": self.role_normalized_hash,
+            "requested_quantities": list(self.requested_quantities),
+            "planner": dict(self.planner),
             "bindings": self.bindings,
             "grounded": self.grounded,
             "certification": self.certification,

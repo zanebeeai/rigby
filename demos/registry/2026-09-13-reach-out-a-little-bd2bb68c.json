@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-reach-out-a-little-bd2bb68c",
+  "title": "D04: 'reach out a little' on zoo_jaw_arm",
+  "prompt": "reach out a little",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T18:04:05Z",
+  "source": {
+    "commit": "3038d06a56",
+    "branch": "feat/g04-semantics",
+    "dirty": true,
+    "how": "python any-robot/scripts/g04_d04_media.py --out docs/results/g04-d04 --local any-robot/results/g04-d04 --model <selected model>"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: read as reach_to_point remove=proximal, no stated quantity; effector travelled 121.7 cm (92% of a 1.32 m reach) in 22.09 s of physics."
+  },
+  "notes": "See docs/results/g04-report.md. One prompt read once, body-neutrally, by the model planner (the reply served from the committed cache), grounded by this body's own measured reach, executed on native physics with the recorder and rendered from recorded states at real-time playback; the banner carries the reading's entry and remove, the stated quantity or its absence, the effector's measured travel from its start on every frame, the reach fraction and the reading's hash; frames.json beside the MP4 maps every frame to its recorded sample.",
+  "media": [
+    {
+      "path": "docs/results/g04-d04/zoo_jaw_arm/little/media/episode.mp4",
+      "bytes": 175469,
+      "sha256": "0d0e23903899f9f8e7b6b9331fe5229c6c991dcefd831f7d1acea879dffec8b7",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g04-d04/zoo_jaw_arm/little/media/preview.gif",
+      "bytes": 749491,
+      "sha256": "6572a11ae934301e9d525d8e24fc3983ce28ba41227a5a187faee542174444c2",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G04",
+    "D04",
+    "little",
+    "zoo_jaw_arm",
+    "success"
+  ]
+}

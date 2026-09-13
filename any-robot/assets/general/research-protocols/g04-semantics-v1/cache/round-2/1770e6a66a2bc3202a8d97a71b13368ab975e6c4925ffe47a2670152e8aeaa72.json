@@ -1,0 +1,39 @@
+{
+  "cost_usd": 0.00026500000000000004,
+  "created_at_utc": "2026-09-13T17:28:20.989121+00:00",
+  "key": "1770e6a66a2bc3202a8d97a71b13368ab975e6c4925ffe47a2670152e8aeaa72",
+  "model": "gpt-5-nano-2025-08-07",
+  "prompt": "lower onto the table, then lift off",
+  "purpose": "select:gpt-5-nano",
+  "reply": {
+    "segments": [
+      {
+        "clause": "Request: lower onto the table, then lift off",
+        "entry_id": "descend_to_surface",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": null,
+        "quantities": [],
+        "remove": "proximal"
+      }
+    ],
+    "unsupported_reason": "The request contains a segment that names a motion: lower onto the table (descend_to_surface) and lift off (retract_from_surface). However, the instruction says to segment based on markers (then, and then, next, after that, afterwards, finally, and finally, followed by, before returning). The provided request uses a comma and a simple sequence; the system should interpret as two segments if markers present. Since only one explicit segment marker is present via 'then' in natural language? The request uses a comma to separate actions; there is no explicit marker word in the allowed set between segments. Therefore this is ambiguous and cannot be cleanly segmented into the defined inventory entries. No compliant second segment is provided, so we can only return one entry if we treat as single segment. If the system requires segmentation by markers, this is unsupported."
+  },
+  "requested_model": "gpt-5-nano",
+  "schema_sha256": "9d83406652cf48179ff407f9ffe7f29d943d29109ee800c7036f9fb62ca4c5fd",
+  "system_sha256": "32cb644ff94921917cbb30d7260c0c2d07d81329ff07d2afa7a1aac64f3c1af8",
+  "transport": "openai",
+  "usage": {
+    "completion_tokens": 273,
+    "estimated": false,
+    "prompt_tokens": 3116
+  }
+}

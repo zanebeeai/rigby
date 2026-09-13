@@ -1,0 +1,21 @@
+{
+  "cost_usd": 0.001062,
+  "created_at_utc": "2026-09-13T17:31:53.595278+00:00",
+  "key": "86937685fd1b7c9a1ea7176b0ecf1446ee31249e5e8840f9e6b9ad6b5910bd10",
+  "model": "gpt-5-mini-2025-08-07",
+  "prompt": "give a thumbs up",
+  "purpose": "select:gpt-5-mini",
+  "reply": {
+    "segments": [],
+    "unsupported_reason": "The request names a hand posture ('thumbs up'), which corresponds to configure_effector, but the phrase 'give a thumbs up' is a social/communicative gesture; however according to the inventory configure_effector is the only matching entry. The instruction set treats posture-only requests as configure_effector; because the user asked to give a thumbs up (a posture), this should map to configure_effector, but the developer rules require returning entries only \u2014 omitted due to ambiguity? On balance, no motion segment named in the request matches the inventory entries without assuming intent, so no segments returned."
+  },
+  "requested_model": "gpt-5-mini",
+  "schema_sha256": "9d83406652cf48179ff407f9ffe7f29d943d29109ee800c7036f9fb62ca4c5fd",
+  "system_sha256": "32cb644ff94921917cbb30d7260c0c2d07d81329ff07d2afa7a1aac64f3c1af8",
+  "transport": "openai",
+  "usage": {
+    "completion_tokens": 142,
+    "estimated": false,
+    "prompt_tokens": 3112
+  }
+}

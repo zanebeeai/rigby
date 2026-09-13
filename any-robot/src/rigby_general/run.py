@@ -182,6 +182,7 @@ def answer(
 ) -> RunResult:
     started = time.perf_counter()
     resolved_planner = planner or OfflineSchemaPlanner(inventory)
+    requested_distances_m: dict[str, float] = {}
     trace = RunTrace(prompt=prompt, robot_id=manifest.rig_id)
     trace.robot = _robot_summary(manifest)
 
@@ -206,7 +207,14 @@ def answer(
     # -- planning (the firewall runs inside it, before recognition) --------
     mark = time.perf_counter()
     try:
-        schema_program = resolved_planner.plan(prompt, afforded=afforded)
+        if hasattr(resolved_planner, "plan_request"):
+            planned = resolved_planner.plan_request(prompt, afforded=afforded)
+            schema_program = planned.program
+            requested_distances_m = planned.distances_m()
+            trace.requested_quantities = [q.model_dump(mode="json") for q in planned.quantities]
+            trace.planner = {"planner_id": planned.planner_id, "model": planned.model, "cached": planned.cached}
+        else:
+            schema_program = resolved_planner.plan(prompt, afforded=afforded)
     except RigbyGeneralError as error:
         elapsed = (time.perf_counter() - mark) * 1000.0
         stage = (
@@ -258,7 +266,7 @@ def answer(
     mark = time.perf_counter()
     try:
         bound = bind(
-            schema_program, manifest, model, inventory, records, failures, seed=seed
+            schema_program, manifest, model, inventory, records, failures, seed=seed, requested_distances_m=requested_distances_m or None
         )
     except RigbyGeneralError as error:
         # Merged rather than splatted alongside the explicit keys: an

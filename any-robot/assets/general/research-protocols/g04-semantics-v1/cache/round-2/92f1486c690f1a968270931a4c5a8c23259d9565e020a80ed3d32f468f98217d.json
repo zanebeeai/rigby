@@ -1,0 +1,39 @@
+{
+  "cost_usd": 0.00019395000000000003,
+  "created_at_utc": "2026-09-13T17:27:49.438130+00:00",
+  "key": "92f1486c690f1a968270931a4c5a8c23259d9565e020a80ed3d32f468f98217d",
+  "model": "gpt-5-nano-2025-08-07",
+  "prompt": "turn the wrist",
+  "purpose": "select:gpt-5-nano",
+  "reply": {
+    "segments": [
+      {
+        "clause": "turn the wrist",
+        "entry_id": "orient_effector",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": null,
+        "quantities": [],
+        "remove": "medial"
+      }
+    ],
+    "unsupported_reason": null
+  },
+  "requested_model": "gpt-5-nano",
+  "schema_sha256": "9d83406652cf48179ff407f9ffe7f29d943d29109ee800c7036f9fb62ca4c5fd",
+  "system_sha256": "32cb644ff94921917cbb30d7260c0c2d07d81329ff07d2afa7a1aac64f3c1af8",
+  "transport": "openai",
+  "usage": {
+    "completion_tokens": 96,
+    "estimated": false,
+    "prompt_tokens": 3111
+  }
+}

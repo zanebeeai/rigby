@@ -1,0 +1,56 @@
+{
+  "cost_usd": 0.0074459999999999995,
+  "created_at_utc": "2026-09-13T17:36:52.636225+00:00",
+  "key": "964f333864035a3976805e78070e295181a9717dabfffcba2b94105ed131778a",
+  "model": "gpt-4.1-2025-04-14",
+  "prompt": "reach far out, then come back halfway",
+  "purpose": "select:gpt-4.1",
+  "reply": {
+    "segments": [
+      {
+        "clause": "reach far out",
+        "entry_id": "reach_to_point",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": null,
+        "quantities": [],
+        "remove": "distal"
+      },
+      {
+        "clause": "come back halfway",
+        "entry_id": "retract_from_point",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": null,
+        "quantities": [],
+        "remove": "medial"
+      }
+    ],
+    "unsupported_reason": null
+  },
+  "requested_model": "gpt-4.1",
+  "schema_sha256": "9d83406652cf48179ff407f9ffe7f29d943d29109ee800c7036f9fb62ca4c5fd",
+  "system_sha256": "32cb644ff94921917cbb30d7260c0c2d07d81329ff07d2afa7a1aac64f3c1af8",
+  "transport": "openai",
+  "usage": {
+    "completion_tokens": 151,
+    "estimated": false,
+    "prompt_tokens": 3119
+  }
+}

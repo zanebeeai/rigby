@@ -1,0 +1,343 @@
+{
+  "schema": "g04.projection.v1",
+  "started_at_utc": "2026-09-13T17:40:18.659205+00:00",
+  "commit": "3038d06a565136b84976a7ab5891c615dbb5f665",
+  "fixture_registration": "d771326adfc0f7dd8171277386b78a37b660c7dc5937f835f232ca2269ed62fa",
+  "calls": 177,
+  "cases": 180,
+  "tokens_estimated_from_characters": true,
+  "chars_per_token": 3.5,
+  "prompt_tokens_total": 702841,
+  "completion_tokens_total": 16956,
+  "per_model": {
+    "gpt-5-nano": {
+      "prompt_tokens": 702841,
+      "completion_tokens": 63036,
+      "usd_once": 0.0604,
+      "usd_twice_with_margin": 0.1811,
+      "rates_usd_per_mtok": [
+        0.05,
+        0.4
+      ]
+    },
+    "gpt-4.1-nano": {
+      "prompt_tokens": 702841,
+      "completion_tokens": 16956,
+      "usd_once": 0.0771,
+      "usd_twice_with_margin": 0.2312,
+      "rates_usd_per_mtok": [
+        0.1,
+        0.4
+      ]
+    },
+    "gpt-4o-mini": {
+      "prompt_tokens": 702841,
+      "completion_tokens": 16956,
+      "usd_once": 0.1156,
+      "usd_twice_with_margin": 0.3468,
+      "rates_usd_per_mtok": [
+        0.15,
+        0.6
+      ]
+    },
+    "gpt-5-mini": {
+      "prompt_tokens": 702841,
+      "completion_tokens": 63036,
+      "usd_once": 0.3018,
+      "usd_twice_with_margin": 0.9053,
+      "rates_usd_per_mtok": [
+        0.25,
+        2.0
+      ]
+    },
+    "gpt-5-mini@low": {
+      "prompt_tokens": 702841,
+      "completion_tokens": 201276,
+      "usd_once": 0.5783,
+      "usd_twice_with_margin": 1.7348,
+      "rates_usd_per_mtok": [
+        0.25,
+        2.0
+      ]
+    },
+    "gpt-4.1": {
+      "prompt_tokens": 702841,
+      "completion_tokens": 16956,
+      "usd_once": 1.5413,
+      "usd_twice_with_margin": 4.624,
+      "rates_usd_per_mtok": [
+        2.0,
+        8.0
+      ]
+    },
+    "gpt-5@low": {
+      "prompt_tokens": 702841,
+      "completion_tokens": 385596,
+      "usd_once": 4.7345,
+      "usd_twice_with_margin": 14.2035,
+      "rates_usd_per_mtok": [
+        1.25,
+        10.0
+      ]
+    }
+  },
+  "all_candidates_once_usd": 7.409,
+  "protocol": {
+    "selection_canonical_only_every_candidate_usd": 2.4697,
+    "scoring_full_fixture_dearest_candidate_usd": 4.7345,
+    "worst_case_usd": 7.2042,
+    "worst_case_with_margin_usd": 10.8062
+  },
+  "soft_cap_usd": 18.0,
+  "fits_under_soft_cap": true,
+  "mock_reading_summary": {
+    "by_kind": {
+      "canonical": {
+        "cases": 60,
+        "exact": 53,
+        "exact_fraction": 0.8833,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [
+          "entry:arc_to_surface->descend_to_surface",
+          "entry:traverse_line_arced->traverse_line",
+          "manner:{}->{'amplitude': -1}",
+          "refusal_instead_of_reading:unafforded_schema",
+          "repetition_count:None->3"
+        ],
+        "stopped": 0
+      },
+      "language": {
+        "cases": 120,
+        "exact": 90,
+        "exact_fraction": 0.75,
+        "prohibited_cases": 27,
+        "prohibited_rejected": 17,
+        "errors": [
+          "entry:approach_to_contact->transport_object",
+          "entry:hold_still->oscillate_about_point",
+          "entry:hold_still->reach_to_point",
+          "entry:move_away->reach_to_point",
+          "entry:move_away->retract_from_point",
+          "entry:move_toward->reach_to_point",
+          "entry:reach_to_edge->reach_to_point",
+          "entry:reach_to_point->oscillate_about_point",
+          "entry:traverse_line->circle_axis",
+          "entry:traverse_line_arced->traverse_line",
+          "manner:{}->{'amplitude': -1}",
+          "manner:{}->{'speed': 1}",
+          "refusal_instead_of_reading:unafforded_schema",
+          "remove:distal->medial",
+          "remove:medial->distal",
+          "remove:medial->proximal",
+          "remove:proximal->medial",
+          "repetition_count:None->5",
+          "segment_count:2->1"
+        ],
+        "stopped": 0
+      }
+    },
+    "by_family": {
+      "ambiguous_deixis": {
+        "cases": 10,
+        "exact": 5,
+        "exact_fraction": 0.5,
+        "prohibited_cases": 1,
+        "prohibited_rejected": 1,
+        "errors": [
+          "entry:move_away->reach_to_point",
+          "entry:move_away->retract_from_point",
+          "entry:move_toward->reach_to_point",
+          "refusal_instead_of_reading:unafforded_schema"
+        ],
+        "stopped": 0
+      },
+      "amplitude": {
+        "cases": 3,
+        "exact": 3,
+        "exact_fraction": 1.0,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [],
+        "stopped": 0
+      },
+      "effort": {
+        "cases": 2,
+        "exact": 2,
+        "exact_fraction": 1.0,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [],
+        "stopped": 0
+      },
+      "entry": {
+        "cases": 23,
+        "exact": 18,
+        "exact_fraction": 0.7826,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [
+          "entry:arc_to_surface->descend_to_surface",
+          "entry:traverse_line_arced->traverse_line",
+          "refusal_instead_of_reading:unafforded_schema"
+        ],
+        "stopped": 0
+      },
+      "explicit_quantity": {
+        "cases": 20,
+        "exact": 17,
+        "exact_fraction": 0.85,
+        "prohibited_cases": 1,
+        "prohibited_rejected": 1,
+        "errors": [
+          "remove:proximal->medial",
+          "repetition_count:None->5"
+        ],
+        "stopped": 0
+      },
+      "extent": {
+        "cases": 3,
+        "exact": 2,
+        "exact_fraction": 0.6667,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [
+          "manner:{}->{'amplitude': -1}"
+        ],
+        "stopped": 0
+      },
+      "frame": {
+        "cases": 2,
+        "exact": 2,
+        "exact_fraction": 1.0,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [],
+        "stopped": 0
+      },
+      "manner": {
+        "cases": 12,
+        "exact": 11,
+        "exact_fraction": 0.9167,
+        "prohibited_cases": 1,
+        "prohibited_rejected": 1,
+        "errors": [
+          "refusal_instead_of_reading:unafforded_schema"
+        ],
+        "stopped": 0
+      },
+      "minimal_contrast": {
+        "cases": 20,
+        "exact": 15,
+        "exact_fraction": 0.75,
+        "prohibited_cases": 12,
+        "prohibited_rejected": 11,
+        "errors": [
+          "entry:traverse_line_arced->traverse_line",
+          "manner:{}->{'amplitude': -1}",
+          "refusal_instead_of_reading:unafforded_schema",
+          "remove:distal->medial",
+          "remove:medial->proximal"
+        ],
+        "stopped": 0
+      },
+      "negation": {
+        "cases": 12,
+        "exact": 3,
+        "exact_fraction": 0.25,
+        "prohibited_cases": 12,
+        "prohibited_rejected": 3,
+        "errors": [
+          "entry:approach_to_contact->transport_object",
+          "entry:hold_still->oscillate_about_point",
+          "entry:hold_still->reach_to_point",
+          "entry:reach_to_point->oscillate_about_point",
+          "entry:traverse_line->circle_axis",
+          "manner:{}->{'speed': 1}",
+          "remove:medial->distal"
+        ],
+        "stopped": 0
+      },
+      "paraphrase": {
+        "cases": 30,
+        "exact": 25,
+        "exact_fraction": 0.8333,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [
+          "entry:reach_to_edge->reach_to_point",
+          "manner:{}->{'amplitude': -1}",
+          "refusal_instead_of_reading:unafforded_schema"
+        ],
+        "stopped": 0
+      },
+      "posture": {
+        "cases": 6,
+        "exact": 5,
+        "exact_fraction": 0.8333,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [
+          "repetition_count:None->3"
+        ],
+        "stopped": 0
+      },
+      "precision": {
+        "cases": 2,
+        "exact": 2,
+        "exact_fraction": 1.0,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [],
+        "stopped": 0
+      },
+      "repetition": {
+        "cases": 4,
+        "exact": 4,
+        "exact_fraction": 1.0,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [],
+        "stopped": 0
+      },
+      "sequence": {
+        "cases": 17,
+        "exact": 15,
+        "exact_fraction": 0.8824,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [
+          "segment_count:2->1"
+        ],
+        "stopped": 0
+      },
+      "smoothness": {
+        "cases": 2,
+        "exact": 2,
+        "exact_fraction": 1.0,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [],
+        "stopped": 0
+      },
+      "speed": {
+        "cases": 4,
+        "exact": 4,
+        "exact_fraction": 1.0,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [],
+        "stopped": 0
+      },
+      "unsupported": {
+        "cases": 8,
+        "exact": 8,
+        "exact_fraction": 1.0,
+        "prohibited_cases": 0,
+        "prohibited_rejected": 0,
+        "errors": [],
+        "stopped": 0
+      }
+    }
+  }
+}

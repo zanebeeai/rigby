@@ -1,0 +1,68 @@
+{
+  "cost_usd": 0.00025335,
+  "created_at_utc": "2026-09-13T17:28:28.176803+00:00",
+  "key": "2e0b911bca8e7367f66ac899df0b1bde9c37559cf9dbb07a9c9ed7f4744e8be8",
+  "model": "gpt-5-nano-2025-08-07",
+  "prompt": "make a fist then open your hand",
+  "purpose": "select:gpt-5-nano",
+  "reply": {
+    "segments": [
+      {
+        "clause": "make a fist then open your hand",
+        "entry_id": "configure_effector",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": {
+          "group": "opposed",
+          "opposing": "flexed",
+          "remainder": "flexed",
+          "selected": "extended",
+          "selected_count": 0
+        },
+        "quantities": [],
+        "remove": "medial"
+      },
+      {
+        "clause": "",
+        "entry_id": "configure_effector",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": {
+          "group": "opposed",
+          "opposing": "flexed",
+          "remainder": "flexed",
+          "selected": "extended",
+          "selected_count": 0
+        },
+        "quantities": [],
+        "remove": "medial"
+      }
+    ],
+    "unsupported_reason": "Segment names a posture adjustment (configure_effector) but does not specify a clear, discrete motion instruction distinct from the posture change."
+  },
+  "requested_model": "gpt-5-nano",
+  "schema_sha256": "9d83406652cf48179ff407f9ffe7f29d943d29109ee800c7036f9fb62ca4c5fd",
+  "system_sha256": "32cb644ff94921917cbb30d7260c0c2d07d81329ff07d2afa7a1aac64f3c1af8",
+  "transport": "openai",
+  "usage": {
+    "completion_tokens": 244,
+    "estimated": false,
+    "prompt_tokens": 3115
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "cost_usd": 0.00020315,
+  "created_at_utc": "2026-09-13T17:27:56.615211+00:00",
+  "key": "1b2e40b73329e6921e2c543064b5556b278a0cca9c24c74af96db12c1b5cf9b7",
+  "model": "gpt-5-nano-2025-08-07",
+  "prompt": "open your hand",
+  "purpose": "select:gpt-5-nano",
+  "reply": {
+    "segments": [
+      {
+        "clause": "open your hand",
+        "entry_id": "orient_effector",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": {
+          "group": "opposed",
+          "opposing": "extended",
+          "remainder": "extended",
+          "selected": "extended",
+          "selected_count": 0
+        },
+        "quantities": [],
+        "remove": "medial"
+      }
+    ],
+    "unsupported_reason": null
+  },
+  "requested_model": "gpt-5-nano",
+  "schema_sha256": "9d83406652cf48179ff407f9ffe7f29d943d29109ee800c7036f9fb62ca4c5fd",
+  "system_sha256": "32cb644ff94921917cbb30d7260c0c2d07d81329ff07d2afa7a1aac64f3c1af8",
+  "transport": "openai",
+  "usage": {
+    "completion_tokens": 119,
+    "estimated": false,
+    "prompt_tokens": 3111
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "cost_usd": 0.0001764,
+  "created_at_utc": "2026-09-13T17:17:09.306394+00:00",
+  "key": "80e1816b621d306ffd209a2ec234173e0f34867e46c8e6e30ef683bd82e8dc23",
+  "model": "gpt-5-nano-2025-08-07",
+  "prompt": "make a fist then open your hand",
+  "purpose": "select:gpt-5-nano",
+  "reply": {
+    "segments": [
+      {
+        "clause": "Request: make a fist then open your hand",
+        "entry_id": "configure_effector",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": {
+          "group": "opposed",
+          "opposing": "free",
+          "remainder": "free",
+          "selected": "free",
+          "selected_count": 0
+        },
+        "quantities": [],
+        "remove": "distal"
+      }
+    ],
+    "unsupported_reason": null
+  },
+  "requested_model": "gpt-5-nano",
+  "schema_sha256": "5901b440dee4f3fc08a28479a2692d25f65af7930a1198721ec0af934a451473",
+  "system_sha256": "3d079750c0b00547748e68e38d2ddff75914b6583ee60fd9d49c2f82cb880153",
+  "transport": "openai",
+  "usage": {
+    "completion_tokens": 123,
+    "estimated": false,
+    "prompt_tokens": 2544
+  }
+}

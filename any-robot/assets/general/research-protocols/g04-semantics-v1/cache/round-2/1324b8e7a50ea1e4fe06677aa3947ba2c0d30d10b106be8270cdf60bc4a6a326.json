@@ -1,0 +1,56 @@
+{
+  "cost_usd": 0.00055695,
+  "created_at_utc": "2026-09-13T17:31:07.992744+00:00",
+  "key": "1324b8e7a50ea1e4fe06677aa3947ba2c0d30d10b106be8270cdf60bc4a6a326",
+  "model": "gpt-4o-mini-2024-07-18",
+  "prompt": "turn the wrist then hold still",
+  "purpose": "select:gpt-4o-mini",
+  "reply": {
+    "segments": [
+      {
+        "clause": "turn the wrist",
+        "entry_id": "orient_effector",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": null,
+        "quantities": [],
+        "remove": "medial"
+      },
+      {
+        "clause": "hold still",
+        "entry_id": "hold_still",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": null,
+        "quantities": [],
+        "remove": "medial"
+      }
+    ],
+    "unsupported_reason": null
+  },
+  "requested_model": "gpt-4o-mini",
+  "schema_sha256": "9d83406652cf48179ff407f9ffe7f29d943d29109ee800c7036f9fb62ca4c5fd",
+  "system_sha256": "32cb644ff94921917cbb30d7260c0c2d07d81329ff07d2afa7a1aac64f3c1af8",
+  "transport": "openai",
+  "usage": {
+    "completion_tokens": 149,
+    "estimated": false,
+    "prompt_tokens": 3117
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "schema": "g04.selection.v1",
+  "started_at_utc": "2026-09-13T17:40:21.479781+00:00",
+  "commit": "3038d06a565136b84976a7ab5891c615dbb5f665",
+  "candidates": [
+    {
+      "model": "gpt-5-mini",
+      "canonical_exact": 57,
+      "of": 60,
+      "stopped": false,
+      "spend": {
+        "model": "gpt-5-mini",
+        "transport": "openai",
+        "calls": 60,
+        "cached_hits": 0,
+        "paid_calls": 60,
+        "prompt_tokens": 200239,
+        "completion_tokens": 6552,
+        "dollars": 0.06316374999999998,
+        "fallback_used": false,
+        "stopped": null
+      },
+      "failures": [
+        {
+          "case_id": "C026",
+          "prompt": "turn the wrist",
+          "error": "remove:medial->adjacent"
+        },
+        {
+          "case_id": "C044",
+          "prompt": "sweep across smoothly",
+          "error": "entry:traverse_line->traverse_line_arced"
+        },
+        {
+          "case_id": "C060",
+          "prompt": "turn the wrist then hold still",
+          "error": "remove:medial->adjacent"
+        }
+      ]
+    },
+    {
+      "model": "gpt-5-mini@low",
+      "canonical_exact": 59,
+      "of": 60,
+      "stopped": false,
+      "spend": {
+        "model": "gpt-5-mini@low",
+        "transport": "openai",
+        "calls": 60,
+        "cached_hits": 0,
+        "paid_calls": 60,
+        "prompt_tokens": 200239,
+        "completion_tokens": 12864,
+        "dollars": 0.07578775000000001,
+        "fallback_used": false,
+        "stopped": null
+      },
+      "failures": [
+        {
+          "case_id": "C034",
+          "prompt": "three fingers up",
+          "error": "posture:opposed:3.extended.flexed.flexed->opposing:3.extended.flexed.flexed"
+        }
+      ]
+    },
+    {
+      "model": "gpt-4.1",
+      "canonical_exact": 60,
+      "of": 60,
+      "stopped": false,
+      "spend": {
+        "model": "gpt-4.1",
+        "transport": "openai",
+        "calls": 60,
+        "cached_hits": 0,
+        "paid_calls": 60,
+        "prompt_tokens": 200419,
+        "completion_tokens": 5710,
+        "dollars": 0.4465180000000001,
+        "fallback_used": false,
+        "stopped": null
+      },
+      "failures": []
+    }
+  ],
+  "selected": "gpt-4.1",
+  "stopped": null,
+  "totals": {
+    "calls_logged": 180,
+    "paid_calls": 180,
+    "cached_hits": 0,
+    "mock_calls": 0,
+    "prompt_tokens_paid": 600897,
+    "completion_tokens_paid": 25126,
+    "dollars": 0.585469
+  }
+}

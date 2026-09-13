@@ -1,0 +1,52 @@
+{
+  "action_end_s": 1.409464,
+  "body": "zoo_jaw_arm",
+  "farthest_travel_m": 0.050172,
+  "final_position_m": [
+    0.0,
+    0.0,
+    1.32
+  ],
+  "final_travel_fraction_of_reach": 0.038009,
+  "final_travel_m": 0.050172,
+  "outcome": "success",
+  "prompt": "reach out 5 cm",
+  "reach_radius_m": 1.32,
+  "reading": {
+    "hash": "428eaf09aec2071b389469331a22c95e70cb1a182b538fc537046d353f8590e3",
+    "planner": {
+      "cached": true,
+      "model": "gpt-4.1-2025-04-14",
+      "planner_id": "model-schema-planner-v1"
+    },
+    "prompt": "reach out 5 cm",
+    "quantities": [
+      {
+        "kind": "distance",
+        "provenance": "user_stated",
+        "segment_id": "s0",
+        "text": "5 cm",
+        "unit": "m",
+        "value": 0.05
+      }
+    ],
+    "refusal": null,
+    "segments": [
+      {
+        "entry_id": "reach_to_point",
+        "manner": {},
+        "remove": "medial",
+        "segment_id": "s0"
+      }
+    ]
+  },
+  "simulation_duration_s": 2.847999999999908,
+  "start_position_m": [
+    0.0,
+    0.0,
+    1.32
+  ],
+  "task_site": "palm_grasp_center",
+  "terminus_time_s": 1.408000000000001,
+  "travel_at_end_of_recording_m": 0.0
+}

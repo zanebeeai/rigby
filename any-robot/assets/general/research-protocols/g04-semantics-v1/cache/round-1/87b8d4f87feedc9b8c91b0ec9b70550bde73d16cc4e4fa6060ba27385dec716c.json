@@ -1,0 +1,39 @@
+{
+  "cost_usd": 0.0002984,
+  "created_at_utc": "2026-09-13T17:17:31.577845+00:00",
+  "key": "87b8d4f87feedc9b8c91b0ec9b70550bde73d16cc4e4fa6060ba27385dec716c",
+  "model": "gpt-4.1-nano-2025-04-14",
+  "prompt": "go back and forth",
+  "purpose": "select:gpt-4.1-nano",
+  "reply": {
+    "segments": [
+      {
+        "clause": "go back and forth",
+        "entry_id": "oscillate_along_line",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": 0,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": null,
+        "quantities": [],
+        "remove": "proximal"
+      }
+    ],
+    "unsupported_reason": "The request 'go back and forth' matches the 'oscillate_along_line' motion, but no specific distance is provided."
+  },
+  "requested_model": "gpt-4.1-nano",
+  "schema_sha256": "5901b440dee4f3fc08a28479a2692d25f65af7930a1198721ec0af934a451473",
+  "system_sha256": "3d079750c0b00547748e68e38d2ddff75914b6583ee60fd9d49c2f82cb880153",
+  "transport": "openai",
+  "usage": {
+    "completion_tokens": 110,
+    "estimated": false,
+    "prompt_tokens": 2544
+  }
+}
