@@ -1,0 +1,1141 @@
+{
+  "actuator_order": [
+    "joint_0",
+    "joint_1",
+    "joint_2",
+    "joint_3",
+    "joint_4",
+    "joint_5",
+    "grip_left",
+    "grip_right"
+  ],
+  "adjacent_collision_exclusions": [
+    [
+      "link_5",
+      "wrist_camera"
+    ]
+  ],
+  "asset_licenses": {},
+  "coordinate_system": {
+    "forward_axis": "+X",
+    "right_handed": true,
+    "units": "meters",
+    "up_axis": "+Z"
+  },
+  "dofs": [
+    {
+      "acceleration_limit": 500.0,
+      "effort_limit": 420.0,
+      "joint": "joint_0",
+      "maximum": 2.85,
+      "minimum": -2.85,
+      "name": "joint_0",
+      "velocity_limit": 1.6
+    },
+    {
+      "acceleration_limit": 500.0,
+      "effort_limit": 420.0,
+      "joint": "joint_1",
+      "maximum": 2.85,
+      "minimum": -2.85,
+      "name": "joint_1",
+      "velocity_limit": 1.6
+    },
+    {
+      "acceleration_limit": 500.0,
+      "effort_limit": 420.0,
+      "joint": "joint_2",
+      "maximum": 2.85,
+      "minimum": -2.85,
+      "name": "joint_2",
+      "velocity_limit": 1.6
+    },
+    {
+      "acceleration_limit": 500.0,
+      "effort_limit": 420.0,
+      "joint": "joint_3",
+      "maximum": 2.85,
+      "minimum": -2.85,
+      "name": "joint_3",
+      "velocity_limit": 1.6
+    },
+    {
+      "acceleration_limit": 500.0,
+      "effort_limit": 420.0,
+      "joint": "joint_4",
+      "maximum": 2.85,
+      "minimum": -2.85,
+      "name": "joint_4",
+      "velocity_limit": 1.6
+    },
+    {
+      "acceleration_limit": 500.0,
+      "effort_limit": 420.0,
+      "joint": "joint_5",
+      "maximum": 2.85,
+      "minimum": -2.85,
+      "name": "joint_5",
+      "velocity_limit": 1.6
+    },
+    {
+      "acceleration_limit": 500.0,
+      "effort_limit": 110.0,
+      "joint": "grip_left",
+      "maximum": 0.065,
+      "minimum": 0.0,
+      "name": "grip_left",
+      "velocity_limit": 0.4
+    },
+    {
+      "acceleration_limit": 500.0,
+      "effort_limit": 110.0,
+      "joint": "grip_right",
+      "maximum": 0.065,
+      "minimum": 0.0,
+      "name": "grip_right",
+      "velocity_limit": 0.4
+    }
+  ],
+  "fixed_base": true,
+  "mjcf": {
+    "filename": "robot.xml",
+    "media_type": "application/xml",
+    "schema_version": "1.0",
+    "sha256": "af964935a960ed697da5e3493331f073d7c40f93d7e03154ecae63d727198662",
+    "size_bytes": 5411
+  },
+  "morphology": {
+    "base_body": "base",
+    "chains": [
+      {
+        "bodies": [
+          "base",
+          "link_0",
+          "link_1",
+          "link_2",
+          "link_3",
+          "link_4",
+          "link_5"
+        ],
+        "chain_id": "link_5",
+        "envelope_azimuth_bins": 12,
+        "envelope_elevation_bins": 7,
+        "joints": [
+          "joint_0",
+          "joint_1",
+          "joint_2",
+          "joint_3",
+          "joint_4",
+          "joint_5"
+        ],
+        "orienting_dof": 1,
+        "positioning_dof": 5,
+        "reach_envelope_m": [
+          0.8899509837460422,
+          1.0539289695510654,
+          1.0372831172069958,
+          1.2861628860285135,
+          1.361019817048954,
+          1.606758573062668,
+          1.6573775162957647,
+          0.9518110279121751,
+          0.9377779057036154,
+          1.1151209168194585,
+          1.1904581871498543,
+          1.5236695036812469,
+          1.5150412687448351,
+          1.634831091304852,
+          0.9593009783414465,
+          1.0973656488040058,
+          1.201873689511972,
+          1.1800058797745159,
+          1.4782792984750774,
+          1.5502250753827438,
+          1.6737355109176764,
+          0.8714742174749395,
+          0.9996127639518314,
+          1.1762829352856243,
+          1.2174437701393033,
+          1.4380041269663184,
+          1.536802246733859,
+          1.6567343740175005,
+          0.7359840617022959,
+          1.0479445687410305,
+          1.064663379618864,
+          1.2525535297227002,
+          1.3072113365645885,
+          1.5955620128835515,
+          1.6291155330068259,
+          0.9503853692923179,
+          0.925728776375788,
+          1.1247838905134726,
+          1.2756116411003795,
+          1.485130215082213,
+          1.5789844321973239,
+          1.6071609614168052,
+          0.7055680080182574,
+          0.9882705058794921,
+          1.204310371530879,
+          1.355519892192515,
+          1.3244402863107725,
+          1.4879805201553489,
+          1.701058493997193,
+          0.9668746203671174,
+          0.8591521708920048,
+          1.1325634520661425,
+          1.3495516103803942,
+          1.375194087156823,
+          1.5603107150577047,
+          1.6031158405945474,
+          0.9517441674100258,
+          0.9955132788131017,
+          1.1778359782517405,
+          1.2820580906148145,
+          1.4571871153182245,
+          1.4993183781025572,
+          1.6314578231417118,
+          1.0414539235688776,
+          1.0378193063047008,
+          1.1050902790764623,
+          1.275975014516814,
+          1.3244867168100996,
+          1.4861265127035086,
+          1.6329399452922986,
+          0.9014052765373706,
+          0.9864857935663002,
+          1.143702212096338,
+          1.2024464248208444,
+          1.489658467793466,
+          1.5984709257099592,
+          1.5289423834679179,
+          0.9688812374240972,
+          1.0333788675343665,
+          1.138277458053556,
+          1.186373170837927,
+          1.3689431096047329,
+          1.5421975449098835,
+          1.5679467900637125
+        ],
+        "reach_inner_m": [
+          0.13323228207183463,
+          0.3637463178158891,
+          0.07942164202005698,
+          0.138429372939614,
+          0.17942418804925764,
+          0.30674838981644603,
+          0.4223695954546119,
+          0.2580922554761111,
+          0.1095283545408092,
+          0.2649975886726656,
+          0.17475931439475179,
+          0.06328152766011873,
+          0.19454231447518652,
+          0.2823521500815648,
+          0.399785284439271,
+          0.1987014112311493,
+          0.11628414719470231,
+          0.17559862201898763,
+          0.033645924977222436,
+          0.33629508994473034,
+          0.26142618628723935,
+          0.2244123673311805,
+          0.08380877655667028,
+          0.19416528045037754,
+          0.12482240932529184,
+          0.1896301219755679,
+          0.21170687077358077,
+          0.0784571611449101,
+          0.17038327930437783,
+          0.07124659449215091,
+          0.1504809549609702,
+          0.17032365358910717,
+          0.25995792498090575,
+          0.269706030478126,
+          0.3908939298692084,
+          0.34466722048640847,
+          0.0616526726797215,
+          0.16619431308304697,
+          0.21988772193558498,
+          0.10293093529149122,
+          0.15182862626938662,
+          0.44527009462644335,
+          0.39150051488522347,
+          0.15227359977762286,
+          0.13955803792248125,
+          0.1396692264596987,
+          0.11429160772454236,
+          0.11525289835478018,
+          0.18947317564141777,
+          0.3673649506407207,
+          0.24674692108002905,
+          0.1337974574279323,
+          0.0980278452592675,
+          0.09562723979609891,
+          0.13543556540491555,
+          0.20432174568452643,
+          0.2614007721950111,
+          0.09847810510921036,
+          0.11974322212428143,
+          0.14326699999428008,
+          0.22972287019612245,
+          0.14542704309265667,
+          0.44994908319338167,
+          0.3667161282729448,
+          0.30050420700570585,
+          0.2414472051329459,
+          0.04997638368315053,
+          0.10512707818982434,
+          0.26378560305409304,
+          0.415759525882725,
+          0.2925890799192038,
+          0.13394986095470307,
+          0.09002956636618473,
+          0.09223105846973992,
+          0.08325031457879375,
+          0.24507312897302216,
+          0.3804727608454628,
+          0.19678178108344527,
+          0.23351932459526065,
+          0.22002470103384153,
+          0.02570872495170417,
+          0.14113491063188077,
+          0.32099582421317013,
+          0.4414460381832584
+        ],
+        "reach_radius_m": 1.701058,
+        "root_body": "link_0",
+        "tip_body": "link_5",
+        "working_direction": {
+          "x": 0.9121287270387419,
+          "y": 0.4099038732565044,
+          "z": 0.0
+        },
+        "workspace_centroid_m": {
+          "x": 0.003632752066294642,
+          "y": 0.0016325317890042686,
+          "z": 0.6453382659064675
+        }
+      },
+      {
+        "bodies": [
+          "base",
+          "link_0",
+          "link_1",
+          "link_2",
+          "link_3",
+          "link_4",
+          "link_5",
+          "palm"
+        ],
+        "chain_id": "palm",
+        "envelope_azimuth_bins": 12,
+        "envelope_elevation_bins": 7,
+        "joints": [
+          "joint_0",
+          "joint_1",
+          "joint_2",
+          "joint_3",
+          "joint_4",
+          "joint_5"
+        ],
+        "orienting_dof": 1,
+        "positioning_dof": 5,
+        "reach_envelope_m": [
+          1.0310872614496385,
+          0.8319358532312565,
+          1.156554247338086,
+          1.3209024172772152,
+          1.5224379395749148,
+          1.700099699846026,
+          1.761531976419667,
+          1.0732937371342548,
+          0.9099639663110937,
+          1.2335715605424005,
+          1.2568854966379321,
+          1.6158341678138561,
+          1.616996146400536,
+          1.7401328372710827,
+          0.911812847760783,
+          1.1501196562800844,
+          1.2951808133935157,
+          1.3439382236824526,
+          1.4918937820366374,
+          1.6413346638991466,
+          1.7885520259175713,
+          0.7383351440011442,
+          0.9303384752288025,
+          1.1649671569451272,
+          1.3034953061595456,
+          1.3892916393575943,
+          1.6637526137222611,
+          1.7333106784453078,
+          1.0684660983091387,
+          1.1418207443243307,
+          1.2239210448424114,
+          1.3702895306789422,
+          1.5896374128297168,
+          1.6685190637223488,
+          1.5315952308183505,
+          0.7441188604427722,
+          1.0384266387687295,
+          1.0961055101682238,
+          1.4115219168626345,
+          1.443944467950293,
+          1.4707289809614361,
+          1.7243954434628537,
+          0.6032633519854365,
+          1.0145761589090543,
+          1.3098211095699526,
+          1.4650746392396095,
+          1.4568902873345169,
+          1.6755644904257554,
+          1.8099999999999994,
+          1.0674265831049063,
+          1.2247852984237133,
+          1.2128530684823582,
+          1.2563752528817316,
+          1.499835044482965,
+          1.6556242184433532,
+          1.7084669676931192,
+          1.0149200442822521,
+          1.14232150371298,
+          1.1853488662642122,
+          1.3223931729601592,
+          1.5784227173865346,
+          1.5284492328611208,
+          1.7069909450930607,
+          1.024474142424588,
+          1.0918366039354763,
+          1.219378409041604,
+          1.3561939551938578,
+          1.5294500004944087,
+          1.6162633999613412,
+          1.7308616648577595,
+          0.5835134725619614,
+          1.1199358339086984,
+          1.241105851416094,
+          1.2868976493219841,
+          1.4249387759771242,
+          1.7054679882905572,
+          1.6032991852263876,
+          1.032617106755825,
+          1.1472835548272011,
+          1.101799953576963,
+          1.2037951788916754,
+          1.4601200667350416,
+          1.7210779231304145,
+          1.6899988807563961
+        ],
+        "reach_inner_m": [
+          0.32405586465558606,
+          0.4589246894637522,
+          0.0960061938140168,
+          0.23285150701541532,
+          0.052260150519624154,
+          0.11182527341017802,
+          0.2014429535926761,
+          0.2775940387515359,
+          0.3145310341974226,
+          0.12324098576781696,
+          0.11204078166564191,
+          0.18534671756565943,
+          0.14231117124154727,
+          0.11603774793132231,
+          0.31719871864172255,
+          0.1031387767796921,
+          0.0246518717137199,
+          0.1387174838631658,
+          0.12863671808393595,
+          0.2013817532992761,
+          0.20313342844120444,
+          0.28811497272077574,
+          0.1473426708174717,
+          0.2659724604713612,
+          0.12549895810915684,
+          0.10759519781504388,
+          0.2542387598266792,
+          0.2702029804602147,
+          0.21449589820140313,
+          0.36700986675454533,
+          0.1721511235438586,
+          0.2239101122030848,
+          0.2455745573765663,
+          0.19582165024138742,
+          0.1869432417590526,
+          0.10670847654585226,
+          0.29183293440250047,
+          0.20823020704570747,
+          0.054887926867426204,
+          0.20677573630408547,
+          0.12189794486945721,
+          0.1927332399686121,
+          0.5127503683651574,
+          0.23849588233643382,
+          0.17679756252511408,
+          0.11423096484529086,
+          0.2085039668316148,
+          0.26111849343453386,
+          0.050174088750134724,
+          0.2149696435729559,
+          0.19354756116243277,
+          0.19292932327317014,
+          0.3050333312637801,
+          0.04472858111997551,
+          0.06351711349004947,
+          0.18505498525282096,
+          0.4027701419004298,
+          0.2660662762613675,
+          0.10138051899697123,
+          0.2229631471595151,
+          0.1629364232020392,
+          0.4322472575604704,
+          0.09888131451361099,
+          0.3191832174227727,
+          0.15268971082799687,
+          0.17011613134211268,
+          0.11346514911440293,
+          0.2392840932124709,
+          0.1409230518827791,
+          0.1463398270353161,
+          0.2863709198501926,
+          0.22876088231691674,
+          0.21796528406907104,
+          0.0767140077973003,
+          0.11511248461134987,
+          0.0828903641009502,
+          0.22612355895330477,
+          0.1634714630537075,
+          0.11208570845499291,
+          0.17450340338857542,
+          0.2032640545598366,
+          0.4387095711300993,
+          0.14262294045653987,
+          0.3550737238101635
+        ],
+        "reach_radius_m": 1.81,
+        "root_body": "link_0",
+        "tip_body": "palm",
+        "working_direction": {
+          "x": 0.7114781183572165,
+          "y": 0.7027082517651793,
+          "z": 0.0
+        },
+        "workspace_centroid_m": {
+          "x": 0.0011526120228927104,
+          "y": 0.001138404623659566,
+          "z": 0.6435604169292982
+        }
+      }
+    ],
+    "coordinate_system": {
+      "forward_axis": "-Y",
+      "right_handed": true,
+      "units": "meters",
+      "up_axis": "+Z"
+    },
+    "effectors": [
+      {
+        "chain_id": "link_5",
+        "closes_toward_upper": true,
+        "grip_joints": [],
+        "kind": "sensor",
+        "max_aperture_m": null,
+        "member_bodies": [],
+        "member_extends_toward_upper": [],
+        "member_joints": [],
+        "min_aperture_m": null,
+        "name": "link_5_effector",
+        "opposition_groups": [],
+        "site_names": [
+          "link_5_gaze"
+        ],
+        "tip_body": "wrist_camera"
+      },
+      {
+        "chain_id": "palm",
+        "closes_toward_upper": true,
+        "grip_joints": [
+          "grip_left",
+          "grip_right"
+        ],
+        "kind": "parallel_jaw",
+        "max_aperture_m": 0.132,
+        "member_bodies": [
+          "finger_left",
+          "finger_right"
+        ],
+        "member_extends_toward_upper": [
+          false,
+          false
+        ],
+        "member_joints": [
+          [
+            "grip_left"
+          ],
+          [
+            "grip_right"
+          ]
+        ],
+        "min_aperture_m": 0.002,
+        "name": "palm_effector",
+        "opposition_groups": [
+          [
+            "finger_right"
+          ],
+          [
+            "finger_left"
+          ]
+        ],
+        "site_names": [
+          "palm_contact_0",
+          "palm_contact_1",
+          "palm_grasp_center",
+          "palm_grasp_point",
+          "palm_tip",
+          "palm_wrist"
+        ],
+        "tip_body": "finger_left"
+      }
+    ],
+    "intrinsic_frame": {
+      "confidence": 0.0,
+      "evidence": [
+        "no_evidence_default_axis"
+      ],
+      "front": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "lateral": {
+        "x": -0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "source": "derived",
+      "up": {
+        "x": -0.0,
+        "y": -0.0,
+        "z": 1.0
+      }
+    },
+    "joints": [
+      {
+        "axis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        },
+        "body": "link_0",
+        "effort_declared": true,
+        "effort_limit": 420.0,
+        "kind": "hinge",
+        "maximum": 2.85,
+        "minimum": -2.85,
+        "name": "joint_0",
+        "role": "major_position",
+        "tip_rotation_rad": 2.85,
+        "tip_translation_m": 1.807462,
+        "velocity_limit": 1.6
+      },
+      {
+        "axis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "body": "link_1",
+        "effort_declared": true,
+        "effort_limit": 420.0,
+        "kind": "hinge",
+        "maximum": 2.85,
+        "minimum": -2.85,
+        "name": "joint_1",
+        "role": "major_position",
+        "tip_rotation_rad": 2.85,
+        "tip_translation_m": 2.69376,
+        "velocity_limit": 1.6
+      },
+      {
+        "axis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "body": "link_2",
+        "effort_declared": true,
+        "effort_limit": 420.0,
+        "kind": "hinge",
+        "maximum": 2.85,
+        "minimum": -2.85,
+        "name": "joint_2",
+        "role": "major_position",
+        "tip_rotation_rad": 2.85,
+        "tip_translation_m": 1.548009,
+        "velocity_limit": 1.6
+      },
+      {
+        "axis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "body": "link_3",
+        "effort_declared": true,
+        "effort_limit": 420.0,
+        "kind": "hinge",
+        "maximum": 2.85,
+        "minimum": -2.85,
+        "name": "joint_3",
+        "role": "major_position",
+        "tip_rotation_rad": 2.85,
+        "tip_translation_m": 0.63321,
+        "velocity_limit": 1.6
+      },
+      {
+        "axis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "body": "link_4",
+        "effort_declared": true,
+        "effort_limit": 420.0,
+        "kind": "hinge",
+        "maximum": 2.85,
+        "minimum": -2.85,
+        "name": "joint_4",
+        "role": "major_position",
+        "tip_rotation_rad": 2.85,
+        "tip_translation_m": 0.301399,
+        "velocity_limit": 1.6
+      },
+      {
+        "axis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        },
+        "body": "link_5",
+        "effort_declared": true,
+        "effort_limit": 420.0,
+        "kind": "hinge",
+        "maximum": 2.85,
+        "minimum": -2.85,
+        "name": "joint_5",
+        "role": "wrist_orient",
+        "tip_rotation_rad": 2.85,
+        "tip_translation_m": 0.118727,
+        "velocity_limit": 1.6
+      },
+      {
+        "axis": {
+          "x": -1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "body": "finger_left",
+        "effort_declared": true,
+        "effort_limit": 110.0,
+        "kind": "slide",
+        "maximum": 0.065,
+        "minimum": 0.0,
+        "name": "grip_left",
+        "role": "grip",
+        "tip_rotation_rad": 0.0,
+        "tip_translation_m": 0.0,
+        "velocity_limit": 0.4
+      },
+      {
+        "axis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "body": "finger_right",
+        "effort_declared": true,
+        "effort_limit": 110.0,
+        "kind": "slide",
+        "maximum": 0.065,
+        "minimum": 0.0,
+        "name": "grip_right",
+        "role": "grip",
+        "tip_rotation_rad": 0.0,
+        "tip_translation_m": 0.0,
+        "velocity_limit": 0.4
+      }
+    ],
+    "morphology_class": "fixed_base_arm",
+    "robot_id": "zoo_long_arm",
+    "scale": {
+      "base_footprint_m": 0.36,
+      "characteristic_length_m": 0.24,
+      "neutral_speed_mps": 0.217264,
+      "payload_kg": 20.884613,
+      "reach_radius_m": 2.05,
+      "reach_samples": 8192,
+      "total_mass_kg": 51.470677,
+      "workspace_centroid_m": {
+        "x": 0.00239268204459368,
+        "y": 0.0013854682063319194,
+        "z": 0.6444493414178818
+      }
+    },
+    "schema_version": "1.0",
+    "self_collision_pairs": [
+      [
+        "base",
+        "finger_left"
+      ],
+      [
+        "base",
+        "finger_right"
+      ],
+      [
+        "base",
+        "link_1"
+      ],
+      [
+        "base",
+        "link_2"
+      ],
+      [
+        "base",
+        "link_3"
+      ],
+      [
+        "base",
+        "link_4"
+      ],
+      [
+        "base",
+        "link_5"
+      ],
+      [
+        "base",
+        "palm"
+      ],
+      [
+        "base",
+        "wrist_camera"
+      ],
+      [
+        "finger_left",
+        "finger_right"
+      ],
+      [
+        "finger_left",
+        "link_0"
+      ],
+      [
+        "finger_left",
+        "link_1"
+      ],
+      [
+        "finger_left",
+        "link_2"
+      ],
+      [
+        "finger_left",
+        "link_3"
+      ],
+      [
+        "finger_left",
+        "link_4"
+      ],
+      [
+        "finger_right",
+        "link_0"
+      ],
+      [
+        "finger_right",
+        "link_1"
+      ],
+      [
+        "finger_right",
+        "link_2"
+      ],
+      [
+        "finger_right",
+        "link_3"
+      ],
+      [
+        "finger_right",
+        "link_4"
+      ],
+      [
+        "link_0",
+        "link_2"
+      ],
+      [
+        "link_0",
+        "link_3"
+      ],
+      [
+        "link_0",
+        "link_4"
+      ],
+      [
+        "link_0",
+        "link_5"
+      ],
+      [
+        "link_0",
+        "palm"
+      ],
+      [
+        "link_0",
+        "wrist_camera"
+      ],
+      [
+        "link_1",
+        "link_3"
+      ],
+      [
+        "link_1",
+        "link_4"
+      ],
+      [
+        "link_1",
+        "link_5"
+      ],
+      [
+        "link_1",
+        "palm"
+      ],
+      [
+        "link_1",
+        "wrist_camera"
+      ],
+      [
+        "link_2",
+        "link_4"
+      ],
+      [
+        "link_2",
+        "link_5"
+      ],
+      [
+        "link_2",
+        "palm"
+      ],
+      [
+        "link_2",
+        "wrist_camera"
+      ],
+      [
+        "link_3",
+        "link_5"
+      ],
+      [
+        "link_3",
+        "palm"
+      ],
+      [
+        "link_3",
+        "wrist_camera"
+      ]
+    ],
+    "sites": [
+      {
+        "body": "base",
+        "derivation": "base.root_body_origin.v1",
+        "name": "robot_base",
+        "position_m": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "semantic": "base"
+      },
+      {
+        "body": "wrist_camera",
+        "derivation": "gaze.sensor_name_hint.v1",
+        "name": "link_5_gaze",
+        "position_m": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "semantic": "gaze"
+      },
+      {
+        "body": "finger_left",
+        "derivation": "tip.distal_geom_extreme.v1",
+        "name": "palm_tip",
+        "position_m": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.1100000000000003
+        },
+        "semantic": "tip"
+      },
+      {
+        "body": "palm",
+        "derivation": "grasp_point.mid_gripping_surface.v1",
+        "name": "palm_grasp_point",
+        "position_m": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.10499999999999997
+        },
+        "semantic": "grasp_point"
+      },
+      {
+        "body": "palm",
+        "derivation": "grasp_center.half_closed_member_centroid.v1",
+        "name": "palm_grasp_center",
+        "position_m": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.049999999999999815
+        },
+        "semantic": "grasp_center"
+      },
+      {
+        "body": "finger_left",
+        "derivation": "contact.member_distal_extreme.v1",
+        "name": "palm_contact_0",
+        "position_m": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.1100000000000003
+        },
+        "semantic": "contact"
+      },
+      {
+        "body": "finger_right",
+        "derivation": "contact.member_distal_extreme.v1",
+        "name": "palm_contact_1",
+        "position_m": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.1100000000000003
+        },
+        "semantic": "contact"
+      },
+      {
+        "body": "palm",
+        "derivation": "wrist.last_chain_body_origin.v1",
+        "name": "palm_wrist",
+        "position_m": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "semantic": "joint"
+      }
+    ],
+    "symmetry": null
+  },
+  "rest_qpos": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0013000000000000002,
+    0.0013000000000000002
+  ],
+  "rig_id": "zoo_long_arm",
+  "schema_version": "1.0",
+  "sites": [
+    {
+      "body": "base",
+      "derivation": "base.root_body_origin.v1",
+      "name": "robot_base",
+      "position_m": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "semantic": "base"
+    },
+    {
+      "body": "wrist_camera",
+      "derivation": "gaze.sensor_name_hint.v1",
+      "name": "link_5_gaze",
+      "position_m": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "semantic": "gaze"
+    },
+    {
+      "body": "finger_left",
+      "derivation": "tip.distal_geom_extreme.v1",
+      "name": "palm_tip",
+      "position_m": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.1100000000000003
+      },
+      "semantic": "tip"
+    },
+    {
+      "body": "palm",
+      "derivation": "grasp_point.mid_gripping_surface.v1",
+      "name": "palm_grasp_point",
+      "position_m": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.10499999999999997
+      },
+      "semantic": "grasp_point"
+    },
+    {
+      "body": "palm",
+      "derivation": "grasp_center.half_closed_member_centroid.v1",
+      "name": "palm_grasp_center",
+      "position_m": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.049999999999999815
+      },
+      "semantic": "grasp_center"
+    },
+    {
+      "body": "finger_left",
+      "derivation": "contact.member_distal_extreme.v1",
+      "name": "palm_contact_0",
+      "position_m": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.1100000000000003
+      },
+      "semantic": "contact"
+    },
+    {
+      "body": "finger_right",
+      "derivation": "contact.member_distal_extreme.v1",
+      "name": "palm_contact_1",
+      "position_m": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.1100000000000003
+      },
+      "semantic": "contact"
+    },
+    {
+      "body": "palm",
+      "derivation": "wrist.last_chain_body_origin.v1",
+      "name": "palm_wrist",
+      "position_m": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "semantic": "joint"
+    }
+  ],
+  "source_asset": {
+    "filename": "robot.urdf",
+    "media_type": "application/xml",
+    "schema_version": "1.0",
+    "sha256": "126c4beb1379d7a3e92f03e85109f892b90e25d633715f8a8f2a26a79ba74ecc",
+    "size_bytes": 10727
+  },
+  "source_format": "urdf"
+}

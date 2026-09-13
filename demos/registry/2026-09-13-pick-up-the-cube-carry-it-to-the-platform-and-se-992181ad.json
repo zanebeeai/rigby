@@ -1,0 +1,43 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-carry-it-to-the-platform-and-se-992181ad",
+  "title": "D06: zoo_jaw_arm standoff repair, before and after",
+  "prompt": "pick up the cube, carry it to the platform and set it down",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T08:54:28Z",
+  "source": {
+    "commit": "d313256eae",
+    "branch": "feat/g06-contact-transfer",
+    "dirty": false,
+    "how": "python any-robot/scripts/g06_d06_media.py --campaign docs/results/g06-campaign --out docs/results/g06-d06"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "Left, without the repair: runtime_failure (hold_not_sustained). Right, with it: success. Identical physics, same body, same world."
+  },
+  "notes": "See docs/results/g06-report.md. Rendered from recorded physical states at real-time playback with the simulation clock and outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. Repair: standoff.",
+  "media": [
+    {
+      "path": "docs/results/g06-d06/standoff-before-after.mp4",
+      "bytes": 255605,
+      "sha256": "6f6c29f8e9d5102b5598318c84abd742111639f12cf02ca3db765038d80e3a04",
+      "role": "comparison"
+    },
+    {
+      "path": "docs/results/g06-d06/standoff-before-after-preview.gif",
+      "bytes": 1763408,
+      "sha256": "7647a03c3045ece9b703e76db69dc209e68d267dd22c3c7b3918c290bbc74912",
+      "role": "comparison"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G06",
+    "D06",
+    "before-after",
+    "standoff"
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-carry-it-to-the-platform-and-se-ef76e315",
+  "title": "G06 pilot 1: zoo_dual_arm, strict fixed world, seed 3",
+  "prompt": "pick up the cube, carry it to the platform and set it down",
+  "tier": "any-robot",
+  "embodiment": "zoo_dual_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T08:54:06Z",
+  "source": {
+    "commit": "d313256eae",
+    "branch": "feat/g06-contact-transfer",
+    "dirty": false,
+    "how": "python any-robot/scripts/g06_transfer_campaign.py --out docs/results/g06-campaign --local any-robot/results/g06-campaign"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: approach, opposition, lift, 2 s hold, carry, lower, release, retreat and 2 s released dwell all certified; sim 12.96 s"
+  },
+  "notes": "See docs/results/g06-report.md. Rendered from recorded physical states at real-time playback with the simulation clock and outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. Pilot 1 at f68ab68, before the turn phase. Registered perturbation seed 3: cube displaced (1.9, 8.6) mm, mass x1.042, friction x1.066. The bundle was not retained; its digest is in the pilot's trials.json (fb2e6f400ffe).",
+  "media": [
+    {
+      "path": "docs/results/g06-campaign-pilot-1/zoo_dual_arm/fixed/seed-003/media/episode.mp4",
+      "bytes": 102090,
+      "sha256": "b93089faae861ef3d391cd76385e0a6564d4583494b1cbaa841a67d7242032a3",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g06-campaign-pilot-1/zoo_dual_arm/fixed/seed-003/media/preview.gif",
+      "bytes": 853521,
+      "sha256": "4ca570af8e5d65fcce44849628440bcb3aec2028e4327817d30ce1536ce65c2f",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G06",
+    "transfer",
+    "pilot-1",
+    "seeded",
+    "success"
+  ]
+}

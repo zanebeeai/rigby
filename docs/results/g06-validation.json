@@ -1,0 +1,417 @@
+{
+  "bodies": {
+    "zoo_compact_arm": {
+      "canonical": false,
+      "class": "infeasible",
+      "count": 1,
+      "normalized": false,
+      "successes": 0,
+      "taxonomy": {
+        "unreachable_path": 1
+      }
+    },
+    "zoo_dual_arm": {
+      "canonical": true,
+      "class": "feasible",
+      "count": 100,
+      "normalized": true,
+      "successes": 99,
+      "taxonomy": {
+        "hold_not_sustained": 1
+      }
+    },
+    "zoo_hand_arm": {
+      "canonical": false,
+      "class": "feasible",
+      "count": 100,
+      "normalized": true,
+      "successes": 0,
+      "taxonomy": {
+        "hold_not_sustained": 94,
+        "object_not_lifted": 6
+      }
+    },
+    "zoo_jaw_arm": {
+      "canonical": true,
+      "class": "feasible",
+      "count": 100,
+      "normalized": true,
+      "successes": 98,
+      "taxonomy": {
+        "object_not_lifted": 2
+      }
+    },
+    "zoo_long_arm": {
+      "canonical": true,
+      "class": "feasible",
+      "count": 100,
+      "normalized": true,
+      "successes": 100,
+      "taxonomy": {}
+    },
+    "zoo_tool_arm": {
+      "class": "unsupported_by_structure"
+    }
+  },
+  "campaign_commit": "d046dbcf35401779198653b2780932fe25566ac5",
+  "created_at_utc": "2026-09-13T08:53:39.092368+00:00",
+  "d06_commit": "d313256eae6782a1926916b3ab9acf84c4382df2",
+  "detail": {
+    "zoo_compact_arm": {
+      "fixed_canonical": {
+        "certified": false,
+        "failed_gate": "unreachable_path",
+        "hold_s": 0.0,
+        "lift_height_m": 0.0,
+        "max_penetration_m": 0.0,
+        "path_seed": "",
+        "peak_force_n": 0.0,
+        "placement_dwell_s": 0.0,
+        "simulation_duration_s": 0.0,
+        "wall_seconds": 0.7565109999995911
+      },
+      "normalized": {
+        "certified": false,
+        "failed_gate": "object_not_lifted",
+        "hold_s": 0.0,
+        "length_factor": 0.2916666666666667,
+        "lift_height_m": 0.0013412254947442748,
+        "max_penetration_m": 0.0011901756769165162,
+        "path_seed": "rest",
+        "peak_force_n": 1.9737959744199045,
+        "placement_dwell_s": 0.0,
+        "simulation_duration_s": 14.634000000001556,
+        "wall_seconds": 2.772111300000688
+      },
+      "seeded": {
+        "count": 1,
+        "max_peak_force_n_over_executed": null,
+        "max_penetration_m_over_executed": null,
+        "mean_wall_s": 0.73,
+        "min_hold_s_over_successes": null,
+        "min_lift_m_over_successes": null,
+        "min_placement_dwell_s_over_successes": null,
+        "path_seeds": [],
+        "rendered_failures": 1,
+        "rendered_successes": 0,
+        "successes": 0,
+        "taxonomy": {
+          "unreachable_path": 1
+        }
+      }
+    },
+    "zoo_dual_arm": {
+      "fixed_canonical": {
+        "certified": true,
+        "failed_gate": null,
+        "hold_s": 2.002000000000001,
+        "lift_height_m": 0.07417363327572835,
+        "max_penetration_m": 0.00038056078382202416,
+        "path_seed": "rest",
+        "peak_force_n": 11.343771276195639,
+        "placement_dwell_s": 2.498000000000834,
+        "simulation_duration_s": 13.890000000001308,
+        "wall_seconds": 2.8499158000049647
+      },
+      "normalized": {
+        "certified": true,
+        "failed_gate": null,
+        "hold_s": 2.002000000000001,
+        "length_factor": 1.004737121212121,
+        "lift_height_m": 0.06126250481517315,
+        "max_penetration_m": 0.000730252550927743,
+        "path_seed": "rest",
+        "peak_force_n": 15.141058525627702,
+        "placement_dwell_s": 2.498000000000834,
+        "simulation_duration_s": 13.95400000000133,
+        "wall_seconds": 3.0500218000088353
+      },
+      "seeded": {
+        "count": 100,
+        "max_peak_force_n_over_executed": 137.35205038181988,
+        "max_penetration_m_over_executed": 0.0038994825795654635,
+        "mean_wall_s": 3.07,
+        "min_hold_s_over_successes": 2.002000000000001,
+        "min_lift_m_over_successes": 0.07403477631941374,
+        "min_placement_dwell_s_over_successes": 2.498000000000834,
+        "path_seeds": [
+          "rest"
+        ],
+        "rendered_failures": 1,
+        "rendered_successes": 5,
+        "successes": 99,
+        "taxonomy": {
+          "hold_not_sustained": 1
+        }
+      }
+    },
+    "zoo_hand_arm": {
+      "fixed_canonical": {
+        "certified": false,
+        "failed_gate": "hold_not_sustained",
+        "hold_s": 0.0,
+        "lift_height_m": 0.06657563691658913,
+        "max_penetration_m": 0.007812657145003172,
+        "path_seed": "rest",
+        "peak_force_n": 71.47091861981998,
+        "placement_dwell_s": 0.0,
+        "simulation_duration_s": 16.838000000001546,
+        "wall_seconds": 2.189524600005825
+      },
+      "normalized": {
+        "certified": true,
+        "failed_gate": null,
+        "hold_s": 2.0000000000000013,
+        "length_factor": 1.0378939393939393,
+        "lift_height_m": 0.04733960091120942,
+        "max_penetration_m": 0.0012244528722741303,
+        "path_seed": "rest",
+        "peak_force_n": 11.981899361570074,
+        "placement_dwell_s": 2.498000000000834,
+        "simulation_duration_s": 14.814000000001617,
+        "wall_seconds": 2.506087900008424
+      },
+      "seeded": {
+        "count": 100,
+        "max_peak_force_n_over_executed": 904.2432055365716,
+        "max_penetration_m_over_executed": 0.01587960873195204,
+        "mean_wall_s": 2.11,
+        "min_hold_s_over_successes": null,
+        "min_lift_m_over_successes": null,
+        "min_placement_dwell_s_over_successes": null,
+        "path_seeds": [
+          "rest"
+        ],
+        "rendered_failures": 10,
+        "rendered_successes": 0,
+        "successes": 0,
+        "taxonomy": {
+          "hold_not_sustained": 94,
+          "object_not_lifted": 6
+        }
+      }
+    },
+    "zoo_jaw_arm": {
+      "fixed_canonical": {
+        "certified": true,
+        "failed_gate": null,
+        "hold_s": 2.0000000000000013,
+        "lift_height_m": 0.07455259621844368,
+        "max_penetration_m": 0.0008933038888627767,
+        "path_seed": "rest",
+        "peak_force_n": 21.929849911132276,
+        "placement_dwell_s": 2.498000000000834,
+        "simulation_duration_s": 14.718000000001584,
+        "wall_seconds": 2.474015400002827
+      },
+      "normalized": {
+        "certified": true,
+        "failed_gate": null,
+        "hold_s": 2.0000000000000013,
+        "length_factor": 1.0,
+        "lift_height_m": 0.07455259621844368,
+        "max_penetration_m": 0.0008933038888627767,
+        "path_seed": "rest",
+        "peak_force_n": 21.929849911132276,
+        "placement_dwell_s": 2.498000000000834,
+        "simulation_duration_s": 14.718000000001584,
+        "wall_seconds": 2.807828899996821
+      },
+      "seeded": {
+        "count": 100,
+        "max_peak_force_n_over_executed": 36.561692777643366,
+        "max_penetration_m_over_executed": 0.0025144826214461534,
+        "mean_wall_s": 2.51,
+        "min_hold_s_over_successes": 2.0000000000000013,
+        "min_lift_m_over_successes": 0.07444944790203634,
+        "min_placement_dwell_s_over_successes": 2.498000000000834,
+        "path_seeds": [
+          "rest"
+        ],
+        "rendered_failures": 2,
+        "rendered_successes": 5,
+        "successes": 98,
+        "taxonomy": {
+          "object_not_lifted": 2
+        }
+      }
+    },
+    "zoo_long_arm": {
+      "fixed_canonical": {
+        "certified": true,
+        "failed_gate": null,
+        "hold_s": 2.0000000000000013,
+        "lift_height_m": 0.07462861914842928,
+        "max_penetration_m": 0.0006034798600538985,
+        "path_seed": "rest",
+        "peak_force_n": 19.067169116340168,
+        "placement_dwell_s": 2.498000000000834,
+        "simulation_duration_s": 15.552000000001863,
+        "wall_seconds": 2.1284143999946536
+      },
+      "normalized": {
+        "certified": true,
+        "failed_gate": null,
+        "hold_s": 2.0000000000000013,
+        "length_factor": 1.5530303030303028,
+        "lift_height_m": 0.11343240885459915,
+        "max_penetration_m": 0.0005289607668077062,
+        "path_seed": "rest",
+        "peak_force_n": 24.719442381631083,
+        "placement_dwell_s": 2.498000000000834,
+        "simulation_duration_s": 15.45200000000183,
+        "wall_seconds": 2.3828346999944188
+      },
+      "seeded": {
+        "count": 100,
+        "max_peak_force_n_over_executed": 32.57198190598071,
+        "max_penetration_m_over_executed": 0.002400700446386121,
+        "mean_wall_s": 2.74,
+        "min_hold_s_over_successes": 2.0000000000000013,
+        "min_lift_m_over_successes": 0.07445378395624624,
+        "min_placement_dwell_s_over_successes": 2.498000000000834,
+        "path_seeds": [
+          "rest"
+        ],
+        "rendered_failures": 0,
+        "rendered_successes": 5,
+        "successes": 100,
+        "taxonomy": {}
+      }
+    }
+  },
+  "enabled_set": [
+    "zoo_dual_arm",
+    "zoo_jaw_arm",
+    "zoo_long_arm"
+  ],
+  "failure_taxonomy": {
+    "hold_not_sustained": 95,
+    "object_not_lifted": 8,
+    "unreachable_path": 1
+  },
+  "generation_calls": 0,
+  "goal": "G06",
+  "phases": [
+    "approach",
+    "turn",
+    "descend",
+    "close",
+    "lift",
+    "hold",
+    "carry",
+    "lower",
+    "release",
+    "retreat",
+    "dwell"
+  ],
+  "pilots": [
+    [
+      "g06-campaign-pilot-1",
+      "f68ab68b0dc8b59ca7a6620b6b6afee56472351b",
+      {
+        "zoo_compact_arm": {
+          "canonical": false,
+          "count": 1,
+          "normalized": false,
+          "successes": 0,
+          "taxonomy": {
+            "unreachable_path": 1
+          }
+        },
+        "zoo_dual_arm": {
+          "canonical": true,
+          "count": 100,
+          "normalized": true,
+          "successes": 99,
+          "taxonomy": {
+            "hold_not_sustained": 1
+          }
+        },
+        "zoo_hand_arm": {
+          "canonical": false,
+          "count": 100,
+          "normalized": false,
+          "successes": 0,
+          "taxonomy": {
+            "hold_not_sustained": 86,
+            "object_not_lifted": 14
+          }
+        },
+        "zoo_jaw_arm": {
+          "canonical": true,
+          "count": 100,
+          "normalized": true,
+          "successes": 56,
+          "taxonomy": {
+            "grasp_not_achieved": 42,
+            "object_not_lifted": 2
+          }
+        },
+        "zoo_long_arm": {
+          "canonical": true,
+          "count": 100,
+          "normalized": false,
+          "successes": 100,
+          "taxonomy": {}
+        }
+      }
+    ]
+  ],
+  "registration_sha256": "0846972af045f04cd46006fae1d280691c8c9ec03fba30cf361ade7b8de1109e",
+  "repairs": {
+    "facing": {
+      "after": "hold_not_sustained",
+      "before": "grasp_not_achieved",
+      "body": "zoo_hand_arm"
+    },
+    "standoff": {
+      "after": null,
+      "before": "hold_not_sustained",
+      "body": "zoo_jaw_arm"
+    },
+    "turn-normalized": {
+      "after": null,
+      "before": "grasp_not_achieved",
+      "body": "zoo_long_arm"
+    },
+    "turn-seeded": {
+      "after": null,
+      "before": "grasp_not_achieved",
+      "body": "zoo_jaw_arm"
+    }
+  },
+  "restart_seeds_needed_by": [],
+  "tests": {
+    "anyrobot_failed": 0,
+    "anyrobot_passed": 405,
+    "anyrobot_skipped": 5,
+    "core_failed": 0,
+    "core_passed": 263,
+    "core_skipped": 2
+  },
+  "tolerances_frozen_before_evaluation": {
+    "carry_offset_fraction_of_aperture": 2.5,
+    "dwell_s": 2.0,
+    "hold_s": 2.0,
+    "max_penetration_m": 0.004,
+    "maximum_angular_speed_radps": 0.1,
+    "maximum_linear_speed_mps": 0.01,
+    "perturbation": {
+      "friction_multiplier_range": [
+        0.8,
+        1.2
+      ],
+      "mass_multiplier_range": [
+        0.8,
+        1.2
+      ],
+      "translation_half_width_m": [
+        0.02,
+        0.02,
+        0.0
+      ]
+    },
+    "required_lift_fraction_of_height": 0.8
+  }
+}

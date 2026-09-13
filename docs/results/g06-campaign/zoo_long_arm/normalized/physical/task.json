@@ -1,0 +1,123 @@
+{
+  "attempts": 1,
+  "clock_disclosure": {
+    "phase_timing_on_native_physics_time": true,
+    "physics_timestep_s": 0.002
+  },
+  "environment": {
+    "authored_for_aperture_m": 0.087,
+    "authored_for_reach_m": 1.32,
+    "description": "A 30 mm cube on a low bench to the left of and slightly behind the mount, and an empty platform of the same height beside it, both in absolute metres. Nothing about the world depends on which body enters it.",
+    "environment_id": "g06_transfer_v1",
+    "fixtures": [
+      {
+        "name": "bench",
+        "position_m": [
+          -0.23295454545454541,
+          1.0094696969696968,
+          0.3804924242424242
+        ],
+        "rgba": [
+          0.35,
+          0.35,
+          0.4,
+          1.0
+        ],
+        "size_m": [
+          0.07765151515151514,
+          0.07765151515151514,
+          0.02329545454545454
+        ]
+      },
+      {
+        "name": "platform",
+        "position_m": [
+          -0.015530303030303028,
+          1.0094696969696968,
+          0.3804924242424242
+        ],
+        "rgba": [
+          0.3,
+          0.45,
+          0.75,
+          1.0
+        ],
+        "size_m": [
+          0.07765151515151514,
+          0.07765151515151514,
+          0.02329545454545454
+        ]
+      }
+    ],
+    "objects": [
+      {
+        "friction": 1.4,
+        "mass_kg": 0.030177119193078854,
+        "name": "cube",
+        "position_m": [
+          -0.23295454545454541,
+          1.0094696969696968,
+          0.4265464994775339
+        ],
+        "rgba": [
+          0.85,
+          0.45,
+          0.15,
+          1.0
+        ],
+        "size_m": [
+          0.022758620689655173,
+          0.022758620689655173,
+          0.022758620689655173
+        ]
+      }
+    ],
+    "robot_mount_m": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "environment_sha256": "4bec9a91bf2caf2585c9dc70b34647a10dd7d5555b9a3393caf6d7ec0641cd37",
+  "goal": "G06",
+  "interventions": [],
+  "label": "zoo_long_arm-normalized",
+  "limits": "Manifest joint/actuator limits; closure force bounded by the object's needs and half the weakest closure actuator; penetration 4 mm; no relaxed thresholds.",
+  "observation_contract": {
+    "inputs": [
+      "joint encoders",
+      "model parameters",
+      "contact forces on the gripper"
+    ],
+    "policy": "fully_observed_model_based_baseline",
+    "vlm": false
+  },
+  "placement_goal": {
+    "dwell_s": 2.0,
+    "maximum_angular_speed_radps": 0.1,
+    "maximum_linear_speed_mps": 0.01,
+    "region_maximum_m": [
+      0.07765151515151514,
+      1.102651515151515,
+      0.543560606060606
+    ],
+    "region_minimum_m": [
+      -0.1087121212121212,
+      0.9162878787878785,
+      0.4022348484848484
+    ]
+  },
+  "protocol": "rigby.transfer-trial/1",
+  "retry_limit": 0,
+  "track": "capability_normalized",
+  "trial": {
+    "kind": "canonical_normalized",
+    "normalization": {
+      "cube_mass_kg": 0.030177119193078854,
+      "cube_span_m": 0.04551724137931035,
+      "length_factor": 1.5530303030303028,
+      "reference_aperture_m": 0.087,
+      "reference_reach_m": 1.32
+    }
+  }
+}

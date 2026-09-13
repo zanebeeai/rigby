@@ -1,0 +1,43 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-carry-it-to-the-platform-and-se-7f0352ba",
+  "title": "G06 transfer: zoo_jaw_arm, capability-normalized fixture",
+  "prompt": "pick up the cube, carry it to the platform and set it down",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T08:53:53Z",
+  "source": {
+    "commit": "d313256eae",
+    "branch": "feat/g06-contact-transfer",
+    "dirty": false,
+    "how": "python any-robot/scripts/g06_transfer_campaign.py --out docs/results/g06-campaign --local any-robot/results/g06-campaign"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: approach, opposition, lift, 2 s hold, carry, lower, release, retreat and 2 s released dwell all certified; sim 14.47 s"
+  },
+  "notes": "See docs/results/g06-report.md. Rendered from recorded physical states at real-time playback with the simulation clock and outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. Track: normalized; feasibility class feasible.",
+  "media": [
+    {
+      "path": "docs/results/g06-campaign/zoo_jaw_arm/normalized/media/episode.mp4",
+      "bytes": 117919,
+      "sha256": "726f24e274cd4fd7f6da6580fe85c908666b891a537afcb89780fb173a1569ba",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g06-campaign/zoo_jaw_arm/normalized/media/preview.gif",
+      "bytes": 906297,
+      "sha256": "e4c0e2eef3fb5b67bb41c7b64ac40c6ec9ce7ec76df5632a3aebc6e724cd2231",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G06",
+    "transfer",
+    "normalized",
+    "success"
+  ]
+}

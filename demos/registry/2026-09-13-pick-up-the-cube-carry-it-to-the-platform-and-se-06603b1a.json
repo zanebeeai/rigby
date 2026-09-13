@@ -1,0 +1,43 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-carry-it-to-the-platform-and-se-06603b1a",
+  "title": "D06: zoo_hand_arm facing repair, before and after",
+  "prompt": "pick up the cube, carry it to the platform and set it down",
+  "tier": "any-robot",
+  "embodiment": "zoo_hand_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T08:54:27Z",
+  "source": {
+    "commit": "d313256eae",
+    "branch": "feat/g06-contact-transfer",
+    "dirty": false,
+    "how": "python any-robot/scripts/g06_d06_media.py --campaign docs/results/g06-campaign --out docs/results/g06-d06"
+  },
+  "outcome": {
+    "state": "partial",
+    "text": "Left, without the repair: runtime_failure (grasp_not_achieved). Right, with it: runtime_failure (hold_not_sustained). Identical physics, same body, same world."
+  },
+  "notes": "See docs/results/g06-report.md. Rendered from recorded physical states at real-time playback with the simulation clock and outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. Repair: facing.",
+  "media": [
+    {
+      "path": "docs/results/g06-d06/facing-before-after.mp4",
+      "bytes": 194732,
+      "sha256": "f97cb815a33c3ead3f9f03c13c2a822cd3470e4175b0fbdd8d1fd0e9e9fb3570",
+      "role": "comparison"
+    },
+    {
+      "path": "docs/results/g06-d06/facing-before-after-preview.gif",
+      "bytes": 1454671,
+      "sha256": "cab389f36f830777af548608d0fb8650a090518f119cd08b59dc37178800f472",
+      "role": "comparison"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G06",
+    "D06",
+    "before-after",
+    "facing"
+  ]
+}

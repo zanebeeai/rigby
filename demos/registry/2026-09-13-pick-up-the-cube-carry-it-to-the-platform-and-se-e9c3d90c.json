@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-carry-it-to-the-platform-and-se-e9c3d90c",
+  "title": "G06 pilot 1: zoo_jaw_arm, strict fixed world, seed 11 (grasp_not_achieved)",
+  "prompt": "pick up the cube, carry it to the platform and set it down",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T08:54:19Z",
+  "source": {
+    "commit": "d313256eae",
+    "branch": "feat/g06-contact-transfer",
+    "dirty": false,
+    "how": "python any-robot/scripts/g06_transfer_campaign.py --out docs/results/g06-campaign --local any-robot/results/g06-campaign"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "RUNTIME FAILURE, typed grasp_not_achieved: opposing members never both made contact with the object; sim 14.38 s"
+  },
+  "notes": "See docs/results/g06-report.md. Rendered from recorded physical states at real-time playback with the simulation clock and outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. Pilot 1 at f68ab68, before the turn phase. Registered perturbation seed 11: cube displaced (12.8, -14.6) mm, mass x1.032, friction x1.017. The bundle was not retained; its digest is in the pilot's trials.json (8b472b3f655d).",
+  "media": [
+    {
+      "path": "docs/results/g06-campaign-pilot-1/zoo_jaw_arm/fixed/seed-011/media/episode.mp4",
+      "bytes": 91106,
+      "sha256": "07456c36fdd8005ca605662549c5785b8b3bff074632c46066bff15f14b2d434",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g06-campaign-pilot-1/zoo_jaw_arm/fixed/seed-011/media/preview.gif",
+      "bytes": 676045,
+      "sha256": "91ee2552d6d4b7e620a026cd60b0675ae08a592513e7e9941505a0a5950ba7d5",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G06",
+    "transfer",
+    "pilot-1",
+    "seeded",
+    "failure"
+  ]
+}

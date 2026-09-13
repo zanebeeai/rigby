@@ -50,6 +50,23 @@ turns a reachable waypoint into a residual the solver never closes -- which is
 what `unreachable_object` was on arms that can plainly reach the block."""
 MAX_STEP_RAD = 0.25
 NULL_SPACE_GAIN = 0.25
+FACING_GAIN = 0.05
+"""How hard the null space is spent on pointing the site along a requested
+axis once the position task has priority again. A preference at that stage:
+on an arm with no spare freedom the facing simply goes unmet."""
+FACING_WEIGHT_M = 0.4
+"""Metres of position error one radian of facing error is worth while the
+two are solved together. Facing cannot be a null-space afterthought on a
+five- or six-axis arm reaching down onto a bench: measured at the grasp
+point, the hand arrived 116 to 121 degrees from vertical and put its palm
+through the bench and its forearm through the neighbouring platform. So the
+first stretch of every waypoint solve carries the facing as part of the task,
+weighted so it is heard but cannot outvote the point, and the last stretch
+returns position to sole priority so the tolerance is met exactly. Swept on
+the four larger public bodies at 0.12, 0.25 and 0.4 m/rad: only the last
+brought a five-axis arm within ten degrees of vertical at the bench."""
+STACKED_ITERATIONS = 120
+"""How many of the iterations carry the facing inside the task."""
 
 SEPARATION_DAMPING = 1e-3
 """Damping of the separation task's least-squares solve.
@@ -282,6 +299,7 @@ def solve_site_path(
     seed_qpos: np.ndarray,
     tolerance_m: float = DEFAULT_TOLERANCE_M,
     guard: CollisionGuard | None = None,
+    facing: tuple[np.ndarray, np.ndarray] | None = None,
 ) -> IkSolution:
     """Walk a site through a sequence of world targets.
 
@@ -293,6 +311,11 @@ def solve_site_path(
     waypoints is also required to be free of penetration between the guarded
     pairs; a failure to keep them clear is reported as an :class:`IkFailure`
     carrying the pair and the depth, distinct from an unreachable target.
+
+    ``facing`` is a pair ``(local_axis, world_axis)``: the site's local axis
+    the solver prefers to keep pointed along the world axis, spent only in the
+    position task's null space. A hand asked to descend on an object needs to
+    arrive pointing at it, and nothing else in a position solve says so.
     """
 
     site_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_SITE, site_name)
@@ -363,15 +386,28 @@ def solve_site_path(
     for index, target in enumerate(np.asarray(targets, dtype=float)):
         residual = np.inf
         blocking: tuple[str, str] | None = None
-        for _ in range(MAX_ITERATIONS):
+        for iteration in range(MAX_ITERATIONS):
             error, residual, near = observe(current)
             blocking = _pair_names(kinematic_model, near[0]) if near else None
-            if residual <= tolerance_m and not near:
+            if residual <= tolerance_m and not near and (facing is None or iteration >= STACKED_ITERATIONS):
                 break
 
             mujoco.mj_jacSite(kinematic_model, data, jacp, jacr, site_id)
             jacobian = jacp[:, dof_adr]
+            task_jacobian, task_error = jacobian, error
             toward_reference = NULL_SPACE_GAIN * (reference[qpos_adr] - current[qpos_adr])
+            if facing is not None:
+                rotation = np.array(data.site_xmat[site_id], dtype=float).reshape(3, 3)
+                twist = np.cross(rotation @ np.asarray(facing[0], dtype=float), np.asarray(facing[1], dtype=float))
+                if iteration < STACKED_ITERATIONS:
+                    # Solved together with the point, weighted in metres per
+                    # radian; see FACING_WEIGHT_M.
+                    task_jacobian = np.vstack([jacobian, FACING_WEIGHT_M * jacr[:, dof_adr]])
+                    task_error = np.concatenate([error, FACING_WEIGHT_M * twist])
+                elif float(np.linalg.norm(twist)) > 1e-6:
+                    toward_reference = toward_reference + FACING_GAIN * (
+                        np.linalg.pinv(jacr[:, dof_adr], rcond=1e-3) @ twist
+                    )
 
             separation = (
                 _separation_task(kinematic_model, data, near, dof_adr, guard.clearance_m)
@@ -389,9 +425,9 @@ def solve_site_path(
                 rows, wanted = separation
                 opening = _damped_pseudo_inverse(rows, SEPARATION_DAMPING) @ wanted
                 remaining = np.eye(len(joint_ids)) - np.linalg.pinv(rows, rcond=1e-3) @ rows
-                restricted = jacobian @ remaining
+                restricted = task_jacobian @ remaining
                 step = opening + _damped_pseudo_inverse(restricted, DAMPING**2) @ (
-                    error - jacobian @ opening
+                    task_error - task_jacobian @ opening
                 )
                 projector = remaining - np.linalg.pinv(restricted, rcond=1e-3) @ restricted
                 if not step_toward(step + projector @ toward_reference):
@@ -401,9 +437,9 @@ def solve_site_path(
             # Damped least squares. The damping is what keeps the step finite
             # near a singularity, where an undamped pseudo-inverse would demand
             # an enormous joint velocity to produce a tiny Cartesian one.
-            gram = jacobian @ jacobian.T + (DAMPING**2) * np.eye(3)
-            pseudo_inverse = jacobian.T @ np.linalg.inv(gram)
-            step = pseudo_inverse @ error
+            gram = task_jacobian @ task_jacobian.T + (DAMPING**2) * np.eye(task_jacobian.shape[0])
+            pseudo_inverse = task_jacobian.T @ np.linalg.inv(gram)
+            step = pseudo_inverse @ task_error
 
             # Null-space term, pulling toward the previous waypoint's solution.
             #
@@ -423,8 +459,8 @@ def solve_site_path(
             # converging and reports a target it can plainly reach as
             # unreachable.
             projector = np.eye(len(joint_ids)) - np.linalg.pinv(
-                jacobian, rcond=1e-3
-            ) @ jacobian
+                task_jacobian, rcond=1e-3
+            ) @ task_jacobian
             if not step_toward(step + projector @ toward_reference):
                 break
 

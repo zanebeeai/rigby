@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-carry-it-to-the-platform-and-se-d0b32be2",
+  "title": "D06: zoo_hand_arm, facing repair BEFORE (grasp_not_achieved)",
+  "prompt": "pick up the cube, carry it to the platform and set it down",
+  "tier": "any-robot",
+  "embodiment": "zoo_hand_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T08:54:27Z",
+  "source": {
+    "commit": "d313256eae",
+    "branch": "feat/g06-contact-transfer",
+    "dirty": false,
+    "how": "python any-robot/scripts/g06_d06_media.py --campaign docs/results/g06-campaign --out docs/results/g06-d06"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "RUNTIME FAILURE, typed grasp_not_achieved: opposing members never both made contact with the object; sim 15.58 s"
+  },
+  "notes": "See docs/results/g06-report.md. Rendered from recorded physical states at real-time playback with the simulation clock and outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. The before side of the facing before/after pair.",
+  "media": [
+    {
+      "path": "docs/results/g06-d06/facing/before/media/episode.mp4",
+      "bytes": 96920,
+      "sha256": "8d032ccfa5e8deaae7cd76e3d6a911da1953ecb17c5fa93eb3e56194bf9a1c42",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g06-d06/facing/before/media/preview.gif",
+      "bytes": 699556,
+      "sha256": "01e16b2ad41fee3adc5b068603175510ee455c14071e992d4a8fb14bb9bb7771",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G06",
+    "D06",
+    "before-after",
+    "facing",
+    "before"
+  ]
+}

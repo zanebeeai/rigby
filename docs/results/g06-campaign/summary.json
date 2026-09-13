@@ -1,0 +1,100 @@
+{
+  "bodies": [
+    {
+      "feasibility_class": "infeasible",
+      "fixed_canonical_certified": false,
+      "fixed_count": 1,
+      "fixed_failure_taxonomy": {
+        "unreachable_path": 1
+      },
+      "fixed_successes": 0,
+      "normalized_certified": false,
+      "normalized_gate": "object_not_lifted",
+      "rig_id": "zoo_compact_arm",
+      "zoo_id": "zoo_compact_arm"
+    },
+    {
+      "feasibility_class": "feasible",
+      "fixed_canonical_certified": true,
+      "fixed_count": 100,
+      "fixed_failure_taxonomy": {
+        "hold_not_sustained": 1
+      },
+      "fixed_successes": 99,
+      "normalized_certified": true,
+      "normalized_gate": null,
+      "rig_id": "zoo_dual_arm",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "feasibility_class": "feasible",
+      "fixed_canonical_certified": false,
+      "fixed_count": 100,
+      "fixed_failure_taxonomy": {
+        "hold_not_sustained": 94,
+        "object_not_lifted": 6
+      },
+      "fixed_successes": 0,
+      "normalized_certified": true,
+      "normalized_gate": null,
+      "rig_id": "zoo_hand_arm",
+      "zoo_id": "zoo_hand_arm"
+    },
+    {
+      "feasibility_class": "feasible",
+      "fixed_canonical_certified": true,
+      "fixed_count": 100,
+      "fixed_failure_taxonomy": {
+        "object_not_lifted": 2
+      },
+      "fixed_successes": 98,
+      "normalized_certified": true,
+      "normalized_gate": null,
+      "rig_id": "zoo_jaw_arm",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "feasibility_class": "feasible",
+      "fixed_canonical_certified": true,
+      "fixed_count": 100,
+      "fixed_failure_taxonomy": {},
+      "fixed_successes": 100,
+      "normalized_certified": true,
+      "normalized_gate": null,
+      "rig_id": "zoo_long_arm",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "feasibility_class": "unsupported_by_structure",
+      "feasibility_reasons": [
+        "no grasping effector"
+      ],
+      "fixed": {
+        "attempted": false,
+        "reason": "no grasping effector"
+      },
+      "normalized": {
+        "attempted": false,
+        "reason": "no grasping effector"
+      },
+      "rig_id": "zoo_tool_arm",
+      "zoo_id": "zoo_tool_arm"
+    }
+  ],
+  "finished_at_utc": "2026-09-13T08:47:18.549084+00:00",
+  "goal": "G06",
+  "provenance": {
+    "commit": "d046dbcf35401779198653b2780932fe25566ac5",
+    "generation_calls": 0,
+    "mujoco": "3.11.0",
+    "numpy": "2.5.1",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.7 (tags/v3.12.7:0b05ead, Oct  1 2024, 03:06:41) [MSC v.1941 64 bit (AMD64)]",
+    "registration_sha256": "0846972af045f04cd46006fae1d280691c8c9ec03fba30cf361ade7b8de1109e",
+    "scored": true,
+    "seed_limit": null,
+    "started_at_utc": "2026-09-13T08:23:59.956640+00:00",
+    "working_tree_dirty": false
+  },
+  "registration_sha256": "0846972af045f04cd46006fae1d280691c8c9ec03fba30cf361ade7b8de1109e"
+}

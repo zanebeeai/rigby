@@ -1,0 +1,261 @@
+{
+  "feasibility_class": "infeasible",
+  "feasibility_reasons": [
+    "necessary condition violated: aperture_spans_cube",
+    "necessary condition violated: points_inside_measured_envelope"
+  ],
+  "fixed": {
+    "attempted": true,
+    "canonical": {
+      "bundle": {
+        "bundle": "C:/Users/hocke/GitHub/rigby-g06/docs/results/g06-campaign/zoo_compact_arm/fixed-canonical/physical",
+        "outcome": "pre_execution_refusal",
+        "replay_agrees": true,
+        "sha256": "dbdc08009707171185f94309b5957428f029acc8bdc8a6b9260ac298e14f2b67",
+        "simulation_duration_s": 0.0,
+        "trace_sha256": "3d58c8f2a63f3089b28067090eb25e87dd65bf4ea1b519e78465e9059a08e708"
+      },
+      "carry_offset_max_m": 0.0,
+      "certified": false,
+      "collision_policy": {
+        "contact_exclusions_total": 0,
+        "contact_exclusions_with_object": [],
+        "equality_constraints": 0,
+        "object_actuators": 0,
+        "object_geoms_collidable": true,
+        "object_state_writes": 0
+      },
+      "duration_s": 0.0,
+      "failed_gate": "unreachable_path",
+      "frames": 24,
+      "hold_s": 0.0,
+      "lift_height_m": 0.0,
+      "max_penetration_m": 0.0,
+      "media_sha256": "22244b9db174b46930d250108c539af32e8c5704609749d27c8bbe022f3253b5",
+      "opposition_achieved": false,
+      "path_seed": "",
+      "peak_force_n": 0.0,
+      "phases": [],
+      "placed_inside": false,
+      "placement_dwell_s": 0.0,
+      "placement_success": false,
+      "released": true,
+      "robot_fixture_contacts": [],
+      "unexpected_contacts": [],
+      "violations": [
+        {
+          "code": "unreachable_path",
+          "detail": "waypoint 1 is 0.0369 m from where it was asked to be, past a tolerance of 0.0040 m",
+          "limit": 0.0,
+          "measured": 0.03692146929177467
+        }
+      ],
+      "wall_seconds": 0.20145389999379404
+    },
+    "class": "infeasible",
+    "count": 1,
+    "failure_taxonomy": {
+      "unreachable_path": 1
+    },
+    "successes": 0,
+    "trials": [
+      {
+        "bundle": {
+          "bundle": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign/zoo_compact_arm/seed-000/physical",
+          "outcome": "pre_execution_refusal",
+          "replay_agrees": true,
+          "sha256": "b82a05b5cae5460c49537d5d31a0676fef86486b71d76c2b0ea8ae64130684e4",
+          "simulation_duration_s": 0.0,
+          "trace_sha256": "94cc37fae2dcc62c0f22c3111ef6ad4bcb5035dc79edd9e6ddab0225c1424b6b"
+        },
+        "carry_offset_max_m": 0.0,
+        "certified": false,
+        "collision_policy": {
+          "contact_exclusions_total": 0,
+          "contact_exclusions_with_object": [],
+          "equality_constraints": 0,
+          "object_actuators": 0,
+          "object_geoms_collidable": true,
+          "object_state_writes": 0
+        },
+        "draw": {
+          "friction_multiplier": 1.0182962155737896,
+          "mass_multiplier": 0.9191994206519264,
+          "seed": 0,
+          "translation_m": [
+            -0.011422315080391625,
+            -0.005868115488978502,
+            0.0
+          ]
+        },
+        "duration_s": 0.0,
+        "failed_gate": "unreachable_path",
+        "hold_s": 0.0,
+        "lift_height_m": 0.0,
+        "max_penetration_m": 0.0,
+        "media_sha256": "cd53da0817eb4bcbd1a3bc0b994e0b8cc7d9dc6a5c4f5ae7b2ce4b5c6a937987",
+        "opposition_achieved": false,
+        "path_seed": "",
+        "peak_force_n": 0.0,
+        "phases": [],
+        "placed_inside": false,
+        "placement_dwell_s": 0.0,
+        "placement_success": false,
+        "released": true,
+        "robot_fixture_contacts": [],
+        "seed": 0,
+        "trace_file_sha256": null,
+        "unexpected_contacts": [],
+        "violations": [
+          {
+            "code": "unreachable_path",
+            "detail": "waypoint 1 is 0.0334 m from where it was asked to be, past a tolerance of 0.0040 m",
+            "limit": 0.0,
+            "measured": 0.03339962496217025
+          }
+        ],
+        "wall_seconds": 0.16525640001054853
+      }
+    ]
+  },
+  "normalized": {
+    "attempted": true,
+    "bundle": {
+      "bundle": "C:/Users/hocke/GitHub/rigby-g06/docs/results/g06-campaign/zoo_compact_arm/normalized/physical",
+      "outcome": "runtime_failure",
+      "replay_agrees": true,
+      "sha256": "713d936928fe98cc84810d57ba1f6c73247ae27565960f5011bd2523222fa234",
+      "simulation_duration_s": 13.910000000001315,
+      "trace_sha256": "6bb2910638597be637b4a763a6cd7019d4979fe7a85d4e6d34c563fd30b23d6e"
+    },
+    "carry_offset_max_m": 0.07040305285565819,
+    "certified": false,
+    "collision_policy": {
+      "contact_exclusions_total": 0,
+      "contact_exclusions_with_object": [],
+      "equality_constraints": 0,
+      "object_actuators": 0,
+      "object_geoms_collidable": true,
+      "object_state_writes": 0
+    },
+    "duration_s": 13.910000000001315,
+    "failed_gate": "object_not_lifted",
+    "frames": 165,
+    "hold_s": 0.0,
+    "lift_height_m": 0.001420317608979385,
+    "max_penetration_m": 0.0009990080915067093,
+    "media_sha256": "43afcebd52090eb3db791994e5c3b307812ba5e35639178892ca1e44e09c2c48",
+    "normalization": {
+      "cube_mass_kg": 0.00042993808684242907,
+      "cube_span_m": 0.01103448275862069,
+      "length_factor": 0.2916666666666667,
+      "reference_aperture_m": 0.087,
+      "reference_reach_m": 1.32
+    },
+    "opposition_achieved": true,
+    "path_seed": "rest",
+    "peak_force_n": 1.4998507912248256,
+    "phases": [
+      {
+        "end_s": 1.8460000000000014,
+        "name": "approach",
+        "note": "",
+        "start_s": 0.25000000000000017
+      },
+      {
+        "end_s": 3.245999999999864,
+        "name": "descend",
+        "note": "",
+        "start_s": 1.8460000000000014
+      },
+      {
+        "end_s": 5.747999999999589,
+        "name": "close",
+        "note": "closure never settled on the object",
+        "start_s": 3.245999999999864
+      },
+      {
+        "end_s": 6.749999999999479,
+        "name": "lift",
+        "note": "",
+        "start_s": 5.747999999999589
+      },
+      {
+        "end_s": 8.749999999999591,
+        "name": "hold",
+        "note": "",
+        "start_s": 6.749999999999479
+      },
+      {
+        "end_s": 9.949999999999992,
+        "name": "carry",
+        "note": "",
+        "start_s": 8.749999999999591
+      },
+      {
+        "end_s": 10.110000000000046,
+        "name": "lower",
+        "note": "",
+        "start_s": 9.949999999999992
+      },
+      {
+        "end_s": 10.610000000000213,
+        "name": "release",
+        "note": "",
+        "start_s": 10.110000000000046
+      },
+      {
+        "end_s": 11.41000000000048,
+        "name": "retreat",
+        "note": "",
+        "start_s": 10.610000000000213
+      },
+      {
+        "end_s": 13.910000000001315,
+        "name": "dwell",
+        "note": "",
+        "start_s": 11.41000000000048
+      }
+    ],
+    "placed_inside": false,
+    "placement_dwell_s": 0.0,
+    "placement_success": false,
+    "released": true,
+    "robot_fixture_contacts": [
+      [
+        "env_fixture_bench",
+        "finger_right"
+      ]
+    ],
+    "unexpected_contacts": [],
+    "violations": [
+      {
+        "code": "object_not_lifted",
+        "detail": "the object never came off its support",
+        "limit": 0.008827586206896552,
+        "measured": 0.001420317608979385
+      },
+      {
+        "code": "hold_not_sustained",
+        "detail": "the object was not held continuously through the hold",
+        "limit": 2.0,
+        "measured": 0.0
+      },
+      {
+        "code": "not_transported",
+        "detail": "the object did not end inside the destination region",
+        "limit": 1.0,
+        "measured": 0.0
+      },
+      {
+        "code": "placement_unstable",
+        "detail": "the object did not rest inside the region, released and still, for the dwell",
+        "limit": 2.0,
+        "measured": 0.0
+      }
+    ],
+    "wall_seconds": 2.149133200000506
+  },
+  "rig_id": "zoo_compact_arm",
+  "zoo_id": "zoo_compact_arm"
+}

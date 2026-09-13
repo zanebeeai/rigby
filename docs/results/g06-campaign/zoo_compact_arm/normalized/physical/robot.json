@@ -1,0 +1,746 @@
+{
+  "actuator_order": [
+    "joint_0",
+    "joint_1",
+    "joint_2",
+    "joint_3",
+    "grip_left",
+    "grip_right"
+  ],
+  "adjacent_collision_exclusions": [],
+  "asset_licenses": {},
+  "coordinate_system": {
+    "forward_axis": "+X",
+    "right_handed": true,
+    "units": "meters",
+    "up_axis": "+Z"
+  },
+  "dofs": [
+    {
+      "acceleration_limit": 500.0,
+      "effort_limit": 14.0,
+      "joint": "joint_0",
+      "maximum": 2.85,
+      "minimum": -2.85,
+      "name": "joint_0",
+      "velocity_limit": 3.2
+    },
+    {
+      "acceleration_limit": 500.0,
+      "effort_limit": 14.0,
+      "joint": "joint_1",
+      "maximum": 2.85,
+      "minimum": -2.85,
+      "name": "joint_1",
+      "velocity_limit": 3.2
+    },
+    {
+      "acceleration_limit": 500.0,
+      "effort_limit": 14.0,
+      "joint": "joint_2",
+      "maximum": 2.85,
+      "minimum": -2.85,
+      "name": "joint_2",
+      "velocity_limit": 3.2
+    },
+    {
+      "acceleration_limit": 500.0,
+      "effort_limit": 14.0,
+      "joint": "joint_3",
+      "maximum": 2.85,
+      "minimum": -2.85,
+      "name": "joint_3",
+      "velocity_limit": 3.2
+    },
+    {
+      "acceleration_limit": 500.0,
+      "effort_limit": 8.0,
+      "joint": "grip_left",
+      "maximum": 0.015,
+      "minimum": 0.0,
+      "name": "grip_left",
+      "velocity_limit": 0.4
+    },
+    {
+      "acceleration_limit": 500.0,
+      "effort_limit": 8.0,
+      "joint": "grip_right",
+      "maximum": 0.015,
+      "minimum": 0.0,
+      "name": "grip_right",
+      "velocity_limit": 0.4
+    }
+  ],
+  "fixed_base": true,
+  "mjcf": {
+    "filename": "robot.xml",
+    "media_type": "application/xml",
+    "schema_version": "1.0",
+    "sha256": "078bdb712c0939e02da47cd5552db02c4b61c94df87b2dcac84c3ae3595d1850",
+    "size_bytes": 3926
+  },
+  "morphology": {
+    "base_body": "base",
+    "chains": [
+      {
+        "bodies": [
+          "base",
+          "link_0",
+          "link_1",
+          "link_2",
+          "link_3",
+          "palm"
+        ],
+        "chain_id": "palm",
+        "envelope_azimuth_bins": 12,
+        "envelope_elevation_bins": 7,
+        "joints": [
+          "joint_0",
+          "joint_1",
+          "joint_2",
+          "joint_3"
+        ],
+        "orienting_dof": 0,
+        "positioning_dof": 4,
+        "reach_envelope_m": [
+          0.17285782582288653,
+          0.21165736250671413,
+          0.21713244549123298,
+          0.25835964691229757,
+          0.28877567072864657,
+          0.31383413715830494,
+          0.3343493592670815,
+          0.16906536924704627,
+          0.19588212516628678,
+          0.2276330877354982,
+          0.2474567835947539,
+          0.274911325674066,
+          0.31530170209840014,
+          0.3211806137499848,
+          0.1747293237871562,
+          0.20495412522506312,
+          0.22177280838773827,
+          0.26803501002158725,
+          0.28879090057812745,
+          0.30822172734309855,
+          0.3342055964338421,
+          0.18448057911644833,
+          0.20043672962199152,
+          0.22469807715979295,
+          0.23824315733903895,
+          0.2884820442588159,
+          0.3144335741704648,
+          0.32472079789592045,
+          0.18614654998631713,
+          0.19931987358548248,
+          0.2293934859443375,
+          0.2537076707687324,
+          0.2979616919134888,
+          0.31970720448924617,
+          0.33414982856414194,
+          0.1899579573073529,
+          0.20529153312505305,
+          0.22675937670924615,
+          0.23731820176590007,
+          0.2732030792576078,
+          0.323757905306271,
+          0.3282739158193095,
+          0.17676106543281614,
+          0.1920175880252365,
+          0.21499784514220316,
+          0.2614217144226488,
+          0.2659293060020261,
+          0.30396629013725374,
+          0.3350000000000001,
+          0.19425316354364555,
+          0.20249725887990952,
+          0.23541550054577612,
+          0.2657283990407595,
+          0.29597225796379056,
+          0.3168343974654076,
+          0.3292738254908379,
+          0.1918274187806637,
+          0.20626110810884812,
+          0.22758446855124148,
+          0.26593343588149027,
+          0.2911008601603069,
+          0.3166783799346689,
+          0.33210226014236605,
+          0.1854525785716293,
+          0.21428094455170735,
+          0.21743922873254312,
+          0.2554076615192459,
+          0.29289384011137115,
+          0.3188371435872716,
+          0.33483319607611073,
+          0.18502806762907073,
+          0.1886891314251723,
+          0.22862776776123012,
+          0.26049719657410697,
+          0.29406575235368565,
+          0.30452126267586993,
+          0.3305138832990656,
+          0.15811479444103144,
+          0.19794435806807673,
+          0.2242245546167877,
+          0.2555774312208923,
+          0.28803032728214834,
+          0.31561388430001985,
+          0.33053135850791876
+        ],
+        "reach_inner_m": [
+          0.06557732725225826,
+          0.08713541285696022,
+          0.04911036528586821,
+          0.06432226184255302,
+          0.02021010678279102,
+          0.06099544250747966,
+          0.040768781203685725,
+          0.02369386837593381,
+          0.008105034360765937,
+          0.005222497925637654,
+          0.04741990373055288,
+          0.02792602361557497,
+          0.026646345232128322,
+          0.038823923708546614,
+          0.021827577692877177,
+          0.03275998978206009,
+          0.0657334501948411,
+          0.012522063188070719,
+          0.018565114673589928,
+          0.022084920061302617,
+          0.01946823856995294,
+          0.018437627573072383,
+          0.018754613902376118,
+          0.012938764923048404,
+          0.016372675685404084,
+          0.02292017824734841,
+          0.025546367073924728,
+          0.016328426046014963,
+          0.013485416546955864,
+          0.053635059037807555,
+          0.03137905328432025,
+          0.0121278754655346,
+          0.0369519338675553,
+          0.031925729956871526,
+          0.0223637334264077,
+          0.05880441277252364,
+          0.019851935091121774,
+          0.011331388698866908,
+          0.032417733065635,
+          0.03596419309893238,
+          0.002983737377979653,
+          0.010044991729012846,
+          0.0020806052499626523,
+          0.030725736791523003,
+          0.02933727081500937,
+          0.02974141510453297,
+          0.03787369566634664,
+          0.02031665782663206,
+          0.012598673502436958,
+          0.04876518879014094,
+          0.07917267179650835,
+          0.013305919825687967,
+          0.04823540467331233,
+          0.006041916478531283,
+          0.024231174725055864,
+          0.014016417883153349,
+          0.06830786909596501,
+          0.013654771864248912,
+          0.01793959459112227,
+          0.04582719620742315,
+          0.011193783570965208,
+          0.016240474804463764,
+          0.022222174886636345,
+          0.008653021986586152,
+          0.029733127648787976,
+          0.02860410540334643,
+          0.0208488367351543,
+          0.03777219288835774,
+          0.01801822112452551,
+          0.023114314131246854,
+          0.03705807371185434,
+          0.01595201061245334,
+          0.010106497892804687,
+          0.02720494989147204,
+          0.030039175635763575,
+          0.009753686774720738,
+          0.030056521778185866,
+          0.030324943762794796,
+          0.023062943648293803,
+          0.018915251728554423,
+          0.006547287094694264,
+          0.025951203818685906,
+          0.016815715545101445,
+          0.009121413658233473
+        ],
+        "reach_radius_m": 0.335,
+        "root_body": "link_0",
+        "tip_body": "palm",
+        "working_direction": {
+          "x": 0.9162108788312703,
+          "y": -0.4006964256282198,
+          "z": 0.0
+        },
+        "workspace_centroid_m": {
+          "x": 0.002072746724400395,
+          "y": -0.0009064967715285031,
+          "z": 0.13441024744083208
+        }
+      }
+    ],
+    "coordinate_system": {
+      "forward_axis": "-Y",
+      "right_handed": true,
+      "units": "meters",
+      "up_axis": "+Z"
+    },
+    "effectors": [
+      {
+        "chain_id": "palm",
+        "closes_toward_upper": true,
+        "grip_joints": [
+          "grip_left",
+          "grip_right"
+        ],
+        "kind": "parallel_jaw",
+        "max_aperture_m": 0.032,
+        "member_bodies": [
+          "finger_left",
+          "finger_right"
+        ],
+        "member_extends_toward_upper": [
+          false,
+          false
+        ],
+        "member_joints": [
+          [
+            "grip_left"
+          ],
+          [
+            "grip_right"
+          ]
+        ],
+        "min_aperture_m": 0.002,
+        "name": "palm_effector",
+        "opposition_groups": [
+          [
+            "finger_left"
+          ],
+          [
+            "finger_right"
+          ]
+        ],
+        "site_names": [
+          "palm_contact_0",
+          "palm_contact_1",
+          "palm_grasp_center",
+          "palm_grasp_point",
+          "palm_tip",
+          "palm_wrist"
+        ],
+        "tip_body": "finger_left"
+      }
+    ],
+    "intrinsic_frame": {
+      "confidence": 0.0,
+      "evidence": [
+        "no_evidence_default_axis"
+      ],
+      "front": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "lateral": {
+        "x": -0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "source": "derived",
+      "up": {
+        "x": -0.0,
+        "y": -0.0,
+        "z": 1.0
+      }
+    },
+    "joints": [
+      {
+        "axis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        },
+        "body": "link_0",
+        "effort_declared": true,
+        "effort_limit": 14.0,
+        "kind": "hinge",
+        "maximum": 2.85,
+        "minimum": -2.85,
+        "name": "joint_0",
+        "role": "major_position",
+        "tip_rotation_rad": 2.85,
+        "tip_translation_m": 0.476074,
+        "velocity_limit": 3.2
+      },
+      {
+        "axis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "body": "link_1",
+        "effort_declared": true,
+        "effort_limit": 14.0,
+        "kind": "hinge",
+        "maximum": 2.85,
+        "minimum": -2.85,
+        "name": "joint_1",
+        "role": "major_position",
+        "tip_rotation_rad": 2.85,
+        "tip_translation_m": 0.529073,
+        "velocity_limit": 3.2
+      },
+      {
+        "axis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "body": "link_2",
+        "effort_declared": true,
+        "effort_limit": 14.0,
+        "kind": "hinge",
+        "maximum": 2.85,
+        "minimum": -2.85,
+        "name": "joint_2",
+        "role": "major_position",
+        "tip_rotation_rad": 2.85,
+        "tip_translation_m": 0.329574,
+        "velocity_limit": 3.2
+      },
+      {
+        "axis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "body": "link_3",
+        "effort_declared": true,
+        "effort_limit": 14.0,
+        "kind": "hinge",
+        "maximum": 2.85,
+        "minimum": -2.85,
+        "name": "joint_3",
+        "role": "major_position",
+        "tip_rotation_rad": 2.85,
+        "tip_translation_m": 0.174091,
+        "velocity_limit": 3.2
+      },
+      {
+        "axis": {
+          "x": -1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "body": "finger_left",
+        "effort_declared": true,
+        "effort_limit": 8.0,
+        "kind": "slide",
+        "maximum": 0.015,
+        "minimum": 0.0,
+        "name": "grip_left",
+        "role": "grip",
+        "tip_rotation_rad": 0.0,
+        "tip_translation_m": 0.015,
+        "velocity_limit": 0.4
+      },
+      {
+        "axis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "body": "finger_right",
+        "effort_declared": true,
+        "effort_limit": 8.0,
+        "kind": "slide",
+        "maximum": 0.015,
+        "minimum": 0.0,
+        "name": "grip_right",
+        "role": "grip",
+        "tip_rotation_rad": 0.0,
+        "tip_translation_m": 0.0,
+        "velocity_limit": 0.4
+      }
+    ],
+    "morphology_class": "fixed_base_arm",
+    "robot_id": "zoo_compact_arm",
+    "scale": {
+      "base_footprint_m": 0.09,
+      "characteristic_length_m": 0.07,
+      "neutral_speed_mps": 0.113073,
+      "payload_kg": 3.706793,
+      "reach_radius_m": 0.385,
+      "reach_samples": 4096,
+      "total_mass_kg": 2.37,
+      "workspace_centroid_m": {
+        "x": 0.002072746724400395,
+        "y": -0.0009064967715285031,
+        "z": 0.13441024744083208
+      }
+    },
+    "schema_version": "1.0",
+    "self_collision_pairs": [
+      [
+        "base",
+        "finger_left"
+      ],
+      [
+        "base",
+        "finger_right"
+      ],
+      [
+        "base",
+        "link_1"
+      ],
+      [
+        "base",
+        "link_2"
+      ],
+      [
+        "base",
+        "link_3"
+      ],
+      [
+        "base",
+        "palm"
+      ],
+      [
+        "finger_left",
+        "finger_right"
+      ],
+      [
+        "finger_left",
+        "link_0"
+      ],
+      [
+        "finger_left",
+        "link_1"
+      ],
+      [
+        "finger_left",
+        "link_2"
+      ],
+      [
+        "finger_right",
+        "link_0"
+      ],
+      [
+        "finger_right",
+        "link_1"
+      ],
+      [
+        "finger_right",
+        "link_2"
+      ],
+      [
+        "link_0",
+        "link_2"
+      ],
+      [
+        "link_0",
+        "link_3"
+      ],
+      [
+        "link_0",
+        "palm"
+      ],
+      [
+        "link_1",
+        "link_3"
+      ],
+      [
+        "link_1",
+        "palm"
+      ]
+    ],
+    "sites": [
+      {
+        "body": "base",
+        "derivation": "base.root_body_origin.v1",
+        "name": "robot_base",
+        "position_m": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "semantic": "base"
+      },
+      {
+        "body": "finger_left",
+        "derivation": "tip.distal_geom_extreme.v1",
+        "name": "palm_tip",
+        "position_m": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.030000000000000027
+        },
+        "semantic": "tip"
+      },
+      {
+        "body": "palm",
+        "derivation": "grasp_point.mid_gripping_surface.v1",
+        "name": "palm_grasp_point",
+        "position_m": {
+          "x": 0.0,
+          "y": -3.854941057726238e-19,
+          "z": 0.065
+        },
+        "semantic": "grasp_point"
+      },
+      {
+        "body": "palm",
+        "derivation": "grasp_center.half_closed_member_centroid.v1",
+        "name": "palm_grasp_center",
+        "position_m": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.04999999999999999
+        },
+        "semantic": "grasp_center"
+      },
+      {
+        "body": "finger_left",
+        "derivation": "contact.member_distal_extreme.v1",
+        "name": "palm_contact_0",
+        "position_m": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.030000000000000027
+        },
+        "semantic": "contact"
+      },
+      {
+        "body": "finger_right",
+        "derivation": "contact.member_distal_extreme.v1",
+        "name": "palm_contact_1",
+        "position_m": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.030000000000000027
+        },
+        "semantic": "contact"
+      },
+      {
+        "body": "palm",
+        "derivation": "wrist.last_chain_body_origin.v1",
+        "name": "palm_wrist",
+        "position_m": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "semantic": "joint"
+      }
+    ],
+    "symmetry": null
+  },
+  "rest_qpos": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0003,
+    0.0003
+  ],
+  "rig_id": "zoo_compact_arm",
+  "schema_version": "1.0",
+  "sites": [
+    {
+      "body": "base",
+      "derivation": "base.root_body_origin.v1",
+      "name": "robot_base",
+      "position_m": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "semantic": "base"
+    },
+    {
+      "body": "finger_left",
+      "derivation": "tip.distal_geom_extreme.v1",
+      "name": "palm_tip",
+      "position_m": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.030000000000000027
+      },
+      "semantic": "tip"
+    },
+    {
+      "body": "palm",
+      "derivation": "grasp_point.mid_gripping_surface.v1",
+      "name": "palm_grasp_point",
+      "position_m": {
+        "x": 0.0,
+        "y": -3.854941057726238e-19,
+        "z": 0.065
+      },
+      "semantic": "grasp_point"
+    },
+    {
+      "body": "palm",
+      "derivation": "grasp_center.half_closed_member_centroid.v1",
+      "name": "palm_grasp_center",
+      "position_m": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.04999999999999999
+      },
+      "semantic": "grasp_center"
+    },
+    {
+      "body": "finger_left",
+      "derivation": "contact.member_distal_extreme.v1",
+      "name": "palm_contact_0",
+      "position_m": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.030000000000000027
+      },
+      "semantic": "contact"
+    },
+    {
+      "body": "finger_right",
+      "derivation": "contact.member_distal_extreme.v1",
+      "name": "palm_contact_1",
+      "position_m": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.030000000000000027
+      },
+      "semantic": "contact"
+    },
+    {
+      "body": "palm",
+      "derivation": "wrist.last_chain_body_origin.v1",
+      "name": "palm_wrist",
+      "position_m": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "semantic": "joint"
+    }
+  ],
+  "source_asset": {
+    "filename": "robot.urdf",
+    "media_type": "application/xml",
+    "schema_version": "1.0",
+    "sha256": "67461be18b9f49b7af8547ddb7599a7b0815d1f1bef7aeff8ef6056f3db153bd",
+    "size_bytes": 7715
+  },
+  "source_format": "urdf"
+}

@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-carry-it-to-the-platform-and-se-e8223839",
+  "title": "D06: zoo_jaw_arm, turn-seeded repair AFTER",
+  "prompt": "pick up the cube, carry it to the platform and set it down",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T08:54:30Z",
+  "source": {
+    "commit": "d313256eae",
+    "branch": "feat/g06-contact-transfer",
+    "dirty": false,
+    "how": "python any-robot/scripts/g06_d06_media.py --campaign docs/results/g06-campaign --out docs/results/g06-d06"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: approach, opposition, lift, 2 s hold, carry, lower, release, retreat and 2 s released dwell all certified; sim 14.54 s"
+  },
+  "notes": "See docs/results/g06-report.md. Rendered from recorded physical states at real-time playback with the simulation clock and outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. The after side of the turn-seeded before/after pair.",
+  "media": [
+    {
+      "path": "docs/results/g06-d06/turn-seeded/after/media/episode.mp4",
+      "bytes": 119575,
+      "sha256": "346774e9abed328c559fa0e06229c1022c18b9b7d3a5b52d4835dfde29ee3f55",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g06-d06/turn-seeded/after/media/preview.gif",
+      "bytes": 933806,
+      "sha256": "59b437f0adc62d9db082d47cd71471ee32a9e9ede9c656a101b4747b3c3ff049",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G06",
+    "D06",
+    "before-after",
+    "turn-seeded",
+    "after"
+  ]
+}

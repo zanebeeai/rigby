@@ -1,0 +1,43 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-carry-it-to-the-platform-and-se-22ef0d05",
+  "title": "G06 transfer: zoo_dual_arm, strict fixed world, seed 0",
+  "prompt": "pick up the cube, carry it to the platform and set it down",
+  "tier": "any-robot",
+  "embodiment": "zoo_dual_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T08:53:44Z",
+  "source": {
+    "commit": "d313256eae",
+    "branch": "feat/g06-contact-transfer",
+    "dirty": false,
+    "how": "python any-robot/scripts/g06_transfer_campaign.py --out docs/results/g06-campaign --local any-robot/results/g06-campaign"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: approach, opposition, lift, 2 s hold, carry, lower, release, retreat and 2 s released dwell all certified; sim 13.47 s"
+  },
+  "notes": "See docs/results/g06-report.md. Rendered from recorded physical states at real-time playback with the simulation clock and outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. Registered perturbation seed 0: cube displaced (-11.4, -5.9) mm, mass x0.919, friction x1.018. The replayable bundle lives in the local results tree (sha256 780690fb8527).",
+  "media": [
+    {
+      "path": "docs/results/g06-campaign/zoo_dual_arm/fixed/seed-000/media/episode.mp4",
+      "bytes": 104879,
+      "sha256": "7e0b73d8cf0c0aae7ed636be74f8d23867cb40f7ce155359dd052067ca40161b",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g06-campaign/zoo_dual_arm/fixed/seed-000/media/preview.gif",
+      "bytes": 849062,
+      "sha256": "1004987d0a19453d3c8dc042c05243a7f1cd9d71136405c6ee0aba73b988e084",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G06",
+    "transfer",
+    "seeded",
+    "success"
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "actual_physics_duration_s": 14.814000000001617,
+  "carry_offset_max_m": 0.13357131506192604,
+  "certified": true,
+  "collision_policy": {
+    "contact_exclusions_total": 0,
+    "contact_exclusions_with_object": [],
+    "equality_constraints": 0,
+    "object_actuators": 0,
+    "object_geoms_collidable": true,
+    "object_state_writes": 0
+  },
+  "duration_s": 14.814000000001617,
+  "failed_gate": null,
+  "hold_s": 2.0000000000000013,
+  "lift_height_m": 0.04733960091120942,
+  "max_penetration_m": 0.0012244528722741303,
+  "opposition_achieved": true,
+  "path_seed": "rest",
+  "peak_force_n": 11.981899361570074,
+  "phases": [
+    {
+      "end_s": 3.319999999999856,
+      "name": "approach",
+      "note": "",
+      "start_s": 0.25000000000000017
+    },
+    {
+      "end_s": 4.91799999999968,
+      "name": "turn",
+      "note": "",
+      "start_s": 3.319999999999856
+    },
+    {
+      "end_s": 5.719999999999592,
+      "name": "descend",
+      "note": "",
+      "start_s": 4.91799999999968
+    },
+    {
+      "end_s": 6.01199999999956,
+      "name": "close",
+      "note": "",
+      "start_s": 5.719999999999592
+    },
+    {
+      "end_s": 7.01399999999945,
+      "name": "lift",
+      "note": "",
+      "start_s": 6.01199999999956
+    },
+    {
+      "end_s": 9.01399999999968,
+      "name": "hold",
+      "note": "",
+      "start_s": 7.01399999999945
+    },
+    {
+      "end_s": 10.21400000000008,
+      "name": "carry",
+      "note": "",
+      "start_s": 9.01399999999968
+    },
+    {
+      "end_s": 11.014000000000348,
+      "name": "lower",
+      "note": "",
+      "start_s": 10.21400000000008
+    },
+    {
+      "end_s": 11.514000000000514,
+      "name": "release",
+      "note": "",
+      "start_s": 11.014000000000348
+    },
+    {
+      "end_s": 12.314000000000782,
+      "name": "retreat",
+      "note": "",
+      "start_s": 11.514000000000514
+    },
+    {
+      "end_s": 14.814000000001617,
+      "name": "dwell",
+      "note": "",
+      "start_s": 12.314000000000782
+    }
+  ],
+  "physical_steps": 7282,
+  "placed_inside": true,
+  "placement_dwell_s": 2.498000000000834,
+  "placement_success": true,
+  "refusal": null,
+  "released": true,
+  "robot_fixture_contacts": [],
+  "scope": "contact transfer in an authored world; independent placement evaluator",
+  "status": "success",
+  "unexpected_contacts": [],
+  "violations": []
+}

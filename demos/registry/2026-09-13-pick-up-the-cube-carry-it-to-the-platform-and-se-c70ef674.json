@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-carry-it-to-the-platform-and-se-c70ef674",
+  "title": "D06: zoo_hand_arm, facing repair AFTER (hold_not_sustained)",
+  "prompt": "pick up the cube, carry it to the platform and set it down",
+  "tier": "any-robot",
+  "embodiment": "zoo_hand_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T08:54:28Z",
+  "source": {
+    "commit": "d313256eae",
+    "branch": "feat/g06-contact-transfer",
+    "dirty": false,
+    "how": "python any-robot/scripts/g06_d06_media.py --campaign docs/results/g06-campaign --out docs/results/g06-d06"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "RUNTIME FAILURE, typed hold_not_sustained: the object was not held continuously through the 2 s hold; sim 16.59 s"
+  },
+  "notes": "See docs/results/g06-report.md. Rendered from recorded physical states at real-time playback with the simulation clock and outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. The after side of the facing before/after pair.",
+  "media": [
+    {
+      "path": "docs/results/g06-d06/facing/after/media/episode.mp4",
+      "bytes": 114902,
+      "sha256": "e32322a75cc90de00b71a6a1fa20c231b944a3ae13fbd45bf5eca062791128d9",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g06-d06/facing/after/media/preview.gif",
+      "bytes": 818992,
+      "sha256": "dab0675d9bfba9da8748372cb6792bf74085fe7c667165c961f3f4a4f33ded81",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G06",
+    "D06",
+    "before-after",
+    "facing",
+    "after"
+  ]
+}

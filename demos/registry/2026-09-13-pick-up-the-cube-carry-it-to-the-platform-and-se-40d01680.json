@@ -1,0 +1,43 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-carry-it-to-the-platform-and-se-40d01680",
+  "title": "G06 transfer: zoo_compact_arm, strict fixed world, nominal cube",
+  "prompt": "pick up the cube, carry it to the platform and set it down",
+  "tier": "any-robot",
+  "embodiment": "zoo_compact_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T08:53:42Z",
+  "source": {
+    "commit": "d313256eae",
+    "branch": "feat/g06-contact-transfer",
+    "dirty": false,
+    "how": "python any-robot/scripts/g06_transfer_campaign.py --out docs/results/g06-campaign --local any-robot/results/g06-campaign"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "PRE-EXECUTION REFUSAL, typed unreachable_path; no motion executed. unreachable_path: waypoint 1 is 0.0363 m from where it was asked to be, past a tolerance of 0.0040 m"
+  },
+  "notes": "See docs/results/g06-report.md. Rendered from recorded physical states at real-time playback with the simulation clock and outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. Track: fixed-canonical; feasibility class infeasible.",
+  "media": [
+    {
+      "path": "docs/results/g06-campaign/zoo_compact_arm/fixed-canonical/media/episode.mp4",
+      "bytes": 21522,
+      "sha256": "d618e19e03b1f83dccc9de9666dc13e82b0452e1082b5e76d577663961420adc",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g06-campaign/zoo_compact_arm/fixed-canonical/media/preview.gif",
+      "bytes": 17460,
+      "sha256": "1010f308a87a3b7183949bd8524e6595e07e8d495a0450d9c5668513bd9c6232",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G06",
+    "transfer",
+    "fixed-canonical",
+    "refusal"
+  ]
+}
