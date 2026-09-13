@@ -79,6 +79,8 @@ def summarize(runs, records, failures, program, prompt, wall_s: float) -> dict:
         row["region_substitutions"] = run.bound.substitutions
         row["authored_duration_s"] = run.duration_s
         row["grounded_program_sha256"] = run.bound.grounded.program.content_hash()
+        row["path_repairs"] = list(run.bound.grounded.program.metadata.get("path_repairs", []))
+        row["leaf_path_repairs"] = [int(r.measurements.get("path_repairs", 0)) for r in records]
     if run.certification is not None:
         trace = run.certification.trace
         row.update({
@@ -182,26 +184,28 @@ def main() -> int:
             expected = case["expected"]
             observed_codes = {row["failure"]["code"]} if row["failure"] else set()
             observed_codes |= {f["code"] for f in row["leaf_failures"]}
-            measurements = " ".join(f["detail"] for f in row["leaf_failures"]) + " " + (row["failure"]["detail"] if row["failure"] else "")
+            observed_measurements = {f["gate"] for f in row["leaf_failures"] if f["gate"]}
             correct = (not row["accepted"]) and expected["refusal_code"] in observed_codes and (
-                expected["measurement"] is None or expected["measurement"] in measurements
-                or any(expected["measurement"] in json.dumps(f) for f in row["leaf_failures"])
+                expected["measurement"] is None or expected["measurement"] in observed_measurements
             )
             row.update({"case_id": case["case_id"], "kind": "invalid", "reason": case["reason"], "expected": expected,
-                        "observed_codes": sorted(observed_codes), "correct_typed_refusal": bool(correct)})
+                        "observed_codes": sorted(observed_codes), "observed_measurements": sorted(observed_measurements),
+                        "correct_typed_refusal": bool(correct)})
             invalid.append(row)
             print(json.dumps({"body": zoo_id, "invalid": case["case_id"], "accepted": row["accepted"], "correct": row["correct_typed_refusal"], "codes": sorted(observed_codes)}), flush=True)
         successes = sum(1 for t in trials if t["accepted"])
+        repaired = sum(1 for t in trials if t["accepted"] and t.get("path_repairs"))
         body_summary = {
             "zoo_id": zoo_id, "rig_id": robot.manifest.rig_id, "package_sha256": capability.manifest.package_sha256,
             "canonical": canonical, "feasible_trials": trials, "invalid_requests": invalid,
             "feasible_successes": successes, "feasible_count": len(trials),
+            "successes_with_path_repair": repaired, "successes_straight": successes - repaired,
             "meets_19_of_20": successes >= 19 and len(trials) >= 20,
             "invalid_correctly_refused": sum(1 for c in invalid if c.get("correct_typed_refusal")),
             "invalid_constructed": sum(1 for c in invalid if not c.get("not_constructible")),
         }
         (out / "trials.json").write_bytes(json_bytes(body_summary))
-        bodies_out.append({k: body_summary[k] for k in ("zoo_id", "rig_id", "feasible_successes", "feasible_count", "meets_19_of_20", "invalid_correctly_refused", "invalid_constructed")}
+        bodies_out.append({k: body_summary[k] for k in ("zoo_id", "rig_id", "feasible_successes", "feasible_count", "successes_with_path_repair", "successes_straight", "meets_19_of_20", "invalid_correctly_refused", "invalid_constructed")}
                           | {"canonical_outcome": canonical["outcome"], "canonical_reference_s": canonical["reference_duration_s"], "canonical_physics_s": canonical["simulation_duration_s"], "canonical_sha256": canonical["sha256"]})
     summary = {
         "goal": "G05", "roster_sha256": registration["roster_sha256"], "provenance": provenance,

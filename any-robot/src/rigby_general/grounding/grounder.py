@@ -97,6 +97,9 @@ class GroundedProgram:
     figure_sites: tuple[str, ...]
     waypoint_count: int
     measured_speed_mps: float
+    path_repairs: tuple[dict, ...] = ()
+    """Spans the body itself stood across, and the deflection that cleared
+    each; also carried in the program metadata. Empty for a straight grounding."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -679,6 +682,7 @@ def ground(
     total_waypoints = 0
     fastest = 0.0
     rest_by_chain: dict[str, np.ndarray] = {}
+    repairs: list[dict] = []
 
     for index, segment in enumerate(schema_program.segments):
         entry = _entry_for(inventory, segment)
@@ -739,7 +743,6 @@ def ground(
         if float(np.linalg.norm(points[0] - current_position)) > 1e-4:
             points = [current_position, *points]
 
-        dense = ik.densify(points, per_span=_SUBDIVISIONS_PER_SPAN)
         joint_names = _solver_joints(manifest, model, binding)
         # Seeding from where the previous segment left this chain is what keeps
         # the trajectory in one piece. Re-seeding from rest lets the solver pick
@@ -748,14 +751,11 @@ def ground(
         # then correctly rejects as an infinite joint velocity.
         ik_seed = rest_by_chain.get(binding.frame.chain_id, start_qpos)
         try:
-            solution = ik.solve_site_path(
-                model,
-                binding.frame.figure_site,
-                joint_names,
-                np.asarray(dense),
-                seed_qpos=ik_seed,
-                guard=guard,
+            solution, dense, repair = _solve_segment(
+                model, binding, joint_names, points, ik_seed, guard
             )
+            if repair is not None:
+                repairs.append({"segment": index, "entry_id": entry.entry_id, **repair})
         except ik.IkFailure as error:
             if error.collision is not None:
                 # A reachable point is not a groundable one if the only way
@@ -925,6 +925,7 @@ def ground(
             "role_normalized_hash": schema_program.role_normalized_hash(),
             "inventory_sha256": inventory.sha256,
             "duration_scale": duration_scale,
+            "path_repairs": repairs,
             "grounded_against": {
                 "reach_radius_m": manifest.morphology.scale.reach_radius_m,
                 "neutral_speed_mps": manifest.morphology.scale.neutral_speed_mps,
@@ -940,6 +941,7 @@ def ground(
         figure_sites=tuple(figure_sites),
         waypoint_count=total_waypoints,
         measured_speed_mps=fastest,
+        path_repairs=tuple(repairs),
     )
 
 
@@ -1125,6 +1127,91 @@ def _validate_start_state(
                     "pairs": [[a, b, d] for a, b, d in inside],
                 },
             )
+
+
+_DEFLECTION_FRACTIONS = (0.15, 0.3, 0.5)
+"""Of the chain's reach: how far a blocked span's midpoint is pushed aside,
+smallest first, so the path that clears the body is the least changed one."""
+
+
+def _deflected(
+    points: list[np.ndarray], span: int, frame: WorkspaceFrame, direction: str, distance: float
+) -> tuple[list[np.ndarray], np.ndarray]:
+    """The same points with one via point beside the blocked span's midpoint.
+
+    ``outward`` pushes the midpoint away from the chain root in the frame's
+    horizontal plane -- round the trunk; ``up`` lifts it along the frame's up
+    -- over the base. The via point is clamped back inside measured reach, so
+    the deflection can shrink but never asks for a point the arm cannot get to.
+    """
+
+    start, end = points[span], points[span + 1]
+    midpoint = (start + end) / 2.0
+    if direction == "up":
+        unit = frame.up
+    else:
+        radial = midpoint - frame.origin
+        radial = radial - frame.up * float(np.dot(radial, frame.up))
+        norm = float(np.linalg.norm(radial))
+        unit = radial / norm if norm > 1e-6 else frame.out
+    via = frame.clamp(midpoint + unit * distance)
+    return [*points[: span + 1], via, *points[span + 1 :]], via
+
+
+def _solve_segment(
+    model,
+    binding: _Binding,
+    joint_names: tuple[str, ...],
+    points: list[np.ndarray],
+    seed: np.ndarray,
+    guard: "ik.CollisionGuard | None",
+) -> tuple["ik.IkSolution", list[np.ndarray], dict | None]:
+    """Solve a segment's points straight; if the body itself stands across a
+    span, solve again along the least deflection that clears it.
+
+    A straight line from behind a body's head to a point in front of its base
+    runs through the base. The schema still means what it said -- from there to
+    here -- and the least path that goes round is the honest execution of it,
+    provided the deflection is recorded: every repair is returned with the span,
+    the via point and the pair that blocked the straight path, and lands in the
+    program's metadata. A span no deflection clears keeps its typed refusal.
+    """
+
+    frame = binding.frame
+    dense = ik.densify(points, per_span=_SUBDIVISIONS_PER_SPAN)
+    try:
+        solution = ik.solve_site_path(
+            model, frame.figure_site, joint_names, np.asarray(dense), seed_qpos=seed, guard=guard
+        )
+        return solution, dense, None
+    except ik.IkFailure as error:
+        if error.collision is None or guard is None or len(points) < 2:
+            raise
+        blocked = error
+    # Which span the failing waypoint belongs to: densify keeps the first point
+    # and then lays per_span points per span, the last of them the span's end.
+    span = min(len(points) - 2, max(0, (blocked.index - 1) // _SUBDIVISIONS_PER_SPAN))
+    for direction in ("outward", "up"):
+        for fraction in _DEFLECTION_FRACTIONS:
+            distance = fraction * frame.reach_m
+            deflected, via = _deflected(points, span, frame, direction, distance)
+            dense = ik.densify(deflected, per_span=_SUBDIVISIONS_PER_SPAN)
+            try:
+                solution = ik.solve_site_path(
+                    model, frame.figure_site, joint_names, np.asarray(dense), seed_qpos=seed, guard=guard
+                )
+            except ik.IkFailure:
+                continue
+            return solution, dense, {
+                "span": span,
+                "direction": direction,
+                "deflection_fraction_of_reach": fraction,
+                "deflection_m": float(np.linalg.norm(via - (points[span] + points[span + 1]) / 2.0)),
+                "via_point_m": [float(v) for v in via],
+                "blocked_by": list(blocked.collision),
+                "straight_refusal": str(blocked)[:240],
+            }
+    raise blocked
 
 
 def _solver_joints(

@@ -169,6 +169,7 @@ def capture_prompt(
         "reference_duration_s": run.duration_s,
         "actual_physics_duration_s": float(physical[0].arrays["time_s"][-1]),
         "region_substitutions": run.bound.substitutions if run.bound else None,
+        "path_repairs": list(run.bound.grounded.program.metadata.get("path_repairs", [])) if run.bound else None,
         "leaf_duration_scales": [
             float(b.record.measurements.get("duration_scale", 1.0)) for b in run.bound.bindings if b.record
         ] if run.bound else None,

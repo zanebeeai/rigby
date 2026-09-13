@@ -12,6 +12,7 @@ from before the repair; it is data, not a per-robot branch in the source.
 
 from __future__ import annotations
 
+import json
 from dataclasses import replace
 from pathlib import Path
 
@@ -41,6 +42,7 @@ from rigby_general.schema.inventory import afforded_entries, load_inventory
 ZOO_ROOT = Path(__file__).resolve().parents[1] / "assets" / "general" / "zoo"
 ZOO_IDS = sorted(p.parent.name for p in ZOO_ROOT.glob("*/robot.urdf"))
 FIXTURE = Path(__file__).resolve().parent / "fixtures" / "g05_composition"
+ROSTER = Path(__file__).resolve().parents[1] / "assets" / "general" / "research-protocols" / "g05-composition-v1"
 PROMPT = "reach out as far as you can and then come back"
 
 
@@ -314,6 +316,71 @@ def test_start_state_outside_a_limit_is_refused_before_planning(zoo, inventory) 
         ground(program, manifest.model_copy(update={"rest_qpos": tuple(start)}), model, inventory)
     assert refusal.value.details["measurement"] == "start_state.joint_limit"
     assert refusal.value.details["joint"] == dof.name
+
+
+def test_a_span_the_body_blocks_is_routed_round_it_and_recorded(zoo, inventory) -> None:
+    """From a start behind and above its base, a body asked to come back from
+    a point in front of and level with that base has a straight line that runs
+    through the base. The grounder now takes the least deflection that clears
+    it, records the repair, and the execution certifies clear of contact.
+
+    The start comes from the registered G05 roster (data, not a name): the
+    first registered displaced start, on any body, whose straight retract the
+    guard refuses. Before the guard, the same start produced a reference with
+    the upper links 31 mm inside the base and no gate that could say so.
+    """
+
+    roster = json.loads((ROSTER / "roster.json").read_bytes())
+    planner = OfflineSchemaPlanner(inventory)
+    for entry in roster["bodies"]:
+        robot = zoo[entry["zoo_id"]]
+        model, manifest = robot.finalized.model, robot.manifest
+        program = planner.plan(PROMPT, afforded=afforded_entries(inventory, robot.morphology))
+        for start in entry["starts"][1:]:
+            displaced = manifest.model_copy(update={"rest_qpos": tuple(float(v) for v in start["qpos"])})
+            grounded = ground(program, displaced, model, inventory)
+            if not grounded.path_repairs:
+                continue
+            repair = grounded.path_repairs[0]
+            assert repair["direction"] in {"outward", "up"} and repair["deflection_m"] > 0.0
+            assert len(repair["blocked_by"]) == 2 and "straight_refusal" in repair
+            assert json.loads(json.dumps(grounded.program.metadata["path_repairs"])) == json.loads(
+                json.dumps(list(grounded.path_repairs))
+            )
+            guard = _collision_guard(displaced, model)
+            trajectory = compile_motion_program(grounded.program, model, displaced, sample_hz=30)
+            for qpos in trajectory.qpos:
+                assert ik.penetrations(model, guard, qpos) == ()
+            trace = simulate(model, displaced, trajectory, site_name=grounded.figure_sites[0])
+            assert not evaluate_gates(model, displaced, trace, GatePolicy())
+            return
+    pytest.skip("no registered displaced start needs a repair on this zoo")
+
+
+def test_a_grounding_refusal_names_its_measurement_in_the_bake_record(zoo, inventory) -> None:
+    from rigby_general.bake.enumerate import build_candidate
+    from rigby_general.bake.runner import _attempt
+    from rigby_general.config import base_tree_fingerprint
+    from rigby_general.primitives import BindingFailure
+
+    robot = next(iter(zoo.values()))
+    model, manifest = robot.finalized.model, robot.manifest
+    planner = OfflineSchemaPlanner(inventory)
+    program = planner.plan(PROMPT, afforded=afforded_entries(inventory, robot.morphology))
+    dof = manifest.dofs[0]
+    joint = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, dof.joint)
+    start = np.asarray(manifest.rest_qpos, dtype=float).copy()
+    start[int(model.jnt_qposadr[joint])] = dof.maximum + 0.5
+    beyond = manifest.model_copy(update={"rest_qpos": tuple(start)})
+    segment = program.segments[0]
+    entry = inventory.by_binding_key(
+        f"{segment.motion_schema.canonical_key}|{segment.figure.role.value}->{segment.ground.role.value}"
+    )
+    outcome = _attempt(build_candidate(entry, segment.region.remove), beyond, model, inventory,
+                       policy=None, fingerprint=base_tree_fingerprint().sha256)
+    assert isinstance(outcome, BindingFailure)
+    assert outcome.failure_code == GeneralFailureCode.UNGROUNDABLE.value
+    assert outcome.failed_gate == "start_state.joint_limit"
 
 
 def test_a_displaced_start_is_where_the_motion_begins(zoo, inventory) -> None:
