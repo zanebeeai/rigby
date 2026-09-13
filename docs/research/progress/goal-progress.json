@@ -392,12 +392,17 @@
     {
       "id": "G05",
       "title": "Close the six-body free-space composition gap",
-      "status": "planned",
+      "status": "in_progress",
       "discovered_prerequisites": [
         {
           "finding": "Reference clock 240 Hz differs from zoo MuJoCo timestep 0.002 s (500 Hz); existing timing/velocity claims require re-evaluation.",
           "evidence": "docs/results/g01-report.md (PR 28)",
           "required_action": "Use actual physics time consistently, preserve existing physical limits, and independently justify any physically required duration increase before G05 scoring. Do not redefine a slower result as passing by changing timestamps."
+        },
+        {
+          "finding": "Dual-arm legal IK keys overshoot left_joint_4 in the interior of the return and recovery quintics, not at a discontinuous phase seam. Uniform duration scaling cannot repair the position overshoot.",
+          "evidence": "docs/results/g05-transition-diagnostic/offending-keyframes.json (PR 31)",
+          "required_action": "Use bounded, continuous joint interpolation; preserve keys, limits and authored timing, verify continuous extrema and physical execution."
         }
       ],
       "criteria": [
@@ -424,8 +429,43 @@
       "demo_status": "pending",
       "assessment_complete": false,
       "capability_supported": false,
-      "commits": [],
-      "pull_requests": []
+      "commits": [
+        "8d4d1c7cbeb0986e471dd1d743711d1b8e0d3119",
+        "2a4a0cc4ee7ec18e3dca2be35f2d0a6adbcbdd6b"
+      ],
+      "pull_requests": [
+        "https://github.com/zanebeeai/rigby/pull/31"
+      ],
+      "evidence_worktree": "C:/Users/hocke/GitHub/rigby-g05",
+      "prerequisite_milestones": [
+        {
+          "title": "Certify trajectories on native physics time",
+          "status": "locally_verified",
+          "evidence": [
+            "docs/results/g05-clock-report.md",
+            "docs/results/g05-clock-validation.json",
+            "docs/results/verify_g05_clock.py"
+          ],
+          "local_validation": {
+            "anyrobot_passed": 310,
+            "clock_regression_passed": 11,
+            "payloads_verified": 33,
+            "fresh_exact_region_leaves": 12,
+            "canonical_successes": 5,
+            "canonical_refusals": 1,
+            "generation_calls": 0
+          },
+          "scope": "Repairs control/observation time and stale post-step geometry without changing limits or authored durations. G05 criteria remain pending."
+        }
+      ],
+      "integration_status": "open_pr_ci_infrastructure_blocked",
+      "integration_blocker": {
+        "run_id": 34728946806,
+        "head_commit": "2a4a0cc4ee7ec18e3dca2be35f2d0a6adbcbdd6b",
+        "annotation": "The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the 'Billing & plans' section in your settings",
+        "action_owner": "Repository/account owner",
+        "action": "Restore GitHub Actions billing/allowance, then rerun CI. No workflow bypass or merge performed."
+      }
     },
     {
       "id": "G06",
@@ -679,7 +719,7 @@
           "evidence": []
         }
       ],
-      "demo_requirement": "D12: missing skill → failed attempts → acquired execution → reuse, with search budget and an uninterrupted final trial.",
+      "demo_requirement": "D12: missing skill \u2192 failed attempts \u2192 acquired execution \u2192 reuse, with search budget and an uninterrupted final trial.",
       "demo_status": "pending",
       "assessment_complete": false,
       "capability_supported": false,
@@ -878,7 +918,7 @@
       "criteria": [
         {
           "id": "G18.A01",
-          "requirement": "Execute approach object → stabilize → acquire → move while holding → place → return, with the same root contract on the three bodies.",
+          "requirement": "Execute approach object \u2192 stabilize \u2192 acquire \u2192 move while holding \u2192 place \u2192 return, with the same root contract on the three bodies.",
           "status": "pending",
           "evidence": []
         },
@@ -1026,7 +1066,7 @@
       "criteria": [
         {
           "id": "G22.A01",
-          "requirement": "Freeze candidate code, seeds, feasible/infeasible task map and independent labels before confirmatory evaluation; use a 6–10-body, 6-task-family, 20-seed pilot to choose and register the final sample design.",
+          "requirement": "Freeze candidate code, seeds, feasible/infeasible task map and independent labels before confirmatory evaluation; use a 6\u201310-body, 6-task-family, 20-seed pilot to choose and register the final sample design.",
           "status": "pending",
           "evidence": []
         },
@@ -1300,10 +1340,10 @@
   ],
   "milestones": [],
   "next_actions": [
-    "Pursue the G05 reference/physics clock correction and frozen six-body free-space primitive/composition trials; require the structural capability profile and G01 replay when integrated.",
-    "Restore GitHub Actions billing/allowance and rerun PRs 27-30; merge only after required checks are green.",
+    "Repair the G05 bounded-interpolation failure, then integrate native physics time, structural capability intake and replay for the predeclared six-body/120-variant campaign and D05 demos. Preserve all frozen criteria, including explicit duration comparison.",
+    "Restore GitHub Actions billing/allowance and rerun PRs 27-31; merge only after required checks are green.",
     "Before scored manipulation benchmarks, integrate G01/G02/G03, independent task/body feasibility and trial rosters, and a shared retry/time-budget ledger.",
     "Preserve all 30 goals and their frozen criteria; G04 independent language validation and later judge/learning/mobility tracks remain in scope."
   ],
-  "updated_at_utc": "2026-09-12T05:29:17.531851+00:00"
+  "updated_at_utc": "2026-09-13T00:55:03.781622+00:00"
 }
