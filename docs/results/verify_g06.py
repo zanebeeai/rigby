@@ -179,6 +179,35 @@ def main() -> int:
     assert validation["failure_taxonomy"] == taxonomy, (taxonomy, validation["failure_taxonomy"])
     assert validation["bodies"] == bodies, "the validation record disagrees with the per-trial records"
 
+    # -- the retained pilot ---------------------------------------------------
+    # The first scored pass, run whole on the same registered roster before
+    # the turn phase existed. Its per-trial records and rendered episodes are
+    # kept; its replayable bundles are not, their digests being in each
+    # trials.json. It failed exactly what the report says it failed.
+    for name, expected_commit, expected in validation["pilots"]:
+        pilot = json.loads((ROOT / name / "summary.json").read_bytes())
+        assert pilot["registration_sha256"] == registration["registration_sha256"]
+        assert pilot["provenance"]["commit"] == expected_commit and pilot["provenance"]["scored"] is True
+        tallies = {}
+        for entry in pilot["bodies"]:
+            zoo_id = entry["zoo_id"]
+            if entry["feasibility_class"] == "unsupported_by_structure":
+                continue
+            trials = json.loads((ROOT / name / zoo_id / "trials.json").read_bytes())
+            rows = trials["fixed"]["trials"]
+            taxonomy_here: dict[str, int] = {}
+            for row in rows:
+                if not row["certified"]:
+                    taxonomy_here[row["failed_gate"]] = taxonomy_here.get(row["failed_gate"], 0) + 1
+                if "bundle" in row:
+                    media = ROOT / name / zoo_id / "fixed" / f"seed-{row['seed']:03d}" / "media"
+                    check_media(media, row["bundle"]["sha256"])
+            for track, record in (("normalized", trials["normalized"]), ("fixed-canonical", trials["fixed"]["canonical"])):
+                check_media(ROOT / name / zoo_id / track / "media", record["bundle"]["sha256"])
+            tallies[zoo_id] = {"successes": sum(1 for r in rows if r["certified"]), "count": len(rows), "normalized": trials["normalized"]["certified"],
+                               "canonical": trials["fixed"]["canonical"]["certified"], "taxonomy": taxonomy_here}
+        assert tallies == expected, (name, tallies)
+
     # -- D06 ------------------------------------------------------------------
     index = json.loads((D06 / "index.json").read_bytes())
     assert index["registration_sha256"] == registration["registration_sha256"]
@@ -191,18 +220,31 @@ def main() -> int:
         assert sha256(media / "manifest.json") == body["media_sha256"]
     assert sorted(b["zoo_id"] for b in index["enabled_set"]["bodies"]) == sorted(enabled)
     assert all(b["outcome"] == "success" for b in index["enabled_set"]["bodies"])
-    assert {p["repair"] for p in index["repairs"]} >= {"facing", "standoff"}
+    assert {p["repair"] for p in index["repairs"]} >= {"facing", "standoff", "turn-seeded", "turn-normalized"}
     for pair in index["repairs"]:
         before, after = pair["before"], pair["after"]
         assert before["outcome"] != "success"
         assert (before["outcome"], before["failed_gate"]) != (after["outcome"], after["failed_gate"])
         if pair["after_certifies"]:
             assert after["outcome"] == "success" and after["certified"]
-        for label in ("before", "after"):
+        if pair.get("before_is_pilot_episode"):
+            # The before side is the pilot's own rendered failure; its bundle
+            # was not retained, so its media is checked against the digest
+            # the pilot's trials.json recorded for that bundle.
+            pilot_media = REPO / before["media"]
+            assert pilot_media.is_relative_to(ROOT), before["media"]
+            manifest = check_media(pilot_media, before["physical_sha256"])
+            assert sha256(pilot_media / "manifest.json") == before["media_sha256"]
+            assert manifest["metadata"]["outcome"] == before["outcome"] != "success"
+            labels = ("after",)
+        else:
+            labels = ("before", "after")
+        for label in labels:
             physical = D06 / pair["repair"] / label / "physical"
             check_bundle(physical, pair[label]["physical_sha256"], replay=args.replay)
             check_media(D06 / pair["repair"] / label / "media", pair[label]["physical_sha256"])
         assert pair["side_by_side"]["frames"] >= max(before["frames"], after["frames"])
+    assert index["pilot_commit"] == validation["pilots"][0][1]
     assert validation["repairs"] == {p["repair"]: {"body": p["body"], "before": p["before"]["failed_gate"], "after": p["after"]["failed_gate"]} for p in index["repairs"]}
 
     print(json.dumps({"verified": True, "enabled_set": enabled, "bodies": bodies, "failure_taxonomy": taxonomy,

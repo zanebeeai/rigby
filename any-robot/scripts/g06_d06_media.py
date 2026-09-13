@@ -7,13 +7,19 @@ certified transfers, the multifinger hand's failure and the compact arm's
 typed refusal slate -- on one physics clock, each shorter episode holding its
 final recorded state. The enabled-set reel shows the three bodies the
 independent map classed feasible and the primitive certified, side by side.
-Each before/after pair runs the same body in the same world through the same
-primitive with one repair switched off, records both executions, gates both
-and tiles them: the facing objective solved with the point rather than after
-it, the finger standoff above the object, and -- where the campaign shows the
-body needed one -- the restart seeds. No API or model calls.
+Each before/after pair shows one repair through identical physics. For the
+facing objective and the finger standoff, the same body is run in the same
+world through the same primitive with the repair switched off and then as
+the code stands, both executions recorded, gated and tiled. For the turn
+phase, the before side is the retained pilot run's own rendered episode of
+the very seed or world that failed -- the jaw arm's first rendered failing
+seed and the long arm's normalized world -- and the after side is that seed
+or world run again at the current commit, recorded, sealed and rendered.
+The restart seeds are shown where the campaign shows a body needed one. No
+API or model calls.
 
-    python any-robot/scripts/g06_d06_media.py --campaign docs/results/g06-campaign --out docs/results/g06-d06
+    python any-robot/scripts/g06_d06_media.py --campaign docs/results/g06-campaign \
+        --pilot docs/results/g06-campaign-pilot-1 --out docs/results/g06-d06
 """
 
 from __future__ import annotations
@@ -143,6 +149,37 @@ def record_pair(out: Path, *, name: str, zoo_id: str, env, goal, before_caption:
     return comparison
 
 
+def record_after_pilot(out: Path, *, name: str, zoo_id: str, pilot_media: Path, pilot_row: dict, env, goal, before_caption: str, after_caption: str, trial: dict) -> dict:
+    """The pilot's own rendered failure as the before side; the same world
+    run again at the current commit as the after side."""
+
+    manifest = verify_bundle(pilot_media)
+    if manifest["metadata"]["outcome"] == "success":
+        raise SystemExit(f"{name}: the pilot episode chosen as the before side certified")
+    before = {"pilot": True, "media_sha256": hashlib.sha256((pilot_media / "manifest.json").read_bytes()).hexdigest(),
+              "media": pilot_media.relative_to(REPO).as_posix(), "physical_sha256": pilot_row["bundle"]["sha256"], "bundle_retained": False,
+              "outcome": manifest["metadata"]["outcome"], "certified": pilot_row["certified"], "failed_gate": pilot_row["failed_gate"],
+              "violations": [v["code"] for v in pilot_row["violations"]], "path_seed": pilot_row["path_seed"],
+              "lift_height_m": pilot_row["lift_height_m"], "max_penetration_m": pilot_row["max_penetration_m"],
+              "frames": manifest["metadata"]["frame_count"], "simulation_duration_s": manifest["metadata"]["simulation_duration_s"], "caption": before_caption}
+    source = REPO / f"any-robot/assets/general/zoo/{zoo_id}/robot.urdf"
+    robot = ingest_robot(source, robot_id=zoo_id)
+    result, recorder, scene, wall = campaign.run_one(robot, source, env, goal, record=True)
+    physical = out / name / "after" / "physical"
+    sealed = campaign.seal(physical, label=f"{zoo_id}-{name}-after", robot=robot, source=source, scene=scene, env=env, goal=goal, result=result,
+                           recorder=recorder, track=trial["track"], trial=trial, caption=after_caption)
+    media = render_bundle(physical, out / name / "after" / "media", expected_digest=sealed["sha256"])
+    after = {"physical_sha256": sealed["sha256"], "media_sha256": media["sha256"], "outcome": sealed["outcome"],
+             "certified": result.certified, "failed_gate": result.failed_gate, "violations": [v.code for v in result.violations],
+             "path_seed": result.path_seed, "robot_fixture_contacts": [list(p) for p in result.robot_fixture_contacts],
+             "lift_height_m": result.lift_height_m, "max_penetration_m": result.max_penetration_m,
+             "frames": media["frame_count"], "simulation_duration_s": media["simulation_duration_s"], "wall_seconds": wall}
+    print(json.dumps({name: "after", "outcome": sealed["outcome"], "gate": result.failed_gate}), flush=True)
+    if after["outcome"] != "success":
+        raise SystemExit(f"{name}: the run with the repair was expected to certify and did not ({after['failed_gate']})")
+    return {"body": zoo_id, "repair": name, "before": before, "after": after, "after_certifies": True, "before_is_pilot_episode": True}
+
+
 def switch_off_facing():
     """Facing spent only in the position task's null space: the solver as it
     stood before the stacked task, gain and all."""
@@ -181,6 +218,7 @@ def switch_off_restart_seeds():
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--campaign", type=Path, required=True)
+    parser.add_argument("--pilot", type=Path, required=True, help="the retained first scored pass, whose rendered failures are the before side of the turn pairs")
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
     ffmpeg, ffprobe = shutil.which("ffmpeg"), shutil.which("ffprobe")
@@ -259,9 +297,35 @@ def main() -> int:
                                  after_caption=f"{zoo_id} | AFTER: solved from a turned seed; the path reaches out clear of the base",
                                  switch_off=switch_off_restart_seeds, after_certifies=True))
     index["restart_seeds_needed_by"] = seeded
+    # The turn phase: the pilot's first rendered failing jaw seed, and the
+    # long arm's normalized world, each against the same world at HEAD.
+    pilot_summary = json.loads((args.pilot / "summary.json").read_bytes())
+    index["pilot_commit"] = pilot_summary["provenance"]["commit"]
+    turn_pairs = []
+    for zoo_id in [b["zoo_id"] for b in pilot_summary["bodies"] if b["feasibility_class"] == "feasible"]:
+        pilot_trials = json.loads((args.pilot / zoo_id / "trials.json").read_bytes())
+        failing = next((r for r in pilot_trials["fixed"]["trials"] if not r["certified"] and "bundle" in r and r["phases"]), None)
+        if failing is not None and kinds.get(zoo_id) == "parallel_jaw" and zoo_id in certified and not any(p["repair"] == "turn-seeded" for p in turn_pairs):
+            draw = failing["draw"]
+            turn_pairs.append(record_after_pilot(args.out, name="turn-seeded", zoo_id=zoo_id, pilot_media=args.pilot / zoo_id / "fixed" / f"seed-{failing['seed']:03d}" / "media",
+                                                 pilot_row=failing, env=campaign.perturbed(env, draw), goal=goal,
+                                                 before_caption=f"{zoo_id} | BEFORE the turn phase | seed {failing['seed']} | {failing['failed_gate']}",
+                                                 after_caption=f"{zoo_id} | AFTER: hand turned vertical at the hover | seed {failing['seed']}",
+                                                 trial={"kind": "d06_turn_after", "track": "strict_fixed_world", "seed": failing["seed"], "draw": draw}))
+        normalized_row = pilot_trials["normalized"]
+        if not normalized_row["certified"] and normalized_row["phases"] and zoo_id in certified and not any(p["repair"] == "turn-normalized" for p in turn_pairs):
+            robot = ingest_robot(REPO / f"any-robot/assets/general/zoo/{zoo_id}/robot.urdf", robot_id=zoo_id)
+            scaled_env, scaled_goal, normalization = campaign.normalized(env, goal, robot, roster["normalization"]["reference_reach_m"], roster["normalization"]["reference_aperture_m"])
+            turn_pairs.append(record_after_pilot(args.out, name="turn-normalized", zoo_id=zoo_id, pilot_media=args.pilot / zoo_id / "normalized" / "media",
+                                                 pilot_row=normalized_row, env=scaled_env, goal=scaled_goal,
+                                                 before_caption=f"{zoo_id} | BEFORE the turn phase | normalized world x{normalization['length_factor']:.2f} | {normalized_row['failed_gate']}",
+                                                 after_caption=f"{zoo_id} | AFTER: hand turned vertical at the hover | normalized world x{normalization['length_factor']:.2f}",
+                                                 trial={"kind": "d06_turn_after", "track": "capability_normalized", "normalization": normalization}))
+    pairs.extend(turn_pairs)
     for pair in pairs:
         name = pair["repair"]
-        side = tile(ffmpeg, ffprobe, [args.out / name / "before" / "media" / "episode.mp4", args.out / name / "after" / "media" / "episode.mp4"],
+        before_clip = (REPO / pair["before"]["media"] / "episode.mp4") if pair.get("before_is_pilot_episode") else args.out / name / "before" / "media" / "episode.mp4"
+        side = tile(ffmpeg, ffprobe, [before_clip, args.out / name / "after" / "media" / "episode.mp4"],
                     "0_0|w0_0", args.out / f"{name}-before-after.mp4")
         side["preview"] = gif_summary(ffmpeg, args.out / f"{name}-before-after.mp4", args.out / f"{name}-before-after-preview.gif",
                                       f"{pair['body']} {name} before/after", side["duration_s"])
