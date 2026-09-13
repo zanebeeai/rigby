@@ -193,7 +193,7 @@ there was no dwell to read. The executor's clock is the physics clock.
 | any-robot exotic bodies | 10 passed, 0 failed |
 | `test_rgb_encoders_and_truth_stay_separate_in_actual_simulator`, run alone | 1 passed, 0 failed |
 
-The policy-worker test starts a subprocess with a 10 s startup budget; inside the full suite on this Windows machine the spawn exceeded it twice (a wall-clock flake on no code path of this branch), so the suite was run with it deselected and it was run alone, where it passes. Both JUnit records are kept.
+The policy-worker test starts a subprocess with a 10 s startup budget; on this Windows machine two earlier full-suite runs failed it on that wall-clock budget while other work shared the CPU (no code path of this branch). The cited run is the third, whole suite; the test also passes alone. Both JUnit records are kept.
 
 ## Reproduction
 
