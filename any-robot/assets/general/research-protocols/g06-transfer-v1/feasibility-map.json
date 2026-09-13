@@ -1,0 +1,747 @@
+{
+  "bodies": [
+    {
+      "class": "infeasible",
+      "conditions": {
+        "aperture_spans_cube": {
+          "aperture_m": 0.032,
+          "ok": false,
+          "span_m": 0.03
+        },
+        "fixture_clear_of_body_at_rest": {
+          "contacts": [],
+          "ok": true
+        },
+        "kinematic_witness": {
+          "destination": {
+            "collision": null,
+            "found": false,
+            "reason": "waypoint 0 is 0.4772 m from where it was asked to be, past a tolerance of 0.0040 m"
+          },
+          "ok": false,
+          "source": {
+            "collision": null,
+            "found": false,
+            "reason": "waypoint 0 is 0.4989 m from where it was asked to be, past a tolerance of 0.0040 m"
+          }
+        },
+        "payload_carries_cube": {
+          "mass_kg": 0.00864,
+          "ok": true,
+          "payload_kg": 3.706793
+        },
+        "points_inside_measured_envelope": {
+          "destination": {
+            "contained": false,
+            "distance_m": 0.6879135120056882,
+            "inner_m": 0.03777219288835774,
+            "outer_m": 0.29289384011137115
+          },
+          "destination_hover": {
+            "contained": false,
+            "distance_m": 0.719135766041434,
+            "inner_m": 0.03777219288835774,
+            "outer_m": 0.29289384011137115
+          },
+          "ok": false,
+          "source": {
+            "contained": false,
+            "distance_m": 0.7040063920164362,
+            "inner_m": 0.030039175635763575,
+            "outer_m": 0.29406575235368565
+          },
+          "source_hover": {
+            "contained": false,
+            "distance_m": 0.7345449271487756,
+            "inner_m": 0.030039175635763575,
+            "outer_m": 0.29406575235368565
+          }
+        }
+      },
+      "effector": {
+        "chain_id": "palm",
+        "kind": "parallel_jaw",
+        "max_aperture_m": 0.032,
+        "min_aperture_m": 0.002
+      },
+      "reasons": [
+        "necessary condition violated: aperture_spans_cube",
+        "necessary condition violated: points_inside_measured_envelope"
+      ],
+      "rig_id": "zoo_compact_arm",
+      "witness_configurations": {
+        "destination": null,
+        "source": null
+      },
+      "zoo_id": "zoo_compact_arm"
+    },
+    {
+      "class": "feasible",
+      "conditions": {
+        "aperture_spans_cube": {
+          "aperture_m": 0.072,
+          "ok": true,
+          "span_m": 0.03
+        },
+        "fixture_clear_of_body_at_rest": {
+          "contacts": [],
+          "ok": true
+        },
+        "kinematic_witness": {
+          "destination": {
+            "fixture_penetrations": [],
+            "found": true,
+            "residuals_m": [
+              0.0007576614780432591,
+              5.893386667534155e-11
+            ],
+            "seed": "rest",
+            "standoff_m": 0.02099999999999999
+          },
+          "ok": true,
+          "source": {
+            "fixture_penetrations": [],
+            "found": true,
+            "residuals_m": [
+              0.0008283508474758725,
+              3.662739132786432e-11
+            ],
+            "seed": "rest",
+            "standoff_m": 0.02099999999999999
+          }
+        },
+        "payload_carries_cube": {
+          "mass_kg": 0.00864,
+          "ok": true,
+          "payload_kg": 7.30177
+        },
+        "points_inside_measured_envelope": {
+          "destination": {
+            "contained": true,
+            "distance_m": 0.3870723446592381,
+            "inner_m": 0.1128229290318747,
+            "outer_m": 0.6055755676500724
+          },
+          "destination_hover": {
+            "contained": true,
+            "distance_m": 0.3597308021284806,
+            "inner_m": 0.1128229290318747,
+            "outer_m": 0.6055755676500724
+          },
+          "ok": true,
+          "source": {
+            "contained": true,
+            "distance_m": 0.41500000000000004,
+            "inner_m": 0.1128229290318747,
+            "outer_m": 0.6055755676500724
+          },
+          "source_hover": {
+            "contained": true,
+            "distance_m": 0.3896232154274178,
+            "inner_m": 0.05764772925273726,
+            "outer_m": 0.6952243721615234
+          }
+        }
+      },
+      "effector": {
+        "chain_id": "left_palm",
+        "kind": "parallel_jaw",
+        "max_aperture_m": 0.072,
+        "min_aperture_m": 0.002
+      },
+      "reasons": [
+        "all necessary conditions hold and a guarded kinematic witness reaches the cube and the destination clear of the fixtures"
+      ],
+      "rig_id": "zoo_dual_arm",
+      "witness_configurations": {
+        "destination": [
+          [
+            1.762823843360868,
+            2.50434463509341,
+            -1.8923622271052265,
+            -0.519353437247563,
+            2.2078404718515885,
+            0.0007000000000000001,
+            0.0007000000000000001,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0007000000000000001,
+            0.0007000000000000001,
+            -0.15,
+            0.65,
+            0.275,
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.6017318075901221,
+            2.6905757309895266,
+            -1.8362691900130736,
+            -0.012675344856714578,
+            1.887434784130035,
+            0.0007000000000000001,
+            0.0007000000000000001,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0007000000000000001,
+            0.0007000000000000001,
+            -0.15,
+            0.65,
+            0.275,
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "source": [
+          [
+            2.0368998653030213,
+            2.3963659781829336,
+            -1.741453683654603,
+            -0.19152289313418874,
+            2.207841571075823,
+            0.0007000000000000001,
+            0.0007000000000000001,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0007000000000000001,
+            0.0007000000000000001,
+            -0.15,
+            0.65,
+            0.275,
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            2.0044612184256847,
+            2.585028281399227,
+            -1.6680747639002076,
+            -0.17127367230989318,
+            1.854318752276883,
+            0.0007000000000000001,
+            0.0007000000000000001,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0007000000000000001,
+            0.0007000000000000001,
+            -0.15,
+            0.65,
+            0.275,
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        ]
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "feasible",
+      "conditions": {
+        "aperture_spans_cube": {
+          "aperture_m": 0.055863,
+          "ok": true,
+          "span_m": 0.03
+        },
+        "fixture_clear_of_body_at_rest": {
+          "contacts": [],
+          "ok": true
+        },
+        "kinematic_witness": {
+          "destination": {
+            "fixture_penetrations": [],
+            "found": true,
+            "residuals_m": [
+              4.0727598226005027e-16,
+              1.300117091939649e-16
+            ],
+            "seed": "rest",
+            "standoff_m": 0.03790777327089453
+          },
+          "ok": true,
+          "source": {
+            "fixture_penetrations": [],
+            "found": true,
+            "residuals_m": [
+              3.3422138886441676e-16,
+              2.9893669801409083e-16
+            ],
+            "seed": "rest",
+            "standoff_m": 0.03790777327089453
+          }
+        },
+        "payload_carries_cube": {
+          "mass_kg": 0.00864,
+          "ok": true,
+          "payload_kg": 12.648905
+        },
+        "points_inside_measured_envelope": {
+          "destination": {
+            "contained": true,
+            "distance_m": 0.6569817349059257,
+            "inner_m": 0.09191736907256247,
+            "outer_m": 0.9753708424625795
+          },
+          "destination_hover": {
+            "contained": true,
+            "distance_m": 0.6738740609342372,
+            "inner_m": 0.15091601916792494,
+            "outer_m": 1.0332501652232444
+          },
+          "ok": true,
+          "source": {
+            "contained": true,
+            "distance_m": 0.6738137724920736,
+            "inner_m": 0.09191736907256247,
+            "outer_m": 0.9753708424625795
+          },
+          "source_hover": {
+            "contained": true,
+            "distance_m": 0.6902943212862177,
+            "inner_m": 0.15091601916792494,
+            "outer_m": 1.0332501652232444
+          }
+        }
+      },
+      "effector": {
+        "chain_id": "palm",
+        "kind": "multifinger",
+        "max_aperture_m": 0.055863,
+        "min_aperture_m": -0.02014
+      },
+      "reasons": [
+        "all necessary conditions hold and a guarded kinematic witness reaches the cube and the destination clear of the fixtures"
+      ],
+      "rig_id": "zoo_hand_arm",
+      "witness_configurations": {
+        "destination": [
+          [
+            -1.1362914867475566,
+            -1.5160437016542265,
+            0.9632599712210836,
+            1.0904914930318248,
+            -1.3246456464574186,
+            -2.179604413587039,
+            -0.17264513093670208,
+            0.011000000000000001,
+            0.011000000000000001,
+            0.011000000000000001,
+            -0.15,
+            0.65,
+            0.275,
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            -1.0998115893840705,
+            -1.6427940963684318,
+            1.0098439033268989,
+            1.188985105047991,
+            -1.2780094576212706,
+            -2.1042352701175595,
+            -0.19026105719455694,
+            0.011000000000000001,
+            0.011000000000000001,
+            0.011000000000000001,
+            -0.15,
+            0.65,
+            0.275,
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "source": [
+          [
+            -0.960252516423145,
+            -1.5176521806051588,
+            0.9435542754660002,
+            1.0412446460130356,
+            -1.2438582882060119,
+            -2.1772414987698787,
+            0.47113826664837055,
+            0.011000000000000001,
+            0.011000000000000001,
+            0.011000000000000001,
+            -0.15,
+            0.65,
+            0.275,
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            -0.9227701996282879,
+            -1.6493060385520255,
+            0.9868831042203206,
+            1.1441003778026841,
+            -1.201388993445681,
+            -2.1028755344996783,
+            0.44725766786086757,
+            0.011000000000000001,
+            0.011000000000000001,
+            0.011000000000000001,
+            -0.15,
+            0.65,
+            0.275,
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        ]
+      },
+      "zoo_id": "zoo_hand_arm"
+    },
+    {
+      "class": "feasible",
+      "conditions": {
+        "aperture_spans_cube": {
+          "aperture_m": 0.087,
+          "ok": true,
+          "span_m": 0.03
+        },
+        "fixture_clear_of_body_at_rest": {
+          "contacts": [],
+          "ok": true
+        },
+        "kinematic_witness": {
+          "destination": {
+            "fixture_penetrations": [],
+            "found": true,
+            "residuals_m": [
+              1.854653799410726e-12,
+              5.6513796095025486e-12
+            ],
+            "seed": "rest",
+            "standoff_m": 0.02850000000000022
+          },
+          "ok": true,
+          "source": {
+            "fixture_penetrations": [],
+            "found": true,
+            "residuals_m": [
+              3.1307545893848792e-12,
+              1.0735384911374585e-12
+            ],
+            "seed": "rest",
+            "standoff_m": 0.02850000000000022
+          }
+        },
+        "payload_carries_cube": {
+          "mass_kg": 0.00864,
+          "ok": true,
+          "payload_kg": 12.355976
+        },
+        "points_inside_measured_envelope": {
+          "destination": {
+            "contained": true,
+            "distance_m": 0.6601704325399617,
+            "inner_m": 0.10189661157974672,
+            "outer_m": 0.8907955766640823
+          },
+          "destination_hover": {
+            "contained": true,
+            "distance_m": 0.6794161096117755,
+            "inner_m": 0.16117997022426822,
+            "outer_m": 1.0050443402947173
+          },
+          "ok": true,
+          "source": {
+            "contained": true,
+            "distance_m": 0.6769231861888023,
+            "inner_m": 0.10189661157974672,
+            "outer_m": 0.8907955766640823
+          },
+          "source_hover": {
+            "contained": true,
+            "distance_m": 0.6957055770942188,
+            "inner_m": 0.16117997022426822,
+            "outer_m": 1.0050443402947173
+          }
+        }
+      },
+      "effector": {
+        "chain_id": "palm",
+        "kind": "parallel_jaw",
+        "max_aperture_m": 0.087,
+        "min_aperture_m": 0.002
+      },
+      "reasons": [
+        "all necessary conditions hold and a guarded kinematic witness reaches the cube and the destination clear of the fixtures"
+      ],
+      "rig_id": "zoo_jaw_arm",
+      "witness_configurations": {
+        "destination": [
+          [
+            1.5861797285754917,
+            1.5973950064819817,
+            -0.7098994873582513,
+            -6.067950892082501e-16,
+            2.2540971344638607,
+            1.6279148809132844,
+            0.0008500000000000001,
+            0.0008500000000000001,
+            -0.15,
+            0.65,
+            0.275,
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.5861797285754917,
+            1.8025826249128227,
+            -0.8787405788337548,
+            3.1901484402061227e-16,
+            2.217750607503854,
+            1.6279148809132848,
+            0.0008500000000000001,
+            0.0008500000000000001,
+            -0.15,
+            0.65,
+            0.275,
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "source": [
+          [
+            1.7975951748487824,
+            1.5306803393920785,
+            -0.5720733303824068,
+            -8.87529936280892e-17,
+            2.1829856445839506,
+            1.1662615188723933,
+            0.0008500000000000001,
+            0.0008500000000000001,
+            -0.15,
+            0.65,
+            0.275,
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.7975951748487824,
+            1.7516775689972548,
+            -0.7697396102409726,
+            5.4214212677117094e-17,
+            2.1596546948321826,
+            1.1662615188723933,
+            0.0008500000000000001,
+            0.0008500000000000001,
+            -0.15,
+            0.65,
+            0.275,
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        ]
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "feasible",
+      "conditions": {
+        "aperture_spans_cube": {
+          "aperture_m": 0.132,
+          "ok": true,
+          "span_m": 0.03
+        },
+        "fixture_clear_of_body_at_rest": {
+          "contacts": [],
+          "ok": true
+        },
+        "kinematic_witness": {
+          "destination": {
+            "fixture_penetrations": [],
+            "found": true,
+            "residuals_m": [
+              1.1506590202168201e-13,
+              3.0991953364884164e-12
+            ],
+            "seed": "turned",
+            "standoff_m": 0.046
+          },
+          "ok": true,
+          "source": {
+            "fixture_penetrations": [],
+            "found": true,
+            "residuals_m": [
+              7.456122705619817e-12,
+              3.4091587273816433e-12
+            ],
+            "seed": "turned",
+            "standoff_m": 0.046
+          }
+        },
+        "payload_carries_cube": {
+          "mass_kg": 0.00864,
+          "ok": true,
+          "payload_kg": 20.884613
+        },
+        "points_inside_measured_envelope": {
+          "destination": {
+            "contained": true,
+            "distance_m": 0.6510184329187615,
+            "inner_m": 0.3050333312637801,
+            "outer_m": 1.2563752528817316
+          },
+          "destination_hover": {
+            "contained": true,
+            "distance_m": 0.6606105130861907,
+            "inner_m": 0.3050333312637801,
+            "outer_m": 1.2563752528817316
+          },
+          "ok": true,
+          "source": {
+            "contained": true,
+            "distance_m": 0.6680007485025746,
+            "inner_m": 0.3050333312637801,
+            "outer_m": 1.2563752528817316
+          },
+          "source_hover": {
+            "contained": true,
+            "distance_m": 0.6773523824421082,
+            "inner_m": 0.3050333312637801,
+            "outer_m": 1.2563752528817316
+          }
+        }
+      },
+      "effector": {
+        "chain_id": "palm",
+        "kind": "parallel_jaw",
+        "max_aperture_m": 0.132,
+        "min_aperture_m": 0.002
+      },
+      "reasons": [
+        "all necessary conditions hold and a guarded kinematic witness reaches the cube and the destination clear of the fixtures"
+      ],
+      "rig_id": "zoo_long_arm",
+      "witness_configurations": {
+        "destination": [
+          [
+            0.9753141375651523,
+            0.30097783008492807,
+            1.9969510542811564,
+            -9.207477804437124e-13,
+            0.843663769223295,
+            -1.3776258379881103,
+            0.0013000000000000002,
+            0.0013000000000000002,
+            -0.15,
+            0.65,
+            0.275,
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.9753141375657556,
+            0.4100772550029442,
+            2.0180719612290456,
+            2.842704375405041e-17,
+            0.7134434373453497,
+            -1.3776258379882873,
+            0.0013000000000000002,
+            0.0013000000000000002,
+            -0.15,
+            0.65,
+            0.275,
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "source": [
+          [
+            1.1867295838595489,
+            0.3249548221078837,
+            1.9640547041752237,
+            3.2903535647531345e-11,
+            0.8525831272788279,
+            -1.5510116965726815,
+            0.0013000000000000002,
+            0.0013000000000000002,
+            -0.15,
+            0.65,
+            0.275,
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.1867295838390464,
+            0.43416264920737496,
+            1.9851425853886513,
+            5.5437806099160065e-17,
+            0.7222874189801106,
+            -1.551011696565129,
+            0.0013000000000000002,
+            0.0013000000000000002,
+            -0.15,
+            0.65,
+            0.275,
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        ]
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "unsupported_by_structure",
+      "conditions": {},
+      "reasons": [
+        "no grasping effector"
+      ],
+      "rig_id": "zoo_tool_arm",
+      "zoo_id": "zoo_tool_arm"
+    }
+  ],
+  "commit": "3f40ddc0276acdace6ec898e5de8899e846280c5",
+  "created_at_utc": "2026-09-13T07:43:04.836924+00:00",
+  "environment_id": "g06_transfer_v1",
+  "environment_sha256": "f59400f2199ceb92eaf5ac4328442eb099a4e455bd51343e760631da88297c64",
+  "goal_sha256": "03e392be24394f0e314bfbc583b217f653f9c1b1e789f1126991971a95a86b92",
+  "independence": "Assessed from the measured body and the authored world before any transfer controller ran; no controller outcome informs a class.",
+  "mujoco": "3.11.0",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.12.7 (tags/v3.12.7:0b05ead, Oct  1 2024, 03:06:41) [MSC v.1941 64 bit (AMD64)]",
+  "rule": "independent_geometry_and_mechanics_before_scoring",
+  "schema": "g06.feasibility-map.v1"
+}

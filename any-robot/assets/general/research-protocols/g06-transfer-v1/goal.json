@@ -1,0 +1,27 @@
+{
+  "containment": "whole_geometry",
+  "destination_fixture": "platform",
+  "dwell_s": 2.0,
+  "hold_rule": "opposition held continuously for 2.0 s with the object raised at least half the required lift",
+  "maximum_angular_speed_radps": 0.1,
+  "maximum_linear_speed_mps": 0.01,
+  "object": "cube",
+  "predicate": "object_placed_released_and_still",
+  "region_maximum_m": [
+    0.05,
+    0.7100000000000001,
+    0.35
+  ],
+  "region_minimum_m": [
+    -0.07,
+    0.59,
+    0.259
+  ],
+  "release_rule": "no_robot_touch_or_positive_normal_force",
+  "schema": "g06.placement-goal.v1",
+  "tolerances": {
+    "carry_offset_fraction_of_aperture": 2.5,
+    "max_penetration_m": 0.004,
+    "required_lift_fraction_of_height": 0.8
+  }
+}
