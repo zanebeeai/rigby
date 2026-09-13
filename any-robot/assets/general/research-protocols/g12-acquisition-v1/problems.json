@@ -1,0 +1,331 @@
+{
+  "changes": {
+    "hand-fixed-world": {},
+    "jaw-slick": {
+      "friction_scale": 0.5
+    },
+    "long-heavy-large": {
+      "mass_scale": 1.5,
+      "object_half_size_m": 0.0175
+    }
+  },
+  "classification": "instantiation when attempt 0 (the defaults) passes and no parameter moved; discovery when a searched vector passes; budget_exhausted with a hypothesis about the limiting capability otherwise; a composition is a new arrangement of existing leaves and none is posed here (G11's reuse is the composition evidence)",
+  "friction_assumptions": {
+    "jaw-slick": {
+      "basis": "the G11 friction change: half the registered coefficient, with the draw's 0.8-1.2",
+      "object_friction_range": [
+        0.5,
+        0.9
+      ]
+    }
+  },
+  "problems": [
+    {
+      "acceptance": {
+        "set_id": "g12-holdout-jaw-slick",
+        "threshold": 40,
+        "trials": 50
+      },
+      "body": "zoo_jaw_arm",
+      "body_family": "single-arm jaw gripper",
+      "ceiling": {
+        "attempts": 200,
+        "worker_minutes": 30.0
+      },
+      "confirmation_seeds": [
+        4002,
+        4003
+      ],
+      "controller_family": "contact.transfer",
+      "development_seeds": [
+        4000,
+        4001
+      ],
+      "effect": {
+        "arguments": {
+          "destination": "platform",
+          "object": "cube"
+        },
+        "skill_id": "transfer_object"
+      },
+      "hypothesis": "discovery",
+      "notes": "new contact and timing parameters are the expected answer: more grip, a slower lift and carry",
+      "parameters": [
+        {
+          "default": 80.0,
+          "description": "multiplier on the statically required grip force",
+          "high": 400.0,
+          "low": 10.0,
+          "name": "closure.grip_safety_factor",
+          "scale": "log",
+          "units": "ratio"
+        },
+        {
+          "default": 0.12,
+          "description": "of the weakest closure actuator's limit, to move the members through the approach",
+          "high": 0.4,
+          "low": 0.03,
+          "name": "closure.closing_force_fraction",
+          "scale": "linear",
+          "units": "fraction"
+        },
+        {
+          "default": 0.5,
+          "description": "never more than this fraction of what the joint can produce",
+          "high": 0.9,
+          "low": 0.2,
+          "name": "closure.actuator_ceiling_fraction",
+          "scale": "linear",
+          "units": "fraction"
+        },
+        {
+          "default": 0.55,
+          "description": "fraction of the joint's span advanced per second while closing",
+          "high": 1.0,
+          "low": 0.1,
+          "name": "closure.closure_rate_per_s",
+          "scale": "linear",
+          "units": "span/s"
+        },
+        {
+          "default": 0.15,
+          "description": "how long opposition must be held before the grip is called established",
+          "high": 0.5,
+          "low": 0.1,
+          "name": "closure.hold_duration_s",
+          "scale": "linear",
+          "units": "s"
+        },
+        {
+          "default": 14.0,
+          "description": "the computed-torque tracking bandwidth",
+          "high": 25.0,
+          "low": 5.0,
+          "name": "arm.natural_frequency_hz",
+          "scale": "linear",
+          "units": "Hz"
+        },
+        {
+          "default": 1.0,
+          "description": "how much slower than the declared joint speeds the moving phases run",
+          "high": 4.0,
+          "low": 1.0,
+          "name": "duration_scale",
+          "scale": "linear",
+          "units": "ratio"
+        }
+      ],
+      "problem_id": "jaw-slick",
+      "schema_version": "1.0",
+      "world_change": "the cube at half its registered friction (0.7 against 1.4): the G11 friction revalidation failed 0/6 with the implementation as it stands"
+    },
+    {
+      "acceptance": {
+        "set_id": "g12-holdout-hand-fixed-world",
+        "threshold": 40,
+        "trials": 50
+      },
+      "body": "zoo_hand_arm",
+      "body_family": "multifinger hand",
+      "ceiling": {
+        "attempts": 200,
+        "worker_minutes": 30.0
+      },
+      "confirmation_seeds": [
+        4002,
+        4003
+      ],
+      "controller_family": "contact.transfer",
+      "development_seeds": [
+        4000,
+        4001
+      ],
+      "effect": {
+        "arguments": {
+          "destination": "platform",
+          "object": "cube"
+        },
+        "skill_id": "transfer_object"
+      },
+      "hypothesis": "discovery",
+      "notes": "G06's diagnosis names the inertial load at the top of the lift; a slower lift is inside the family, a wrap grasp or a compliant pad is not",
+      "parameters": [
+        {
+          "default": 80.0,
+          "description": "multiplier on the statically required grip force",
+          "high": 400.0,
+          "low": 10.0,
+          "name": "closure.grip_safety_factor",
+          "scale": "log",
+          "units": "ratio"
+        },
+        {
+          "default": 0.12,
+          "description": "of the weakest closure actuator's limit, to move the members through the approach",
+          "high": 0.4,
+          "low": 0.03,
+          "name": "closure.closing_force_fraction",
+          "scale": "linear",
+          "units": "fraction"
+        },
+        {
+          "default": 0.5,
+          "description": "never more than this fraction of what the joint can produce",
+          "high": 0.9,
+          "low": 0.2,
+          "name": "closure.actuator_ceiling_fraction",
+          "scale": "linear",
+          "units": "fraction"
+        },
+        {
+          "default": 0.55,
+          "description": "fraction of the joint's span advanced per second while closing",
+          "high": 1.0,
+          "low": 0.1,
+          "name": "closure.closure_rate_per_s",
+          "scale": "linear",
+          "units": "span/s"
+        },
+        {
+          "default": 0.15,
+          "description": "how long opposition must be held before the grip is called established",
+          "high": 0.5,
+          "low": 0.1,
+          "name": "closure.hold_duration_s",
+          "scale": "linear",
+          "units": "s"
+        },
+        {
+          "default": 14.0,
+          "description": "the computed-torque tracking bandwidth",
+          "high": 25.0,
+          "low": 5.0,
+          "name": "arm.natural_frequency_hz",
+          "scale": "linear",
+          "units": "Hz"
+        },
+        {
+          "default": 1.0,
+          "description": "how much slower than the declared joint speeds the moving phases run",
+          "high": 4.0,
+          "low": 1.0,
+          "name": "duration_scale",
+          "scale": "linear",
+          "units": "ratio"
+        }
+      ],
+      "problem_id": "hand-fixed-world",
+      "schema_version": "1.0",
+      "world_change": "none: the registered fixed world, in which G06 recorded the hand failing all 100 seeds (94 hold_not_sustained, 6 object_not_lifted) with the fingertip pinch losing the cube as the lift decelerates"
+    },
+    {
+      "acceptance": {
+        "set_id": "g12-holdout-long-heavy-large",
+        "threshold": 40,
+        "trials": 50
+      },
+      "body": "zoo_long_arm",
+      "body_family": "single-arm long-reach jaw gripper",
+      "ceiling": {
+        "attempts": 200,
+        "worker_minutes": 30.0
+      },
+      "confirmation_seeds": [
+        4002,
+        4003
+      ],
+      "controller_family": "contact.transfer",
+      "development_seeds": [
+        4000,
+        4001
+      ],
+      "effect": {
+        "arguments": {
+          "destination": "platform",
+          "object": "cube"
+        },
+        "skill_id": "transfer_object"
+      },
+      "hypothesis": "instantiation",
+      "notes": "posed as a control: the defaults are expected to pass, and the outcome must then say instantiation, not discovery",
+      "parameters": [
+        {
+          "default": 80.0,
+          "description": "multiplier on the statically required grip force",
+          "high": 400.0,
+          "low": 10.0,
+          "name": "closure.grip_safety_factor",
+          "scale": "log",
+          "units": "ratio"
+        },
+        {
+          "default": 0.12,
+          "description": "of the weakest closure actuator's limit, to move the members through the approach",
+          "high": 0.4,
+          "low": 0.03,
+          "name": "closure.closing_force_fraction",
+          "scale": "linear",
+          "units": "fraction"
+        },
+        {
+          "default": 0.5,
+          "description": "never more than this fraction of what the joint can produce",
+          "high": 0.9,
+          "low": 0.2,
+          "name": "closure.actuator_ceiling_fraction",
+          "scale": "linear",
+          "units": "fraction"
+        },
+        {
+          "default": 0.55,
+          "description": "fraction of the joint's span advanced per second while closing",
+          "high": 1.0,
+          "low": 0.1,
+          "name": "closure.closure_rate_per_s",
+          "scale": "linear",
+          "units": "span/s"
+        },
+        {
+          "default": 0.15,
+          "description": "how long opposition must be held before the grip is called established",
+          "high": 0.5,
+          "low": 0.1,
+          "name": "closure.hold_duration_s",
+          "scale": "linear",
+          "units": "s"
+        },
+        {
+          "default": 14.0,
+          "description": "the computed-torque tracking bandwidth",
+          "high": 25.0,
+          "low": 5.0,
+          "name": "arm.natural_frequency_hz",
+          "scale": "linear",
+          "units": "Hz"
+        },
+        {
+          "default": 1.0,
+          "description": "how much slower than the declared joint speeds the moving phases run",
+          "high": 4.0,
+          "low": 1.0,
+          "name": "duration_scale",
+          "scale": "linear",
+          "units": "ratio"
+        }
+      ],
+      "problem_id": "long-heavy-large",
+      "schema_version": "1.0",
+      "world_change": "the cube grown to 35 mm a side and made half again heavier than its volume would make it (about 20.6 g against 8.6 g)"
+    }
+  ],
+  "rule": "every evaluation is the G06 transfer primitive single-shot with every hard gate on; the search sees the development and confirmation draws only; the held-out draws run once with the settled vector; zero manual trajectory edits",
+  "schema": "g12.problems.v1",
+  "search": {
+    "algorithm": "one-plus-lambda-es",
+    "contraction": 0.85,
+    "minimum_sigma": 0.02,
+    "offspring": 4,
+    "seed": 20261212,
+    "sigma0": 0.25
+  }
+}
