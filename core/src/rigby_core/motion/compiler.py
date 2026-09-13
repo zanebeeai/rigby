@@ -597,6 +597,11 @@ def compile_motion_program(
         if has_joint:
             joint_tracks.append(track)
             continue
+        if track.interpolation is InterpolationKind.BOUNDED_QUINTIC:
+            raise MotionCompilationError(
+                MotionFailureReason.UNSUPPORTED_TRACK,
+                f"Bounded quintic track {track.track_id!r} requires joint-value targets",
+            )
         if not (has_position or has_rotation):
             raise MotionCompilationError(
                 MotionFailureReason.UNSUPPORTED_TRACK,

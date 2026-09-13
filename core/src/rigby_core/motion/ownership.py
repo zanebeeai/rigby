@@ -18,6 +18,34 @@ class JointTrackSample:
     acceleration: float
 
 
+def _bound_quintic_tangents(
+    times: np.ndarray, values: np.ndarray, velocities: np.ndarray
+) -> None:
+    """Limit shared tangents so each zero-acceleration quintic is monotone.
+
+    For an interval of length h and endpoint velocities v0, v1, the six
+    Bernstein ordinates are q0, q0+h*v0/5, q0+2*h*v0/5,
+    q1-2*h*v1/5, q1-h*v1/5, q1. They are ordered when the velocities
+    follow the secant and |v0|+|v1| <= 2.5*|q1-q0|/h. Ordered ordinates
+    bound the complete polynomial between its endpoints, not only samples.
+    Later reductions preserve earlier bounds. Shared velocities and zero
+    knot accelerations retain C2 continuity without changing keys or timing.
+
+    This bounds each scalar track. Additive composition, accents, task-space
+    refinement, and physical tracking still require their own validation.
+    """
+    secants = np.diff(values) / np.diff(times)
+    for index, secant in enumerate(secants):
+        for knot in (index, index + 1):
+            if np.sign(velocities[knot]) != np.sign(secant):
+                velocities[knot] = 0.0
+    for index, secant in enumerate(secants):
+        total = abs(velocities[index]) + abs(velocities[index + 1])
+        bound = 2.5 * abs(secant)
+        if total > bound:
+            velocities[index:index + 2] *= bound / total
+
+
 class JointTrackSeries:
     def __init__(self, track: MotionTrackV2, joint_name: str, duration_s: float) -> None:
         entries = [
@@ -50,6 +78,8 @@ class JointTrackSeries:
             if self.values[index] == self.values[index + 1]:
                 velocities[index] = 0.0
                 velocities[index + 1] = 0.0
+        if track.interpolation is InterpolationKind.BOUNDED_QUINTIC:
+            _bound_quintic_tangents(self.times, self.values, velocities)
         self._velocities = velocities
         self._segments = tuple(
             QuinticSegment(

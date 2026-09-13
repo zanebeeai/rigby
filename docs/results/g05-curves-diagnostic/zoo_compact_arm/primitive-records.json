@@ -1,0 +1,562 @@
+[
+  {
+    "base_tree_sha256": "9013f483f702e1f01855c42ff132f185c645de3e120bec856ba765a5c2a6036c",
+    "duration_s": 14.9958,
+    "entry_id": "reach_to_edge",
+    "figure_role": "primary_effector",
+    "figure_site": "palm_grasp_center",
+    "ground_role": "base",
+    "inventory_sha256": "b445d7b0455ea1c8b2b3c02423fcb5eb3d1e67c1100c054a1f316bff414175cd",
+    "measurements": {
+      "base_drift_m": 0.0,
+      "duration_s": 14.9958,
+      "duration_scale": 1.0,
+      "tracking_error_m": 1.9e-05
+    },
+    "program": {
+      "assertions": [],
+      "contacts": [],
+      "duration_s": 14.995784,
+      "metadata": {
+        "duration_scale": 1.0,
+        "grounded_against": {
+          "characteristic_length_m": 0.07,
+          "neutral_speed_mps": 0.113073,
+          "reach_radius_m": 0.385
+        },
+        "inventory_sha256": "b445d7b0455ea1c8b2b3c02423fcb5eb3d1e67c1100c054a1f316bff414175cd",
+        "role_normalized_hash": "42bdc39f205059c4d463949f1587ca264c0f07da176efe23ca1aa814296fde75",
+        "schema_keys": [
+          "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute"
+        ],
+        "schema_program_id": "primitive-reach_to_edge-distal"
+      },
+      "phases": [
+        {
+          "end_s": 8.310081,
+          "energy": 0.45,
+          "kind": "action",
+          "phase_id": "phase_0",
+          "start_s": 0.0
+        },
+        {
+          "end_s": 14.995784,
+          "energy": 0.3,
+          "kind": "recovery",
+          "phase_id": "phase_recovery",
+          "start_s": 8.310081
+        }
+      ],
+      "program_id": "grounded-c3f6289a3c17b0b72af9cb83cca840f9",
+      "rig_id": "zoo_compact_arm",
+      "scene_id": "empty",
+      "schema_version": "2.0",
+      "seed": 0,
+      "source_text": "extend to the edge of what the robot can reach, distal",
+      "tracks": [
+        {
+          "interpolation": "bounded_quintic",
+          "keyframes": [
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": 0.0,
+                "joint_1": 0.0,
+                "joint_2": 0.0,
+                "joint_3": 0.0
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 0.0
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.41225917162279296,
+                "joint_1": -0.5629673092092987,
+                "joint_2": 0.8486552298059254,
+                "joint_3": 0.844611503728481
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 2.862585
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.4122731162203566,
+                "joint_1": -0.4621564948803507,
+                "joint_2": 1.1781555318781676,
+                "joint_3": 1.1059959065396936
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 3.755971
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.412276479322893,
+                "joint_1": -0.009002885707235675,
+                "joint_2": 1.3287031513961702,
+                "joint_3": 1.0031501766015383
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 4.764946
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.41227683519039315,
+                "joint_1": 0.5893885142005232,
+                "joint_2": 1.232414630757501,
+                "joint_3": 0.6464376431143924
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 6.217645
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.41227683483605204,
+                "joint_1": 1.339484534635181,
+                "joint_2": 0.7394167002639271,
+                "joint_3": 0.17694481686014357
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 8.310081
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.41227683519039315,
+                "joint_1": 0.5893885142005232,
+                "joint_2": 1.232414630757501,
+                "joint_3": 0.6464376431143924
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 9.992803
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.412276479322893,
+                "joint_1": -0.009002885707235675,
+                "joint_2": 1.3287031513961702,
+                "joint_3": 1.0031501766015383
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 11.335199
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.4122731162203566,
+                "joint_1": -0.4621564948803507,
+                "joint_2": 1.1781555318781676,
+                "joint_3": 1.1059959065396936
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 12.351778
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.41225917162279296,
+                "joint_1": -0.5629673092092987,
+                "joint_2": 0.8486552298059254,
+                "joint_3": 0.844611503728481
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 13.09096
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": 0.0,
+                "joint_1": 0.0,
+                "joint_2": 0.0,
+                "joint_3": 0.0
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 14.994784
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": 0.0,
+                "joint_1": 0.0,
+                "joint_2": 0.0,
+                "joint_3": 0.0
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 14.995784
+            }
+          ],
+          "owner": "chain_palm",
+          "ownership": "exclusive",
+          "priority": 0,
+          "target": "palm_grasp_center",
+          "track_id": "chain_palm"
+        }
+      ]
+    },
+    "program_sha256": "8c20ecd0c138649fae3b36c50bcc4ea4dccca306016955e05ba32c07c53326fd",
+    "record_id": "a2bca82af8dabca342ece57a152426cc",
+    "remove": "distal",
+    "robot_id": "zoo_compact_arm",
+    "schema_key": "path:to.boundary.neutral.straight",
+    "segment_key": "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+    "trace_sha256": "15841b211f4c7dd10c4e547d95270f4fcbae98b3040fd55bff753c25434c6e63",
+    "waypoints": 6
+  },
+  {
+    "base_tree_sha256": "9013f483f702e1f01855c42ff132f185c645de3e120bec856ba765a5c2a6036c",
+    "duration_s": 26.1142,
+    "entry_id": "retract_from_point",
+    "figure_role": "primary_effector",
+    "figure_site": "palm_grasp_center",
+    "ground_role": "base",
+    "inventory_sha256": "b445d7b0455ea1c8b2b3c02423fcb5eb3d1e67c1100c054a1f316bff414175cd",
+    "measurements": {
+      "base_drift_m": 0.0,
+      "duration_s": 26.1142,
+      "duration_scale": 1.0,
+      "tracking_error_m": 2.6e-05
+    },
+    "program": {
+      "assertions": [],
+      "contacts": [],
+      "duration_s": 26.114231,
+      "metadata": {
+        "duration_scale": 1.0,
+        "grounded_against": {
+          "characteristic_length_m": 0.07,
+          "neutral_speed_mps": 0.113073,
+          "reach_radius_m": 0.385
+        },
+        "inventory_sha256": "b445d7b0455ea1c8b2b3c02423fcb5eb3d1e67c1100c054a1f316bff414175cd",
+        "role_normalized_hash": "849e3a197333744a9d116047c72ed37e632c3684e7dd74538763fbb8f4e0449c",
+        "schema_keys": [
+          "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+        ],
+        "schema_program_id": "primitive-retract_from_point-medial"
+      },
+      "phases": [
+        {
+          "end_s": 13.984977,
+          "energy": 0.45,
+          "kind": "action",
+          "phase_id": "phase_0",
+          "start_s": 0.0
+        },
+        {
+          "end_s": 26.114231,
+          "energy": 0.3,
+          "kind": "recovery",
+          "phase_id": "phase_recovery",
+          "start_s": 13.984977
+        }
+      ],
+      "program_id": "grounded-44254ce122e4bf8d03d2651b07df2f80",
+      "rig_id": "zoo_compact_arm",
+      "scene_id": "empty",
+      "schema_version": "2.0",
+      "seed": 0,
+      "source_text": "withdraw from a point, medial",
+      "tracks": [
+        {
+          "interpolation": "bounded_quintic",
+          "keyframes": [
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": 0.0,
+                "joint_1": 0.0,
+                "joint_2": 0.0,
+                "joint_3": 0.0
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 0.0
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.41088575106322034,
+                "joint_1": -0.6507021323306509,
+                "joint_2": 0.8626220239848247,
+                "joint_3": 0.8759258203619456
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 2.78128
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.41227072750439114,
+                "joint_1": -0.6576438245372875,
+                "joint_2": 1.2266980655757724,
+                "joint_3": 1.1878420569418726
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 3.700725
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.41227640130521803,
+                "joint_1": -0.3266831701901596,
+                "joint_2": 1.4894158794809544,
+                "joint_3": 1.2662152406333425
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 4.524851
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.4122768350646909,
+                "joint_1": 0.23892143179247793,
+                "joint_2": 1.592920504130676,
+                "joint_3": 0.9489314870575828
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 5.784205
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.4122768348360648,
+                "joint_1": 0.8773408180901819,
+                "joint_2": 1.4129199328768685,
+                "joint_3": 0.5453992848224258
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 7.273072
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.4122768348360514,
+                "joint_1": 0.22295296193336617,
+                "joint_2": 1.5923644332443296,
+                "joint_3": 0.979695892316127
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 8.817962
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.41227683483605143,
+                "joint_1": -0.31603504728333764,
+                "joint_2": 1.457834173955138,
+                "joint_3": 1.2817619659510358
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 10.030545
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.4122768348360512,
+                "joint_1": -0.6412127447617096,
+                "joint_2": 1.1520159826176148,
+                "joint_3": 1.2897183965032395
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 10.88669
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.41227683483605165,
+                "joint_1": -0.6302215097495223,
+                "joint_2": 0.8222951245728365,
+                "joint_3": 0.9310162751026936
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 11.821231
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.41227683483605015,
+                "joint_1": -0.14822085851342828,
+                "joint_2": 0.15575173048732266,
+                "joint_3": 0.15863883919789
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 13.984977
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.41227683483605165,
+                "joint_1": -0.6302215097495223,
+                "joint_2": 0.8222951245728365,
+                "joint_3": 0.9310162751026936
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 15.711842
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.4122768348360512,
+                "joint_1": -0.6412127447617096,
+                "joint_2": 1.1520159826176148,
+                "joint_3": 1.2897183965032395
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 16.513821
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.41227683483605143,
+                "joint_1": -0.31603504728333764,
+                "joint_2": 1.457834173955138,
+                "joint_3": 1.2817619659510358
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 17.240847
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.4122768348360514,
+                "joint_1": 0.22295296193336617,
+                "joint_2": 1.5923644332443296,
+                "joint_3": 0.979695892316127
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 18.445905
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.4122768348360648,
+                "joint_1": 0.8773408180901819,
+                "joint_2": 1.4129199328768685,
+                "joint_3": 0.5453992848224258
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 19.908973
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.4122768350646909,
+                "joint_1": 0.23892143179247793,
+                "joint_2": 1.592920504130676,
+                "joint_3": 0.9489314870575828
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 21.336338
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.41227640130521803,
+                "joint_1": -0.3266831701901596,
+                "joint_2": 1.4894158794809544,
+                "joint_3": 1.2662152406333425
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 22.600905
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.41227072750439114,
+                "joint_1": -0.6576438245372875,
+                "joint_2": 1.2266980655757724,
+                "joint_3": 1.1878420569418726
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 23.34086
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.41088575106322034,
+                "joint_1": -0.6507021323306509,
+                "joint_2": 0.8626220239848247,
+                "joint_3": 0.8759258203619456
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 24.154854
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": 0.0,
+                "joint_1": 0.0,
+                "joint_2": 0.0,
+                "joint_3": 0.0
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 26.113231
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": 0.0,
+                "joint_1": 0.0,
+                "joint_2": 0.0,
+                "joint_3": 0.0
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 26.114231
+            }
+          ],
+          "owner": "chain_palm",
+          "ownership": "exclusive",
+          "priority": 0,
+          "target": "palm_grasp_center",
+          "track_id": "chain_palm"
+        }
+      ]
+    },
+    "program_sha256": "b8ccfbb11a1e82a0c31652c08ddea4cdddb127e1851055106c6cafe00f03582a",
+    "record_id": "33b5b9bc57c09fdd02d7af18bccca2b2",
+    "remove": "medial",
+    "robot_id": "zoo_compact_arm",
+    "schema_key": "path:from.point.neutral.straight",
+    "segment_key": "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute",
+    "trace_sha256": "cb672482e4f6f8df50661c3c502e04b902cb590b16600b77311a95b43bad618a",
+    "waypoints": 11
+  }
+]

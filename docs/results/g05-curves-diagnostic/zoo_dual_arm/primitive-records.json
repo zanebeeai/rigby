@@ -1,0 +1,596 @@
+[
+  {
+    "base_tree_sha256": "9013f483f702e1f01855c42ff132f185c645de3e120bec856ba765a5c2a6036c",
+    "duration_s": 23.1819,
+    "entry_id": "reach_to_edge",
+    "figure_role": "primary_effector",
+    "figure_site": "left_palm_grasp_center",
+    "ground_role": "base",
+    "inventory_sha256": "b445d7b0455ea1c8b2b3c02423fcb5eb3d1e67c1100c054a1f316bff414175cd",
+    "measurements": {
+      "base_drift_m": 0.0,
+      "duration_s": 23.1819,
+      "duration_scale": 1.0,
+      "tracking_error_m": 5.4e-05
+    },
+    "program": {
+      "assertions": [],
+      "contacts": [],
+      "duration_s": 23.181927,
+      "metadata": {
+        "duration_scale": 1.0,
+        "grounded_against": {
+          "characteristic_length_m": 0.2,
+          "neutral_speed_mps": 0.168625,
+          "reach_radius_m": 1.326253
+        },
+        "inventory_sha256": "b445d7b0455ea1c8b2b3c02423fcb5eb3d1e67c1100c054a1f316bff414175cd",
+        "role_normalized_hash": "42bdc39f205059c4d463949f1587ca264c0f07da176efe23ca1aa814296fde75",
+        "schema_keys": [
+          "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute"
+        ],
+        "schema_program_id": "primitive-reach_to_edge-distal"
+      },
+      "phases": [
+        {
+          "end_s": 12.739785,
+          "energy": 0.45,
+          "kind": "action",
+          "phase_id": "phase_0",
+          "start_s": 0.0
+        },
+        {
+          "end_s": 23.181927,
+          "energy": 0.3,
+          "kind": "recovery",
+          "phase_id": "phase_recovery",
+          "start_s": 12.739785
+        }
+      ],
+      "program_id": "grounded-49dcd6ff47004dd96ea5f50dea14c338",
+      "rig_id": "zoo_dual_arm",
+      "scene_id": "empty",
+      "schema_version": "2.0",
+      "seed": 0,
+      "source_text": "extend to the edge of what the robot can reach, distal",
+      "tracks": [
+        {
+          "interpolation": "bounded_quintic",
+          "keyframes": [
+            {
+              "hard": false,
+              "joint_values": {
+                "left_joint_0": 0.0,
+                "left_joint_1": 0.0,
+                "left_joint_2": 0.0,
+                "left_joint_3": 0.0,
+                "left_joint_4": 0.0
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 0.0
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "left_joint_0": -0.34170207385082524,
+                "left_joint_1": -0.34850916648057867,
+                "left_joint_2": 0.4500680715935041,
+                "left_joint_3": 1.3815153705553527,
+                "left_joint_4": 1.4379338703699445
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 5.664129
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "left_joint_0": -1.1585904559478757,
+                "left_joint_1": -0.8198598962859798,
+                "left_joint_2": 0.654778701965192,
+                "left_joint_3": 1.4336319953513468,
+                "left_joint_4": 1.9089543301509784
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 8.561741
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "left_joint_0": -1.3440657379390502,
+                "left_joint_1": -1.163924693967794,
+                "left_joint_2": 0.6433995578701451,
+                "left_joint_3": 1.4624389482740279,
+                "left_joint_4": 2.0911731420890076
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 9.727007
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "left_joint_0": -1.3880032372087632,
+                "left_joint_1": -1.3787786910203181,
+                "left_joint_2": 0.4119309691726256,
+                "left_joint_3": 1.5579588231324448,
+                "left_joint_4": 1.9077529742295587
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 10.751262
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "left_joint_0": -1.440516185856747,
+                "left_joint_1": -1.499361770704968,
+                "left_joint_2": 0.15677319507685908,
+                "left_joint_3": 1.673491063421467,
+                "left_joint_4": 1.237934681694983
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 12.739785
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "left_joint_0": -1.3880032372087632,
+                "left_joint_1": -1.3787786910203181,
+                "left_joint_2": 0.4119309691726256,
+                "left_joint_3": 1.5579588231324448,
+                "left_joint_4": 1.9077529742295587
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 14.737877
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "left_joint_0": -1.3440657379390502,
+                "left_joint_1": -1.163924693967794,
+                "left_joint_2": 0.6433995578701451,
+                "left_joint_3": 1.4624389482740279,
+                "left_joint_4": 2.0911731420890076
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 15.428356
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "left_joint_0": -1.1585904559478757,
+                "left_joint_1": -0.8198598962859798,
+                "left_joint_2": 0.654778701965192,
+                "left_joint_3": 1.4336319953513468,
+                "left_joint_4": 1.9089543301509784
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 16.454713
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "left_joint_0": -0.34170207385082524,
+                "left_joint_1": -0.34850916648057867,
+                "left_joint_2": 0.4500680715935041,
+                "left_joint_3": 1.3815153705553527,
+                "left_joint_4": 1.4379338703699445
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 18.89152
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "left_joint_0": 0.0,
+                "left_joint_1": 0.0,
+                "left_joint_2": 0.0,
+                "left_joint_3": 0.0,
+                "left_joint_4": 0.0
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 23.180927
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "left_joint_0": 0.0,
+                "left_joint_1": 0.0,
+                "left_joint_2": 0.0,
+                "left_joint_3": 0.0,
+                "left_joint_4": 0.0
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 23.181927
+            }
+          ],
+          "owner": "chain_left_palm",
+          "ownership": "exclusive",
+          "priority": 0,
+          "target": "left_palm_grasp_center",
+          "track_id": "chain_left_palm"
+        }
+      ]
+    },
+    "program_sha256": "b586c8e28f63289980c7143005e1d85e7abf17a98d51781f19869ad22ad570b7",
+    "record_id": "4c6415078c66b3b3bf7aa283c4ab3f78",
+    "remove": "distal",
+    "robot_id": "zoo_dual_arm",
+    "schema_key": "path:to.boundary.neutral.straight",
+    "segment_key": "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+    "trace_sha256": "fa79098ffc2d1f8045590a254b0bd3532f54cf91731924322c5b6ee20234d33b",
+    "waypoints": 6
+  },
+  {
+    "base_tree_sha256": "9013f483f702e1f01855c42ff132f185c645de3e120bec856ba765a5c2a6036c",
+    "duration_s": 39.7012,
+    "entry_id": "retract_from_point",
+    "figure_role": "primary_effector",
+    "figure_site": "left_palm_grasp_center",
+    "ground_role": "base",
+    "inventory_sha256": "b445d7b0455ea1c8b2b3c02423fcb5eb3d1e67c1100c054a1f316bff414175cd",
+    "measurements": {
+      "base_drift_m": 0.0,
+      "duration_s": 39.7012,
+      "duration_scale": 1.0,
+      "tracking_error_m": 0.000109
+    },
+    "program": {
+      "assertions": [],
+      "contacts": [],
+      "duration_s": 39.701185,
+      "metadata": {
+        "duration_scale": 1.0,
+        "grounded_against": {
+          "characteristic_length_m": 0.2,
+          "neutral_speed_mps": 0.168625,
+          "reach_radius_m": 1.326253
+        },
+        "inventory_sha256": "b445d7b0455ea1c8b2b3c02423fcb5eb3d1e67c1100c054a1f316bff414175cd",
+        "role_normalized_hash": "849e3a197333744a9d116047c72ed37e632c3684e7dd74538763fbb8f4e0449c",
+        "schema_keys": [
+          "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+        ],
+        "schema_program_id": "primitive-retract_from_point-medial"
+      },
+      "phases": [
+        {
+          "end_s": 22.536555,
+          "energy": 0.45,
+          "kind": "action",
+          "phase_id": "phase_0",
+          "start_s": 0.0
+        },
+        {
+          "end_s": 39.701185,
+          "energy": 0.3,
+          "kind": "recovery",
+          "phase_id": "phase_recovery",
+          "start_s": 22.536555
+        }
+      ],
+      "program_id": "grounded-e87834cba2fe1da1255fdfd3bce1bf46",
+      "rig_id": "zoo_dual_arm",
+      "scene_id": "empty",
+      "schema_version": "2.0",
+      "seed": 0,
+      "source_text": "withdraw from a point, medial",
+      "tracks": [
+        {
+          "interpolation": "bounded_quintic",
+          "keyframes": [
+            {
+              "hard": false,
+              "joint_values": {
+                "left_joint_0": 0.0,
+                "left_joint_1": 0.0,
+                "left_joint_2": 0.0,
+                "left_joint_3": 0.0,
+                "left_joint_4": 0.0
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 0.0
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "left_joint_0": -0.24459329810838204,
+                "left_joint_1": -0.6473851799371882,
+                "left_joint_2": 0.8458570554449212,
+                "left_joint_3": 0.8830570370841802,
+                "left_joint_4": 1.0965276092250942
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 4.707681
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "left_joint_0": -0.8883615320556904,
+                "left_joint_1": -1.0675359064639414,
+                "left_joint_2": 1.30368623331242,
+                "left_joint_3": 1.2898675994520565,
+                "left_joint_4": 1.60914161463821
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 7.63571
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "left_joint_0": -1.1852221787971928,
+                "left_joint_1": -1.545946550711989,
+                "left_joint_2": 1.5467096943861078,
+                "left_joint_3": 1.3177667492141387,
+                "left_joint_4": 1.9071536758746856
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 9.438142
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "left_joint_0": -1.3257433483000982,
+                "left_joint_1": -1.9510159446023867,
+                "left_joint_2": 1.5289711011196039,
+                "left_joint_3": 1.3612111775141882,
+                "left_joint_4": 2.0995460982742253
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 10.685593
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "left_joint_0": -1.3775506300896354,
+                "left_joint_1": -2.1977320036827943,
+                "left_joint_2": 1.2508054221344274,
+                "left_joint_3": 1.4811738425945122,
+                "left_joint_4": 2.0889961602997738
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 11.726943
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "left_joint_0": -1.3429482665686383,
+                "left_joint_1": -1.9234106878444097,
+                "left_joint_2": 1.5001392207249198,
+                "left_joint_3": 1.3391727103532753,
+                "left_joint_4": 2.1818420393109696
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 12.807649
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "left_joint_0": -1.2067883069242267,
+                "left_joint_1": -1.4999034234139708,
+                "left_joint_2": 1.5057401561394115,
+                "left_joint_3": 1.3057480010424833,
+                "left_joint_4": 2.015922688889525
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 14.064936
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "left_joint_0": -0.8904217867138366,
+                "left_joint_1": -1.0356911074421027,
+                "left_joint_2": 1.2621041361873682,
+                "left_joint_3": 1.3106587223271398,
+                "left_joint_4": 1.685612679609624
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 15.902664
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "left_joint_0": -0.5072547159164332,
+                "left_joint_1": -0.7216872721289068,
+                "left_joint_2": 0.91310284164405,
+                "left_joint_3": 0.8816484688968943,
+                "left_joint_4": 0.9879077871066853
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 18.59382
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "left_joint_0": -0.509642598236054,
+                "left_joint_1": -0.0931028621429557,
+                "left_joint_2": 0.1532560388584016,
+                "left_joint_3": 0.38182916623202123,
+                "left_joint_4": -0.014995804649845686
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 22.536555
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "left_joint_0": -0.5072547159164332,
+                "left_joint_1": -0.7216872721289068,
+                "left_joint_2": 0.91310284164405,
+                "left_joint_3": 0.8816484688968943,
+                "left_joint_4": 0.9879077871066853
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 25.522624
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "left_joint_0": -0.8904217867138366,
+                "left_joint_1": -1.0356911074421027,
+                "left_joint_2": 1.2621041361873682,
+                "left_joint_3": 1.3106587223271398,
+                "left_joint_4": 1.685612679609624
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 27.599987
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "left_joint_0": -1.2067883069242267,
+                "left_joint_1": -1.4999034234139708,
+                "left_joint_2": 1.5057401561394115,
+                "left_joint_3": 1.3057480010424833,
+                "left_joint_4": 2.015922688889525
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 28.982144
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "left_joint_0": -1.3429482665686383,
+                "left_joint_1": -1.9234106878444097,
+                "left_joint_2": 1.5001392207249198,
+                "left_joint_3": 1.3391727103532753,
+                "left_joint_4": 2.1818420393109696
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 30.243104
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "left_joint_0": -1.3775506300896354,
+                "left_joint_1": -2.1977320036827943,
+                "left_joint_2": 1.2508054221344274,
+                "left_joint_3": 1.4811738425945122,
+                "left_joint_4": 2.0889961602997738
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 31.059875
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "left_joint_0": -1.3257433483000982,
+                "left_joint_1": -1.9510159446023867,
+                "left_joint_2": 1.5289711011196039,
+                "left_joint_3": 1.3612111775141882,
+                "left_joint_4": 2.0995460982742253
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 31.888092
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "left_joint_0": -1.1852221787971928,
+                "left_joint_1": -1.545946550711989,
+                "left_joint_2": 1.5467096943861078,
+                "left_joint_3": 1.3177667492141387,
+                "left_joint_4": 1.9071536758746856
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 33.094155
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "left_joint_0": -0.8883615320556904,
+                "left_joint_1": -1.0675359064639414,
+                "left_joint_2": 1.30368623331242,
+                "left_joint_3": 1.2898675994520565,
+                "left_joint_4": 1.60914161463821
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 34.518587
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "left_joint_0": -0.24459329810838204,
+                "left_joint_1": -0.6473851799371882,
+                "left_joint_2": 0.8458570554449212,
+                "left_joint_3": 0.8830570370841802,
+                "left_joint_4": 1.0965276092250942
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 36.435357
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "left_joint_0": 0.0,
+                "left_joint_1": 0.0,
+                "left_joint_2": 0.0,
+                "left_joint_3": 0.0,
+                "left_joint_4": 0.0
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 39.700185
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "left_joint_0": 0.0,
+                "left_joint_1": 0.0,
+                "left_joint_2": 0.0,
+                "left_joint_3": 0.0,
+                "left_joint_4": 0.0
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 39.701185
+            }
+          ],
+          "owner": "chain_left_palm",
+          "ownership": "exclusive",
+          "priority": 0,
+          "target": "left_palm_grasp_center",
+          "track_id": "chain_left_palm"
+        }
+      ]
+    },
+    "program_sha256": "85d44a0383eee7bbb491489bbb53665f32959adb158634f8b0f8d558846e8d09",
+    "record_id": "157de8d5f92243ccb65b09017a2c59f0",
+    "remove": "medial",
+    "robot_id": "zoo_dual_arm",
+    "schema_key": "path:from.point.neutral.straight",
+    "segment_key": "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute",
+    "trace_sha256": "63b0666e169192c64a37d4458aae42af2e21a04982b2bf40fc0416c80a5a461c",
+    "waypoints": 11
+  }
+]
