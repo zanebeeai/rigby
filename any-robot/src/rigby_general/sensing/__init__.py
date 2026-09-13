@@ -9,11 +9,12 @@ reach. The oracle labeler reads the full state and never feeds the
 evaluator; it is what the evaluator's verdicts are scored against.
 """
 
-from .bind import conditionals_for, decide, load_policy, policy_digest
+from .bind import bind_conditionals, conditionals_for, decide, load_policy, policy_digest
 from .corrupt import absent, occluded_by_screen, sparse, stale
 from .episode import Episode
 from .labels import OracleLabeler
+from .live import LiveSensing, decide_live
 from .sensors import CONFIGURATIONS, CameraSpec, EvidenceStreams, configuration
 
-__all__ = ["CONFIGURATIONS", "CameraSpec", "Episode", "EvidenceStreams", "OracleLabeler", "absent", "conditionals_for", "configuration", "decide",
-           "load_policy", "occluded_by_screen", "policy_digest", "sparse", "stale"]
+__all__ = ["CONFIGURATIONS", "CameraSpec", "Episode", "EvidenceStreams", "LiveSensing", "OracleLabeler", "absent", "bind_conditionals", "conditionals_for", "configuration",
+           "decide", "decide_live", "load_policy", "occluded_by_screen", "policy_digest", "sparse", "stale"]

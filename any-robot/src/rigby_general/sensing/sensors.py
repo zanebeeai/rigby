@@ -40,6 +40,8 @@ class CameraSpec:
     many must reach it first for the sample to report a position."""
     noise_m: float = 0.002
     """Standard deviation of the reported position, per axis, seeded per trace and sensor."""
+    range_m: float = 3.0
+    """Beyond this distance the camera reports nothing (a missing sample), not a position."""
 
 
 CAMERAS = {
@@ -150,6 +152,45 @@ def _noise(episode: Episode, sensor_id: str) -> np.random.Generator:
     return np.random.default_rng(seed)
 
 
+FACES = [np.zeros(3), np.array([1.0, 0, 0]), np.array([-1.0, 0, 0]), np.array([0, 1.0, 0]), np.array([0, -1.0, 0]), np.array([0, 0, 1.0])]
+"""Where a camera's rays are aimed: the object's centre and five of its faces (not the underside)."""
+
+
+def visible_fraction(model: mujoco.MjModel, data: mujoco.MjData, object_geom: int, half: np.ndarray, origin: np.ndarray, geomid: np.ndarray) -> tuple[float, np.ndarray]:
+    """The fraction of the rays from ``origin`` that reach the object first,
+    against the world as ``data`` has it, and the object's centre."""
+
+    centre = np.array(data.geom_xpos[object_geom], dtype=float)
+    rotation = np.array(data.geom_xmat[object_geom], dtype=float).reshape(3, 3)
+    seen = 0
+    for face in FACES:
+        target = centre + rotation @ (half * face)
+        vector = target - origin
+        distance = float(np.linalg.norm(vector))
+        mujoco.mj_ray(model, data, origin, vector / distance, None, 1, -1, geomid)
+        seen += int(geomid[0] == object_geom)
+    return seen / len(FACES), centre
+
+
+def group_forces_from_data(model: mujoco.MjModel, data: mujoco.MjData, member_geoms: dict[str, frozenset[int]], groups, object_geom: int) -> list[float]:
+    """Normal force on each opposition group from the object, from the live contacts."""
+
+    forces = {body: 0.0 for body in member_geoms}
+    buffer = np.zeros(6, dtype=float)
+    for index in range(data.ncon):
+        contact = data.contact[index]
+        first, second = int(contact.geom1), int(contact.geom2)
+        if object_geom not in (first, second):
+            continue
+        other = second if first == object_geom else first
+        for body, geoms in member_geoms.items():
+            if other in geoms:
+                mujoco.mj_contactForce(model, data, index, buffer)
+                forces[body] += abs(float(buffer[0]))
+                break
+    return [max((forces.get(m, 0.0) for m in group), default=0.0) for group in groups]
+
+
 def camera_stream(episode: Episode, sensor: SensorSpecV1, spec: CameraSpec, *, model: mujoco.MjModel | None = None) -> Stream:
     """Rays from the camera to the object's centre and five face centres,
     against the world as recorded (or ``model``, a copy with more in it)."""
@@ -163,21 +204,19 @@ def camera_stream(episode: Episode, sensor: SensorSpecV1, spec: CameraSpec, *, m
     obj = episode.object_geom
     half = episode.object_half_extent_m
     quality, values = [], []
-    faces = [np.zeros(3), np.array([1.0, 0, 0]), np.array([-1.0, 0, 0]), np.array([0, 1.0, 0]), np.array([0, -1.0, 0]), np.array([0, 0, 1.0])]
     for t in times:
         index = episode.index_at(t - spec.latency_s)
         data.qpos[:] = episode.record.arrays["qpos"][index]
+        if model.nmocap:
+            # A recorded occluder stands where the record's user input put it.
+            user = episode.record.arrays["user_input"][index]
+            mujoco.mj_setState(model, data, user, int(episode.record.arrays["input_spec"]))
         mujoco.mj_kinematics(model, data)
-        centre = np.array(data.geom_xpos[obj], dtype=float)
-        rotation = np.array(data.geom_xmat[obj], dtype=float).reshape(3, 3)
-        seen = 0
-        for face in faces:
-            target = centre + rotation @ (half * face)
-            vector = target - origin
-            distance = float(np.linalg.norm(vector))
-            mujoco.mj_ray(model, data, origin, vector / distance, None, 1, -1, geomid)
-            seen += int(geomid[0] == obj)
-        fraction = seen / len(faces)
+        fraction, centre = visible_fraction(model, data, obj, half, origin, geomid)
+        if float(np.linalg.norm(centre - origin)) > spec.range_m:
+            quality.append(SampleQuality.MISSING)
+            values.append({"visible_fraction": 0.0})
+            continue
         if fraction >= spec.visible_fraction:
             reported = centre + rng.normal(0.0, spec.noise_m, size=3)
             quality.append(SampleQuality.VALID)
@@ -185,7 +224,7 @@ def camera_stream(episode: Episode, sensor: SensorSpecV1, spec: CameraSpec, *, m
         else:
             quality.append(SampleQuality.OCCLUDED)
             values.append({"visible_fraction": fraction})
-    return Stream(sensor, times, quality, values, f"camera {spec.name} at {spec.position_m}, {len(faces)} rays, visible when >= {spec.visible_fraction:.0%} reach the object")
+    return Stream(sensor, times, quality, values, f"camera {spec.name} at {spec.position_m}, {len(FACES)} rays, visible when >= {spec.visible_fraction:.0%} reach the object")
 
 
 def frame_for(episode: Episode, effector: EffectorV1) -> WorkspaceFrame:
