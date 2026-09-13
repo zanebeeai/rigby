@@ -273,7 +273,7 @@ def main() -> int:
     # without it. The restart seeds are shown on any certified body whose
     # campaign path needed one; at the registered fixture none did.
     pairs = []
-    certified = {b["zoo_id"]: b for b in summary["bodies"] if b["fixed_canonical_certified"]}
+    certified = {b["zoo_id"]: b for b in summary["bodies"] if b.get("fixed_canonical_certified")}
     kinds = {}
     for zoo_id in attempted:
         robot = ingest_robot(REPO / f"any-robot/assets/general/zoo/{zoo_id}/robot.urdf", robot_id=zoo_id)
