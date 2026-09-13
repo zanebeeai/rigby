@@ -34,7 +34,7 @@ from ..grounding.grounder import _collision_guard
 from ..grounding.workspace import WorkspaceFrame
 from ..scenes.block import GraspScene, block_qpos_address
 from ..scenes.environment import OBJECT_PREFIX, SUPPORT_PREFIX, EnvironmentV1
-from .closure import ClosureController, GripState
+from .closure import ClosureConfig, ClosureController, GripState
 from .grasp import TRAVERSE_MARGIN, _hand_facing, _scene_rest_qpos, effector_grasp_site
 from .placement import PlacementEvaluator, PlacementGoal
 
@@ -434,8 +434,17 @@ def attempt_transfer(
     object_position_m: np.ndarray | None = None,
     on_step: Callable[[mujoco.MjData], None] | None = None,
     controller_config: ControllerConfig | None = None,
+    closure_config: ClosureConfig | None = None,
+    duration_scale: float = 1.0,
 ) -> TransferResult:
     """Run one transfer and gate every phase of it.
+
+    ``closure_config`` and ``duration_scale`` are the contact and timing
+    parameters an acquisition may search over: how the closure advances,
+    detects contact and squeezes, and how much slower than the declared
+    joint speeds the moving phases run (a slower lift and carry put less
+    inertial load on a grip). At their defaults the transfer is the one G06
+    certified.
 
     ``object_position_m`` is the believed position of the object the path
     is planned to, when a sensor rather than the world's authoring says
@@ -514,7 +523,7 @@ def attempt_transfer(
             return _refused(violations, TransferViolation("facing_unmet", f"the planned hand is {np.degrees(worst):.1f} degrees from the requested facing at the hover or the grasp", float(worst), float(FACING_TOLERANCE_RAD)), policy)
 
     controller = ComputedTorqueController(model, controller_config or ControllerConfig())
-    closure = ClosureController(model, manifest, effector, object_geoms=frozenset({"scene_block_geom"}))
+    closure = ClosureController(model, manifest, effector, object_geoms=frozenset({"scene_block_geom"}), config=closure_config)
     evaluator = PlacementEvaluator(model, scene.goal, object_geom="scene_block_geom", object_joint="scene_block_free")
 
     arm_adr = np.array([int(model.jnt_qposadr[mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, n)]) for n in arm_joints])
@@ -543,7 +552,7 @@ def attempt_transfer(
     durations: dict[str, float] = {}
     for name, (start, end) in spans.items():
         travel = np.abs(np.diff(path[marks[start]: marks[end] + 1][:, arm_adr], axis=0)).sum(axis=0)
-        durations[name] = max(MIN_PHASE_S[name], float(np.max(travel / speeds)) * TRAVERSE_MARGIN)
+        durations[name] = max(MIN_PHASE_S[name], float(np.max(travel / speeds)) * TRAVERSE_MARGIN) * max(1.0, float(duration_scale))
     # The dwell phase outlasts the required dwell by a margin: the evaluator
     # starts counting a step after the object first qualifies, and a phase
     # exactly as long as the requirement ends two milliseconds short of it.
