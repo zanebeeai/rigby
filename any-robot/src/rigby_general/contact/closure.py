@@ -37,6 +37,50 @@ from ..contracts import EffectorV1, RobotAssetManifestV1
 from ..morphology import measure
 
 
+CLOSURE_LIMITS_HOLD = True
+"""Whether a compiled scene's grip joints get limit constraints that hold
+against the closure's own force. The compiler's default limit is soft
+(solref 0.02 s): a 60 N finger actuator drove the jaw arm's fingers 1.3 cm
+past their range and through one another when a lost hold snapped the jaw
+shut, and no later grasp could open them (G15's first campaign). False
+reproduces the soft limits for the comparison."""
+LIMIT_TIMECONST_S = 0.005
+"""The limit constraint's time constant: at least twice the 2 ms step."""
+LIMIT_SOLIMP = (0.95, 0.99, 0.001, 0.5, 2.0)
+
+
+def hold_closure_limits(model: mujoco.MjModel, manifest: RobotAssetManifestV1) -> tuple[str, ...]:
+    """Stiffen the limit constraints of every declared grip joint in a
+    compiled model so the closure cannot drive its fingers past their range;
+    returns the joints changed. A no-op while ``CLOSURE_LIMITS_HOLD`` is off."""
+
+    if not CLOSURE_LIMITS_HOLD:
+        return ()
+    changed = []
+    for effector in manifest.morphology.grasping_effectors:
+        for joint_name in effector.grip_joints:
+            joint = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, joint_name)
+            if joint < 0 or not model.jnt_limited[joint]:
+                continue
+            model.jnt_solref[joint] = (LIMIT_TIMECONST_S, 1.0)
+            model.jnt_solimp[joint] = LIMIT_SOLIMP
+            changed.append(joint_name)
+    return tuple(changed)
+
+
+def carry_joint_limits(source: mujoco.MjModel, target: mujoco.MjModel) -> None:
+    """Copy every named joint's limit constraint parameters from one compiled
+    model to another (a scene recompiled with a body added keeps the limits
+    the first compile was given)."""
+
+    for joint in range(source.njnt):
+        name = mujoco.mj_id2name(source, mujoco.mjtObj.mjOBJ_JOINT, joint)
+        other = mujoco.mj_name2id(target, mujoco.mjtObj.mjOBJ_JOINT, name) if name else -1
+        if other >= 0:
+            target.jnt_solref[other] = source.jnt_solref[joint]
+            target.jnt_solimp[other] = source.jnt_solimp[joint]
+
+
 class GripState(StrEnum):
     OPEN = "open"
     CLOSING = "closing"

@@ -1097,14 +1097,51 @@ def self_clearance_m(reach_radius_m: float) -> float:
     return max(2.0 * ik.DEFAULT_TOLERANCE_M, _SELF_CLEARANCE_FRACTION * float(reach_radius_m))
 
 
+GUARD_LEAVES_CLOSURE_PAIRS = True
+"""Whether the arm planner's guard leaves the closure's own pairs alone: two
+bodies whose relative pose is set by grip joints only (opposing fingers) are
+the closure's business. Closed on nothing, such fingers stand a few
+millimetres inside one another, and a guard that counted them refused every
+arm path from then on, and every IK solution too, since no arm joint could
+part them (G15's first campaign: after one lost hold, every later transfer
+in the chain was refused). False reproduces that guard for the comparison."""
+
+
+def _closure_pair(model, grip_joints: set[str], first_id: int, second_id: int) -> bool:
+    """Whether every joint on the kinematic path between the two bodies is a
+    grip joint: their relative pose is then the closure's alone."""
+
+    import mujoco
+
+    def ancestors(body: int) -> list[int]:
+        chain = []
+        while body > 0:
+            chain.append(body)
+            body = int(model.body_parentid[body])
+        return chain
+
+    first_chain, second_chain = ancestors(first_id), ancestors(second_id)
+    common = next((body for body in first_chain if body in set(second_chain)), 0)
+    below_first = first_chain[: first_chain.index(common)] if common in first_chain else first_chain
+    below_second = second_chain[: second_chain.index(common)] if common in second_chain else second_chain
+    joints = []
+    for body in below_first + below_second:
+        start, count = int(model.body_jntadr[body]), int(model.body_jntnum[body])
+        joints.extend(mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_JOINT, j) for j in range(start, start + count))
+    return bool(joints) and all(name in grip_joints for name in joints)
+
+
 def _collision_guard(
     manifest: RobotAssetManifestV1, model
 ) -> "ik.CollisionGuard | None":
     """Every link pair the self-collision gate would report, as a guard for IK.
 
     The pairs are the morphology's own non-adjacent list, minus what ingest
-    proved inseparable and so excluded from the gate. No names are consulted:
-    a pair is guarded because its hulls can meet, whatever the links are called.
+    proved inseparable and so excluded from the gate, minus the closure's
+    own pairs (bodies parted only by grip joints, which no arm motion can
+    separate or bring together). No names are consulted for the links: a
+    pair is guarded because its hulls can meet, whatever the links are
+    called; the grip joints are the ones the manifest declares.
     """
 
     import mujoco
@@ -1114,6 +1151,7 @@ def _collision_guard(
     excluded = {
         tuple(sorted(pair)) for pair in manifest.adjacent_collision_exclusions
     }
+    grip_joints = {name for effector in manifest.morphology.grasping_effectors for name in effector.grip_joints}
     pairs: set[tuple[int, int]] = set()
     for first, second in manifest.morphology.self_collision_pairs:
         if tuple(sorted((first, second))) in excluded:
@@ -1124,6 +1162,8 @@ def _collision_guard(
             continue
         if not physics_may_collide(model, first_id, second_id):
             continue  # An older manifest may list a pair the engine filters.
+        if GUARD_LEAVES_CLOSURE_PAIRS and grip_joints and _closure_pair(model, grip_joints, first_id, second_id):
+            continue
         pairs.add((min(first_id, second_id), max(first_id, second_id)))
     if not pairs:
         return None

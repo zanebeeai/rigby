@@ -179,17 +179,32 @@ def test_clearance_is_never_below_the_solver_tolerance() -> None:
 
 
 def test_guard_covers_every_gated_pair(zoo) -> None:
+    """Every pair the gate can report is guarded, except the closure's own:
+    two bodies parted by grip joints alone (opposing fingers) are the
+    closure's to keep apart or bring together, and no arm motion can change
+    their separation; closed on nothing they stand inside one another, and a
+    guard that counted them refused every later arm path (G15)."""
+
+    from rigby_general.grounding.grounder import _closure_pair
+
     for robot in zoo.values():
         model, manifest = robot.finalized.model, robot.manifest
         guard = _collision_guard(manifest, model)
         assert guard is not None
         excluded = {tuple(sorted(p)) for p in manifest.adjacent_collision_exclusions}
+        grip = {j for e in manifest.morphology.grasping_effectors for j in e.grip_joints}
         expected = {
             tuple(sorted((_body_id(model, a), _body_id(model, b))))
             for a, b in robot.morphology.self_collision_pairs
             if tuple(sorted((a, b))) not in excluded
         }
-        assert set(guard.pairs) == expected
+        closure = {pair for pair in expected if grip and _closure_pair(model, grip, *pair)}
+        assert set(guard.pairs) == expected - closure
+        if grip:
+            assert closure, "a body with a closure has at least one pair of opposing fingers"
+            for first, second in closure:
+                names = {mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_BODY, first), mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_BODY, second)}
+                assert all(mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_JOINT, j) in grip for b in (first, second) for j in range(int(model.body_jntadr[b]), int(model.body_jntadr[b]) + int(model.body_jntnum[b]))), names
         assert guard.clearance_m == pytest.approx(
             self_clearance_m(manifest.morphology.scale.reach_radius_m)
         )

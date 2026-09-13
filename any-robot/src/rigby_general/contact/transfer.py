@@ -188,9 +188,12 @@ def transfer_scene_from_environment(
     destination_fixture: str,
     goal: PlacementGoal,
     asset_root=None,
+    destination_offset_m: tuple[float, float] = (0.0, 0.0),
 ) -> TransferScene:
     """The authored world with its target renamed for the grasp machinery,
-    plus the destination read off the named fixture."""
+    plus the destination read off the named fixture, shifted by
+    ``destination_offset_m`` across its top so several objects can share
+    one fixture, each in its own cell."""
 
     from .task import build_task_scene
 
@@ -198,7 +201,7 @@ def transfer_scene_from_environment(
     fixture = next(f for f in environment.fixtures if f.name == destination_fixture)
     top = float(fixture.position_m[2] + fixture.size_m[2])
     half = scene.block_half_extent_m
-    destination = np.array([fixture.position_m[0], fixture.position_m[1], top + half], dtype=float)
+    destination = np.array([fixture.position_m[0] + float(destination_offset_m[0]), fixture.position_m[1] + float(destination_offset_m[1]), top + half], dtype=float)
     return TransferScene(scene=scene, destination_m=destination, destination_top_m=top, goal=goal,
                          environment_id=environment.environment_id, object_name=object_name)
 
