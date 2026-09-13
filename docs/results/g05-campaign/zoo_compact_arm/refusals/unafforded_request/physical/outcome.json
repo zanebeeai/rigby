@@ -1,0 +1,31 @@
+{
+  "actual_physics_duration_s": 0.0,
+  "fault": null,
+  "leaf_duration_scales": null,
+  "nominal_pipeline_result": {
+    "accepted": false,
+    "elapsed_seconds": 0.0,
+    "failure": {
+      "code": "unafforded_schema",
+      "detail": "this robot has no certified 'transport_object' primitive",
+      "stage": "planning"
+    },
+    "prompt": "grasp the cup and then come back",
+    "robot_id": "body_2e3d1c514d083e8a"
+  },
+  "path_repairs": null,
+  "physical_steps": 0,
+  "reference_duration_s": 0.0,
+  "refusal": {
+    "code": "unafforded_schema",
+    "detail": "this robot has no certified 'transport_object' primitive",
+    "stage": "planning"
+  },
+  "refused_leaf_bakes": [],
+  "region_substitutions": null,
+  "scope": "free-space motion; no object task",
+  "status": "pre_execution_refusal",
+  "tracking_error_m": null,
+  "unexpected_contacts": null,
+  "violations": []
+}

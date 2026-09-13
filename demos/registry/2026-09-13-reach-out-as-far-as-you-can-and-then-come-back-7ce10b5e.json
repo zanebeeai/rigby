@@ -1,0 +1,41 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-reach-out-as-far-as-you-can-and-then-come-back-7ce10b5e",
+  "title": "G05 refusal: zoo_compact_arm, start_beyond_limit",
+  "prompt": "reach out as far as you can and then come back",
+  "tier": "any-robot",
+  "embodiment": "zoo_compact_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T07:21:29Z",
+  "source": {
+    "commit": "c131ab9811",
+    "branch": "feat/g05-six-body-composition",
+    "dirty": true,
+    "how": "python any-robot/scripts/g05_refusal_clips.py --campaign docs/results/g05-campaign"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "PRE-EXECUTION REFUSAL, typed unafforded_schema / start_state.joint_limit; no motion executed. Reason: axis_0000 placed past its maximum"
+  },
+  "notes": "Predeclared invalid request of the G05 roster, refused before any motion; the clip is a two-second slate of the initial state labelled as a pre-execution refusal. Counted apart from the 120 feasible trials. See docs/results/g05-report.md.",
+  "media": [
+    {
+      "path": "docs/results/g05-campaign/zoo_compact_arm/refusals/start_beyond_limit/media/episode.mp4",
+      "bytes": 21306,
+      "sha256": "30756e1ded203f4066148b9f4a6fd8d675aaee89e698ec407da11993d5174c10",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g05-campaign/zoo_compact_arm/refusals/start_beyond_limit/media/preview.gif",
+      "bytes": 25123,
+      "sha256": "55929d33be7cefc9fbe992ada6015640b28706f34b76f6ae6a0ea17104cd8c41",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G05",
+    "refusal"
+  ]
+}

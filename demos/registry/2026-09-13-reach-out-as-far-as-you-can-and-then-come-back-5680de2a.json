@@ -1,0 +1,42 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-reach-out-as-far-as-you-can-and-then-come-back-5680de2a",
+  "title": "G05 canonical reach/return: zoo_compact_arm",
+  "prompt": "reach out as far as you can and then come back",
+  "tier": "any-robot",
+  "embodiment": "zoo_compact_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T07:19:08Z",
+  "source": {
+    "commit": "c131ab9811",
+    "branch": "feat/g05-six-body-composition",
+    "dirty": true,
+    "how": "python any-robot/scripts/g05_composition_campaign.py --out docs/results/g05-campaign --local any-robot/results/g05-campaign --render"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS; all physical gates including self-collision; 30.51s of recorded physics at real-time playback."
+  },
+  "notes": "Canonical trial (pace 0, measured rest) through the structural capability intake; sealed bundle beside the media with three identical replays. GIF is a labelled summary. See docs/results/g05-report.md.",
+  "media": [
+    {
+      "path": "docs/results/g05-campaign/zoo_compact_arm/canonical/media/episode.mp4",
+      "bytes": 267103,
+      "sha256": "1c2f862c2bc398dd1a85965c870906c12e5a8947f14c9bb024aba8fdc97aa0ed",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g05-campaign/zoo_compact_arm/canonical/media/preview.gif",
+      "bytes": 801000,
+      "sha256": "efd197b65aac1284658163f3c3bcb28be3ddda97b25b7c337f5afc582f623411",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G05",
+    "canonical",
+    "physical-replay"
+  ]
+}

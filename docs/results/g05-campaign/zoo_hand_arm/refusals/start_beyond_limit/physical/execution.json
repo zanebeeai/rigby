@@ -1,0 +1,300 @@
+{
+  "active_skill_tree": "flat sequence of the requested schema segments",
+  "baked_primitives": [],
+  "contact_and_sensor_timestamp_semantics": "Initial forward solve, then the previous integration interval; see contact_sample_time_s.",
+  "nominal_repeat_outcomes": [
+    {
+      "accepted": false,
+      "failure_code": "unafforded_schema",
+      "failure_stage": "binding",
+      "semantic_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6"
+    },
+    {
+      "accepted": false,
+      "failure_code": "unafforded_schema",
+      "failure_stage": "binding",
+      "semantic_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6"
+    },
+    {
+      "accepted": false,
+      "failure_code": "unafforded_schema",
+      "failure_stage": "binding",
+      "semantic_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6"
+    }
+  ],
+  "pipeline": {
+    "accepted": false,
+    "bindings": [],
+    "certification": null,
+    "clip": null,
+    "content_sha256": "a4b1e88558069e24642760486f59546689d03b4f664ea24fc2ea23b92b63fbe7",
+    "created_at": "2026-09-13T07:19:15+00:00",
+    "elapsed_seconds": 0.001,
+    "failure": {
+      "code": "unafforded_schema",
+      "detail": "body_f403f1e59f1018c5 has no certified 'reach_to_edge' at distal: it failed at the grounding stage -- body_f403f1e59f1018c5: the start state puts axis_0000 at 3.3500, outside its range [-2.8500, 2.8500]",
+      "stage": "binding"
+    },
+    "grasp": null,
+    "grounded": null,
+    "kind": "prompt",
+    "prompt": "reach out as far as you can and then come back",
+    "provenance": {
+      "base_tree": {
+        "file_count": 25,
+        "package": "rigby_core",
+        "sha256": "46501568d3e0e942cbfb3d4b263b7316466479225dce75ee7d11e3a65153f3aa"
+      }
+    },
+    "ran_at": "2026-09-13T07:19:15+00:00",
+    "robot": {
+      "characteristic_length_m": 0.16,
+      "dof": 10,
+      "effectors": [
+        {
+          "aperture_m": 0.055863,
+          "kind": "multifinger",
+          "name": "body_0008_effector"
+        }
+      ],
+      "intrinsic_frame": {
+        "confidence": 0.0,
+        "evidence": [
+          "no_evidence_default_axis"
+        ],
+        "source": "derived"
+      },
+      "morphology_class": "fixed_base_arm",
+      "neutral_speed_mps": 0.181697,
+      "payload_kg": 12.648905,
+      "reach_radius_m": 1.37002,
+      "robot_id": "body_f403f1e59f1018c5",
+      "total_mass_kg": 16.539438
+    },
+    "robot_id": "body_f403f1e59f1018c5",
+    "role_normalized_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6",
+    "schema_program": {
+      "canonical_keys": [
+        "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+        "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+      ],
+      "links": [
+        {
+          "coupling": null,
+          "coupling_region": null,
+          "from_segment": "s0",
+          "relation": "sequence",
+          "to_segment": "s1"
+        }
+      ],
+      "program_id": "offline-449943676987",
+      "schema_version": "1.0",
+      "segments": [
+        {
+          "boundary": "terminus",
+          "figure": {
+            "object_id": null,
+            "role": "primary_effector",
+            "site": null
+          },
+          "frame": "absolute",
+          "ground": {
+            "object_id": null,
+            "role": "base",
+            "site": null
+          },
+          "manner": {
+            "amplitude": 0,
+            "effort": 0,
+            "precision": 0,
+            "repetition": 0,
+            "repetition_count": null,
+            "rhythm": 0,
+            "smoothness": 0,
+            "speed": 0
+          },
+          "motion_schema": {
+            "conformation": "boundary",
+            "contour": "straight",
+            "deixis": "neutral",
+            "kind": "path",
+            "stative": null,
+            "vector": "to"
+          },
+          "posture": null,
+          "region": {
+            "dimensionality": "point",
+            "remove": "distal"
+          },
+          "segment_id": "s0"
+        },
+        {
+          "boundary": "terminus",
+          "figure": {
+            "object_id": null,
+            "role": "primary_effector",
+            "site": null
+          },
+          "frame": "absolute",
+          "ground": {
+            "object_id": null,
+            "role": "base",
+            "site": null
+          },
+          "manner": {
+            "amplitude": 0,
+            "effort": 0,
+            "precision": 0,
+            "repetition": 0,
+            "repetition_count": null,
+            "rhythm": 0,
+            "smoothness": 0,
+            "speed": 0
+          },
+          "motion_schema": {
+            "conformation": "point",
+            "contour": "straight",
+            "deixis": "neutral",
+            "kind": "path",
+            "stative": null,
+            "vector": "from"
+          },
+          "posture": null,
+          "region": {
+            "dimensionality": "point",
+            "remove": "medial"
+          },
+          "segment_id": "s1"
+        }
+      ],
+      "segments_readable": [
+        {
+          "boundary": "terminus",
+          "conformation": "boundary",
+          "contour": "straight",
+          "deixis": "neutral",
+          "figure": "primary_effector",
+          "frame": "absolute",
+          "ground": "base",
+          "manner": {
+            "amplitude": 0,
+            "effort": 0,
+            "precision": 0,
+            "repetition": 0,
+            "rhythm": 0,
+            "smoothness": 0,
+            "speed": 0
+          },
+          "remove": "distal",
+          "repetition_count": null,
+          "schema": "path:to.boundary.neutral.straight",
+          "segment_id": "s0",
+          "stative": null,
+          "vector": "to"
+        },
+        {
+          "boundary": "terminus",
+          "conformation": "point",
+          "contour": "straight",
+          "deixis": "neutral",
+          "figure": "primary_effector",
+          "frame": "absolute",
+          "ground": "base",
+          "manner": {
+            "amplitude": 0,
+            "effort": 0,
+            "precision": 0,
+            "repetition": 0,
+            "rhythm": 0,
+            "smoothness": 0,
+            "speed": 0
+          },
+          "remove": "medial",
+          "repetition_count": null,
+          "schema": "path:from.point.neutral.straight",
+          "segment_id": "s1",
+          "stative": null,
+          "vector": "from"
+        }
+      ],
+      "source_text": "reach out as far as you can and then come back"
+    },
+    "schema_version": "1.0",
+    "stages": [
+      {
+        "detail": {},
+        "elapsed_ms": 0.0,
+        "name": "firewall",
+        "status": "ok",
+        "summary": "in scope: the request names motion this system performs"
+      },
+      {
+        "detail": {
+          "afforded_schemas": 19,
+          "cues": [
+            {
+              "clause": "reach out as far as you can",
+              "entry_id": "reach_to_edge",
+              "manner": {},
+              "remove": "distal"
+            },
+            {
+              "clause": "come back",
+              "entry_id": "retract_from_point",
+              "manner": {},
+              "remove": "medial"
+            }
+          ],
+          "role_normalized_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6"
+        },
+        "elapsed_ms": 0.205,
+        "name": "planning",
+        "status": "ok",
+        "summary": "read as 2 segment(s): reach_to_edge, retract_from_point"
+      },
+      {
+        "detail": {
+          "failed_gate": "start_state.joint_limit",
+          "failure_code": "ungroundable",
+          "library_size": 0,
+          "measurements": {},
+          "segment_key": "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+          "stage": "grounding"
+        },
+        "elapsed_ms": 0.043,
+        "name": "binding",
+        "status": "refused",
+        "summary": "body_f403f1e59f1018c5 has no certified 'reach_to_edge' at distal: it failed at the grounding stage -- body_f403f1e59f1018c5: the start state puts axis_0000 at 3.3500, outside its range [-2.8500, 2.8500]"
+      }
+    ],
+    "trace_id": "body_f403f1e59f1018c5--reach-out-as-far-as-you-can-and-then-come-back",
+    "trial": null
+  },
+  "refused_bakes": [
+    {
+      "detail": "body_f403f1e59f1018c5: the start state puts axis_0000 at 3.3500, outside its range [-2.8500, 2.8500]",
+      "entry_id": "reach_to_edge",
+      "failed_gate": "start_state.joint_limit",
+      "failure_code": "ungroundable",
+      "measurements": {},
+      "remove": "distal",
+      "robot_id": "body_f403f1e59f1018c5",
+      "schema_key": "path:to.boundary.neutral.straight",
+      "segment_key": "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+      "stage": "grounding"
+    },
+    {
+      "detail": "body_f403f1e59f1018c5: the start state puts axis_0000 at 3.3500, outside its range [-2.8500, 2.8500]",
+      "entry_id": "retract_from_point",
+      "failed_gate": "start_state.joint_limit",
+      "failure_code": "ungroundable",
+      "measurements": {},
+      "remove": "medial",
+      "robot_id": "body_f403f1e59f1018c5",
+      "schema_key": "path:from.point.neutral.straight",
+      "segment_key": "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute",
+      "stage": "grounding"
+    }
+  ],
+  "user_input_semantics": "External forces, mocap, equality and userdata schedule; no intermediate qpos/state resets during replay."
+}

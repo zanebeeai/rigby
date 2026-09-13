@@ -13,6 +13,67 @@ Source commit: see `g05-validation.json` (`campaign_commit`). Verifier:
 `python docs/results/verify_g05.py [--replay]` from the workspace environment.
 No API or model calls were made anywhere in this work.
 
+## Playback
+
+Every clip below is rendered from recorded physical states, at real-time
+playback with the simulation clock in the banner. The GIF is a labelled,
+accelerated summary; the MP4 is the evidence. `frames.json` beside each MP4
+maps every video frame to its recorded sample and simulation time.
+
+### D05
+
+| Six bodies, one prompt, one physics clock | Dual arm before and after the guard |
+|---|---|
+| ![Six-body synchronized reach/return, GIF summary](g05-d05/six-body-preview.gif) | ![Dual arm before/after, GIF summary](g05-d05/dual-arm-before-after-preview.gif) |
+| [Full video](g05-d05/six-body-synchronized.mp4) | [Full video](g05-d05/dual-arm-before-after.mp4) |
+| Each tile holds its final state until the longest episode ends | Left: pre-guard grounder, `RUNTIME FAILURE` (self-collision). Right: current grounder, `SUCCESS` |
+
+Per-side dual-arm episodes: [before](g05-d05/dual-arm/before/media/episode.mp4)
+([frames](g05-d05/dual-arm/before/media/frames.json)),
+[after](g05-d05/dual-arm/after/media/episode.mp4)
+([frames](g05-d05/dual-arm/after/media/frames.json)).
+
+### Canonical trials, one per body
+
+| Body | Summary | Full episode | Frame map |
+|---|---|---|---|
+| compact arm | ![compact arm](g05-campaign/zoo_compact_arm/canonical/media/preview.gif) | [episode.mp4](g05-campaign/zoo_compact_arm/canonical/media/episode.mp4) | [frames.json](g05-campaign/zoo_compact_arm/canonical/media/frames.json) |
+| dual arm | ![dual arm](g05-campaign/zoo_dual_arm/canonical/media/preview.gif) | [episode.mp4](g05-campaign/zoo_dual_arm/canonical/media/episode.mp4) | [frames.json](g05-campaign/zoo_dual_arm/canonical/media/frames.json) |
+| hand arm | ![hand arm](g05-campaign/zoo_hand_arm/canonical/media/preview.gif) | [episode.mp4](g05-campaign/zoo_hand_arm/canonical/media/episode.mp4) | [frames.json](g05-campaign/zoo_hand_arm/canonical/media/frames.json) |
+| jaw arm | ![jaw arm](g05-campaign/zoo_jaw_arm/canonical/media/preview.gif) | [episode.mp4](g05-campaign/zoo_jaw_arm/canonical/media/episode.mp4) | [frames.json](g05-campaign/zoo_jaw_arm/canonical/media/frames.json) |
+| long arm | ![long arm](g05-campaign/zoo_long_arm/canonical/media/preview.gif) | [episode.mp4](g05-campaign/zoo_long_arm/canonical/media/episode.mp4) | [frames.json](g05-campaign/zoo_long_arm/canonical/media/frames.json) |
+| tool arm | ![tool arm](g05-campaign/zoo_tool_arm/canonical/media/preview.gif) | [episode.mp4](g05-campaign/zoo_tool_arm/canonical/media/episode.mp4) | [frames.json](g05-campaign/zoo_tool_arm/canonical/media/frames.json) |
+
+The 120 variant trials keep their full physical traces locally (untracked)
+with SHA-256 digests in each `trials.json`; the roster and commit regenerate
+any of them, and any bundle can be re-rendered without a model call with
+`python -m rigby_general.evidence render <bundle> --out <dir>`.
+
+### Refusals, one per invalid request
+
+Every predeclared invalid request was refused before any motion; each clip is a two-second slate of the initial state, labelled `PRE EXECUTION REFUSAL` with the typed reason in the banner. None of these are counted as trials.
+
+| Body | Invalid request | Typed refusal | Clip | Full slate | Frame map |
+|---|---|---|---|---|---|
+| zoo_compact_arm | start_beyond_limit | `unafforded_schema (start_state.joint_limit)` | ![zoo_compact_arm start_beyond_limit](g05-campaign/zoo_compact_arm/refusals/start_beyond_limit/media/preview.gif) | [episode.mp4](g05-campaign/zoo_compact_arm/refusals/start_beyond_limit/media/episode.mp4) | [frames.json](g05-campaign/zoo_compact_arm/refusals/start_beyond_limit/media/frames.json) |
+| zoo_compact_arm | unafforded_request | `unafforded_schema` | ![zoo_compact_arm unafforded_request](g05-campaign/zoo_compact_arm/refusals/unafforded_request/media/preview.gif) | [episode.mp4](g05-campaign/zoo_compact_arm/refusals/unafforded_request/media/episode.mp4) | [frames.json](g05-campaign/zoo_compact_arm/refusals/unafforded_request/media/frames.json) |
+| zoo_compact_arm | start_self_collision | `unafforded_schema (start_state.self_collision)` | ![zoo_compact_arm start_self_collision](g05-campaign/zoo_compact_arm/refusals/start_self_collision/media/preview.gif) | [episode.mp4](g05-campaign/zoo_compact_arm/refusals/start_self_collision/media/episode.mp4) | [frames.json](g05-campaign/zoo_compact_arm/refusals/start_self_collision/media/frames.json) |
+| zoo_dual_arm | start_beyond_limit | `unafforded_schema (start_state.joint_limit)` | ![zoo_dual_arm start_beyond_limit](g05-campaign/zoo_dual_arm/refusals/start_beyond_limit/media/preview.gif) | [episode.mp4](g05-campaign/zoo_dual_arm/refusals/start_beyond_limit/media/episode.mp4) | [frames.json](g05-campaign/zoo_dual_arm/refusals/start_beyond_limit/media/frames.json) |
+| zoo_dual_arm | unafforded_request | `unafforded_schema` | ![zoo_dual_arm unafforded_request](g05-campaign/zoo_dual_arm/refusals/unafforded_request/media/preview.gif) | [episode.mp4](g05-campaign/zoo_dual_arm/refusals/unafforded_request/media/episode.mp4) | [frames.json](g05-campaign/zoo_dual_arm/refusals/unafforded_request/media/frames.json) |
+| zoo_dual_arm | start_self_collision | `unafforded_schema (start_state.self_collision)` | ![zoo_dual_arm start_self_collision](g05-campaign/zoo_dual_arm/refusals/start_self_collision/media/preview.gif) | [episode.mp4](g05-campaign/zoo_dual_arm/refusals/start_self_collision/media/episode.mp4) | [frames.json](g05-campaign/zoo_dual_arm/refusals/start_self_collision/media/frames.json) |
+| zoo_hand_arm | start_beyond_limit | `unafforded_schema (start_state.joint_limit)` | ![zoo_hand_arm start_beyond_limit](g05-campaign/zoo_hand_arm/refusals/start_beyond_limit/media/preview.gif) | [episode.mp4](g05-campaign/zoo_hand_arm/refusals/start_beyond_limit/media/episode.mp4) | [frames.json](g05-campaign/zoo_hand_arm/refusals/start_beyond_limit/media/frames.json) |
+| zoo_hand_arm | unafforded_request | `unafforded_schema` | ![zoo_hand_arm unafforded_request](g05-campaign/zoo_hand_arm/refusals/unafforded_request/media/preview.gif) | [episode.mp4](g05-campaign/zoo_hand_arm/refusals/unafforded_request/media/episode.mp4) | [frames.json](g05-campaign/zoo_hand_arm/refusals/unafforded_request/media/frames.json) |
+| zoo_hand_arm | start_self_collision | `unafforded_schema (start_state.self_collision)` | ![zoo_hand_arm start_self_collision](g05-campaign/zoo_hand_arm/refusals/start_self_collision/media/preview.gif) | [episode.mp4](g05-campaign/zoo_hand_arm/refusals/start_self_collision/media/episode.mp4) | [frames.json](g05-campaign/zoo_hand_arm/refusals/start_self_collision/media/frames.json) |
+| zoo_jaw_arm | start_beyond_limit | `unafforded_schema (start_state.joint_limit)` | ![zoo_jaw_arm start_beyond_limit](g05-campaign/zoo_jaw_arm/refusals/start_beyond_limit/media/preview.gif) | [episode.mp4](g05-campaign/zoo_jaw_arm/refusals/start_beyond_limit/media/episode.mp4) | [frames.json](g05-campaign/zoo_jaw_arm/refusals/start_beyond_limit/media/frames.json) |
+| zoo_jaw_arm | unafforded_request | `unafforded_schema` | ![zoo_jaw_arm unafforded_request](g05-campaign/zoo_jaw_arm/refusals/unafforded_request/media/preview.gif) | [episode.mp4](g05-campaign/zoo_jaw_arm/refusals/unafforded_request/media/episode.mp4) | [frames.json](g05-campaign/zoo_jaw_arm/refusals/unafforded_request/media/frames.json) |
+| zoo_jaw_arm | start_self_collision | `unafforded_schema (start_state.self_collision)` | ![zoo_jaw_arm start_self_collision](g05-campaign/zoo_jaw_arm/refusals/start_self_collision/media/preview.gif) | [episode.mp4](g05-campaign/zoo_jaw_arm/refusals/start_self_collision/media/episode.mp4) | [frames.json](g05-campaign/zoo_jaw_arm/refusals/start_self_collision/media/frames.json) |
+| zoo_long_arm | start_beyond_limit | `unafforded_schema (start_state.joint_limit)` | ![zoo_long_arm start_beyond_limit](g05-campaign/zoo_long_arm/refusals/start_beyond_limit/media/preview.gif) | [episode.mp4](g05-campaign/zoo_long_arm/refusals/start_beyond_limit/media/episode.mp4) | [frames.json](g05-campaign/zoo_long_arm/refusals/start_beyond_limit/media/frames.json) |
+| zoo_long_arm | unafforded_request | `unafforded_schema` | ![zoo_long_arm unafforded_request](g05-campaign/zoo_long_arm/refusals/unafforded_request/media/preview.gif) | [episode.mp4](g05-campaign/zoo_long_arm/refusals/unafforded_request/media/episode.mp4) | [frames.json](g05-campaign/zoo_long_arm/refusals/unafforded_request/media/frames.json) |
+| zoo_long_arm | start_self_collision | `unafforded_schema (start_state.self_collision)` | ![zoo_long_arm start_self_collision](g05-campaign/zoo_long_arm/refusals/start_self_collision/media/preview.gif) | [episode.mp4](g05-campaign/zoo_long_arm/refusals/start_self_collision/media/episode.mp4) | [frames.json](g05-campaign/zoo_long_arm/refusals/start_self_collision/media/frames.json) |
+| zoo_tool_arm | start_beyond_limit | `unafforded_schema (start_state.joint_limit)` | ![zoo_tool_arm start_beyond_limit](g05-campaign/zoo_tool_arm/refusals/start_beyond_limit/media/preview.gif) | [episode.mp4](g05-campaign/zoo_tool_arm/refusals/start_beyond_limit/media/episode.mp4) | [frames.json](g05-campaign/zoo_tool_arm/refusals/start_beyond_limit/media/frames.json) |
+| zoo_tool_arm | unafforded_request | `unafforded_schema` | ![zoo_tool_arm unafforded_request](g05-campaign/zoo_tool_arm/refusals/unafforded_request/media/preview.gif) | [episode.mp4](g05-campaign/zoo_tool_arm/refusals/unafforded_request/media/episode.mp4) | [frames.json](g05-campaign/zoo_tool_arm/refusals/unafforded_request/media/frames.json) |
+| zoo_tool_arm | start_self_collision | `unafforded_schema (start_state.self_collision)` | ![zoo_tool_arm start_self_collision](g05-campaign/zoo_tool_arm/refusals/start_self_collision/media/preview.gif) | [episode.mp4](g05-campaign/zoo_tool_arm/refusals/start_self_collision/media/episode.mp4) | [frames.json](g05-campaign/zoo_tool_arm/refusals/start_self_collision/media/frames.json) |
+
 ## Acceptance evidence
 
 | Criterion | Evidence and outcome |

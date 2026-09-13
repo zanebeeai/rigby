@@ -1,0 +1,102 @@
+{
+  "active_skill_tree": "flat sequence of the requested schema segments",
+  "baked_primitives": [],
+  "contact_and_sensor_timestamp_semantics": "Initial forward solve, then the previous integration interval; see contact_sample_time_s.",
+  "nominal_repeat_outcomes": [
+    {
+      "accepted": false,
+      "failure_code": "unafforded_schema",
+      "failure_stage": "planning",
+      "semantic_hash": null
+    },
+    {
+      "accepted": false,
+      "failure_code": "unafforded_schema",
+      "failure_stage": "planning",
+      "semantic_hash": null
+    },
+    {
+      "accepted": false,
+      "failure_code": "unafforded_schema",
+      "failure_stage": "planning",
+      "semantic_hash": null
+    }
+  ],
+  "pipeline": {
+    "accepted": false,
+    "bindings": [],
+    "certification": null,
+    "clip": null,
+    "content_sha256": "ca2b8ebfcd6ce8e81bc1b909170111356a8b48b76e46b04194f559e67149f9c4",
+    "created_at": "2026-09-13T07:19:11+00:00",
+    "elapsed_seconds": 0.0,
+    "failure": {
+      "code": "unafforded_schema",
+      "detail": "this robot has no certified 'transport_object' primitive",
+      "stage": "planning"
+    },
+    "grasp": null,
+    "grounded": null,
+    "kind": "prompt",
+    "prompt": "grasp the cup and then come back",
+    "provenance": {
+      "base_tree": {
+        "file_count": 25,
+        "package": "rigby_core",
+        "sha256": "46501568d3e0e942cbfb3d4b263b7316466479225dce75ee7d11e3a65153f3aa"
+      }
+    },
+    "ran_at": "2026-09-13T07:19:11+00:00",
+    "robot": {
+      "characteristic_length_m": 0.2,
+      "dof": 14,
+      "effectors": [
+        {
+          "aperture_m": 0.072,
+          "kind": "parallel_jaw",
+          "name": "body_0007_effector"
+        },
+        {
+          "aperture_m": 0.072,
+          "kind": "parallel_jaw",
+          "name": "body_0015_effector"
+        }
+      ],
+      "intrinsic_frame": {
+        "confidence": 0.5,
+        "evidence": [
+          "mirror_plane"
+        ],
+        "source": "derived"
+      },
+      "morphology_class": "fixed_base_bimanual",
+      "neutral_speed_mps": 0.168625,
+      "payload_kg": 7.30177,
+      "reach_radius_m": 1.326253,
+      "robot_id": "body_c928a9ae9ac9408b",
+      "total_mass_kg": 35.586392
+    },
+    "robot_id": "body_c928a9ae9ac9408b",
+    "role_normalized_hash": null,
+    "schema_program": null,
+    "schema_version": "1.0",
+    "stages": [
+      {
+        "detail": {
+          "afforded_schemas": 20,
+          "clause": "grasp the cup",
+          "entry_id": "transport_object",
+          "failure_code": "unafforded_schema"
+        },
+        "elapsed_ms": 0.034,
+        "name": "planning",
+        "status": "refused",
+        "summary": "this robot has no certified 'transport_object' primitive"
+      }
+    ],
+    "trace_id": "body_c928a9ae9ac9408b--grasp-the-cup-and-then-come-back",
+    "trial": null
+  },
+  "refused_bakes": [],
+  "user_input_semantics": "External forces, mocap, equality and userdata schedule; no intermediate qpos/state resets during replay."
+}

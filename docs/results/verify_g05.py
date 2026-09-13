@@ -153,6 +153,26 @@ def main() -> int:
             assert abs(duration - baseline) < 1e-6, (zoo_id, duration, baseline)
     assert durations == validation["canonical_durations_s"]
 
+    # Every predeclared invalid request has a refusal clip: a sealed bundle
+    # whose physical record is the initial state alone, rendered as a labelled
+    # slate. Refusals are evidence of correct typing, never counted as trials.
+    refusals = json.loads((CAMPAIGN / "refusals.json").read_bytes())
+    assert refusals["roster_sha256"] == registration["roster_sha256"]
+    assert len(refusals["clips"]) == totals["invalid"] == 18
+    for clip in refusals["clips"]:
+        assert clip["scored_record_correct"] and clip["refusal_slate"]
+        physical = CAMPAIGN / clip["zoo_id"] / "refusals" / clip["case_id"] / "physical"
+        manifest = json.loads((physical / "manifest.json").read_bytes())
+        assert sha256(physical / "manifest.json") == clip["physical_sha256"]
+        assert manifest["metadata"]["outcome"] == "pre_execution_refusal"
+        outcome = json.loads((physical / "outcome.json").read_bytes())
+        assert outcome["physical_steps"] == 0 and outcome["refusal"]["code"] == clip["refusal"]["code"]
+        media = CAMPAIGN / clip["zoo_id"] / "refusals" / clip["case_id"] / "media"
+        media_manifest = json.loads((media / "manifest.json").read_bytes())
+        assert media_manifest["metadata"]["refusal_slate"] and media_manifest["metadata"]["source_bundle_sha256"] == clip["physical_sha256"]
+        for name in ("episode.mp4", "preview.gif", "frames.json"):
+            assert (media / name).is_file(), (clip["zoo_id"], clip["case_id"], name)
+
     index = json.loads((D05 / "index.json").read_bytes())
     for name, digest in index["files"].items():
         assert sha256(D05 / name) == digest, name
