@@ -4,7 +4,7 @@
     "zoo_jaw_arm",
     "zoo_long_arm"
   ],
-  "created_at_utc": "2026-09-13T10:19:04.996645+00:00",
+  "created_at_utc": "2026-09-13T10:22:19.904522+00:00",
   "draw": {
     "feasible_band_fraction": 0.2,
     "generator": "numpy.random.default_rng(seed), one stream, bodies in the order listed, feasible then injected",
@@ -3455,10 +3455,11 @@
       "fixture": "any-robot/tests/fixtures/g05_composition/dual_arm_program_before_guard.json",
       "fixture_sha256": "0a1f1ada662632d91706f1c939e75cc303116d55d3a56b5baa785c29c075e8a6",
       "kind": "joint_inside_margin",
-      "note": "the reviewed dual-arm failure: the pre-guard return leg's keyframe at 32.96 s, the left wrist at 2.850 rad against a limit of 2.85",
+      "note": "the reviewed dual-arm failure: the pre-guard program's keyframe at 32.96 s, left_joint_3 at 2.850 rad against a limit of 2.85, the latest keyframe of that program with a joint inside its limit margin that the body can be moved to clear of itself and of the world (the keyframes with the wrist folded into the forearm are self-colliding and cannot be reached as a certified motion)",
       "second": {
         "skill": "transfer"
       },
+      "subject": "left_joint_3",
       "zoo_id": "zoo_dual_arm"
     }
   ],

@@ -271,9 +271,12 @@ def injected_cases(bodies: dict[str, Body], rng: np.random.Generator) -> list[di
     if chosen is None:
         raise SystemExit("no keyframe of the reviewed dual-arm failure is both inside a limit margin and reachable clear of the body")
     keyframe, targets = chosen
+    at_limit, value = max(targets.items(), key=lambda item: abs(item[1]))
     cases.append({"case_id": "zoo_dual_arm-reviewed_dual_arm_failure-00", "zoo_id": "zoo_dual_arm", "kind": "joint_inside_margin", "first": {"skill": "joint_move", "targets": targets},
-                  "second": {"skill": "transfer"}, "expect": "repaired_then_reverified",
-                  "note": f"the reviewed dual-arm failure: the pre-guard return leg's keyframe at {keyframe['time_s']:.2f} s, the left wrist at {max(targets.values(), key=abs):.3f} rad against a limit of 2.85",
+                  "second": {"skill": "transfer"}, "expect": "repaired_then_reverified", "subject": at_limit,
+                  "note": (f"the reviewed dual-arm failure: the pre-guard program's keyframe at {keyframe['time_s']:.2f} s, {at_limit} at {value:.3f} rad against a limit of 2.85, "
+                           "the latest keyframe of that program with a joint inside its limit margin that the body can be moved to clear of itself and of the world "
+                           "(the keyframes with the wrist folded into the forearm are self-colliding and cannot be reached as a certified motion)"),
                   "fixture": FIXTURE.relative_to(REPO).as_posix(), "fixture_sha256": hashlib.sha256(FIXTURE.read_bytes()).hexdigest()})
     return cases
 
