@@ -1,0 +1,785 @@
+{
+  "comparisons": {
+    "current_legacy": {
+      "compilation": {
+        "accepted": false,
+        "detail": "Composed tracks exceed limits for 'left_joint_4'",
+        "details": {
+          "motion_reason": "joint_limit_violation",
+          "time_s": 20.304166666666667,
+          "value": 2.8500972672682026
+        },
+        "exception": "MotionCompilationError"
+      },
+      "duration_s": 60.591332,
+      "extrema_violations": [
+        {
+          "interval": 10,
+          "interval_authored_s": [
+            18.036707,
+            19.573017
+          ],
+          "joint": "left_joint_4",
+          "knot_values": [
+            2.826298357833412,
+            2.8492995289416974
+          ],
+          "knot_velocities": [
+            0.10864571553380041,
+            -0.014006328031953334
+          ],
+          "limits": [
+            -2.85,
+            2.85
+          ],
+          "maximum": 2.867910593797897,
+          "maximum_authored_s": 18.708756677032206,
+          "minimum": 2.826298357833412,
+          "minimum_authored_s": 18.036707,
+          "neighbors": [
+            {
+              "time_s": 16.761898,
+              "value": 2.5438834937360357,
+              "velocity": 0.25885208423525097
+            },
+            {
+              "time_s": 18.036707,
+              "value": 2.826298357833412,
+              "velocity": 0.10864571553380041
+            },
+            {
+              "time_s": 19.573017,
+              "value": 2.8492995289416974,
+              "velocity": -0.014006328031953334
+            },
+            {
+              "time_s": 20.932593,
+              "value": 2.785737628574271,
+              "velocity": -0.09241397462609961
+            }
+          ],
+          "source_joint": "left_joint_4"
+        },
+        {
+          "interval": 19,
+          "interval_authored_s": [
+            44.017016,
+            45.440577
+          ],
+          "joint": "left_joint_4",
+          "knot_values": [
+            2.8492995289416974,
+            2.826298357833412
+          ],
+          "knot_velocities": [
+            0.014578380843698282,
+            -0.13399706889371857
+          ],
+          "limits": [
+            -2.85,
+            2.85
+          ],
+          "maximum": 2.8721782580550217,
+          "maximum_authored_s": 44.843332450964326,
+          "minimum": 2.826298357833412,
+          "minimum_authored_s": 45.440577,
+          "neighbors": [
+            {
+              "time_s": 42.658325,
+              "value": 2.785737628574271,
+              "velocity": 0.11578524445627636
+            },
+            {
+              "time_s": 44.017016,
+              "value": 2.8492995289416974,
+              "velocity": 0.014578380843698282
+            },
+            {
+              "time_s": 45.440577,
+              "value": 2.826298357833412,
+              "velocity": -0.13399706889371857
+            },
+            {
+              "time_s": 46.29629,
+              "value": 2.5438834937360357,
+              "velocity": -0.3333405990113301
+            }
+          ],
+          "source_joint": "left_joint_4"
+        }
+      ],
+      "figure_sites": [
+        "left_palm_grasp_center"
+      ],
+      "leaf_compilation": [
+        {
+          "compilation": {
+            "accepted": true,
+            "duration_s": 23.181927,
+            "sample_count": 5565
+          },
+          "duration_s": 23.181927,
+          "entry": "reach_to_edge",
+          "extrema_violations": [],
+          "figure_sites": [
+            "left_palm_grasp_center"
+          ],
+          "phases": [
+            {
+              "end_s": 12.739785,
+              "energy": 0.45,
+              "kind": "action",
+              "phase_id": "phase_0",
+              "start_s": 0.0
+            },
+            {
+              "end_s": 23.181927,
+              "energy": 0.3,
+              "kind": "recovery",
+              "phase_id": "phase_recovery",
+              "start_s": 12.739785
+            }
+          ],
+          "remove": "distal",
+          "source_joints": {}
+        },
+        {
+          "compilation": {
+            "accepted": true,
+            "duration_s": 39.701185,
+            "sample_count": 9530
+          },
+          "duration_s": 39.701185,
+          "entry": "retract_from_point",
+          "extrema_violations": [],
+          "figure_sites": [
+            "left_palm_grasp_center"
+          ],
+          "phases": [
+            {
+              "end_s": 22.536555,
+              "energy": 0.45,
+              "kind": "action",
+              "phase_id": "phase_0",
+              "start_s": 0.0
+            },
+            {
+              "end_s": 39.701185,
+              "energy": 0.3,
+              "kind": "recovery",
+              "phase_id": "phase_recovery",
+              "start_s": 22.536555
+            }
+          ],
+          "remove": "medial",
+          "source_joints": {}
+        }
+      ],
+      "phases": [
+        {
+          "end_s": 12.739785,
+          "energy": 0.45,
+          "kind": "action",
+          "phase_id": "phase_0",
+          "start_s": 0.0
+        },
+        {
+          "end_s": 32.958493,
+          "energy": 0.45,
+          "kind": "action",
+          "phase_id": "phase_1",
+          "start_s": 12.739785
+        },
+        {
+          "end_s": 60.591332,
+          "energy": 0.3,
+          "kind": "recovery",
+          "phase_id": "phase_recovery",
+          "start_s": 32.958493
+        }
+      ],
+      "selected_physical_sites": [
+        {
+          "body": "left_palm",
+          "site": "left_palm_grasp_center"
+        },
+        {
+          "body": "left_palm",
+          "site": "left_palm_grasp_center"
+        }
+      ],
+      "semantic_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6",
+      "source_joints": {}
+    },
+    "current_structural": {
+      "compilation": {
+        "accepted": false,
+        "detail": "Composed tracks exceed limits for 'axis_0005'",
+        "details": {
+          "motion_reason": "joint_limit_violation",
+          "time_s": 20.304166666666667,
+          "value": 2.8500972672682026
+        },
+        "exception": "MotionCompilationError"
+      },
+      "duration_s": 60.591332,
+      "extrema_violations": [
+        {
+          "interval": 10,
+          "interval_authored_s": [
+            18.036707,
+            19.573017
+          ],
+          "joint": "axis_0005",
+          "knot_values": [
+            2.826298357833412,
+            2.8492995289416974
+          ],
+          "knot_velocities": [
+            0.10864571553380041,
+            -0.014006328031953334
+          ],
+          "limits": [
+            -2.85,
+            2.85
+          ],
+          "maximum": 2.867910593797897,
+          "maximum_authored_s": 18.708756677032206,
+          "minimum": 2.826298357833412,
+          "minimum_authored_s": 18.036707,
+          "neighbors": [
+            {
+              "time_s": 16.761898,
+              "value": 2.5438834937360357,
+              "velocity": 0.25885208423525097
+            },
+            {
+              "time_s": 18.036707,
+              "value": 2.826298357833412,
+              "velocity": 0.10864571553380041
+            },
+            {
+              "time_s": 19.573017,
+              "value": 2.8492995289416974,
+              "velocity": -0.014006328031953334
+            },
+            {
+              "time_s": 20.932593,
+              "value": 2.785737628574271,
+              "velocity": -0.09241397462609961
+            }
+          ],
+          "source_joint": "left_joint_4"
+        },
+        {
+          "interval": 19,
+          "interval_authored_s": [
+            44.017016,
+            45.440577
+          ],
+          "joint": "axis_0005",
+          "knot_values": [
+            2.8492995289416974,
+            2.826298357833412
+          ],
+          "knot_velocities": [
+            0.014578380843698282,
+            -0.13399706889371857
+          ],
+          "limits": [
+            -2.85,
+            2.85
+          ],
+          "maximum": 2.8721782580550217,
+          "maximum_authored_s": 44.843332450964326,
+          "minimum": 2.826298357833412,
+          "minimum_authored_s": 45.440577,
+          "neighbors": [
+            {
+              "time_s": 42.658325,
+              "value": 2.785737628574271,
+              "velocity": 0.11578524445627636
+            },
+            {
+              "time_s": 44.017016,
+              "value": 2.8492995289416974,
+              "velocity": 0.014578380843698282
+            },
+            {
+              "time_s": 45.440577,
+              "value": 2.826298357833412,
+              "velocity": -0.13399706889371857
+            },
+            {
+              "time_s": 46.29629,
+              "value": 2.5438834937360357,
+              "velocity": -0.3333405990113301
+            }
+          ],
+          "source_joint": "left_joint_4"
+        }
+      ],
+      "figure_sites": [
+        "body_0007_grasp_center"
+      ],
+      "leaf_compilation": [
+        {
+          "compilation": {
+            "accepted": true,
+            "duration_s": 23.181927,
+            "sample_count": 5565
+          },
+          "duration_s": 23.181927,
+          "entry": "reach_to_edge",
+          "extrema_violations": [],
+          "figure_sites": [
+            "body_0007_grasp_center"
+          ],
+          "phases": [
+            {
+              "end_s": 12.739785,
+              "energy": 0.45,
+              "kind": "action",
+              "phase_id": "phase_0",
+              "start_s": 0.0
+            },
+            {
+              "end_s": 23.181927,
+              "energy": 0.3,
+              "kind": "recovery",
+              "phase_id": "phase_recovery",
+              "start_s": 12.739785
+            }
+          ],
+          "remove": "distal",
+          "source_joints": {
+            "axis_0000": "torso_fixed",
+            "axis_0001": "left_joint_0",
+            "axis_0002": "left_joint_1",
+            "axis_0003": "left_joint_2",
+            "axis_0004": "left_joint_3",
+            "axis_0005": "left_joint_4",
+            "axis_0006": "left_palm_fixed",
+            "axis_0007": "left_grip_left",
+            "axis_0008": "left_grip_right",
+            "axis_0009": "right_joint_0",
+            "axis_0010": "right_joint_1",
+            "axis_0011": "right_joint_2",
+            "axis_0012": "right_joint_3",
+            "axis_0013": "right_joint_4",
+            "axis_0014": "right_palm_fixed",
+            "axis_0015": "right_grip_left",
+            "axis_0016": "right_grip_right"
+          }
+        },
+        {
+          "compilation": {
+            "accepted": true,
+            "duration_s": 39.701185,
+            "sample_count": 9530
+          },
+          "duration_s": 39.701185,
+          "entry": "retract_from_point",
+          "extrema_violations": [],
+          "figure_sites": [
+            "body_0007_grasp_center"
+          ],
+          "phases": [
+            {
+              "end_s": 22.536555,
+              "energy": 0.45,
+              "kind": "action",
+              "phase_id": "phase_0",
+              "start_s": 0.0
+            },
+            {
+              "end_s": 39.701185,
+              "energy": 0.3,
+              "kind": "recovery",
+              "phase_id": "phase_recovery",
+              "start_s": 22.536555
+            }
+          ],
+          "remove": "medial",
+          "source_joints": {
+            "axis_0000": "torso_fixed",
+            "axis_0001": "left_joint_0",
+            "axis_0002": "left_joint_1",
+            "axis_0003": "left_joint_2",
+            "axis_0004": "left_joint_3",
+            "axis_0005": "left_joint_4",
+            "axis_0006": "left_palm_fixed",
+            "axis_0007": "left_grip_left",
+            "axis_0008": "left_grip_right",
+            "axis_0009": "right_joint_0",
+            "axis_0010": "right_joint_1",
+            "axis_0011": "right_joint_2",
+            "axis_0012": "right_joint_3",
+            "axis_0013": "right_joint_4",
+            "axis_0014": "right_palm_fixed",
+            "axis_0015": "right_grip_left",
+            "axis_0016": "right_grip_right"
+          }
+        }
+      ],
+      "phases": [
+        {
+          "end_s": 12.739785,
+          "energy": 0.45,
+          "kind": "action",
+          "phase_id": "phase_0",
+          "start_s": 0.0
+        },
+        {
+          "end_s": 32.958493,
+          "energy": 0.45,
+          "kind": "action",
+          "phase_id": "phase_1",
+          "start_s": 12.739785
+        },
+        {
+          "end_s": 60.591332,
+          "energy": 0.3,
+          "kind": "recovery",
+          "phase_id": "phase_recovery",
+          "start_s": 32.958493
+        }
+      ],
+      "selected_physical_sites": [
+        {
+          "body": "left_palm",
+          "site": "body_0007_grasp_center"
+        },
+        {
+          "body": "left_palm",
+          "site": "body_0007_grasp_center"
+        }
+      ],
+      "semantic_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6",
+      "source_joints": {
+        "axis_0000": "torso_fixed",
+        "axis_0001": "left_joint_0",
+        "axis_0002": "left_joint_1",
+        "axis_0003": "left_joint_2",
+        "axis_0004": "left_joint_3",
+        "axis_0005": "left_joint_4",
+        "axis_0006": "left_palm_fixed",
+        "axis_0007": "left_grip_left",
+        "axis_0008": "left_grip_right",
+        "axis_0009": "right_joint_0",
+        "axis_0010": "right_joint_1",
+        "axis_0011": "right_joint_2",
+        "axis_0012": "right_joint_3",
+        "axis_0013": "right_joint_4",
+        "axis_0014": "right_palm_fixed",
+        "axis_0015": "right_grip_left",
+        "axis_0016": "right_grip_right"
+      }
+    },
+    "g01_frozen_dual": {
+      "compilation": {
+        "accepted": false,
+        "detail": "Composed tracks exceed limits for 'left_joint_4'",
+        "details": {
+          "motion_reason": "joint_limit_violation",
+          "time_s": 20.304166666666667,
+          "value": 2.8500972672682026
+        },
+        "exception": "MotionCompilationError"
+      },
+      "duration_s": 60.591332,
+      "extrema_violations": [
+        {
+          "interval": 10,
+          "interval_authored_s": [
+            18.036707,
+            19.573017
+          ],
+          "joint": "left_joint_4",
+          "knot_values": [
+            2.826298357833412,
+            2.8492995289416974
+          ],
+          "knot_velocities": [
+            0.10864571553380041,
+            -0.014006328031953334
+          ],
+          "limits": [
+            -2.85,
+            2.85
+          ],
+          "maximum": 2.867910593797897,
+          "maximum_authored_s": 18.708756677032206,
+          "minimum": 2.826298357833412,
+          "minimum_authored_s": 18.036707,
+          "neighbors": [
+            {
+              "time_s": 16.761898,
+              "value": 2.5438834937360357,
+              "velocity": 0.25885208423525097
+            },
+            {
+              "time_s": 18.036707,
+              "value": 2.826298357833412,
+              "velocity": 0.10864571553380041
+            },
+            {
+              "time_s": 19.573017,
+              "value": 2.8492995289416974,
+              "velocity": -0.014006328031953334
+            },
+            {
+              "time_s": 20.932593,
+              "value": 2.785737628574271,
+              "velocity": -0.09241397462609961
+            }
+          ],
+          "source_joint": "left_joint_4"
+        },
+        {
+          "interval": 19,
+          "interval_authored_s": [
+            44.017016,
+            45.440577
+          ],
+          "joint": "left_joint_4",
+          "knot_values": [
+            2.8492995289416974,
+            2.826298357833412
+          ],
+          "knot_velocities": [
+            0.014578380843698282,
+            -0.13399706889371857
+          ],
+          "limits": [
+            -2.85,
+            2.85
+          ],
+          "maximum": 2.8721782580550217,
+          "maximum_authored_s": 44.843332450964326,
+          "minimum": 2.826298357833412,
+          "minimum_authored_s": 45.440577,
+          "neighbors": [
+            {
+              "time_s": 42.658325,
+              "value": 2.785737628574271,
+              "velocity": 0.11578524445627636
+            },
+            {
+              "time_s": 44.017016,
+              "value": 2.8492995289416974,
+              "velocity": 0.014578380843698282
+            },
+            {
+              "time_s": 45.440577,
+              "value": 2.826298357833412,
+              "velocity": -0.13399706889371857
+            },
+            {
+              "time_s": 46.29629,
+              "value": 2.5438834937360357,
+              "velocity": -0.3333405990113301
+            }
+          ],
+          "source_joint": "left_joint_4"
+        }
+      ],
+      "figure_sites": [
+        "left_palm_grasp_center"
+      ],
+      "phases": [
+        {
+          "end_s": 12.739785,
+          "energy": 0.45,
+          "kind": "action",
+          "phase_id": "phase_0",
+          "start_s": 0.0
+        },
+        {
+          "end_s": 32.958493,
+          "energy": 0.45,
+          "kind": "action",
+          "phase_id": "phase_1",
+          "start_s": 12.739785
+        },
+        {
+          "end_s": 60.591332,
+          "energy": 0.3,
+          "kind": "recovery",
+          "phase_id": "phase_recovery",
+          "start_s": 32.958493
+        }
+      ],
+      "source_joints": {}
+    }
+  },
+  "g01_durations": [
+    {
+      "case": "zoo_compact_arm",
+      "outcome": "success",
+      "reference_duration_s": 30.509918,
+      "refusal": null,
+      "simulation_duration_s": 14.64400000000156
+    },
+    {
+      "case": "zoo_dual_arm",
+      "outcome": "pre_execution_refusal",
+      "reference_duration_s": 60.591332,
+      "refusal": {
+        "code": "joint_limit_violation",
+        "detail": "Composed tracks exceed limits for 'left_joint_4'",
+        "stage": "compilation"
+      },
+      "simulation_duration_s": 0.0
+    },
+    {
+      "case": "zoo_hand_arm",
+      "outcome": "success",
+      "reference_duration_s": 49.245976,
+      "refusal": null,
+      "simulation_duration_s": 23.637999999997778
+    },
+    {
+      "case": "zoo_jaw_arm",
+      "outcome": "success",
+      "reference_duration_s": 47.844854,
+      "refusal": null,
+      "simulation_duration_s": 22.96599999999815
+    },
+    {
+      "case": "zoo_long_arm",
+      "outcome": "success",
+      "reference_duration_s": 67.454452,
+      "refusal": null,
+      "simulation_duration_s": 32.377999999993605
+    },
+    {
+      "case": "zoo_tool_arm",
+      "outcome": "success",
+      "reference_duration_s": 52.43766,
+      "refusal": null,
+      "simulation_duration_s": 25.16999999999693
+    },
+    {
+      "case": "zoo_compact_arm-actuation-loss",
+      "outcome": "runtime_failure",
+      "reference_duration_s": 30.509918,
+      "refusal": null,
+      "simulation_duration_s": 14.64400000000156
+    }
+  ],
+  "g01_leaf_bakes": [
+    {
+      "entry_id": "reach_to_edge",
+      "measurements": {
+        "base_drift_m": 0.0,
+        "duration_s": 23.1819,
+        "duration_scale": 1.0,
+        "tracking_error_m": 0.01468
+      },
+      "remove": "distal"
+    },
+    {
+      "entry_id": "retract_from_point",
+      "measurements": {
+        "base_drift_m": 0.0,
+        "duration_s": 39.7012,
+        "duration_scale": 1.0,
+        "tracking_error_m": 0.017754
+      },
+      "remove": "medial"
+    }
+  ],
+  "g01_source_sha256": {
+    "any-robot/assets/general/schema_inventory.v1.json": "b445d7b0455ea1c8b2b3c02423fcb5eb3d1e67c1100c054a1f316bff414175cd",
+    "any-robot/pyproject.toml": "ffc52fbd4ad75fd2b1f94cfadb9676faf2ced83ca97adf6bf4f733e8330455dd",
+    "any-robot/src/rigby_general/__init__.py": "84408a3c175aeef58f48a8083517915ebcadfab46d54696cca3abe1dcd8956ce",
+    "any-robot/src/rigby_general/app.py": "3d2dd74949d771b7ae0fb0742ad3ee41869ec1ac2409db5f8d08e15b30db88e0",
+    "any-robot/src/rigby_general/audit.py": "8a3664b78ceee2a2775eee9ce61e77249136e1a28cb54303a9c2e8bd2660b8b6",
+    "any-robot/src/rigby_general/bake/__init__.py": "98c9928128389b27363f65e220c19405046b3ffadab9a27f6de51b3a2740f95a",
+    "any-robot/src/rigby_general/bake/enumerate.py": "4b35209fb08fa5fabfb57bee9749910b678ededf6240d9711f6166fe9f418551",
+    "any-robot/src/rigby_general/bake/runner.py": "7bd21a19103f07ddaf4095aca7ff59bec48dce993d690068a6ca5ed216dda1ec",
+    "any-robot/src/rigby_general/binding/__init__.py": "e5cab939f81b4bbf36d53e611c937968e776e336e1db6e59cdeb8f9c2fae243f",
+    "any-robot/src/rigby_general/binding/binder.py": "93f4b1667d9c914f64447a37efa1d52025e5cbd7762f828fac9e14294994820f",
+    "any-robot/src/rigby_general/config.py": "d38ab51fd4a83d64d892aabbeb14cf2e8a433c826b0d5a80f8d827abfe185378",
+    "any-robot/src/rigby_general/contact/__init__.py": "b3653e9b1a0f1317ef079a133a49fdf040409a3448114aa7099ec41c52b2432d",
+    "any-robot/src/rigby_general/contact/closure.py": "4c7e64cadbc0709efcaa43edccbae1ca3abee37f1858ae4dbc8a534bcc3eb102",
+    "any-robot/src/rigby_general/contact/grasp.py": "4b60477eef68679eb8759045ba9b65b0c5e5b5cad3027a7ac68ed10075bddd3e",
+    "any-robot/src/rigby_general/contact/probe.py": "2cfc4e0a833207e9ac4b5c9b024cce9073785a404938480e99d43c27fb07a992",
+    "any-robot/src/rigby_general/contact/task.py": "b0e90870c4fafb47fe9bcc51fe72af149248ea18c0119d6131c40fdf7629034c",
+    "any-robot/src/rigby_general/contracts.py": "2d6b03415905397c3bedd78e91f4694f4b0e99328d879f657f8ddb32a77c2871",
+    "any-robot/src/rigby_general/errors.py": "9662af78f75908f48a796dc5cfe42ca8003788b0d1d3d021a7910316c64b9e15",
+    "any-robot/src/rigby_general/evidence/__init__.py": "8d17d964096bbb5575518b7d49b5cbdf13e495636d17af9fd5fd2826486dc2e6",
+    "any-robot/src/rigby_general/evidence/__main__.py": "3dc3aa887784d8d927c7a45cc525487aeffc11f902c26396d84b6c340466b7be",
+    "any-robot/src/rigby_general/evidence/capture.py": "f297bdeab5ba450a63faaea3d603fa2384d42062318407022c5f4fc230d50bfb",
+    "any-robot/src/rigby_general/evidence/release.py": "606d3beb915214f9a4016d508438c57c6a425035388e483a1fcf7a431df7c9a6",
+    "any-robot/src/rigby_general/evidence/render.py": "8ba338605f93d82a5a06719e3cfada003808ba71ed3c740ba2637268fc0a5f6f",
+    "any-robot/src/rigby_general/gates/__init__.py": "c64fde79724e233e540fd631945a6fca111ddcd50162748019e9168f95016fc3",
+    "any-robot/src/rigby_general/gates/certify.py": "4ca3e10a837dac9ac60615310bbbfb008770b875c395213dfe8b1f8ce529867d",
+    "any-robot/src/rigby_general/gates/control.py": "b000b4fef84d508e6349100f38e79b9c501d3df017943310da47b6a52d985ad6",
+    "any-robot/src/rigby_general/grounding/__init__.py": "f59281667abb14fb8f6cc0afeca59770347787b2b02a92c511d43576f6b0c7c2",
+    "any-robot/src/rigby_general/grounding/grounder.py": "037101ece593f181636d71840b8ba39fc731bdca25cf683b524bc29d5216182d",
+    "any-robot/src/rigby_general/grounding/ik.py": "f2525bcad4c6d1cbf94635bff2f8f10bb2bdc602c344463a39c27447d95b1547",
+    "any-robot/src/rigby_general/grounding/magnitudes.py": "3572d6182184f26c594f991bfd8300bf2b5cd3704c7e6bf2a70126654b36bffd",
+    "any-robot/src/rigby_general/grounding/workspace.py": "14218e92d92bd1918585fb25363b89ebe3684db8c5285fb9305133e11a135917",
+    "any-robot/src/rigby_general/guardrails/__init__.py": "dbe0cb2b465d2ec5e7cd78ac1a4c38c8684700dc54513c6a74fe2822e59fd8ba",
+    "any-robot/src/rigby_general/guardrails/firewall.py": "288a839cfb545e49831ac1375210e77df19100640f43277910b024f020c7b603",
+    "any-robot/src/rigby_general/ingest/__init__.py": "3979bf5b7cecaf6340d7e8d2f623076f66391ea54748e2b952881e57f39fc162",
+    "any-robot/src/rigby_general/ingest/integrity.py": "820043f8c3902fbb779409b61d7fbc32331d76a0b0451147db7aa7c3f2c632ca",
+    "any-robot/src/rigby_general/ingest/loader.py": "c47416bfef2ea98e2d89a764ba21c31be198bf5737f9ca39a48ca56265deb996",
+    "any-robot/src/rigby_general/ingest/normalize.py": "5b1002923df84f7b0ec40bcc4762d05afc2dba2e909412f602b80a8a5de399ad",
+    "any-robot/src/rigby_general/morphology/__init__.py": "6884d309d30aad2deb02391a8bc5acb2442ec9cd9731d4860514a9717d4f2f40",
+    "any-robot/src/rigby_general/morphology/analyze.py": "708abe23677146c4eddce07fc87684eb5a6d6c7a06f3016f11b9eb577beefdce",
+    "any-robot/src/rigby_general/morphology/envelope.py": "9decc6892630b78a782c8eef93782eb80be1293ea992863bb5b7a7bda51536bc",
+    "any-robot/src/rigby_general/morphology/frames.py": "86308a0807e9db0a2b7480830b50674f36d0ee92522ea35eccafa8226d901d7d",
+    "any-robot/src/rigby_general/morphology/graph.py": "3d09cd1b9e884afd418eb18b7064d00b6174cdc234aa324b4a552cf81eaf3614",
+    "any-robot/src/rigby_general/morphology/measure.py": "f9e7aae415ad0889185096e8b9ce6282c9e42e3440beee34e452607ee0ffe024",
+    "any-robot/src/rigby_general/pipeline.py": "a5badc0991324c249ee9fa9d1aad1c38372dd4640e036ae33da47928b02da0cb",
+    "any-robot/src/rigby_general/planner/__init__.py": "9ea21c973cee786a9ecea890e525d476deb5ca60fce431162928be1639160b8f",
+    "any-robot/src/rigby_general/planner/schema_planner.py": "4c63fb41286b217b4cd23880bf58a5f4a770e6f28f7e043e3bc960b21ee60175",
+    "any-robot/src/rigby_general/primitives/__init__.py": "fa954fedae1006759bee322cb51500aed6a3122e345f4280b34fafa9b2071ebb",
+    "any-robot/src/rigby_general/primitives/library.py": "25f3b286393cb0dc87d74500264d859ce7e7b82182cf7adefd31bc6e023f3f5f",
+    "any-robot/src/rigby_general/robots.py": "f4240b026b759fde8d7064927ee936190498ab0485aac4bf4796b16545448162",
+    "any-robot/src/rigby_general/run.py": "7a22ee9aa416c1ead1fbbcc4a5b454bc3c2b55a8b884f08143ad44e3ee5806e6",
+    "any-robot/src/rigby_general/scenes/__init__.py": "aa4f7fb812e2345fb84c1a8957d068e873bf8a6849e041f2182837d8d9b31e50",
+    "any-robot/src/rigby_general/scenes/admission.py": "22ea833cfe89172f160040ca5c28c0e03e4f73a18d549ddbef6a31b08c9acfbf",
+    "any-robot/src/rigby_general/scenes/block.py": "1e3523155e746841500e7f3f68d29c4d524d27122437665b595ed8f1ad5b5c7c",
+    "any-robot/src/rigby_general/scenes/environment.py": "49b3cacf359a92a893ab383f5cb258cc541d1d4d28caeffb25a0324e342a96a0",
+    "any-robot/src/rigby_general/scenes/fit.py": "a36b2bcf34ed02bb6ecf8ab026d46c55605e65e217112996bda9e2e474ccbe22",
+    "any-robot/src/rigby_general/schema/__init__.py": "b382c2a5cd0dec9452ea3af38480d47b61fe8f63ee8f2873f544ba8eb1010d74",
+    "any-robot/src/rigby_general/schema/inventory.py": "45e46dc2c9c3fc906f5423695e319efb22f0b2a3b4a98268251227f1b696069e",
+    "any-robot/src/rigby_general/schema/program.py": "8dafc633e7bf0e7b636b4ac3826bf324e7a7afc469e9b7eb8403ebbae5a14e55",
+    "any-robot/src/rigby_general/trace.py": "d116886eb021909afe2f17e0ead945332d5c929b112ef12b20f1a6812a8e8917",
+    "any-robot/src/rigby_general/viewer/__init__.py": "fe6fe0c5e03c4fcea6f778fe1b8abebe2a40ed366973c7f4f38a79c38b65843f",
+    "any-robot/src/rigby_general/viewer/scene.py": "9e4b2997e7c1445b59279ad045682d063d9c0684801ed0a1053e69ff47a57525",
+    "any-robot/src/rigby_general/viewer/track.py": "b38d5c0153d2c33ca827aaa5d7653c0768965d545e4352a21b03ed43c76bf925",
+    "core/pyproject.toml": "5eaadc5fcb5767f6a34ace2737f0da0fcdeeeb3c71754e543d8ce390f94878ae",
+    "core/src/rigby_core/__init__.py": "fb97b07966b965c25ec078bc345019cbdf62ac6a0e696f26a6daa45485333ba0",
+    "core/src/rigby_core/artifacts.py": "baafda0f40c4492d90799383ac00f52ef99bf6b615222d8930a926d6152b8a6e",
+    "core/src/rigby_core/contracts.py": "1b90addb02f7a02d6575a01551cc40d9d796ec3634ffc54860147ac8e0747e57",
+    "core/src/rigby_core/demos.py": "6892268318781fbb197fd1de48bed583a327091f7149bc4a3a13563486517d5c",
+    "core/src/rigby_core/errors.py": "2b1cddc51eef03f6558607c2eaea9c97957e582a5964936ce000a2c844786c52",
+    "core/src/rigby_core/evidence.py": "de902a007391026d8692a585a85fb877ade44f6f97c248224ce94bfaa7d5ca42",
+    "core/src/rigby_core/evidence_archive.py": "1148430050ae3a676b1c633ded42b0d92bba96e989f21b262f8ed01484e72ce1",
+    "core/src/rigby_core/hashing.py": "6b0473e51dd98eb886943ffdf3c2d670df46470a92dac72d1aa847bf6bac1678",
+    "core/src/rigby_core/jobs.py": "12e4ce647754485c7e932c229ef39b748846bcca7bfa601e73143675e7cd175c",
+    "core/src/rigby_core/motion/__init__.py": "0c3bf676b28ed0c807550ba3d781b1baf09ad7dd6bf87aec2ee3117848e45fc8",
+    "core/src/rigby_core/motion/accents.py": "bad6fa2f4d7b65d2f58a004c3ce3574fd76bb247007e3ddaa22925eb21791f92",
+    "core/src/rigby_core/motion/compiler.py": "25d597c9f54032a99506e115c5a1bd9473eaa76e31f59f42fd05ffadecf16ed6",
+    "core/src/rigby_core/motion/errors.py": "b3df9667dc1507df9df9617419b173f46bfd5d43e55418819b01affcecde092b",
+    "core/src/rigby_core/motion/ownership.py": "e2c61101359428cdfb7d4b5ab23bd77e2f33dc9ed33a5a766b631793d68c2975",
+    "core/src/rigby_core/motion/refinement.py": "f0b0cfffc2cfd0214ef1d0273b848205eec77f3718d6aa14e35d34846e28a3cf",
+    "core/src/rigby_core/motion/rotations.py": "6478a26a131e79837b3cc9f0b5be8add0f5848fa9b116c841ce8ec410e8d5fdf",
+    "core/src/rigby_core/motion/timing.py": "2fef0fa9fb48ae81f90fd9c0af14744df150f810c3163f5d1f508150ddb4352d",
+    "core/src/rigby_core/motion/trajectory.py": "da74997ab697da1e9d7c08f19e337de9c3e0b8fcca632810af2deb7bc826205c",
+    "core/src/rigby_core/postgres_jobs.py": "e9cae977b34ffe7ef1fb7ddf9c81826b9419a54f6c41ddb72f666730bf223e71",
+    "core/src/rigby_core/records.py": "13e0ffc65300e4bcdc04bf250ff17c37318315e8cb0c8bc928a62e2a9636b0ed",
+    "core/src/rigby_core/simulation/__init__.py": "7215c32655c525a6180f3b77f42d345235fa411e6ae549deee9619feb250ed20",
+    "core/src/rigby_core/simulation/controller.py": "cd8297c42350a0c6c867f49fedafecc2b8afeb738cbdb1aa356196f369a60cec",
+    "core/src/rigby_core/simulation/recording.py": "892bdad179cf0cfc12889a10999c67c4a99e12f34afc84d311b00fd218a3f406",
+    "pyproject.toml": "926add6073e8900600163140bf4a1d7c4495c51829a76e2774713c9511d2be95"
+  },
+  "prompt": "reach out as far as you can and then come back",
+  "scope": "Reference compilation and analytic polynomial extrema only; no physical execution or new success claims",
+  "source_commit": "7e1da38328e65d865b07130d33b5ee4d56e748d5"
+}

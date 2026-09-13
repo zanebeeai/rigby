@@ -1,0 +1,61 @@
+{
+  "actual_physics_duration_s": 0.0,
+  "fault": null,
+  "leaf_duration_scales": null,
+  "nominal_pipeline_result": {
+    "accepted": false,
+    "elapsed_seconds": 0.001,
+    "failure": {
+      "code": "unafforded_schema",
+      "detail": "body_2e3d1c514d083e8a has no certified 'reach_to_edge' at distal: it failed at the grounding stage -- body_2e3d1c514d083e8a: the start state puts axis_0000 at 3.3500, outside its range [-2.8500, 2.8500]",
+      "stage": "binding"
+    },
+    "prompt": "reach out as far as you can and then come back",
+    "robot_id": "body_2e3d1c514d083e8a",
+    "role_normalized_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6",
+    "schema_keys": [
+      "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+      "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+    ]
+  },
+  "path_repairs": null,
+  "physical_steps": 0,
+  "reference_duration_s": 0.0,
+  "refusal": {
+    "code": "unafforded_schema",
+    "detail": "body_2e3d1c514d083e8a has no certified 'reach_to_edge' at distal: it failed at the grounding stage -- body_2e3d1c514d083e8a: the start state puts axis_0000 at 3.3500, outside its range [-2.8500, 2.8500]",
+    "stage": "binding"
+  },
+  "refused_leaf_bakes": [
+    {
+      "detail": "body_2e3d1c514d083e8a: the start state puts axis_0000 at 3.3500, outside its range [-2.8500, 2.8500]",
+      "entry_id": "reach_to_edge",
+      "failed_gate": "start_state.joint_limit",
+      "failure_code": "ungroundable",
+      "measurements": {},
+      "remove": "distal",
+      "robot_id": "body_2e3d1c514d083e8a",
+      "schema_key": "path:to.boundary.neutral.straight",
+      "segment_key": "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+      "stage": "grounding"
+    },
+    {
+      "detail": "body_2e3d1c514d083e8a: the start state puts axis_0000 at 3.3500, outside its range [-2.8500, 2.8500]",
+      "entry_id": "retract_from_point",
+      "failed_gate": "start_state.joint_limit",
+      "failure_code": "ungroundable",
+      "measurements": {},
+      "remove": "medial",
+      "robot_id": "body_2e3d1c514d083e8a",
+      "schema_key": "path:from.point.neutral.straight",
+      "segment_key": "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute",
+      "stage": "grounding"
+    }
+  ],
+  "region_substitutions": null,
+  "scope": "free-space motion; no object task",
+  "status": "pre_execution_refusal",
+  "tracking_error_m": null,
+  "unexpected_contacts": null,
+  "violations": []
+}

@@ -1,0 +1,70 @@
+{
+  "attempts": [
+    {
+      "block_mass_kg": 0.005,
+      "block_size_m": 0.0176,
+      "certified": true,
+      "effector": "parallel_jaw",
+      "grip_force_n": 4.988,
+      "lift_height_m": 0.04133,
+      "opposition_achieved": true,
+      "penetration_m": 0.00047,
+      "robot_id": "zoo_compact_arm",
+      "violations": []
+    },
+    {
+      "block_mass_kg": 0.01987,
+      "block_size_m": 0.0396,
+      "certified": false,
+      "effector": "parallel_jaw",
+      "grip_force_n": 0.0,
+      "lift_height_m": 0.07719,
+      "opposition_achieved": true,
+      "penetration_m": 0.0,
+      "robot_id": "zoo_dual_arm",
+      "violations": [
+        "object_dropped",
+        "object_not_carried"
+      ]
+    },
+    {
+      "block_mass_kg": 0.00928,
+      "block_size_m": 0.03072,
+      "certified": false,
+      "effector": "multifinger",
+      "grip_force_n": 0.0,
+      "lift_height_m": 0.02701,
+      "opposition_achieved": true,
+      "penetration_m": 0.0,
+      "robot_id": "zoo_hand_arm",
+      "violations": [
+        "object_dropped",
+        "object_not_carried"
+      ]
+    },
+    {
+      "block_mass_kg": 0.03506,
+      "block_size_m": 0.04785,
+      "certified": true,
+      "effector": "parallel_jaw",
+      "grip_force_n": 25.395,
+      "lift_height_m": 0.11359,
+      "opposition_achieved": true,
+      "penetration_m": 0.00055,
+      "robot_id": "zoo_jaw_arm",
+      "violations": []
+    },
+    {
+      "block_mass_kg": 0.12245,
+      "block_size_m": 0.0726,
+      "certified": true,
+      "effector": "parallel_jaw",
+      "grip_force_n": 35.488,
+      "lift_height_m": 0.17332,
+      "opposition_achieved": true,
+      "penetration_m": 0.00049,
+      "robot_id": "zoo_long_arm",
+      "violations": []
+    }
+  ]
+}

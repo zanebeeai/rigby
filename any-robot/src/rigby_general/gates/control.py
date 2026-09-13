@@ -47,11 +47,11 @@ from ..morphology import measure
 
 
 
-# Chosen from a measured sweep across the zoo, not from a rule of thumb. Raising
-# the bandwidth tightens tracking (40 mm at 6 Hz, 14 mm at 20 Hz) but the loop is
-# stepped at 240 Hz, and by 20 Hz omega*dt has reached 0.52 -- far enough into
-# the discrete regime that the response overshoots its own reference velocity by
-# more than a quarter. 10 Hz keeps omega*dt near 0.26 and lands between the two.
+# Historical tuning values are retained. Earlier notes described a 240 Hz loop,
+# but certification mislabeled model steps with that reference clock; the zoo's
+# native timestep is 0.002 s. Certification now uses actual simulation time.
+# These gains must be evaluated at each admitted model timestep; the clock fix
+# does not claim that the historical tuning sweep validated a different rate.
 DEFAULT_NATURAL_FREQUENCY_HZ = 14.0
 DEFAULT_DAMPING_RATIO = 1.2
 

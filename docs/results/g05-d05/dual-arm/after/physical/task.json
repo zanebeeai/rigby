@@ -1,0 +1,16 @@
+{
+  "gate_policy": {
+    "effort_margin_fraction": 0.02,
+    "limit_margin": 0.01,
+    "max_base_drift_m": 0.0001,
+    "repeats": 3,
+    "settle_fraction": 0.08,
+    "tracking_error_fraction": 0.035
+  },
+  "goal": "G05",
+  "interventions": [],
+  "label": "zoo_dual_arm-after",
+  "prompt": "reach out as far as you can and then come back",
+  "protocol": "rigby.d05-comparison/1",
+  "retry_limit": 0
+}

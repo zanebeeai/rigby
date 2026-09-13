@@ -198,7 +198,16 @@ def _attempt_once(
             candidate.program, manifest, model, inventory, duration_scale=duration_scale
         )
     except GroundingError as error:
-        return failed(BakeStage.GROUNDING, error.code.value, str(error))
+        # The measurement that refused the grounding rides in the gate slot:
+        # for a grounding refusal it is the same kind of fact a gate name is
+        # for a certification refusal -- which check said no -- and it is what
+        # lets a caller tell a start outside a limit from a self-collision.
+        return failed(
+            BakeStage.GROUNDING,
+            error.code.value,
+            str(error),
+            gate=error.details.get("measurement"),
+        )
     except RigbyGeneralError as error:
         stage = (
             BakeStage.AFFORDANCE
@@ -279,6 +288,9 @@ def _attempt_once(
             "base_drift_m": round(result.trace.base_drift_m, 9),
             "duration_s": round(grounded.program.duration_s, 4),
             "duration_scale": round(duration_scale, 4),
+            # How many spans the body itself stood across and the grounder
+            # routed round; the deflections are in the program's metadata.
+            "path_repairs": float(len(grounded.path_repairs)),
         },
         inventory_sha256=inventory.sha256,
         base_tree_sha256=fingerprint,

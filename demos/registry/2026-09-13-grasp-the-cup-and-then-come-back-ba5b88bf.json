@@ -1,0 +1,41 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-grasp-the-cup-and-then-come-back-ba5b88bf",
+  "title": "G05 refusal: zoo_jaw_arm, unafforded_request",
+  "prompt": "grasp the cup and then come back",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T07:21:34Z",
+  "source": {
+    "commit": "c131ab9811",
+    "branch": "feat/g05-six-body-composition",
+    "dirty": true,
+    "how": "python any-robot/scripts/g05_refusal_clips.py --campaign docs/results/g05-campaign"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "PRE-EXECUTION REFUSAL, typed unafforded_schema; no motion executed. Reason: asks for a contact schema this free-space campaign does not certify"
+  },
+  "notes": "Predeclared invalid request of the G05 roster, refused before any motion; the clip is a two-second slate of the initial state labelled as a pre-execution refusal. Counted apart from the 120 feasible trials. See docs/results/g05-report.md.",
+  "media": [
+    {
+      "path": "docs/results/g05-campaign/zoo_jaw_arm/refusals/unafforded_request/media/episode.mp4",
+      "bytes": 18735,
+      "sha256": "051dabce232a5f42b5243ff5b51140ef27384346a1856255ff5f1048703b1be2",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g05-campaign/zoo_jaw_arm/refusals/unafforded_request/media/preview.gif",
+      "bytes": 20303,
+      "sha256": "c55a84bf698f0c191701909646917f109db501b67f1ca0851ece9bc1c62b45d7",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G05",
+    "refusal"
+  ]
+}

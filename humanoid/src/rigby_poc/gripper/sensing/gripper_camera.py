@@ -1,47 +1,20 @@
-"""What a cheap gripper could actually know, and nothing else.
+"""The gripper's declared simulator observations and visual belief.
 
-The controller had been reading the simulator: the object's true position, its
-true half-extents, and a per-pad contact force, in eighteen places. None of
-those exist on a real machine of this class. ALOHA (Zhao, Kumar, Levine, Finn,
-2023) does battery-slotting and cup-opening at 80-90% with joint positions and
-RGB cameras and NOTHING ELSE -- no object pose, no object size, no force or
-torque sensing -- which is the standard worth holding to, because every sensor
-assumed away here is one that has to exist and be calibrated later.
+The current controller reads joint encoders, rendered wrist/room images,
+fingertip normal-force measurements, an approach rangefinder, and contact-based
+obstruction measurements on the robot. Grip effort is the requested motor
+command. These are assumed instruments, not a hardware-validation result.
 
-So this instrument list is deliberately short:
+Without a model-identified world, the offline controller segments a warm blob
+and uses the declared bench plane to estimate position and size. With an
+identified world, model-provided image locations and subsequent visual tracking
+supply that belief instead. Multi-view ranging and declared camera calibration
+are part of that path. Missing or stale visual evidence remains visible.
 
-JOINT ENCODERS. Exact, and the only thing that is. Every arm has them.
-
-ONE CAMERA on the wrist, looking along the approach axis. It is a real camera --
-declared in the model, rendered through, and read as PIXELS. The previous
-version computed a field-of-view cone geometrically and then returned the true
-position with an error added, which tests the controller against a plausible
-error but still reads the answer out of the simulator. This one segments the
-image and works the position out from where the object appears, so being wrong
-is a property of the view rather than a number chosen here.
-
-Range comes from the GROUND PLANE, not from knowing the object's size: the
-bottom edge of the blob is where the object meets the bench, the bench height is
-known furniture, so the ray through that pixel meets it at exactly one point.
-Size then follows from how large the object appears at that range. This is the
-standard monocular trick and it carries the standard monocular error -- the
-bottom edge seen from an angle is the object's near-bottom corner, not the point
-under its centre, so estimates are biased toward the camera. That bias is real
-and the controller has to tolerate it.
-
-NO FORCE SENSOR. Contact is inferred from the encoders: a finger told to close,
-which has stopped moving, and which is not shut, has something between the pads.
-Note the shape of that test -- it is NOT "the finger failed to reach its
-target". Under a commanded squeeze a blocked finger is driven PAST its position
-target and pinned there by the object, so the tracking error goes the other way,
-and testing its sign detects contact exactly when there is none. Stopped-and-not-
-shut is the signature that survives being pushed. It is free on any encoder,
-it is how cheap hardware actually finds an object, and it removes the most
-expensive instrument on the list.
-
-GRIP EFFORT from motor command, not from a load cell. What the controller knows
-is how hard it is pushing, which is a current reading, rather than what the
-object feels, which is not measurable without a sensor in the fingertip.
+The historical single-camera/no-force experiment is preserved in milestones/;
+it is not the sensor contract of this implementation. ``sense`` lists the
+observations actually consumed, and ``audit`` describes their provenance and
+the declared-versus-perceived target information.
 """
 
 from __future__ import annotations
@@ -559,74 +532,52 @@ def sense(body: Body, eyes: Senses, commanded: np.ndarray, squeeze_n: float,
 
 
 def audit(body: Body) -> dict[str, str]:
-    """What is readable, and by what instrument. The boundary, in one place.
+    """Describe simulated instruments and the two visual-estimation routes.
 
-    This went stale once already -- it was still claiming there was no force
-    sensor after the load cells went in, and said nothing about the rangefinder
-    or the room camera's ability to locate. A statement of what the machine may
-    know is worth nothing if it is not kept true, so it is written to be checked
-    against the code rather than remembered.
+    This is descriptive provenance, not an enforced observation firewall or
+    evidence that the assumed instruments have been validated on hardware.
     """
     return {
-        "joint positions":
-            "encoders, exact",
-        "object position":
-            "segmented from EITHER camera and ranged off the bench plane. The "
-            "hand camera is preferred because it is close; the room camera "
-            "acquires when the hand cannot see, and stops writing to the "
-            "belief once the hand has had a proper look",
-        "object size":
-            "apparent size in the same image at that range; the depth no "
-            "single view can see is assumed equal to the width it can",
-        "contact":
-            "MEASURED. A load cell in each fingertip pad, reporting normal "
-            "force in newtons, blind to what it is touching. Contact between "
-            "the gripper's own parts is excluded as self-touch",
-        "grip effort":
-            "the motor command, which is what is asked for -- not what is felt",
-        "range ahead":
-            "time-of-flight along the approach axis; a distance, never an "
-            "identity",
-        "bin position":
-            "PERCEIVED, and also declared, and the two are compared. The "
-            "corner cameras locate it the same way they locate anything else "
-            "-- the model points at it in each view and the rays are crossed "
-            "-- which puts it about 17 mm from its true centre, the bias being "
-            "that each ray runs through the centroid of the bin surface THAT "
-            "camera can see rather than through the middle of the bin. The "
-            "goal metrics still measure against the declared centre, so the "
-            "gap between the two is reported to the planner rather than "
-            "quietly picked for it. Until this existed the bin was invisible "
-            "to every instrument here and known only because a manifest said "
-            "so",
-        "what is in the scene":
-            "NOT declared. The model reads the task, looks at the four corner "
-            "views and says what it has to find and where each thing is, in "
-            "pixels. Nothing in the sensing code knows the scene contains a "
-            "block or a bin, and a task naming something else needs no code "
-            "change. See sensing/landmarks.py",
-        "an object's appearance":
-            "LEARNED from where the model pointed, not declared. The patch "
-            "under each pick is sampled so the item can be followed between "
-            "model calls at frame rate. A learned look is verified by tracking "
-            "with it before it is kept: a pick that clipped the background "
-            "teaches the tracker to follow the background, which measured 220-"
-            "357 mm of silent belief drift, so a look that does not lead back "
-            "to where the picks put the item is refused outright",
-        "bench height":
-            "DECLARED, not sensed. Monocular ranging works by meeting a ray "
-            "with a known plane, so the height of the table is an assumption "
-            "the whole estimate rests on. In a fixed workcell it is calibrated "
-            "once; it is not free",
-        "camera poses":
-            "the hand camera from the arm's own encoders and a fixed "
-            "mounting, the room camera from calibration",
-        "object colour":
-            "ASSUMED. Segmentation finds the only warm thing in a blue-grey "
-            "scene, which is a prior about this bench and not a general one",
-        "NOT available":
-            "true object pose, true object size, true object mass, anything "
-            "about the object while neither camera can see it, and whether a "
-            "grasp succeeded -- object_in_target reads the simulator and is "
-            "the judge, never a control input",
+        "joint positions": "Exact simulated encoders.",
+        "object position": (
+            "Offline bench route: camera segmentation ranged against the declared "
+            "bench plane; wrist view preferred, room view used for acquisition. "
+            "Identified-scene route: model-picked image landmarks and calibrated "
+            "multiview rays, then tracked visual belief. Neither reads object qpos."
+        ),
+        "object size": (
+            "Image extent at estimated range; unseen depth is assumed from visible width."
+        ),
+        "contact": (
+            "Simulated normal-force measurement at each fingertip pad, without "
+            "object identity. Contacts with the gripper's own parts are excluded."
+        ),
+        "obstruction": (
+            "Simulated contact-force readout reports force and the robot part "
+            "being pressed; it does not identify the external object."
+        ),
+        "grip effort": "Commanded motor effort, not measured contact force.",
+        "range ahead": "Simulated approach-axis rangefinder; distance without identity.",
+        "bin position": (
+            "Task/workcell declaration in the bench route. The identified-scene "
+            "route also estimates it from model-picked multiview landmarks and "
+            "reports disagreement with the declared goal centre."
+        ),
+        "what is in the scene": (
+            "The offline bench route assumes a block/bin task. The identified-scene "
+            "route uses the task and model interpretation of four corner images."
+        ),
+        "an object's appearance": (
+            "Offline route uses a warm-colour prior. Identified-scene route learns "
+            "a visual patch from model-picked landmarks, verifies its tracking "
+            "consistency, and may refuse an inconsistent patch."
+        ),
+        "bench height": "Declared calibration for monocular plane ranging.",
+        "camera poses": "Encoder-derived wrist mounting and calibrated room cameras.",
+        "object colour": "Warm-colour prior offline; learned patch after scene identification.",
+        "NOT available": (
+            "True object pose, dimensions or mass; fresh visual evidence during "
+            "occlusion; oracle task success. object_in_target reads the simulator "
+            "for evaluation, not as a sensing control input."
+        ),
     }

@@ -1,0 +1,203 @@
+<robot name="zoo_compact_arm">
+  <link name="left_0009">
+    <visual>
+      <origin xyz="0.000000 0.000000 0.017500" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <cylinder radius="0.022000" length="0.035000" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0.000000 0.000000 0.017500" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <cylinder radius="0.022000" length="0.035000" />
+      </geometry>
+    </collision>
+  <inertial>
+      <origin xyz="0.000000 0.000000 0.017500" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.250000" />
+      <inertia ixx="0.00005577" ixy="0" ixz="0" iyy="0.00005577" iyz="0" izz="0.00006050" />
+    </inertial>
+    </link>
+  <joint name="left_0011" type="revolute">
+    <parent link="left_0010" />
+    <origin xyz="0.000000 0.000000 0.080000" rpy="0.000000 0.000000 0.000000" />
+    <axis xyz="0.000000 1.000000 0.000000" />
+    <limit lower="-2.850000" upper="2.850000" effort="14.000" velocity="3.200" />
+  <child link="left_0009" />
+    </joint>
+  <joint name="left_0012" type="revolute">
+    <parent link="left_0003" />
+    <child link="left_0010" />
+    <origin xyz="0.000000 0.000000 0.100000" rpy="0.000000 0.000000 0.000000" />
+    <axis xyz="0.000000 1.000000 0.000000" />
+    <limit lower="-2.850000" upper="2.850000" effort="14.000" velocity="3.200" />
+  </joint>
+  <link name="left_0013">
+    <visual>
+      <geometry>
+        <box size="0.014000 0.030000 0.030000" />
+      </geometry>
+    <origin xyz="0.000000 0.000000 0.015000" rpy="0.000000 0.000000 0.000000" />
+      </visual>
+    <collision>
+      <origin xyz="0.000000 0.000000 0.015000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.014000 0.030000 0.030000" />
+      </geometry>
+    </collision>
+  <inertial>
+      <inertia ixx="0.00000900" ixy="0" ixz="0" iyy="0.00000548" iyz="0" izz="0.00000548" />
+    <origin xyz="0.000000 0.000000 0.015000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.060000" />
+      </inertial>
+    </link>
+  <joint name="left_0000" type="revolute">
+    <axis xyz="0.000000 1.000000 0.000000" />
+    <parent link="left_0002" />
+    <child link="left_0003" />
+    <origin xyz="0.000000 0.000000 0.070000" rpy="0.000000 0.000000 0.000000" />
+    <limit lower="-2.850000" upper="2.850000" effort="14.000" velocity="3.200" />
+  </joint>
+  <link name="left_0010">
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.040000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.250000" />
+      <inertia ixx="0.00016358" ixy="0" ixz="0" iyy="0.00016358" iyz="0" izz="0.00006050" />
+    </inertial>
+    <visual>
+      <origin xyz="0.000000 0.000000 0.040000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <cylinder radius="0.022000" length="0.080000" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0.000000 0.000000 0.040000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <cylinder radius="0.022000" length="0.080000" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="left_0001" type="fixed">
+    <axis xyz="0.000000 0.000000 1.000000" />
+    <limit lower="0.000000" upper="0.000000" effort="0.000" velocity="0.000" />
+  <parent link="left_0009" />
+    <child link="left_0004" />
+    <origin xyz="0.000000 0.000000 0.035000" rpy="0.000000 0.000000 0.000000" />
+    </joint>
+  <link name="left_0004">
+    <inertial>
+      <mass value="0.350000" />
+      <inertia ixx="0.00014583" ixy="0" ixz="0" iyy="0.00030917" iyz="0" izz="0.00030917" />
+    <origin xyz="0.000000 0.000000 0.025000" rpy="0.000000 0.000000 0.000000" />
+      </inertial>
+    <collision>
+      <origin xyz="0.000000 0.000000 0.025000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.090000 0.050000 0.050000" />
+      </geometry>
+    </collision>
+  <visual>
+      <origin xyz="0.000000 0.000000 0.025000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.090000 0.050000 0.050000" />
+      </geometry>
+    </visual>
+    </link>
+  <joint name="left_0008" type="revolute">
+    <limit lower="-2.850000" upper="2.850000" effort="14.000" velocity="3.200" />
+  <child link="left_0002" />
+    <origin xyz="0.000000 0.000000 0.050000" rpy="0.000000 0.000000 0.000000" />
+    <parent link="left_0005" />
+    <axis xyz="0.000000 0.000000 1.000000" />
+    </joint>
+  <link name="left_0003">
+    <collision>
+      <geometry>
+        <cylinder radius="0.022000" length="0.100000" />
+      </geometry>
+    <origin xyz="0.000000 0.000000 0.050000" rpy="0.000000 0.000000 0.000000" />
+      </collision>
+  <inertial>
+      <inertia ixx="0.00023858" ixy="0" ixz="0" iyy="0.00023858" iyz="0" izz="0.00006050" />
+    <mass value="0.250000" />
+      <origin xyz="0.000000 0.000000 0.050000" rpy="0.000000 0.000000 0.000000" />
+      </inertial>
+    <visual>
+      <origin xyz="0.000000 0.000000 0.050000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <cylinder radius="0.022000" length="0.100000" />
+      </geometry>
+    </visual>
+    </link>
+  <link name="left_0002">
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.035000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.250000" />
+      <inertia ixx="0.00012233" ixy="0" ixz="0" iyy="0.00012233" iyz="0" izz="0.00004050" />
+    </inertial>
+    <collision>
+      <geometry>
+        <cylinder radius="0.018000" length="0.070000" />
+      </geometry>
+    <origin xyz="0.000000 0.000000 0.035000" rpy="0.000000 0.000000 0.000000" />
+      </collision>
+  <visual>
+      <origin xyz="0.000000 0.000000 0.035000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <cylinder radius="0.018000" length="0.070000" />
+      </geometry>
+    </visual>
+    </link>
+  <link name="left_0014">
+    <collision>
+      <origin xyz="0.000000 0.000000 0.015000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.014000 0.030000 0.030000" />
+      </geometry>
+    </collision>
+  <visual>
+      <geometry>
+        <box size="0.014000 0.030000 0.030000" />
+      </geometry>
+    <origin xyz="0.000000 0.000000 0.015000" rpy="0.000000 0.000000 0.000000" />
+      </visual>
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.015000" rpy="0.000000 0.000000 0.000000" />
+      <inertia ixx="0.00000900" ixy="0" ixz="0" iyy="0.00000548" iyz="0" izz="0.00000548" />
+    <mass value="0.060000" />
+      </inertial>
+    </link>
+  <joint name="left_0006" type="prismatic">
+    <child link="left_0014" />
+    <axis xyz="1.000000 0.000000 0.000000" />
+    <origin xyz="-0.023000 0.000000 0.050000" rpy="0.000000 0.000000 0.000000" />
+    <parent link="left_0004" />
+    <limit lower="0.000000" upper="0.015000" effort="8.000" velocity="0.400" />
+  </joint>
+<joint name="left_0007" type="prismatic">
+    <parent link="left_0004" />
+    <origin xyz="0.023000 0.000000 0.050000" rpy="0.000000 0.000000 0.000000" />
+    <child link="left_0013" />
+    <limit lower="0.000000" upper="0.015000" effort="8.000" velocity="0.400" />
+  <axis xyz="-1.000000 0.000000 0.000000" />
+    </joint>
+  <link name="left_0005">
+    <collision>
+      <origin xyz="0.000000 0.000000 0.025000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <cylinder radius="0.045000" length="0.050000" />
+      </geometry>
+    </collision>
+  <visual>
+      <geometry>
+        <cylinder radius="0.045000" length="0.050000" />
+      </geometry>
+    <origin xyz="0.000000 0.000000 0.025000" rpy="0.000000 0.000000 0.000000" />
+      </visual>
+    <inertial>
+      <mass value="0.900000" />
+      <origin xyz="0.000000 0.000000 0.025000" rpy="0.000000 0.000000 0.000000" />
+      <inertia ixx="0.00064313" ixy="0" ixz="0" iyy="0.00064313" iyz="0" izz="0.00091125" />
+    </inertial>
+    </link>
+  </robot>

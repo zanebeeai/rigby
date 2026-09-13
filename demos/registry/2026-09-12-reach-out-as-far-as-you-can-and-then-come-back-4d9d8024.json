@@ -1,0 +1,35 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-12-reach-out-as-far-as-you-can-and-then-come-back-4d9d8024",
+  "title": "G01 six bodies: canonical replay summary",
+  "prompt": "reach out as far as you can and then come back",
+  "tier": "any-robot",
+  "embodiment": "six-body-zoo",
+  "kind": "gif",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-12T03:35:35.683535+00:00",
+  "source": {
+    "commit": "2770b0e5e4",
+    "branch": "codex/replay-evidence",
+    "dirty": false,
+    "how": "cd .. && uv run --package rigby-general python -m rigby_general.evidence release any-robot/results/g01-reproduce --out any-robot/results/g01-reproduce-release"
+  },
+  "outcome": {
+    "state": "partial",
+    "text": "Five existing free-space gate successes and one pre-execution refusal. GIF summary with independent timelines normalized to six seconds."
+  },
+  "notes": "Full videos, raw physical archives, actual/reference clock mismatch and preview source-frame mapping: docs/results/g01-report.md. Not a simultaneous fixed-world object task.",
+  "media": [
+    {
+      "path": "docs/results/g01-release/six-body-preview.gif",
+      "bytes": 1209767,
+      "sha256": "d05f1534646535df707c3803f1dfd858917e28eac4ece8014415b37f8404857f",
+      "role": "comparison"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G01",
+    "six-bodies"
+  ]
+}

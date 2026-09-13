@@ -1,0 +1,589 @@
+{
+  "clips": [
+    {
+      "case_id": "start_beyond_limit",
+      "expected": {
+        "measurement": "start_state.joint_limit",
+        "refusal_code": "ungroundable",
+        "where": "leaf_bake_and_binding"
+      },
+      "frames": 24,
+      "frames_map": "zoo_compact_arm/refusals/start_beyond_limit/media/frames.json",
+      "media_sha256": "97bb14a3867e1612c285a4805690f116c926e0b70fac4b75378e911d80371182",
+      "physical_sha256": "111dda5886bc0e51e62d72a9d2058e7fd132160b543f1d456b9bcab4de1f441b",
+      "preview": "zoo_compact_arm/refusals/start_beyond_limit/media/preview.gif",
+      "prompt": "reach out as far as you can and then come back",
+      "reason": "axis_0000 placed past its maximum",
+      "refusal": {
+        "code": "unafforded_schema",
+        "detail": "body_2e3d1c514d083e8a has no certified 'reach_to_edge' at distal: it failed at the grounding stage -- body_2e3d1c514d083e8a: the start state puts axis_0000 at 3.3500, outside its range [-2.8500, 2.8500]",
+        "stage": "binding"
+      },
+      "refusal_slate": true,
+      "refused_leaf_bakes": [
+        {
+          "code": "ungroundable",
+          "entry": "reach_to_edge",
+          "gate": "start_state.joint_limit"
+        },
+        {
+          "code": "ungroundable",
+          "entry": "retract_from_point",
+          "gate": "start_state.joint_limit"
+        }
+      ],
+      "scored_record_correct": true,
+      "video": "zoo_compact_arm/refusals/start_beyond_limit/media/episode.mp4",
+      "zoo_id": "zoo_compact_arm"
+    },
+    {
+      "case_id": "unafforded_request",
+      "expected": {
+        "measurement": null,
+        "refusal_code": "unafforded_schema",
+        "where": "planning"
+      },
+      "frames": 24,
+      "frames_map": "zoo_compact_arm/refusals/unafforded_request/media/frames.json",
+      "media_sha256": "4e02643c8710343007aad2664cd1952489c6cf6e2ceb73c21a00817f3d087c04",
+      "physical_sha256": "3d8ac61250ee6791fc1a0310e7930f1448eb06e6477e7e15f253c41316c780fb",
+      "preview": "zoo_compact_arm/refusals/unafforded_request/media/preview.gif",
+      "prompt": "grasp the cup and then come back",
+      "reason": "asks for a contact schema this free-space campaign does not certify",
+      "refusal": {
+        "code": "unafforded_schema",
+        "detail": "this robot has no certified 'transport_object' primitive",
+        "stage": "planning"
+      },
+      "refusal_slate": true,
+      "refused_leaf_bakes": [],
+      "scored_record_correct": true,
+      "video": "zoo_compact_arm/refusals/unafforded_request/media/episode.mp4",
+      "zoo_id": "zoo_compact_arm"
+    },
+    {
+      "case_id": "start_self_collision",
+      "expected": {
+        "measurement": "start_state.self_collision",
+        "refusal_code": "ungroundable",
+        "where": "leaf_bake_and_binding"
+      },
+      "frames": 24,
+      "frames_map": "zoo_compact_arm/refusals/start_self_collision/media/frames.json",
+      "media_sha256": "b21eb591afbcf9e4a0a603cbc36c8ceb13ee03dc58f7fa332ea191e7f0eb953a",
+      "physical_sha256": "b63b78b7403a63f95bed40f6c002512b9a52e5da1d05af6500c3bb31a9497490",
+      "preview": "zoo_compact_arm/refusals/start_self_collision/media/preview.gif",
+      "prompt": "reach out as far as you can and then come back",
+      "reason": "body_0002 26.0 mm inside body_0006",
+      "refusal": {
+        "code": "unafforded_schema",
+        "detail": "body_2e3d1c514d083e8a has no certified 'reach_to_edge' at distal: it failed at the grounding stage -- body_2e3d1c514d083e8a: the start state has body_0002 26.0 mm inside body_0006",
+        "stage": "binding"
+      },
+      "refusal_slate": true,
+      "refused_leaf_bakes": [
+        {
+          "code": "ungroundable",
+          "entry": "reach_to_edge",
+          "gate": "start_state.self_collision"
+        },
+        {
+          "code": "ungroundable",
+          "entry": "retract_from_point",
+          "gate": "start_state.self_collision"
+        }
+      ],
+      "scored_record_correct": true,
+      "video": "zoo_compact_arm/refusals/start_self_collision/media/episode.mp4",
+      "zoo_id": "zoo_compact_arm"
+    },
+    {
+      "case_id": "start_beyond_limit",
+      "expected": {
+        "measurement": "start_state.joint_limit",
+        "refusal_code": "ungroundable",
+        "where": "leaf_bake_and_binding"
+      },
+      "frames": 24,
+      "frames_map": "zoo_dual_arm/refusals/start_beyond_limit/media/frames.json",
+      "media_sha256": "df643a0266e693e51c61e3a19dd6ca12ef622fcdd6d4d3afdb0d2a5953412239",
+      "physical_sha256": "8bf1e9e639bb3a22be7222ee5c76a1d656d9e14db3dfc8bde771a01e134d896b",
+      "preview": "zoo_dual_arm/refusals/start_beyond_limit/media/preview.gif",
+      "prompt": "reach out as far as you can and then come back",
+      "reason": "axis_0001 placed past its maximum",
+      "refusal": {
+        "code": "unafforded_schema",
+        "detail": "body_c928a9ae9ac9408b has no certified 'reach_to_edge' at distal: it failed at the grounding stage -- body_c928a9ae9ac9408b: the start state puts axis_0001 at 3.3500, outside its range [-2.8500, 2.8500]",
+        "stage": "binding"
+      },
+      "refusal_slate": true,
+      "refused_leaf_bakes": [
+        {
+          "code": "ungroundable",
+          "entry": "reach_to_edge",
+          "gate": "start_state.joint_limit"
+        },
+        {
+          "code": "ungroundable",
+          "entry": "retract_from_point",
+          "gate": "start_state.joint_limit"
+        }
+      ],
+      "scored_record_correct": true,
+      "video": "zoo_dual_arm/refusals/start_beyond_limit/media/episode.mp4",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "unafforded_request",
+      "expected": {
+        "measurement": null,
+        "refusal_code": "unafforded_schema",
+        "where": "planning"
+      },
+      "frames": 24,
+      "frames_map": "zoo_dual_arm/refusals/unafforded_request/media/frames.json",
+      "media_sha256": "8394d400ec78a33094cfea7261dde1846cad9ed843bffe3c7e5919995a882ca7",
+      "physical_sha256": "89c8d7c6e8fa36308b7008ca1807c540d4c8bb496c56a152bf4e515c2bb50423",
+      "preview": "zoo_dual_arm/refusals/unafforded_request/media/preview.gif",
+      "prompt": "grasp the cup and then come back",
+      "reason": "asks for a contact schema this free-space campaign does not certify",
+      "refusal": {
+        "code": "unafforded_schema",
+        "detail": "this robot has no certified 'transport_object' primitive",
+        "stage": "planning"
+      },
+      "refusal_slate": true,
+      "refused_leaf_bakes": [],
+      "scored_record_correct": true,
+      "video": "zoo_dual_arm/refusals/unafforded_request/media/episode.mp4",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "start_self_collision",
+      "expected": {
+        "measurement": "start_state.self_collision",
+        "refusal_code": "ungroundable",
+        "where": "leaf_bake_and_binding"
+      },
+      "frames": 24,
+      "frames_map": "zoo_dual_arm/refusals/start_self_collision/media/frames.json",
+      "media_sha256": "014c2267bacdfbd0d0ce694f72d33870e0df088871b8f2f2b20a012d5f78997e",
+      "physical_sha256": "06d303e976347b18b825fd7c52906af3d2ab0f8fcdbe2909da977f40c116c3ab",
+      "preview": "zoo_dual_arm/refusals/start_self_collision/media/preview.gif",
+      "prompt": "reach out as far as you can and then come back",
+      "reason": "body_0012 47.5 mm inside body_0016",
+      "refusal": {
+        "code": "unafforded_schema",
+        "detail": "body_c928a9ae9ac9408b has no certified 'reach_to_edge' at distal: it failed at the grounding stage -- body_c928a9ae9ac9408b: the start state has body_0012 47.5 mm inside body_0016",
+        "stage": "binding"
+      },
+      "refusal_slate": true,
+      "refused_leaf_bakes": [
+        {
+          "code": "ungroundable",
+          "entry": "reach_to_edge",
+          "gate": "start_state.self_collision"
+        },
+        {
+          "code": "ungroundable",
+          "entry": "retract_from_point",
+          "gate": "start_state.self_collision"
+        }
+      ],
+      "scored_record_correct": true,
+      "video": "zoo_dual_arm/refusals/start_self_collision/media/episode.mp4",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "start_beyond_limit",
+      "expected": {
+        "measurement": "start_state.joint_limit",
+        "refusal_code": "ungroundable",
+        "where": "leaf_bake_and_binding"
+      },
+      "frames": 24,
+      "frames_map": "zoo_hand_arm/refusals/start_beyond_limit/media/frames.json",
+      "media_sha256": "4e4d54dc720e7e0cec572001373ada69f8be4dfb405d0a4f49aedb27e6b41cfa",
+      "physical_sha256": "08670a96de0ecbf5d3f6edc4344099a6a1ae709c56f5adbf510f8e37e39a15b2",
+      "preview": "zoo_hand_arm/refusals/start_beyond_limit/media/preview.gif",
+      "prompt": "reach out as far as you can and then come back",
+      "reason": "axis_0000 placed past its maximum",
+      "refusal": {
+        "code": "unafforded_schema",
+        "detail": "body_f403f1e59f1018c5 has no certified 'reach_to_edge' at distal: it failed at the grounding stage -- body_f403f1e59f1018c5: the start state puts axis_0000 at 3.3500, outside its range [-2.8500, 2.8500]",
+        "stage": "binding"
+      },
+      "refusal_slate": true,
+      "refused_leaf_bakes": [
+        {
+          "code": "ungroundable",
+          "entry": "reach_to_edge",
+          "gate": "start_state.joint_limit"
+        },
+        {
+          "code": "ungroundable",
+          "entry": "retract_from_point",
+          "gate": "start_state.joint_limit"
+        }
+      ],
+      "scored_record_correct": true,
+      "video": "zoo_hand_arm/refusals/start_beyond_limit/media/episode.mp4",
+      "zoo_id": "zoo_hand_arm"
+    },
+    {
+      "case_id": "unafforded_request",
+      "expected": {
+        "measurement": null,
+        "refusal_code": "unafforded_schema",
+        "where": "planning"
+      },
+      "frames": 24,
+      "frames_map": "zoo_hand_arm/refusals/unafforded_request/media/frames.json",
+      "media_sha256": "9b28b324671695fcc54aeee5cc4a7c04723f56428ed8dd7b564b8fa36e542aac",
+      "physical_sha256": "f696bad58905f6cc30beba917b74a6ce83c33b0b8608ceb2fd30ce8f425708bb",
+      "preview": "zoo_hand_arm/refusals/unafforded_request/media/preview.gif",
+      "prompt": "grasp the cup and then come back",
+      "reason": "asks for a contact schema this free-space campaign does not certify",
+      "refusal": {
+        "code": "unafforded_schema",
+        "detail": "this robot has no certified 'transport_object' primitive",
+        "stage": "planning"
+      },
+      "refusal_slate": true,
+      "refused_leaf_bakes": [],
+      "scored_record_correct": true,
+      "video": "zoo_hand_arm/refusals/unafforded_request/media/episode.mp4",
+      "zoo_id": "zoo_hand_arm"
+    },
+    {
+      "case_id": "start_self_collision",
+      "expected": {
+        "measurement": "start_state.self_collision",
+        "refusal_code": "ungroundable",
+        "where": "leaf_bake_and_binding"
+      },
+      "frames": 24,
+      "frames_map": "zoo_hand_arm/refusals/start_self_collision/media/frames.json",
+      "media_sha256": "3913c3fe6b186636fdfdacb4d6c3a3c3a3cd0890d476e221a9e2a523bea8dead",
+      "physical_sha256": "90075acb885ca614638753f28be14a8d8570ed5e7239ea1e8918071a70b6fad8",
+      "preview": "zoo_hand_arm/refusals/start_self_collision/media/preview.gif",
+      "prompt": "reach out as far as you can and then come back",
+      "reason": "body_0004 50.0 mm inside body_0008",
+      "refusal": {
+        "code": "unafforded_schema",
+        "detail": "body_f403f1e59f1018c5 has no certified 'reach_to_edge' at distal: it failed at the grounding stage -- body_f403f1e59f1018c5: the start state has body_0004 50.0 mm inside body_0008",
+        "stage": "binding"
+      },
+      "refusal_slate": true,
+      "refused_leaf_bakes": [
+        {
+          "code": "ungroundable",
+          "entry": "reach_to_edge",
+          "gate": "start_state.self_collision"
+        },
+        {
+          "code": "ungroundable",
+          "entry": "retract_from_point",
+          "gate": "start_state.self_collision"
+        }
+      ],
+      "scored_record_correct": true,
+      "video": "zoo_hand_arm/refusals/start_self_collision/media/episode.mp4",
+      "zoo_id": "zoo_hand_arm"
+    },
+    {
+      "case_id": "start_beyond_limit",
+      "expected": {
+        "measurement": "start_state.joint_limit",
+        "refusal_code": "ungroundable",
+        "where": "leaf_bake_and_binding"
+      },
+      "frames": 24,
+      "frames_map": "zoo_jaw_arm/refusals/start_beyond_limit/media/frames.json",
+      "media_sha256": "2463566a24d59aea035b4862040973cf945896f7dfef156670011ab915867339",
+      "physical_sha256": "c1dba256bf5698084b60a8e5427ddd13407b40fcb2b03a4e5773f4203bda0774",
+      "preview": "zoo_jaw_arm/refusals/start_beyond_limit/media/preview.gif",
+      "prompt": "reach out as far as you can and then come back",
+      "reason": "axis_0000 placed past its maximum",
+      "refusal": {
+        "code": "unafforded_schema",
+        "detail": "body_c7f1054100131d9a has no certified 'reach_to_edge' at distal: it failed at the grounding stage -- body_c7f1054100131d9a: the start state puts axis_0000 at 3.3500, outside its range [-2.8500, 2.8500]",
+        "stage": "binding"
+      },
+      "refusal_slate": true,
+      "refused_leaf_bakes": [
+        {
+          "code": "ungroundable",
+          "entry": "reach_to_edge",
+          "gate": "start_state.joint_limit"
+        },
+        {
+          "code": "ungroundable",
+          "entry": "retract_from_point",
+          "gate": "start_state.joint_limit"
+        }
+      ],
+      "scored_record_correct": true,
+      "video": "zoo_jaw_arm/refusals/start_beyond_limit/media/episode.mp4",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "unafforded_request",
+      "expected": {
+        "measurement": null,
+        "refusal_code": "unafforded_schema",
+        "where": "planning"
+      },
+      "frames": 24,
+      "frames_map": "zoo_jaw_arm/refusals/unafforded_request/media/frames.json",
+      "media_sha256": "3c685d72a808284ce10a322c82f70a6b012a19ac8b8166fe55b275cb53b58058",
+      "physical_sha256": "c1caf4e1fda5d8a5f12f219d9946fbcef2db6f1505030723fca5f3288244a1f4",
+      "preview": "zoo_jaw_arm/refusals/unafforded_request/media/preview.gif",
+      "prompt": "grasp the cup and then come back",
+      "reason": "asks for a contact schema this free-space campaign does not certify",
+      "refusal": {
+        "code": "unafforded_schema",
+        "detail": "this robot has no certified 'transport_object' primitive",
+        "stage": "planning"
+      },
+      "refusal_slate": true,
+      "refused_leaf_bakes": [],
+      "scored_record_correct": true,
+      "video": "zoo_jaw_arm/refusals/unafforded_request/media/episode.mp4",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "start_self_collision",
+      "expected": {
+        "measurement": "start_state.self_collision",
+        "refusal_code": "ungroundable",
+        "where": "leaf_bake_and_binding"
+      },
+      "frames": 24,
+      "frames_map": "zoo_jaw_arm/refusals/start_self_collision/media/frames.json",
+      "media_sha256": "699806cb84f8e61f8a58a0287c5a54be487d0a2fdf49249ef8578504e3542c44",
+      "physical_sha256": "b685920c028084acbf3d1de44b0137dbaa08bc6b17dd204efb104ea26ff2e250",
+      "preview": "zoo_jaw_arm/refusals/start_self_collision/media/preview.gif",
+      "prompt": "reach out as far as you can and then come back",
+      "reason": "body_0003 44.4 mm inside body_0007",
+      "refusal": {
+        "code": "unafforded_schema",
+        "detail": "body_c7f1054100131d9a has no certified 'reach_to_edge' at distal: it failed at the grounding stage -- body_c7f1054100131d9a: the start state has body_0003 44.4 mm inside body_0007",
+        "stage": "binding"
+      },
+      "refusal_slate": true,
+      "refused_leaf_bakes": [
+        {
+          "code": "ungroundable",
+          "entry": "reach_to_edge",
+          "gate": "start_state.self_collision"
+        },
+        {
+          "code": "ungroundable",
+          "entry": "retract_from_point",
+          "gate": "start_state.self_collision"
+        }
+      ],
+      "scored_record_correct": true,
+      "video": "zoo_jaw_arm/refusals/start_self_collision/media/episode.mp4",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "start_beyond_limit",
+      "expected": {
+        "measurement": "start_state.joint_limit",
+        "refusal_code": "ungroundable",
+        "where": "leaf_bake_and_binding"
+      },
+      "frames": 24,
+      "frames_map": "zoo_long_arm/refusals/start_beyond_limit/media/frames.json",
+      "media_sha256": "cddf20fcbec300f8c4d7ad61fb6b33593421437fd511c6f2f6ed2c21360a6410",
+      "physical_sha256": "9656cfa19832681eba7ab362340442c13b2abccb8408accf8f7f2f819e3aa6a5",
+      "preview": "zoo_long_arm/refusals/start_beyond_limit/media/preview.gif",
+      "prompt": "reach out as far as you can and then come back",
+      "reason": "axis_0000 placed past its maximum",
+      "refusal": {
+        "code": "unafforded_schema",
+        "detail": "body_aec600cd39928515 has no certified 'reach_to_edge' at distal: it failed at the grounding stage -- body_aec600cd39928515: the start state puts axis_0000 at 3.3500, outside its range [-2.8500, 2.8500]",
+        "stage": "binding"
+      },
+      "refusal_slate": true,
+      "refused_leaf_bakes": [
+        {
+          "code": "ungroundable",
+          "entry": "reach_to_edge",
+          "gate": "start_state.joint_limit"
+        },
+        {
+          "code": "ungroundable",
+          "entry": "retract_from_point",
+          "gate": "start_state.joint_limit"
+        }
+      ],
+      "scored_record_correct": true,
+      "video": "zoo_long_arm/refusals/start_beyond_limit/media/episode.mp4",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "unafforded_request",
+      "expected": {
+        "measurement": null,
+        "refusal_code": "unafforded_schema",
+        "where": "planning"
+      },
+      "frames": 24,
+      "frames_map": "zoo_long_arm/refusals/unafforded_request/media/frames.json",
+      "media_sha256": "7665dc9ab911028cb93adb5b4a26189ccefc71e123e9f7d6bfa6c018b5357838",
+      "physical_sha256": "ba34c98ec381803b47c99fd0c4c5c18cb4533baa4ee12df8055a63c972a12157",
+      "preview": "zoo_long_arm/refusals/unafforded_request/media/preview.gif",
+      "prompt": "grasp the cup and then come back",
+      "reason": "asks for a contact schema this free-space campaign does not certify",
+      "refusal": {
+        "code": "unafforded_schema",
+        "detail": "this robot has no certified 'transport_object' primitive",
+        "stage": "planning"
+      },
+      "refusal_slate": true,
+      "refused_leaf_bakes": [],
+      "scored_record_correct": true,
+      "video": "zoo_long_arm/refusals/unafforded_request/media/episode.mp4",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "start_self_collision",
+      "expected": {
+        "measurement": "start_state.self_collision",
+        "refusal_code": "ungroundable",
+        "where": "leaf_bake_and_binding"
+      },
+      "frames": 24,
+      "frames_map": "zoo_long_arm/refusals/start_self_collision/media/frames.json",
+      "media_sha256": "b73fafaf1d3dfb5f236ce7482a7654e6a5908b0dff0cc5701d93724aa9734fec",
+      "physical_sha256": "a0b95617abeff5c63a210375df3a193abbfdd35dd02670a48a5ab8b757d8837d",
+      "preview": "zoo_long_arm/refusals/start_self_collision/media/preview.gif",
+      "prompt": "reach out as far as you can and then come back",
+      "reason": "body_0004 66.4 mm inside body_0006",
+      "refusal": {
+        "code": "unafforded_schema",
+        "detail": "body_aec600cd39928515 has no certified 'reach_to_edge' at distal: it failed at the grounding stage -- body_aec600cd39928515: the start state has body_0004 66.4 mm inside body_0006",
+        "stage": "binding"
+      },
+      "refusal_slate": true,
+      "refused_leaf_bakes": [
+        {
+          "code": "ungroundable",
+          "entry": "reach_to_edge",
+          "gate": "start_state.self_collision"
+        },
+        {
+          "code": "ungroundable",
+          "entry": "retract_from_point",
+          "gate": "start_state.self_collision"
+        }
+      ],
+      "scored_record_correct": true,
+      "video": "zoo_long_arm/refusals/start_self_collision/media/episode.mp4",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "start_beyond_limit",
+      "expected": {
+        "measurement": "start_state.joint_limit",
+        "refusal_code": "ungroundable",
+        "where": "leaf_bake_and_binding"
+      },
+      "frames": 24,
+      "frames_map": "zoo_tool_arm/refusals/start_beyond_limit/media/frames.json",
+      "media_sha256": "aa753408d6630358bbee3ef96f092eebfe0e5392e7a185ce9c304f8e1f7ff728",
+      "physical_sha256": "95d80a7ead63e5651e6ed9b79fe7d197c2b00ec33f55da3832349446bc422d4e",
+      "preview": "zoo_tool_arm/refusals/start_beyond_limit/media/preview.gif",
+      "prompt": "reach out as far as you can and then come back",
+      "reason": "axis_0000 placed past its maximum",
+      "refusal": {
+        "code": "unafforded_schema",
+        "detail": "body_89ff575455c980ab has no certified 'reach_to_edge' at distal: it failed at the grounding stage -- body_89ff575455c980ab: the start state puts axis_0000 at 3.3500, outside its range [-2.8500, 2.8500]",
+        "stage": "binding"
+      },
+      "refusal_slate": true,
+      "refused_leaf_bakes": [
+        {
+          "code": "ungroundable",
+          "entry": "reach_to_edge",
+          "gate": "start_state.joint_limit"
+        },
+        {
+          "code": "ungroundable",
+          "entry": "retract_from_point",
+          "gate": "start_state.joint_limit"
+        }
+      ],
+      "scored_record_correct": true,
+      "video": "zoo_tool_arm/refusals/start_beyond_limit/media/episode.mp4",
+      "zoo_id": "zoo_tool_arm"
+    },
+    {
+      "case_id": "unafforded_request",
+      "expected": {
+        "measurement": null,
+        "refusal_code": "unafforded_schema",
+        "where": "planning"
+      },
+      "frames": 24,
+      "frames_map": "zoo_tool_arm/refusals/unafforded_request/media/frames.json",
+      "media_sha256": "9d24f6ecc5aa65cb9719cb3eb5c0a2b2e59a964455ff45ca8a362f30439b4039",
+      "physical_sha256": "4029e17d4d45ef2583ed1589878563a85247f6cf9613bb112413de42b81c2516",
+      "preview": "zoo_tool_arm/refusals/unafforded_request/media/preview.gif",
+      "prompt": "grasp the cup and then come back",
+      "reason": "asks for a contact schema this free-space campaign does not certify",
+      "refusal": {
+        "code": "unafforded_schema",
+        "detail": "this robot has no certified 'transport_object' primitive",
+        "stage": "planning"
+      },
+      "refusal_slate": true,
+      "refused_leaf_bakes": [],
+      "scored_record_correct": true,
+      "video": "zoo_tool_arm/refusals/unafforded_request/media/episode.mp4",
+      "zoo_id": "zoo_tool_arm"
+    },
+    {
+      "case_id": "start_self_collision",
+      "expected": {
+        "measurement": "start_state.self_collision",
+        "refusal_code": "ungroundable",
+        "where": "leaf_bake_and_binding"
+      },
+      "frames": 24,
+      "frames_map": "zoo_tool_arm/refusals/start_self_collision/media/frames.json",
+      "media_sha256": "0c003aa520fde81b3050348fb2880f854db1bc3d48469b732fa13f95b671d217",
+      "physical_sha256": "4299d56f938740fdae845ce925b64ea2dac91849287484303acbe24393675114",
+      "preview": "zoo_tool_arm/refusals/start_self_collision/media/preview.gif",
+      "prompt": "reach out as far as you can and then come back",
+      "reason": "body_0003 21.8 mm inside body_0006",
+      "refusal": {
+        "code": "unafforded_schema",
+        "detail": "body_89ff575455c980ab has no certified 'reach_to_edge' at distal: it failed at the grounding stage -- body_89ff575455c980ab: the start state has body_0003 21.8 mm inside body_0006",
+        "stage": "binding"
+      },
+      "refusal_slate": true,
+      "refused_leaf_bakes": [
+        {
+          "code": "ungroundable",
+          "entry": "reach_to_edge",
+          "gate": "start_state.self_collision"
+        },
+        {
+          "code": "ungroundable",
+          "entry": "retract_from_point",
+          "gate": "start_state.self_collision"
+        }
+      ],
+      "scored_record_correct": true,
+      "video": "zoo_tool_arm/refusals/start_self_collision/media/episode.mp4",
+      "zoo_id": "zoo_tool_arm"
+    }
+  ],
+  "created_at_utc": "2026-09-13T07:18:59.663478+00:00",
+  "goal": "G05",
+  "roster_sha256": "442d585025c7f42102e5ff42b9eaa753d3164a4f7e44f3ad6943ac563ccb6cea"
+}

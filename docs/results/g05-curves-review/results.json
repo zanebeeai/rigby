@@ -1,0 +1,60 @@
+{
+  "seed": 716310,
+  "counts": {
+    "curves": 1800,
+    "intervals": 14543,
+    "plateaus": 615,
+    "bound_failures": 0,
+    "bernstein_order_failures": 0
+  },
+  "worst": {
+    "bound_error": 2.7755575615628914e-14,
+    "normalized_velocity_seam_error": 2.798759469621505e-14,
+    "normalized_acceleration_seam_error": 9.516811292301007e-14
+  },
+  "examples": [],
+  "legacy_examples": [
+    {
+      "old_middle_maximum": 2.867910593797897,
+      "bounded_middle_maximum": 2.8492995289416974,
+      "same_keys": true,
+      "same_times": true,
+      "old_tangents": [
+        0.0,
+        0.10864571553380041,
+        -0.014006328031953334,
+        0.0
+      ],
+      "new_tangents": [
+        0.0,
+        0.0374292478540873,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "old_middle_maximum": 2.8721782580550212,
+      "bounded_middle_maximum": 2.8492995289416974,
+      "same_keys": true,
+      "same_times": true,
+      "old_tangents": [
+        0.0,
+        0.014578380843698282,
+        -0.13399706889371857,
+        0.0
+      ],
+      "new_tangents": [
+        0.0,
+        0.0,
+        -0.04039372234186865,
+        0.0
+      ]
+    }
+  ],
+  "source_sha256": {
+    "core\\src\\rigby_core\\contracts.py": "60a15ad7ac8fa5efa636b93db16a73ecac2c167489809e0e68b0d118f178b488",
+    "core\\src\\rigby_core\\motion\\ownership.py": "7256ffade2c37a611bb9a6930c46d0914dce2157c07fdc0135e39c5a01363b72",
+    "core\\src\\rigby_core\\motion\\compiler.py": "c45cb8acd93ac1ee3d7a88b6ed4bae37ea2c1bf5ee9be2ca62f257dc618d48a3",
+    "any-robot\\src\\rigby_general\\grounding\\grounder.py": "7c800d13f002ec6966bee29bbc2ed019274887dfd2fde14fcbb3a24f60d54b0d"
+  }
+}

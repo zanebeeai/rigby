@@ -1,0 +1,1015 @@
+{
+  "active_skill_tree": "flat sequence of the requested schema segments",
+  "baked_primitives": [
+    {
+      "base_tree_sha256": "46501568d3e0e942cbfb3d4b263b7316466479225dce75ee7d11e3a65153f3aa",
+      "duration_s": 22.9009,
+      "entry_id": "reach_to_edge",
+      "figure_role": "primary_effector",
+      "figure_site": "body_0007_grasp_center",
+      "ground_role": "base",
+      "inventory_sha256": "b445d7b0455ea1c8b2b3c02423fcb5eb3d1e67c1100c054a1f316bff414175cd",
+      "measurements": {
+        "base_drift_m": 0.0,
+        "duration_s": 22.9009,
+        "duration_scale": 1.0,
+        "path_repairs": 0.0,
+        "tracking_error_m": 2.1e-05
+      },
+      "program": {
+        "assertions": [],
+        "contacts": [],
+        "duration_s": 22.900852,
+        "metadata": {
+          "duration_scale": 1.0,
+          "grounded_against": {
+            "characteristic_length_m": 0.16,
+            "neutral_speed_mps": 0.229905,
+            "reach_radius_m": 1.32
+          },
+          "inventory_sha256": "b445d7b0455ea1c8b2b3c02423fcb5eb3d1e67c1100c054a1f316bff414175cd",
+          "path_repairs": [],
+          "role_normalized_hash": "42bdc39f205059c4d463949f1587ca264c0f07da176efe23ca1aa814296fde75",
+          "schema_keys": [
+            "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute"
+          ],
+          "schema_program_id": "primitive-reach_to_edge-distal"
+        },
+        "phases": [
+          {
+            "end_s": 12.655043,
+            "energy": 0.45,
+            "kind": "action",
+            "phase_id": "phase_0",
+            "start_s": 0.0
+          },
+          {
+            "end_s": 22.900852,
+            "energy": 0.3,
+            "kind": "recovery",
+            "phase_id": "phase_recovery",
+            "start_s": 12.655043
+          }
+        ],
+        "program_id": "grounded-91eab2f5ea83a9656d2635085709a025",
+        "rig_id": "body_c7f1054100131d9a",
+        "scene_id": "empty",
+        "schema_version": "2.0",
+        "seed": 0,
+        "source_text": "extend to the edge of what the robot can reach, distal",
+        "tracks": [
+          {
+            "interpolation": "bounded_quintic",
+            "keyframes": [
+              {
+                "hard": false,
+                "joint_values": {
+                  "axis_0000": 0.0,
+                  "axis_0001": 0.0,
+                  "axis_0002": 0.0,
+                  "axis_0003": 0.0,
+                  "axis_0004": 0.0,
+                  "axis_0005": 0.0
+                },
+                "position": null,
+                "rotation": null,
+                "time_s": 0.0
+              },
+              {
+                "hard": false,
+                "joint_values": {
+                  "axis_0000": 0.21028206964557253,
+                  "axis_0001": -0.5660115200050639,
+                  "axis_0002": 0.9773803682039782,
+                  "axis_0003": 0.1369357968432125,
+                  "axis_0004": 0.8892547335972966,
+                  "axis_0005": 6.611452486070964e-17
+                },
+                "position": null,
+                "rotation": null,
+                "time_s": 4.41449
+              },
+              {
+                "hard": false,
+                "joint_values": {
+                  "axis_0000": 0.2550318508265712,
+                  "axis_0001": -0.4582482198341208,
+                  "axis_0002": 1.3435170895492425,
+                  "axis_0003": 0.1532715509404953,
+                  "axis_0004": 1.1192703362235015,
+                  "axis_0005": 7.490945960295468e-17
+                },
+                "position": null,
+                "rotation": null,
+                "time_s": 5.770256
+              },
+              {
+                "hard": false,
+                "joint_values": {
+                  "axis_0000": 0.28161746397161896,
+                  "axis_0001": -0.038026356218496406,
+                  "axis_0002": 1.4677826996912082,
+                  "axis_0003": 0.1622328921259604,
+                  "axis_0004": 1.0214547113252979,
+                  "axis_0005": 7.189372754969756e-17
+                },
+                "position": null,
+                "rotation": null,
+                "time_s": 7.131202
+              },
+              {
+                "hard": false,
+                "joint_values": {
+                  "axis_0000": 0.3042940697695657,
+                  "axis_0001": 0.5601842926167736,
+                  "axis_0002": 1.303957330353861,
+                  "axis_0003": 0.17410171781481465,
+                  "axis_0004": 0.6625401878112124,
+                  "axis_0005": 3.415473801235446e-17
+                },
+                "position": null,
+                "rotation": null,
+                "time_s": 9.300437
+              },
+              {
+                "hard": false,
+                "joint_values": {
+                  "axis_0000": 0.3271621057811202,
+                  "axis_0001": 1.346105500222375,
+                  "axis_0002": 0.6792870686787379,
+                  "axis_0003": 0.18847605552536875,
+                  "axis_0004": 0.1924121929364185,
+                  "axis_0005": -3.4902448411029415e-17
+                },
+                "position": null,
+                "rotation": null,
+                "time_s": 12.655043
+              },
+              {
+                "hard": false,
+                "joint_values": {
+                  "axis_0000": 0.3042940697695657,
+                  "axis_0001": 0.5601842926167736,
+                  "axis_0002": 1.303957330353861,
+                  "axis_0003": 0.17410171781481465,
+                  "axis_0004": 0.6625401878112124,
+                  "axis_0005": 3.415473801235446e-17
+                },
+                "position": null,
+                "rotation": null,
+                "time_s": 15.212839
+              },
+              {
+                "hard": false,
+                "joint_values": {
+                  "axis_0000": 0.28161746397161896,
+                  "axis_0001": -0.038026356218496406,
+                  "axis_0002": 1.4677826996912082,
+                  "axis_0003": 0.1622328921259604,
+                  "axis_0004": 1.0214547113252979,
+                  "axis_0005": 7.189372754969756e-17
+                },
+                "position": null,
+                "rotation": null,
+                "time_s": 17.159728
+              },
+              {
+                "hard": false,
+                "joint_values": {
+                  "axis_0000": 0.2550318508265712,
+                  "axis_0001": -0.4582482198341208,
+                  "axis_0002": 1.3435170895492425,
+                  "axis_0003": 0.1532715509404953,
+                  "axis_0004": 1.1192703362235015,
+                  "axis_0005": 7.490945960295468e-17
+                },
+                "position": null,
+                "rotation": null,
+                "time_s": 18.527348
+              },
+              {
+                "hard": false,
+                "joint_values": {
+                  "axis_0000": 0.21028206964557253,
+                  "axis_0001": -0.5660115200050639,
+                  "axis_0002": 0.9773803682039782,
+                  "axis_0003": 0.1369357968432125,
+                  "axis_0004": 0.8892547335972966,
+                  "axis_0005": 6.611452486070964e-17
+                },
+                "position": null,
+                "rotation": null,
+                "time_s": 19.718948
+              },
+              {
+                "hard": false,
+                "joint_values": {
+                  "axis_0000": 0.0,
+                  "axis_0001": 0.0,
+                  "axis_0002": 0.0,
+                  "axis_0003": 0.0,
+                  "axis_0004": 0.0,
+                  "axis_0005": 0.0
+                },
+                "position": null,
+                "rotation": null,
+                "time_s": 22.899852
+              },
+              {
+                "hard": false,
+                "joint_values": {
+                  "axis_0000": 0.0,
+                  "axis_0001": 0.0,
+                  "axis_0002": 0.0,
+                  "axis_0003": 0.0,
+                  "axis_0004": 0.0,
+                  "axis_0005": 0.0
+                },
+                "position": null,
+                "rotation": null,
+                "time_s": 22.900852
+              }
+            ],
+            "owner": "chain_body_0007",
+            "ownership": "exclusive",
+            "priority": 0,
+            "target": "body_0007_grasp_center",
+            "track_id": "chain_body_0007"
+          }
+        ]
+      },
+      "program_sha256": "273456b9a2a9c3b0476962c3febb3778f5fae7c93e3f07f188d5840aff0ee3f0",
+      "record_id": "9ccf61fb0ac5fdd7a1e0556fd94a0ce4",
+      "remove": "distal",
+      "robot_id": "body_c7f1054100131d9a",
+      "schema_key": "path:to.boundary.neutral.straight",
+      "segment_key": "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+      "trace_sha256": "2c8051f39c7e0c2f72e8fc15a59aa74c6d332bd0e1ddc0a045eaac5d49de987f",
+      "waypoints": 6
+    },
+    {
+      "base_tree_sha256": "46501568d3e0e942cbfb3d4b263b7316466479225dce75ee7d11e3a65153f3aa",
+      "duration_s": 40.2091,
+      "entry_id": "retract_from_point",
+      "figure_role": "primary_effector",
+      "figure_site": "body_0007_grasp_center",
+      "ground_role": "base",
+      "inventory_sha256": "b445d7b0455ea1c8b2b3c02423fcb5eb3d1e67c1100c054a1f316bff414175cd",
+      "measurements": {
+        "base_drift_m": 0.0,
+        "duration_s": 40.2091,
+        "duration_scale": 1.0,
+        "path_repairs": 0.0,
+        "tracking_error_m": 6.4e-05
+      },
+      "program": {
+        "assertions": [],
+        "contacts": [],
+        "duration_s": 40.209093,
+        "metadata": {
+          "duration_scale": 1.0,
+          "grounded_against": {
+            "characteristic_length_m": 0.16,
+            "neutral_speed_mps": 0.229905,
+            "reach_radius_m": 1.32
+          },
+          "inventory_sha256": "b445d7b0455ea1c8b2b3c02423fcb5eb3d1e67c1100c054a1f316bff414175cd",
+          "path_repairs": [],
+          "role_normalized_hash": "849e3a197333744a9d116047c72ed37e632c3684e7dd74538763fbb8f4e0449c",
+          "schema_keys": [
+            "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+          ],
+          "schema_program_id": "primitive-retract_from_point-medial"
+        },
+        "phases": [
+          {
+            "end_s": 21.490857,
+            "energy": 0.45,
+            "kind": "action",
+            "phase_id": "phase_0",
+            "start_s": 0.0
+          },
+          {
+            "end_s": 40.209093,
+            "energy": 0.3,
+            "kind": "recovery",
+            "phase_id": "phase_recovery",
+            "start_s": 21.490857
+          }
+        ],
+        "program_id": "grounded-c329a8ca4650b7381a5e3ab13f621f0c",
+        "rig_id": "body_c7f1054100131d9a",
+        "scene_id": "empty",
+        "schema_version": "2.0",
+        "seed": 0,
+        "source_text": "withdraw from a point, medial",
+        "tracks": [
+          {
+            "interpolation": "bounded_quintic",
+            "keyframes": [
+              {
+                "hard": false,
+                "joint_values": {
+                  "axis_0000": 0.0,
+                  "axis_0001": 0.0,
+                  "axis_0002": 0.0,
+                  "axis_0003": 0.0,
+                  "axis_0004": 0.0,
+                  "axis_0005": 0.0
+                },
+                "position": null,
+                "rotation": null,
+                "time_s": 0.0
+              },
+              {
+                "hard": false,
+                "joint_values": {
+                  "axis_0000": 0.1557369758996217,
+                  "axis_0001": -0.6514615186622822,
+                  "axis_0002": 0.9909859058320286,
+                  "axis_0003": 0.13164886310482518,
+                  "axis_0004": 0.9288285813763434,
+                  "axis_0005": 3.838663925186977e-17
+                },
+                "position": null,
+                "rotation": null,
+                "time_s": 4.229688
+              },
+              {
+                "hard": false,
+                "joint_values": {
+                  "axis_0000": 0.20519334836826622,
+                  "axis_0001": -0.6924233246350074,
+                  "axis_0002": 1.4388420592587505,
+                  "axis_0003": 0.16367589216966127,
+                  "axis_0004": 1.2459602113199875,
+                  "axis_0005": 2.8656872711171096e-17
+                },
+                "position": null,
+                "rotation": null,
+                "time_s": 5.769622
+              },
+              {
+                "hard": false,
+                "joint_values": {
+                  "axis_0000": 0.24171059940815998,
+                  "axis_0001": -0.400362297612875,
+                  "axis_0002": 1.7150029366615076,
+                  "axis_0003": 0.173591989013737,
+                  "axis_0004": 1.303008996033108,
+                  "axis_0005": 2.2689892315636707e-17
+                },
+                "position": null,
+                "rotation": null,
+                "time_s": 6.904143
+              },
+              {
+                "hard": false,
+                "joint_values": {
+                  "axis_0000": 0.269754729470857,
+                  "axis_0001": 0.13832592636569013,
+                  "axis_0002": 1.7727631048108885,
+                  "axis_0003": 0.187679891896362,
+                  "axis_0004": 0.9889619854607984,
+                  "axis_0005": 5.918268745484993e-17
+                },
+                "position": null,
+                "rotation": null,
+                "time_s": 8.648759
+              },
+              {
+                "hard": false,
+                "joint_values": {
+                  "axis_0000": 0.29660752430478304,
+                  "axis_0001": 0.7969974185691561,
+                  "axis_0002": 1.498302989977795,
+                  "axis_0003": 0.20387838818496562,
+                  "axis_0004": 0.6059867402694921,
+                  "axis_0005": 2.357293450174727e-17
+                },
+                "position": null,
+                "rotation": null,
+                "time_s": 10.903813
+              },
+              {
+                "hard": false,
+                "joint_values": {
+                  "axis_0000": 0.2676539972896282,
+                  "axis_0001": 0.16472331936674112,
+                  "axis_0002": 1.7368113154419826,
+                  "axis_0003": 0.18639686660578692,
+                  "axis_0004": 1.0506838576481972,
+                  "axis_0005": 2.9485893622905774e-17
+                },
+                "position": null,
+                "rotation": null,
+                "time_s": 13.156681
+              },
+              {
+                "hard": false,
+                "joint_values": {
+                  "axis_0000": 0.23907683781937106,
+                  "axis_0001": -0.3602277641317824,
+                  "axis_0002": 1.6715104487356034,
+                  "axis_0003": 0.17540232509944947,
+                  "axis_0004": 1.3760985752821158,
+                  "axis_0005": 4.592173474246765e-17
+                },
+                "position": null,
+                "rotation": null,
+                "time_s": 14.886899
+              },
+              {
+                "hard": false,
+                "joint_values": {
+                  "axis_0000": 0.1998497469436396,
+                  "axis_0001": -0.6284783502834004,
+                  "axis_0002": 1.349661564002301,
+                  "axis_0003": 0.16401069215159536,
+                  "axis_0004": 1.3805410764859187,
+                  "axis_0005": 4.622153750140351e-17
+                },
+                "position": null,
+                "rotation": null,
+                "time_s": 16.058294
+              },
+              {
+                "hard": false,
+                "joint_values": {
+                  "axis_0000": 0.14393370403283126,
+                  "axis_0001": -0.6268031559708703,
+                  "axis_0002": 0.9330624262659549,
+                  "axis_0003": 0.13097964857115513,
+                  "axis_0004": 1.0241086989243815,
+                  "axis_0005": 7.655775270190157e-17
+                },
+                "position": null,
+                "rotation": null,
+                "time_s": 17.594509
+              },
+              {
+                "hard": false,
+                "joint_values": {
+                  "axis_0000": 0.09792876651946722,
+                  "axis_0001": -0.06333279240979817,
+                  "axis_0002": 0.07113498342281055,
+                  "axis_0003": 0.00934954772044502,
+                  "axis_0004": 0.08412641111722051,
+                  "axis_0005": 1.0182380428172416e-16
+                },
+                "position": null,
+                "rotation": null,
+                "time_s": 21.490857
+              },
+              {
+                "hard": false,
+                "joint_values": {
+                  "axis_0000": 0.14393370403283126,
+                  "axis_0001": -0.6268031559708703,
+                  "axis_0002": 0.9330624262659549,
+                  "axis_0003": 0.13097964857115513,
+                  "axis_0004": 1.0241086989243815,
+                  "axis_0005": 7.655775270190157e-17
+                },
+                "position": null,
+                "rotation": null,
+                "time_s": 24.543272
+              },
+              {
+                "hard": false,
+                "joint_values": {
+                  "axis_0000": 0.1998497469436396,
+                  "axis_0001": -0.6284783502834004,
+                  "axis_0002": 1.349661564002301,
+                  "axis_0003": 0.16401069215159536,
+                  "axis_0004": 1.3805410764859187,
+                  "axis_0005": 4.622153750140351e-17
+                },
+                "position": null,
+                "rotation": null,
+                "time_s": 25.896099
+              },
+              {
+                "hard": false,
+                "joint_values": {
+                  "axis_0000": 0.23907683781937106,
+                  "axis_0001": -0.3602277641317824,
+                  "axis_0002": 1.6715104487356034,
+                  "axis_0003": 0.17540232509944947,
+                  "axis_0004": 1.3760985752821158,
+                  "axis_0005": 4.592173474246765e-17
+                },
+                "position": null,
+                "rotation": null,
+                "time_s": 26.941242
+              },
+              {
+                "hard": false,
+                "joint_values": {
+                  "axis_0000": 0.2676539972896282,
+                  "axis_0001": 0.16472331936674112,
+                  "axis_0002": 1.7368113154419826,
+                  "axis_0003": 0.18639686660578692,
+                  "axis_0004": 1.0506838576481972,
+                  "axis_0005": 2.9485893622905774e-17
+                },
+                "position": null,
+                "rotation": null,
+                "time_s": 28.645922
+              },
+              {
+                "hard": false,
+                "joint_values": {
+                  "axis_0000": 0.29660752430478304,
+                  "axis_0001": 0.7969974185691561,
+                  "axis_0002": 1.498302989977795,
+                  "axis_0003": 0.20387838818496562,
+                  "axis_0004": 0.6059867402694921,
+                  "axis_0005": 2.357293450174727e-17
+                },
+                "position": null,
+                "rotation": null,
+                "time_s": 30.699112
+              },
+              {
+                "hard": false,
+                "joint_values": {
+                  "axis_0000": 0.269754729470857,
+                  "axis_0001": 0.13832592636569013,
+                  "axis_0002": 1.7727631048108885,
+                  "axis_0003": 0.187679891896362,
+                  "axis_0004": 0.9889619854607984,
+                  "axis_0005": 5.918268745484993e-17
+                },
+                "position": null,
+                "rotation": null,
+                "time_s": 32.838024
+              },
+              {
+                "hard": false,
+                "joint_values": {
+                  "axis_0000": 0.24171059940815998,
+                  "axis_0001": -0.400362297612875,
+                  "axis_0002": 1.7150029366615076,
+                  "axis_0003": 0.173591989013737,
+                  "axis_0004": 1.303008996033108,
+                  "axis_0005": 2.2689892315636707e-17
+                },
+                "position": null,
+                "rotation": null,
+                "time_s": 34.587312
+              },
+              {
+                "hard": false,
+                "joint_values": {
+                  "axis_0000": 0.20519334836826622,
+                  "axis_0001": -0.6924233246350074,
+                  "axis_0002": 1.4388420592587505,
+                  "axis_0003": 0.16367589216966127,
+                  "axis_0004": 1.2459602113199875,
+                  "axis_0005": 2.8656872711171096e-17
+                },
+                "position": null,
+                "rotation": null,
+                "time_s": 35.535725
+              },
+              {
+                "hard": false,
+                "joint_values": {
+                  "axis_0000": 0.1557369758996217,
+                  "axis_0001": -0.6514615186622822,
+                  "axis_0002": 0.9909859058320286,
+                  "axis_0003": 0.13164886310482518,
+                  "axis_0004": 0.9288285813763434,
+                  "axis_0005": 3.838663925186977e-17
+                },
+                "position": null,
+                "rotation": null,
+                "time_s": 36.990053
+              },
+              {
+                "hard": false,
+                "joint_values": {
+                  "axis_0000": 0.0,
+                  "axis_0001": 0.0,
+                  "axis_0002": 0.0,
+                  "axis_0003": 0.0,
+                  "axis_0004": 0.0,
+                  "axis_0005": 0.0
+                },
+                "position": null,
+                "rotation": null,
+                "time_s": 40.208093
+              },
+              {
+                "hard": false,
+                "joint_values": {
+                  "axis_0000": 0.0,
+                  "axis_0001": 0.0,
+                  "axis_0002": 0.0,
+                  "axis_0003": 0.0,
+                  "axis_0004": 0.0,
+                  "axis_0005": 0.0
+                },
+                "position": null,
+                "rotation": null,
+                "time_s": 40.209093
+              }
+            ],
+            "owner": "chain_body_0007",
+            "ownership": "exclusive",
+            "priority": 0,
+            "target": "body_0007_grasp_center",
+            "track_id": "chain_body_0007"
+          }
+        ]
+      },
+      "program_sha256": "02170cc30bacb2d3b9afbf7a7d856ebde39bf3e74d030eea6dda4d733cf8375f",
+      "record_id": "55bcda30b85a1d2a9dc85c6237236002",
+      "remove": "medial",
+      "robot_id": "body_c7f1054100131d9a",
+      "schema_key": "path:from.point.neutral.straight",
+      "segment_key": "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute",
+      "trace_sha256": "b8223c8010bc1d47df1a036cd91ae3ac55a6483c9eb725b520cfe15e1cfec0dd",
+      "waypoints": 11
+    }
+  ],
+  "contact_and_sensor_timestamp_semantics": "Initial forward solve, then the previous integration interval; see contact_sample_time_s.",
+  "nominal_repeat_outcomes": [
+    {
+      "accepted": true,
+      "failure_code": null,
+      "failure_stage": null,
+      "semantic_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6"
+    },
+    {
+      "accepted": true,
+      "failure_code": null,
+      "failure_stage": null,
+      "semantic_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6"
+    },
+    {
+      "accepted": true,
+      "failure_code": null,
+      "failure_stage": null,
+      "semantic_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6"
+    }
+  ],
+  "pipeline": {
+    "accepted": true,
+    "bindings": [
+      {
+        "certified_primitive": "9ccf61fb0ac5fdd7a1e0556fd94a0ce4",
+        "certified_remove": "distal",
+        "entry_id": "reach_to_edge",
+        "segment_id": "s0",
+        "segment_key": "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+        "substituted": false
+      },
+      {
+        "certified_primitive": "55bcda30b85a1d2a9dc85c6237236002",
+        "certified_remove": "medial",
+        "entry_id": "retract_from_point",
+        "segment_id": "s1",
+        "segment_key": "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute",
+        "substituted": false
+      }
+    ],
+    "certification": {
+      "base_drift_m": 0.0,
+      "certified": true,
+      "repeats": 3,
+      "replay_agreement": true,
+      "replay_hashes": [
+        "e80c3eedf02cd9f3",
+        "e80c3eedf02cd9f3",
+        "e80c3eedf02cd9f3"
+      ],
+      "tracking_error_m": 0.000128,
+      "unexpected_contacts": [],
+      "violations": []
+    },
+    "clip": null,
+    "content_sha256": "798f247d8d09777d659ab214b3137af07d18503d40f3d66ad260789deab53df7",
+    "created_at": "2026-09-13T03:54:20+00:00",
+    "elapsed_seconds": 6.115,
+    "failure": null,
+    "grasp": null,
+    "grounded": {
+      "duration_s": 47.8449,
+      "figure_sites": [
+        "body_0007_grasp_center",
+        "body_0007_grasp_center"
+      ],
+      "grounded_against": {
+        "characteristic_length_m": 0.16,
+        "neutral_speed_mps": 0.229905,
+        "reach_radius_m": 1.32
+      },
+      "inventory_sha256": "b445d7b0455ea1c8b2b3c02423fcb5eb3d1e67c1100c054a1f316bff414175cd",
+      "phases": [
+        {
+          "end_s": 12.655043,
+          "energy": 0.45,
+          "kind": "action",
+          "phase_id": "phase_0",
+          "start_s": 0.0
+        },
+        {
+          "end_s": 25.728003,
+          "energy": 0.45,
+          "kind": "action",
+          "phase_id": "phase_1",
+          "start_s": 12.655043
+        },
+        {
+          "end_s": 47.844854,
+          "energy": 0.3,
+          "kind": "recovery",
+          "phase_id": "phase_recovery",
+          "start_s": 25.728003
+        }
+      ],
+      "program_sha256": "ecb57af638b02ec2761941c3a46ea86a7c40107dc0f415a697a98e8dd62c5fc7",
+      "tracks": [
+        {
+          "keyframes": 32,
+          "owner": "chain_body_0007",
+          "target_site": "body_0007_grasp_center",
+          "track_id": "chain_body_0007"
+        }
+      ],
+      "waypoints": 17
+    },
+    "kind": "prompt",
+    "prompt": "reach out as far as you can and then come back",
+    "provenance": {
+      "base_tree": {
+        "file_count": 25,
+        "package": "rigby_core",
+        "sha256": "46501568d3e0e942cbfb3d4b263b7316466479225dce75ee7d11e3a65153f3aa"
+      }
+    },
+    "ran_at": "2026-09-13T03:54:20+00:00",
+    "robot": {
+      "characteristic_length_m": 0.16,
+      "dof": 8,
+      "effectors": [
+        {
+          "aperture_m": 0.087,
+          "kind": "parallel_jaw",
+          "name": "body_0007_effector"
+        }
+      ],
+      "intrinsic_frame": {
+        "confidence": 0.0,
+        "evidence": [
+          "no_evidence_default_axis"
+        ],
+        "source": "derived"
+      },
+      "morphology_class": "fixed_base_arm",
+      "neutral_speed_mps": 0.229905,
+      "payload_kg": 12.355976,
+      "reach_radius_m": 1.32,
+      "robot_id": "body_c7f1054100131d9a",
+      "total_mass_kg": 15.043276
+    },
+    "robot_id": "body_c7f1054100131d9a",
+    "role_normalized_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6",
+    "schema_program": {
+      "canonical_keys": [
+        "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+        "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+      ],
+      "links": [
+        {
+          "coupling": null,
+          "coupling_region": null,
+          "from_segment": "s0",
+          "relation": "sequence",
+          "to_segment": "s1"
+        }
+      ],
+      "program_id": "offline-872906688140",
+      "schema_version": "1.0",
+      "segments": [
+        {
+          "boundary": "terminus",
+          "figure": {
+            "object_id": null,
+            "role": "primary_effector",
+            "site": null
+          },
+          "frame": "absolute",
+          "ground": {
+            "object_id": null,
+            "role": "base",
+            "site": null
+          },
+          "manner": {
+            "amplitude": 0,
+            "effort": 0,
+            "precision": 0,
+            "repetition": 0,
+            "repetition_count": null,
+            "rhythm": 0,
+            "smoothness": 0,
+            "speed": 0
+          },
+          "motion_schema": {
+            "conformation": "boundary",
+            "contour": "straight",
+            "deixis": "neutral",
+            "kind": "path",
+            "stative": null,
+            "vector": "to"
+          },
+          "posture": null,
+          "region": {
+            "dimensionality": "point",
+            "remove": "distal"
+          },
+          "segment_id": "s0"
+        },
+        {
+          "boundary": "terminus",
+          "figure": {
+            "object_id": null,
+            "role": "primary_effector",
+            "site": null
+          },
+          "frame": "absolute",
+          "ground": {
+            "object_id": null,
+            "role": "base",
+            "site": null
+          },
+          "manner": {
+            "amplitude": 0,
+            "effort": 0,
+            "precision": 0,
+            "repetition": 0,
+            "repetition_count": null,
+            "rhythm": 0,
+            "smoothness": 0,
+            "speed": 0
+          },
+          "motion_schema": {
+            "conformation": "point",
+            "contour": "straight",
+            "deixis": "neutral",
+            "kind": "path",
+            "stative": null,
+            "vector": "from"
+          },
+          "posture": null,
+          "region": {
+            "dimensionality": "point",
+            "remove": "medial"
+          },
+          "segment_id": "s1"
+        }
+      ],
+      "segments_readable": [
+        {
+          "boundary": "terminus",
+          "conformation": "boundary",
+          "contour": "straight",
+          "deixis": "neutral",
+          "figure": "primary_effector",
+          "frame": "absolute",
+          "ground": "base",
+          "manner": {
+            "amplitude": 0,
+            "effort": 0,
+            "precision": 0,
+            "repetition": 0,
+            "rhythm": 0,
+            "smoothness": 0,
+            "speed": 0
+          },
+          "remove": "distal",
+          "repetition_count": null,
+          "schema": "path:to.boundary.neutral.straight",
+          "segment_id": "s0",
+          "stative": null,
+          "vector": "to"
+        },
+        {
+          "boundary": "terminus",
+          "conformation": "point",
+          "contour": "straight",
+          "deixis": "neutral",
+          "figure": "primary_effector",
+          "frame": "absolute",
+          "ground": "base",
+          "manner": {
+            "amplitude": 0,
+            "effort": 0,
+            "precision": 0,
+            "repetition": 0,
+            "rhythm": 0,
+            "smoothness": 0,
+            "speed": 0
+          },
+          "remove": "medial",
+          "repetition_count": null,
+          "schema": "path:from.point.neutral.straight",
+          "segment_id": "s1",
+          "stative": null,
+          "vector": "from"
+        }
+      ],
+      "source_text": "reach out as far as you can and then come back"
+    },
+    "schema_version": "1.0",
+    "stages": [
+      {
+        "detail": {},
+        "elapsed_ms": 0.0,
+        "name": "firewall",
+        "status": "ok",
+        "summary": "in scope: the request names motion this system performs"
+      },
+      {
+        "detail": {
+          "afforded_schemas": 19,
+          "cues": [
+            {
+              "clause": "reach out as far as you can",
+              "entry_id": "reach_to_edge",
+              "manner": {},
+              "remove": "distal"
+            },
+            {
+              "clause": "come back",
+              "entry_id": "retract_from_point",
+              "manner": {},
+              "remove": "medial"
+            }
+          ],
+          "role_normalized_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6"
+        },
+        "elapsed_ms": 0.373,
+        "name": "planning",
+        "status": "ok",
+        "summary": "read as 2 segment(s): reach_to_edge, retract_from_point"
+      },
+      {
+        "detail": {
+          "library_size": 2
+        },
+        "elapsed_ms": 20.435,
+        "name": "binding",
+        "status": "ok",
+        "summary": "2 certified primitive(s) matched"
+      },
+      {
+        "detail": {
+          "characteristic_length_m": 0.16,
+          "neutral_speed_mps": 0.229905,
+          "reach_radius_m": 1.32
+        },
+        "elapsed_ms": 0.0,
+        "name": "grounding",
+        "status": "ok",
+        "summary": "17 waypoints over 47.8s, against a measured reach of 1.320 m"
+      },
+      {
+        "detail": {
+          "frames": 11484,
+          "sample_hz": 240
+        },
+        "elapsed_ms": 1496.332,
+        "name": "compilation",
+        "status": "ok",
+        "summary": "11484 frames at 240 Hz"
+      },
+      {
+        "detail": {
+          "base_drift_m": 0.0,
+          "certified": true,
+          "repeats": 3,
+          "replay_agreement": true,
+          "replay_hashes": [
+            "e80c3eedf02cd9f3",
+            "e80c3eedf02cd9f3",
+            "e80c3eedf02cd9f3"
+          ],
+          "tracking_error_m": 0.000128,
+          "unexpected_contacts": [],
+          "violations": []
+        },
+        "elapsed_ms": 4597.006,
+        "name": "certification",
+        "status": "ok",
+        "summary": "3 identical replays, tracking within 0.1 mm"
+      }
+    ],
+    "trace_id": "body_c7f1054100131d9a--reach-out-as-far-as-you-can-and-then-come-back",
+    "trial": null
+  },
+  "refused_bakes": [],
+  "user_input_semantics": "External forces, mocap, equality and userdata schedule; no intermediate qpos/state resets during replay."
+}

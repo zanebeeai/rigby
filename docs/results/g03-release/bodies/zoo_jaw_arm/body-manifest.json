@@ -1,0 +1,2246 @@
+{
+  "assets": {},
+  "canonical_urdf_sha256": "a4ee0ce33200ba8394842b3f5ac4c5cc5bdfefe9a2dbba38bd8279dee08f2dfc",
+  "capabilities": [
+    {
+      "capability": "kinematic_positioning",
+      "condition": "Goal binding still requires reachable geometry, limits and an appropriate reference frame",
+      "enabled": true,
+      "evidence_ids": [
+        "chain.body_0007",
+        "body.actuation",
+        "body.geometry",
+        "body.frame"
+      ],
+      "status": "observed_in_model",
+      "subject": "body_0007"
+    },
+    {
+      "capability": "kinematic_closure",
+      "condition": "Closing opposing surfaces observed in this model; object-specific fit/contact remains to be checked",
+      "enabled": true,
+      "evidence_ids": [
+        "effector.body_0007_effector"
+      ],
+      "status": "observed_in_model",
+      "subject": "body_0007_effector"
+    },
+    {
+      "capability": "physical_grasp_transport",
+      "condition": "Requires independently checked object fit, contact mechanics and physical lift/retention/release trials",
+      "enabled": false,
+      "evidence_ids": [
+        "effector.body_0007_effector",
+        "body.actuation",
+        "body.geometry"
+      ],
+      "status": "unknown",
+      "subject": "body_0007_effector"
+    },
+    {
+      "capability": "simulation_joint_observation",
+      "condition": "A declared observation adapter must expose these channels",
+      "enabled": true,
+      "evidence_ids": [
+        "body.sensors"
+      ],
+      "status": "observed_in_model",
+      "subject": "body"
+    },
+    {
+      "capability": "hardware_rgb",
+      "condition": "Requires source declarations and an appropriate independent mechanics/sensor evaluation",
+      "enabled": false,
+      "evidence_ids": [
+        "gap.hardware_rgb"
+      ],
+      "status": "unknown",
+      "subject": "body"
+    },
+    {
+      "capability": "hardware_depth",
+      "condition": "Requires source declarations and an appropriate independent mechanics/sensor evaluation",
+      "enabled": false,
+      "evidence_ids": [
+        "gap.hardware_depth"
+      ],
+      "status": "unknown",
+      "subject": "body"
+    },
+    {
+      "capability": "suction",
+      "condition": "Requires source declarations and an appropriate independent mechanics/sensor evaluation",
+      "enabled": false,
+      "evidence_ids": [
+        "gap.suction"
+      ],
+      "status": "unknown",
+      "subject": "body"
+    },
+    {
+      "capability": "rolling",
+      "condition": "Requires source declarations and an appropriate independent mechanics/sensor evaluation",
+      "enabled": false,
+      "evidence_ids": [
+        "gap.rolling"
+      ],
+      "status": "unknown",
+      "subject": "body"
+    },
+    {
+      "capability": "dynamic_balance",
+      "condition": "Requires source declarations and an appropriate independent mechanics/sensor evaluation",
+      "enabled": false,
+      "evidence_ids": [
+        "gap.dynamic_balance"
+      ],
+      "status": "unknown",
+      "subject": "body"
+    },
+    {
+      "capability": "physical_payload_capacity",
+      "condition": "Requires source declarations and an appropriate independent mechanics/sensor evaluation",
+      "enabled": false,
+      "evidence_ids": [
+        "gap.physical_payload_capacity"
+      ],
+      "status": "unknown",
+      "subject": "body"
+    },
+    {
+      "capability": "locomotion_execution",
+      "condition": "A floating-base/mobility runtime and its gates are required",
+      "enabled": false,
+      "evidence_ids": [
+        "body.base"
+      ],
+      "status": "unsupported_by_runtime",
+      "subject": "body"
+    }
+  ],
+  "facts": [
+    {
+      "basis": "compiled_model",
+      "fact_id": "body.mass",
+      "method": "Sum compiled link masses",
+      "subject": "body",
+      "uncertainty": "Source values and geometry-derived inertias are not independently validated hardware measurements",
+      "units": "kg",
+      "value": 15.043276
+    },
+    {
+      "basis": "source_declared",
+      "fact_id": "inertia.body_0000",
+      "method": "Compiled positive inertia with source-presence attribution",
+      "subject": "body_0000",
+      "uncertainty": "Declared inertia has not been measured independently",
+      "units": null,
+      "value": {
+        "mass_kg": 8.0,
+        "principal_inertia_kgm2": [
+          0.0484,
+          0.04126667,
+          0.04126667
+        ]
+      }
+    },
+    {
+      "basis": "source_declared",
+      "fact_id": "inertia.body_0001",
+      "method": "Compiled positive inertia with source-presence attribution",
+      "subject": "body_0001",
+      "uncertainty": "Declared inertia has not been measured independently",
+      "units": null,
+      "value": {
+        "mass_kg": 1.881657,
+        "principal_inertia_kgm2": [
+          0.00901235,
+          0.00901235,
+          0.00284601
+        ]
+      }
+    },
+    {
+      "basis": "source_declared",
+      "fact_id": "inertia.body_0002",
+      "method": "Compiled positive inertia with source-presence attribution",
+      "subject": "body_0002",
+      "uncertainty": "Declared inertia has not been measured independently",
+      "units": null,
+      "value": {
+        "mass_kg": 2.251967,
+        "principal_inertia_kgm2": [
+          0.02301279,
+          0.02301279,
+          0.00263768
+        ]
+      }
+    },
+    {
+      "basis": "source_declared",
+      "fact_id": "inertia.body_0003",
+      "method": "Compiled positive inertia with source-presence attribution",
+      "subject": "body_0003",
+      "uncertainty": "Declared inertia has not been measured independently",
+      "units": null,
+      "value": {
+        "mass_kg": 1.436172,
+        "principal_inertia_kgm2": [
+          0.01003432,
+          0.01003432,
+          0.00130266
+        ]
+      }
+    },
+    {
+      "basis": "source_declared",
+      "fact_id": "inertia.body_0004",
+      "method": "Compiled positive inertia with source-presence attribution",
+      "subject": "body_0004",
+      "uncertainty": "Declared inertia has not been measured independently",
+      "units": null,
+      "value": {
+        "mass_kg": 0.476645,
+        "principal_inertia_kgm2": [
+          0.00073937,
+          0.00073937,
+          0.0003348
+        ]
+      }
+    },
+    {
+      "basis": "source_declared",
+      "fact_id": "inertia.body_0005",
+      "method": "Compiled positive inertia with source-presence attribution",
+      "subject": "body_0005",
+      "uncertainty": "Declared inertia has not been measured independently",
+      "units": null,
+      "value": {
+        "mass_kg": 0.276835,
+        "principal_inertia_kgm2": [
+          0.00026216,
+          0.00026216,
+          0.00015058
+        ]
+      }
+    },
+    {
+      "basis": "source_declared",
+      "fact_id": "inertia.body_0006",
+      "method": "Compiled positive inertia with source-presence attribution",
+      "subject": "body_0006",
+      "uncertainty": "Declared inertia has not been measured independently",
+      "units": null,
+      "value": {
+        "mass_kg": 0.25,
+        "principal_inertia_kgm2": [
+          0.00012765,
+          0.00012765,
+          0.00010531
+        ]
+      }
+    },
+    {
+      "basis": "source_declared",
+      "fact_id": "inertia.body_0007",
+      "method": "Compiled positive inertia with source-presence attribution",
+      "subject": "body_0007",
+      "uncertainty": "Declared inertia has not been measured independently",
+      "units": null,
+      "value": {
+        "mass_kg": 0.35,
+        "principal_inertia_kgm2": [
+          0.00030917,
+          0.00030917,
+          0.00014583
+        ]
+      }
+    },
+    {
+      "basis": "source_declared",
+      "fact_id": "inertia.body_0008",
+      "method": "Compiled positive inertia with source-presence attribution",
+      "subject": "body_0008",
+      "uncertainty": "Declared inertia has not been measured independently",
+      "units": null,
+      "value": {
+        "mass_kg": 0.06,
+        "principal_inertia_kgm2": [
+          3.263e-05,
+          2.911e-05,
+          5.48e-06
+        ]
+      }
+    },
+    {
+      "basis": "source_declared",
+      "fact_id": "inertia.body_0009",
+      "method": "Compiled positive inertia with source-presence attribution",
+      "subject": "body_0009",
+      "uncertainty": "Declared inertia has not been measured independently",
+      "units": null,
+      "value": {
+        "mass_kg": 0.06,
+        "principal_inertia_kgm2": [
+          3.263e-05,
+          2.911e-05,
+          5.48e-06
+        ]
+      }
+    },
+    {
+      "basis": "source_declared",
+      "fact_id": "joint.axis_0000",
+      "method": "Source limit parsing and compiled joint measurement",
+      "subject": "axis_0000",
+      "uncertainty": "Declared limits are unverified. Continuous joints have no declared position bounds; their finite measurement interval is a sampling assumption. Missing effort values are model-load lower bounds, not actuator capacity; missing velocity uses a stated sweep assumption",
+      "units": null,
+      "value": {
+        "axis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        },
+        "effort_is_declared_limit": true,
+        "effort_value": 160.0,
+        "kind": "hinge",
+        "measurement_interval": [
+          -2.85,
+          2.85
+        ],
+        "measurement_interval_is_assumed": false,
+        "position_is_bounded": true,
+        "source_position_range": [
+          -2.85,
+          2.85
+        ],
+        "velocity_is_declared": true,
+        "velocity_limit": 2.2
+      }
+    },
+    {
+      "basis": "source_declared",
+      "fact_id": "joint.axis_0001",
+      "method": "Source limit parsing and compiled joint measurement",
+      "subject": "axis_0001",
+      "uncertainty": "Declared limits are unverified. Continuous joints have no declared position bounds; their finite measurement interval is a sampling assumption. Missing effort values are model-load lower bounds, not actuator capacity; missing velocity uses a stated sweep assumption",
+      "units": null,
+      "value": {
+        "axis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "effort_is_declared_limit": true,
+        "effort_value": 160.0,
+        "kind": "hinge",
+        "measurement_interval": [
+          -2.85,
+          2.85
+        ],
+        "measurement_interval_is_assumed": false,
+        "position_is_bounded": true,
+        "source_position_range": [
+          -2.85,
+          2.85
+        ],
+        "velocity_is_declared": true,
+        "velocity_limit": 2.2
+      }
+    },
+    {
+      "basis": "source_declared",
+      "fact_id": "joint.axis_0002",
+      "method": "Source limit parsing and compiled joint measurement",
+      "subject": "axis_0002",
+      "uncertainty": "Declared limits are unverified. Continuous joints have no declared position bounds; their finite measurement interval is a sampling assumption. Missing effort values are model-load lower bounds, not actuator capacity; missing velocity uses a stated sweep assumption",
+      "units": null,
+      "value": {
+        "axis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "effort_is_declared_limit": true,
+        "effort_value": 160.0,
+        "kind": "hinge",
+        "measurement_interval": [
+          -2.85,
+          2.85
+        ],
+        "measurement_interval_is_assumed": false,
+        "position_is_bounded": true,
+        "source_position_range": [
+          -2.85,
+          2.85
+        ],
+        "velocity_is_declared": true,
+        "velocity_limit": 2.2
+      }
+    },
+    {
+      "basis": "source_declared",
+      "fact_id": "joint.axis_0003",
+      "method": "Source limit parsing and compiled joint measurement",
+      "subject": "axis_0003",
+      "uncertainty": "Declared limits are unverified. Continuous joints have no declared position bounds; their finite measurement interval is a sampling assumption. Missing effort values are model-load lower bounds, not actuator capacity; missing velocity uses a stated sweep assumption",
+      "units": null,
+      "value": {
+        "axis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        },
+        "effort_is_declared_limit": true,
+        "effort_value": 160.0,
+        "kind": "hinge",
+        "measurement_interval": [
+          -2.85,
+          2.85
+        ],
+        "measurement_interval_is_assumed": false,
+        "position_is_bounded": true,
+        "source_position_range": [
+          -2.85,
+          2.85
+        ],
+        "velocity_is_declared": true,
+        "velocity_limit": 2.2
+      }
+    },
+    {
+      "basis": "source_declared",
+      "fact_id": "joint.axis_0004",
+      "method": "Source limit parsing and compiled joint measurement",
+      "subject": "axis_0004",
+      "uncertainty": "Declared limits are unverified. Continuous joints have no declared position bounds; their finite measurement interval is a sampling assumption. Missing effort values are model-load lower bounds, not actuator capacity; missing velocity uses a stated sweep assumption",
+      "units": null,
+      "value": {
+        "axis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "effort_is_declared_limit": true,
+        "effort_value": 160.0,
+        "kind": "hinge",
+        "measurement_interval": [
+          -2.85,
+          2.85
+        ],
+        "measurement_interval_is_assumed": false,
+        "position_is_bounded": true,
+        "source_position_range": [
+          -2.85,
+          2.85
+        ],
+        "velocity_is_declared": true,
+        "velocity_limit": 2.2
+      }
+    },
+    {
+      "basis": "source_declared",
+      "fact_id": "joint.axis_0005",
+      "method": "Source limit parsing and compiled joint measurement",
+      "subject": "axis_0005",
+      "uncertainty": "Declared limits are unverified. Continuous joints have no declared position bounds; their finite measurement interval is a sampling assumption. Missing effort values are model-load lower bounds, not actuator capacity; missing velocity uses a stated sweep assumption",
+      "units": null,
+      "value": {
+        "axis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        },
+        "effort_is_declared_limit": true,
+        "effort_value": 160.0,
+        "kind": "hinge",
+        "measurement_interval": [
+          -2.85,
+          2.85
+        ],
+        "measurement_interval_is_assumed": false,
+        "position_is_bounded": true,
+        "source_position_range": [
+          -2.85,
+          2.85
+        ],
+        "velocity_is_declared": true,
+        "velocity_limit": 2.2
+      }
+    },
+    {
+      "basis": "source_declared",
+      "fact_id": "joint.axis_0007",
+      "method": "Source limit parsing and compiled joint measurement",
+      "subject": "axis_0007",
+      "uncertainty": "Declared limits are unverified. Continuous joints have no declared position bounds; their finite measurement interval is a sampling assumption. Missing effort values are model-load lower bounds, not actuator capacity; missing velocity uses a stated sweep assumption",
+      "units": null,
+      "value": {
+        "axis": {
+          "x": -1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "effort_is_declared_limit": true,
+        "effort_value": 60.0,
+        "kind": "slide",
+        "measurement_interval": [
+          0.0,
+          0.0425
+        ],
+        "measurement_interval_is_assumed": false,
+        "position_is_bounded": true,
+        "source_position_range": [
+          0.0,
+          0.0425
+        ],
+        "velocity_is_declared": true,
+        "velocity_limit": 0.4
+      }
+    },
+    {
+      "basis": "source_declared",
+      "fact_id": "joint.axis_0008",
+      "method": "Source limit parsing and compiled joint measurement",
+      "subject": "axis_0008",
+      "uncertainty": "Declared limits are unverified. Continuous joints have no declared position bounds; their finite measurement interval is a sampling assumption. Missing effort values are model-load lower bounds, not actuator capacity; missing velocity uses a stated sweep assumption",
+      "units": null,
+      "value": {
+        "axis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "effort_is_declared_limit": true,
+        "effort_value": 60.0,
+        "kind": "slide",
+        "measurement_interval": [
+          0.0,
+          0.0425
+        ],
+        "measurement_interval_is_assumed": false,
+        "position_is_bounded": true,
+        "source_position_range": [
+          0.0,
+          0.0425
+        ],
+        "velocity_is_declared": true,
+        "velocity_limit": 0.4
+      }
+    },
+    {
+      "basis": "simulation_assumption",
+      "fact_id": "body.actuation",
+      "method": "Legacy finalize adds direct motors; source transmissions are descriptive inputs",
+      "subject": "body",
+      "uncertainty": "Does not validate hardware drives, motor dynamics, gear compliance, controller bandwidth or the default acceleration bound",
+      "units": null,
+      "value": {
+        "acceleration_limit": 500.0,
+        "model": "generated_direct_joint_torque_motors",
+        "motor_count": 8,
+        "source_transmissions": 0
+      }
+    },
+    {
+      "basis": "measured_kinematics",
+      "fact_id": "body.geometry",
+      "method": "Derived geometry sites and nonpenetrating-rest search",
+      "subject": "body",
+      "uncertainty": "Mesh collision is convexified by the existing intake; derived sites have no universal accuracy bound",
+      "units": null,
+      "value": {
+        "colliders": 10,
+        "rest_qpos": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0008500000000000001,
+          0.0008500000000000001
+        ],
+        "sites": [
+          {
+            "body": "body_0000",
+            "derivation": "base.root_body_origin.v1",
+            "name": "robot_base",
+            "position_m": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "semantic": "base"
+          },
+          {
+            "body": "body_0008",
+            "derivation": "tip.distal_geom_extreme.v1",
+            "name": "body_0007_tip",
+            "position_m": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.07500000000000018
+            },
+            "semantic": "tip"
+          },
+          {
+            "body": "body_0007",
+            "derivation": "grasp_point.mid_gripping_surface.v1",
+            "name": "body_0007_grasp_point",
+            "position_m": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.08749999999999991
+            },
+            "semantic": "grasp_point"
+          },
+          {
+            "body": "body_0007",
+            "derivation": "grasp_center.half_closed_member_centroid.v1",
+            "name": "body_0007_grasp_center",
+            "position_m": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.050000000000000044
+            },
+            "semantic": "grasp_center"
+          },
+          {
+            "body": "body_0008",
+            "derivation": "contact.member_distal_extreme.v1",
+            "name": "body_0007_contact_0",
+            "position_m": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.07500000000000018
+            },
+            "semantic": "contact"
+          },
+          {
+            "body": "body_0009",
+            "derivation": "contact.member_distal_extreme.v1",
+            "name": "body_0007_contact_1",
+            "position_m": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.07500000000000018
+            },
+            "semantic": "contact"
+          },
+          {
+            "body": "body_0007",
+            "derivation": "wrist.last_chain_body_origin.v1",
+            "name": "body_0007_wrist",
+            "position_m": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "semantic": "joint"
+          }
+        ]
+      }
+    },
+    {
+      "basis": "simulation_assumption",
+      "fact_id": "body.collision_exclusions",
+      "method": "Recorded source-overlap/IK exclusion policy",
+      "subject": "body",
+      "uncertainty": "Excluded or convexified geometry needs an independent contact check before task certification",
+      "units": null,
+      "value": [
+        [
+          "body_0000",
+          "body_0002"
+        ],
+        [
+          "body_0000",
+          "body_0003"
+        ],
+        [
+          "body_0000",
+          "body_0004"
+        ],
+        [
+          "body_0000",
+          "body_0005"
+        ],
+        [
+          "body_0000",
+          "body_0006"
+        ],
+        [
+          "body_0000",
+          "body_0007"
+        ],
+        [
+          "body_0000",
+          "body_0008"
+        ],
+        [
+          "body_0000",
+          "body_0009"
+        ],
+        [
+          "body_0001",
+          "body_0003"
+        ],
+        [
+          "body_0001",
+          "body_0004"
+        ],
+        [
+          "body_0001",
+          "body_0005"
+        ],
+        [
+          "body_0001",
+          "body_0006"
+        ],
+        [
+          "body_0001",
+          "body_0007"
+        ],
+        [
+          "body_0001",
+          "body_0008"
+        ],
+        [
+          "body_0001",
+          "body_0009"
+        ],
+        [
+          "body_0002",
+          "body_0004"
+        ],
+        [
+          "body_0002",
+          "body_0005"
+        ],
+        [
+          "body_0002",
+          "body_0006"
+        ],
+        [
+          "body_0002",
+          "body_0007"
+        ],
+        [
+          "body_0002",
+          "body_0008"
+        ],
+        [
+          "body_0002",
+          "body_0009"
+        ],
+        [
+          "body_0003",
+          "body_0005"
+        ],
+        [
+          "body_0003",
+          "body_0006"
+        ],
+        [
+          "body_0003",
+          "body_0007"
+        ],
+        [
+          "body_0003",
+          "body_0008"
+        ],
+        [
+          "body_0003",
+          "body_0009"
+        ],
+        [
+          "body_0004",
+          "body_0006"
+        ],
+        [
+          "body_0004",
+          "body_0007"
+        ],
+        [
+          "body_0004",
+          "body_0008"
+        ],
+        [
+          "body_0004",
+          "body_0009"
+        ],
+        [
+          "body_0005",
+          "body_0007"
+        ],
+        [
+          "body_0005",
+          "body_0008"
+        ],
+        [
+          "body_0005",
+          "body_0009"
+        ],
+        [
+          "body_0006",
+          "body_0008"
+        ],
+        [
+          "body_0006",
+          "body_0009"
+        ],
+        [
+          "body_0008",
+          "body_0009"
+        ]
+      ]
+    },
+    {
+      "basis": "measured_kinematics",
+      "fact_id": "body.frame",
+      "method": "Gravity, workspace asymmetry and geometric symmetry",
+      "subject": "body",
+      "uncertainty": "Proposed intrinsic front remains unconfirmed; confidence is a heuristic, not a calibrated probability",
+      "units": null,
+      "value": {
+        "confidence": 0.0,
+        "evidence": [
+          "no_evidence_default_axis"
+        ],
+        "front": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "lateral": {
+          "x": -0.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "source": "derived",
+        "up": {
+          "x": -0.0,
+          "y": -0.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "basis": "simulation_assumption",
+      "fact_id": "body.legacy_payload_estimate",
+      "method": "Legacy mass/effort heuristic retained for provenance",
+      "subject": "body",
+      "uncertainty": "Not an identified payload capacity and not an independent feasibility certificate",
+      "units": "kg",
+      "value": 12.355976
+    },
+    {
+      "basis": "measured_kinematics",
+      "fact_id": "chain.body_0007",
+      "method": "Seeded reachable-site sampling and joint sweeps",
+      "subject": "body_0007",
+      "uncertainty": "Sampled workspace is not an exact reachable set or a contact/torque feasibility guarantee",
+      "units": null,
+      "value": {
+        "bodies": [
+          "body_0000",
+          "body_0001",
+          "body_0002",
+          "body_0003",
+          "body_0004",
+          "body_0005",
+          "body_0006",
+          "body_0007"
+        ],
+        "chain_id": "body_0007",
+        "envelope_azimuth_bins": 12,
+        "envelope_elevation_bins": 7,
+        "joints": [
+          "axis_0000",
+          "axis_0001",
+          "axis_0002",
+          "axis_0003",
+          "axis_0004",
+          "axis_0005"
+        ],
+        "orienting_dof": 1,
+        "positioning_dof": 5,
+        "reach_envelope_m": [
+          0.7190316910450278,
+          0.7538695643818788,
+          0.7991398235296261,
+          0.925594290276794,
+          1.0416869707250966,
+          1.1239040978846901,
+          1.1543084440811051,
+          0.677722735596931,
+          0.7093044351914679,
+          0.840282423219587,
+          0.9246868188989033,
+          1.0209712707203296,
+          1.0877697923212652,
+          1.146556012203787,
+          0.639679832363642,
+          0.7377653161795523,
+          0.8532500299367808,
+          0.9287478711164826,
+          0.9967555792572743,
+          1.1039016558752712,
+          1.1479849981948458,
+          0.6753678259039115,
+          0.7607494147444455,
+          0.7938722375403516,
+          0.9273374233933758,
+          0.9735806923760695,
+          1.1054468871570433,
+          1.1439347082434095,
+          0.6605736204130654,
+          0.754261233332619,
+          0.7862665037180666,
+          0.8927789137988492,
+          1.0208453425992807,
+          1.1164879535278547,
+          1.152519721560797,
+          0.5486704470484831,
+          0.7549988824213965,
+          0.8525311045487423,
+          0.9008796280282709,
+          0.9712352094834525,
+          1.0707507158526919,
+          1.1569592556555908,
+          0.6564059059125792,
+          0.7471717022248261,
+          0.8298009045471417,
+          0.9551977284369393,
+          1.0181951373202227,
+          1.107110336128288,
+          1.1600000000000004,
+          0.6964111919090332,
+          0.7820607019939185,
+          0.8067496955853966,
+          0.942860858987095,
+          1.0068663905690958,
+          1.0788844011297687,
+          1.1458261485060173,
+          0.6806270988828322,
+          0.7797897675878034,
+          0.8114963033434821,
+          0.8907955766640823,
+          1.0050443402947173,
+          1.1027960705595066,
+          1.1297497169566857,
+          0.5221306821172758,
+          0.7619126158450503,
+          0.8448336432807033,
+          0.913819333980411,
+          1.047511195705025,
+          1.116701019874686,
+          1.127626646491663,
+          0.6614149214936607,
+          0.7733626324726736,
+          0.822367942836338,
+          0.9205694924000344,
+          1.0471847549562652,
+          1.0806396488564518,
+          1.1175203596797403,
+          0.634274574285376,
+          0.7386352428993007,
+          0.7967770150058734,
+          0.8729883168740251,
+          0.9871882401594316,
+          1.1147112945587523,
+          1.1449336853885737
+        ],
+        "reach_inner_m": [
+          0.13574822433108485,
+          0.17014799484378462,
+          0.049704036706581356,
+          0.06480281868537159,
+          0.14066348219431912,
+          0.15837007923042054,
+          0.15231133964607926,
+          0.21526626603128607,
+          0.14932497844044704,
+          0.11520111160629144,
+          0.10184122891336551,
+          0.11022116599184546,
+          0.16578052528751744,
+          0.12821700247656684,
+          0.15049877729814448,
+          0.19806489043870826,
+          0.06602050711630988,
+          0.09469046399023032,
+          0.07664917669513042,
+          0.20246531185662556,
+          0.17347536678538655,
+          0.23024332348486523,
+          0.06812830199119681,
+          0.19883773025816281,
+          0.08546334607701354,
+          0.11241280187427795,
+          0.20882480904562292,
+          0.1167617461597686,
+          0.16329274643299638,
+          0.17408267180240566,
+          0.11222358909034111,
+          0.11207110418821671,
+          0.0826502886122279,
+          0.22775278986520223,
+          0.2572147375123247,
+          0.2646196051519378,
+          0.11318492667272087,
+          0.07571349694657967,
+          0.09184827482556501,
+          0.17776737259534697,
+          0.04835966856533029,
+          0.20452797744103565,
+          0.15376106731914868,
+          0.06589063438807224,
+          0.13142422571175216,
+          0.09133714285770392,
+          0.14548115556795,
+          0.1311637757775608,
+          0.2826161429998712,
+          0.19066987358359375,
+          0.05789214130819348,
+          0.22426013005941833,
+          0.1060510482024429,
+          0.20920155527943027,
+          0.10832836658252797,
+          0.20087539592279194,
+          0.21292091367171026,
+          0.2054961489482567,
+          0.1810838735256024,
+          0.10189661157974672,
+          0.16117997022426822,
+          0.13553836297476837,
+          0.3241115613444542,
+          0.16628348600664078,
+          0.16189044979813982,
+          0.1431704121325705,
+          0.08455815291762597,
+          0.13119738408119896,
+          0.06415644494442452,
+          0.08311720380311921,
+          0.2839128691945256,
+          0.29182281338106175,
+          0.15124875848770689,
+          0.12191553074180882,
+          0.12824241804920733,
+          0.10157313461827186,
+          0.27353826943734,
+          0.25445286789266014,
+          0.07618203839844756,
+          0.08044671810260448,
+          0.15337668748416067,
+          0.06204456309287464,
+          0.19094840083478035,
+          0.266388215008101
+        ],
+        "reach_radius_m": 1.16,
+        "root_body": "body_0001",
+        "tip_body": "body_0007",
+        "working_direction": {
+          "x": 0.9442233371475827,
+          "y": 0.3293057691354383,
+          "z": 0.0
+        },
+        "workspace_centroid_m": {
+          "x": 0.0029312771778189375,
+          "y": 0.0010223073796363361,
+          "z": 0.42251440901685067
+        }
+      }
+    },
+    {
+      "basis": "measured_kinematics",
+      "fact_id": "effector.body_0007_effector",
+      "method": "Surface closure sweep and measured opposition groups",
+      "subject": "body_0007_effector",
+      "uncertainty": "Geometric closure is not a measured force-closure grasp or a successful object lift",
+      "units": null,
+      "value": {
+        "chain_id": "body_0007",
+        "closes_toward_upper": true,
+        "grip_joints": [
+          "axis_0007",
+          "axis_0008"
+        ],
+        "kind": "parallel_jaw",
+        "max_aperture_m": 0.087,
+        "member_bodies": [
+          "body_0008",
+          "body_0009"
+        ],
+        "member_extends_toward_upper": [
+          false,
+          false
+        ],
+        "member_joints": [
+          [
+            "axis_0007"
+          ],
+          [
+            "axis_0008"
+          ]
+        ],
+        "min_aperture_m": 0.002,
+        "name": "body_0007_effector",
+        "opposition_groups": [
+          [
+            "body_0008"
+          ],
+          [
+            "body_0009"
+          ]
+        ],
+        "site_names": [
+          "body_0007_contact_0",
+          "body_0007_contact_1",
+          "body_0007_grasp_center",
+          "body_0007_grasp_point",
+          "body_0007_tip",
+          "body_0007_wrist"
+        ],
+        "tip_body": "body_0008"
+      }
+    },
+    {
+      "basis": "compiled_model",
+      "fact_id": "body.sensors",
+      "method": "Compiled sensor/camera inventory",
+      "subject": "body",
+      "uncertainty": "URDF link names confer no sensor capability; simulated encoders do not prove hardware sensor availability",
+      "units": null,
+      "value": {
+        "declared_model_cameras": 0,
+        "declared_model_sensors": 0,
+        "simulation_joint_position_and_velocity_available": true
+      }
+    },
+    {
+      "basis": "unverified",
+      "fact_id": "gap.hardware_rgb",
+      "method": "No independent operational evidence registered",
+      "subject": "body",
+      "uncertainty": "Unknown; visual shape and uploaded identifier strings cannot establish this ability",
+      "units": null,
+      "value": null
+    },
+    {
+      "basis": "unverified",
+      "fact_id": "gap.hardware_depth",
+      "method": "No independent operational evidence registered",
+      "subject": "body",
+      "uncertainty": "Unknown; visual shape and uploaded identifier strings cannot establish this ability",
+      "units": null,
+      "value": null
+    },
+    {
+      "basis": "unverified",
+      "fact_id": "gap.suction",
+      "method": "No independent operational evidence registered",
+      "subject": "body",
+      "uncertainty": "Unknown; visual shape and uploaded identifier strings cannot establish this ability",
+      "units": null,
+      "value": null
+    },
+    {
+      "basis": "unverified",
+      "fact_id": "gap.rolling",
+      "method": "No independent operational evidence registered",
+      "subject": "body",
+      "uncertainty": "Unknown; visual shape and uploaded identifier strings cannot establish this ability",
+      "units": null,
+      "value": null
+    },
+    {
+      "basis": "unverified",
+      "fact_id": "gap.dynamic_balance",
+      "method": "No independent operational evidence registered",
+      "subject": "body",
+      "uncertainty": "Unknown; visual shape and uploaded identifier strings cannot establish this ability",
+      "units": null,
+      "value": null
+    },
+    {
+      "basis": "unverified",
+      "fact_id": "gap.physical_payload_capacity",
+      "method": "No independent operational evidence registered",
+      "subject": "body",
+      "uncertainty": "Unknown; visual shape and uploaded identifier strings cannot establish this ability",
+      "units": null,
+      "value": null
+    },
+    {
+      "basis": "compiled_model",
+      "fact_id": "body.base",
+      "method": "Fixed-base admission gate",
+      "subject": "body",
+      "uncertainty": "No locomotion or base-balance controller is admitted by this profile",
+      "units": null,
+      "value": {
+        "fixed_base": true
+      }
+    }
+  ],
+  "intake_profile": "structural_urdf.v1",
+  "joint_aliases": {
+    "axis_0000": "joint_0",
+    "axis_0001": "joint_1",
+    "axis_0002": "joint_2",
+    "axis_0003": "joint_3",
+    "axis_0004": "joint_4",
+    "axis_0005": "joint_5",
+    "axis_0006": "palm_fixed",
+    "axis_0007": "grip_left",
+    "axis_0008": "grip_right"
+  },
+  "limitations": [
+    "Kinematic capability evidence only; no physical manipulation success is inferred.",
+    "Rigid fixed-base URDF profile; unsupported extensions, couplings and ambiguous structural identities receive typed refusals.",
+    "Legacy name-hint annotations are unavailable in this profile; actual sensor declarations need an explicit supported sensor format.",
+    "Existing source transmissions, inferred actuator limits, default accelerations and collision assumptions are not verified hardware properties."
+  ],
+  "link_aliases": {
+    "body_0000": "base",
+    "body_0001": "link_0",
+    "body_0002": "link_1",
+    "body_0003": "link_2",
+    "body_0004": "link_3",
+    "body_0005": "link_4",
+    "body_0006": "link_5",
+    "body_0007": "palm",
+    "body_0008": "finger_left",
+    "body_0009": "finger_right"
+  },
+  "package_sha256": "c7f1054100131d9a8ae2026689c57b4f1dedb1425191d9e61fd6367200e0c745",
+  "robot": {
+    "actuator_order": [
+      "axis_0000",
+      "axis_0001",
+      "axis_0002",
+      "axis_0003",
+      "axis_0004",
+      "axis_0005",
+      "axis_0007",
+      "axis_0008"
+    ],
+    "adjacent_collision_exclusions": [
+      [
+        "body_0000",
+        "body_0002"
+      ],
+      [
+        "body_0000",
+        "body_0003"
+      ],
+      [
+        "body_0000",
+        "body_0004"
+      ],
+      [
+        "body_0000",
+        "body_0005"
+      ],
+      [
+        "body_0000",
+        "body_0006"
+      ],
+      [
+        "body_0000",
+        "body_0007"
+      ],
+      [
+        "body_0000",
+        "body_0008"
+      ],
+      [
+        "body_0000",
+        "body_0009"
+      ],
+      [
+        "body_0001",
+        "body_0003"
+      ],
+      [
+        "body_0001",
+        "body_0004"
+      ],
+      [
+        "body_0001",
+        "body_0005"
+      ],
+      [
+        "body_0001",
+        "body_0006"
+      ],
+      [
+        "body_0001",
+        "body_0007"
+      ],
+      [
+        "body_0001",
+        "body_0008"
+      ],
+      [
+        "body_0001",
+        "body_0009"
+      ],
+      [
+        "body_0002",
+        "body_0004"
+      ],
+      [
+        "body_0002",
+        "body_0005"
+      ],
+      [
+        "body_0002",
+        "body_0006"
+      ],
+      [
+        "body_0002",
+        "body_0007"
+      ],
+      [
+        "body_0002",
+        "body_0008"
+      ],
+      [
+        "body_0002",
+        "body_0009"
+      ],
+      [
+        "body_0003",
+        "body_0005"
+      ],
+      [
+        "body_0003",
+        "body_0006"
+      ],
+      [
+        "body_0003",
+        "body_0007"
+      ],
+      [
+        "body_0003",
+        "body_0008"
+      ],
+      [
+        "body_0003",
+        "body_0009"
+      ],
+      [
+        "body_0004",
+        "body_0006"
+      ],
+      [
+        "body_0004",
+        "body_0007"
+      ],
+      [
+        "body_0004",
+        "body_0008"
+      ],
+      [
+        "body_0004",
+        "body_0009"
+      ],
+      [
+        "body_0005",
+        "body_0007"
+      ],
+      [
+        "body_0005",
+        "body_0008"
+      ],
+      [
+        "body_0005",
+        "body_0009"
+      ],
+      [
+        "body_0006",
+        "body_0008"
+      ],
+      [
+        "body_0006",
+        "body_0009"
+      ],
+      [
+        "body_0008",
+        "body_0009"
+      ]
+    ],
+    "asset_licenses": {},
+    "coordinate_system": {
+      "forward_axis": "+X",
+      "right_handed": true,
+      "units": "meters",
+      "up_axis": "+Z"
+    },
+    "dofs": [
+      {
+        "acceleration_limit": 500.0,
+        "effort_limit": 160.0,
+        "joint": "axis_0000",
+        "maximum": 2.85,
+        "minimum": -2.85,
+        "name": "axis_0000",
+        "velocity_limit": 2.2
+      },
+      {
+        "acceleration_limit": 500.0,
+        "effort_limit": 160.0,
+        "joint": "axis_0001",
+        "maximum": 2.85,
+        "minimum": -2.85,
+        "name": "axis_0001",
+        "velocity_limit": 2.2
+      },
+      {
+        "acceleration_limit": 500.0,
+        "effort_limit": 160.0,
+        "joint": "axis_0002",
+        "maximum": 2.85,
+        "minimum": -2.85,
+        "name": "axis_0002",
+        "velocity_limit": 2.2
+      },
+      {
+        "acceleration_limit": 500.0,
+        "effort_limit": 160.0,
+        "joint": "axis_0003",
+        "maximum": 2.85,
+        "minimum": -2.85,
+        "name": "axis_0003",
+        "velocity_limit": 2.2
+      },
+      {
+        "acceleration_limit": 500.0,
+        "effort_limit": 160.0,
+        "joint": "axis_0004",
+        "maximum": 2.85,
+        "minimum": -2.85,
+        "name": "axis_0004",
+        "velocity_limit": 2.2
+      },
+      {
+        "acceleration_limit": 500.0,
+        "effort_limit": 160.0,
+        "joint": "axis_0005",
+        "maximum": 2.85,
+        "minimum": -2.85,
+        "name": "axis_0005",
+        "velocity_limit": 2.2
+      },
+      {
+        "acceleration_limit": 500.0,
+        "effort_limit": 60.0,
+        "joint": "axis_0007",
+        "maximum": 0.0425,
+        "minimum": 0.0,
+        "name": "axis_0007",
+        "velocity_limit": 0.4
+      },
+      {
+        "acceleration_limit": 500.0,
+        "effort_limit": 60.0,
+        "joint": "axis_0008",
+        "maximum": 0.0425,
+        "minimum": 0.0,
+        "name": "axis_0008",
+        "velocity_limit": 0.4
+      }
+    ],
+    "fixed_base": true,
+    "mjcf": {
+      "filename": "robot.xml",
+      "media_type": "application/xml",
+      "schema_version": "1.0",
+      "sha256": "28c12799211edf179981ad4f4ba70ddc97b190137a4fcf94c4ad6d40e8a93305",
+      "size_bytes": 5141
+    },
+    "morphology": {
+      "base_body": "body_0000",
+      "chains": [
+        {
+          "bodies": [
+            "body_0000",
+            "body_0001",
+            "body_0002",
+            "body_0003",
+            "body_0004",
+            "body_0005",
+            "body_0006",
+            "body_0007"
+          ],
+          "chain_id": "body_0007",
+          "envelope_azimuth_bins": 12,
+          "envelope_elevation_bins": 7,
+          "joints": [
+            "axis_0000",
+            "axis_0001",
+            "axis_0002",
+            "axis_0003",
+            "axis_0004",
+            "axis_0005"
+          ],
+          "orienting_dof": 1,
+          "positioning_dof": 5,
+          "reach_envelope_m": [
+            0.7190316910450278,
+            0.7538695643818788,
+            0.7991398235296261,
+            0.925594290276794,
+            1.0416869707250966,
+            1.1239040978846901,
+            1.1543084440811051,
+            0.677722735596931,
+            0.7093044351914679,
+            0.840282423219587,
+            0.9246868188989033,
+            1.0209712707203296,
+            1.0877697923212652,
+            1.146556012203787,
+            0.639679832363642,
+            0.7377653161795523,
+            0.8532500299367808,
+            0.9287478711164826,
+            0.9967555792572743,
+            1.1039016558752712,
+            1.1479849981948458,
+            0.6753678259039115,
+            0.7607494147444455,
+            0.7938722375403516,
+            0.9273374233933758,
+            0.9735806923760695,
+            1.1054468871570433,
+            1.1439347082434095,
+            0.6605736204130654,
+            0.754261233332619,
+            0.7862665037180666,
+            0.8927789137988492,
+            1.0208453425992807,
+            1.1164879535278547,
+            1.152519721560797,
+            0.5486704470484831,
+            0.7549988824213965,
+            0.8525311045487423,
+            0.9008796280282709,
+            0.9712352094834525,
+            1.0707507158526919,
+            1.1569592556555908,
+            0.6564059059125792,
+            0.7471717022248261,
+            0.8298009045471417,
+            0.9551977284369393,
+            1.0181951373202227,
+            1.107110336128288,
+            1.1600000000000004,
+            0.6964111919090332,
+            0.7820607019939185,
+            0.8067496955853966,
+            0.942860858987095,
+            1.0068663905690958,
+            1.0788844011297687,
+            1.1458261485060173,
+            0.6806270988828322,
+            0.7797897675878034,
+            0.8114963033434821,
+            0.8907955766640823,
+            1.0050443402947173,
+            1.1027960705595066,
+            1.1297497169566857,
+            0.5221306821172758,
+            0.7619126158450503,
+            0.8448336432807033,
+            0.913819333980411,
+            1.047511195705025,
+            1.116701019874686,
+            1.127626646491663,
+            0.6614149214936607,
+            0.7733626324726736,
+            0.822367942836338,
+            0.9205694924000344,
+            1.0471847549562652,
+            1.0806396488564518,
+            1.1175203596797403,
+            0.634274574285376,
+            0.7386352428993007,
+            0.7967770150058734,
+            0.8729883168740251,
+            0.9871882401594316,
+            1.1147112945587523,
+            1.1449336853885737
+          ],
+          "reach_inner_m": [
+            0.13574822433108485,
+            0.17014799484378462,
+            0.049704036706581356,
+            0.06480281868537159,
+            0.14066348219431912,
+            0.15837007923042054,
+            0.15231133964607926,
+            0.21526626603128607,
+            0.14932497844044704,
+            0.11520111160629144,
+            0.10184122891336551,
+            0.11022116599184546,
+            0.16578052528751744,
+            0.12821700247656684,
+            0.15049877729814448,
+            0.19806489043870826,
+            0.06602050711630988,
+            0.09469046399023032,
+            0.07664917669513042,
+            0.20246531185662556,
+            0.17347536678538655,
+            0.23024332348486523,
+            0.06812830199119681,
+            0.19883773025816281,
+            0.08546334607701354,
+            0.11241280187427795,
+            0.20882480904562292,
+            0.1167617461597686,
+            0.16329274643299638,
+            0.17408267180240566,
+            0.11222358909034111,
+            0.11207110418821671,
+            0.0826502886122279,
+            0.22775278986520223,
+            0.2572147375123247,
+            0.2646196051519378,
+            0.11318492667272087,
+            0.07571349694657967,
+            0.09184827482556501,
+            0.17776737259534697,
+            0.04835966856533029,
+            0.20452797744103565,
+            0.15376106731914868,
+            0.06589063438807224,
+            0.13142422571175216,
+            0.09133714285770392,
+            0.14548115556795,
+            0.1311637757775608,
+            0.2826161429998712,
+            0.19066987358359375,
+            0.05789214130819348,
+            0.22426013005941833,
+            0.1060510482024429,
+            0.20920155527943027,
+            0.10832836658252797,
+            0.20087539592279194,
+            0.21292091367171026,
+            0.2054961489482567,
+            0.1810838735256024,
+            0.10189661157974672,
+            0.16117997022426822,
+            0.13553836297476837,
+            0.3241115613444542,
+            0.16628348600664078,
+            0.16189044979813982,
+            0.1431704121325705,
+            0.08455815291762597,
+            0.13119738408119896,
+            0.06415644494442452,
+            0.08311720380311921,
+            0.2839128691945256,
+            0.29182281338106175,
+            0.15124875848770689,
+            0.12191553074180882,
+            0.12824241804920733,
+            0.10157313461827186,
+            0.27353826943734,
+            0.25445286789266014,
+            0.07618203839844756,
+            0.08044671810260448,
+            0.15337668748416067,
+            0.06204456309287464,
+            0.19094840083478035,
+            0.266388215008101
+          ],
+          "reach_radius_m": 1.16,
+          "root_body": "body_0001",
+          "tip_body": "body_0007",
+          "working_direction": {
+            "x": 0.9442233371475827,
+            "y": 0.3293057691354383,
+            "z": 0.0
+          },
+          "workspace_centroid_m": {
+            "x": 0.0029312771778189375,
+            "y": 0.0010223073796363361,
+            "z": 0.42251440901685067
+          }
+        }
+      ],
+      "coordinate_system": {
+        "forward_axis": "-Y",
+        "right_handed": true,
+        "units": "meters",
+        "up_axis": "+Z"
+      },
+      "effectors": [
+        {
+          "chain_id": "body_0007",
+          "closes_toward_upper": true,
+          "grip_joints": [
+            "axis_0007",
+            "axis_0008"
+          ],
+          "kind": "parallel_jaw",
+          "max_aperture_m": 0.087,
+          "member_bodies": [
+            "body_0008",
+            "body_0009"
+          ],
+          "member_extends_toward_upper": [
+            false,
+            false
+          ],
+          "member_joints": [
+            [
+              "axis_0007"
+            ],
+            [
+              "axis_0008"
+            ]
+          ],
+          "min_aperture_m": 0.002,
+          "name": "body_0007_effector",
+          "opposition_groups": [
+            [
+              "body_0008"
+            ],
+            [
+              "body_0009"
+            ]
+          ],
+          "site_names": [
+            "body_0007_contact_0",
+            "body_0007_contact_1",
+            "body_0007_grasp_center",
+            "body_0007_grasp_point",
+            "body_0007_tip",
+            "body_0007_wrist"
+          ],
+          "tip_body": "body_0008"
+        }
+      ],
+      "intrinsic_frame": {
+        "confidence": 0.0,
+        "evidence": [
+          "no_evidence_default_axis"
+        ],
+        "front": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "lateral": {
+          "x": -0.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "source": "derived",
+        "up": {
+          "x": -0.0,
+          "y": -0.0,
+          "z": 1.0
+        }
+      },
+      "joints": [
+        {
+          "axis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0
+          },
+          "body": "body_0001",
+          "effort_declared": true,
+          "effort_limit": 160.0,
+          "kind": "hinge",
+          "maximum": 2.85,
+          "minimum": -2.85,
+          "name": "axis_0000",
+          "role": "major_position",
+          "tip_rotation_rad": 2.85,
+          "tip_translation_m": 1.638661,
+          "velocity_limit": 2.2
+        },
+        {
+          "axis": {
+            "x": 0.0,
+            "y": 1.0,
+            "z": 0.0
+          },
+          "body": "body_0002",
+          "effort_declared": true,
+          "effort_limit": 160.0,
+          "kind": "hinge",
+          "maximum": 2.85,
+          "minimum": -2.85,
+          "name": "axis_0001",
+          "role": "major_position",
+          "tip_rotation_rad": 2.85,
+          "tip_translation_m": 1.862647,
+          "velocity_limit": 2.2
+        },
+        {
+          "axis": {
+            "x": 0.0,
+            "y": 1.0,
+            "z": 0.0
+          },
+          "body": "body_0003",
+          "effort_declared": true,
+          "effort_limit": 160.0,
+          "kind": "hinge",
+          "maximum": 2.85,
+          "minimum": -2.85,
+          "name": "axis_0002",
+          "role": "major_position",
+          "tip_rotation_rad": 2.85,
+          "tip_translation_m": 1.191327,
+          "velocity_limit": 2.2
+        },
+        {
+          "axis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0
+          },
+          "body": "body_0004",
+          "effort_declared": true,
+          "effort_limit": 160.0,
+          "kind": "hinge",
+          "maximum": 2.85,
+          "minimum": -2.85,
+          "name": "axis_0003",
+          "role": "major_position",
+          "tip_rotation_rad": 2.85,
+          "tip_translation_m": 0.362697,
+          "velocity_limit": 2.2
+        },
+        {
+          "axis": {
+            "x": 0.0,
+            "y": 1.0,
+            "z": 0.0
+          },
+          "body": "body_0005",
+          "effort_declared": true,
+          "effort_limit": 160.0,
+          "kind": "hinge",
+          "maximum": 2.85,
+          "minimum": -2.85,
+          "name": "axis_0004",
+          "role": "major_position",
+          "tip_rotation_rad": 2.85,
+          "tip_translation_m": 0.407769,
+          "velocity_limit": 2.2
+        },
+        {
+          "axis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0
+          },
+          "body": "body_0006",
+          "effort_declared": true,
+          "effort_limit": 160.0,
+          "kind": "hinge",
+          "maximum": 2.85,
+          "minimum": -2.85,
+          "name": "axis_0005",
+          "role": "wrist_orient",
+          "tip_rotation_rad": 2.85,
+          "tip_translation_m": 0.098246,
+          "velocity_limit": 2.2
+        },
+        {
+          "axis": {
+            "x": -1.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "body": "body_0008",
+          "effort_declared": true,
+          "effort_limit": 60.0,
+          "kind": "slide",
+          "maximum": 0.0425,
+          "minimum": 0.0,
+          "name": "axis_0007",
+          "role": "grip",
+          "tip_rotation_rad": 0.0,
+          "tip_translation_m": 0.0425,
+          "velocity_limit": 0.4
+        },
+        {
+          "axis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "body": "body_0009",
+          "effort_declared": true,
+          "effort_limit": 60.0,
+          "kind": "slide",
+          "maximum": 0.0425,
+          "minimum": 0.0,
+          "name": "axis_0008",
+          "role": "grip",
+          "tip_rotation_rad": 0.0,
+          "tip_translation_m": 0.0,
+          "velocity_limit": 0.4
+        }
+      ],
+      "morphology_class": "fixed_base_arm",
+      "robot_id": "body_c7f1054100131d9a",
+      "scale": {
+        "base_footprint_m": 0.22,
+        "characteristic_length_m": 0.16,
+        "neutral_speed_mps": 0.229905,
+        "payload_kg": 12.355976,
+        "reach_radius_m": 1.32,
+        "reach_samples": 4096,
+        "total_mass_kg": 15.043276,
+        "workspace_centroid_m": {
+          "x": 0.0029312771778189375,
+          "y": 0.0010223073796363361,
+          "z": 0.42251440901685067
+        }
+      },
+      "schema_version": "1.0",
+      "self_collision_pairs": [
+        [
+          "body_0000",
+          "body_0002"
+        ],
+        [
+          "body_0000",
+          "body_0003"
+        ],
+        [
+          "body_0000",
+          "body_0004"
+        ],
+        [
+          "body_0000",
+          "body_0005"
+        ],
+        [
+          "body_0000",
+          "body_0006"
+        ],
+        [
+          "body_0000",
+          "body_0007"
+        ],
+        [
+          "body_0000",
+          "body_0008"
+        ],
+        [
+          "body_0000",
+          "body_0009"
+        ],
+        [
+          "body_0001",
+          "body_0003"
+        ],
+        [
+          "body_0001",
+          "body_0004"
+        ],
+        [
+          "body_0001",
+          "body_0005"
+        ],
+        [
+          "body_0001",
+          "body_0006"
+        ],
+        [
+          "body_0001",
+          "body_0007"
+        ],
+        [
+          "body_0001",
+          "body_0008"
+        ],
+        [
+          "body_0001",
+          "body_0009"
+        ],
+        [
+          "body_0002",
+          "body_0004"
+        ],
+        [
+          "body_0002",
+          "body_0005"
+        ],
+        [
+          "body_0002",
+          "body_0006"
+        ],
+        [
+          "body_0002",
+          "body_0007"
+        ],
+        [
+          "body_0002",
+          "body_0008"
+        ],
+        [
+          "body_0002",
+          "body_0009"
+        ],
+        [
+          "body_0003",
+          "body_0005"
+        ],
+        [
+          "body_0003",
+          "body_0006"
+        ],
+        [
+          "body_0003",
+          "body_0007"
+        ],
+        [
+          "body_0003",
+          "body_0008"
+        ],
+        [
+          "body_0003",
+          "body_0009"
+        ],
+        [
+          "body_0004",
+          "body_0006"
+        ],
+        [
+          "body_0004",
+          "body_0007"
+        ],
+        [
+          "body_0004",
+          "body_0008"
+        ],
+        [
+          "body_0004",
+          "body_0009"
+        ],
+        [
+          "body_0005",
+          "body_0007"
+        ],
+        [
+          "body_0005",
+          "body_0008"
+        ],
+        [
+          "body_0005",
+          "body_0009"
+        ],
+        [
+          "body_0006",
+          "body_0008"
+        ],
+        [
+          "body_0006",
+          "body_0009"
+        ],
+        [
+          "body_0008",
+          "body_0009"
+        ]
+      ],
+      "sites": [
+        {
+          "body": "body_0000",
+          "derivation": "base.root_body_origin.v1",
+          "name": "robot_base",
+          "position_m": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "semantic": "base"
+        },
+        {
+          "body": "body_0008",
+          "derivation": "tip.distal_geom_extreme.v1",
+          "name": "body_0007_tip",
+          "position_m": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.07500000000000018
+          },
+          "semantic": "tip"
+        },
+        {
+          "body": "body_0007",
+          "derivation": "grasp_point.mid_gripping_surface.v1",
+          "name": "body_0007_grasp_point",
+          "position_m": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.08749999999999991
+          },
+          "semantic": "grasp_point"
+        },
+        {
+          "body": "body_0007",
+          "derivation": "grasp_center.half_closed_member_centroid.v1",
+          "name": "body_0007_grasp_center",
+          "position_m": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.050000000000000044
+          },
+          "semantic": "grasp_center"
+        },
+        {
+          "body": "body_0008",
+          "derivation": "contact.member_distal_extreme.v1",
+          "name": "body_0007_contact_0",
+          "position_m": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.07500000000000018
+          },
+          "semantic": "contact"
+        },
+        {
+          "body": "body_0009",
+          "derivation": "contact.member_distal_extreme.v1",
+          "name": "body_0007_contact_1",
+          "position_m": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.07500000000000018
+          },
+          "semantic": "contact"
+        },
+        {
+          "body": "body_0007",
+          "derivation": "wrist.last_chain_body_origin.v1",
+          "name": "body_0007_wrist",
+          "position_m": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "semantic": "joint"
+        }
+      ],
+      "symmetry": null
+    },
+    "rest_qpos": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0008500000000000001,
+      0.0008500000000000001
+    ],
+    "rig_id": "body_c7f1054100131d9a",
+    "schema_version": "1.0",
+    "sites": [
+      {
+        "body": "body_0000",
+        "derivation": "base.root_body_origin.v1",
+        "name": "robot_base",
+        "position_m": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "semantic": "base"
+      },
+      {
+        "body": "body_0008",
+        "derivation": "tip.distal_geom_extreme.v1",
+        "name": "body_0007_tip",
+        "position_m": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.07500000000000018
+        },
+        "semantic": "tip"
+      },
+      {
+        "body": "body_0007",
+        "derivation": "grasp_point.mid_gripping_surface.v1",
+        "name": "body_0007_grasp_point",
+        "position_m": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.08749999999999991
+        },
+        "semantic": "grasp_point"
+      },
+      {
+        "body": "body_0007",
+        "derivation": "grasp_center.half_closed_member_centroid.v1",
+        "name": "body_0007_grasp_center",
+        "position_m": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.050000000000000044
+        },
+        "semantic": "grasp_center"
+      },
+      {
+        "body": "body_0008",
+        "derivation": "contact.member_distal_extreme.v1",
+        "name": "body_0007_contact_0",
+        "position_m": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.07500000000000018
+        },
+        "semantic": "contact"
+      },
+      {
+        "body": "body_0009",
+        "derivation": "contact.member_distal_extreme.v1",
+        "name": "body_0007_contact_1",
+        "position_m": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.07500000000000018
+        },
+        "semantic": "contact"
+      },
+      {
+        "body": "body_0007",
+        "derivation": "wrist.last_chain_body_origin.v1",
+        "name": "body_0007_wrist",
+        "position_m": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "semantic": "joint"
+      }
+    ],
+    "source_asset": {
+      "filename": "structural.urdf",
+      "media_type": "application/xml",
+      "schema_version": "1.0",
+      "sha256": "a4ee0ce33200ba8394842b3f5ac4c5cc5bdfefe9a2dbba38bd8279dee08f2dfc",
+      "size_bytes": 8334
+    },
+    "source_format": "urdf"
+  },
+  "schema_version": "body.capabilities.v1",
+  "source_urdf_sha256": "e471721a99f33a062ff4f96fef38d7523b1e8196bd7c95406ddb2ebe4778cd3d"
+}

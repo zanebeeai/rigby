@@ -1,0 +1,203 @@
+<robot name="zoo_compact_arm">
+  <link name="imu_0014">
+    <inertial>
+      <inertia ixx="0.00012233" ixy="0" ixz="0" iyy="0.00012233" iyz="0" izz="0.00004050" />
+    <mass value="0.250000" />
+      <origin xyz="0.000000 0.000000 0.035000" rpy="0.000000 0.000000 0.000000" />
+      </inertial>
+    <visual>
+      <origin xyz="0.000000 0.000000 0.035000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <cylinder radius="0.018000" length="0.070000" />
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder radius="0.018000" length="0.070000" />
+      </geometry>
+    <origin xyz="0.000000 0.000000 0.035000" rpy="0.000000 0.000000 0.000000" />
+      </collision>
+  </link>
+  <link name="imu_0001">
+    <visual>
+      <origin xyz="0.000000 0.000000 0.017500" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <cylinder radius="0.022000" length="0.035000" />
+      </geometry>
+    </visual>
+    <inertial>
+      <mass value="0.250000" />
+      <inertia ixx="0.00005577" ixy="0" ixz="0" iyy="0.00005577" iyz="0" izz="0.00006050" />
+    <origin xyz="0.000000 0.000000 0.017500" rpy="0.000000 0.000000 0.000000" />
+      </inertial>
+    <collision>
+      <origin xyz="0.000000 0.000000 0.017500" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <cylinder radius="0.022000" length="0.035000" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="imu_0009">
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.025000" rpy="0.000000 0.000000 0.000000" />
+      <inertia ixx="0.00014583" ixy="0" ixz="0" iyy="0.00030917" iyz="0" izz="0.00030917" />
+    <mass value="0.350000" />
+      </inertial>
+    <collision>
+      <origin xyz="0.000000 0.000000 0.025000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.090000 0.050000 0.050000" />
+      </geometry>
+    </collision>
+  <visual>
+      <geometry>
+        <box size="0.090000 0.050000 0.050000" />
+      </geometry>
+    <origin xyz="0.000000 0.000000 0.025000" rpy="0.000000 0.000000 0.000000" />
+      </visual>
+    </link>
+  <joint name="imu_0007" type="revolute">
+    <origin xyz="0.000000 0.000000 0.050000" rpy="0.000000 0.000000 0.000000" />
+    <child link="imu_0014" />
+    <parent link="imu_0005" />
+    <limit lower="-2.850000" upper="2.850000" effort="14.000" velocity="3.200" />
+  <axis xyz="0.000000 0.000000 1.000000" />
+    </joint>
+  <joint name="imu_0012" type="fixed">
+    <origin xyz="0.000000 0.000000 0.035000" rpy="0.000000 0.000000 0.000000" />
+    <limit lower="0.000000" upper="0.000000" effort="0.000" velocity="0.000" />
+  <axis xyz="0.000000 0.000000 1.000000" />
+    <child link="imu_0009" />
+    <parent link="imu_0001" />
+    </joint>
+  <joint name="imu_0013" type="revolute">
+    <limit lower="-2.850000" upper="2.850000" effort="14.000" velocity="3.200" />
+  <origin xyz="0.000000 0.000000 0.070000" rpy="0.000000 0.000000 0.000000" />
+    <axis xyz="0.000000 1.000000 0.000000" />
+    <child link="imu_0006" />
+    <parent link="imu_0014" />
+    </joint>
+  <link name="imu_0011">
+    <visual>
+      <origin xyz="0.000000 0.000000 0.040000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <cylinder radius="0.022000" length="0.080000" />
+      </geometry>
+    </visual>
+    <inertial>
+      <inertia ixx="0.00016358" ixy="0" ixz="0" iyy="0.00016358" iyz="0" izz="0.00006050" />
+    <origin xyz="0.000000 0.000000 0.040000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.250000" />
+      </inertial>
+    <collision>
+      <origin xyz="0.000000 0.000000 0.040000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <cylinder radius="0.022000" length="0.080000" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="imu_0008">
+    <visual>
+      <geometry>
+        <box size="0.014000 0.030000 0.030000" />
+      </geometry>
+    <origin xyz="0.000000 0.000000 0.015000" rpy="0.000000 0.000000 0.000000" />
+      </visual>
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.015000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.060000" />
+      <inertia ixx="0.00000900" ixy="0" ixz="0" iyy="0.00000548" iyz="0" izz="0.00000548" />
+    </inertial>
+    <collision>
+      <geometry>
+        <box size="0.014000 0.030000 0.030000" />
+      </geometry>
+    <origin xyz="0.000000 0.000000 0.015000" rpy="0.000000 0.000000 0.000000" />
+      </collision>
+  </link>
+  <joint name="imu_0002" type="prismatic">
+    <axis xyz="-1.000000 0.000000 0.000000" />
+    <origin xyz="0.023000 0.000000 0.050000" rpy="0.000000 0.000000 0.000000" />
+    <child link="imu_0008" />
+    <parent link="imu_0009" />
+    <limit lower="0.000000" upper="0.015000" effort="8.000" velocity="0.400" />
+  </joint>
+  <joint name="imu_0003" type="revolute">
+    <child link="imu_0011" />
+    <origin xyz="0.000000 0.000000 0.100000" rpy="0.000000 0.000000 0.000000" />
+    <axis xyz="0.000000 1.000000 0.000000" />
+    <parent link="imu_0006" />
+    <limit lower="-2.850000" upper="2.850000" effort="14.000" velocity="3.200" />
+  </joint>
+  <link name="imu_0004">
+    <collision>
+      <origin xyz="0.000000 0.000000 0.015000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.014000 0.030000 0.030000" />
+      </geometry>
+    </collision>
+  <visual>
+      <origin xyz="0.000000 0.000000 0.015000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.014000 0.030000 0.030000" />
+      </geometry>
+    </visual>
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.015000" rpy="0.000000 0.000000 0.000000" />
+      <inertia ixx="0.00000900" ixy="0" ixz="0" iyy="0.00000548" iyz="0" izz="0.00000548" />
+    <mass value="0.060000" />
+      </inertial>
+    </link>
+  <link name="imu_0005">
+    <inertial>
+      <inertia ixx="0.00064313" ixy="0" ixz="0" iyy="0.00064313" iyz="0" izz="0.00091125" />
+    <origin xyz="0.000000 0.000000 0.025000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.900000" />
+      </inertial>
+    <visual>
+      <origin xyz="0.000000 0.000000 0.025000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <cylinder radius="0.045000" length="0.050000" />
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder radius="0.045000" length="0.050000" />
+      </geometry>
+    <origin xyz="0.000000 0.000000 0.025000" rpy="0.000000 0.000000 0.000000" />
+      </collision>
+  </link>
+  <joint name="imu_0000" type="prismatic">
+    <child link="imu_0004" />
+    <limit lower="0.000000" upper="0.015000" effort="8.000" velocity="0.400" />
+  <axis xyz="1.000000 0.000000 0.000000" />
+    <parent link="imu_0009" />
+    <origin xyz="-0.023000 0.000000 0.050000" rpy="0.000000 0.000000 0.000000" />
+    </joint>
+<link name="imu_0006">
+    <visual>
+      <geometry>
+        <cylinder radius="0.022000" length="0.100000" />
+      </geometry>
+    <origin xyz="0.000000 0.000000 0.050000" rpy="0.000000 0.000000 0.000000" />
+      </visual>
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.050000" rpy="0.000000 0.000000 0.000000" />
+      <inertia ixx="0.00023858" ixy="0" ixz="0" iyy="0.00023858" iyz="0" izz="0.00006050" />
+    <mass value="0.250000" />
+      </inertial>
+    <collision>
+      <geometry>
+        <cylinder radius="0.022000" length="0.100000" />
+      </geometry>
+    <origin xyz="0.000000 0.000000 0.050000" rpy="0.000000 0.000000 0.000000" />
+      </collision>
+  </link>
+  <joint name="imu_0010" type="revolute">
+    <axis xyz="0.000000 1.000000 0.000000" />
+    <origin xyz="0.000000 0.000000 0.080000" rpy="0.000000 0.000000 0.000000" />
+    <child link="imu_0001" />
+    <parent link="imu_0011" />
+    <limit lower="-2.850000" upper="2.850000" effort="14.000" velocity="3.200" />
+  </joint>
+  </robot>

@@ -1,0 +1,664 @@
+[
+  {
+    "base_tree_sha256": "db40968c2f614f116b58ef2c6ea5c3ad0fa825effde826113e62cc69de14d9c3",
+    "duration_s": 23.1985,
+    "entry_id": "reach_to_edge",
+    "figure_role": "primary_effector",
+    "figure_site": "palm_grasp_center",
+    "ground_role": "base",
+    "inventory_sha256": "b445d7b0455ea1c8b2b3c02423fcb5eb3d1e67c1100c054a1f316bff414175cd",
+    "measurements": {
+      "base_drift_m": 0.0,
+      "duration_s": 23.1985,
+      "duration_scale": 1.0,
+      "tracking_error_m": 3.2e-05
+    },
+    "program": {
+      "assertions": [],
+      "contacts": [],
+      "duration_s": 23.198454,
+      "metadata": {
+        "duration_scale": 1.0,
+        "grounded_against": {
+          "characteristic_length_m": 0.16,
+          "neutral_speed_mps": 0.181697,
+          "reach_radius_m": 1.37002
+        },
+        "inventory_sha256": "b445d7b0455ea1c8b2b3c02423fcb5eb3d1e67c1100c054a1f316bff414175cd",
+        "role_normalized_hash": "42bdc39f205059c4d463949f1587ca264c0f07da176efe23ca1aa814296fde75",
+        "schema_keys": [
+          "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute"
+        ],
+        "schema_program_id": "primitive-reach_to_edge-distal"
+      },
+      "phases": [
+        {
+          "end_s": 12.708153,
+          "energy": 0.45,
+          "kind": "action",
+          "phase_id": "phase_0",
+          "start_s": 0.0
+        },
+        {
+          "end_s": 23.198454,
+          "energy": 0.3,
+          "kind": "recovery",
+          "phase_id": "phase_recovery",
+          "start_s": 12.708153
+        }
+      ],
+      "program_id": "grounded-fdb795805d8f2a9a21acf8e29cc61d48",
+      "rig_id": "zoo_hand_arm",
+      "scene_id": "empty",
+      "schema_version": "2.0",
+      "seed": 0,
+      "source_text": "extend to the edge of what the robot can reach, distal",
+      "tracks": [
+        {
+          "interpolation": "quintic",
+          "keyframes": [
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": 0.0,
+                "joint_1": 0.0,
+                "joint_2": 0.0,
+                "joint_3": 0.0,
+                "joint_4": 0.0,
+                "joint_5": 0.0,
+                "joint_6": 0.0
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 0.0
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.11908652599637035,
+                "joint_1": 0.4383580778321177,
+                "joint_2": 0.015126670513455363,
+                "joint_3": -0.9786305849847992,
+                "joint_4": 0.01570208720166137,
+                "joint_5": -0.823904979742362,
+                "joint_6": -0.017300488699288748
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 4.597302
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.11492616439738071,
+                "joint_1": 0.29548609571480233,
+                "joint_2": 0.02820031116646971,
+                "joint_3": -1.3559821978176507,
+                "joint_4": 0.017412599753368178,
+                "joint_5": -1.0422636926347948,
+                "joint_6": -0.0170267600445185
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 6.151383
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.10896871107550372,
+                "joint_1": -0.1218152593778661,
+                "joint_2": 0.03733087271308218,
+                "joint_3": -1.4807654998563284,
+                "joint_4": 0.019630702076762457,
+                "joint_5": -0.9879147247806764,
+                "joint_6": -0.016956217765129067
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 7.638019
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.1001100210889847,
+                "joint_1": -0.6675936064899176,
+                "joint_2": 0.03654357132828446,
+                "joint_3": -1.3101494977124313,
+                "joint_4": 0.020395051561704115,
+                "joint_5": -0.735962015134674,
+                "joint_6": -0.017097855861272014
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 9.753936
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.08633288547524376,
+                "joint_1": -1.278861867793129,
+                "joint_2": 0.030089513864229363,
+                "joint_3": -0.8211762693275554,
+                "joint_4": 0.02091850945801357,
+                "joint_5": -0.35082923034820285,
+                "joint_6": -0.01733947398886084
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 12.708153
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.1001100210889847,
+                "joint_1": -0.6675936064899176,
+                "joint_2": 0.03654357132828446,
+                "joint_3": -1.3101494977124313,
+                "joint_4": 0.020395051561704115,
+                "joint_5": -0.735962015134674,
+                "joint_6": -0.017097855861272014
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 14.896226
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.10896871107550372,
+                "joint_1": -0.1218152593778661,
+                "joint_2": 0.03733087271308218,
+                "joint_3": -1.4807654998563284,
+                "joint_4": 0.019630702076762457,
+                "joint_5": -0.9879147247806764,
+                "joint_6": -0.016956217765129067
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 16.849874
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.11492616439738071,
+                "joint_1": 0.29548609571480233,
+                "joint_2": 0.02820031116646971,
+                "joint_3": -1.3559821978176507,
+                "joint_4": 0.017412599753368178,
+                "joint_5": -1.0422636926347948,
+                "joint_6": -0.0170267600445185
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 18.34363
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.11908652599637035,
+                "joint_1": 0.4383580778321177,
+                "joint_2": 0.015126670513455363,
+                "joint_3": -0.9786305849847992,
+                "joint_4": 0.01570208720166137,
+                "joint_5": -0.823904979742362,
+                "joint_6": -0.017300488699288748
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 19.694384
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": 0.0,
+                "joint_1": 0.0,
+                "joint_2": 0.0,
+                "joint_3": 0.0,
+                "joint_4": 0.0,
+                "joint_5": 0.0,
+                "joint_6": 0.0
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 23.197454
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": 0.0,
+                "joint_1": 0.0,
+                "joint_2": 0.0,
+                "joint_3": 0.0,
+                "joint_4": 0.0,
+                "joint_5": 0.0,
+                "joint_6": 0.0
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 23.198454
+            }
+          ],
+          "owner": "chain_palm",
+          "ownership": "exclusive",
+          "priority": 0,
+          "target": "palm_grasp_center",
+          "track_id": "chain_palm"
+        }
+      ]
+    },
+    "program_sha256": "5dab185f95117497646e6ede57d9812dfdb2b367953d6d288ded8308a480bc92",
+    "record_id": "9f2c12b994a579026086ae08bae7e5f2",
+    "remove": "distal",
+    "robot_id": "zoo_hand_arm",
+    "schema_key": "path:to.boundary.neutral.straight",
+    "segment_key": "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+    "trace_sha256": "17ea5f2a8bcc6c8cfea6fd47560ea724f5e7c02899459991a2b3e4da6d129e37",
+    "waypoints": 6
+  },
+  {
+    "base_tree_sha256": "db40968c2f614f116b58ef2c6ea5c3ad0fa825effde826113e62cc69de14d9c3",
+    "duration_s": 44.0679,
+    "entry_id": "retract_from_point",
+    "figure_role": "primary_effector",
+    "figure_site": "palm_grasp_center",
+    "ground_role": "base",
+    "inventory_sha256": "b445d7b0455ea1c8b2b3c02423fcb5eb3d1e67c1100c054a1f316bff414175cd",
+    "measurements": {
+      "base_drift_m": 0.0,
+      "duration_s": 44.0679,
+      "duration_scale": 1.0,
+      "tracking_error_m": 2.7e-05
+    },
+    "program": {
+      "assertions": [],
+      "contacts": [],
+      "duration_s": 44.067885,
+      "metadata": {
+        "duration_scale": 1.0,
+        "grounded_against": {
+          "characteristic_length_m": 0.16,
+          "neutral_speed_mps": 0.181697,
+          "reach_radius_m": 1.37002
+        },
+        "inventory_sha256": "b445d7b0455ea1c8b2b3c02423fcb5eb3d1e67c1100c054a1f316bff414175cd",
+        "role_normalized_hash": "849e3a197333744a9d116047c72ed37e632c3684e7dd74538763fbb8f4e0449c",
+        "schema_keys": [
+          "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+        ],
+        "schema_program_id": "primitive-retract_from_point-medial"
+      },
+      "phases": [
+        {
+          "end_s": 23.870135,
+          "energy": 0.45,
+          "kind": "action",
+          "phase_id": "phase_0",
+          "start_s": 0.0
+        },
+        {
+          "end_s": 44.067885,
+          "energy": 0.3,
+          "kind": "recovery",
+          "phase_id": "phase_recovery",
+          "start_s": 23.870135
+        }
+      ],
+      "program_id": "grounded-8ac54c33b7a8a358927503cf6495340b",
+      "rig_id": "zoo_hand_arm",
+      "scene_id": "empty",
+      "schema_version": "2.0",
+      "seed": 0,
+      "source_text": "withdraw from a point, medial",
+      "tracks": [
+        {
+          "interpolation": "quintic",
+          "keyframes": [
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": 0.0,
+                "joint_1": 0.0,
+                "joint_2": 0.0,
+                "joint_3": 0.0,
+                "joint_4": 0.0,
+                "joint_5": 0.0,
+                "joint_6": 0.0
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 0.0
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.0892490522625829,
+                "joint_1": 0.5111579558949322,
+                "joint_2": 0.002120733300996297,
+                "joint_3": -0.9999013200129167,
+                "joint_4": 0.015644268122731314,
+                "joint_5": -0.8454006393012548,
+                "joint_6": -0.01385611217770669
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 4.640781
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.0882351099955483,
+                "joint_1": 0.4834745138106662,
+                "joint_2": 0.006285490084645579,
+                "joint_3": -1.4548501344501412,
+                "joint_4": 0.014461232756801251,
+                "joint_5": -1.116569429700325,
+                "joint_6": -0.01372511166868346
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 6.388139
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.08662282119924923,
+                "joint_1": 0.1482450320285402,
+                "joint_2": 0.010847456061412774,
+                "joint_3": -1.7198025785809514,
+                "joint_4": 0.014461717737460248,
+                "joint_5": -1.159231209986001,
+                "joint_6": -0.013700263599891798
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 7.802972
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.08435015051762827,
+                "joint_1": -0.39252236947549435,
+                "joint_2": 0.012391830345034697,
+                "joint_3": -1.728929228304326,
+                "joint_4": 0.014992998217259426,
+                "joint_5": -0.9369568477451278,
+                "joint_6": -0.013805080694197691
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 9.729456
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.08042595430345703,
+                "joint_1": -0.9581646300950661,
+                "joint_2": 0.010133985177758908,
+                "joint_3": -1.4549955053006178,
+                "joint_4": 0.015435097298537929,
+                "joint_5": -0.6368686151543665,
+                "joint_6": -0.013953740437003053
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 12.024013
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.08502593211978746,
+                "joint_1": -0.39229271774488284,
+                "joint_2": 0.013109841039939354,
+                "joint_3": -1.7225219945830508,
+                "joint_4": 0.015020813933633631,
+                "joint_5": -0.9627573405084526,
+                "joint_6": -0.01378233953995366
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 14.348999
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.0884941490857302,
+                "joint_1": 0.13329996503741365,
+                "joint_2": 0.012331307450105829,
+                "joint_3": -1.6959290531734665,
+                "joint_4": 0.014912767435990527,
+                "joint_5": -1.2206905902800274,
+                "joint_6": -0.013637191806562516
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 16.279902
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.0905389235003823,
+                "joint_1": 0.4473657999910617,
+                "joint_2": 0.00748320807403437,
+                "joint_3": -1.3965241935920396,
+                "joint_4": 0.01463876761404701,
+                "joint_5": -1.236148860043446,
+                "joint_6": -0.01364083971528588
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 17.710473
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.09234243755444757,
+                "joint_1": 0.48261916794516546,
+                "joint_2": 0.0027820583334498277,
+                "joint_3": -0.9333628394904862,
+                "joint_4": 0.015419201658928456,
+                "joint_5": -0.9574792946942652,
+                "joint_6": -0.013766662969160235
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 19.495158
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.09292919586036169,
+                "joint_1": 0.04081397550517836,
+                "joint_2": 0.005542441245323085,
+                "joint_3": -0.05244528296484276,
+                "joint_4": 0.01876362540627771,
+                "joint_5": -0.06743222627962372,
+                "joint_6": -0.013694544069373675
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 23.870135
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.09234243755444757,
+                "joint_1": 0.48261916794516546,
+                "joint_2": 0.0027820583334498277,
+                "joint_3": -0.9333628394904862,
+                "joint_4": 0.015419201658928456,
+                "joint_5": -0.9574792946942652,
+                "joint_6": -0.013766662969160235
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 27.048797
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.0905389235003823,
+                "joint_1": 0.4473657999910617,
+                "joint_2": 0.00748320807403437,
+                "joint_3": -1.3965241935920396,
+                "joint_4": 0.01463876761404701,
+                "joint_5": -1.236148860043446,
+                "joint_6": -0.01364083971528588
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 28.702904
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.0884941490857302,
+                "joint_1": 0.13329996503741365,
+                "joint_2": 0.012331307450105829,
+                "joint_3": -1.6959290531734665,
+                "joint_4": 0.014912767435990527,
+                "joint_5": -1.2206905902800274,
+                "joint_6": -0.013637191806562516
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 29.824541
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.08502593211978746,
+                "joint_1": -0.39229271774488284,
+                "joint_2": 0.013109841039939354,
+                "joint_3": -1.7225219945830508,
+                "joint_4": 0.015020813933633631,
+                "joint_5": -0.9627573405084526,
+                "joint_6": -0.01378233953995366
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 31.701611
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.08042595430345703,
+                "joint_1": -0.9581646300950661,
+                "joint_2": 0.010133985177758908,
+                "joint_3": -1.4549955053006178,
+                "joint_4": 0.015435097298537929,
+                "joint_5": -0.6368686151543665,
+                "joint_6": -0.013953740437003053
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 33.722533
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.08435015051762827,
+                "joint_1": -0.39252236947549435,
+                "joint_2": 0.012391830345034697,
+                "joint_3": -1.728929228304326,
+                "joint_4": 0.014992998217259426,
+                "joint_5": -0.9369568477451278,
+                "joint_6": -0.013805080694197691
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 35.742635
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.08662282119924923,
+                "joint_1": 0.1482450320285402,
+                "joint_2": 0.010847456061412774,
+                "joint_3": -1.7198025785809514,
+                "joint_4": 0.014461717737460248,
+                "joint_5": -1.159231209986001,
+                "joint_6": -0.013700263599891798
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 37.6739
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.0882351099955483,
+                "joint_1": 0.4834745138106662,
+                "joint_2": 0.006285490084645579,
+                "joint_3": -1.4548501344501412,
+                "joint_4": 0.014461232756801251,
+                "joint_5": -1.116569429700325,
+                "joint_6": -0.01372511166868346
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 38.871119
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": -0.0892490522625829,
+                "joint_1": 0.5111579558949322,
+                "joint_2": 0.002120733300996297,
+                "joint_3": -0.9999013200129167,
+                "joint_4": 0.015644268122731314,
+                "joint_5": -0.8454006393012548,
+                "joint_6": -0.01385611217770669
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 40.495896
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": 0.0,
+                "joint_1": 0.0,
+                "joint_2": 0.0,
+                "joint_3": 0.0,
+                "joint_4": 0.0,
+                "joint_5": 0.0,
+                "joint_6": 0.0
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 44.066885
+            },
+            {
+              "hard": false,
+              "joint_values": {
+                "joint_0": 0.0,
+                "joint_1": 0.0,
+                "joint_2": 0.0,
+                "joint_3": 0.0,
+                "joint_4": 0.0,
+                "joint_5": 0.0,
+                "joint_6": 0.0
+              },
+              "position": null,
+              "rotation": null,
+              "time_s": 44.067885
+            }
+          ],
+          "owner": "chain_palm",
+          "ownership": "exclusive",
+          "priority": 0,
+          "target": "palm_grasp_center",
+          "track_id": "chain_palm"
+        }
+      ]
+    },
+    "program_sha256": "9d1cc3fd4a0e79db0cc32ae25b40b8bb4d87ba47d8e7f9ecf8756cae4672acfe",
+    "record_id": "1f944d7aba7f6c98550b506e12ce60a7",
+    "remove": "medial",
+    "robot_id": "zoo_hand_arm",
+    "schema_key": "path:from.point.neutral.straight",
+    "segment_key": "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute",
+    "trace_sha256": "b09ddfdbbae0596ad8fca526f904cebde96151ceaaeb713dbdc0d50044db499c",
+    "waypoints": 11
+  }
+]

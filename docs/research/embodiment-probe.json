@@ -1,0 +1,303 @@
+{
+  "recorded_at_utc": "2026-09-12T01:24:27.136060+00:00",
+  "commit": "cfbe16e90544fc22b3acc9d95ce7b2d9cc6a24ba",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.12.7 (tags/v3.12.7:0b05ead, Oct  1 2024, 03:06:41) [MSC v.1941 64 bit (AMD64)]",
+  "mujoco": "3.11.0",
+  "numpy": "2.5.1",
+  "core_fingerprint": "db40968c2f614f116b58ef2c6ea5c3ad0fa825effde826113e62cc69de14d9c3",
+  "prompt": "reach out as far as you can and then come back",
+  "inventory_entry_count": 26,
+  "experiment_scope": "Fresh exact-region bake for two requested free-space segments per robot, then complete prompt path. No neural model, no old baked library, no object task.",
+  "results": [
+    {
+      "prompt": "reach out as far as you can and then come back",
+      "robot_id": "zoo_compact_arm",
+      "accepted": true,
+      "elapsed_seconds": 2.327,
+      "schema_keys": [
+        "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+        "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+      ],
+      "role_normalized_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6",
+      "duration_s": 30.51,
+      "bound_schema_keys": [
+        "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+        "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+      ],
+      "certified_primitives_used": 2,
+      "region_substitutions": 0,
+      "tracking_error_m": 0.006825,
+      "replay_agreement": true,
+      "source_urdf": "any-robot/assets/general/zoo/zoo_compact_arm/robot.urdf",
+      "dof": 6,
+      "reach_m": 0.385,
+      "fresh_bake_attempts": [
+        {
+          "entry": "reach_to_edge",
+          "remove": "distal",
+          "certified": true,
+          "failure": null
+        },
+        {
+          "entry": "retract_from_point",
+          "remove": "medial",
+          "certified": true,
+          "failure": null
+        }
+      ],
+      "bound_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6"
+    },
+    {
+      "prompt": "reach out as far as you can and then come back",
+      "robot_id": "zoo_dual_arm",
+      "accepted": false,
+      "elapsed_seconds": 0.606,
+      "schema_keys": [
+        "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+        "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+      ],
+      "role_normalized_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6",
+      "duration_s": 60.591,
+      "bound_schema_keys": [
+        "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+        "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+      ],
+      "certified_primitives_used": 2,
+      "region_substitutions": 0,
+      "failure": {
+        "code": "joint_limit_violation",
+        "stage": "compilation",
+        "detail": "Composed tracks exceed limits for 'left_joint_4'"
+      },
+      "source_urdf": "any-robot/assets/general/zoo/zoo_dual_arm/robot.urdf",
+      "dof": 14,
+      "reach_m": 1.326253,
+      "fresh_bake_attempts": [
+        {
+          "entry": "reach_to_edge",
+          "remove": "distal",
+          "certified": true,
+          "failure": null
+        },
+        {
+          "entry": "retract_from_point",
+          "remove": "medial",
+          "certified": true,
+          "failure": null
+        }
+      ],
+      "bound_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6"
+    },
+    {
+      "prompt": "reach out as far as you can and then come back",
+      "robot_id": "zoo_hand_arm",
+      "accepted": true,
+      "elapsed_seconds": 4.351,
+      "schema_keys": [
+        "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+        "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+      ],
+      "role_normalized_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6",
+      "duration_s": 49.246,
+      "bound_schema_keys": [
+        "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+        "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+      ],
+      "certified_primitives_used": 2,
+      "region_substitutions": 0,
+      "tracking_error_m": 0.014647,
+      "replay_agreement": true,
+      "source_urdf": "any-robot/assets/general/zoo/zoo_hand_arm/robot.urdf",
+      "dof": 10,
+      "reach_m": 1.37002,
+      "fresh_bake_attempts": [
+        {
+          "entry": "reach_to_edge",
+          "remove": "distal",
+          "certified": true,
+          "failure": null
+        },
+        {
+          "entry": "retract_from_point",
+          "remove": "medial",
+          "certified": true,
+          "failure": null
+        }
+      ],
+      "bound_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6"
+    },
+    {
+      "prompt": "reach out as far as you can and then come back",
+      "robot_id": "zoo_jaw_arm",
+      "accepted": true,
+      "elapsed_seconds": 4.133,
+      "schema_keys": [
+        "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+        "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+      ],
+      "role_normalized_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6",
+      "duration_s": 47.845,
+      "bound_schema_keys": [
+        "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+        "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+      ],
+      "certified_primitives_used": 2,
+      "region_substitutions": 0,
+      "tracking_error_m": 0.016629,
+      "replay_agreement": true,
+      "source_urdf": "any-robot/assets/general/zoo/zoo_jaw_arm/robot.urdf",
+      "dof": 8,
+      "reach_m": 1.32,
+      "fresh_bake_attempts": [
+        {
+          "entry": "reach_to_edge",
+          "remove": "distal",
+          "certified": true,
+          "failure": null
+        },
+        {
+          "entry": "retract_from_point",
+          "remove": "medial",
+          "certified": true,
+          "failure": null
+        }
+      ],
+      "bound_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6"
+    },
+    {
+      "prompt": "reach out as far as you can and then come back",
+      "robot_id": "zoo_long_arm",
+      "accepted": true,
+      "elapsed_seconds": 5.989,
+      "schema_keys": [
+        "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+        "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+      ],
+      "role_normalized_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6",
+      "duration_s": 67.454,
+      "bound_schema_keys": [
+        "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+        "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+      ],
+      "certified_primitives_used": 2,
+      "region_substitutions": 0,
+      "tracking_error_m": 0.016837,
+      "replay_agreement": true,
+      "source_urdf": "any-robot/assets/general/zoo/zoo_long_arm/robot.urdf",
+      "dof": 8,
+      "reach_m": 2.05,
+      "fresh_bake_attempts": [
+        {
+          "entry": "reach_to_edge",
+          "remove": "distal",
+          "certified": true,
+          "failure": null
+        },
+        {
+          "entry": "retract_from_point",
+          "remove": "medial",
+          "certified": true,
+          "failure": null
+        }
+      ],
+      "bound_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6"
+    },
+    {
+      "prompt": "reach out as far as you can and then come back",
+      "robot_id": "zoo_tool_arm",
+      "accepted": true,
+      "elapsed_seconds": 3.326,
+      "schema_keys": [
+        "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+        "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+      ],
+      "role_normalized_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6",
+      "duration_s": 52.438,
+      "bound_schema_keys": [
+        "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+        "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+      ],
+      "certified_primitives_used": 2,
+      "region_substitutions": 0,
+      "tracking_error_m": 0.012715,
+      "replay_agreement": true,
+      "source_urdf": "any-robot/assets/general/zoo/zoo_tool_arm/robot.urdf",
+      "dof": 5,
+      "reach_m": 1.18,
+      "fresh_bake_attempts": [
+        {
+          "entry": "reach_to_edge",
+          "remove": "distal",
+          "certified": true,
+          "failure": null
+        },
+        {
+          "entry": "retract_from_point",
+          "remove": "medial",
+          "certified": true,
+          "failure": null
+        }
+      ],
+      "bound_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6"
+    }
+  ],
+  "historical_demo_summary_recomputed": {
+    "reach out as far as you can and then come back": {
+      "robot_count_from_clip_rows": 6,
+      "distinct_hashes_from_clip_rows": 1,
+      "published_summary": {
+        "distinct_readings": 1,
+        "robots": 1
+      }
+    },
+    "reach out quickly, just a little": {
+      "robot_count_from_clip_rows": 1,
+      "distinct_hashes_from_clip_rows": 1,
+      "published_summary": {
+        "distinct_readings": 1,
+        "robots": 1
+      }
+    },
+    "lower the tool down toward the table": {
+      "robot_count_from_clip_rows": 1,
+      "distinct_hashes_from_clip_rows": 1,
+      "published_summary": {
+        "distinct_readings": 1,
+        "robots": 1
+      }
+    },
+    "trace a big circle": {
+      "robot_count_from_clip_rows": 1,
+      "distinct_hashes_from_clip_rows": 1,
+      "published_summary": {
+        "distinct_readings": 1,
+        "robots": 1
+      }
+    },
+    "wave three times": {
+      "robot_count_from_clip_rows": 1,
+      "distinct_hashes_from_clip_rows": 1,
+      "published_summary": {
+        "distinct_readings": 1,
+        "robots": 1
+      }
+    },
+    "sweep across the workspace, then hold still": {
+      "robot_count_from_clip_rows": 1,
+      "distinct_hashes_from_clip_rows": 1,
+      "published_summary": {
+        "distinct_readings": 1,
+        "robots": 1
+      }
+    },
+    "sweep slowly across in front of you": {
+      "robot_count_from_clip_rows": 1,
+      "distinct_hashes_from_clip_rows": 1,
+      "published_summary": {
+        "distinct_readings": 1,
+        "robots": 1
+      }
+    }
+  }
+}

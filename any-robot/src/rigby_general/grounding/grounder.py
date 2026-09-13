@@ -97,6 +97,9 @@ class GroundedProgram:
     figure_sites: tuple[str, ...]
     waypoint_count: int
     measured_speed_mps: float
+    path_repairs: tuple[dict, ...] = ()
+    """Spans the body itself stood across, and the deflection that cleared
+    each; also carried in the program metadata. Empty for a straight grounding."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -660,6 +663,10 @@ def ground(
     capabilities = capabilities_of(manifest.morphology, contact_scene=contact_scene)
     cache: dict[str, WorkspaceFrame] = {}
 
+    start_qpos = np.asarray(manifest.rest_qpos, dtype=float)
+    guard = _collision_guard(manifest, model)
+    _validate_start_state(manifest, model, start_qpos, guard)
+
     phases: list[MotionPhaseV2] = []
     # One track per chain, not one per segment. Separate tracks meet at phase
     # boundaries that the compiler's retimer maps through independently, and the
@@ -675,6 +682,7 @@ def ground(
     total_waypoints = 0
     fastest = 0.0
     rest_by_chain: dict[str, np.ndarray] = {}
+    repairs: list[dict] = []
 
     for index, segment in enumerate(schema_program.segments):
         entry = _entry_for(inventory, segment)
@@ -735,25 +743,38 @@ def ground(
         if float(np.linalg.norm(points[0] - current_position)) > 1e-4:
             points = [current_position, *points]
 
-        dense = ik.densify(points, per_span=_SUBDIVISIONS_PER_SPAN)
         joint_names = _solver_joints(manifest, model, binding)
         # Seeding from where the previous segment left this chain is what keeps
         # the trajectory in one piece. Re-seeding from rest lets the solver pick
         # a different elbow configuration for the same Cartesian point, and the
         # arm snaps between them at the segment boundary -- which the compiler
         # then correctly rejects as an infinite joint velocity.
-        ik_seed = rest_by_chain.get(
-            binding.frame.chain_id, np.asarray(manifest.rest_qpos, dtype=float)
-        )
+        ik_seed = rest_by_chain.get(binding.frame.chain_id, start_qpos)
         try:
-            solution = ik.solve_site_path(
-                model,
-                binding.frame.figure_site,
-                joint_names,
-                np.asarray(dense),
-                seed_qpos=ik_seed,
+            solution, dense, repair = _solve_segment(
+                model, binding, joint_names, points, ik_seed, guard
             )
+            if repair is not None:
+                repairs.append({"segment": index, "entry_id": entry.entry_id, **repair})
         except ik.IkFailure as error:
+            if error.collision is not None:
+                # A reachable point is not a groundable one if the only way
+                # to hold it is through the robot's own links. Typed apart from
+                # an unreachable target: the repair is a different path, not a
+                # different arm.
+                raise GroundingError(
+                    f"{manifest.rig_id}: {entry.entry_id!r} at "
+                    f"{segment.region.remove.value} cannot be performed without "
+                    f"self-collision -- {error}",
+                    schema_key=segment.motion_schema.canonical_key,
+                    measurement="self_collision.clearance_m",
+                    details={
+                        "bodies": list(error.collision),
+                        "penetration_m": error.penetration_m,
+                        "residual_m": error.residual_m,
+                        "waypoint": error.index,
+                    },
+                ) from error
             raise GroundingError(
                 f"{manifest.rig_id}: {entry.entry_id!r} at "
                 f"{segment.region.remove.value} is not solvable -- {error}",
@@ -855,16 +876,15 @@ def ground(
         keyframes_by_chain[chain_id].extend(extra)
         cursor = phase.end_s
 
-    # Monotonicity is enforced once over the whole assembled series rather than
-    # inside each piece. Segments and the recovery are timed independently, so a
-    # collision can only appear where two of them meet -- exactly the seam that a
-    # per-piece check cannot see.
+    # Enforce increasing keyframe times over the assembled segments and recovery.
+    # Bounded interpolation also keeps each joint between its legal IK keys;
+    # unconstrained tangents can overshoot inside a segment as well as at seams.
     tracks = [
         MotionTrackV2(
             track_id=f"chain_{chain_id}",
             target=site_by_chain[chain_id],
             owner=owner_by_chain[chain_id],
-            interpolation=InterpolationKind.QUINTIC,
+            interpolation=InterpolationKind.BOUNDED_QUINTIC,
             keyframes=tuple(_strictly_increasing(frames)),
         )
         for chain_id, frames in sorted(keyframes_by_chain.items())
@@ -905,6 +925,7 @@ def ground(
             "role_normalized_hash": schema_program.role_normalized_hash(),
             "inventory_sha256": inventory.sha256,
             "duration_scale": duration_scale,
+            "path_repairs": repairs,
             "grounded_against": {
                 "reach_radius_m": manifest.morphology.scale.reach_radius_m,
                 "neutral_speed_mps": manifest.morphology.scale.neutral_speed_mps,
@@ -920,6 +941,7 @@ def ground(
         figure_sites=tuple(figure_sites),
         waypoint_count=total_waypoints,
         measured_speed_mps=fastest,
+        path_repairs=tuple(repairs),
     )
 
 
@@ -956,13 +978,19 @@ def _chain_position(
     rest_by_chain: dict[str, np.ndarray],
     manifest: RobotAssetManifestV1,
 ) -> np.ndarray:
-    """Where this chain's steered site is right now, in world coordinates."""
+    """Where this chain's steered site is right now, in world coordinates.
+
+    Before any segment has moved the chain, "right now" is the manifest's
+    start state, not the workspace frame's home: the two coincide for a body
+    that starts at its measured neutral pose and differ for one that starts
+    somewhere else, and a segment must begin where the body actually is.
+    """
 
     import mujoco
 
     qpos = rest_by_chain.get(binding.frame.chain_id)
     if qpos is None:
-        return binding.frame.home
+        qpos = np.asarray(manifest.rest_qpos, dtype=float)
 
     data = mujoco.MjData(model)
     data.qpos[:] = qpos
@@ -986,6 +1014,213 @@ def _entry_for(inventory: SchemaInventory, segment: SegmentV1):
             f"binding {key!r} is not in the sealed inventory",
             details={"binding": key},
         ) from error
+
+
+_SELF_CLEARANCE_FRACTION = 0.005
+"""How far, as a fraction of the body's reach, a reference prefers to keep its
+own links apart; never less than twice the solver's waypoint tolerance.
+
+Only actual penetration is refused. The clearance is a preference the solver
+spends null space on, and it is deliberately small: the reference is only
+known to hit its waypoints to ``ik.DEFAULT_TOLERANCE_M``, so a clearance of
+twice that is the smallest one that means anything, and the physical gate --
+which reports any contact at all -- remains the arbiter of whether a motion
+actually stayed clear. A generous clearance was tried first, one tracking
+tolerance of the certification gate: it reshaped postures on bodies whose links
+pass within a few centimetres of each other by design, and cost them up to five
+percent in duration for a margin their sub-millimetre tracking never needed.
+"""
+
+
+def self_clearance_m(reach_radius_m: float) -> float:
+    return max(2.0 * ik.DEFAULT_TOLERANCE_M, _SELF_CLEARANCE_FRACTION * float(reach_radius_m))
+
+
+def _collision_guard(
+    manifest: RobotAssetManifestV1, model
+) -> "ik.CollisionGuard | None":
+    """Every link pair the self-collision gate would report, as a guard for IK.
+
+    The pairs are the morphology's own non-adjacent list, minus what ingest
+    proved inseparable and so excluded from the gate. No names are consulted:
+    a pair is guarded because its hulls can meet, whatever the links are called.
+    """
+
+    import mujoco
+
+    from ..morphology.graph import physics_may_collide
+
+    excluded = {
+        tuple(sorted(pair)) for pair in manifest.adjacent_collision_exclusions
+    }
+    pairs: set[tuple[int, int]] = set()
+    for first, second in manifest.morphology.self_collision_pairs:
+        if tuple(sorted((first, second))) in excluded:
+            continue
+        first_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, first)
+        second_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, second)
+        if first_id < 0 or second_id < 0 or first_id == second_id:
+            continue
+        if not physics_may_collide(model, first_id, second_id):
+            continue  # An older manifest may list a pair the engine filters.
+        pairs.add((min(first_id, second_id), max(first_id, second_id)))
+    if not pairs:
+        return None
+    return ik.CollisionGuard(
+        pairs=tuple(sorted(pairs)),
+        clearance_m=self_clearance_m(manifest.morphology.scale.reach_radius_m),
+    )
+
+
+def _validate_start_state(
+    manifest: RobotAssetManifestV1,
+    model,
+    start: np.ndarray,
+    guard: "ik.CollisionGuard | None",
+) -> None:
+    """The configuration every segment begins from has to be one the body can
+    hold: inside every limit and clear of itself. Otherwise the request is
+    refused before any motion is planned, with the reason typed."""
+
+    import mujoco
+
+    if start.shape != (model.nq,):
+        raise GroundingError(
+            f"{manifest.rig_id}: the start state has {start.shape[0]} values for "
+            f"{model.nq} generalized coordinates",
+            measurement="start_state.size",
+        )
+    if not np.all(np.isfinite(start)):
+        raise GroundingError(
+            f"{manifest.rig_id}: the start state is not finite",
+            measurement="start_state.finite",
+        )
+    for dof in manifest.dofs:
+        joint = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, dof.joint)
+        if joint < 0:  # pragma: no cover - manifest and model agree by construction
+            continue
+        value = float(start[int(model.jnt_qposadr[joint])])
+        if value < dof.minimum or value > dof.maximum:
+            raise GroundingError(
+                f"{manifest.rig_id}: the start state puts {dof.name} at "
+                f"{value:.4f}, outside its range "
+                f"[{dof.minimum:.4f}, {dof.maximum:.4f}]",
+                measurement="start_state.joint_limit",
+                details={
+                    "joint": dof.name,
+                    "value": value,
+                    "minimum": dof.minimum,
+                    "maximum": dof.maximum,
+                },
+            )
+    if guard is not None:
+        inside = ik.penetrations(model, guard, start)
+        if inside:
+            first, second, depth = inside[0]
+            raise GroundingError(
+                f"{manifest.rig_id}: the start state has {first} "
+                f"{depth * 1000:.1f} mm inside {second}",
+                measurement="start_state.self_collision",
+                details={
+                    "bodies": [first, second],
+                    "penetration_m": depth,
+                    "pairs": [[a, b, d] for a, b, d in inside],
+                },
+            )
+
+
+_DEFLECTION_FRACTIONS = (0.15, 0.3, 0.5)
+"""Of the chain's reach: how far a blocked span's midpoint is pushed aside,
+smallest first, so the path that clears the body is the least changed one."""
+
+
+def _deflected(
+    points: list[np.ndarray], span: int, frame: WorkspaceFrame, direction: str, distance: float
+) -> tuple[list[np.ndarray], np.ndarray]:
+    """The same points with one via point beside the blocked span's midpoint.
+
+    ``outward`` pushes the midpoint away from the chain root in the frame's
+    horizontal plane -- round the trunk; ``up`` lifts it along the frame's up
+    -- over the base. The via point is clamped back inside measured reach, so
+    the deflection can shrink but never asks for a point the arm cannot get to.
+    """
+
+    start, end = points[span], points[span + 1]
+    midpoint = (start + end) / 2.0
+    if direction == "up":
+        unit = frame.up
+    else:
+        radial = midpoint - frame.origin
+        radial = radial - frame.up * float(np.dot(radial, frame.up))
+        norm = float(np.linalg.norm(radial))
+        unit = radial / norm if norm > 1e-6 else frame.out
+    via = frame.clamp(midpoint + unit * distance)
+    return [*points[: span + 1], via, *points[span + 1 :]], via
+
+
+def _solve_segment(
+    model,
+    binding: _Binding,
+    joint_names: tuple[str, ...],
+    points: list[np.ndarray],
+    seed: np.ndarray,
+    guard: "ik.CollisionGuard | None",
+) -> tuple["ik.IkSolution", list[np.ndarray], dict | None]:
+    """Solve a segment's points straight; if a span cannot be followed, solve
+    again along the least deflection that can.
+
+    Two things stop a straight span, and both are properties of the line, not
+    of the request. The body itself can stand across it: a straight line from
+    behind a body's head to a point in front of its base runs through the
+    base. Or the line can lead the solver into a fold it cannot straighten out
+    of: coming back to a fully extended rest pose from a bent configuration,
+    the damped solver stalls a few centimetres short, at a singularity, with
+    every joint well inside its range. The schema still means what it said --
+    from there to here -- and the least path that goes round is the honest
+    execution of it, provided the deflection is recorded: every repair is
+    returned with the span, the via point, what stopped the straight line and
+    the refusal text, and lands in the program's metadata. A span no
+    deflection clears keeps its typed refusal. A first point that cannot be
+    reached at all is not a span problem and is refused as it was.
+    """
+
+    frame = binding.frame
+    dense = ik.densify(points, per_span=_SUBDIVISIONS_PER_SPAN)
+    try:
+        solution = ik.solve_site_path(
+            model, frame.figure_site, joint_names, np.asarray(dense), seed_qpos=seed, guard=guard
+        )
+        return solution, dense, None
+    except ik.IkFailure as error:
+        if error.index == 0 or len(points) < 2:
+            raise
+        blocked = error
+    # Which span the failing waypoint belongs to: densify keeps the first point
+    # and then lays per_span points per span, the last of them the span's end.
+    span = min(len(points) - 2, max(0, (blocked.index - 1) // _SUBDIVISIONS_PER_SPAN))
+    for direction in ("outward", "up"):
+        for fraction in _DEFLECTION_FRACTIONS:
+            distance = fraction * frame.reach_m
+            deflected, via = _deflected(points, span, frame, direction, distance)
+            dense = ik.densify(deflected, per_span=_SUBDIVISIONS_PER_SPAN)
+            try:
+                solution = ik.solve_site_path(
+                    model, frame.figure_site, joint_names, np.asarray(dense), seed_qpos=seed, guard=guard
+                )
+            except ik.IkFailure:
+                continue
+            return solution, dense, {
+                "span": span,
+                "kind": "self_collision" if blocked.collision is not None else "unreachable_straight",
+                "direction": direction,
+                "deflection_fraction_of_reach": fraction,
+                "deflection_m": float(np.linalg.norm(via - (points[span] + points[span + 1]) / 2.0)),
+                "via_point_m": [float(v) for v in via],
+                "blocked_by": list(blocked.collision) if blocked.collision is not None else None,
+                "straight_residual_m": float(blocked.residual_m),
+                "straight_refusal": str(blocked)[:240],
+            }
+    raise blocked
 
 
 def _solver_joints(

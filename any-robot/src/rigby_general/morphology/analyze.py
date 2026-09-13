@@ -78,7 +78,8 @@ def _looks_like_a_sensor(name: str) -> bool:
 
 
 def _classify_effector(
-    graph: KinematicGraph, cluster: EffectorCluster, closure: measure.ClosureEvidence
+    graph: KinematicGraph, cluster: EffectorCluster, closure: measure.ClosureEvidence,
+    *, legacy_name_hints: bool = True,
 ) -> EffectorKind:
     """Decide what the thing on the end of this chain is.
 
@@ -98,7 +99,7 @@ def _classify_effector(
             if graph.collidable_geoms_of_body(body)
         )
         return EffectorKind.PARALLEL_JAW if digits == 2 else EffectorKind.MULTIFINGER
-    if all(
+    if legacy_name_hints and all(
         _looks_like_a_sensor(graph.body_names[body]) for body in cluster.member_bodies
     ):
         return EffectorKind.SENSOR
@@ -125,7 +126,7 @@ def _chain_identity(graph: KinematicGraph, cluster: EffectorCluster) -> str:
 
 
 def _measure_chains(
-    graph: KinematicGraph, base_qpos: np.ndarray
+    graph: KinematicGraph, base_qpos: np.ndarray, *, legacy_name_hints: bool = True,
 ) -> tuple[ChainMeasurement, ...]:
     measured: list[ChainMeasurement] = []
     for cluster in graph.clusters:
@@ -144,7 +145,7 @@ def _measure_chains(
             cluster.interior_joints,
             base_qpos=base_qpos,
         )
-        kind = _classify_effector(graph, cluster, closure)
+        kind = _classify_effector(graph, cluster, closure, legacy_name_hints=legacy_name_hints)
         measured.append(
             ChainMeasurement(
                 cluster=cluster,
@@ -648,7 +649,11 @@ def _self_collision_pairs(
 
     Adjacent links are always in contact at the joint; listing them would drown
     the real signal. What is left is the set worth guarding with a collision
-    objective during IK.
+    objective during IK -- and it is also exactly the set the physical
+    self-collision gate can report, so a pair the engine filters out itself
+    (welded together, or a weld against the weld it hangs from) is left out
+    here too. Two boxes bolted to the same wrist can overlap by design; a
+    guard that tried to part them would only distort every pose.
     """
 
     model = graph.model
@@ -667,6 +672,8 @@ def _self_collision_pairs(
         for second in moving[index + 1 :]:
             if (min(first, second), max(first, second)) in adjacency:
                 continue
+            if not graph.physics_may_collide(first, second):
+                continue
             pairs.append(
                 tuple(sorted((graph.body_names[first], graph.body_names[second])))
             )
@@ -675,7 +682,8 @@ def _self_collision_pairs(
 
 
 
-def analyze(loaded: LoadedModel, *, velocity_limits: dict[str, float] | None = None) -> RobotMorphologyV1:
+def analyze(loaded: LoadedModel, *, velocity_limits: dict[str, float] | None = None,
+            legacy_name_hints: bool = True) -> RobotMorphologyV1:
     """Measure a compiled model and describe what kind of robot it is."""
 
     graph = KinematicGraph(loaded.model)
@@ -689,7 +697,7 @@ def analyze(loaded: LoadedModel, *, velocity_limits: dict[str, float] | None = N
                 by_index[index] = float(velocity_limits[name])
         register_velocity_limits(model, by_index)
 
-    chains = _measure_chains(graph, base_qpos)
+    chains = _measure_chains(graph, base_qpos, legacy_name_hints=legacy_name_hints)
     if not chains:
         raise MorphologyError(
             GeneralFailureCode.NO_EFFECTOR,

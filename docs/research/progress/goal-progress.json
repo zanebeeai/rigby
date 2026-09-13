@@ -1,0 +1,1349 @@
+{
+  "schema_version": "1.0",
+  "objective": "Execute the complete Rigby verifiable-goal catalog, with evidence-backed milestone commits/PRs and explicit subgoal completion announcements.",
+  "goal_catalog": "docs/research/rigby-verifiable-goals.json",
+  "goal_catalog_sha256": "3672ebf5fa10ff4216fa0213499d5988281f2ebbc611500e8526afe6e618b250",
+  "started_at_utc": "2026-09-12T02:34:49.841258+00:00",
+  "current_goal": "G05",
+  "overall_status": "active",
+  "authorization": {
+    "commits_and_pull_requests": true,
+    "conservative_subagents": true,
+    "openai_key_configured": true,
+    "openai_models_endpoint_authenticated": true,
+    "generation_calls_so_far": 0
+  },
+  "previous_goal_turn_classification": "progress",
+  "goals": [
+    {
+      "id": "G00",
+      "title": "Establish the executable baseline and protect existing capabilities",
+      "status": "complete",
+      "criteria": [
+        {
+          "id": "G00.A01",
+          "requirement": "Reproduce the review probes at a recorded commit, then fix the Windows hash-test environment issue without changing hashing semantics; core and any-robot suites pass with no new skips or weakened assertions.",
+          "status": "verified",
+          "evidence": [
+            "docs/research/progress/g00-baseline.md",
+            "docs/research/progress/g00-verification-summary.json"
+          ]
+        },
+        {
+          "id": "G00.A02",
+          "requirement": "Record the selected humanoid and frontend suites, existing expected failures, basic drawer acceptance, and gesture/finger export smoke checks. A green expected-failure test is never counted as task success.",
+          "status": "verified",
+          "evidence": [
+            "docs/research/progress/g00-baseline.md",
+            "docs/research/progress/g00-verification-summary.json"
+          ]
+        },
+        {
+          "id": "G00.A03",
+          "requirement": "Correct stale capability/sensor/collision descriptions and the zoo manifest robot count; map every active acceptance requirement to measured, deferred, failed or out-of-scope evidence.",
+          "status": "verified",
+          "evidence": [
+            "docs/research/progress/g00-baseline.md",
+            "docs/research/progress/g00-verification-summary.json",
+            "docs/research/progress/g00-acceptance-crosswalk.json"
+          ]
+        }
+      ],
+      "demo_requirement": null,
+      "demo_status": "not_required",
+      "assessment_complete": true,
+      "capability_supported": true,
+      "commits": [
+        "dfeab15617770b86bb2369f1929cfac6e0654aca",
+        "59b93a81d4c2430ca3e8e06b7d30674c97918cae",
+        "eb690937a5fa30ee132dbf260815fc459d7efc2c",
+        "b92a2d82573419bacc7dcd73ac889b439e8349fe"
+      ],
+      "pull_requests": [
+        "https://github.com/zanebeeai/rigby/pull/27"
+      ],
+      "supported_scope": "Executable baseline and explicit acceptance gaps only; no new robot manipulation capability.",
+      "integration_status": "open_pr_ci_infrastructure_blocked",
+      "completed_at_utc": "2026-09-12T02:47:24.113913+00:00",
+      "integration_blocker": {
+        "run_id": 34668561762,
+        "head_commit": "b92a2d82573419bacc7dcd73ac889b439e8349fe",
+        "annotation": "The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the Billing & plans section in your settings",
+        "action_owner": "Repository/account owner",
+        "action": "Restore GitHub Actions billing/allowance, then rerun CI. No workflow bypass or merge performed."
+      }
+    },
+    {
+      "id": "G01",
+      "title": "Make every major result replayable and visually inspectable",
+      "status": "complete",
+      "criteria": [
+        {
+          "id": "G01.A01",
+          "requirement": "Create the evidence-bundle contract described below and a single runner that can simulate, verify, render, and re-render recorded trajectories offline.",
+          "status": "verified",
+          "evidence": [
+            "docs/results/g01-report.md",
+            "docs/results/g01-validation.json"
+          ]
+        },
+        {
+          "id": "G01.A02",
+          "requirement": "Demonstrate one success, one runtime failure and one pre-execution refusal; tampering with a trace, model, world or outcome file is detected.",
+          "status": "verified",
+          "evidence": [
+            "docs/results/g01-report.md",
+            "docs/results/g01-validation.json",
+            "docs/results/g01-release/index.json"
+          ]
+        },
+        {
+          "id": "G01.A03",
+          "requirement": "Re-run the six-body canonical prompt three times under pinned dependencies; compare deterministic state/action data while excluding run IDs and wall-clock metadata. Declare any required numerical tolerance before evaluation.",
+          "status": "verified",
+          "evidence": [
+            "docs/results/g01-validation.json",
+            "docs/results/g01-repeat-regression-tests.xml",
+            "docs/results/g01-release/index.json"
+          ]
+        },
+        {
+          "id": "G01.A04",
+          "requirement": "MP4/WebM contains the full episode at real-time playback with timestamps; GIFs are explicitly labeled summaries. Verify that the existing 90-frame render cap cannot silently replace a full-duration video.",
+          "status": "verified",
+          "evidence": [
+            "docs/results/g01-report.md",
+            "docs/results/g01-validation.json",
+            "docs/results/g01-release/index.json"
+          ]
+        }
+      ],
+      "demo_requirement": "D01: baseline success/failure replay, plus a six-body GIF preview and full-duration videos.",
+      "demo_status": "verified",
+      "assessment_complete": true,
+      "capability_supported": true,
+      "commits": [
+        "2bdb57273615c4099cf64b317ea7855f52eaa89f",
+        "2770b0e5e4a631326947b8ac18520f7085c43132",
+        "ebaa67505afc10607962b62b761d33c17c63c5da"
+      ],
+      "pull_requests": [
+        "https://github.com/zanebeeai/rigby/pull/28"
+      ],
+      "completed_at_utc": "2026-09-12T03:39:48+00:00",
+      "evidence_worktree": "C:/Users/hocke/GitHub/rigby-g01",
+      "supported_scope": "Portable full-state recording/replay and complete video evidence for the six-body free-space baseline: five gate successes, one compilation refusal, one declared runtime failure. No manipulation, locomotion, VLM or robustness claim.",
+      "local_validation": {
+        "anyrobot_unique_passed": 308,
+        "core_unique_passed": 179,
+        "core_windows_symlink_skips": 2,
+        "core_known_windows_test_deferred_to_PR27": 1,
+        "archives_verified": 7,
+        "tamper_payloads_detected": 4,
+        "full_video_frames": 1634,
+        "generation_calls": 0
+      },
+      "review_resolution": "Final review found three recordings shared the first prompt reference. Fixed to record each independent prompt run, persist reference/pipeline hashes and compare every observed certification trace. A changed second run is rejected by a regression test. Entire seven-case suite and media regenerated at 2770b0e; final audit passed.",
+      "demo_evidence": [
+        "docs/results/g01-release/six-body-preview.gif",
+        "docs/results/g01-release/index.json",
+        "demos/index.html"
+      ],
+      "integration_status": "open_pr_ci_infrastructure_blocked",
+      "integration_blocker": {
+        "run_id": 34670926133,
+        "head_commit": "ebaa67505afc10607962b62b761d33c17c63c5da",
+        "annotation": "The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the Billing & plans section in your settings",
+        "action_owner": "Repository/account owner",
+        "action": "Restore GitHub Actions billing/allowance, then rerun CI. No workflow bypass or merge performed."
+      },
+      "work_basis": "Independent replay branch from origin/main; G00 changes do not alter the runtime interfaces it uses. Rebase onto merged G00 before integrating G01."
+    },
+    {
+      "id": "G02",
+      "title": "Freeze task contracts, observation boundaries and benchmark protocol",
+      "status": "complete",
+      "criteria": [
+        {
+          "id": "G02.A01",
+          "requirement": "Implement separate strict fixed-world and capability-normalized modes. A mutation test proves strict mode rejects world fitting and undocumented semantic substitutions.",
+          "status": "verified",
+          "evidence": [
+            "docs/results/g02-report.md",
+            "docs/results/g02-validation.json",
+            "any-robot/tests/test_benchmark_world.py"
+          ]
+        },
+        {
+          "id": "G02.A02",
+          "requirement": "Hash resolved non-robot geometry, object dynamics, placements, lighting, goals, physics, start-zone rules and sensor policy; the fixed-world hash remains identical across robot swaps. Declared robot-mounted sensor transforms live in the body manifest.",
+          "status": "verified",
+          "evidence": [
+            "docs/results/g02-release/world-conformance.json",
+            "docs/results/g02-release/worlds",
+            "docs/results/g02-release/bodies",
+            "any-robot/tests/test_benchmark_world.py"
+          ]
+        },
+        {
+          "id": "G02.A03",
+          "requirement": "Register root goals, dwell times, attempt/time budgets, perturbation distributions, feasibility rules, metrics and split policy before scored runs. Do not inspect existing sealed holdout identities.",
+          "status": "verified",
+          "evidence": [
+            "any-robot/assets/general/research-protocols/transfer-bench-v1-r1/benchmark-protocol.v1.json",
+            "any-robot/assets/general/research-protocols/transfer-bench-v1-r1/feasibility-rules.v1.json",
+            "any-robot/assets/general/research-protocols/transfer-bench-v1-r1/registration.json",
+            "docs/results/g02-acceptance-crosswalk.json"
+          ]
+        },
+        {
+          "id": "G02.A04",
+          "requirement": "Keep simulator ground truth in an independent evaluator. Access tests prove the acting policy cannot read privileged evaluator fields; fully observed planning is a separately labeled baseline.",
+          "status": "verified",
+          "evidence": [
+            "core/tests/test_observations.py",
+            "any-robot/tests/test_benchmark_evaluator.py",
+            "any-robot/tests/test_benchmark_runner.py",
+            "docs/results/g02-core-tests.xml",
+            "docs/results/g02-anyrobot-tests.xml"
+          ]
+        }
+      ],
+      "demo_requirement": null,
+      "demo_status": "not_required",
+      "assessment_complete": true,
+      "capability_supported": true,
+      "commits": [
+        "faaa8e2e938b5c9ca7875a258b81b967dd1b8131",
+        "ca4f4b5fc5e7439771a56227f0cdc8e28ea0d42c"
+      ],
+      "pull_requests": [
+        "https://github.com/zanebeeai/rigby/pull/29"
+      ],
+      "completed_at_utc": "2026-09-12T04:34:32+00:00",
+      "evidence_worktree": "C:/Users/hocke/GitHub/rigby-g02",
+      "supported_scope": "Registered fixed-world/normalized benchmark contracts, resolved-model invariance and trusted-policy observation API separation. No manipulation, locomotion, VLM, hierarchy, unseen-body or robustness claim; all twelve probes unscored.",
+      "local_validation": {
+        "anyrobot_passed": 337,
+        "core_passed": 112,
+        "core_observation_cases": 52,
+        "core_known_windows_test_deferred_to_PR27": 1,
+        "registered_public_variants": 140,
+        "body_world_comparisons": 840,
+        "sensor_policy_probes": 12,
+        "evidence_payloads_verified": 248,
+        "tamper_payloads_detected": 4,
+        "existing_acceptance_requirements_preserved": 16,
+        "generation_calls": 0
+      },
+      "review_resolution": "Independent review reproduced false release from force-bearing margin contacts and success after a non-grid-aligned simulation deadline. Both fixed and covered by real MuJoCo regressions before final artifacts. Release semantics amended in a new registration, preserving the original unscored draft. Reviewer finished; no active subagents remain.",
+      "release_index_sha256": "4f0088702fbc4c845838f62fafff62c4ac8a1de53ce380d2f728bba567752303",
+      "integration_status": "open_pr_ci_infrastructure_blocked",
+      "integration_blocker": {
+        "run_id": 34673352496,
+        "head_commit": "ca4f4b5fc5e7439771a56227f0cdc8e28ea0d42c",
+        "annotation": "The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the Billing & plans section in your settings",
+        "action_owner": "Repository/account owner",
+        "action": "Restore GitHub Actions billing/allowance, then rerun CI. No workflow bypass or merge performed."
+      },
+      "work_basis": "Independent branch from origin/main, not stacked on G00/G01. Local criteria verified; merge after green CI. G01 physical replay integration, a shared retry-budget ledger, a preregistered independent feasibility roster and confirmatory split custody remain prerequisites to research scoring."
+    },
+    {
+      "id": "G03",
+      "title": "Derive a body capability contract automatically",
+      "status": "complete",
+      "criteria": [
+        {
+          "id": "G03.A01",
+          "requirement": "Ingest all six zoo bodies and at least three available valid third-party descriptions without robot-ID, joint-name or link-name branches in shared control code.",
+          "status": "verified",
+          "evidence": [
+            "docs/results/g03-release/audit.json",
+            "docs/results/g03-release/static-scan.json",
+            "any-robot/tests/fixtures/g03_third_party/provenance.json",
+            "any-robot/tests/test_body_capabilities.py"
+          ]
+        },
+        {
+          "id": "G03.A02",
+          "requirement": "On an independently checked geometry fixture, derive sites within 1 mm, classify all declared effectors correctly, and identify capability/limit/inertia problems by typed error; separately retain existing sealed-label accuracy requirements.",
+          "status": "verified",
+          "evidence": [
+            "docs/results/g03-release/geometry.json",
+            "docs/results/g03-release/independent-geometry.json",
+            "docs/results/g03-release/contact-feasibility.json",
+            "any-robot/tests/fixtures/g03_geometry/label-freeze.json",
+            "docs/results/g03-any-robot-tests.xml"
+          ]
+        },
+        {
+          "id": "G03.A03",
+          "requirement": "Record geometry, actuation, contact and sensor assumptions with provenance and uncertainty. Unknown grip, suction, rolling or balance ability must not be inferred from appearance alone.",
+          "status": "verified",
+          "evidence": [
+            "docs/results/g03-release/bodies",
+            "any-robot/src/rigby_general/capabilities/contracts.py",
+            "any-robot/src/rigby_general/capabilities/intake.py",
+            "docs/results/g03-report.md"
+          ]
+        },
+        {
+          "id": "G03.A04",
+          "requirement": "Joint/link renaming and ordering changes preserve capabilities and transform-equivalent motion; include at least 20 renamings/permutations per zoo body.",
+          "status": "verified",
+          "evidence": [
+            "docs/results/g03-release/invariance.json",
+            "docs/results/g03-release/invariance",
+            "docs/results/g03-release/uploaded-model-equivalence.json",
+            "docs/results/verify_g03_release.py"
+          ]
+        }
+      ],
+      "demo_requirement": "D03: automated body inspection gallery showing inferred chains, effectors, workspace and named unsupported capabilities.",
+      "demo_status": "verified",
+      "assessment_complete": true,
+      "capability_supported": true,
+      "commits": [
+        "a1cfd75d30f8949ad2fc46049b3f32a0402942cb",
+        "1efdd8c75ea5d799abbeba7b1eb924d96f3eed1c",
+        "7e1da38328e65d865b07130d33b5ee4d56e748d5"
+      ],
+      "pull_requests": [
+        "https://github.com/zanebeeai/rigby/pull/30"
+      ],
+      "completed_at_utc": "2026-09-12T05:29:17.531851+00:00",
+      "evidence_worktree": "C:/Users/hocke/GitHub/rigby-g03",
+      "supported_scope": "Evidence-qualified rigid fixed-base URDF intake with structural identities, explicit source-name classification bypass, preserved aliases, qualified geometry/actuation/contact/sensor facts and replayable kinematic inspection. No physical grasp, locomotion, hardware sensor, universal controller or unseen-topology performance claim.",
+      "demo_evidence": [
+        "docs/results/g03-release/index.html",
+        "docs/results/g03-release/media",
+        "docs/results/g03-validation.json"
+      ],
+      "local_validation": {
+        "anyrobot_passed": 328,
+        "final_compressed_archive_targeted_passed": 1,
+        "zoo_bodies": 6,
+        "admitted_unchanged_third_party_descriptions": 3,
+        "upstream_meshes_verified": 41,
+        "independent_geometry_fixtures": 3,
+        "derived_sites_verified": 18,
+        "site_error_max_m": 2.7761598307598603e-17,
+        "name_order_permutations": 120,
+        "inspection_gifs": 12,
+        "inspection_frames": 720,
+        "exact_kinematic_sample_replays": 1536,
+        "payloads_verified": 518,
+        "tamper_mutations_refused": 3,
+        "byte_identical_full_gif_rerender": true,
+        "generation_calls": 0,
+        "scored_physical_task_trials": 0,
+        "existing_acceptance_requirements_preserved": 16
+      },
+      "review_resolution": "Independent audit found legacy name-dependent arm/tip selection, 19.09 mm grasp-centre errors, inverted limits, a centroid inside a central obstacle, overstated continuous-joint bounds and a missing-contact test loophole. General fixes verified against unchanged independent fixture labels. Reviewer completed and has no running processes.",
+      "release_index_sha256": "c9702384ce8e16085b143c1fbefc01a1e71f2be676e193a6cfac3483cf4464bf",
+      "integration_status": "open_pr_ci_infrastructure_blocked",
+      "integration_blocker": {
+        "run_id": 34675642519,
+        "head_commit": "7e1da38328e65d865b07130d33b5ee4d56e748d5",
+        "check_run_id": 103504908652,
+        "annotation": "The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the 'Billing & plans' section in your settings",
+        "action_owner": "Repository/account owner",
+        "action": "Restore GitHub Actions billing/allowance, then rerun CI. No workflow bypass or merge performed."
+      },
+      "work_basis": "Independent branch from current origin/main, not stacked on G00-G02. New experiments must use ingest_capability_body; default legacy studio/API has not been migrated. Existing sealed-label accuracy requirements remain unchanged. Coupled/floating-base/sensor extensions need their own runtime support."
+    },
+    {
+      "id": "G04",
+      "title": "Verify semantic fidelity beyond identical hashes",
+      "status": "planned",
+      "criteria": [
+        {
+          "id": "G04.A01",
+          "requirement": "Freeze 60 shared semantic cases spanning the inventory, reference frames, qualitative extent/speed, repetition and object roles; corresponding requested semantic programs agree across applicable bodies.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G04.A02",
+          "requirement": "Add at least 120 independently authored/reviewed language cases with paraphrases, minimal contrasts, negation, ambiguous deixis and explicit quantities. Canonical symbolic cases must be exact; language correctness target is at least 95%, with all prohibited substitutions rejected.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G04.A03",
+          "requirement": "Preserve '5 cm' as an exact requested quantity while grounding 'a little' from context; verify two distinct body-relative distances without changing the semantic reading.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G04.A04",
+          "requirement": "Publish errors and unsupported language coverage separately. If independent labels are unavailable, complete the engineering fixture but leave the research-language gate pending.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "demo_requirement": "D04: synchronized 'a little' versus 'as far as possible' versus '5 cm' on three bodies, with the semantic fields and measured distances visible.",
+      "demo_status": "pending",
+      "assessment_complete": false,
+      "capability_supported": false,
+      "commits": [],
+      "pull_requests": []
+    },
+    {
+      "id": "G05",
+      "title": "Close the six-body free-space composition gap",
+      "status": "in_progress",
+      "discovered_prerequisites": [
+        {
+          "finding": "Reference clock 240 Hz differs from zoo MuJoCo timestep 0.002 s (500 Hz); existing timing/velocity claims require re-evaluation.",
+          "evidence": "docs/results/g01-report.md (PR 28)",
+          "required_action": "Use actual physics time consistently, preserve existing physical limits, and independently justify any physically required duration increase before G05 scoring. Do not redefine a slower result as passing by changing timestamps."
+        },
+        {
+          "finding": "Dual-arm legal IK keys overshoot left_joint_4 in the interior of the return and recovery quintics, not at a discontinuous phase seam. Uniform duration scaling cannot repair the position overshoot.",
+          "evidence": "docs/results/g05-transition-diagnostic/offending-keyframes.json (PR 31)",
+          "required_action": "Use bounded, continuous joint interpolation; preserve keys, limits and authored timing, verify continuous extrema and physical execution."
+        }
+      ],
+      "criteria": [
+        {
+          "id": "G05.A01",
+          "requirement": "The exact reviewed reach/return prompt succeeds on all six bodies using freshly generated exact-region primitives, zero substitutions and unchanged limits; left_joint_4 no longer exceeds its range.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G05.A02",
+          "requirement": "For each body, evaluate at least 20 predeclared start/pace variants with at least 19 successful feasible trials; invalid requests produce correct typed refusals and are counted separately.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G05.A03",
+          "requirement": "Retain all current physical gates, report tracking and wall/execution time, and keep canonical durations no slower than the recorded baseline unless a documented physical requirement is independently justified.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "demo_requirement": "D05: six synchronized bodies performing reach/return, plus the old and repaired dual-arm transition.",
+      "demo_status": "pending",
+      "assessment_complete": false,
+      "capability_supported": false,
+      "commits": [
+        "8d4d1c7cbeb0986e471dd1d743711d1b8e0d3119",
+        "2a4a0cc4ee7ec18e3dca2be35f2d0a6adbcbdd6b"
+      ],
+      "pull_requests": [
+        "https://github.com/zanebeeai/rigby/pull/31"
+      ],
+      "evidence_worktree": "C:/Users/hocke/GitHub/rigby-g05",
+      "prerequisite_milestones": [
+        {
+          "title": "Certify trajectories on native physics time",
+          "status": "locally_verified",
+          "evidence": [
+            "docs/results/g05-clock-report.md",
+            "docs/results/g05-clock-validation.json",
+            "docs/results/verify_g05_clock.py"
+          ],
+          "local_validation": {
+            "anyrobot_passed": 310,
+            "clock_regression_passed": 11,
+            "payloads_verified": 33,
+            "fresh_exact_region_leaves": 12,
+            "canonical_successes": 5,
+            "canonical_refusals": 1,
+            "generation_calls": 0
+          },
+          "scope": "Repairs control/observation time and stale post-step geometry without changing limits or authored durations. G05 criteria remain pending."
+        }
+      ],
+      "integration_status": "open_pr_ci_infrastructure_blocked",
+      "integration_blocker": {
+        "run_id": 34728946806,
+        "head_commit": "2a4a0cc4ee7ec18e3dca2be35f2d0a6adbcbdd6b",
+        "annotation": "The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the 'Billing & plans' section in your settings",
+        "action_owner": "Repository/account owner",
+        "action": "Restore GitHub Actions billing/allowance, then rerun CI. No workflow bypass or merge performed."
+      }
+    },
+    {
+      "id": "G06",
+      "title": "Make contact primitives physically useful across grippers",
+      "status": "planned",
+      "criteria": [
+        {
+          "id": "G06.A01",
+          "requirement": "For every one of the five gripper-bearing zoo bodies, attempt approach, opposition/closure, lift, sustained hold, transport and release. Every enabled body must pass the canonical normalized grasp. Record remaining bodies as failed or independently demonstrated mechanically unsupported, with concrete diagnostics.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G06.A02",
+          "requirement": "On a fixed fixture selected and frozen from the independent feasibility map, achieve at least 90/100 successful trials per enabled body. Completion requires at least three structural/effector configurations, including a bimanual or multifinger configuration, not three length variants of one gripper. An unsuccessful/refused body does not count toward this minimum.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G06.A03",
+          "requirement": "Measure stable object support for at least 2 s, transport into the target region, and stable released placement for at least 2 s; freeze displacement, load and penetration tolerances before evaluation.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G06.A04",
+          "requirement": "No hidden object state writes, welds, object actuators or arm/object collision exclusions may create a successful manipulation result. Invalid source-model collision hulls require documented model treatment.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "demo_requirement": "D06: acquisition-to-release on all five attempted bodies, including failures; synchronized fixed-world comparison for the enabled set.",
+      "demo_status": "pending",
+      "assessment_complete": false,
+      "capability_supported": false,
+      "commits": [],
+      "pull_requests": []
+    },
+    {
+      "id": "G07",
+      "title": "Implement recursive superprimitive contracts",
+      "status": "planned",
+      "criteria": [
+        {
+          "id": "G07.A01",
+          "requirement": "Use one neutral typed contract for leaves and composites: arguments, requirements, initiation, invariants, effects, termination, timeout, recovery, resource ownership and validity context.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G07.A02",
+          "requirement": "Execute Sequence, Selector, Observe, Primitive and bounded RepeatUntil at nesting depth at least 4; represent Parallel with explicit resource conflicts.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G07.A03",
+          "requirement": "Reject cycles, unbounded retries, unknown predicates and incompatible resource ownership; test success, failure, unknown and interruption at each node.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G07.A04",
+          "requirement": "Round-trip persisted definitions without changing meaning; no thumb/finger/arm names are required by the neutral contract.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "demo_requirement": null,
+      "demo_status": "not_required",
+      "assessment_complete": false,
+      "capability_supported": false,
+      "commits": [],
+      "pull_requests": []
+    },
+    {
+      "id": "G08",
+      "title": "Validate and repair transitions between certified skills",
+      "status": "planned",
+      "criteria": [
+        {
+          "id": "G08.A01",
+          "requirement": "Check terminal/initiation compatibility for pose, velocity, contact mode, object ownership, belief freshness and limb/support resources.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G08.A02",
+          "requirement": "On at least 100 frozen feasible boundary cases spanning every enabled body, achieve at least 95 successful composed executions; record transition cost.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G08.A03",
+          "requirement": "Inject at least 40 incompatible boundaries and require every one to be rejected or repaired and re-verified before execution. Include the reviewed dual-arm failure.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G08.A04",
+          "requirement": "Apply continuity requirements appropriate to the contact mode; confirm that a smooth path cannot bypass object-hold or support checks.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "demo_requirement": "D08: before/after transition repair, including joint-limit approach, carry-to-place and a contact-mode change.",
+      "demo_status": "pending",
+      "assessment_complete": false,
+      "capability_supported": false,
+      "commits": [],
+      "pull_requests": []
+    },
+    {
+      "id": "G09",
+      "title": "Generate observable conditionals and monitor progress honestly",
+      "status": "planned",
+      "criteria": [
+        {
+          "id": "G09.A01",
+          "requirement": "Represent each conditional with entities, evidence sources, temporal window, decision rule, uncertainty/abstention and fallback.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G09.A02",
+          "requirement": "Cover at least six predicates: reachable, opposition established, held, moving with robot, stably placed, area clear. Evaluate at least 20 independently labeled episodes per predicate using declared sensors.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G09.A03",
+          "requirement": "On at least 60 cases with occlusion, stale frames or absent sensors, produce unknown/re-observe/failure rather than an unsupported success; no false success in this engineered negative set.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G09.A04",
+          "requirement": "The same predicate contract binds to different sensor configurations without privileged evaluator leakage. Thresholds are set by task policy/calibration, not guessed from URDF text.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "demo_requirement": "D09: visible grasp, hidden slip and occluded placement, with sensor provenance and pass/fail/unknown overlays.",
+      "demo_status": "pending",
+      "assessment_complete": false,
+      "capability_supported": false,
+      "commits": [],
+      "pull_requests": []
+    },
+    {
+      "id": "G10",
+      "title": "Deliver the first reusable closed-loop TransferObject skill",
+      "status": "planned",
+      "criteria": [
+        {
+          "id": "G10.A01",
+          "requirement": "Run one root skill definition through Acquire, VerifyHold, Transport, Release and VerifyPlacement on the frozen enabled bodies and identical physical scene.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G10.A02",
+          "requirement": "At least 90/100 nominal successful episodes per body under a frozen 120 s default episode cap; report cap changes as protocol revisions before evaluation.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G10.A03",
+          "requirement": "For each body, run 20 trials each of displaced object, induced slip and temporary occlusion; recover and finish at least 16/20 in each class, with no false completion across all trials.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G10.A04",
+          "requirement": "Retry budgets are at most 3 per subgoal and execution is resumable from observed state; a recovery does not restart the environment or teleport an object.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "demo_requirement": "D10: three-body fixed-world transfer, plus uninterrupted slip and occlusion recoveries.",
+      "demo_status": "pending",
+      "assessment_complete": false,
+      "capability_supported": false,
+      "commits": [],
+      "pull_requests": []
+    },
+    {
+      "id": "G11",
+      "title": "Promote, retrieve and reuse skills with validity conditions",
+      "status": "planned",
+      "criteria": [
+        {
+          "id": "G11.A01",
+          "requirement": "Promote a candidate only after its independent validation set passes; store definition, body/controller/sensor context, cost and evidence hashes.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G11.A02",
+          "requirement": "Execute the same TransferObject and at least two subskills from persisted storage on three new object/layout instances per enabled body without manual edits; log cache reuse.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G11.A03",
+          "requirement": "Change geometry, controller, sensors, friction assumptions and evidence schema in separate tests; invalidate or revalidate every affected certificate.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G11.A04",
+          "requirement": "Interrupt and restart at at least 10 safe boundaries; reconstruct state from observations and complete or stop explicitly. Do not treat retrieval similarity as proof of validity.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "demo_requirement": "D11: learn/validate once, reuse in a new layout, then invalidate and repair after a physical-context change.",
+      "demo_status": "pending",
+      "assessment_complete": false,
+      "capability_supported": false,
+      "commits": [],
+      "pull_requests": []
+    },
+    {
+      "id": "G12",
+      "title": "Acquire missing motor skills within a bounded search budget",
+      "status": "planned",
+      "criteria": [
+        {
+          "id": "G12.A01",
+          "requirement": "Freeze three acquisition problems in at least two body families before search; at least one requires new contact timing/trajectory/controller parameters rather than only a new sequence or rename.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G12.A02",
+          "requirement": "Starting without a validated implementation, synthesize one through simulation/optimization and store its contract. Default ceiling: 200 attempts or 30 simulator-worker minutes per problem, whichever comes first.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G12.A03",
+          "requirement": "Evaluate on 50 unseen perturbation trials per body/problem; success target is at least 40/50 with all hard gates satisfied and zero manual trajectory edits during acquisition.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G12.A04",
+          "requirement": "Separate instantiation, composition and motor-skill discovery in the ledger. An unsupported discovery hypothesis is a valid reported research result, but does not meet the capability target.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "demo_requirement": "D12: missing skill \u2192 failed attempts \u2192 acquired execution \u2192 reuse, with search budget and an uninterrupted final trial.",
+      "demo_status": "pending",
+      "assessment_complete": false,
+      "capability_supported": false,
+      "commits": [],
+      "pull_requests": []
+    },
+    {
+      "id": "G13",
+      "title": "Build a calibration corpus from real execution outcomes",
+      "status": "planned",
+      "criteria": [
+        {
+          "id": "G13.A01",
+          "requirement": "Collect at least 600 independent source episodes: 300 successes and 300 natural failures, covering at least five enabled bodies and six task/failure families. Mutations are auxiliary and stay grouped with their source.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G13.A02",
+          "requirement": "Reserve 120 success and 120 failure episodes for a sealed evaluation slice; retain at least two morphology identities or one distinct family outside calibration tuning.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G13.A03",
+          "requirement": "Provide full video, sparse/dense sampled views and global-plus-local crops from the same episodes; hide labels, model verdicts and privileged telemetry from judging inputs.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G13.A04",
+          "requirement": "Use independent simulator truth for measurable physical outcomes. Human reviewers resolve semantic/visual ambiguity and record unknown instead of forced labels.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "demo_requirement": "D13: labeled failure atlas with complete source-episode links, including near successes and occluded failures.",
+      "demo_status": "pending",
+      "assessment_complete": false,
+      "capability_supported": false,
+      "commits": [],
+      "pull_requests": []
+    },
+    {
+      "id": "G14",
+      "title": "Calibrate VLM judging before enabling autonomous termination",
+      "status": "planned",
+      "criteria": [
+        {
+          "id": "G14.A01",
+          "requirement": "Freeze model/version/prompt, decision threshold, abstention policy and evidence format before sealed evaluation; compare sparse frames, dense/video evidence, and global-plus-local views at matched call/candidate budgets.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G14.A02",
+          "requirement": "Beat always-accept/reject/first/base baselines; proposed promotion targets are balanced accuracy at least 0.85, sensitivity at least 0.85 and decided-case coverage at least 0.80, with per-body/class results and confidence intervals.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G14.A03",
+          "requirement": "For noncritical semantic termination, require one-sided 95% false-success upper bound at most 5% on the eligible decided failure population; keep unknowns separate and report all-trial metrics. Critical physical termination retains deterministic/sensor checks.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G14.A04",
+          "requirement": "For any stronger per-failure-class claim, collect the required independent sample count; the pooled corpus cannot establish each rare-class rate. Complete oracle/no-VLM/calibrated-VLM downstream comparisons.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "demo_requirement": "D14: old versus calibrated decisions on the same hidden-slip/near-complete sequences, including abstentions and remaining errors.",
+      "demo_status": "pending",
+      "assessment_complete": false,
+      "capability_supported": false,
+      "commits": [],
+      "pull_requests": []
+    },
+    {
+      "id": "G15",
+      "title": "Demonstrate recursive long-horizon manipulation before mobility",
+      "status": "planned",
+      "criteria": [
+        {
+          "id": "G15.A01",
+          "requirement": "Generate ClearWorkArea trees of depth at least 4 for 3, 5 and 10 objects, using shared subskills and per-object grounding rather than manually authored per-instance scripts.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G15.A02",
+          "requirement": "On three frozen enabled bodies, run 50 paired nominal seeds for each chain length; proposed whole-task success targets are 90%, 80% and 60% for 3/5/10 objects respectively, with confidence intervals.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G15.A03",
+          "requirement": "Run 30 paired disturbed seeds per body for 5 objects; hierarchy with recovery should improve full completion by at least 15 percentage points over the same leaves in a flat/no-recovery executor, under equal time and retry budgets.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G15.A04",
+          "requirement": "Root success requires every designated object correctly/stably placed and the work area clear; no averaging successful children over an unfinished root task. Track planning calls and time saved by reuse.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "demo_requirement": "D15: uninterrupted 3/5/10-object clearance videos with a live tree and a disturbance/recovery example.",
+      "demo_status": "pending",
+      "assessment_complete": false,
+      "capability_supported": false,
+      "commits": [],
+      "pull_requests": []
+    },
+    {
+      "id": "G16",
+      "title": "Build and validate the three exotic mobile embodiments",
+      "status": "planned",
+      "criteria": [
+        {
+          "id": "G16.A01",
+          "requirement": "Provide dog-plus-arm, wheeled-biped and rigid segmented octopus-like models with physical/actuator/sensor manifests; these are development/showcase bodies, not automatically held-out research bodies.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G16.A02",
+          "requirement": "Validate inertias, limits, collision geometry, support/contact roles and recoverable initial states. Body definitions may differ; shared task code contains no robot-ID special cases.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G16.A03",
+          "requirement": "Freeze one common feasible world and goal set for the three bodies before policy tuning, supported by reach/support/traction analysis and a labeled expert feasibility baseline.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G16.A04",
+          "requirement": "Record origin and redistribution terms of every asset; procedural models are the default if no preferred models are supplied. The shared task/world remains independent of which locomotion controller later succeeds.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "demo_requirement": "D16: physical inspection and contact/support tests for all three bodies, including any unsupported maneuvers.",
+      "demo_status": "pending",
+      "assessment_complete": false,
+      "capability_supported": false,
+      "commits": [],
+      "pull_requests": []
+    },
+    {
+      "id": "G17",
+      "title": "Establish independent locomotion control",
+      "status": "planned",
+      "criteria": [
+        {
+          "id": "G17.A01",
+          "requirement": "For each body, execute travel, stop, turn and return on the common course in at least 100 frozen trials; at least 90 reach the goal and remain stable for 2 s.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G17.A02",
+          "requirement": "Run 30 predetermined perturbation trials per body with at least 24 recoveries; include traction/support disturbances appropriate to the declared mechanics and report them separately.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G17.A03",
+          "requirement": "Controller logs identify analytic, per-body trained, automatically adapted or shared policy provenance. No root teleportation, artificial support or hidden stabilizing wrench may count as success.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G17.A04",
+          "requirement": "Publish fall, collision, energy, speed, controller latency and time-budget outcomes; locomotion control must work without the high-level language planner.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "demo_requirement": "D17: synchronized walk/roll/crawl course plus uninterrupted perturbation recoveries.",
+      "demo_status": "pending",
+      "assessment_complete": false,
+      "capability_supported": false,
+      "commits": [],
+      "pull_requests": []
+    },
+    {
+      "id": "G18",
+      "title": "Combine locomotion with manipulation",
+      "status": "planned",
+      "criteria": [
+        {
+          "id": "G18.A01",
+          "requirement": "Execute approach object \u2192 stabilize \u2192 acquire \u2192 move while holding \u2192 place \u2192 return, with the same root contract on the three bodies.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G18.A02",
+          "requirement": "Achieve at least 80/100 nominal full-task successes per body in the fixed world; verify object control during base motion and correct support-resource allocation.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G18.A03",
+          "requirement": "Run 30 disturbances per body distributed over navigation, carrying and placement; at least 24 end in recovery and true completion, with all remaining trials explicitly failed.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G18.A04",
+          "requirement": "Validate shared limbs/support contacts: a limb used to hold an object cannot simultaneously be assumed available for stance without a verified combined controller.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "demo_requirement": "D18: uninterrupted retrieve-and-deliver on dog, wheels and articulated tentacles, with carrying perturbations.",
+      "demo_status": "pending",
+      "assessment_complete": false,
+      "capability_supported": false,
+      "commits": [],
+      "pull_requests": []
+    },
+    {
+      "id": "G19",
+      "title": "Generate a useful synthetic control dataset",
+      "status": "planned",
+      "criteria": [
+        {
+          "id": "G19.A01",
+          "requirement": "Produce a 1,000-episode pilot from at least four development morphologies, six primitive/contact/transition families and recorded disturbance distributions; include at least 20% failure/recovery or near-boundary episodes.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G19.A02",
+          "requirement": "Store actual state, action, reference, contacts, declared observations, body graph, dynamics, seed and independent outcomes. Demonstrate reconstruction of any sampled episode.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G19.A03",
+          "requirement": "Freeze train/development/topology-test splits before generation; no holdout teacher trajectories enter training. Validate coverage and data integrity with a sampled replay audit.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G19.A04",
+          "requirement": "Measure bytes/episode and simulation throughput before scaling. Default local disk ceiling is 10 GiB for research outputs until capacity is reassessed; 10k/100k points are conditional expansions, not required upfront.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "demo_requirement": "D19: dataset coverage reel with linked full traces and a side-by-side clean/disturbed/recovery episode.",
+      "demo_status": "pending",
+      "assessment_complete": false,
+      "capability_supported": false,
+      "commits": [],
+      "pull_requests": []
+    },
+    {
+      "id": "G20",
+      "title": "Test a small per-body residual tracker",
+      "status": "planned",
+      "criteria": [
+        {
+          "id": "G20.A01",
+          "requirement": "Install an isolated reproducible training environment and compare analytic control, a small per-body tracker, and a history-conditioned residual tracker under identical observations and references.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G20.A02",
+          "requirement": "Run at least three training seeds and 100 held-out disturbance trials per selected body; include tracking, task success, latency and effort outcomes.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G20.A03",
+          "requirement": "Adoption target: at least 10 percentage points more disturbed task success or at least 20% lower tracking error, with no material task-success regression and no critical false acceptance; report paired confidence intervals.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G20.A04",
+          "requirement": "Collect corrections on states reached by the learned policy and compare this with clean-success-only imitation. Bound training by a measured pilot budget before continuing.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "demo_requirement": "D20: identical disturbance replay under analytic and learned controllers, including cases where learning loses.",
+      "demo_status": "pending",
+      "assessment_complete": false,
+      "capability_supported": false,
+      "commits": [],
+      "pull_requests": []
+    },
+    {
+      "id": "G21",
+      "title": "Test a shared controller on unseen topology",
+      "status": "planned",
+      "criteria": [
+        {
+          "id": "G21.A01",
+          "requirement": "Expand the dataset to the stated mobile/manipulation scope with variable-size morphology inputs; compare graph/joint tokens, padded vectors and per-body policies.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G21.A02",
+          "requirement": "Use at least three unseen topology families and multiple bodies per family; freeze models and data before revealing test identities. Evaluate at least 100 trials per reported task/body cell over three training seeds.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G21.A03",
+          "requirement": "Report zero-shot results separately from 10-episode and 100-episode adaptation; zero-shot permits no test-body expert rollouts, finetuning or body-specific code.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G21.A04",
+          "requirement": "Adoption target: at least 10 percentage points better zero-shot full-task success than the padded-vector baseline with a paired confidence interval excluding zero, while preserving physical gates and reported control latency.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "demo_requirement": "D21: first execution on a previously withheld topology, followed by explicitly labeled few-shot adaptation comparisons.",
+      "demo_status": "pending",
+      "assessment_complete": false,
+      "capability_supported": false,
+      "commits": [],
+      "pull_requests": []
+    },
+    {
+      "id": "G22",
+      "title": "Run the controlled research benchmark and ablations",
+      "status": "planned",
+      "criteria": [
+        {
+          "id": "G22.A01",
+          "requirement": "Freeze candidate code, seeds, feasible/infeasible task map and independent labels before confirmatory evaluation; use a 6\u201310-body, 6-task-family, 20-seed pilot to choose and register the final sample design.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G22.A02",
+          "requirement": "Measure all five hypotheses from the research plan: semantic factorization, body-authoring cost, hierarchy/recovery, synthetic control and visual verification. Conditional branches may be reported unsupported/not enabled; they may not disappear from the results table.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G22.A03",
+          "requirement": "Compare equally expressive Talmy/generic representations, same leaves with flat/hierarchical execution, equal-budget language/constraint baselines, measured/manual body adapters, and applicable control/verifier variants.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G22.A04",
+          "requirement": "Publish every per-cell outcome, unconditional and feasible-only success, refusal precision/recall, coverage, chain length, data/compute/manual labor and confidence intervals. Results are grouped by source episode/body; no frame-level pseudo-replication.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "demo_requirement": "D22: deterministic paired comparison reels linked to every complete benchmark episode, including negative ablations.",
+      "demo_status": "pending",
+      "assessment_complete": false,
+      "capability_supported": false,
+      "commits": [],
+      "pull_requests": []
+    },
+    {
+      "id": "G23",
+      "title": "Build the synchronized research/demo viewer and exports",
+      "status": "planned",
+      "criteria": [
+        {
+          "id": "G23.A01",
+          "requirement": "Display physical views, root goal and active subtree, observed/unknown predicates, body/controller provenance, world hash, sim time, interventions and final outcome.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G23.A02",
+          "requirement": "Load evidence bundles offline; scrubbing aligns video/state/tree within one video frame. Selecting any trial, including failure, opens its full episode and rerun command.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G23.A03",
+          "requirement": "Export rigid per-link GLB and round-trip within the existing 1 mm requirement where that export capability is claimed; keep diagnostic video/trace available when an exporter is unsupported.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G23.A04",
+          "requirement": "Preserve existing humanoid Motion Studio/gesture regressions; separate captured execution from editable planned animation in the UI.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "demo_requirement": "D23: screen recording of opening, replaying, scrubbing and rerunning a success and failure bundle.",
+      "demo_status": "pending",
+      "assessment_complete": false,
+      "capability_supported": false,
+      "commits": [],
+      "pull_requests": []
+    },
+    {
+      "id": "G24",
+      "title": "Deliver the flagship same-room exotic cleanup demonstration",
+      "status": "planned",
+      "criteria": [
+        {
+          "id": "G24.A01",
+          "requirement": "Use the identical instruction and world with three designated objects/trays on dog-plus-arm, wheeled-biped and articulated-octopus bodies; generate a depth-at-least-4 task tree with reused subskills.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G24.A02",
+          "requirement": "Run 50 predetermined nominal seeds per body and achieve at least 40/50 full completions under a frozen default 10-minute simulation cap. No human action during an episode.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G24.A03",
+          "requirement": "Run 30 predetermined disturbed seeds per body with at least 24 true full completions; count remaining failures and every retry/intervention.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G24.A04",
+          "requirement": "Use only declared observations for the deployed policy; VLM-only termination is permitted only for the predicates/populations accepted in G14. Publish an oracle-assisted version separately if used. Goal includes stable placement, clear marked region and return to start.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "demo_requirement": "D24: synchronized uninterrupted three-body cleanup video, short GIF preview, and an offline gallery containing every trial.",
+      "demo_status": "pending",
+      "assessment_complete": false,
+      "capability_supported": false,
+      "commits": [],
+      "pull_requests": []
+    },
+    {
+      "id": "G25",
+      "title": "Package a reproducible research release",
+      "status": "planned",
+      "criteria": [
+        {
+          "id": "G25.A01",
+          "requirement": "Produce a capability/claim table linking every statement to code, protocol, quantitative result and replayable media; identify negative and untested findings.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G25.A02",
+          "requirement": "A fresh checkout reproduces a small smoke bundle and re-renders an archived full episode without API calls. Large models/data have checksums, acquisition instructions, provenance and license inventory.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G25.A03",
+          "requirement": "Provide literature/baseline mapping, data/compute accounting, benchmark protocol, limitations and a clear separation of semantic transfer, per-body adaptation and universal control.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G25.A04",
+          "requirement": "Prepare the manuscript/demo package locally. Public publication, repository push or collaborator messaging occurs only when requested.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "demo_requirement": "D25: final demo reel with captions linking each segment to its uninterrupted run and quantitative claim.",
+      "demo_status": "pending",
+      "assessment_complete": false,
+      "capability_supported": false,
+      "commits": [],
+      "pull_requests": []
+    },
+    {
+      "id": "G26",
+      "title": "Close optional legacy humanoid, RAG and human-preference acceptance",
+      "status": "planned",
+      "criteria": [
+        {
+          "id": "G26.A01",
+          "requirement": "Map existing v2 benchmark, human-study, RAG A/B, export and physical-task requirements to real collected evidence rather than synthetic test fixtures; preserve their original acceptance thresholds.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G26.A02",
+          "requirement": "Run the required human preference/calibration study with independent raters and actual records before claiming human agreement; measure retrieval benefit with a controlled no-retrieval baseline.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G26.A03",
+          "requirement": "Re-run button/drawer robustness and other claimed physical tasks; unresolved grasp/container/bimanual cases remain failed rather than being absorbed into a suite pass rate.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "demo_requirement": "D26: updated humanoid capability reel with measured tasks, supported retrieval benefits and labeled unresolved failures.",
+      "demo_status": "pending",
+      "assessment_complete": false,
+      "capability_supported": false,
+      "commits": [],
+      "pull_requests": []
+    },
+    {
+      "id": "G27",
+      "title": "Transfer one additional embodiment to physical hardware",
+      "status": "planned",
+      "criteria": [
+        {
+          "id": "G27.A01",
+          "requirement": "Obtain the actual robot/actuator/sensor specs, validated model, driver interface, workspace constraints and an on-site operator; calibrate physical parameters and observations.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G27.A02",
+          "requirement": "Reproduce a bounded transfer task for at least 30 physical trials, with at least 24 true completions and independent placement/contact evidence; report sim/real discrepancies and interventions.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G27.A03",
+          "requirement": "Demonstrate one bounded recovery and validate stopping behavior before attempting unattended long-horizon tasks; preserve limits and observation contracts.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "demo_requirement": "D27: uninterrupted real-robot trials and synchronized simulation/real comparisons.",
+      "demo_status": "pending",
+      "assessment_complete": false,
+      "capability_supported": false,
+      "commits": [],
+      "pull_requests": []
+    },
+    {
+      "id": "G28",
+      "title": "Explore compliant or soft embodiments as a separate mechanics extension",
+      "status": "planned",
+      "criteria": [
+        {
+          "id": "G28.A01",
+          "requirement": "Define whether the target is compliant joints, a continuum body or fluid interaction, and select an appropriate physical model with measured/validated parameters.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G28.A02",
+          "requirement": "Validate at least three deformation/contact responses against independent reference data before transferring skill contracts.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G28.A03",
+          "requirement": "Execute one bounded acquisition/transport or locomotion task under declared observation/control limits, with separate success metrics and no claim that rigid URDF tests validate soft mechanics.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "demo_requirement": "D28: deformation/contact validation plus uninterrupted soft/compliant task execution.",
+      "demo_status": "pending",
+      "assessment_complete": false,
+      "capability_supported": false,
+      "commits": [],
+      "pull_requests": []
+    },
+    {
+      "id": "G29",
+      "title": "Test a learned short-horizon reference generator",
+      "status": "planned",
+      "criteria": [
+        {
+          "id": "G29.A01",
+          "requirement": "Compare analytic/optimization reference generation with a small autoregressive generator using the same semantic constraints and a fixed feedback tracker.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G29.A02",
+          "requirement": "On at least three body families and 100 held-out reference/task cases per body, record hard-constraint feasibility, semantic fidelity, generation latency and physical success.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G29.A03",
+          "requirement": "Adoption target: at least 20% lower reference-generation latency or at least 10 percentage points greater coverage at equal physical success, with no critical feasibility regression; all references still pass validation.",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "id": "G29.A04",
+          "requirement": "Separate this model's data/compute and errors from the low-level tracker; human motion data are optional and must not become an undeclared embodiment prior.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "demo_requirement": "D29: identical constraints realized by analytic and learned references, with resulting physical execution and failure cases.",
+      "demo_status": "pending",
+      "assessment_complete": false,
+      "capability_supported": false,
+      "commits": [],
+      "pull_requests": []
+    }
+  ],
+  "milestones": [],
+  "next_actions": [
+    "Repair the G05 bounded-interpolation failure, then integrate native physics time, structural capability intake and replay for the predeclared six-body/120-variant campaign and D05 demos. Preserve all frozen criteria, including explicit duration comparison.",
+    "Restore GitHub Actions billing/allowance and rerun PRs 27-31; merge only after required checks are green.",
+    "Before scored manipulation benchmarks, integrate G01/G02/G03, independent task/body feasibility and trial rosters, and a shared retry/time-budget ledger.",
+    "Preserve all 30 goals and their frozen criteria; G04 independent language validation and later judge/learning/mobility tracks remain in scope."
+  ],
+  "updated_at_utc": "2026-09-13T00:55:03.781622+00:00"
+}

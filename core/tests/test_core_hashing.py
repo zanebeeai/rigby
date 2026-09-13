@@ -12,6 +12,7 @@ insertion order, on `PYTHONHASHSEED`, or on the platform is not a digest.
 
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
 from datetime import UTC, date, datetime, timedelta, timezone
@@ -72,7 +73,10 @@ def test_the_digest_is_stable_across_processes() -> None:
             capture_output=True,
             text=True,
             check=True,
-            env={"PYTHONHASHSEED": seed, "PATH": "/usr/bin:/bin"},
+            # Keep the platform's interpreter/DLL environment, changing only
+            # the hash seed under test. A Unix-only PATH makes the child fail
+            # during imports on Windows before it can compute a digest.
+            env={**os.environ, "PYTHONHASHSEED": seed},
         )
         digests.add(completed.stdout.strip())
     assert len(digests) == 1, f"digest moved with PYTHONHASHSEED: {digests}"

@@ -1,0 +1,140 @@
+{
+  "bound_semantics": null,
+  "clock_disclosure": {
+    "interpretation": "Certification samples the reference at MjData.time; recorded times are physics times.",
+    "physics_timestep_s": 0.002,
+    "reference_sampled_on_native_physics_time": true
+  },
+  "gate_policy": {
+    "effort_margin_fraction": 0.02,
+    "limit_margin": 0.01,
+    "max_base_drift_m": 0.0001,
+    "repeats": 3,
+    "settle_fraction": 0.08,
+    "tracking_error_fraction": 0.035
+  },
+  "goal": "G05",
+  "grounded_program": null,
+  "interventions": [],
+  "label": "zoo_tool_arm-start_self_collision",
+  "limits": "Existing manifest joint/actuator limits and free-space gates, including the self-collision gate; no relaxed thresholds.",
+  "model_rng": "none",
+  "observation_contract": {
+    "inputs": [
+      "joint encoders",
+      "model parameters",
+      "compiled reference"
+    ],
+    "policy": "fully_observed_model_based_baseline",
+    "vlm": false
+  },
+  "prompt": "reach out as far as you can and then come back",
+  "protocol": "rigby.composition-trial/1",
+  "protocol_reference": {
+    "case_id": "start_self_collision",
+    "roster_sha256": "442d585025c7f42102e5ff42b9eaa753d3164a4f7e44f3ad6943ac563ccb6cea"
+  },
+  "reference_duration_s": 0.0,
+  "requested_semantics": {
+    "links": [
+      {
+        "coupling": null,
+        "coupling_region": null,
+        "from_segment": "s0",
+        "relation": "sequence",
+        "to_segment": "s1"
+      }
+    ],
+    "program_id": "offline-449943676987",
+    "schema_version": "1.0",
+    "segments": [
+      {
+        "boundary": "terminus",
+        "figure": {
+          "object_id": null,
+          "role": "primary_effector",
+          "site": null
+        },
+        "frame": "absolute",
+        "ground": {
+          "object_id": null,
+          "role": "base",
+          "site": null
+        },
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "motion_schema": {
+          "conformation": "boundary",
+          "contour": "straight",
+          "deixis": "neutral",
+          "kind": "path",
+          "stative": null,
+          "vector": "to"
+        },
+        "posture": null,
+        "region": {
+          "dimensionality": "point",
+          "remove": "distal"
+        },
+        "segment_id": "s0"
+      },
+      {
+        "boundary": "terminus",
+        "figure": {
+          "object_id": null,
+          "role": "primary_effector",
+          "site": null
+        },
+        "frame": "absolute",
+        "ground": {
+          "object_id": null,
+          "role": "base",
+          "site": null
+        },
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "motion_schema": {
+          "conformation": "point",
+          "contour": "straight",
+          "deixis": "neutral",
+          "kind": "path",
+          "stative": null,
+          "vector": "from"
+        },
+        "posture": null,
+        "region": {
+          "dimensionality": "point",
+          "remove": "medial"
+        },
+        "segment_id": "s1"
+      }
+    ],
+    "source_text": "reach out as far as you can and then come back"
+  },
+  "retry_limit": 0,
+  "seed": 0,
+  "start_is_measured_rest": false,
+  "start_qpos": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    2.85
+  ]
+}

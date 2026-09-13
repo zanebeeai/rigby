@@ -272,6 +272,9 @@ jobs:
   any-robot:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    env:
+      # G02 tests exercise actual RGB sensors; use CPU offscreen rendering.
+      MUJOCO_GL: osmesa
     defaults:
       run:
         working-directory: any-robot
@@ -282,4 +285,6 @@ jobs:
           enable-cache: true
           cache-dependency-glob: uv.lock
       - run: uv sync --extra dev
+      - name: Install the headless sensor renderer
+        run: sudo apt-get update && sudo apt-get install -y libosmesa6
       - run: uv run pytest

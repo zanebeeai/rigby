@@ -1,0 +1,35 @@
+{
+  "cases": [
+    {
+      "acceptable_legacy_code": "unreadable_model",
+      "attribute": "upper",
+      "expected_result": "typed_refusal",
+      "id": "inverted_position_limit",
+      "physical_defect": "lower=-0.05 exceeds upper=-0.1",
+      "preferred_specific_reason": "invalid_joint_limit",
+      "source": "rigid_tool/robot.urdf",
+      "value": "-0.1",
+      "xpath": "./joint[@name='position_x']/limit"
+    },
+    {
+      "attribute": "ixx",
+      "expected_result": "typed_refusal",
+      "id": "negative_principal_inertia",
+      "physical_defect": "negative principal moment of inertia",
+      "preferred_specific_reason": "degenerate_inertia",
+      "source": "rigid_tool/robot.urdf",
+      "value": "-0.000001",
+      "xpath": "./link[@name='tool']/inertial/inertia"
+    },
+    {
+      "expected_code": "unafforded_schema",
+      "expected_result": "request_refusal",
+      "id": "tool_has_no_gripper",
+      "mutation": null,
+      "physical_defect": "No opposing articulated members exist",
+      "required_capability": "GRASP",
+      "source": "rigid_tool/robot.urdf"
+    }
+  ],
+  "note": "Mutation recipes only; these do not add normal fixture bodies. Exact refusal details are measured separately from these preregistered physical defects."
+}

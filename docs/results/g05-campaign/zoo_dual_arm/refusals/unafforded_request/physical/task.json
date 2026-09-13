@@ -1,0 +1,58 @@
+{
+  "bound_semantics": null,
+  "clock_disclosure": {
+    "interpretation": "Certification samples the reference at MjData.time; recorded times are physics times.",
+    "physics_timestep_s": 0.002,
+    "reference_sampled_on_native_physics_time": true
+  },
+  "gate_policy": {
+    "effort_margin_fraction": 0.02,
+    "limit_margin": 0.01,
+    "max_base_drift_m": 0.0001,
+    "repeats": 3,
+    "settle_fraction": 0.08,
+    "tracking_error_fraction": 0.035
+  },
+  "goal": "G05",
+  "grounded_program": null,
+  "interventions": [],
+  "label": "zoo_dual_arm-unafforded_request",
+  "limits": "Existing manifest joint/actuator limits and free-space gates, including the self-collision gate; no relaxed thresholds.",
+  "model_rng": "none",
+  "observation_contract": {
+    "inputs": [
+      "joint encoders",
+      "model parameters",
+      "compiled reference"
+    ],
+    "policy": "fully_observed_model_based_baseline",
+    "vlm": false
+  },
+  "prompt": "grasp the cup and then come back",
+  "protocol": "rigby.composition-trial/1",
+  "protocol_reference": {
+    "case_id": "unafforded_request",
+    "roster_sha256": "442d585025c7f42102e5ff42b9eaa753d3164a4f7e44f3ad6943ac563ccb6cea"
+  },
+  "reference_duration_s": 0.0,
+  "requested_semantics": null,
+  "retry_limit": 0,
+  "seed": 0,
+  "start_is_measured_rest": true,
+  "start_qpos": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0007000000000000001,
+    0.0007000000000000001,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0007000000000000001,
+    0.0007000000000000001
+  ]
+}

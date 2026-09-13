@@ -1,0 +1,281 @@
+<robot name="zoo_long_arm">
+  <joint name="vacuum_0004" type="prismatic">
+    <limit lower="0.000000" upper="0.065000" effort="110.000" velocity="0.400" />
+  <parent link="vacuum_0009" />
+    <child link="vacuum_0015" />
+    <axis xyz="1.000000 0.000000 0.000000" />
+    <origin xyz="-0.073000 0.000000 0.050000" rpy="0.000000 0.000000 0.000000" />
+    </joint>
+<joint name="vacuum_0008" type="revolute">
+    <limit lower="-2.850000" upper="2.850000" effort="420.000" velocity="1.600" />
+  <axis xyz="0.000000 1.000000 0.000000" />
+    <parent link="vacuum_0018" />
+    <child link="vacuum_0013" />
+    <origin xyz="0.000000 0.000000 0.340000" rpy="0.000000 0.000000 0.000000" />
+    </joint>
+  <link name="vacuum_0006">
+    <visual>
+      <geometry>
+        <cylinder radius="0.180000" length="0.240000" />
+      </geometry>
+    <origin xyz="0.000000 0.000000 0.120000" rpy="0.000000 0.000000 0.000000" />
+      </visual>
+    <collision>
+      <geometry>
+        <cylinder radius="0.180000" length="0.240000" />
+      </geometry>
+    <origin xyz="0.000000 0.000000 0.120000" rpy="0.000000 0.000000 0.000000" />
+      </collision>
+  <inertial>
+      <origin xyz="0.000000 0.000000 0.120000" rpy="0.000000 0.000000 0.000000" />
+      <inertia ixx="0.33540000" ixy="0" ixz="0" iyy="0.33540000" iyz="0" izz="0.42120000" />
+    <mass value="26.000000" />
+      </inertial>
+    </link>
+  <link name="vacuum_0012">
+    <visual>
+      <geometry>
+        <cylinder radius="0.050974" length="0.120000" />
+      </geometry>
+    <origin xyz="0.000000 0.000000 0.060000" rpy="0.000000 0.000000 0.000000" />
+      </visual>
+    <collision>
+      <origin xyz="0.000000 0.000000 0.060000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <cylinder radius="0.050974" length="0.120000" />
+      </geometry>
+    </collision>
+  <inertial>
+      <inertia ixx="0.00163060" ixy="0" ixz="0" iyy="0.00163060" iyz="0" izz="0.00114536" />
+    <origin xyz="0.000000 0.000000 0.060000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.881603" />
+      </inertial>
+    </link>
+  <link name="vacuum_0019">
+    <inertial>
+      <inertia ixx="0.00604308" ixy="0" ixz="0" iyy="0.00604308" iyz="0" izz="0.00286486" />
+    <mass value="1.707650" />
+      <origin xyz="0.000000 0.000000 0.090000" rpy="0.000000 0.000000 0.000000" />
+      </inertial>
+    <visual>
+      <geometry>
+        <cylinder radius="0.057925" length="0.180000" />
+      </geometry>
+    <origin xyz="0.000000 0.000000 0.090000" rpy="0.000000 0.000000 0.000000" />
+      </visual>
+    <collision>
+      <origin xyz="0.000000 0.000000 0.090000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <cylinder radius="0.057925" length="0.180000" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="vacuum_0003">
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.040000" rpy="0.000000 0.000000 0.000000" />
+      <inertia ixx="0.00047170" ixy="0" ixz="0" iyy="0.00047170" iyz="0" izz="0.00045791" />
+    <mass value="0.455142" />
+      </inertial>
+    <collision>
+      <origin xyz="0.000000 0.000000 0.040000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <cylinder radius="0.044857" length="0.080000" />
+      </geometry>
+    </collision>
+  <visual>
+      <origin xyz="0.000000 0.000000 0.040000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <cylinder radius="0.044857" length="0.080000" />
+      </geometry>
+    </visual>
+    </link>
+  <joint name="vacuum_0007" type="revolute">
+    <origin xyz="0.000000 0.000000 0.460000" rpy="0.000000 0.000000 0.000000" />
+    <child link="vacuum_0019" />
+    <limit lower="-2.850000" upper="2.850000" effort="420.000" velocity="1.600" />
+  <parent link="vacuum_0001" />
+    <axis xyz="1.000000 0.000000 0.000000" />
+    </joint>
+  <link name="vacuum_0001">
+    <visual>
+      <origin xyz="0.000000 0.000000 0.230000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <cylinder radius="0.065824" length="0.460000" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0.000000 0.000000 0.230000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <cylinder radius="0.065824" length="0.460000" />
+      </geometry>
+    </collision>
+  <inertial>
+      <mass value="5.635322" />
+      <origin xyz="0.000000 0.000000 0.230000" rpy="0.000000 0.000000 0.000000" />
+      <inertia ixx="0.10547369" ixy="0" ixz="0" iyy="0.10547369" iyz="0" izz="0.01220836" />
+    </inertial>
+    </link>
+  <link name="vacuum_0013">
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.290000" rpy="0.000000 0.000000 0.000000" />
+      <inertia ixx="0.27005034" ixy="0" ixz="0" iyy="0.27005034" iyz="0" izz="0.02566828" />
+    <mass value="9.175370" />
+      </inertial>
+    <collision>
+      <geometry>
+        <cylinder radius="0.074800" length="0.580000" />
+      </geometry>
+    <origin xyz="0.000000 0.000000 0.290000" rpy="0.000000 0.000000 0.000000" />
+      </collision>
+  <visual>
+      <origin xyz="0.000000 0.000000 0.290000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <cylinder radius="0.074800" length="0.580000" />
+      </geometry>
+    </visual>
+    </link>
+  <joint name="vacuum_0016" type="revolute">
+    <parent link="vacuum_0006" />
+    <child link="vacuum_0018" />
+    <origin xyz="0.000000 0.000000 0.240000" rpy="0.000000 0.000000 0.610865" />
+    <limit lower="-2.850000" upper="2.850000" effort="420.000" velocity="1.600" />
+  <axis xyz="0.000000 0.000000 1.000000" />
+    </joint>
+  <link name="vacuum_0018">
+    <collision>
+      <origin xyz="0.000000 0.000000 0.170000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <cylinder radius="0.085000" length="0.340000" />
+      </geometry>
+    </collision>
+  <visual>
+      <geometry>
+        <cylinder radius="0.085000" length="0.340000" />
+      </geometry>
+    <origin xyz="0.000000 0.000000 0.170000" rpy="0.000000 0.000000 0.000000" />
+      </visual>
+    <inertial>
+      <inertia ixx="0.07945466" ixy="0" ixz="0" iyy="0.07945466" iyz="0" izz="0.02509094" />
+    <mass value="6.945590" />
+      <origin xyz="0.000000 0.000000 0.170000" rpy="0.000000 0.000000 0.000000" />
+      </inertial>
+    </link>
+  <joint name="vacuum_0017" type="revolute">
+    <parent link="vacuum_0013" />
+    <child link="vacuum_0001" />
+    <axis xyz="0.000000 1.000000 0.000000" />
+    <origin xyz="0.000000 0.000000 0.580000" rpy="0.000000 0.000000 0.000000" />
+    <limit lower="-2.850000" upper="2.850000" effort="420.000" velocity="1.600" />
+  </joint>
+  <joint name="vacuum_0000" type="fixed">
+    <parent link="vacuum_0003" />
+    <origin xyz="0.060000 0.000000 0.020000" rpy="0.000000 0.000000 0.000000" />
+    <axis xyz="0.000000 0.000000 1.000000" />
+    <limit lower="0.000000" upper="0.000000" effort="0.000" velocity="0.000" />
+  <child link="vacuum_0005" />
+    </joint>
+  <joint name="vacuum_0011" type="revolute">
+    <parent link="vacuum_0012" />
+    <axis xyz="0.000000 0.000000 1.000000" />
+    <origin xyz="0.000000 0.000000 0.120000" rpy="0.000000 0.000000 0.000000" />
+    <child link="vacuum_0003" />
+    <limit lower="-2.850000" upper="2.850000" effort="420.000" velocity="1.600" />
+  </joint>
+  <link name="vacuum_0015">
+    <inertial>
+      <inertia ixx="0.00006500" ixy="0" ixz="0" iyy="0.00006148" iyz="0" izz="0.00000548" />
+    <mass value="0.060000" />
+      <origin xyz="0.000000 0.000000 0.055000" rpy="0.000000 0.000000 0.000000" />
+      </inertial>
+    <collision>
+      <geometry>
+        <box size="0.014000 0.030000 0.110000" />
+      </geometry>
+    <origin xyz="0.000000 0.000000 0.055000" rpy="0.000000 0.000000 0.000000" />
+      </collision>
+  <visual>
+      <origin xyz="0.000000 0.000000 0.055000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.014000 0.030000 0.110000" />
+      </geometry>
+    </visual>
+    </link>
+  <joint name="vacuum_0010" type="fixed">
+    <limit lower="0.000000" upper="0.000000" effort="0.000" velocity="0.000" />
+  <parent link="vacuum_0003" />
+    <child link="vacuum_0009" />
+    <origin xyz="0.000000 0.000000 0.080000" rpy="0.000000 0.000000 0.000000" />
+    <axis xyz="0.000000 0.000000 1.000000" />
+    </joint>
+  <link name="vacuum_0009">
+    <visual>
+      <origin xyz="0.000000 0.000000 0.025000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.090000 0.050000 0.050000" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0.000000 0.000000 0.025000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.090000 0.050000 0.050000" />
+      </geometry>
+    </collision>
+  <inertial>
+      <inertia ixx="0.00014583" ixy="0" ixz="0" iyy="0.00030917" iyz="0" izz="0.00030917" />
+    <origin xyz="0.000000 0.000000 0.025000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.350000" />
+      </inertial>
+    </link>
+  <joint name="vacuum_0014" type="revolute">
+    <child link="vacuum_0012" />
+    <origin xyz="0.000000 0.000000 0.180000" rpy="0.000000 0.000000 0.000000" />
+    <axis xyz="0.000000 1.000000 0.000000" />
+    <parent link="vacuum_0019" />
+    <limit lower="-2.850000" upper="2.850000" effort="420.000" velocity="1.600" />
+  </joint>
+  <link name="vacuum_0005">
+    <collision>
+      <origin xyz="0.000000 0.000000 0.015000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.050000 0.050000 0.030000" />
+      </geometry>
+    </collision>
+  <inertial>
+      <origin xyz="0.000000 0.000000 0.015000" rpy="0.000000 0.000000 0.000000" />
+      <inertia ixx="0.00005667" ixy="0" ixz="0" iyy="0.00005667" iyz="0" izz="0.00008333" />
+    <mass value="0.200000" />
+      </inertial>
+    <visual>
+      <geometry>
+        <box size="0.050000 0.050000 0.030000" />
+      </geometry>
+    <origin xyz="0.000000 0.000000 0.015000" rpy="0.000000 0.000000 0.000000" />
+      </visual>
+    </link>
+  <link name="vacuum_0020">
+    <collision>
+      <geometry>
+        <box size="0.014000 0.030000 0.110000" />
+      </geometry>
+    <origin xyz="0.000000 0.000000 0.055000" rpy="0.000000 0.000000 0.000000" />
+      </collision>
+  <visual>
+      <geometry>
+        <box size="0.014000 0.030000 0.110000" />
+      </geometry>
+    <origin xyz="0.000000 0.000000 0.055000" rpy="0.000000 0.000000 0.000000" />
+      </visual>
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.055000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.060000" />
+      <inertia ixx="0.00006500" ixy="0" ixz="0" iyy="0.00006148" iyz="0" izz="0.00000548" />
+    </inertial>
+    </link>
+  <joint name="vacuum_0002" type="prismatic">
+    <origin xyz="0.073000 0.000000 0.050000" rpy="0.000000 0.000000 0.000000" />
+    <limit lower="0.000000" upper="0.065000" effort="110.000" velocity="0.400" />
+  <axis xyz="-1.000000 0.000000 0.000000" />
+    <parent link="vacuum_0009" />
+    <child link="vacuum_0020" />
+    </joint>
+  </robot>

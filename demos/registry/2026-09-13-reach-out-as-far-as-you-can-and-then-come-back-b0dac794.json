@@ -1,0 +1,42 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-reach-out-as-far-as-you-can-and-then-come-back-b0dac794",
+  "title": "G05 D05: dual-arm return, before and after the self-collision guard",
+  "prompt": "reach out as far as you can and then come back",
+  "tier": "any-robot",
+  "embodiment": "zoo_dual_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T04:34:30Z",
+  "source": {
+    "commit": "46c9edf20b",
+    "branch": "feat/g05-six-body-composition",
+    "dirty": false,
+    "how": "python any-robot/scripts/g05_d05_media.py --campaign docs/results/g05-campaign --out docs/results/g05-d05"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "Before: the return folds the wrist 28 mm into the forearm and fails self-collision, effort and joint-limit gates. After: the same prompt on the same body executes clear of contact in 53.7 s."
+  },
+  "notes": "Same body, same prompt, identical physics. The left panel is the grounder at commit 5a6c0b3 (bounded curves, no guard), reproducing the frozen fixture exactly; the right is the current grounder. Both are sealed, replayable bundles under docs/results/g05-d05/dual-arm.",
+  "media": [
+    {
+      "path": "docs/results/g05-d05/dual-arm-before-after.mp4",
+      "bytes": 599621,
+      "sha256": "1ebfeb5aaa1db0daa7604ca9456e2fb70b47c71163040e6c968d62abc92f507e",
+      "role": "comparison"
+    },
+    {
+      "path": "docs/results/g05-d05/dual-arm-before-after-preview.gif",
+      "bytes": 1132047,
+      "sha256": "dc7f15c4637127ca162f1f09cccd339c2a103c95aad1ddbd7add4be81b71922f",
+      "role": "comparison"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G05",
+    "D05",
+    "self-collision"
+  ]
+}

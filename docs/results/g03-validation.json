@@ -1,0 +1,52 @@
+{
+  "api_calls": 0,
+  "explicit_hint_bypass_preserved_all_12_capability_hashes": true,
+  "general_acceptance_contract_sha256": "78f2b41e81a034d317dd4619c947c0fedd66524aaac2741a4249ed174ffda04b",
+  "max_site_error_m": 2.7761598307598603e-17,
+  "physical_task_trials": 0,
+  "release_bytes": 43689304,
+  "release_index_sha256": "c9702384ce8e16085b143c1fbefc01a1e71f2be676e193a6cfac3483cf4464bf",
+  "release_payloads": 518,
+  "schema": "g03.validation.v1",
+  "source_commit": "1efdd8c75ea5d799abbeba7b1eb924d96f3eed1c",
+  "source_profile": "structural_urdf.v1: rigid fixed-base; explicit legacy name-classification bypass",
+  "tamper_checks": [
+    {
+      "payload": "bodies/three_digits/canonical.urdf",
+      "refused": true
+    },
+    {
+      "payload": "invariance/zoo_dual_arm/variant-00/reference.npz",
+      "refused": true
+    },
+    {
+      "payload": "release-index.json",
+      "refused": true
+    }
+  ],
+  "test_results": {
+    "g03-any-robot-tests.xml": {
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "328",
+      "time": "117.975"
+    },
+    "g03-compressed-inspection-tests.xml": {
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "1",
+      "time": "1.990"
+    }
+  },
+  "verification": {
+    "bodies_replayed": 12,
+    "full_gif_rerender_byte_identical": true,
+    "inspection_frames_verified": 720,
+    "invariance_cases_verified": 120,
+    "kinematic_samples_replayed": 1536,
+    "payloads_verified": 518,
+    "physical_task_success_claimed": false
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "review_date_local": "2026-09-11",
+  "timezone": "America/Toronto",
+  "commit": "cfbe16e90544fc22b3acc9d95ce7b2d9cc6a24ba",
+  "scope": "Repository audit, primary-source literature research, offline test suites, and two fresh bounded simulation probes. No new paid model calls, hardware trials, or complete humanoid suite.",
+  "tests": {
+    "any_robot_full": {"passed": 299, "failed": 0, "skipped": 0, "seconds": 71.997},
+    "core_full": {"passed": 58, "failed": 1, "seconds": 5.566, "failure": "test_core_hashing.py::test_the_digest_is_stable_across_processes: child interpreter fails during imports with a Linux-only replacement environment on Windows; no digest mismatch was observed."},
+    "humanoid_selected": {"passed": 99, "failed": 0, "skipped": 1, "xfailed": 3, "xpassed": 1, "seconds": 435.219, "xpass": "Windows-quarantined test_production_grasp_program_compiles_but_failed_trace_is_not_certified; the passing assertion confirms physical grasp failure is rejected.", "skip": "Opt-in production drawer three-repeat/five-variation robustness run."},
+    "humanoid_frontend": {"passed": 36, "failed": 0, "test_files": 6, "seconds": 2.89}
+  },
+  "fresh_probes": {
+    "reach_return": {"bodies": 6, "distinct_requested_semantic_hashes": 1, "fresh_leaf_certifications": 12, "accepted_compositions": 5, "region_substitutions": 0, "failure": "zoo_dual_arm: composition exceeds left_joint_4 limits", "evidence": "embodiment-probe.json"},
+    "grasp": {"attempted_bodies": 5, "certified": 3, "failed": ["zoo_dual_arm", "zoo_hand_arm"], "scope": "One deterministic grasp per body with body-scaled object size and mass; not a fixed-world benchmark.", "evidence": "grasp-report.json"}
+  },
+  "interpretation": "Unit/contract test passes include intentional refusal and physical-failure acceptance tests. Do not interpret test counts as successful robotic tasks. Exact deterministic replays are not independent robustness trials. Historical model calibration is separately documented in the report."
+}

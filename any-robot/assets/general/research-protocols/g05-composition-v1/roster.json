@@ -1,0 +1,1859 @@
+{
+  "bodies": [
+    {
+      "canonical_urdf_sha256": "bdb99f843c6071bbbdd518516e6f15249633ab5e2f9c22051609ced4860ade9a",
+      "collision_exclusions": [],
+      "dof_count": 6,
+      "feasible_trials": [
+        {
+          "pace_ordinal": -2,
+          "prompt": "very slowly reach out as far as you can and then very slowly come back",
+          "start_id": "start_0",
+          "trial_id": "pace-2_start_0"
+        },
+        {
+          "pace_ordinal": -1,
+          "prompt": "slowly reach out as far as you can and then slowly come back",
+          "start_id": "start_0",
+          "trial_id": "pace-1_start_0"
+        },
+        {
+          "pace_ordinal": 0,
+          "prompt": "reach out as far as you can and then come back",
+          "start_id": "start_0",
+          "trial_id": "pace+0_start_0"
+        },
+        {
+          "pace_ordinal": 1,
+          "prompt": "quickly reach out as far as you can and then quickly come back",
+          "start_id": "start_0",
+          "trial_id": "pace+1_start_0"
+        },
+        {
+          "pace_ordinal": 2,
+          "prompt": "flat out reach out as far as you can and then come back flat out",
+          "start_id": "start_0",
+          "trial_id": "pace+2_start_0"
+        },
+        {
+          "pace_ordinal": -2,
+          "prompt": "very slowly reach out as far as you can and then very slowly come back",
+          "start_id": "start_1",
+          "trial_id": "pace-2_start_1"
+        },
+        {
+          "pace_ordinal": -1,
+          "prompt": "slowly reach out as far as you can and then slowly come back",
+          "start_id": "start_1",
+          "trial_id": "pace-1_start_1"
+        },
+        {
+          "pace_ordinal": 0,
+          "prompt": "reach out as far as you can and then come back",
+          "start_id": "start_1",
+          "trial_id": "pace+0_start_1"
+        },
+        {
+          "pace_ordinal": 1,
+          "prompt": "quickly reach out as far as you can and then quickly come back",
+          "start_id": "start_1",
+          "trial_id": "pace+1_start_1"
+        },
+        {
+          "pace_ordinal": 2,
+          "prompt": "flat out reach out as far as you can and then come back flat out",
+          "start_id": "start_1",
+          "trial_id": "pace+2_start_1"
+        },
+        {
+          "pace_ordinal": -2,
+          "prompt": "very slowly reach out as far as you can and then very slowly come back",
+          "start_id": "start_2",
+          "trial_id": "pace-2_start_2"
+        },
+        {
+          "pace_ordinal": -1,
+          "prompt": "slowly reach out as far as you can and then slowly come back",
+          "start_id": "start_2",
+          "trial_id": "pace-1_start_2"
+        },
+        {
+          "pace_ordinal": 0,
+          "prompt": "reach out as far as you can and then come back",
+          "start_id": "start_2",
+          "trial_id": "pace+0_start_2"
+        },
+        {
+          "pace_ordinal": 1,
+          "prompt": "quickly reach out as far as you can and then quickly come back",
+          "start_id": "start_2",
+          "trial_id": "pace+1_start_2"
+        },
+        {
+          "pace_ordinal": 2,
+          "prompt": "flat out reach out as far as you can and then come back flat out",
+          "start_id": "start_2",
+          "trial_id": "pace+2_start_2"
+        },
+        {
+          "pace_ordinal": -2,
+          "prompt": "very slowly reach out as far as you can and then very slowly come back",
+          "start_id": "start_3",
+          "trial_id": "pace-2_start_3"
+        },
+        {
+          "pace_ordinal": -1,
+          "prompt": "slowly reach out as far as you can and then slowly come back",
+          "start_id": "start_3",
+          "trial_id": "pace-1_start_3"
+        },
+        {
+          "pace_ordinal": 0,
+          "prompt": "reach out as far as you can and then come back",
+          "start_id": "start_3",
+          "trial_id": "pace+0_start_3"
+        },
+        {
+          "pace_ordinal": 1,
+          "prompt": "quickly reach out as far as you can and then quickly come back",
+          "start_id": "start_3",
+          "trial_id": "pace+1_start_3"
+        },
+        {
+          "pace_ordinal": 2,
+          "prompt": "flat out reach out as far as you can and then come back flat out",
+          "start_id": "start_3",
+          "trial_id": "pace+2_start_3"
+        }
+      ],
+      "guarded_pairs": 18,
+      "intake": "rigby_general.capabilities.intake.ingest_capability_body",
+      "invalid_requests": [
+        {
+          "case_id": "start_beyond_limit",
+          "expected": {
+            "measurement": "start_state.joint_limit",
+            "refusal_code": "ungroundable",
+            "where": "leaf_bake_and_binding"
+          },
+          "prompt": "reach out as far as you can and then come back",
+          "reason": "axis_0000 placed past its maximum",
+          "start_qpos": [
+            3.35,
+            0.0,
+            0.0,
+            0.0,
+            0.0003,
+            0.0003
+          ]
+        },
+        {
+          "case_id": "unafforded_request",
+          "expected": {
+            "measurement": null,
+            "refusal_code": "unafforded_schema",
+            "where": "planning"
+          },
+          "prompt": "grasp the cup and then come back",
+          "reason": "asks for a contact schema this free-space campaign does not certify",
+          "start_qpos": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0003,
+            0.0003
+          ]
+        },
+        {
+          "case_id": "start_self_collision",
+          "expected": {
+            "measurement": "start_state.self_collision",
+            "refusal_code": "ungroundable",
+            "where": "leaf_bake_and_binding"
+          },
+          "prompt": "reach out as far as you can and then come back",
+          "reason": "body_0002 26.0 mm inside body_0006",
+          "start_qpos": [
+            0.0,
+            0.0,
+            0.0,
+            2.85,
+            0.0003,
+            0.0003
+          ]
+        }
+      ],
+      "package_sha256": "2e3d1c514d083e8af8ebdce1f47ec1f4c761217bfeb8b286a8506c1ddd9a5774",
+      "positioning_joints": [
+        "axis_0000",
+        "axis_0001",
+        "axis_0002",
+        "axis_0003"
+      ],
+      "reach_radius_m": 0.385,
+      "rig_id": "body_2e3d1c514d083e8a",
+      "self_clearance_m": 0.008,
+      "source_sha256": "67461be18b9f49b7af8547ddb7599a7b0815d1f1bef7aeff8ef6056f3db153bd",
+      "source_urdf": "any-robot/assets/general/zoo/zoo_compact_arm/robot.urdf",
+      "starts": [
+        {
+          "kind": "measured_rest",
+          "offsets": {},
+          "qpos": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0003,
+            0.0003
+          ],
+          "redraws": 0,
+          "start_id": "start_0"
+        },
+        {
+          "kind": "displaced",
+          "offsets": {
+            "axis_0000": -0.08377237790333038,
+            "axis_0001": 0.12702337219706752,
+            "axis_0002": 0.03064817038816765,
+            "axis_0003": 0.14461342187366907
+          },
+          "qpos": [
+            -0.08377237790333038,
+            0.12702337219706752,
+            0.03064817038816765,
+            0.14461342187366907,
+            0.0003,
+            0.0003
+          ],
+          "redraws": 0,
+          "start_id": "start_1"
+        },
+        {
+          "kind": "displaced",
+          "offsets": {
+            "axis_0000": -0.13738912744970602,
+            "axis_0001": -0.14194695510069422,
+            "axis_0002": -0.14051761368737478,
+            "axis_0003": 0.030782029956123003
+          },
+          "qpos": [
+            -0.13738912744970602,
+            -0.14194695510069422,
+            -0.14051761368737478,
+            0.030782029956123003,
+            0.0003,
+            0.0003
+          ],
+          "redraws": 0,
+          "start_id": "start_2"
+        },
+        {
+          "kind": "displaced",
+          "offsets": {
+            "axis_0000": -0.009213109540091568,
+            "axis_0001": 0.12273859383949959,
+            "axis_0002": 0.08223503487491932,
+            "axis_0003": 0.08550240920662856
+          },
+          "qpos": [
+            -0.009213109540091568,
+            0.12273859383949959,
+            0.08223503487491932,
+            0.08550240920662856,
+            0.0003,
+            0.0003
+          ],
+          "redraws": 0,
+          "start_id": "start_3"
+        }
+      ],
+      "zoo_id": "zoo_compact_arm"
+    },
+    {
+      "canonical_urdf_sha256": "e837d6540dfefde307da0c763b05e0c8869aab46bc0a3d65a7a459fcc71d58f4",
+      "collision_exclusions": [],
+      "dof_count": 14,
+      "feasible_trials": [
+        {
+          "pace_ordinal": -2,
+          "prompt": "very slowly reach out as far as you can and then very slowly come back",
+          "start_id": "start_0",
+          "trial_id": "pace-2_start_0"
+        },
+        {
+          "pace_ordinal": -1,
+          "prompt": "slowly reach out as far as you can and then slowly come back",
+          "start_id": "start_0",
+          "trial_id": "pace-1_start_0"
+        },
+        {
+          "pace_ordinal": 0,
+          "prompt": "reach out as far as you can and then come back",
+          "start_id": "start_0",
+          "trial_id": "pace+0_start_0"
+        },
+        {
+          "pace_ordinal": 1,
+          "prompt": "quickly reach out as far as you can and then quickly come back",
+          "start_id": "start_0",
+          "trial_id": "pace+1_start_0"
+        },
+        {
+          "pace_ordinal": 2,
+          "prompt": "flat out reach out as far as you can and then come back flat out",
+          "start_id": "start_0",
+          "trial_id": "pace+2_start_0"
+        },
+        {
+          "pace_ordinal": -2,
+          "prompt": "very slowly reach out as far as you can and then very slowly come back",
+          "start_id": "start_1",
+          "trial_id": "pace-2_start_1"
+        },
+        {
+          "pace_ordinal": -1,
+          "prompt": "slowly reach out as far as you can and then slowly come back",
+          "start_id": "start_1",
+          "trial_id": "pace-1_start_1"
+        },
+        {
+          "pace_ordinal": 0,
+          "prompt": "reach out as far as you can and then come back",
+          "start_id": "start_1",
+          "trial_id": "pace+0_start_1"
+        },
+        {
+          "pace_ordinal": 1,
+          "prompt": "quickly reach out as far as you can and then quickly come back",
+          "start_id": "start_1",
+          "trial_id": "pace+1_start_1"
+        },
+        {
+          "pace_ordinal": 2,
+          "prompt": "flat out reach out as far as you can and then come back flat out",
+          "start_id": "start_1",
+          "trial_id": "pace+2_start_1"
+        },
+        {
+          "pace_ordinal": -2,
+          "prompt": "very slowly reach out as far as you can and then very slowly come back",
+          "start_id": "start_2",
+          "trial_id": "pace-2_start_2"
+        },
+        {
+          "pace_ordinal": -1,
+          "prompt": "slowly reach out as far as you can and then slowly come back",
+          "start_id": "start_2",
+          "trial_id": "pace-1_start_2"
+        },
+        {
+          "pace_ordinal": 0,
+          "prompt": "reach out as far as you can and then come back",
+          "start_id": "start_2",
+          "trial_id": "pace+0_start_2"
+        },
+        {
+          "pace_ordinal": 1,
+          "prompt": "quickly reach out as far as you can and then quickly come back",
+          "start_id": "start_2",
+          "trial_id": "pace+1_start_2"
+        },
+        {
+          "pace_ordinal": 2,
+          "prompt": "flat out reach out as far as you can and then come back flat out",
+          "start_id": "start_2",
+          "trial_id": "pace+2_start_2"
+        },
+        {
+          "pace_ordinal": -2,
+          "prompt": "very slowly reach out as far as you can and then very slowly come back",
+          "start_id": "start_3",
+          "trial_id": "pace-2_start_3"
+        },
+        {
+          "pace_ordinal": -1,
+          "prompt": "slowly reach out as far as you can and then slowly come back",
+          "start_id": "start_3",
+          "trial_id": "pace-1_start_3"
+        },
+        {
+          "pace_ordinal": 0,
+          "prompt": "reach out as far as you can and then come back",
+          "start_id": "start_3",
+          "trial_id": "pace+0_start_3"
+        },
+        {
+          "pace_ordinal": 1,
+          "prompt": "quickly reach out as far as you can and then quickly come back",
+          "start_id": "start_3",
+          "trial_id": "pace+1_start_3"
+        },
+        {
+          "pace_ordinal": 2,
+          "prompt": "flat out reach out as far as you can and then come back flat out",
+          "start_id": "start_3",
+          "trial_id": "pace+2_start_3"
+        }
+      ],
+      "guarded_pairs": 128,
+      "intake": "rigby_general.capabilities.intake.ingest_capability_body",
+      "invalid_requests": [
+        {
+          "case_id": "start_beyond_limit",
+          "expected": {
+            "measurement": "start_state.joint_limit",
+            "refusal_code": "ungroundable",
+            "where": "leaf_bake_and_binding"
+          },
+          "prompt": "reach out as far as you can and then come back",
+          "reason": "axis_0001 placed past its maximum",
+          "start_qpos": [
+            3.35,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0007000000000000001,
+            0.0007000000000000001,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0007000000000000001,
+            0.0007000000000000001
+          ]
+        },
+        {
+          "case_id": "unafforded_request",
+          "expected": {
+            "measurement": null,
+            "refusal_code": "unafforded_schema",
+            "where": "planning"
+          },
+          "prompt": "grasp the cup and then come back",
+          "reason": "asks for a contact schema this free-space campaign does not certify",
+          "start_qpos": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0007000000000000001,
+            0.0007000000000000001,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0007000000000000001,
+            0.0007000000000000001
+          ]
+        },
+        {
+          "case_id": "start_self_collision",
+          "expected": {
+            "measurement": "start_state.self_collision",
+            "refusal_code": "ungroundable",
+            "where": "leaf_bake_and_binding"
+          },
+          "prompt": "reach out as far as you can and then come back",
+          "reason": "body_0012 47.5 mm inside body_0016",
+          "start_qpos": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0007000000000000001,
+            0.0007000000000000001,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            2.85,
+            0.0007000000000000001,
+            0.0007000000000000001
+          ]
+        }
+      ],
+      "package_sha256": "c928a9ae9ac9408ba54e1e1f03b43b1e82d5eada367d15e579b10d0a32ab1c9c",
+      "positioning_joints": [
+        "axis_0001",
+        "axis_0002",
+        "axis_0003",
+        "axis_0004",
+        "axis_0005",
+        "axis_0009",
+        "axis_0010",
+        "axis_0011",
+        "axis_0012",
+        "axis_0013"
+      ],
+      "reach_radius_m": 1.326253,
+      "rig_id": "body_c928a9ae9ac9408b",
+      "self_clearance_m": 0.008,
+      "source_sha256": "628edbed60eb5732d38f1542a1411ea76518bc8c0f78c43f5910f6e9a0868d71",
+      "source_urdf": "any-robot/assets/general/zoo/zoo_dual_arm/robot.urdf",
+      "starts": [
+        {
+          "kind": "measured_rest",
+          "offsets": {},
+          "qpos": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0007000000000000001,
+            0.0007000000000000001,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0007000000000000001,
+            0.0007000000000000001
+          ],
+          "redraws": 0,
+          "start_id": "start_0"
+        },
+        {
+          "kind": "displaced",
+          "offsets": {
+            "axis_0001": -0.027546188239927383,
+            "axis_0002": 0.04004986785637108,
+            "axis_0003": -0.07476067555466383,
+            "axis_0004": -0.04875011176340932,
+            "axis_0005": 0.14690459722349303,
+            "axis_0009": 0.09232924997894888,
+            "axis_0010": 0.010656819566439811,
+            "axis_0011": -0.051055904792410366,
+            "axis_0012": -0.1396579446911857,
+            "axis_0013": 0.07419506745753834
+          },
+          "qpos": [
+            -0.027546188239927383,
+            0.04004986785637108,
+            -0.07476067555466383,
+            -0.04875011176340932,
+            0.14690459722349303,
+            0.0007000000000000001,
+            0.0007000000000000001,
+            0.09232924997894888,
+            0.010656819566439811,
+            -0.051055904792410366,
+            -0.1396579446911857,
+            0.07419506745753834,
+            0.0007000000000000001,
+            0.0007000000000000001
+          ],
+          "redraws": 0,
+          "start_id": "start_1"
+        },
+        {
+          "kind": "displaced",
+          "offsets": {
+            "axis_0001": -0.13629614126436254,
+            "axis_0002": 0.06611170976039131,
+            "axis_0003": 0.08282963810491227,
+            "axis_0004": 0.1483096392708722,
+            "axis_0005": 0.016911570628094917,
+            "axis_0009": -0.029505910880195482,
+            "axis_0010": -0.04247573064269806,
+            "axis_0011": 0.021174381005741948,
+            "axis_0012": 0.04115046329612589,
+            "axis_0013": 0.041465085830904844
+          },
+          "qpos": [
+            -0.13629614126436254,
+            0.06611170976039131,
+            0.08282963810491227,
+            0.1483096392708722,
+            0.016911570628094917,
+            0.0007000000000000001,
+            0.0007000000000000001,
+            -0.029505910880195482,
+            -0.04247573064269806,
+            0.021174381005741948,
+            0.04115046329612589,
+            0.041465085830904844,
+            0.0007000000000000001,
+            0.0007000000000000001
+          ],
+          "redraws": 0,
+          "start_id": "start_2"
+        },
+        {
+          "kind": "displaced",
+          "offsets": {
+            "axis_0001": -0.11426398854278522,
+            "axis_0002": 0.08827718377882973,
+            "axis_0003": 0.03295904442604873,
+            "axis_0004": -0.0722217795272888,
+            "axis_0005": 0.12181223194281293,
+            "axis_0009": -0.050125218243245485,
+            "axis_0010": 0.06972235474706488,
+            "axis_0011": 0.10135582783978937,
+            "axis_0012": -0.0692586989075842,
+            "axis_0013": 0.0121396994810941
+          },
+          "qpos": [
+            -0.11426398854278522,
+            0.08827718377882973,
+            0.03295904442604873,
+            -0.0722217795272888,
+            0.12181223194281293,
+            0.0007000000000000001,
+            0.0007000000000000001,
+            -0.050125218243245485,
+            0.06972235474706488,
+            0.10135582783978937,
+            -0.0692586989075842,
+            0.0121396994810941,
+            0.0007000000000000001,
+            0.0007000000000000001
+          ],
+          "redraws": 0,
+          "start_id": "start_3"
+        }
+      ],
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "canonical_urdf_sha256": "5c76d1ebd6f0b32f04c25f992b37f801128ab4df8aaf42719b08618a153fb318",
+      "collision_exclusions": [],
+      "dof_count": 10,
+      "feasible_trials": [
+        {
+          "pace_ordinal": -2,
+          "prompt": "very slowly reach out as far as you can and then very slowly come back",
+          "start_id": "start_0",
+          "trial_id": "pace-2_start_0"
+        },
+        {
+          "pace_ordinal": -1,
+          "prompt": "slowly reach out as far as you can and then slowly come back",
+          "start_id": "start_0",
+          "trial_id": "pace-1_start_0"
+        },
+        {
+          "pace_ordinal": 0,
+          "prompt": "reach out as far as you can and then come back",
+          "start_id": "start_0",
+          "trial_id": "pace+0_start_0"
+        },
+        {
+          "pace_ordinal": 1,
+          "prompt": "quickly reach out as far as you can and then quickly come back",
+          "start_id": "start_0",
+          "trial_id": "pace+1_start_0"
+        },
+        {
+          "pace_ordinal": 2,
+          "prompt": "flat out reach out as far as you can and then come back flat out",
+          "start_id": "start_0",
+          "trial_id": "pace+2_start_0"
+        },
+        {
+          "pace_ordinal": -2,
+          "prompt": "very slowly reach out as far as you can and then very slowly come back",
+          "start_id": "start_1",
+          "trial_id": "pace-2_start_1"
+        },
+        {
+          "pace_ordinal": -1,
+          "prompt": "slowly reach out as far as you can and then slowly come back",
+          "start_id": "start_1",
+          "trial_id": "pace-1_start_1"
+        },
+        {
+          "pace_ordinal": 0,
+          "prompt": "reach out as far as you can and then come back",
+          "start_id": "start_1",
+          "trial_id": "pace+0_start_1"
+        },
+        {
+          "pace_ordinal": 1,
+          "prompt": "quickly reach out as far as you can and then quickly come back",
+          "start_id": "start_1",
+          "trial_id": "pace+1_start_1"
+        },
+        {
+          "pace_ordinal": 2,
+          "prompt": "flat out reach out as far as you can and then come back flat out",
+          "start_id": "start_1",
+          "trial_id": "pace+2_start_1"
+        },
+        {
+          "pace_ordinal": -2,
+          "prompt": "very slowly reach out as far as you can and then very slowly come back",
+          "start_id": "start_2",
+          "trial_id": "pace-2_start_2"
+        },
+        {
+          "pace_ordinal": -1,
+          "prompt": "slowly reach out as far as you can and then slowly come back",
+          "start_id": "start_2",
+          "trial_id": "pace-1_start_2"
+        },
+        {
+          "pace_ordinal": 0,
+          "prompt": "reach out as far as you can and then come back",
+          "start_id": "start_2",
+          "trial_id": "pace+0_start_2"
+        },
+        {
+          "pace_ordinal": 1,
+          "prompt": "quickly reach out as far as you can and then quickly come back",
+          "start_id": "start_2",
+          "trial_id": "pace+1_start_2"
+        },
+        {
+          "pace_ordinal": 2,
+          "prompt": "flat out reach out as far as you can and then come back flat out",
+          "start_id": "start_2",
+          "trial_id": "pace+2_start_2"
+        },
+        {
+          "pace_ordinal": -2,
+          "prompt": "very slowly reach out as far as you can and then very slowly come back",
+          "start_id": "start_3",
+          "trial_id": "pace-2_start_3"
+        },
+        {
+          "pace_ordinal": -1,
+          "prompt": "slowly reach out as far as you can and then slowly come back",
+          "start_id": "start_3",
+          "trial_id": "pace-1_start_3"
+        },
+        {
+          "pace_ordinal": 0,
+          "prompt": "reach out as far as you can and then come back",
+          "start_id": "start_3",
+          "trial_id": "pace+0_start_3"
+        },
+        {
+          "pace_ordinal": 1,
+          "prompt": "quickly reach out as far as you can and then quickly come back",
+          "start_id": "start_3",
+          "trial_id": "pace+1_start_3"
+        },
+        {
+          "pace_ordinal": 2,
+          "prompt": "flat out reach out as far as you can and then come back flat out",
+          "start_id": "start_3",
+          "trial_id": "pace+2_start_3"
+        }
+      ],
+      "guarded_pairs": 51,
+      "intake": "rigby_general.capabilities.intake.ingest_capability_body",
+      "invalid_requests": [
+        {
+          "case_id": "start_beyond_limit",
+          "expected": {
+            "measurement": "start_state.joint_limit",
+            "refusal_code": "ungroundable",
+            "where": "leaf_bake_and_binding"
+          },
+          "prompt": "reach out as far as you can and then come back",
+          "reason": "axis_0000 placed past its maximum",
+          "start_qpos": [
+            3.35,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.011000000000000001,
+            0.011000000000000001,
+            0.011000000000000001
+          ]
+        },
+        {
+          "case_id": "unafforded_request",
+          "expected": {
+            "measurement": null,
+            "refusal_code": "unafforded_schema",
+            "where": "planning"
+          },
+          "prompt": "grasp the cup and then come back",
+          "reason": "asks for a contact schema this free-space campaign does not certify",
+          "start_qpos": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.011000000000000001,
+            0.011000000000000001,
+            0.011000000000000001
+          ]
+        },
+        {
+          "case_id": "start_self_collision",
+          "expected": {
+            "measurement": "start_state.self_collision",
+            "refusal_code": "ungroundable",
+            "where": "leaf_bake_and_binding"
+          },
+          "prompt": "reach out as far as you can and then come back",
+          "reason": "body_0004 50.0 mm inside body_0008",
+          "start_qpos": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            2.85,
+            2.85,
+            0.011000000000000001,
+            0.011000000000000001,
+            0.011000000000000001
+          ]
+        }
+      ],
+      "package_sha256": "f403f1e59f1018c52e3f0e3c2d86b3176f469a4848481b4dc3b6ef3f6e9a6a95",
+      "positioning_joints": [
+        "axis_0000",
+        "axis_0001",
+        "axis_0002",
+        "axis_0003",
+        "axis_0004",
+        "axis_0005",
+        "axis_0006"
+      ],
+      "reach_radius_m": 1.37002,
+      "rig_id": "body_f403f1e59f1018c5",
+      "self_clearance_m": 0.008,
+      "source_sha256": "44222086fe981a572136e3d0508ab1c5e08ab3de730c615ed37362d3258945d6",
+      "source_urdf": "any-robot/assets/general/zoo/zoo_hand_arm/robot.urdf",
+      "starts": [
+        {
+          "kind": "measured_rest",
+          "offsets": {},
+          "qpos": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.011000000000000001,
+            0.011000000000000001,
+            0.011000000000000001
+          ],
+          "redraws": 0,
+          "start_id": "start_0"
+        },
+        {
+          "kind": "displaced",
+          "offsets": {
+            "axis_0000": 0.004200072105378338,
+            "axis_0001": 0.0031303865309096346,
+            "axis_0002": -0.13216162770793413,
+            "axis_0003": 0.07146195463844629,
+            "axis_0004": 0.010856120477576925,
+            "axis_0005": 0.002272232310367672,
+            "axis_0006": -0.06455674706563731
+          },
+          "qpos": [
+            0.004200072105378338,
+            0.0031303865309096346,
+            -0.13216162770793413,
+            0.07146195463844629,
+            0.010856120477576925,
+            0.002272232310367672,
+            -0.06455674706563731,
+            0.011000000000000001,
+            0.011000000000000001,
+            0.011000000000000001
+          ],
+          "redraws": 0,
+          "start_id": "start_1"
+        },
+        {
+          "kind": "displaced",
+          "offsets": {
+            "axis_0000": -0.03874267373612723,
+            "axis_0001": -0.1289261122486063,
+            "axis_0002": 0.13415361320041824,
+            "axis_0003": 0.06385007933856168,
+            "axis_0004": 0.0884321084147178,
+            "axis_0005": 0.10173597767850384,
+            "axis_0006": 0.02072973220910339
+          },
+          "qpos": [
+            -0.03874267373612723,
+            -0.1289261122486063,
+            0.13415361320041824,
+            0.06385007933856168,
+            0.0884321084147178,
+            0.10173597767850384,
+            0.02072973220910339,
+            0.011000000000000001,
+            0.011000000000000001,
+            0.011000000000000001
+          ],
+          "redraws": 0,
+          "start_id": "start_2"
+        },
+        {
+          "kind": "displaced",
+          "offsets": {
+            "axis_0000": 0.142654195655479,
+            "axis_0001": -0.07759757268362381,
+            "axis_0002": -0.10669394138028834,
+            "axis_0003": -0.00866800276325982,
+            "axis_0004": -0.10789466066661071,
+            "axis_0005": 0.008390367255936304,
+            "axis_0006": 0.08204046327741675
+          },
+          "qpos": [
+            0.142654195655479,
+            -0.07759757268362381,
+            -0.10669394138028834,
+            -0.00866800276325982,
+            -0.10789466066661071,
+            0.008390367255936304,
+            0.08204046327741675,
+            0.011000000000000001,
+            0.011000000000000001,
+            0.011000000000000001
+          ],
+          "redraws": 0,
+          "start_id": "start_3"
+        }
+      ],
+      "zoo_id": "zoo_hand_arm"
+    },
+    {
+      "canonical_urdf_sha256": "a4ee0ce33200ba8394842b3f5ac4c5cc5bdfefe9a2dbba38bd8279dee08f2dfc",
+      "collision_exclusions": [],
+      "dof_count": 8,
+      "feasible_trials": [
+        {
+          "pace_ordinal": -2,
+          "prompt": "very slowly reach out as far as you can and then very slowly come back",
+          "start_id": "start_0",
+          "trial_id": "pace-2_start_0"
+        },
+        {
+          "pace_ordinal": -1,
+          "prompt": "slowly reach out as far as you can and then slowly come back",
+          "start_id": "start_0",
+          "trial_id": "pace-1_start_0"
+        },
+        {
+          "pace_ordinal": 0,
+          "prompt": "reach out as far as you can and then come back",
+          "start_id": "start_0",
+          "trial_id": "pace+0_start_0"
+        },
+        {
+          "pace_ordinal": 1,
+          "prompt": "quickly reach out as far as you can and then quickly come back",
+          "start_id": "start_0",
+          "trial_id": "pace+1_start_0"
+        },
+        {
+          "pace_ordinal": 2,
+          "prompt": "flat out reach out as far as you can and then come back flat out",
+          "start_id": "start_0",
+          "trial_id": "pace+2_start_0"
+        },
+        {
+          "pace_ordinal": -2,
+          "prompt": "very slowly reach out as far as you can and then very slowly come back",
+          "start_id": "start_1",
+          "trial_id": "pace-2_start_1"
+        },
+        {
+          "pace_ordinal": -1,
+          "prompt": "slowly reach out as far as you can and then slowly come back",
+          "start_id": "start_1",
+          "trial_id": "pace-1_start_1"
+        },
+        {
+          "pace_ordinal": 0,
+          "prompt": "reach out as far as you can and then come back",
+          "start_id": "start_1",
+          "trial_id": "pace+0_start_1"
+        },
+        {
+          "pace_ordinal": 1,
+          "prompt": "quickly reach out as far as you can and then quickly come back",
+          "start_id": "start_1",
+          "trial_id": "pace+1_start_1"
+        },
+        {
+          "pace_ordinal": 2,
+          "prompt": "flat out reach out as far as you can and then come back flat out",
+          "start_id": "start_1",
+          "trial_id": "pace+2_start_1"
+        },
+        {
+          "pace_ordinal": -2,
+          "prompt": "very slowly reach out as far as you can and then very slowly come back",
+          "start_id": "start_2",
+          "trial_id": "pace-2_start_2"
+        },
+        {
+          "pace_ordinal": -1,
+          "prompt": "slowly reach out as far as you can and then slowly come back",
+          "start_id": "start_2",
+          "trial_id": "pace-1_start_2"
+        },
+        {
+          "pace_ordinal": 0,
+          "prompt": "reach out as far as you can and then come back",
+          "start_id": "start_2",
+          "trial_id": "pace+0_start_2"
+        },
+        {
+          "pace_ordinal": 1,
+          "prompt": "quickly reach out as far as you can and then quickly come back",
+          "start_id": "start_2",
+          "trial_id": "pace+1_start_2"
+        },
+        {
+          "pace_ordinal": 2,
+          "prompt": "flat out reach out as far as you can and then come back flat out",
+          "start_id": "start_2",
+          "trial_id": "pace+2_start_2"
+        },
+        {
+          "pace_ordinal": -2,
+          "prompt": "very slowly reach out as far as you can and then very slowly come back",
+          "start_id": "start_3",
+          "trial_id": "pace-2_start_3"
+        },
+        {
+          "pace_ordinal": -1,
+          "prompt": "slowly reach out as far as you can and then slowly come back",
+          "start_id": "start_3",
+          "trial_id": "pace-1_start_3"
+        },
+        {
+          "pace_ordinal": 0,
+          "prompt": "reach out as far as you can and then come back",
+          "start_id": "start_3",
+          "trial_id": "pace+0_start_3"
+        },
+        {
+          "pace_ordinal": 1,
+          "prompt": "quickly reach out as far as you can and then quickly come back",
+          "start_id": "start_3",
+          "trial_id": "pace+1_start_3"
+        },
+        {
+          "pace_ordinal": 2,
+          "prompt": "flat out reach out as far as you can and then come back flat out",
+          "start_id": "start_3",
+          "trial_id": "pace+2_start_3"
+        }
+      ],
+      "guarded_pairs": 33,
+      "intake": "rigby_general.capabilities.intake.ingest_capability_body",
+      "invalid_requests": [
+        {
+          "case_id": "start_beyond_limit",
+          "expected": {
+            "measurement": "start_state.joint_limit",
+            "refusal_code": "ungroundable",
+            "where": "leaf_bake_and_binding"
+          },
+          "prompt": "reach out as far as you can and then come back",
+          "reason": "axis_0000 placed past its maximum",
+          "start_qpos": [
+            3.35,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0008500000000000001,
+            0.0008500000000000001
+          ]
+        },
+        {
+          "case_id": "unafforded_request",
+          "expected": {
+            "measurement": null,
+            "refusal_code": "unafforded_schema",
+            "where": "planning"
+          },
+          "prompt": "grasp the cup and then come back",
+          "reason": "asks for a contact schema this free-space campaign does not certify",
+          "start_qpos": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0008500000000000001,
+            0.0008500000000000001
+          ]
+        },
+        {
+          "case_id": "start_self_collision",
+          "expected": {
+            "measurement": "start_state.self_collision",
+            "refusal_code": "ungroundable",
+            "where": "leaf_bake_and_binding"
+          },
+          "prompt": "reach out as far as you can and then come back",
+          "reason": "body_0003 44.4 mm inside body_0007",
+          "start_qpos": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            2.85,
+            2.85,
+            0.0008500000000000001,
+            0.0008500000000000001
+          ]
+        }
+      ],
+      "package_sha256": "c7f1054100131d9a8ae2026689c57b4f1dedb1425191d9e61fd6367200e0c745",
+      "positioning_joints": [
+        "axis_0000",
+        "axis_0001",
+        "axis_0002",
+        "axis_0003",
+        "axis_0004",
+        "axis_0005"
+      ],
+      "reach_radius_m": 1.32,
+      "rig_id": "body_c7f1054100131d9a",
+      "self_clearance_m": 0.008,
+      "source_sha256": "e471721a99f33a062ff4f96fef38d7523b1e8196bd7c95406ddb2ebe4778cd3d",
+      "source_urdf": "any-robot/assets/general/zoo/zoo_jaw_arm/robot.urdf",
+      "starts": [
+        {
+          "kind": "measured_rest",
+          "offsets": {},
+          "qpos": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0008500000000000001,
+            0.0008500000000000001
+          ],
+          "redraws": 0,
+          "start_id": "start_0"
+        },
+        {
+          "kind": "displaced",
+          "offsets": {
+            "axis_0000": -0.09812753113695431,
+            "axis_0001": -0.061144660303161964,
+            "axis_0002": -0.06060172781704852,
+            "axis_0003": -0.08464310880287397,
+            "axis_0004": -0.0655085060645495,
+            "axis_0005": 0.09182572466557609
+          },
+          "qpos": [
+            -0.09812753113695431,
+            -0.061144660303161964,
+            -0.06060172781704852,
+            -0.08464310880287397,
+            -0.0655085060645495,
+            0.09182572466557609,
+            0.0008500000000000001,
+            0.0008500000000000001
+          ],
+          "redraws": 0,
+          "start_id": "start_1"
+        },
+        {
+          "kind": "displaced",
+          "offsets": {
+            "axis_0000": -0.05274472104080114,
+            "axis_0001": -0.12063380932728071,
+            "axis_0002": -0.13013414195760356,
+            "axis_0003": 0.1484016022461211,
+            "axis_0004": 0.03067001463921669,
+            "axis_0005": -0.021026882950111413
+          },
+          "qpos": [
+            -0.05274472104080114,
+            -0.12063380932728071,
+            -0.13013414195760356,
+            0.1484016022461211,
+            0.03067001463921669,
+            -0.021026882950111413,
+            0.0008500000000000001,
+            0.0008500000000000001
+          ],
+          "redraws": 0,
+          "start_id": "start_2"
+        },
+        {
+          "kind": "displaced",
+          "offsets": {
+            "axis_0000": 0.08139089850526549,
+            "axis_0001": -0.11418441403403769,
+            "axis_0002": -0.06473796433809809,
+            "axis_0003": -0.053671883488077554,
+            "axis_0004": 0.10195397735100341,
+            "axis_0005": -0.0428838156115714
+          },
+          "qpos": [
+            0.08139089850526549,
+            -0.11418441403403769,
+            -0.06473796433809809,
+            -0.053671883488077554,
+            0.10195397735100341,
+            -0.0428838156115714,
+            0.0008500000000000001,
+            0.0008500000000000001
+          ],
+          "redraws": 0,
+          "start_id": "start_3"
+        }
+      ],
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "canonical_urdf_sha256": "163143873627dcec5cf5815e9284ff115e94a18c7efc3eb46ed42e7a0ffaf599",
+      "collision_exclusions": [
+        [
+          "body_0006",
+          "body_0010"
+        ]
+      ],
+      "dof_count": 8,
+      "feasible_trials": [
+        {
+          "pace_ordinal": -2,
+          "prompt": "very slowly reach out as far as you can and then very slowly come back",
+          "start_id": "start_0",
+          "trial_id": "pace-2_start_0"
+        },
+        {
+          "pace_ordinal": -1,
+          "prompt": "slowly reach out as far as you can and then slowly come back",
+          "start_id": "start_0",
+          "trial_id": "pace-1_start_0"
+        },
+        {
+          "pace_ordinal": 0,
+          "prompt": "reach out as far as you can and then come back",
+          "start_id": "start_0",
+          "trial_id": "pace+0_start_0"
+        },
+        {
+          "pace_ordinal": 1,
+          "prompt": "quickly reach out as far as you can and then quickly come back",
+          "start_id": "start_0",
+          "trial_id": "pace+1_start_0"
+        },
+        {
+          "pace_ordinal": 2,
+          "prompt": "flat out reach out as far as you can and then come back flat out",
+          "start_id": "start_0",
+          "trial_id": "pace+2_start_0"
+        },
+        {
+          "pace_ordinal": -2,
+          "prompt": "very slowly reach out as far as you can and then very slowly come back",
+          "start_id": "start_1",
+          "trial_id": "pace-2_start_1"
+        },
+        {
+          "pace_ordinal": -1,
+          "prompt": "slowly reach out as far as you can and then slowly come back",
+          "start_id": "start_1",
+          "trial_id": "pace-1_start_1"
+        },
+        {
+          "pace_ordinal": 0,
+          "prompt": "reach out as far as you can and then come back",
+          "start_id": "start_1",
+          "trial_id": "pace+0_start_1"
+        },
+        {
+          "pace_ordinal": 1,
+          "prompt": "quickly reach out as far as you can and then quickly come back",
+          "start_id": "start_1",
+          "trial_id": "pace+1_start_1"
+        },
+        {
+          "pace_ordinal": 2,
+          "prompt": "flat out reach out as far as you can and then come back flat out",
+          "start_id": "start_1",
+          "trial_id": "pace+2_start_1"
+        },
+        {
+          "pace_ordinal": -2,
+          "prompt": "very slowly reach out as far as you can and then very slowly come back",
+          "start_id": "start_2",
+          "trial_id": "pace-2_start_2"
+        },
+        {
+          "pace_ordinal": -1,
+          "prompt": "slowly reach out as far as you can and then slowly come back",
+          "start_id": "start_2",
+          "trial_id": "pace-1_start_2"
+        },
+        {
+          "pace_ordinal": 0,
+          "prompt": "reach out as far as you can and then come back",
+          "start_id": "start_2",
+          "trial_id": "pace+0_start_2"
+        },
+        {
+          "pace_ordinal": 1,
+          "prompt": "quickly reach out as far as you can and then quickly come back",
+          "start_id": "start_2",
+          "trial_id": "pace+1_start_2"
+        },
+        {
+          "pace_ordinal": 2,
+          "prompt": "flat out reach out as far as you can and then come back flat out",
+          "start_id": "start_2",
+          "trial_id": "pace+2_start_2"
+        },
+        {
+          "pace_ordinal": -2,
+          "prompt": "very slowly reach out as far as you can and then very slowly come back",
+          "start_id": "start_3",
+          "trial_id": "pace-2_start_3"
+        },
+        {
+          "pace_ordinal": -1,
+          "prompt": "slowly reach out as far as you can and then slowly come back",
+          "start_id": "start_3",
+          "trial_id": "pace-1_start_3"
+        },
+        {
+          "pace_ordinal": 0,
+          "prompt": "reach out as far as you can and then come back",
+          "start_id": "start_3",
+          "trial_id": "pace+0_start_3"
+        },
+        {
+          "pace_ordinal": 1,
+          "prompt": "quickly reach out as far as you can and then quickly come back",
+          "start_id": "start_3",
+          "trial_id": "pace+1_start_3"
+        },
+        {
+          "pace_ordinal": 2,
+          "prompt": "flat out reach out as far as you can and then come back flat out",
+          "start_id": "start_3",
+          "trial_id": "pace+2_start_3"
+        }
+      ],
+      "guarded_pairs": 38,
+      "intake": "rigby_general.capabilities.intake.ingest_capability_body",
+      "invalid_requests": [
+        {
+          "case_id": "start_beyond_limit",
+          "expected": {
+            "measurement": "start_state.joint_limit",
+            "refusal_code": "ungroundable",
+            "where": "leaf_bake_and_binding"
+          },
+          "prompt": "reach out as far as you can and then come back",
+          "reason": "axis_0000 placed past its maximum",
+          "start_qpos": [
+            3.35,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0013000000000000002,
+            0.0013000000000000002
+          ]
+        },
+        {
+          "case_id": "unafforded_request",
+          "expected": {
+            "measurement": null,
+            "refusal_code": "unafforded_schema",
+            "where": "planning"
+          },
+          "prompt": "grasp the cup and then come back",
+          "reason": "asks for a contact schema this free-space campaign does not certify",
+          "start_qpos": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0013000000000000002,
+            0.0013000000000000002
+          ]
+        },
+        {
+          "case_id": "start_self_collision",
+          "expected": {
+            "measurement": "start_state.self_collision",
+            "refusal_code": "ungroundable",
+            "where": "leaf_bake_and_binding"
+          },
+          "prompt": "reach out as far as you can and then come back",
+          "reason": "body_0004 66.4 mm inside body_0006",
+          "start_qpos": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            2.85,
+            2.85,
+            0.0013000000000000002,
+            0.0013000000000000002
+          ]
+        }
+      ],
+      "package_sha256": "aec600cd399285151a1c3e2d30c314090d90b5a43c8f0e13d2c5458346e1d162",
+      "positioning_joints": [
+        "axis_0000",
+        "axis_0001",
+        "axis_0002",
+        "axis_0003",
+        "axis_0004",
+        "axis_0005"
+      ],
+      "reach_radius_m": 2.05,
+      "rig_id": "body_aec600cd39928515",
+      "self_clearance_m": 0.010249999999999999,
+      "source_sha256": "126c4beb1379d7a3e92f03e85109f892b90e25d633715f8a8f2a26a79ba74ecc",
+      "source_urdf": "any-robot/assets/general/zoo/zoo_long_arm/robot.urdf",
+      "starts": [
+        {
+          "kind": "measured_rest",
+          "offsets": {},
+          "qpos": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0013000000000000002,
+            0.0013000000000000002
+          ],
+          "redraws": 0,
+          "start_id": "start_0"
+        },
+        {
+          "kind": "displaced",
+          "offsets": {
+            "axis_0000": 0.1348698077744027,
+            "axis_0001": 0.11950650058164985,
+            "axis_0002": 0.07634044177771383,
+            "axis_0003": -0.010975790540595009,
+            "axis_0004": 0.05642493103445873,
+            "axis_0005": -0.1404163282666337
+          },
+          "qpos": [
+            0.1348698077744027,
+            0.11950650058164985,
+            0.07634044177771383,
+            -0.010975790540595009,
+            0.05642493103445873,
+            -0.1404163282666337,
+            0.0013000000000000002,
+            0.0013000000000000002
+          ],
+          "redraws": 0,
+          "start_id": "start_1"
+        },
+        {
+          "kind": "displaced",
+          "offsets": {
+            "axis_0000": 0.017894791250088436,
+            "axis_0001": 0.1354078205187555,
+            "axis_0002": 0.10070381709720042,
+            "axis_0003": -0.0846672699613626,
+            "axis_0004": -0.09297996444561535,
+            "axis_0005": 0.08585270078450653
+          },
+          "qpos": [
+            0.017894791250088436,
+            0.1354078205187555,
+            0.10070381709720042,
+            -0.0846672699613626,
+            -0.09297996444561535,
+            0.08585270078450653,
+            0.0013000000000000002,
+            0.0013000000000000002
+          ],
+          "redraws": 0,
+          "start_id": "start_2"
+        },
+        {
+          "kind": "displaced",
+          "offsets": {
+            "axis_0000": 0.07338405815041468,
+            "axis_0001": 0.028623030174765182,
+            "axis_0002": 0.03830351251681988,
+            "axis_0003": -0.07388266579394334,
+            "axis_0004": 0.0014534669671488754,
+            "axis_0005": -0.14626684047183916
+          },
+          "qpos": [
+            0.07338405815041468,
+            0.028623030174765182,
+            0.03830351251681988,
+            -0.07388266579394334,
+            0.0014534669671488754,
+            -0.14626684047183916,
+            0.0013000000000000002,
+            0.0013000000000000002
+          ],
+          "redraws": 0,
+          "start_id": "start_3"
+        }
+      ],
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "canonical_urdf_sha256": "231f1d3a316e94eb518e0adf5372aa5f2baf5fd5f7fd96772a43a736dd0263fb",
+      "collision_exclusions": [],
+      "dof_count": 5,
+      "feasible_trials": [
+        {
+          "pace_ordinal": -2,
+          "prompt": "very slowly reach out as far as you can and then very slowly come back",
+          "start_id": "start_0",
+          "trial_id": "pace-2_start_0"
+        },
+        {
+          "pace_ordinal": -1,
+          "prompt": "slowly reach out as far as you can and then slowly come back",
+          "start_id": "start_0",
+          "trial_id": "pace-1_start_0"
+        },
+        {
+          "pace_ordinal": 0,
+          "prompt": "reach out as far as you can and then come back",
+          "start_id": "start_0",
+          "trial_id": "pace+0_start_0"
+        },
+        {
+          "pace_ordinal": 1,
+          "prompt": "quickly reach out as far as you can and then quickly come back",
+          "start_id": "start_0",
+          "trial_id": "pace+1_start_0"
+        },
+        {
+          "pace_ordinal": 2,
+          "prompt": "flat out reach out as far as you can and then come back flat out",
+          "start_id": "start_0",
+          "trial_id": "pace+2_start_0"
+        },
+        {
+          "pace_ordinal": -2,
+          "prompt": "very slowly reach out as far as you can and then very slowly come back",
+          "start_id": "start_1",
+          "trial_id": "pace-2_start_1"
+        },
+        {
+          "pace_ordinal": -1,
+          "prompt": "slowly reach out as far as you can and then slowly come back",
+          "start_id": "start_1",
+          "trial_id": "pace-1_start_1"
+        },
+        {
+          "pace_ordinal": 0,
+          "prompt": "reach out as far as you can and then come back",
+          "start_id": "start_1",
+          "trial_id": "pace+0_start_1"
+        },
+        {
+          "pace_ordinal": 1,
+          "prompt": "quickly reach out as far as you can and then quickly come back",
+          "start_id": "start_1",
+          "trial_id": "pace+1_start_1"
+        },
+        {
+          "pace_ordinal": 2,
+          "prompt": "flat out reach out as far as you can and then come back flat out",
+          "start_id": "start_1",
+          "trial_id": "pace+2_start_1"
+        },
+        {
+          "pace_ordinal": -2,
+          "prompt": "very slowly reach out as far as you can and then very slowly come back",
+          "start_id": "start_2",
+          "trial_id": "pace-2_start_2"
+        },
+        {
+          "pace_ordinal": -1,
+          "prompt": "slowly reach out as far as you can and then slowly come back",
+          "start_id": "start_2",
+          "trial_id": "pace-1_start_2"
+        },
+        {
+          "pace_ordinal": 0,
+          "prompt": "reach out as far as you can and then come back",
+          "start_id": "start_2",
+          "trial_id": "pace+0_start_2"
+        },
+        {
+          "pace_ordinal": 1,
+          "prompt": "quickly reach out as far as you can and then quickly come back",
+          "start_id": "start_2",
+          "trial_id": "pace+1_start_2"
+        },
+        {
+          "pace_ordinal": 2,
+          "prompt": "flat out reach out as far as you can and then come back flat out",
+          "start_id": "start_2",
+          "trial_id": "pace+2_start_2"
+        },
+        {
+          "pace_ordinal": -2,
+          "prompt": "very slowly reach out as far as you can and then very slowly come back",
+          "start_id": "start_3",
+          "trial_id": "pace-2_start_3"
+        },
+        {
+          "pace_ordinal": -1,
+          "prompt": "slowly reach out as far as you can and then slowly come back",
+          "start_id": "start_3",
+          "trial_id": "pace-1_start_3"
+        },
+        {
+          "pace_ordinal": 0,
+          "prompt": "reach out as far as you can and then come back",
+          "start_id": "start_3",
+          "trial_id": "pace+0_start_3"
+        },
+        {
+          "pace_ordinal": 1,
+          "prompt": "quickly reach out as far as you can and then quickly come back",
+          "start_id": "start_3",
+          "trial_id": "pace+1_start_3"
+        },
+        {
+          "pace_ordinal": 2,
+          "prompt": "flat out reach out as far as you can and then come back flat out",
+          "start_id": "start_3",
+          "trial_id": "pace+2_start_3"
+        }
+      ],
+      "guarded_pairs": 14,
+      "intake": "rigby_general.capabilities.intake.ingest_capability_body",
+      "invalid_requests": [
+        {
+          "case_id": "start_beyond_limit",
+          "expected": {
+            "measurement": "start_state.joint_limit",
+            "refusal_code": "ungroundable",
+            "where": "leaf_bake_and_binding"
+          },
+          "prompt": "reach out as far as you can and then come back",
+          "reason": "axis_0000 placed past its maximum",
+          "start_qpos": [
+            3.35,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "case_id": "unafforded_request",
+          "expected": {
+            "measurement": null,
+            "refusal_code": "unafforded_schema",
+            "where": "planning"
+          },
+          "prompt": "grasp the cup and then come back",
+          "reason": "asks for a contact schema this free-space campaign does not certify",
+          "start_qpos": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "case_id": "start_self_collision",
+          "expected": {
+            "measurement": "start_state.self_collision",
+            "refusal_code": "ungroundable",
+            "where": "leaf_bake_and_binding"
+          },
+          "prompt": "reach out as far as you can and then come back",
+          "reason": "body_0003 21.8 mm inside body_0006",
+          "start_qpos": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            2.85
+          ]
+        }
+      ],
+      "package_sha256": "89ff575455c980abe3281111d62c67671b8a1d268c918377146430cbaa095846",
+      "positioning_joints": [
+        "axis_0000",
+        "axis_0001",
+        "axis_0002",
+        "axis_0003",
+        "axis_0004"
+      ],
+      "reach_radius_m": 1.18,
+      "rig_id": "body_89ff575455c980ab",
+      "self_clearance_m": 0.008,
+      "source_sha256": "676027304f6be91e6af3083e3b17e7a9b23572dec99dd3d8f8fcb1690e45eda3",
+      "source_urdf": "any-robot/assets/general/zoo/zoo_tool_arm/robot.urdf",
+      "starts": [
+        {
+          "kind": "measured_rest",
+          "offsets": {},
+          "qpos": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "redraws": 0,
+          "start_id": "start_0"
+        },
+        {
+          "kind": "displaced",
+          "offsets": {
+            "axis_0000": 0.013842508047461854,
+            "axis_0001": 0.06777253010016261,
+            "axis_0002": -0.11764844443645026,
+            "axis_0003": -0.03306658271714736,
+            "axis_0004": -0.11565902758939324
+          },
+          "qpos": [
+            0.013842508047461854,
+            0.06777253010016261,
+            -0.11764844443645026,
+            -0.03306658271714736,
+            -0.11565902758939324
+          ],
+          "redraws": 0,
+          "start_id": "start_1"
+        },
+        {
+          "kind": "displaced",
+          "offsets": {
+            "axis_0000": -0.14777531407066855,
+            "axis_0001": -0.007707630528519127,
+            "axis_0002": -0.014426288265313301,
+            "axis_0003": 0.11096352390405223,
+            "axis_0004": 0.06845287537092991
+          },
+          "qpos": [
+            -0.14777531407066855,
+            -0.007707630528519127,
+            -0.014426288265313301,
+            0.11096352390405223,
+            0.06845287537092991
+          ],
+          "redraws": 0,
+          "start_id": "start_2"
+        },
+        {
+          "kind": "displaced",
+          "offsets": {
+            "axis_0000": 0.11723070247809636,
+            "axis_0001": 0.07004999935515573,
+            "axis_0002": -0.0639331033163338,
+            "axis_0003": 0.03690822833075029,
+            "axis_0004": 0.045248117669928735
+          },
+          "qpos": [
+            0.11723070247809636,
+            0.07004999935515573,
+            -0.0639331033163338,
+            0.03690822833075029,
+            0.045248117669928735
+          ],
+          "redraws": 0,
+          "start_id": "start_3"
+        }
+      ],
+      "zoo_id": "zoo_tool_arm"
+    }
+  ],
+  "budgets": {
+    "attempts_per_trial": 1,
+    "repeats_per_certification": 3,
+    "wall_seconds_per_trial": 300
+  },
+  "canonical_prompt": "reach out as far as you can and then come back",
+  "commit": "f8a70a978d4d983fd40fb434c0432308d572a934",
+  "created_at_utc": "2026-09-13T02:02:49.616687+00:00",
+  "draw": {
+    "generator": "numpy.random.default_rng(seed), one stream over bodies in sorted zoo order",
+    "limit_margin_fraction": 0.01,
+    "max_offset_rad": 0.15,
+    "max_redraws": 20,
+    "redraw_rule": "a drawn start outside a limit or inside the body's own links is redrawn; every redraw is recorded",
+    "seed": 20260912,
+    "start_variants_per_body": 4
+  },
+  "duration_criterion": {
+    "baseline_reference": "docs/results/g05-curves-report.md canonical authored durations at commit 5a6c0b3bb17eb721da6ba6c144743c24ba872301 (legacy intake, native clock, bounded curves)",
+    "rule": "The canonical (pace 0, measured rest) authored duration per body must be no greater than the baseline; the bimanual body's baseline was a self-colliding, physically refused program, so its comparison is reported against that refused duration and labelled as such."
+  },
+  "evidence": {
+    "full_video": "canonical trial of every body as a G01 evidence bundle with full-duration MP4 and labelled GIF summary (D05)",
+    "per_trial": "outcome, failure typing, authored and actual physics duration, tracking error, violations, replay hashes, leaf duration scales, wall time per stage",
+    "physical_traces": "certification trace hashes recorded for every trial; full traces retained locally under any-robot/results/g05-campaign (untracked)"
+  },
+  "feasibility_rule": "Every pace of the reviewed prompt is feasible by construction: pace is a preference the grounder clamps to the joint velocity limits, never a request that exceeds them. A start is feasible when the body can hold it: inside every limit and clear of self-penetration under the same guard the grounder applies. Invalid requests are predeclared and counted separately; a body that cannot construct one kind of invalid start records that instead of inventing one.",
+  "generation_calls": 0,
+  "goal": "G05",
+  "mujoco": "3.11.0",
+  "paces": [
+    {
+      "ordinal": -2,
+      "prompt": "very slowly reach out as far as you can and then very slowly come back"
+    },
+    {
+      "ordinal": -1,
+      "prompt": "slowly reach out as far as you can and then slowly come back"
+    },
+    {
+      "ordinal": 0,
+      "prompt": "reach out as far as you can and then come back"
+    },
+    {
+      "ordinal": 1,
+      "prompt": "quickly reach out as far as you can and then quickly come back"
+    },
+    {
+      "ordinal": 2,
+      "prompt": "flat out reach out as far as you can and then come back flat out"
+    }
+  ],
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.12.7 (tags/v3.12.7:0b05ead, Oct  1 2024, 03:06:41) [MSC v.1941 64 bit (AMD64)]",
+  "schema": "g05.composition-roster.v1",
+  "scored_runs_started": false,
+  "success": {
+    "definition": "The composed prompt is accepted by the pipeline: both leaves freshly baked at the exact requested region, zero region substitutions, the composition certified by all physical gates (joint position and velocity limits, actuator effort, base drift, self-collision, tracking) on three identical native-clock replays, with unchanged limits and thresholds.",
+    "gate_policy": "rigby_general.gates.certify.GatePolicy() defaults",
+    "leaf_pace_retry": "The bake's existing single pace retry (duration scale) is permitted for a leaf and recorded; it is not a region substitution.",
+    "target": "at least 19 of 20 feasible trials per body"
+  },
+  "title": "Six-body free-space composition: predeclared start/pace variants"
+}

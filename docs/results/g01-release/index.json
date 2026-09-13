@@ -1,0 +1,476 @@
+{
+  "cases": [
+    {
+      "archive": "zoo_compact_arm/physical.zip",
+      "archive_bytes": 3947254,
+      "archive_sha256": "371024db2b11c1eb56efc6859030a2621badaeb09ee14bd45b2dd903acc72e61",
+      "camera": {
+        "centre": [
+          0.002072746724400395,
+          -0.0009064967715285031,
+          0.13441024744083208
+        ],
+        "reach": 0.385
+      },
+      "case": "zoo_compact_arm",
+      "controller": "computed torque",
+      "created_at_utc": "2026-09-12T03:33:32.241022+00:00",
+      "fault": false,
+      "goal": "G01",
+      "media": "zoo_compact_arm/media",
+      "media_manifest_sha256": "fcfc48e636d912387bf4dbcf2372e5678fa5d189bc5a103eb2390a1c6bc40df8",
+      "observation": "model + joint encoders",
+      "outcome": "success",
+      "package_source_map_sha256": "182cd69d731a5a959a4c5a7305339c5b3e44c245c5dbc4fcda5781f2eaa287eb",
+      "package_sources_match_recorded_commit": true,
+      "physical_manifest_sha256": "de01412c61a9ce00b0c62179ae58dbcdc7f66887fc393cfccb1cbb8d317ec89b",
+      "protocol": "rigby.baseline-replay/1",
+      "reference_clock_matches_physics": false,
+      "reference_duration_s": 30.509918,
+      "refusal": null,
+      "replay": {
+        "agrees": true,
+        "recomputed_controller": {
+          "agrees": true,
+          "first_action_difference": null,
+          "first_state_difference": null,
+          "integrated_steps": 7322,
+          "max_state_error": 0.0,
+          "mode": "recomputed_controller",
+          "samples": 7323,
+          "tolerance": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        },
+        "recorded_controls": {
+          "agrees": true,
+          "first_action_difference": null,
+          "first_state_difference": null,
+          "integrated_steps": 7322,
+          "max_state_error": 0.0,
+          "mode": "recorded_controls",
+          "samples": 7323,
+          "tolerance": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        },
+        "task_outcome": "success"
+      },
+      "robot_id": "zoo_compact_arm",
+      "simulation_duration_s": 14.64400000000156,
+      "source_commit": "2770b0e5e4a631326947b8ac18520f7085c43132",
+      "task_site": "palm_grasp_center",
+      "trace_sha256": "8aebd50a5ad6f61a15d1883871abf5938739bcd0950a42b8ac78034cb35846ab",
+      "tracked_source_patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "video_duration_s": 14.75,
+      "video_frames": 177,
+      "world_sha256": "6be1bb15a289c107d58aaad3fc273db5680d27e8da9152bfe069cb83fddf45eb"
+    },
+    {
+      "archive": "zoo_dual_arm/physical.zip",
+      "archive_bytes": 354728,
+      "archive_sha256": "89d97be4ab513c488814ce6382ad631d60da13c4b61f2e5970cd5292c45e7264",
+      "camera": {
+        "centre": [
+          0.0031189494840186635,
+          0.002373619715629676,
+          0.6130161514390277
+        ],
+        "reach": 1.326253
+      },
+      "case": "zoo_dual_arm",
+      "controller": "computed torque",
+      "created_at_utc": "2026-09-12T03:33:44.263410+00:00",
+      "fault": false,
+      "goal": "G01",
+      "media": "zoo_dual_arm/media",
+      "media_manifest_sha256": "7e24374a65c8c5821192af334f77b6b157e3845333ba502793e389a71599274b",
+      "observation": "model + joint encoders",
+      "outcome": "pre_execution_refusal",
+      "package_source_map_sha256": "182cd69d731a5a959a4c5a7305339c5b3e44c245c5dbc4fcda5781f2eaa287eb",
+      "package_sources_match_recorded_commit": true,
+      "physical_manifest_sha256": "9d0cb4b9b0ccf9ada067ef5fa519e2ae2ee060e84c97d13760d28cd9fdc74485",
+      "protocol": "rigby.baseline-replay/1",
+      "reference_clock_matches_physics": false,
+      "reference_duration_s": 60.591332,
+      "refusal": {
+        "code": "joint_limit_violation",
+        "detail": "Composed tracks exceed limits for 'left_joint_4'",
+        "stage": "compilation"
+      },
+      "replay": {
+        "agrees": true,
+        "controller_replay": "not applicable: no execution occurred",
+        "recorded_controls": {
+          "agrees": true,
+          "first_action_difference": null,
+          "first_state_difference": null,
+          "integrated_steps": 0,
+          "max_state_error": 0.0,
+          "mode": "recorded_controls",
+          "samples": 1,
+          "tolerance": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        },
+        "task_outcome": "pre_execution_refusal"
+      },
+      "robot_id": "zoo_dual_arm",
+      "simulation_duration_s": 0.0,
+      "source_commit": "2770b0e5e4a631326947b8ac18520f7085c43132",
+      "task_site": "left_palm_grasp_center",
+      "trace_sha256": "f185fcb28b710b3fe3794eca010b18d59ae7282a0806fdb5d45984b33252a649",
+      "tracked_source_patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "video_duration_s": 2.0,
+      "video_frames": 24,
+      "world_sha256": "6be1bb15a289c107d58aaad3fc273db5680d27e8da9152bfe069cb83fddf45eb"
+    },
+    {
+      "archive": "zoo_hand_arm/physical.zip",
+      "archive_bytes": 10241144,
+      "archive_sha256": "782a4d8ce04a542d869312b3150d2c0d265db3d625e044ed5cd643f98494d3db",
+      "camera": {
+        "centre": [
+          -0.00646430140642869,
+          0.0004495499555840842,
+          0.4245171231150091
+        ],
+        "reach": 1.37002
+      },
+      "case": "zoo_hand_arm",
+      "controller": "computed torque",
+      "created_at_utc": "2026-09-12T03:34:04.355236+00:00",
+      "fault": false,
+      "goal": "G01",
+      "media": "zoo_hand_arm/media",
+      "media_manifest_sha256": "f2acb01bd9cac70820648578d3db7327bc91031abec4724180ff46b3587e5ed6",
+      "observation": "model + joint encoders",
+      "outcome": "success",
+      "package_source_map_sha256": "182cd69d731a5a959a4c5a7305339c5b3e44c245c5dbc4fcda5781f2eaa287eb",
+      "package_sources_match_recorded_commit": true,
+      "physical_manifest_sha256": "ae7ccc5f89fcb199ff5e612c54a6f79c763758f4582fc8e55640eccd61265658",
+      "protocol": "rigby.baseline-replay/1",
+      "reference_clock_matches_physics": false,
+      "reference_duration_s": 49.245976,
+      "refusal": null,
+      "replay": {
+        "agrees": true,
+        "recomputed_controller": {
+          "agrees": true,
+          "first_action_difference": null,
+          "first_state_difference": null,
+          "integrated_steps": 11819,
+          "max_state_error": 0.0,
+          "mode": "recomputed_controller",
+          "samples": 11820,
+          "tolerance": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        },
+        "recorded_controls": {
+          "agrees": true,
+          "first_action_difference": null,
+          "first_state_difference": null,
+          "integrated_steps": 11819,
+          "max_state_error": 0.0,
+          "mode": "recorded_controls",
+          "samples": 11820,
+          "tolerance": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        },
+        "task_outcome": "success"
+      },
+      "robot_id": "zoo_hand_arm",
+      "simulation_duration_s": 23.637999999997778,
+      "source_commit": "2770b0e5e4a631326947b8ac18520f7085c43132",
+      "task_site": "palm_grasp_center",
+      "trace_sha256": "d90dc8dcd30a7c7e7578a9ada6944cad35b5430e470c2c3228463ca7557e9913",
+      "tracked_source_patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "video_duration_s": 23.75,
+      "video_frames": 285,
+      "world_sha256": "6be1bb15a289c107d58aaad3fc273db5680d27e8da9152bfe069cb83fddf45eb"
+    },
+    {
+      "archive": "zoo_jaw_arm/physical.zip",
+      "archive_bytes": 8280470,
+      "archive_sha256": "77af0d2edf692a146b39e6e109fd7f5bbe4c9a46b89340dc10609f3386e9d99f",
+      "camera": {
+        "centre": [
+          0.0029312771778189375,
+          0.0010223073796363361,
+          0.42251440901685067
+        ],
+        "reach": 1.32
+      },
+      "case": "zoo_jaw_arm",
+      "controller": "computed torque",
+      "created_at_utc": "2026-09-12T03:34:26.708216+00:00",
+      "fault": false,
+      "goal": "G01",
+      "media": "zoo_jaw_arm/media",
+      "media_manifest_sha256": "e1e80a8dcb66f793c63b8bd9a1846fb5f0c9d3f100eac64a2a64cb1821616a29",
+      "observation": "model + joint encoders",
+      "outcome": "success",
+      "package_source_map_sha256": "182cd69d731a5a959a4c5a7305339c5b3e44c245c5dbc4fcda5781f2eaa287eb",
+      "package_sources_match_recorded_commit": true,
+      "physical_manifest_sha256": "bcb435e78df5b1e8aa1a9ff657fbec3c7f3c030e25b9f0905ce2649f1bcd0e20",
+      "protocol": "rigby.baseline-replay/1",
+      "reference_clock_matches_physics": false,
+      "reference_duration_s": 47.844854,
+      "refusal": null,
+      "replay": {
+        "agrees": true,
+        "recomputed_controller": {
+          "agrees": true,
+          "first_action_difference": null,
+          "first_state_difference": null,
+          "integrated_steps": 11483,
+          "max_state_error": 0.0,
+          "mode": "recomputed_controller",
+          "samples": 11484,
+          "tolerance": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        },
+        "recorded_controls": {
+          "agrees": true,
+          "first_action_difference": null,
+          "first_state_difference": null,
+          "integrated_steps": 11483,
+          "max_state_error": 0.0,
+          "mode": "recorded_controls",
+          "samples": 11484,
+          "tolerance": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        },
+        "task_outcome": "success"
+      },
+      "robot_id": "zoo_jaw_arm",
+      "simulation_duration_s": 22.96599999999815,
+      "source_commit": "2770b0e5e4a631326947b8ac18520f7085c43132",
+      "task_site": "palm_grasp_center",
+      "trace_sha256": "fe24b4fdb4af8e24453cb75bb5956eb70b9503cca8801dc5ac22f2223e593966",
+      "tracked_source_patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "video_duration_s": 23.083333333333332,
+      "video_frames": 277,
+      "world_sha256": "6be1bb15a289c107d58aaad3fc273db5680d27e8da9152bfe069cb83fddf45eb"
+    },
+    {
+      "archive": "zoo_long_arm/physical.zip",
+      "archive_bytes": 11468669,
+      "archive_sha256": "8f7e82148bdeafdc04b39a7f54b375d2c37dd73b33e93267b4a2d551dbd275ce",
+      "camera": {
+        "centre": [
+          0.00239268204459368,
+          0.0013854682063319194,
+          0.6444493414178818
+        ],
+        "reach": 2.05
+      },
+      "case": "zoo_long_arm",
+      "controller": "computed torque",
+      "created_at_utc": "2026-09-12T03:34:56.267501+00:00",
+      "fault": false,
+      "goal": "G01",
+      "media": "zoo_long_arm/media",
+      "media_manifest_sha256": "bfdc15f62c3c05b55abcf8774caa3ead39dd32c34f931b222d026ffe87d50fe0",
+      "observation": "model + joint encoders",
+      "outcome": "success",
+      "package_source_map_sha256": "182cd69d731a5a959a4c5a7305339c5b3e44c245c5dbc4fcda5781f2eaa287eb",
+      "package_sources_match_recorded_commit": true,
+      "physical_manifest_sha256": "9fdd13becb2342bfb0b003a2ac2c76d1ac05c4f889d471709d26284733b4733b",
+      "protocol": "rigby.baseline-replay/1",
+      "reference_clock_matches_physics": false,
+      "reference_duration_s": 67.454452,
+      "refusal": null,
+      "replay": {
+        "agrees": true,
+        "recomputed_controller": {
+          "agrees": true,
+          "first_action_difference": null,
+          "first_state_difference": null,
+          "integrated_steps": 16189,
+          "max_state_error": 0.0,
+          "mode": "recomputed_controller",
+          "samples": 16190,
+          "tolerance": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        },
+        "recorded_controls": {
+          "agrees": true,
+          "first_action_difference": null,
+          "first_state_difference": null,
+          "integrated_steps": 16189,
+          "max_state_error": 0.0,
+          "mode": "recorded_controls",
+          "samples": 16190,
+          "tolerance": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        },
+        "task_outcome": "success"
+      },
+      "robot_id": "zoo_long_arm",
+      "simulation_duration_s": 32.377999999993605,
+      "source_commit": "2770b0e5e4a631326947b8ac18520f7085c43132",
+      "task_site": "palm_grasp_center",
+      "trace_sha256": "10c69b314a1bf90fb083b0b2e96063d09c1f5041bb7e177394d92530ad86a3f6",
+      "tracked_source_patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "video_duration_s": 32.5,
+      "video_frames": 390,
+      "world_sha256": "6be1bb15a289c107d58aaad3fc273db5680d27e8da9152bfe069cb83fddf45eb"
+    },
+    {
+      "archive": "zoo_tool_arm/physical.zip",
+      "archive_bytes": 6674543,
+      "archive_sha256": "049eb6a61076ee085f6325350d167fdfc2945f8dd077d4cfabf2d077144a95b0",
+      "camera": {
+        "centre": [
+          0.005163935931573556,
+          0.0038818314977113622,
+          0.4220361342883675
+        ],
+        "reach": 1.18
+      },
+      "case": "zoo_tool_arm",
+      "controller": "computed torque",
+      "created_at_utc": "2026-09-12T03:35:20.135317+00:00",
+      "fault": false,
+      "goal": "G01",
+      "media": "zoo_tool_arm/media",
+      "media_manifest_sha256": "5006ebe6de596f26aa2197ef16a6d2b4794025273e49439aa8ade53ca2e09909",
+      "observation": "model + joint encoders",
+      "outcome": "success",
+      "package_source_map_sha256": "182cd69d731a5a959a4c5a7305339c5b3e44c245c5dbc4fcda5781f2eaa287eb",
+      "package_sources_match_recorded_commit": true,
+      "physical_manifest_sha256": "ea3bbc09bfd5290d647dfbec59b511bf6956f62963a7184f4bd8fad0801d4ebc",
+      "protocol": "rigby.baseline-replay/1",
+      "reference_clock_matches_physics": false,
+      "reference_duration_s": 52.43766,
+      "refusal": null,
+      "replay": {
+        "agrees": true,
+        "recomputed_controller": {
+          "agrees": true,
+          "first_action_difference": null,
+          "first_state_difference": null,
+          "integrated_steps": 12585,
+          "max_state_error": 0.0,
+          "mode": "recomputed_controller",
+          "samples": 12586,
+          "tolerance": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        },
+        "recorded_controls": {
+          "agrees": true,
+          "first_action_difference": null,
+          "first_state_difference": null,
+          "integrated_steps": 12585,
+          "max_state_error": 0.0,
+          "mode": "recorded_controls",
+          "samples": 12586,
+          "tolerance": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        },
+        "task_outcome": "success"
+      },
+      "robot_id": "zoo_tool_arm",
+      "simulation_duration_s": 25.16999999999693,
+      "source_commit": "2770b0e5e4a631326947b8ac18520f7085c43132",
+      "task_site": "link_4_tip",
+      "trace_sha256": "1c4afe9eedb02722565817fc660798b6e6df3bc0ab0de5551ddb49f92d4a22f2",
+      "tracked_source_patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "video_duration_s": 25.333333333333332,
+      "video_frames": 304,
+      "world_sha256": "6be1bb15a289c107d58aaad3fc273db5680d27e8da9152bfe069cb83fddf45eb"
+    },
+    {
+      "archive": "zoo_compact_arm-actuation-loss/physical.zip",
+      "archive_bytes": 1805930,
+      "archive_sha256": "c4e44d1b5f0e170292e617fc3a99fa9d6a1713d373729635462307327b74da75",
+      "camera": {
+        "centre": [
+          0.002072746724400395,
+          -0.0009064967715285031,
+          0.13441024744083208
+        ],
+        "reach": 0.385
+      },
+      "case": "zoo_compact_arm-actuation-loss",
+      "controller": "computed torque",
+      "created_at_utc": "2026-09-12T03:35:35.683535+00:00",
+      "fault": true,
+      "goal": "G01",
+      "media": "zoo_compact_arm-actuation-loss/media",
+      "media_manifest_sha256": "1e1e3807ed2e1853b6b627736663e2319d37812aa7b256b874222fa3813e2966",
+      "observation": "model + joint encoders",
+      "outcome": "runtime_failure",
+      "package_source_map_sha256": "182cd69d731a5a959a4c5a7305339c5b3e44c245c5dbc4fcda5781f2eaa287eb",
+      "package_sources_match_recorded_commit": true,
+      "physical_manifest_sha256": "fdc06738ad3110d9c1bf3f2426be6e2727da64d2082907fca928110879f07ca2",
+      "protocol": "rigby.baseline-replay/1",
+      "reference_clock_matches_physics": false,
+      "reference_duration_s": 30.509918,
+      "refusal": null,
+      "replay": {
+        "agrees": true,
+        "recomputed_controller": {
+          "agrees": true,
+          "first_action_difference": null,
+          "first_state_difference": null,
+          "integrated_steps": 7322,
+          "max_state_error": 0.0,
+          "mode": "recomputed_controller",
+          "samples": 7323,
+          "tolerance": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        },
+        "recorded_controls": {
+          "agrees": true,
+          "first_action_difference": null,
+          "first_state_difference": null,
+          "integrated_steps": 7322,
+          "max_state_error": 0.0,
+          "mode": "recorded_controls",
+          "samples": 7323,
+          "tolerance": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        },
+        "task_outcome": "runtime_failure"
+      },
+      "robot_id": "zoo_compact_arm",
+      "simulation_duration_s": 14.64400000000156,
+      "source_commit": "2770b0e5e4a631326947b8ac18520f7085c43132",
+      "task_site": "palm_grasp_center",
+      "trace_sha256": "06990600492160eb1db10b6c8e0e4e03fe3f0a7a42d61fb00e8b5313ad13bbe8",
+      "tracked_source_patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "video_duration_s": 14.75,
+      "video_frames": 177,
+      "world_sha256": "7f77e05a3b3ab699aad679b3ee9ad86b7a3dadb7ea1929259f9aa00b8d925dda"
+    }
+  ],
+  "goal": "G01",
+  "provenance_note": "Package source bytes were independently compared with the recorded commit. Dirty flags also include untracked results; the empty source patch applies only when all archived package sources match that commit.",
+  "schema": "rigby.evidence-release/1",
+  "scope": "Five successful canonical motions, one canonical compilation refusal, and one declared runtime diagnostic failure. No manipulation, locomotion or robustness claim."
+}

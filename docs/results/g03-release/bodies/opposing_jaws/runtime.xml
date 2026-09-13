@@ -1,0 +1,48 @@
+<mujoco model="structural_body">
+  <compiler angle="radian"/>
+
+  <worldbody>
+    <body name="body_0000">
+      <inertial pos="0 0 0.02" quat="0.5 0.5 -0.5 0.5" mass="0.8" diaginertia="0.00048 0.000346667 0.000346667"/>
+      <geom size="0.03 0.03 0.02" pos="0 0 0.02" type="box"/>
+      <site name="robot_base" pos="0 0 0"/>
+      <body name="body_0001" pos="0 0 0.07">
+        <inertial pos="0 0 0" quat="0 0.707107 0 0.707107" mass="0.25" diaginertia="5.88542e-05 4.16667e-05 3.38542e-05"/>
+        <joint name="axis_0000" pos="0 0 0" axis="1 0 0" type="slide" range="-0.05 0.05" actuatorfrcrange="-25 25" damping="0.1"/>
+        <geom size="0.02 0.0175 0.01" type="box"/>
+        <body name="body_0002" pos="0 0 0.04">
+          <inertial pos="0 0 0" quat="0 0.707107 0 0.707107" mass="0.2" diaginertia="4.70833e-05 3.33333e-05 2.70833e-05"/>
+          <joint name="axis_0001" pos="0 0 0" axis="0 1 0" type="slide" range="-0.05 0.05" actuatorfrcrange="-25 25" damping="0.1"/>
+          <geom size="0.02 0.0175 0.01" type="box"/>
+          <body name="body_0003" pos="0 0 0.04">
+            <inertial pos="0 0 0" quat="0 0.707107 0 0.707107" mass="0.1" diaginertia="5.08333e-05 3.33333e-05 2.41667e-05"/>
+            <geom size="0.03 0.025 0.01" type="box"/>
+            <site name="body_0003_grasp_point" pos="0 0 0.045"/>
+            <site name="body_0003_grasp_center" pos="0 0 0.03"/>
+            <site name="body_0003_wrist" pos="0 0 0"/>
+            <body name="body_0004" pos="0.027 0 0.03">
+              <inertial pos="0 0 0.015" mass="0.02" diaginertia="3e-06 1.60667e-06 1.60667e-06"/>
+              <joint name="axis_0003" pos="0 0 0" axis="-1 0 0" type="slide" range="0 0.02" actuatorfrcrange="-25 25" damping="0.1"/>
+              <geom size="0.004 0.015 0.015" pos="0 0 0.015" type="box"/>
+              <site name="body_0003_tip" pos="0 0 0.03"/>
+              <site name="body_0003_contact_0" pos="0 0 0.03"/>
+            </body>
+            <body name="body_0005" pos="-0.027 0 0.03">
+              <inertial pos="0 0 0.015" mass="0.02" diaginertia="3e-06 1.60667e-06 1.60667e-06"/>
+              <joint name="axis_0004" pos="0 0 0" axis="1 0 0" type="slide" range="0 0.02" actuatorfrcrange="-25 25" damping="0.1"/>
+              <geom size="0.004 0.015 0.015" pos="0 0 0.015" type="box"/>
+              <site name="body_0003_contact_1" pos="0 0 0.03"/>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <general name="axis_0000_motor" joint="axis_0000" ctrllimited="true" ctrlrange="-25 25" forcelimited="true" forcerange="-25 25"/>
+    <general name="axis_0001_motor" joint="axis_0001" ctrllimited="true" ctrlrange="-25 25" forcelimited="true" forcerange="-25 25"/>
+    <general name="axis_0003_motor" joint="axis_0003" ctrllimited="true" ctrlrange="-25 25" forcelimited="true" forcerange="-25 25"/>
+    <general name="axis_0004_motor" joint="axis_0004" ctrllimited="true" ctrlrange="-25 25" forcelimited="true" forcerange="-25 25"/>
+  </actuator>
+</mujoco>
