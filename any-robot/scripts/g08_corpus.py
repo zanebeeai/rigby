@@ -36,6 +36,7 @@ from rigby_general.grounding import ik
 from rigby_general.grounding.grounder import _collision_guard, figure_site_for
 from rigby_general.grounding.workspace import build_workspace_frame
 from rigby_general.pipeline import ingest_robot
+from rigby_general.scenes.environment import SUPPORT_PREFIX
 from rigby_general.transitions import arm_joint_names
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -51,6 +52,10 @@ BODIES = {"zoo_dual_arm": 34, "zoo_jaw_arm": 33, "zoo_long_arm": 33}
 BAND = 0.2
 """Fraction of each joint's range kept clear at either end when drawing a feasible pose."""
 GUARD_SAMPLES = 24
+WORLD_CLEARANCE_M = 0.001
+"""A robot geom deeper than this inside a fixture disqualifies a pose or a path; any contact with the object does."""
+PATH_SUBSAMPLES = 4
+"""Configurations checked against the world between consecutive solved rows of the transfer's path."""
 INJECTED = {"joint_beyond_limit": 10, "joint_inside_margin": 6, "velocity_too_high": 8, "holding_into_free": 6, "free_into_holding": 6, "belief_stale": 5, "resource_conflict": 5}
 
 
@@ -81,6 +86,26 @@ class Body:
             qpos[self.arm_adr[index]] = targets[self.dofs[name].name]
         return qpos
 
+    def world_contact(self, qpos: np.ndarray) -> str | None:
+        """A robot geom inside a fixture or the object at ``qpos``: the guard
+        keeps the body out of itself, not out of the world, and a free
+        motion driven through the bench is not a certified skill."""
+
+        data = mujoco.MjData(self.model)
+        data.qpos[:] = qpos
+        mujoco.mj_forward(self.model, data)
+        for index in range(data.ncon):
+            contact = data.contact[index]
+            names = [mujoco.mj_id2name(self.model, mujoco.mjtObj.mjOBJ_GEOM, int(g)) or "" for g in (contact.geom1, contact.geom2)]
+            world = [n for n in names if n.startswith((SUPPORT_PREFIX, "scene_"))]
+            if len(world) != 1:
+                continue
+            allowance = 0.0 if world[0].startswith("scene_") else WORLD_CLEARANCE_M
+            if float(contact.dist) > -allowance:
+                continue
+            return f"{names[0] or 'geom'} against {names[1] or 'geom'} by {-float(contact.dist) * 1000:.1f} mm"
+        return None
+
     def straight_path_clear(self, targets: dict[str, float]) -> tuple[bool, str]:
         end = self.pose_from(targets)
         for fraction in np.linspace(0.0, 1.0, GUARD_SAMPLES):
@@ -88,6 +113,9 @@ class Body:
             inside = ik.penetrations(self.model, self.guard, sample)
             if inside:
                 return False, f"{inside[0][0]} inside {inside[0][1]} at {fraction:.2f}"
+            hit = self.world_contact(sample)
+            if hit:
+                return False, f"world: {hit} at {fraction:.2f}"
         return True, ""
 
     def transfer_path_solves(self, targets: dict[str, float]) -> tuple[bool, str, str]:
@@ -116,6 +144,20 @@ class Body:
         arm_rows = path[:, self.arm_adr]
         if np.any(arm_rows < low - 1e-9) or np.any(arm_rows > high + 1e-9):
             return False, "path_outside_limits", "the solved path leaves a joint range"
+        # The transfer's path keeps the body out of itself; the world it
+        # crosses on the way to the hover is checked here, up to the hover,
+        # between the solved rows as well as at them, and any contact at all
+        # with the object counts: a finger that brushes the cube on the way
+        # in moves it, and the descent then stops.
+        rows = path[: marks[spans["turn"][1]] + 1] if "turn" in spans else path
+        for index in range(len(rows) - 1):
+            for fraction in np.linspace(0.0, 1.0, PATH_SUBSAMPLES, endpoint=False):
+                hit = self.world_contact(rows[index] + fraction * (rows[index + 1] - rows[index]))
+                if hit:
+                    return False, "transfer_path_through_world", f"row {index} + {fraction:.2f}: {hit}"
+        hit = self.world_contact(rows[-1])
+        if hit:
+            return False, "transfer_path_through_world", f"row {len(rows) - 1}: {hit}"
         return True, seed, ""
 
 
@@ -223,7 +265,7 @@ def injected_cases(bodies: dict[str, Body], rng: np.random.Generator) -> list[di
             targets[dof.name] = float(keyframe["joint_values"].get(name, keyframe["joint_values"].get(dof.name, 0.0)))
         wrist = max(targets.values(), key=abs)
         inside_margin = any(abs(v) > 0.98 * dual.dofs[n].maximum for n, v in ((n, targets[dual.dofs[n].name]) for n in dual.arm))
-        if inside_margin and dual.straight_path_clear(targets)[0]:
+        if inside_margin and dual.straight_path_clear(targets)[0] and dual.world_contact(dual.pose_from(targets)) is None:
             chosen = (keyframe, targets)
             break
     if chosen is None:
@@ -254,7 +296,8 @@ def main() -> None:
         "schema": "g08.transition-corpus.v1", "goal": "G08", "created_at_utc": datetime.now(timezone.utc).isoformat(),
         "g06_registration_sha256": registration["registration_sha256"], "environment_id": env.environment_id,
         "draw": {"seed": SEED, "generator": "numpy.random.default_rng(seed), one stream, bodies in the order listed, feasible then injected",
-                 "feasible_band_fraction": BAND, "guard_samples_along_straight_path": GUARD_SAMPLES},
+                 "feasible_band_fraction": BAND, "guard_samples_along_straight_path": GUARD_SAMPLES, "world_clearance_m": WORLD_CLEARANCE_M,
+                 "witness": "the straight joint path from rest clear of the body and of the world; the transfer's guarded path from the pose alone solved, inside every joint range, and clear of the world up to the hover"},
         "initiation": {"limit_margin_fraction": 0.02, "speed_fraction": 0.05, "max_belief_age_s": 5.0,
                        "note": "the transfer begins free with the cube resting; the placement begins holding the cube; every skill requires its manipulator and the object not owned elsewhere"},
         "success": {"feasible": "the first skill certified on its own gates, the boundary compatible (after any repair), the second skill certified, no joint gate violation on the transitions or the second skill; target at least 95 of 100",

@@ -193,6 +193,10 @@ class CompositionRecord:
     cost: TransitionCostV1
     final: TransferStart | None
     belief_age_s: float
+    final_boundary: BoundaryStateV1 | None = None
+    """The boundary measured after the second skill: what the composition
+    actually left behind, whatever the second skill's certificate says."""
+    final_contact: dict = field(default_factory=dict)
 
     @property
     def compatible_before_second(self) -> bool:
@@ -210,6 +214,9 @@ class CompositionRecord:
             "validated": self.validated, "rejected": self.rejected, "rejection": self.rejection, "re_verified": self.re_verified,
             "second": None if self.second is None else {"skill": self.second.skill_id, "executed": self.second.executed, "certified": self.second.certified, "gate": self.second.gate, "phases": self.second.phases, "physics_s": self.second.physics_s, "measurements": self.second.measurements},
             "composed_success": self.composed_success, "gate_violations": self.gate_violations,
+            "final_boundary": None if self.final_boundary is None else {"contact_mode": self.final_boundary.contact_mode.value, "held": dict(self.final_boundary.held),
+                                                                      "resting_on": dict(self.final_boundary.resting_on), "time_s": self.final_boundary.time_s},
+            "final_contact": self.final_contact,
             "cost": {"physics_s": self.cost.physics_s, "joint_travel_rad": self.cost.joint_travel_rad, "peak_speed_fraction": self.cost.peak_speed_fraction, "repairs": [r.value for r in self.cost.repairs]},
         }
 
@@ -240,7 +247,8 @@ def joint_limit_violations(model, manifest: RobotAssetManifestV1, arm_joints: tu
 
 def compose(model, manifest: RobotAssetManifestV1, effector: EffectorV1, frame: WorkspaceFrame, first: Skill, second: Skill, recorder: PhysicsRecorder | None, *,
             guard: "ik.CollisionGuard | None", validate: bool = True, max_repairs: int = 2, belief_age_s: float = 0.0, first_resume: TransferStart | None = None,
-            should_stop: Callable[[float], bool] | None = None, first_done: SkillOutcome | None = None) -> CompositionRecord:
+            should_stop: Callable[[float], bool] | None = None, first_done: SkillOutcome | None = None,
+            reference_configuration: dict[str, float] | None = None) -> CompositionRecord:
     """Run ``first``, check its boundary against ``second``, repair and
     re-verify within ``max_repairs``, then run ``second``; or, with
     ``validate`` off, run ``second`` straight from wherever ``first`` ended,
@@ -307,6 +315,12 @@ def compose(model, manifest: RobotAssetManifestV1, effector: EffectorV1, frame: 
             rejected = True
             rejection = "repair_budget_exhausted:" + ",".join(sorted({v.code for v in verdicts[-1].violations}))
     re_verified = bool(repairs) and verdicts[-1].compatible
+    if reference_configuration is None:
+        from ..contact.grasp import _scene_rest_qpos
+
+        rest = _scene_rest_qpos(model, manifest)
+        by_joint = {dof.joint: dof for dof in manifest.dofs}
+        reference_configuration = {by_joint[n].name: float(rest[int(model.jnt_qposadr[mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, n)])]) for n in arm}
     second_outcome = None
     second_rows_from = None
     if validate and rejected:
@@ -314,6 +328,32 @@ def compose(model, manifest: RobotAssetManifestV1, effector: EffectorV1, frame: 
     else:
         second_rows_from = max(0, len(recorder.rows["qpos"]) - 1) if recorder is not None else None
         second_outcome = second.run(current, recorder, should_stop)
+        if validate and not second_outcome.executed and second_outcome.gate in ("unreachable_path", "self_collision_path") and reference_configuration is not None:
+            # The boundary was compatible and the second skill still could
+            # not plan from it: the arm stands where no guarded path to the
+            # task exists. The verified transition to insert is a guarded
+            # move to the skill's reference configuration, checked again
+            # before one more attempt.
+            reroute = joint_move(model, manifest, effector, arm, current, recorder, dict(reference_configuration), guard, holding=holding)
+            record = RepairRecord(kind=Repair.JOINT_MOVE, executed=reroute.executed, refusal=reroute.refusal, physics_s=reroute.physics_s,
+                                  joint_travel_rad=reroute.joint_travel_rad, peak_speed_fraction=reroute.peak_speed_fraction,
+                                  detail=f"reroute to the reference configuration after {second_outcome.gate}" if reroute.executed else reroute.detail,
+                                  qpos=reroute.qpos, qvel=reroute.qvel)
+            if reroute.executed:
+                current = reroute.start
+                boundary, contact = measure_boundary(model, manifest, effector, frame, current, belief_age_s=age, owned=first.keeps_resources)
+                verdict_after = check_boundary(boundary, second.initiation)
+                record.verdict_after, record.boundary_after = verdict_after, boundary
+                verdicts.append(verdict_after)
+                repairs.append(record)
+                if verdict_after.compatible:
+                    second_rows_from = max(0, len(recorder.rows["qpos"]) - 1) if recorder is not None else None
+                    second_outcome = second.run(current, recorder, should_stop)
+                else:
+                    rejected, rejection = True, "reroute_left_boundary_incompatible"
+            else:
+                repairs.append(record)
+                rejected, rejection = True, f"repair_refused:{reroute.refusal}"
         if second_outcome.continuation is not None:
             current = second_outcome.continuation
     # The position gate over the whole record: a second skill that begins
@@ -331,7 +371,11 @@ def compose(model, manifest: RobotAssetManifestV1, effector: EffectorV1, frame: 
         gate_violations += joint_limit_violations(model, manifest, arm, np.asarray(recorder.rows["qpos"][second_rows_from:]), None, scope="second")
     cost = TransitionCostV1(physics_s=float(sum(r.physics_s for r in repairs)), joint_travel_rad=float(sum(r.joint_travel_rad for r in repairs)),
                             peak_speed_fraction=float(max((r.peak_speed_fraction for r in repairs), default=0.0)), repairs=tuple(r.kind for r in repairs))
+    re_verified = bool(repairs) and verdicts[-1].compatible
     composed_success = bool(outcome.certified and second_outcome is not None and second_outcome.certified and not gate_violations and (not validate or verdicts[-1].compatible))
+    final_boundary, final_contact = (None, {})
+    if second_outcome is not None and second_outcome.continuation is not None:
+        final_boundary, final_contact = measure_boundary(model, manifest, effector, frame, second_outcome.continuation, belief_age_s=age, owned=second.keeps_resources)
     return CompositionRecord(first=outcome, boundary=boundary, contact=contact, verdicts=verdicts, repairs=repairs, validated=validate, rejected=rejected,
                              rejection=rejection, re_verified=re_verified, second=second_outcome, composed_success=composed_success,
-                             gate_violations=gate_violations, cost=cost, final=current, belief_age_s=age)
+                             gate_violations=gate_violations, cost=cost, final=current, belief_age_s=age, final_boundary=final_boundary, final_contact=final_contact)

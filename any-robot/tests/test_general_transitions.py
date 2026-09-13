@@ -126,11 +126,16 @@ def test_a_joint_past_its_limit_is_moved_back_inside_the_margin_and_verified_aga
     assert not record.first.certified and record.first.gate == "joint_position_limit", "the first skill is not certified by its own gate"
     first = record.verdicts[0]
     assert not first.compatible and first.repair is Repair.JOINT_MOVE and first.violations[0].code == "joint_beyond_limit" and first.violations[0].subject == base.name
-    [repair] = record.repairs
+    repair = record.repairs[0]
     assert repair.kind is Repair.JOINT_MOVE and repair.executed and repair.verdict_after.compatible
     inside = repair.boundary_after.joint(base.name)
     assert inside.position <= base.maximum - 0.02 * (base.maximum - base.minimum)
     assert record.re_verified and record.second is not None
+    for extra in record.repairs[1:]:
+        # If the transfer could not plan from the repaired pose, the inserted
+        # transition is a guarded move to its reference configuration,
+        # verified again before the one further attempt.
+        assert extra.kind is Repair.JOINT_MOVE and extra.detail.startswith("reroute") and extra.verdict_after is not None
     assert not record.composed_success, "a composition whose first skill broke a limit is not a success, whatever the second did"
 
 

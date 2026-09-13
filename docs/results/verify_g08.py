@@ -156,6 +156,28 @@ def main() -> int:
     reviewed_row = next(r for r in rows["injected"] if r["case_id"] == reviewed["case_id"])
     assert reviewed_row["repairs"][0]["kind"] == "joint_move" and reviewed_row["re_verified"] and reviewed_row["second"] is not None
 
+    # The retained pilot: the first scored pass, run whole on the corpus as
+    # first registered, before the witness checked the world. Its corpus and
+    # registration are kept beside its records; it failed what the report
+    # says it failed, and every failure is explained by a pose the refined
+    # witness now rejects.
+    for name, expected_commit, expected in validation["pilots"]:
+        pilot_dir = ROOT / name
+        pilot = json.loads((pilot_dir / "summary.json").read_bytes())
+        pilot_registration = json.loads((pilot_dir / "protocol" / "registration.json").read_bytes())
+        assert sha256(pilot_dir / "protocol" / "corpus.json") == pilot_registration["files"]["corpus.json"]
+        assert pilot["registration_sha256"] == pilot_registration["registration_sha256"]
+        assert pilot["provenance"]["commit"] == expected_commit and pilot["provenance"]["scored"] is True
+        pilot_rows = json.loads((pilot_dir / "trials.json").read_bytes())
+        tallies = {"feasible_successes": sum(1 for r in pilot_rows["feasible"] if r["handled_correctly"]), "feasible_count": len(pilot_rows["feasible"]),
+                   "injected_handled": sum(1 for r in pilot_rows["injected"] if r["handled_correctly"]), "injected_count": len(pilot_rows["injected"]),
+                   "failed_cases": sorted(r["case_id"] for r in pilot_rows["feasible"] if not r["handled_correctly"])}
+        assert tallies == expected, (name, tallies)
+        for row in pilot_rows["feasible"] + pilot_rows["injected"]:
+            if "bundle" in row:
+                group = "feasible" if row["kind"] == "feasible" else "injected"
+                check_media(pilot_dir / group / row["case_id"] / "media", row["bundle"]["sha256"])
+
     index = json.loads((D08 / "index.json").read_bytes())
     assert index["registration_sha256"] == registration["registration_sha256"]
     for name, digest in index["files"].items():
@@ -165,19 +187,24 @@ def main() -> int:
     for pair in index["pairs"]:
         before, after = pair["before"], pair["after"]
         assert not before["validated"] and after["validated"]
-        assert not before["composed_success"], pair["name"]
         for label in ("before", "after"):
             check_bundle(D08 / pair["name"] / label / "physical", pair[label]["physical_sha256"], replay=args.replay)
             check_media(D08 / pair["name"] / label / "media", pair[label]["physical_sha256"])
         if pair["name"] == "joint-limit-approach":
-            assert any(g["code"] == "joint_position_limit" for g in before["gate_violations"])
+            # Without the check the transfer is attempted from the wrist at
+            # its limit and does not certify; with it the wrist is moved
+            # inside the margin, verified, and the transfer certifies.
+            assert not before["composed_success"] and before["repairs"] == []
             assert after["repairs"] and after["repairs"][0]["kind"] == "joint_move" and after["composed_success"]
         if pair["name"] == "carry-to-place":
+            assert before["verdicts"][0]["violations"] and all(v["code"] == "velocity_too_high" for v in before["verdicts"][0]["violations"])
+            assert before["repairs"] == [], "without the check the placement begins from the moving arm"
             assert after["repairs"] and after["repairs"][0]["kind"] == "settle" and after["composed_success"]
-            assert after["boundary"]["contact_mode"] == "holding"
+            assert after["boundary"]["contact_mode"] == "holding" and after["repairs"][0]["compatible_after"]
         if pair["name"] == "contact-mode-change":
             assert after["rejected"] and after["rejection"] == "contact_mode_mismatch" and after["second"] is None
             assert before["second"] is not None, "without the check the return ran with the cube in hand"
+            assert before["final_boundary"]["contact_mode"] == "holding" and before["final_boundary"]["resting_on"] == {}, "and carried the cube away from every support"
             assert pair["inserted"]["acquire_to_place_success"] and pair["inserted"]["place_to_return_success"]
             check_bundle(D08 / pair["name"] / "inserted" / "physical", pair["inserted"]["physical_sha256"], replay=args.replay)
         assert pair["side_by_side"]["frames"] >= max(before["frames"], after["frames"])

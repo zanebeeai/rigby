@@ -105,7 +105,7 @@ def side(out: Path, body: campaign.Body, name: str, label: str, case: dict, *, v
     return {"physical_sha256": sealed["sha256"], "media_sha256": media["sha256"], "outcome": sealed["outcome"], "composed_success": result.composed_success,
             "validated": validate, "rejected": result.rejected, "rejection": result.rejection, "repairs": summary["repairs"], "verdicts": summary["verdicts"],
             "gate_violations": summary["gate_violations"], "second": summary["second"], "first": summary["first"], "boundary": summary["boundary"],
-            "frames": media["frame_count"], "simulation_duration_s": media["simulation_duration_s"], "wall_seconds": wall}
+            "final_boundary": summary["final_boundary"], "frames": media["frame_count"], "simulation_duration_s": media["simulation_duration_s"], "wall_seconds": wall}
 
 
 def main() -> int:
