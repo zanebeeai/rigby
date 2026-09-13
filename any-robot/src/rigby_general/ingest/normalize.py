@@ -155,8 +155,15 @@ def finalize(
         rest_qpos=tuple(float(value) for value in rest),
         sites=morphology.sites,
         morphology=morphology,
-        adjacent_collision_exclusions=(
-            morphology.self_collision_pairs + ungateable_pairs
+        # Only the pairs ingest proved inseparable are excluded from the
+        # self-collision gate. ``morphology.self_collision_pairs`` is the
+        # opposite list -- every non-adjacent pair that *could* touch, kept so
+        # the grounder can guard it -- and feeding it in here excluded every
+        # such pair on every body, which silenced the gate: a wrist folded 28 mm
+        # into its own forearm surfaced only as a saturated motor and a finger
+        # shoved past its slide limit, never as the collision it was.
+        adjacent_collision_exclusions=tuple(
+            sorted(set(tuple(sorted(pair)) for pair in ungateable_pairs))
         ),
     )
 

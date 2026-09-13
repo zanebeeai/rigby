@@ -47,6 +47,41 @@ class EffectorCluster:
     """Actuated joints strictly below ``attach_body``: closure candidates."""
 
 
+def physics_may_collide(model: mujoco.MjModel, first: int, second: int) -> bool:
+    """Whether MuJoCo's collision pipeline could ever report these two bodies.
+
+    The same filter the engine applies: two bodies in one weld (no joint between
+    them) never touch, a weld never touches the weld it hangs from, contact
+    type/affinity masks have to admit at least one geom pair, and an explicit
+    ``<exclude>`` pair is out. A pair the physics will never report is not a
+    self-collision risk, and guarding or gating it would only push a solver
+    away from geometry that cannot move.
+    """
+
+    if first == second:
+        return False
+    weld_first = int(model.body_weldid[first])
+    weld_second = int(model.body_weldid[second])
+    if weld_first == weld_second:
+        return False
+    parent_first = int(model.body_weldid[int(model.body_parentid[weld_first])])
+    parent_second = int(model.body_weldid[int(model.body_parentid[weld_second])])
+    if weld_first == parent_second or weld_second == parent_first:
+        return False
+    signature = (min(first, second) << 16) + max(first, second)
+    if signature in {int(value) for value in model.exclude_signature}:
+        return False
+    geoms_first = [g for g in range(model.ngeom) if int(model.geom_bodyid[g]) == first]
+    geoms_second = [g for g in range(model.ngeom) if int(model.geom_bodyid[g]) == second]
+    for one in geoms_first:
+        for other in geoms_second:
+            if (int(model.geom_contype[one]) & int(model.geom_conaffinity[other])) or (
+                int(model.geom_contype[other]) & int(model.geom_conaffinity[one])
+            ):
+                return True
+    return False
+
+
 class KinematicGraph:
     """A read-only view of body and joint structure, indexed for traversal."""
 
@@ -86,6 +121,9 @@ class KinematicGraph:
 
     def parent(self, body: int) -> int:
         return int(self.model.body_parentid[body])
+
+    def physics_may_collide(self, first: int, second: int) -> bool:
+        return physics_may_collide(self.model, first, second)
 
     def is_leaf(self, body: int) -> bool:
         return not self._children[body]

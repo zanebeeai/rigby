@@ -649,7 +649,11 @@ def _self_collision_pairs(
 
     Adjacent links are always in contact at the joint; listing them would drown
     the real signal. What is left is the set worth guarding with a collision
-    objective during IK.
+    objective during IK -- and it is also exactly the set the physical
+    self-collision gate can report, so a pair the engine filters out itself
+    (welded together, or a weld against the weld it hangs from) is left out
+    here too. Two boxes bolted to the same wrist can overlap by design; a
+    guard that tried to part them would only distort every pose.
     """
 
     model = graph.model
@@ -667,6 +671,8 @@ def _self_collision_pairs(
     for index, first in enumerate(moving):
         for second in moving[index + 1 :]:
             if (min(first, second), max(first, second)) in adjacency:
+                continue
+            if not graph.physics_may_collide(first, second):
                 continue
             pairs.append(
                 tuple(sorted((graph.body_names[first], graph.body_names[second])))

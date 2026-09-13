@@ -660,6 +660,10 @@ def ground(
     capabilities = capabilities_of(manifest.morphology, contact_scene=contact_scene)
     cache: dict[str, WorkspaceFrame] = {}
 
+    start_qpos = np.asarray(manifest.rest_qpos, dtype=float)
+    guard = _collision_guard(manifest, model)
+    _validate_start_state(manifest, model, start_qpos, guard)
+
     phases: list[MotionPhaseV2] = []
     # One track per chain, not one per segment. Separate tracks meet at phase
     # boundaries that the compiler's retimer maps through independently, and the
@@ -742,9 +746,7 @@ def ground(
         # a different elbow configuration for the same Cartesian point, and the
         # arm snaps between them at the segment boundary -- which the compiler
         # then correctly rejects as an infinite joint velocity.
-        ik_seed = rest_by_chain.get(
-            binding.frame.chain_id, np.asarray(manifest.rest_qpos, dtype=float)
-        )
+        ik_seed = rest_by_chain.get(binding.frame.chain_id, start_qpos)
         try:
             solution = ik.solve_site_path(
                 model,
@@ -752,8 +754,27 @@ def ground(
                 joint_names,
                 np.asarray(dense),
                 seed_qpos=ik_seed,
+                guard=guard,
             )
         except ik.IkFailure as error:
+            if error.collision is not None:
+                # A reachable point is not a groundable one if the only way
+                # to hold it is through the robot's own links. Typed apart from
+                # an unreachable target: the repair is a different path, not a
+                # different arm.
+                raise GroundingError(
+                    f"{manifest.rig_id}: {entry.entry_id!r} at "
+                    f"{segment.region.remove.value} cannot be performed without "
+                    f"self-collision -- {error}",
+                    schema_key=segment.motion_schema.canonical_key,
+                    measurement="self_collision.clearance_m",
+                    details={
+                        "bodies": list(error.collision),
+                        "penetration_m": error.penetration_m,
+                        "residual_m": error.residual_m,
+                        "waypoint": error.index,
+                    },
+                ) from error
             raise GroundingError(
                 f"{manifest.rig_id}: {entry.entry_id!r} at "
                 f"{segment.region.remove.value} is not solvable -- {error}",
@@ -955,13 +976,19 @@ def _chain_position(
     rest_by_chain: dict[str, np.ndarray],
     manifest: RobotAssetManifestV1,
 ) -> np.ndarray:
-    """Where this chain's steered site is right now, in world coordinates."""
+    """Where this chain's steered site is right now, in world coordinates.
+
+    Before any segment has moved the chain, "right now" is the manifest's
+    start state, not the workspace frame's home: the two coincide for a body
+    that starts at its measured neutral pose and differ for one that starts
+    somewhere else, and a segment must begin where the body actually is.
+    """
 
     import mujoco
 
     qpos = rest_by_chain.get(binding.frame.chain_id)
     if qpos is None:
-        return binding.frame.home
+        qpos = np.asarray(manifest.rest_qpos, dtype=float)
 
     data = mujoco.MjData(model)
     data.qpos[:] = qpos
@@ -985,6 +1012,119 @@ def _entry_for(inventory: SchemaInventory, segment: SegmentV1):
             f"binding {key!r} is not in the sealed inventory",
             details={"binding": key},
         ) from error
+
+
+_SELF_CLEARANCE_FRACTION = 0.005
+"""How far, as a fraction of the body's reach, a reference prefers to keep its
+own links apart; never less than twice the solver's waypoint tolerance.
+
+Only actual penetration is refused. The clearance is a preference the solver
+spends null space on, and it is deliberately small: the reference is only
+known to hit its waypoints to ``ik.DEFAULT_TOLERANCE_M``, so a clearance of
+twice that is the smallest one that means anything, and the physical gate --
+which reports any contact at all -- remains the arbiter of whether a motion
+actually stayed clear. A generous clearance was tried first, one tracking
+tolerance of the certification gate: it reshaped postures on bodies whose links
+pass within a few centimetres of each other by design, and cost them up to five
+percent in duration for a margin their sub-millimetre tracking never needed.
+"""
+
+
+def self_clearance_m(reach_radius_m: float) -> float:
+    return max(2.0 * ik.DEFAULT_TOLERANCE_M, _SELF_CLEARANCE_FRACTION * float(reach_radius_m))
+
+
+def _collision_guard(
+    manifest: RobotAssetManifestV1, model
+) -> "ik.CollisionGuard | None":
+    """Every link pair the self-collision gate would report, as a guard for IK.
+
+    The pairs are the morphology's own non-adjacent list, minus what ingest
+    proved inseparable and so excluded from the gate. No names are consulted:
+    a pair is guarded because its hulls can meet, whatever the links are called.
+    """
+
+    import mujoco
+
+    from ..morphology.graph import physics_may_collide
+
+    excluded = {
+        tuple(sorted(pair)) for pair in manifest.adjacent_collision_exclusions
+    }
+    pairs: set[tuple[int, int]] = set()
+    for first, second in manifest.morphology.self_collision_pairs:
+        if tuple(sorted((first, second))) in excluded:
+            continue
+        first_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, first)
+        second_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, second)
+        if first_id < 0 or second_id < 0 or first_id == second_id:
+            continue
+        if not physics_may_collide(model, first_id, second_id):
+            continue  # An older manifest may list a pair the engine filters.
+        pairs.add((min(first_id, second_id), max(first_id, second_id)))
+    if not pairs:
+        return None
+    return ik.CollisionGuard(
+        pairs=tuple(sorted(pairs)),
+        clearance_m=self_clearance_m(manifest.morphology.scale.reach_radius_m),
+    )
+
+
+def _validate_start_state(
+    manifest: RobotAssetManifestV1,
+    model,
+    start: np.ndarray,
+    guard: "ik.CollisionGuard | None",
+) -> None:
+    """The configuration every segment begins from has to be one the body can
+    hold: inside every limit and clear of itself. Otherwise the request is
+    refused before any motion is planned, with the reason typed."""
+
+    import mujoco
+
+    if start.shape != (model.nq,):
+        raise GroundingError(
+            f"{manifest.rig_id}: the start state has {start.shape[0]} values for "
+            f"{model.nq} generalized coordinates",
+            measurement="start_state.size",
+        )
+    if not np.all(np.isfinite(start)):
+        raise GroundingError(
+            f"{manifest.rig_id}: the start state is not finite",
+            measurement="start_state.finite",
+        )
+    for dof in manifest.dofs:
+        joint = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, dof.joint)
+        if joint < 0:  # pragma: no cover - manifest and model agree by construction
+            continue
+        value = float(start[int(model.jnt_qposadr[joint])])
+        if value < dof.minimum or value > dof.maximum:
+            raise GroundingError(
+                f"{manifest.rig_id}: the start state puts {dof.name} at "
+                f"{value:.4f}, outside its range "
+                f"[{dof.minimum:.4f}, {dof.maximum:.4f}]",
+                measurement="start_state.joint_limit",
+                details={
+                    "joint": dof.name,
+                    "value": value,
+                    "minimum": dof.minimum,
+                    "maximum": dof.maximum,
+                },
+            )
+    if guard is not None:
+        inside = ik.penetrations(model, guard, start)
+        if inside:
+            first, second, depth = inside[0]
+            raise GroundingError(
+                f"{manifest.rig_id}: the start state has {first} "
+                f"{depth * 1000:.1f} mm inside {second}",
+                measurement="start_state.self_collision",
+                details={
+                    "bodies": [first, second],
+                    "penetration_m": depth,
+                    "pairs": [[a, b, d] for a, b, d in inside],
+                },
+            )
 
 
 def _solver_joints(
