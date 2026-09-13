@@ -331,6 +331,10 @@ def attempt_transfer(
         violations.append(TransferViolation("object_collision_exclusion", "a contact exclusion names the object", float(len(policy["contact_exclusions_with_object"])), 0.0))
     if not policy["object_geoms_collidable"]:
         violations.append(TransferViolation("object_not_collidable", "the object cannot make contact", 0.0, 1.0))
+    if violations:
+        # A world that could fake a hold is refused before anything moves;
+        # a certified transfer through it would prove nothing.
+        return _refused(violations, None, policy)
 
     arm_joints = ik.chain_joint_names(model, frame.figure_site, exclude=frozenset(effector.grip_joints))
     rest = _scene_rest_qpos(model, manifest)
@@ -661,9 +665,9 @@ def _grasp_offset_m(manifest: RobotAssetManifestV1, effector: EffectorV1) -> flo
     return float(np.linalg.norm(np.array([point.position_m.x - centre.position_m.x, point.position_m.y - centre.position_m.y, point.position_m.z - centre.position_m.z])))
 
 
-def _refused(violations: list[TransferViolation], refusal: TransferViolation, policy: dict) -> TransferResult:
+def _refused(violations: list[TransferViolation], refusal: TransferViolation | None, policy: dict) -> TransferResult:
     return TransferResult(
-        certified=False, violations=tuple([*violations, refusal]), phases=(), duration_s=0.0, lift_height_m=0.0,
+        certified=False, violations=tuple([*violations, *([refusal] if refusal is not None else [])]), phases=(), duration_s=0.0, lift_height_m=0.0,
         hold_s=0.0, carry_offset_max_m=0.0, peak_force_n=0.0, max_penetration_m=0.0, opposition_achieved=False,
         placement_dwell_s=0.0, placement_success=False, placed_inside=False, released=True,
         unexpected_contacts=(), robot_fixture_contacts=(), collision_policy=policy,
