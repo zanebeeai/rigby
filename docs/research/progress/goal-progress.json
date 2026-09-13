@@ -4,14 +4,25 @@
   "goal_catalog": "docs/research/rigby-verifiable-goals.json",
   "goal_catalog_sha256": "3672ebf5fa10ff4216fa0213499d5988281f2ebbc611500e8526afe6e618b250",
   "started_at_utc": "2026-09-12T02:34:49.841258+00:00",
-  "current_goal": "G11",
+  "current_goal": "G04",
   "overall_status": "active",
   "authorization": {
     "commits_and_pull_requests": true,
     "conservative_subagents": true,
     "openai_key_configured": true,
     "openai_models_endpoint_authenticated": true,
-    "generation_calls_so_far": 0
+    "generation_calls_so_far": 0,
+    "model_budget": {
+      "source": "U1_model_access_budget (user, 13 Sep 2026)",
+      "hard_ceiling_usd": 20.0,
+      "soft_cap_usd": 18.0,
+      "dollars_so_far": 0.0,
+      "generation_calls_so_far": 0,
+      "per_goal_usd": {},
+      "gemini_key": "free plan; fallback only when OpenAI is unavailable, never for scored runs, use recorded in evidence",
+      "keys_in_chat_commits_or_evidence": false,
+      "rule": "before the first paid call: identify the calling module, count tokens against a mock, report the projected cost, proceed only under the soft cap; cache every response by prompt hash; stop at the ceiling or on a billing failure and mark the language gate pending"
+    }
   },
   "previous_goal_turn_classification": "progress",
   "goals": [
@@ -1417,7 +1428,7 @@
         "demos/registry (G10 and D10 entries)"
       ],
       "evidence_worktree": "C:/Users/hocke/GitHub/rigby-g10",
-      "work_basis": "Branch feat/g10-transfer-skill stacked on feat/g09-conditionals (PR 37); lands after it.",
+      "work_basis": "Branch feat/g10-transfer-skill stacked on feat/g09-conditionals (PR 37); PR 39; lands after it.",
       "integration_status": "open_pr_ci_infrastructure_blocked",
       "completed_at_utc": "2026-09-13T16:47:25.337237+00:00",
       "supported_scope": "A closed-loop TransferObject skill on the three G06-enabled bodies in the G06 fixture standing on a floor, verifications from declared simulated sensors, retries bounded at three per subgoal under a 120 s cap; recoveries from a pushed object, a served slip and a three-second occlusion as the registered protocol declares them. No learned perception, no other worlds, no locomotion.",
@@ -2238,11 +2249,11 @@
   ],
   "milestones": [],
   "next_actions": [
-    "G10 recorded partial: the classes below target are listed in the ledger note; a general fix with a retained pilot is the next step if one is found.",
-    "Begin G11 (promote, retrieve and reuse skills with validity conditions) over the certified transfer_object skill and its validity context.",
-    "Restore GitHub Actions billing/allowance and rerun PRs 27-38; merge only after required checks are green, bottom of the stack first.",
-    "G04 independent language validation remains pending on U3_independent_review.",
+    "G04 next (user direction of 13 Sep): engineering half A01, A03 and D04 with model calls under the budget; A02's 120 language cases authored and labelled internally, the independent claim pending on U3_independent_review.",
+    "Then G11 (promote, retrieve and reuse skills) over the transfer_object skill.",
+    "Open prerequisite from G10: a force limit on the closure's advance (rigby_general.contact.closure) before the next goal that grasps with the dual arm; retained pilot required.",
+    "Restore GitHub Actions billing/allowance and rerun PRs 27-39; merge only after required checks are green, bottom of the stack first.",
     "Preserve all 30 goals and their frozen criteria."
   ],
-  "updated_at_utc": "2026-09-13T16:47:25.337237+00:00"
+  "updated_at_utc": "2026-09-13T16:48:09.047840+00:00"
 }
