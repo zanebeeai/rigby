@@ -186,6 +186,20 @@ class LiveSensing:
                 best = latest
         return None if best is None else np.array([best[1]["x"], best[1]["y"], best[1]["z"]], dtype=float)
 
+    def mean_object_position(self, now_s: float, window_s: float, *, min_samples: int = 4) -> np.ndarray | None:
+        """The mean of the positions the cameras reported over the last
+        ``window_s``: an estimate whose noise is a frame's over the root of
+        the number of frames, for an object that has been seen still."""
+
+        track = []
+        for sensor_id in self.cameras:
+            for sample in self.streams[sensor_id].window(now_s - window_s, now_s):
+                if sample.quality is SampleQuality.VALID:
+                    track.append([sample.values["x"], sample.values["y"], sample.values["z"]])
+        if len(track) < min_samples:
+            return None
+        return np.mean(np.asarray(track, dtype=float), axis=0)
+
     def object_drift_mps(self, now_s: float, window_s: float, *, min_samples: int = 4) -> float | None:
         """How fast the sensed object moved over the last ``window_s``: the
         mean position of the window's second half against its first half,

@@ -6,10 +6,10 @@ the G09 conditionals from the declared sensors, its retries bounded at
 three per subgoal, its cap 120 s of physics. Nominal episodes perturb the
 cube by the registered draw; disturbed episodes add the declared push,
 pull or occluder through the step hook. Every episode is one continuous
-physics record; every disturbed episode and every nominal failure,
-undecided or interrupted episode is sealed as a replayable bundle in the
-local results tree and rendered in full under --out, with the first five
-nominal successes per body; every episode keeps its row. A completion is
+physics record; every failed, undecided or interrupted episode and the
+first five successes per body and class are sealed as replayable bundles
+in the local results tree and rendered in full under --out; every episode
+keeps its row, its leaf calls, its verdict trail and its oracle judgement. A completion is
 counted only when the skill's own verdict is success; whether the object
 is then actually placed is judged again from the full recorded state by
 the independent oracle, and a success the oracle denies is a false
@@ -168,7 +168,7 @@ def main() -> int:
                "disturbance": session.disturbance.log if session.disturbance is not None else [], "skill_success": skill_success, "oracle": oracle,
                "false_completion": bool(skill_success and not oracle["placed"]), "recovered": bool(kind != "nominal" and skill_success),
                "physical_steps": session.steps, "effector": session.effector.chain_id}
-        keep = kind != "nominal" or not skill_success or rendered_successes.get((body, kind), 0) < RENDER_SUCCESSES
+        keep = not skill_success or rendered_successes.get((body, kind), 0) < RENDER_SUCCESSES
         if keep:
             bundle_dir = args.local / body / kind / f"seed-{entry['seed']:03d}" / "physical"
             caption = f"{body} | transfer_object | {kind} | seed {entry['seed']} | {record.verdict.value}" + (f" | {record.root.reason}" if record.root.reason else "")
@@ -185,7 +185,7 @@ def main() -> int:
             row["bundle"] = sealed
             row["media_sha256"] = media["sha256"]
             row["frames"] = media["frame_count"]
-            if kind == "nominal" and skill_success:
+            if skill_success:
                 rendered_successes[(body, kind)] = rendered_successes.get((body, kind), 0) + 1
         rows.append(row)
         print(json.dumps({"episode": entry["episode_id"], "verdict": record.verdict.value, "reason": record.root.reason, "physics_s": round(physics_s, 2), "oracle_placed": oracle["placed"],

@@ -61,14 +61,44 @@ fixture tops, so an object that leaves the fixtures lands on something
 the sensors can see and the arm may or may not reach."""
 
 
+TABLE_TOP_M = 0.23
+"""The table's top: the G06 bench and platform, three centimetres tall
+with their tops at 0.26 m, stand on it. An object that leaves a fixture
+lands on the table three centimetres lower, in every enabled body's reach
+and the front camera's view, instead of on a floor 38 cm down."""
+TABLE_HALF_M = (0.40, 0.30, 0.005)
+TABLE_CENTRE_M = (-0.05, 0.65)
+
+
 def with_floor(environment: EnvironmentV1) -> EnvironmentV1:
-    """The G06 fixture standing on a floor. The G06 world has none: an
-    object dropped beside its fixtures fell forever. A floor is a fixture
-    like the bench, two metres square, its top at ``FLOOR_TOP_M``."""
+    """The world standing on a floor. The G06 world has none: an object
+    dropped beside its fixtures fell forever. A floor is a fixture like
+    the bench, two metres square, its top at ``FLOOR_TOP_M``."""
 
     floor = FixtureV1(name="floor", size_m=(1.0, 1.0, 0.01), position_m=(0.0, 0.5, FLOOR_TOP_M - 0.01), rgba=(0.42, 0.42, 0.45, 1.0))
     return environment.model_copy(update={"environment_id": f"{environment.environment_id}+floor", "fixtures": (*environment.fixtures, floor),
                                           "description": environment.description + " The fixtures stand on a floor twelve centimetres below the mount."})
+
+
+def with_table(environment: EnvironmentV1) -> EnvironmentV1:
+    """The G06 fixtures standing on a table. In the first scored pass
+    (retained as pilot 1) an object that slipped from the grip fell from
+    its lift height onto a slab one object-length across, bounced off it
+    and landed on a floor 38 cm down, outside the dual arm's reach shell
+    and beside slabs the other arms' descents collided with; thirteen of
+    the dual arm's twenty induced slips ended there. A table under the
+    fixtures is where such fixtures stand; nothing about the task -- the
+    cube, its start, the region, the fixtures -- changes."""
+
+    table = FixtureV1(name="table", size_m=TABLE_HALF_M, position_m=(TABLE_CENTRE_M[0], TABLE_CENTRE_M[1], TABLE_TOP_M - TABLE_HALF_M[2]), rgba=(0.55, 0.50, 0.42, 1.0))
+    return environment.model_copy(update={"environment_id": f"{environment.environment_id}+table", "fixtures": (*environment.fixtures, table),
+                                          "description": environment.description + " The bench and the platform stand on a table whose top is three centimetres below theirs."})
+
+
+def g10_world(environment: EnvironmentV1) -> EnvironmentV1:
+    """The registered G10 world: the G06 fixtures on a table, on a floor."""
+
+    return with_floor(with_table(environment))
 
 
 MONITOR_PERIOD_S = 0.05
@@ -542,6 +572,14 @@ class TransferObjectRuntime:
                     self.verdicts.append({"time_s": session.time_s, "conditional": "object_still", "decision": "unknown", "reason": f"drift:{drift if drift is None else round(drift, 4)}",
                                           "sensors": list(session.sensing.cameras), "detail": {}, "re_observation": attempt, "cameras": session.sensing.camera_state(session.time_s)})
                     position = None
+                if position is not None:
+                    # Seen still: the plan goes to the mean of the frames that
+                    # showed it still, not to the newest frame's noise. A single
+                    # frame at two millimetres a side missed the cube's centre
+                    # by enough to pinch it off-centre once in twenty.
+                    averaged = session.sensing.mean_object_position(session.time_s, STILL_WINDOW_S)
+                    if averaged is not None:
+                        position = averaged
                 reach = session.decide("reachable")
                 self.verdicts.append({"time_s": session.time_s, "conditional": "reachable", "decision": reach.decision.value, "reason": reach.reason, "sensors": list(reach.sensors_used),
                                       "detail": {k: round(v, 4) for k, v in reach.detail.items()}, "re_observation": attempt, "cameras": session.sensing.camera_state(session.time_s)})

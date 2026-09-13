@@ -1,0 +1,93 @@
+{
+  "environment_id": "g06_transfer_v1+floor",
+  "description": "A 30 mm cube on a low bench to the left of and slightly behind the mount, and an empty platform of the same height beside it, both in absolute metres. Nothing about the world depends on which body enters it. The fixtures stand on a floor twelve centimetres below the mount.",
+  "robot_mount_m": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "fixtures": [
+    {
+      "name": "bench",
+      "size_m": [
+        0.05,
+        0.05,
+        0.015
+      ],
+      "position_m": [
+        -0.15,
+        0.65,
+        0.245
+      ],
+      "rgba": [
+        0.35,
+        0.35,
+        0.4,
+        1.0
+      ]
+    },
+    {
+      "name": "platform",
+      "size_m": [
+        0.05,
+        0.05,
+        0.015
+      ],
+      "position_m": [
+        -0.01,
+        0.65,
+        0.245
+      ],
+      "rgba": [
+        0.3,
+        0.45,
+        0.75,
+        1.0
+      ]
+    },
+    {
+      "name": "floor",
+      "size_m": [
+        1.0,
+        1.0,
+        0.01
+      ],
+      "position_m": [
+        0.0,
+        0.5,
+        -0.13
+      ],
+      "rgba": [
+        0.42,
+        0.42,
+        0.45,
+        1.0
+      ]
+    }
+  ],
+  "objects": [
+    {
+      "name": "cube",
+      "size_m": [
+        0.015,
+        0.015,
+        0.015
+      ],
+      "mass_kg": 0.00864,
+      "position_m": [
+        -0.15,
+        0.65,
+        0.275
+      ],
+      "friction": 1.4,
+      "rgba": [
+        0.85,
+        0.45,
+        0.15,
+        1.0
+      ]
+    }
+  ],
+  "authored_for_reach_m": null,
+  "authored_for_aperture_m": null
+}

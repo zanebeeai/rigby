@@ -26,7 +26,7 @@ from rigby_core.simulation.recording import replay_physics
 from rigby_general.contact.placement import PlacementGoal
 from rigby_general.scenes.environment import EnvironmentV1
 from rigby_general.sensing import load_policy
-from rigby_general.skills import TransferObjectRuntime, TransferObjectSession, disturbance_named, predicates_for_transfer, with_floor
+from rigby_general.skills import TransferObjectRuntime, TransferObjectSession, disturbance_named, g10_world, predicates_for_transfer
 from rigby_general.skills.transfer_runtime import SimulationClock
 
 
@@ -38,7 +38,7 @@ SOURCE = ROOT / "assets" / "general" / "zoo" / "zoo_jaw_arm" / "robot.urdf"
 
 @pytest.fixture(scope="module")
 def world():
-    env = with_floor(EnvironmentV1.model_validate_json((G06 / "environment.json").read_bytes()))
+    env = g10_world(EnvironmentV1.model_validate_json((G06 / "environment.json").read_bytes()))
     raw = json.loads((G06 / "goal.json").read_bytes())
     goal = PlacementGoal(region_minimum_m=tuple(raw["region_minimum_m"]), region_maximum_m=tuple(raw["region_maximum_m"]), dwell_s=raw["dwell_s"],
                          maximum_linear_speed_mps=raw["maximum_linear_speed_mps"], maximum_angular_speed_radps=raw["maximum_angular_speed_radps"])

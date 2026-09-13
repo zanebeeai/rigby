@@ -1,0 +1,892 @@
+{
+  "schema_version": "1.0",
+  "library_id": "transfer_object_v1",
+  "description": "Acquire until a hold is verified, transport, release, verify the placement; repeat the whole within a budget until the placement is verified.",
+  "predicates": [
+    {
+      "name": "object_known",
+      "parameters": [
+        "object"
+      ],
+      "description": "a sensor has reported the object's position recently enough to plan from"
+    },
+    {
+      "name": "object_held",
+      "parameters": [
+        "object"
+      ],
+      "description": "the held conditional decided pass from the declared sensors"
+    },
+    {
+      "name": "object_placed",
+      "parameters": [
+        "object",
+        "destination"
+      ],
+      "description": "the stably-placed conditional decided pass from the declared sensors"
+    },
+    {
+      "name": "object_in_reach",
+      "parameters": [
+        "object"
+      ],
+      "description": "the reachable conditional decided pass from the declared sensors"
+    }
+  ],
+  "skills": [
+    {
+      "schema_version": "1.0",
+      "skill_id": "transfer_object",
+      "kind": "sequence",
+      "description": "Transfer the object to the destination and verify it, within the episode cap.",
+      "arguments": [
+        {
+          "name": "object",
+          "type": "identifier",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "destination",
+          "type": "identifier",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "effector",
+          "type": "identifier",
+          "required": true,
+          "description": ""
+        }
+      ],
+      "requirements": [],
+      "initiation": [],
+      "invariants": [],
+      "effects": [
+        {
+          "name": "object_placed",
+          "arguments": [
+            "$object",
+            "$destination"
+          ],
+          "negate": false
+        }
+      ],
+      "termination": {
+        "require_effects": true,
+        "on_unknown": "propagate"
+      },
+      "timeout_s": 120.0,
+      "recovery": {
+        "skill": null,
+        "max_attempts": 1
+      },
+      "resources": [
+        {
+          "resource": "effector:$effector",
+          "mode": "exclusive"
+        },
+        {
+          "resource": "object:$object",
+          "mode": "exclusive"
+        },
+        {
+          "resource": "perception",
+          "mode": "shared"
+        }
+      ],
+      "validity": {
+        "bodies": [],
+        "environments": [
+          "g06_transfer_v1"
+        ],
+        "operating_range": [
+          {
+            "quantity": "object_span",
+            "low": 0.019,
+            "high": 0.046,
+            "units": "m"
+          }
+        ],
+        "evidence": [],
+        "notes": ""
+      },
+      "children": [
+        {
+          "skill": "place_until_placed",
+          "bindings": {
+            "object": "$object",
+            "destination": "$destination",
+            "effector": "$effector"
+          },
+          "rank": 0
+        }
+      ],
+      "loop": null,
+      "observation": null,
+      "controller": null
+    },
+    {
+      "schema_version": "1.0",
+      "skill_id": "place_until_placed",
+      "kind": "repeat_until",
+      "description": "",
+      "arguments": [
+        {
+          "name": "object",
+          "type": "identifier",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "destination",
+          "type": "identifier",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "effector",
+          "type": "identifier",
+          "required": true,
+          "description": ""
+        }
+      ],
+      "requirements": [],
+      "initiation": [],
+      "invariants": [],
+      "effects": [],
+      "termination": {
+        "require_effects": true,
+        "on_unknown": "propagate"
+      },
+      "timeout_s": 120.0,
+      "recovery": {
+        "skill": null,
+        "max_attempts": 1
+      },
+      "resources": [
+        {
+          "resource": "effector:$effector",
+          "mode": "exclusive"
+        },
+        {
+          "resource": "object:$object",
+          "mode": "exclusive"
+        },
+        {
+          "resource": "perception",
+          "mode": "shared"
+        }
+      ],
+      "validity": {
+        "bodies": [],
+        "environments": [],
+        "operating_range": [],
+        "evidence": [],
+        "notes": ""
+      },
+      "children": [
+        {
+          "skill": "attempt_transfer",
+          "bindings": {
+            "object": "$object",
+            "destination": "$destination",
+            "effector": "$effector"
+          },
+          "rank": 0
+        }
+      ],
+      "loop": {
+        "until": {
+          "name": "object_placed",
+          "arguments": [
+            "$object",
+            "$destination"
+          ],
+          "negate": false
+        },
+        "progress": null,
+        "max_attempts": 3
+      },
+      "observation": null,
+      "controller": null
+    },
+    {
+      "schema_version": "1.0",
+      "skill_id": "attempt_transfer",
+      "kind": "sequence",
+      "description": "",
+      "arguments": [
+        {
+          "name": "object",
+          "type": "identifier",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "destination",
+          "type": "identifier",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "effector",
+          "type": "identifier",
+          "required": true,
+          "description": ""
+        }
+      ],
+      "requirements": [],
+      "initiation": [],
+      "invariants": [],
+      "effects": [],
+      "termination": {
+        "require_effects": false,
+        "on_unknown": "propagate"
+      },
+      "timeout_s": 120.0,
+      "recovery": {
+        "skill": null,
+        "max_attempts": 1
+      },
+      "resources": [
+        {
+          "resource": "effector:$effector",
+          "mode": "exclusive"
+        },
+        {
+          "resource": "object:$object",
+          "mode": "exclusive"
+        },
+        {
+          "resource": "perception",
+          "mode": "shared"
+        }
+      ],
+      "validity": {
+        "bodies": [],
+        "environments": [],
+        "operating_range": [],
+        "evidence": [],
+        "notes": ""
+      },
+      "children": [
+        {
+          "skill": "acquire_until_held",
+          "bindings": {
+            "object": "$object",
+            "destination": "$destination",
+            "effector": "$effector"
+          },
+          "rank": 0
+        },
+        {
+          "skill": "transport",
+          "bindings": {
+            "object": "$object",
+            "destination": "$destination",
+            "effector": "$effector"
+          },
+          "rank": 0
+        },
+        {
+          "skill": "release",
+          "bindings": {
+            "object": "$object",
+            "destination": "$destination",
+            "effector": "$effector"
+          },
+          "rank": 0
+        },
+        {
+          "skill": "verify_placement",
+          "bindings": {
+            "object": "$object",
+            "destination": "$destination",
+            "effector": "$effector"
+          },
+          "rank": 0
+        }
+      ],
+      "loop": null,
+      "observation": null,
+      "controller": null
+    },
+    {
+      "schema_version": "1.0",
+      "skill_id": "acquire_until_held",
+      "kind": "repeat_until",
+      "description": "",
+      "arguments": [
+        {
+          "name": "object",
+          "type": "identifier",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "destination",
+          "type": "identifier",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "effector",
+          "type": "identifier",
+          "required": true,
+          "description": ""
+        }
+      ],
+      "requirements": [],
+      "initiation": [],
+      "invariants": [],
+      "effects": [],
+      "termination": {
+        "require_effects": true,
+        "on_unknown": "propagate"
+      },
+      "timeout_s": 120.0,
+      "recovery": {
+        "skill": null,
+        "max_attempts": 1
+      },
+      "resources": [
+        {
+          "resource": "effector:$effector",
+          "mode": "exclusive"
+        },
+        {
+          "resource": "object:$object",
+          "mode": "exclusive"
+        },
+        {
+          "resource": "perception",
+          "mode": "shared"
+        }
+      ],
+      "validity": {
+        "bodies": [],
+        "environments": [],
+        "operating_range": [],
+        "evidence": [],
+        "notes": ""
+      },
+      "children": [
+        {
+          "skill": "acquire_and_verify",
+          "bindings": {
+            "object": "$object",
+            "destination": "$destination",
+            "effector": "$effector"
+          },
+          "rank": 0
+        }
+      ],
+      "loop": {
+        "until": {
+          "name": "object_held",
+          "arguments": [
+            "$object"
+          ],
+          "negate": false
+        },
+        "progress": null,
+        "max_attempts": 3
+      },
+      "observation": null,
+      "controller": null
+    },
+    {
+      "schema_version": "1.0",
+      "skill_id": "acquire_and_verify",
+      "kind": "sequence",
+      "description": "",
+      "arguments": [
+        {
+          "name": "object",
+          "type": "identifier",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "destination",
+          "type": "identifier",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "effector",
+          "type": "identifier",
+          "required": true,
+          "description": ""
+        }
+      ],
+      "requirements": [],
+      "initiation": [],
+      "invariants": [],
+      "effects": [],
+      "termination": {
+        "require_effects": false,
+        "on_unknown": "propagate"
+      },
+      "timeout_s": 60.0,
+      "recovery": {
+        "skill": null,
+        "max_attempts": 1
+      },
+      "resources": [
+        {
+          "resource": "effector:$effector",
+          "mode": "exclusive"
+        },
+        {
+          "resource": "object:$object",
+          "mode": "exclusive"
+        },
+        {
+          "resource": "perception",
+          "mode": "shared"
+        }
+      ],
+      "validity": {
+        "bodies": [],
+        "environments": [],
+        "operating_range": [],
+        "evidence": [],
+        "notes": ""
+      },
+      "children": [
+        {
+          "skill": "observe_object",
+          "bindings": {
+            "object": "$object"
+          },
+          "rank": 0
+        },
+        {
+          "skill": "acquire",
+          "bindings": {
+            "object": "$object",
+            "destination": "$destination",
+            "effector": "$effector"
+          },
+          "rank": 0
+        },
+        {
+          "skill": "verify_hold",
+          "bindings": {
+            "object": "$object",
+            "effector": "$effector"
+          },
+          "rank": 0
+        }
+      ],
+      "loop": null,
+      "observation": null,
+      "controller": null
+    },
+    {
+      "schema_version": "1.0",
+      "skill_id": "observe_object",
+      "kind": "observe",
+      "description": "",
+      "arguments": [
+        {
+          "name": "object",
+          "type": "identifier",
+          "required": true,
+          "description": ""
+        }
+      ],
+      "requirements": [],
+      "initiation": [],
+      "invariants": [],
+      "effects": [
+        {
+          "name": "object_known",
+          "arguments": [
+            "$object"
+          ],
+          "negate": false
+        }
+      ],
+      "termination": {
+        "require_effects": true,
+        "on_unknown": "propagate"
+      },
+      "timeout_s": 10.0,
+      "recovery": {
+        "skill": null,
+        "max_attempts": 1
+      },
+      "resources": [
+        {
+          "resource": "perception",
+          "mode": "shared"
+        }
+      ],
+      "validity": {
+        "bodies": [],
+        "environments": [],
+        "operating_range": [],
+        "evidence": [],
+        "notes": ""
+      },
+      "children": [],
+      "loop": null,
+      "observation": {
+        "evidence": [
+          "object_pose",
+          "reachable"
+        ],
+        "source": "camera"
+      },
+      "controller": null
+    },
+    {
+      "schema_version": "1.0",
+      "skill_id": "acquire",
+      "kind": "primitive",
+      "description": "",
+      "arguments": [
+        {
+          "name": "object",
+          "type": "identifier",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "destination",
+          "type": "identifier",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "effector",
+          "type": "identifier",
+          "required": true,
+          "description": ""
+        }
+      ],
+      "requirements": [
+        "grasping_effector"
+      ],
+      "initiation": [
+        {
+          "name": "object_known",
+          "arguments": [
+            "$object"
+          ],
+          "negate": false
+        },
+        {
+          "name": "object_in_reach",
+          "arguments": [
+            "$object"
+          ],
+          "negate": false
+        }
+      ],
+      "invariants": [],
+      "effects": [],
+      "termination": {
+        "require_effects": false,
+        "on_unknown": "propagate"
+      },
+      "timeout_s": 30.0,
+      "recovery": {
+        "skill": null,
+        "max_attempts": 1
+      },
+      "resources": [
+        {
+          "resource": "effector:$effector",
+          "mode": "exclusive"
+        },
+        {
+          "resource": "object:$object",
+          "mode": "exclusive"
+        }
+      ],
+      "validity": {
+        "bodies": [],
+        "environments": [],
+        "operating_range": [],
+        "evidence": [],
+        "notes": ""
+      },
+      "children": [],
+      "loop": null,
+      "observation": null,
+      "controller": "contact.transfer.acquire"
+    },
+    {
+      "schema_version": "1.0",
+      "skill_id": "verify_hold",
+      "kind": "observe",
+      "description": "",
+      "arguments": [
+        {
+          "name": "object",
+          "type": "identifier",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "effector",
+          "type": "identifier",
+          "required": true,
+          "description": ""
+        }
+      ],
+      "requirements": [],
+      "initiation": [],
+      "invariants": [],
+      "effects": [],
+      "termination": {
+        "require_effects": true,
+        "on_unknown": "propagate"
+      },
+      "timeout_s": 10.0,
+      "recovery": {
+        "skill": null,
+        "max_attempts": 1
+      },
+      "resources": [
+        {
+          "resource": "effector:$effector",
+          "mode": "exclusive"
+        },
+        {
+          "resource": "object:$object",
+          "mode": "exclusive"
+        },
+        {
+          "resource": "perception",
+          "mode": "shared"
+        }
+      ],
+      "validity": {
+        "bodies": [],
+        "environments": [],
+        "operating_range": [],
+        "evidence": [],
+        "notes": ""
+      },
+      "children": [],
+      "loop": null,
+      "observation": {
+        "evidence": [
+          "held"
+        ],
+        "source": "contact_and_camera"
+      },
+      "controller": null
+    },
+    {
+      "schema_version": "1.0",
+      "skill_id": "transport",
+      "kind": "primitive",
+      "description": "",
+      "arguments": [
+        {
+          "name": "object",
+          "type": "identifier",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "destination",
+          "type": "identifier",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "effector",
+          "type": "identifier",
+          "required": true,
+          "description": ""
+        }
+      ],
+      "requirements": [
+        "grasping_effector"
+      ],
+      "initiation": [
+        {
+          "name": "object_held",
+          "arguments": [
+            "$object"
+          ],
+          "negate": false
+        }
+      ],
+      "invariants": [],
+      "effects": [],
+      "termination": {
+        "require_effects": false,
+        "on_unknown": "propagate"
+      },
+      "timeout_s": 30.0,
+      "recovery": {
+        "skill": null,
+        "max_attempts": 1
+      },
+      "resources": [
+        {
+          "resource": "effector:$effector",
+          "mode": "exclusive"
+        },
+        {
+          "resource": "object:$object",
+          "mode": "exclusive"
+        },
+        {
+          "resource": "perception",
+          "mode": "shared"
+        }
+      ],
+      "validity": {
+        "bodies": [],
+        "environments": [],
+        "operating_range": [],
+        "evidence": [],
+        "notes": ""
+      },
+      "children": [],
+      "loop": null,
+      "observation": null,
+      "controller": "contact.transfer.carry"
+    },
+    {
+      "schema_version": "1.0",
+      "skill_id": "release",
+      "kind": "primitive",
+      "description": "",
+      "arguments": [
+        {
+          "name": "object",
+          "type": "identifier",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "destination",
+          "type": "identifier",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "effector",
+          "type": "identifier",
+          "required": true,
+          "description": ""
+        }
+      ],
+      "requirements": [
+        "grasping_effector"
+      ],
+      "initiation": [],
+      "invariants": [],
+      "effects": [],
+      "termination": {
+        "require_effects": false,
+        "on_unknown": "propagate"
+      },
+      "timeout_s": 30.0,
+      "recovery": {
+        "skill": null,
+        "max_attempts": 1
+      },
+      "resources": [
+        {
+          "resource": "effector:$effector",
+          "mode": "exclusive"
+        },
+        {
+          "resource": "object:$object",
+          "mode": "exclusive"
+        }
+      ],
+      "validity": {
+        "bodies": [],
+        "environments": [],
+        "operating_range": [],
+        "evidence": [],
+        "notes": ""
+      },
+      "children": [],
+      "loop": null,
+      "observation": null,
+      "controller": "contact.transfer.place"
+    },
+    {
+      "schema_version": "1.0",
+      "skill_id": "verify_placement",
+      "kind": "observe",
+      "description": "",
+      "arguments": [
+        {
+          "name": "object",
+          "type": "identifier",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "destination",
+          "type": "identifier",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "effector",
+          "type": "identifier",
+          "required": true,
+          "description": ""
+        }
+      ],
+      "requirements": [],
+      "initiation": [],
+      "invariants": [],
+      "effects": [],
+      "termination": {
+        "require_effects": true,
+        "on_unknown": "propagate"
+      },
+      "timeout_s": 15.0,
+      "recovery": {
+        "skill": null,
+        "max_attempts": 1
+      },
+      "resources": [
+        {
+          "resource": "effector:$effector",
+          "mode": "exclusive"
+        },
+        {
+          "resource": "object:$object",
+          "mode": "exclusive"
+        },
+        {
+          "resource": "perception",
+          "mode": "shared"
+        }
+      ],
+      "validity": {
+        "bodies": [],
+        "environments": [],
+        "operating_range": [],
+        "evidence": [],
+        "notes": ""
+      },
+      "children": [],
+      "loop": null,
+      "observation": {
+        "evidence": [
+          "object_placed"
+        ],
+        "source": "camera_and_contact"
+      },
+      "controller": null
+    }
+  ]
+}

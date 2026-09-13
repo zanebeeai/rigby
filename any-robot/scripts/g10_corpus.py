@@ -1,7 +1,7 @@
 """Register the G10 protocol: the world, the bodies, the seeds, the disturbance schedule, the cap, the library and the policy.
 
 Everything a scored run depends on is written here and hashed before any
-scored run: the G06 fixture standing on a floor; the three enabled bodies
+scored run: the G06 fixtures standing on a table, on a floor; the three enabled bodies
 the G08 corpus certified transitions on; the G06 registered seed draws for
 the nominal episodes (one hundred per body) and the first twenty for each
 disturbance class; the disturbances themselves as declared (a push on the
@@ -29,7 +29,7 @@ from rigby_general.contact.placement import PlacementGoal
 from rigby_general.evidence.capture import json_bytes
 from rigby_general.scenes.environment import EnvironmentV1
 from rigby_general.sensing import configuration
-from rigby_general.skills.transfer_object import FLOOR_TOP_M, SHUTTER_ACTIVE, SHUTTER_HALF, DisplacedObject, InducedSlip, TemporaryOcclusion, with_floor
+from rigby_general.skills.transfer_object import FLOOR_TOP_M, SHUTTER_ACTIVE, SHUTTER_HALF, TABLE_TOP_M, DisplacedObject, InducedSlip, TemporaryOcclusion, g10_world
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -51,7 +51,7 @@ def registered_goal() -> PlacementGoal:
 
 
 def environment() -> EnvironmentV1:
-    return with_floor(EnvironmentV1.model_validate_json((G06 / "environment.json").read_bytes()))
+    return g10_world(EnvironmentV1.model_validate_json((G06 / "environment.json").read_bytes()))
 
 
 def load_registration() -> dict:
@@ -97,7 +97,8 @@ def main() -> int:
     corpus = {
         "schema": "g10.transfer-corpus.v1", "created_at_utc": datetime.now(timezone.utc).isoformat(),
         "commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=REPO, text=True).strip(),
-        "environment_sha256": hashlib.sha256(json_bytes(env.model_dump(mode="json"))).hexdigest(), "environment_id": env.environment_id, "floor_top_m": FLOOR_TOP_M,
+        "environment_sha256": hashlib.sha256(json_bytes(env.model_dump(mode="json"))).hexdigest(), "environment_id": env.environment_id, "floor_top_m": FLOOR_TOP_M, "table_top_m": TABLE_TOP_M,
+        "world_revision": "pilot 1 ran on the G06 fixtures over a floor alone; the scored corpus stands them on a table three centimetres below their tops, for the reason recorded in rigby_general.skills.transfer_object.with_table",
         "library_id": library.library_id, "library_sha256": library.content_hash(), "root_skill": "transfer_object", "retry_budget": RETRY_BUDGET, "episode_cap_s": EPISODE_CAP_S,
         "policy_sha256": hashlib.sha256((G09 / "policy.json").read_bytes()).hexdigest(), "sensor_configuration": CONFIGURATION,
         "sensor_configuration_description": reference.description, "bodies": list(BODIES), "classes": list(CLASSES),
