@@ -1,0 +1,85 @@
+<mujoco model="benchmark-world">
+  <compiler angle="radian"/>
+
+  <option tolerance="1e-10" integrator="implicitfast" jacobian="dense"/>
+
+  <visual>
+    <headlight ambient="0 0 0" diffuse="0 0 0" specular="0 0 0"/>
+  </visual>
+
+  <statistic extent="3" center="0 0 0"/>
+
+  <default>
+    <default class="robot/main"/>
+  </default>
+
+  <worldbody>
+    <geom name="world/floor" size="3 3 0.1" type="plane" rgba="0.18 0.2 0.23 1"/>
+    <camera name="world/camera" pos="1.8 -2.5 1.8" quat="0.803956 0.50933 0.164287 0.259321" fovy="50"/>
+    <light name="world/key" pos="0 -1 3" dir="0 0 -1" type="directional" ambient="0.3 0.3 0.3" diffuse="0.8 0.8 0.8" specular="0.1 0.1 0.1"/>
+    <body name="world/bench" pos="0.165 0 0.038">
+      <geom name="world/bench_geom" size="0.075 0.075 0.012" type="box" condim="4" priority="1" friction="1 0.03 0.001" solref="0.004" solimp="0.95 0.99" rgba="0.32 0.34 0.38 1"/>
+    </body>
+    <body name="world/cube" pos="0.170478 -0.00920853 0.062">
+      <joint name="world/cube_free" type="free"/>
+      <geom name="world/cube_geom" size="0.012 0.012 0.012" type="box" condim="4" priority="1" friction="1.57543 0.03 0.001" solref="0.004" solimp="0.95 0.99" mass="0.014519" rgba="0.85 0.45 0.15 1"/>
+    </body>
+    <body name="world/destination" pos="0.34 0 0.038">
+      <geom name="world/destination_geom" size="0.075 0.075 0.012" type="box" condim="4" priority="1" friction="1 0.03 0.001" solref="0.004" solimp="0.95 0.99" rgba="0.25 0.4 0.3 1"/>
+    </body>
+    <body name="robot/base">
+      <inertial pos="0 0 0.025" quat="0.5 0.5 -0.5 0.5" mass="0.9" diaginertia="0.00091125 0.00064313 0.00064313"/>
+      <geom size="0.045 0.025" pos="0 0 0.025" type="cylinder"/>
+      <site name="robot/robot_base" pos="0 0 0"/>
+      <body name="robot/link_0" pos="0 0 0.05">
+        <inertial pos="0 0 0.035" mass="0.25" diaginertia="0.00012233 0.00012233 4.05e-05"/>
+        <joint name="robot/joint_0" pos="0 0 0" axis="0 0 1" range="-2.85 2.85" actuatorfrcrange="-14 14"/>
+        <geom size="0.018 0.035" pos="0 0 0.035" type="cylinder"/>
+        <body name="robot/link_1" pos="0 0 0.07">
+          <inertial pos="0 0 0.05" mass="0.25" diaginertia="0.00023858 0.00023858 6.05e-05"/>
+          <joint name="robot/joint_1" pos="0 0 0" axis="0 1 0" range="-2.85 2.85" actuatorfrcrange="-14 14"/>
+          <geom size="0.022 0.05" pos="0 0 0.05" type="cylinder"/>
+          <body name="robot/link_2" pos="0 0 0.1">
+            <inertial pos="0 0 0.04" mass="0.25" diaginertia="0.00016358 0.00016358 6.05e-05"/>
+            <joint name="robot/joint_2" pos="0 0 0" axis="0 1 0" range="-2.85 2.85" actuatorfrcrange="-14 14"/>
+            <geom size="0.022 0.04" pos="0 0 0.04" type="cylinder"/>
+            <body name="robot/link_3" pos="0 0 0.08">
+              <inertial pos="0 0 0.0175" quat="0.5 0.5 -0.5 0.5" mass="0.25" diaginertia="6.05e-05 5.577e-05 5.577e-05"/>
+              <joint name="robot/joint_3" pos="0 0 0" axis="0 1 0" range="-2.85 2.85" actuatorfrcrange="-14 14"/>
+              <geom size="0.022 0.0175" pos="0 0 0.0175" type="cylinder"/>
+              <body name="robot/palm" pos="0 0 0.035">
+                <inertial pos="0 0 0.025" quat="0.5 0.5 0.5 0.5" mass="0.35" diaginertia="0.00030917 0.00030917 0.00014583"/>
+                <geom size="0.045 0.025 0.025" pos="0 0 0.025" type="box"/>
+                <site name="robot/palm_grasp_point" pos="0 -0.0115 0.0765"/>
+                <site name="robot/palm_grasp_center" pos="0 0 0.05"/>
+                <site name="robot/palm_wrist" pos="0 0 0"/>
+                <body name="robot/finger_left" pos="0.023 0 0.05">
+                  <inertial pos="0 0 0.015" mass="0.06" diaginertia="9e-06 5.48e-06 5.48e-06"/>
+                  <joint name="robot/grip_left" pos="0 0 0" axis="-1 0 0" type="slide" range="0 0.015" actuatorfrcrange="-8 8"/>
+                  <geom size="0.007 0.015 0.015" pos="0 0 0.015" type="box"/>
+                  <site name="robot/palm_tip" pos="0 0 0.03"/>
+                  <site name="robot/palm_contact_0" pos="0 0 0.03"/>
+                </body>
+                <body name="robot/finger_right" pos="-0.023 0 0.05">
+                  <inertial pos="0 0 0.015" mass="0.06" diaginertia="9e-06 5.48e-06 5.48e-06"/>
+                  <joint name="robot/grip_right" pos="0 0 0" axis="1 0 0" type="slide" range="0 0.015" actuatorfrcrange="-8 8"/>
+                  <geom size="0.007 0.015 0.015" pos="0 0 0.015" type="box"/>
+                  <site name="robot/palm_contact_1" pos="0 0 0.03"/>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <general name="robot/joint_0_motor" joint="robot/joint_0" ctrllimited="true" ctrlrange="-14 14" forcelimited="true" forcerange="-14 14"/>
+    <general name="robot/joint_1_motor" joint="robot/joint_1" ctrllimited="true" ctrlrange="-14 14" forcelimited="true" forcerange="-14 14"/>
+    <general name="robot/joint_2_motor" joint="robot/joint_2" ctrllimited="true" ctrlrange="-14 14" forcelimited="true" forcerange="-14 14"/>
+    <general name="robot/joint_3_motor" joint="robot/joint_3" ctrllimited="true" ctrlrange="-14 14" forcelimited="true" forcerange="-14 14"/>
+    <general name="robot/grip_left_motor" joint="robot/grip_left" ctrllimited="true" ctrlrange="-8 8" forcelimited="true" forcerange="-8 8"/>
+    <general name="robot/grip_right_motor" joint="robot/grip_right" ctrllimited="true" ctrlrange="-8 8" forcelimited="true" forcerange="-8 8"/>
+  </actuator>
+</mujoco>

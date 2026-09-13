@@ -1,0 +1,256 @@
+{
+  "schema": "benchmark.acceptance-crosswalk.v1",
+  "source": "any-robot/acceptance_criteria.general.yaml",
+  "source_sha256": "78f2b41e81a034d317dd4619c947c0fedd66524aaac2741a4249ed174ffda04b",
+  "requirements": [
+    {
+      "id": "zero_per_robot_code",
+      "unchanged_requirement": {
+        "id": "zero_per_robot_code",
+        "statement": "No benchmark robot identifier, link name, or joint name appears anywhere under src/rigby_general/. Ingest and bake configuration is derived from the uploaded model, never authored.",
+        "metric": "static_scan_hits",
+        "threshold": 0,
+        "comparator": "eq",
+        "rationale": "The anti-cheat half of the goal. Special-casing one robot would make every other number meaningless."
+      },
+      "g02_relationship": "The new execution path derives body bindings from ingestion and contains no body-specific joint/link overrides. Full sealed-vocabulary/configuration audit remains deferred.",
+      "full_requirement_verified_by_g02": false,
+      "status": "deferred_full_acceptance"
+    },
+    {
+      "id": "ingest_success",
+      "unchanged_requirement": {
+        "id": "ingest_success",
+        "statement": "Every robot compiles to MJCF, yields a RobotMorphologyV1, and passes the inertia and collider integrity checks.",
+        "metric": "robots_ingested_fraction",
+        "threshold": 1.0,
+        "comparator": "gte"
+      },
+      "g02_relationship": "The conformance audit ingests all six public zoo bodies. This does not prove ingestion for the sealed release roster.",
+      "full_requirement_verified_by_g02": false,
+      "status": "deferred_full_acceptance"
+    },
+    {
+      "id": "site_derivation_accuracy",
+      "unchanged_requirement": {
+        "id": "site_derivation_accuracy",
+        "statement": "Derived semantic sites agree with the sealed human-labelled ground truth.",
+        "metric": "min_per_robot_site_accuracy",
+        "threshold": 0.95,
+        "comparator": "gte",
+        "ground_truth": "assets/general/groundtruth/sites/",
+        "note": "Labels are SHA-pinned per robot exactly as benchmark_spec.json is, so the accuracy cannot be raised by editing the answer key."
+      },
+      "g02_relationship": "G02 uses ingested sites and does not inspect the sealed human labels; ground-truth accuracy remains unmeasured.",
+      "full_requirement_verified_by_g02": false,
+      "status": "deferred_full_acceptance"
+    },
+    {
+      "id": "effector_classification",
+      "unchanged_requirement": {
+        "id": "effector_classification",
+        "statement": "The behavioural gripper test classifies every effector correctly, across at least one parallel-jaw, one multi-finger, and one tool-tip-only robot.",
+        "metric": "effector_classification_accuracy",
+        "threshold": 1.0,
+        "comparator": "eq"
+      },
+      "g02_relationship": "No new behavioral effector-classification benchmark is claimed.",
+      "full_requirement_verified_by_g02": false,
+      "status": "deferred_full_acceptance"
+    },
+    {
+      "id": "bake_coverage",
+      "unchanged_requirement": {
+        "id": "bake_coverage",
+        "statement": "Every schema a robot's morphology affords under the declared affordance rule has at least one certified primitive, and the overall certified yield across attempted bindings clears the floor.",
+        "metrics": {
+          "afforded_schema_coverage": {
+            "threshold": 1.0,
+            "comparator": "eq"
+          },
+          "certified_binding_yield": {
+            "threshold": 0.5,
+            "comparator": "gte",
+            "note": "Lowered from 0.60 after measurement. Yield across regions is a weak signal: an `adjacent` circle on a 0.39 m arm is genuinely infeasible, and refusing it is correct behaviour rather than a shortfall. Coverage -- every afforded schema holding at least one certified primitive -- is the requirement that actually says the robot is usable, and it is held at 1.0. Measured yields: 0.56 to 0.81."
+          }
+        }
+      },
+      "g02_relationship": "No primitive library coverage or certified binding yield is measured by G02.",
+      "full_requirement_verified_by_g02": false,
+      "status": "deferred_full_acceptance"
+    },
+    {
+      "id": "bake_budget",
+      "unchanged_requirement": {
+        "id": "bake_budget",
+        "statement": "Bake time and attempt count stay inside their ceilings.",
+        "metrics": {
+          "bake_p95_seconds": {
+            "threshold": 1200,
+            "comparator": "lte"
+          },
+          "bake_max_attempts": {
+            "threshold": 500,
+            "comparator": "lte"
+          }
+        },
+        "note": "Measured on the reference machine described in the operator runbook."
+      },
+      "g02_relationship": "Registered episode time/attempt limits are separate from the unchanged primitive baking ceilings.",
+      "full_requirement_verified_by_g02": false,
+      "status": "deferred_full_acceptance"
+    },
+    {
+      "id": "schema_invariance",
+      "unchanged_requirement": {
+        "id": "schema_invariance",
+        "statement": "For the shared cross-robot prompt subset, the role-normalized MotionSchemaProgramV1 hash is identical across all six robots.",
+        "metric": "cross_robot_schema_hash_agreement",
+        "threshold": 1.0,
+        "comparator": "eq",
+        "load_bearing": true,
+        "rationale": "The falsification test for the magnitude-neutrality thesis. Talmy's claim is that closed-class spatial terms abstract away metric shape, size, and distance; if that holds, the language-level output cannot depend on the body. A single mismatch means the semantic layer has leaked body knowledge and the design is wrong -- not that a threshold needs relaxing."
+      },
+      "g02_relationship": "G02 checks task-binding equality and resolved world invariance; the 60-prompt cross-body semantic-program hash test is still required.",
+      "full_requirement_verified_by_g02": false,
+      "status": "deferred_full_acceptance"
+    },
+    {
+      "id": "grounding_soundness",
+      "unchanged_requirement": {
+        "id": "grounding_soundness",
+        "statement": "No grounded program references a DOF, site, or contact pair the target robot lacks, and no grounded metric value falls outside the measured limits.",
+        "metrics": {
+          "invented_binding_count": {
+            "threshold": 0,
+            "comparator": "eq"
+          },
+          "out_of_limit_value_count": {
+            "threshold": 0,
+            "comparator": "eq"
+          }
+        },
+        "note": "The structural half is already enforced at import time by schema.program.assert_metric_free; this measures the grounder's half."
+      },
+      "g02_relationship": "Explicit robot joint-address mapping and missing-sensor refusal protect the observation path. Full prompt grounding limit counts remain unmeasured.",
+      "full_requirement_verified_by_g02": false,
+      "status": "deferred_full_acceptance"
+    },
+    {
+      "id": "supported_certified_winner_rate",
+      "unchanged_requirement": {
+        "id": "supported_certified_winner_rate",
+        "statement": "Supported prompts end in a certified, gate-passing, judge-accepted motion.",
+        "metric": "min_per_robot_certified_winner_rate",
+        "threshold": 0.9,
+        "comparator": "gte"
+      },
+      "g02_relationship": "Zero-command infrastructure probes are unscored and cannot count as supported prompt successes.",
+      "full_requirement_verified_by_g02": false,
+      "status": "deferred_full_acceptance"
+    },
+    {
+      "id": "adversarial_typed_outcomes",
+      "unchanged_requirement": {
+        "id": "adversarial_typed_outcomes",
+        "statement": "Adversarial prompts return the expected typed failure, including out-of-morphology requests such as asking a single-arm robot to use its other hand.",
+        "metric": "adversarial_typed_outcome_rate",
+        "threshold": 1.0,
+        "comparator": "eq"
+      },
+      "g02_relationship": "Mutation and boundary tests exercise named refusals. They do not replace 100 adversarial prompts per sealed robot.",
+      "full_requirement_verified_by_g02": false,
+      "status": "deferred_full_acceptance"
+    },
+    {
+      "id": "critical_deterministic_false_accepts",
+      "unchanged_requirement": {
+        "id": "critical_deterministic_false_accepts",
+        "statement": "No candidate failing a deterministic gate is ever selected.",
+        "metric": "deterministic_false_accepts",
+        "threshold": 0,
+        "comparator": "eq"
+      },
+      "g02_relationship": "Actual evaluator regressions reject margin-supported placement and simulation-budget overshoot. Full candidate-selection false-accept counts remain unmeasured.",
+      "full_requirement_verified_by_g02": false,
+      "status": "deferred_full_acceptance"
+    },
+    {
+      "id": "deterministic_replay",
+      "unchanged_requirement": {
+        "id": "deterministic_replay",
+        "statement": "Three repeats of a certified motion produce a byte-identical trace.",
+        "metric": "replay_agreement",
+        "threshold": 1.0,
+        "comparator": "eq"
+      },
+      "g02_relationship": "G01 supplies replay evidence on its separate branch. G02 is not physically replay-integrated and does not claim the existing three-repeat release gate.",
+      "full_requirement_verified_by_g02": false,
+      "status": "deferred_full_acceptance"
+    },
+    {
+      "id": "judge_independence",
+      "unchanged_requirement": {
+        "id": "judge_independence",
+        "statement": "The certifier identity never appears among the judge identities, and the blinded judge agrees with itself under reversed presentation order.",
+        "metrics": {
+          "certifier_judge_overlap": {
+            "threshold": 0,
+            "comparator": "eq"
+          },
+          "judge_order_consistency": {
+            "threshold": 0.95,
+            "comparator": "gte"
+          }
+        }
+      },
+      "g02_relationship": "Simulator truth is separated from acting observations. This is not VLM judging or judge-order calibration; those metrics remain unmeasured.",
+      "full_requirement_verified_by_g02": false,
+      "status": "deferred_full_acceptance"
+    },
+    {
+      "id": "latency_p95",
+      "unchanged_requirement": {
+        "id": "latency_p95",
+        "statement": "Prompt to certified winner, excluding VLM calls.",
+        "metric": "pipeline_p95_seconds",
+        "threshold": 90.0,
+        "comparator": "lte"
+      },
+      "g02_relationship": "Engineering probe wall times do not establish a prompt-to-certified-winner latency distribution.",
+      "full_requirement_verified_by_g02": false,
+      "status": "deferred_full_acceptance"
+    },
+    {
+      "id": "holdout_margin",
+      "unchanged_requirement": {
+        "id": "holdout_margin",
+        "statement": "Both sealed hold-out robots meet every threshold above within 0.05 absolute of the development-robot mean.",
+        "metric": "max_holdout_shortfall",
+        "threshold": 0.05,
+        "comparator": "lte",
+        "rationale": "The other anti-cheat half. Development-set performance proves nothing about an arbitrary robot if the implementation saw the development set."
+      },
+      "g02_relationship": "No sealed body identities or outcomes were read. Public seed splits cannot establish this threshold.",
+      "full_requirement_verified_by_g02": false,
+      "status": "deferred_full_acceptance"
+    },
+    {
+      "id": "export_roundtrip",
+      "unchanged_requirement": {
+        "id": "export_roundtrip",
+        "statement": "Every winner exports to GLB and reimports within tolerance. Robot export is rigid per-link TRS, so there is no skinning or bind-pose error to absorb.",
+        "metric": "max_per_link_position_error_m",
+        "threshold": 0.001,
+        "comparator": "lte"
+      },
+      "g02_relationship": "No GLB export/reimport is exercised by G02.",
+      "full_requirement_verified_by_g02": false,
+      "status": "deferred_full_acceptance"
+    }
+  ],
+  "full_existing_contract_verified": false,
+  "requirements_omitted": [],
+  "thresholds_modified": false,
+  "sealed_identities_read": false
+}
