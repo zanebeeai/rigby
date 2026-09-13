@@ -284,7 +284,13 @@ def main() -> int:
                              before_caption=f"{facing_body} | BEFORE: facing as a null-space afterthought; a finger goes through the bench, no grasp",
                              after_caption=f"{facing_body} | AFTER: facing solved with the point; hand vertical, cube gripped and lifted",
                              switch_off=switch_off_facing, after_certifies=facing_body in certified))
-    jaw_body = next((z for z in certified if kinds[z] == "parallel_jaw"), next(iter(certified)))
+    # The jaw body the standoff and turn pairs are shown on: the certified
+    # parallel-jaw body the pilot failed most often, which is the one whose
+    # fingers reach furthest past the grasp point and whose approach the
+    # turn phase repaired.
+    pilot_summary = json.loads((args.pilot / "summary.json").read_bytes())
+    pilot_failures = {b["zoo_id"]: (b["fixed_count"] - b["fixed_successes"]) for b in pilot_summary["bodies"] if b.get("fixed_count")}
+    jaw_body = max((z for z in certified if kinds[z] == "parallel_jaw"), key=lambda z: pilot_failures.get(z, 0), default=next(iter(certified)))
     pairs.append(record_pair(args.out, name="standoff", zoo_id=jaw_body, env=env, goal=goal,
                              before_caption=f"{jaw_body} | BEFORE: grasp point at the cube's centre; fingers driven into the bench",
                              after_caption=f"{jaw_body} | AFTER: grasp point raised by the fingers' reach; fingers clear of the bench",
@@ -299,13 +305,12 @@ def main() -> int:
     index["restart_seeds_needed_by"] = seeded
     # The turn phase: the pilot's first rendered failing jaw seed, and the
     # long arm's normalized world, each against the same world at HEAD.
-    pilot_summary = json.loads((args.pilot / "summary.json").read_bytes())
     index["pilot_commit"] = pilot_summary["provenance"]["commit"]
     turn_pairs = []
-    for zoo_id in [b["zoo_id"] for b in pilot_summary["bodies"] if b["feasibility_class"] == "feasible"]:
+    for zoo_id in [jaw_body] + [b["zoo_id"] for b in pilot_summary["bodies"] if b["feasibility_class"] == "feasible" and b["zoo_id"] != jaw_body]:
         pilot_trials = json.loads((args.pilot / zoo_id / "trials.json").read_bytes())
         failing = next((r for r in pilot_trials["fixed"]["trials"] if not r["certified"] and "bundle" in r and r["phases"]), None)
-        if failing is not None and kinds.get(zoo_id) == "parallel_jaw" and zoo_id in certified and not any(p["repair"] == "turn-seeded" for p in turn_pairs):
+        if failing is not None and zoo_id == jaw_body and not any(p["repair"] == "turn-seeded" for p in turn_pairs):
             draw = failing["draw"]
             turn_pairs.append(record_after_pilot(args.out, name="turn-seeded", zoo_id=zoo_id, pilot_media=args.pilot / zoo_id / "fixed" / f"seed-{failing['seed']:03d}" / "media",
                                                  pilot_row=failing, env=campaign.perturbed(env, draw), goal=goal,
