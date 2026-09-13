@@ -64,6 +64,8 @@ def _label(frame: Image.Image, metadata: dict, time_s: float, *, preview: str | 
     tint = (100, 230, 165) if status == "SUCCESS" else (255, 189, 100)
     draw.text((12, 7), f"{metadata['robot_id']} | {status} | sim t={time_s:.3f}s", fill=tint, font=font)
     qualifier = "ZERO ACTUATOR GAIN: INJECTED FAILURE" if metadata["fault"] else "Canonical reach/return | free-space baseline"
+    if not metadata["fault"] and metadata.get("caption"):
+        qualifier = str(metadata["caption"])[:105]
     if not metadata["fault"] and metadata.get("reference_clock_matches_physics") is False:
         qualifier = f"Reach/return | {metadata['reference_duration_s']:.2f}s reference / {metadata['simulation_duration_s']:.2f}s physics | CLOCKS DIFFER"
     if metadata.get("refusal_reason"):
