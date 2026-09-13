@@ -1,0 +1,530 @@
+{
+  "commit": "d313256eae6782a1926916b3ab9acf84c4382df2",
+  "created_at_utc": "2026-09-13T08:51:33.101715+00:00",
+  "demo": "D06",
+  "enabled_set": {
+    "bodies": [
+      {
+        "frames": 165,
+        "media_sha256": "606e9f2c867c9f48f4153637f575b45a32b1cb1a941f9c3d856c3256c533c939",
+        "outcome": "success",
+        "simulation_duration_s": 13.640000000001308,
+        "zoo_id": "zoo_dual_arm"
+      },
+      {
+        "frames": 175,
+        "media_sha256": "633e444cd5c15ded9b1d85f701d6812fd23ff3472985b321ccb4cff49df75cb5",
+        "outcome": "success",
+        "simulation_duration_s": 14.468000000001584,
+        "zoo_id": "zoo_jaw_arm"
+      },
+      {
+        "frames": 185,
+        "media_sha256": "892b497edd692f84e82318e73645e1c8c811fa54f5a737ec8f324e886e00a3ab",
+        "outcome": "success",
+        "simulation_duration_s": 15.302000000001863,
+        "zoo_id": "zoo_long_arm"
+      }
+    ],
+    "duration_s": 15.416667,
+    "frames": 185,
+    "height": 408,
+    "inputs": [
+      "C:/Users/hocke/GitHub/rigby-g06/docs/results/g06-campaign/zoo_dual_arm/fixed-canonical/media/episode.mp4",
+      "C:/Users/hocke/GitHub/rigby-g06/docs/results/g06-campaign/zoo_jaw_arm/fixed-canonical/media/episode.mp4",
+      "C:/Users/hocke/GitHub/rigby-g06/docs/results/g06-campaign/zoo_long_arm/fixed-canonical/media/episode.mp4"
+    ],
+    "preview": {
+      "approximate_speed": 2.57,
+      "frames": 60,
+      "gif": "enabled-set-synchronized-preview.gif",
+      "summary_of": "enabled-set-synchronized.mp4"
+    },
+    "video": "enabled-set-synchronized.mp4",
+    "width": 2880
+  },
+  "files": {
+    "enabled-set-synchronized-preview.gif": "283362cb4d3cd04ba7f8593b8aaf9f54c8aa09743c4d1a4bd0eb96809d41c0b0",
+    "enabled-set-synchronized.mp4": "96868e7c03acca54f7afc42adac7986d7c90bee056fcac2900c5545368228ff2",
+    "facing-before-after-preview.gif": "cab389f36f830777af548608d0fb8650a090518f119cd08b59dc37178800f472",
+    "facing-before-after.mp4": "f97cb815a33c3ead3f9f03c13c2a822cd3470e4175b0fbdd8d1fd0e9e9fb3570",
+    "facing/after/media/encoding.json": "7d178cb9c3e621d360d6ed2b8425f03a92e3038b6d130d71b549d5ad6255a969",
+    "facing/after/media/episode.mp4": "e32322a75cc90de00b71a6a1fa20c231b944a3ae13fbd45bf5eca062791128d9",
+    "facing/after/media/final.png": "495960d9f313cf575dfeab27fb357a89b7a39912fc40557cfe2f05220ffa2015",
+    "facing/after/media/frames.json": "78aaf8e1a5b56623d8606da2bb694c6adcee8ec5b34740affab68a60c5bcdd97",
+    "facing/after/media/initial.png": "7e58764bd4113349e21e77cbf486da4b15a3ab1a016e75e4279e05f2c49f16da",
+    "facing/after/media/manifest.json": "d03057a269a4223aaed8fed27c3699a76c9efb101e58e676a31419a82b715bab",
+    "facing/after/media/preview.gif": "dab0675d9bfba9da8748372cb6792bf74085fe7c667165c961f3f4a4f33ded81",
+    "facing/after/media/seal.json": "b4264986a35623b95ca59e97ed862818578ca932e5d490f2cfd416497494ac1b",
+    "facing/after/physical/controller.json": "68dca8020e865f0833a2888f16e783ab83f38aa40283053f1bafe6ec6279d807",
+    "facing/after/physical/execution.json": "966ea269bd3b71e5ce0d1eadb1a1b6755a6ed86e7ec66620b8632fd93657b188",
+    "facing/after/physical/manifest.json": "beffcffbbbc95cfaead0b30fa5d18e3cb1cb17ddfe3a838f20405e64cf19ce36",
+    "facing/after/physical/model.mjb": "94ea3dc4970e9976ed42e43eb0cdfb1e847580ca3154f8a77195eb37ffb3a135",
+    "facing/after/physical/model.xml": "43bbb0973cf215efef7c324477b1bc27c8da882dd68a9305d5eefbca3e044474",
+    "facing/after/physical/outcome.json": "16e340e34ca581816005a1d1711b39fc392ca546fab734b73479e89e57cf5207",
+    "facing/after/physical/repeats.json": "47af084ae0274a6a95a3470bb4e3fdeec2b9f200b4aecdebcec505182f431bcd",
+    "facing/after/physical/robot.json": "666a46446d508fa2a4e37ea06408ab8beea53b15cd3937c37fbf2f5654599daa",
+    "facing/after/physical/robot.urdf": "44222086fe981a572136e3d0508ab1c5e08ab3de730c615ed37362d3258945d6",
+    "facing/after/physical/seal.json": "816a409c4b9646b8a6f9fe476d6aaf0c43387c3e579e77977f0be7d9db750e4e",
+    "facing/after/physical/source.json": "3a1e9a0b669f84e5ef628985871f0e362f32ded6a3bc8c783cd551a5a47714b0",
+    "facing/after/physical/source.zip": "717b8dc780169dec31eb23ffbb3d44540a39480e3c69c384c5733897c8455696",
+    "facing/after/physical/task.json": "fdf83a87431c46eaf4aecadb422056b1cb18fdfeef19cfe4daf3e43faf57d507",
+    "facing/after/physical/trace.npz": "150186c059d2755c0ab162db3feba1c10b2ff80648900b25849d5998ef1ff39c",
+    "facing/after/physical/world.json": "bfd8e0781ffcbe5668b4c78162ff9831c0a2dad8418251807fe5e9499eed7778",
+    "facing/before/media/encoding.json": "1a50061a0969f735aa716c651d27e755618c710e8427be2088f7ea7dae235dcf",
+    "facing/before/media/episode.mp4": "8d032ccfa5e8deaae7cd76e3d6a911da1953ecb17c5fa93eb3e56194bf9a1c42",
+    "facing/before/media/final.png": "e5c3b78ae582f008236de071cf7207bfb2f6e0c415f6f9e5f5f92b533d25b64e",
+    "facing/before/media/frames.json": "555e2afa70bb04091480d51f2ce6eedb3a685dc1c62e9dc3550faaeb969f5346",
+    "facing/before/media/initial.png": "8344429cf8531b38a3f3341554acc492e4f0a707513cbe23ba5451bf95a36451",
+    "facing/before/media/manifest.json": "1a27b7441f7b0a418c1542ef07bed43d76f61c5278a3e8363e75d38454c3707c",
+    "facing/before/media/preview.gif": "01e16b2ad41fee3adc5b068603175510ee455c14071e992d4a8fb14bb9bb7771",
+    "facing/before/media/seal.json": "44f1ccb480f00db36f0abfbd6c6717251f4a68116e8d4477abdb4e4042fc20ec",
+    "facing/before/physical/controller.json": "68dca8020e865f0833a2888f16e783ab83f38aa40283053f1bafe6ec6279d807",
+    "facing/before/physical/execution.json": "dd5bb068af26b57e291b59c9a3089aab0bcdd75fd61d6f10415b2252aad5b8bb",
+    "facing/before/physical/manifest.json": "5b697fe3f0f0eb72d74f25f1ad919941557cd02cbcbf2dac6f8dd0588678bbe9",
+    "facing/before/physical/model.mjb": "94ea3dc4970e9976ed42e43eb0cdfb1e847580ca3154f8a77195eb37ffb3a135",
+    "facing/before/physical/model.xml": "43bbb0973cf215efef7c324477b1bc27c8da882dd68a9305d5eefbca3e044474",
+    "facing/before/physical/outcome.json": "ab511dc639f4ae144abc423d619f7e2fcd2fd9515c9d8892e401153e2dc58120",
+    "facing/before/physical/repeats.json": "4cdf78789a6163554c06b495a530d8d39d6d2938ba6229d742d00e7f0a7dd42b",
+    "facing/before/physical/robot.json": "666a46446d508fa2a4e37ea06408ab8beea53b15cd3937c37fbf2f5654599daa",
+    "facing/before/physical/robot.urdf": "44222086fe981a572136e3d0508ab1c5e08ab3de730c615ed37362d3258945d6",
+    "facing/before/physical/seal.json": "8ed11aa96ac096c91108e3b65d07211cabef1295a81e86e5e1b25f99378b9504",
+    "facing/before/physical/source.json": "3a1e9a0b669f84e5ef628985871f0e362f32ded6a3bc8c783cd551a5a47714b0",
+    "facing/before/physical/source.zip": "717b8dc780169dec31eb23ffbb3d44540a39480e3c69c384c5733897c8455696",
+    "facing/before/physical/task.json": "8de0056f94097b772d2c13a468db8b2ca9a0081948b1a24a17cbf0ded84e8a0c",
+    "facing/before/physical/trace.npz": "7f60b8d4015323b1c2bda4a182700f26c5162d15f93b3f66ff0e6ad028e3d315",
+    "facing/before/physical/world.json": "bfd8e0781ffcbe5668b4c78162ff9831c0a2dad8418251807fe5e9499eed7778",
+    "five-body-fixed-world-preview.gif": "5b8592f1ae6a1619ef8f438ab52bc09e77b12ab317cf18669a78cc85c2d8779b",
+    "five-body-fixed-world.mp4": "7fddb500657ffafd8da29166d74daad3f52b6bb3c48e5edf8ff8956d2851bf5c",
+    "standoff-before-after-preview.gif": "7647a03c3045ece9b703e76db69dc209e68d267dd22c3c7b3918c290bbc74912",
+    "standoff-before-after.mp4": "6f6c29f8e9d5102b5598318c84abd742111639f12cf02ca3db765038d80e3a04",
+    "standoff/after/media/encoding.json": "a15f29c8d34413c0a3d81356c289636806cf7313c4a9e2145a2c9ab2f0e1c9a2",
+    "standoff/after/media/episode.mp4": "3b14e7fb1e8dda04cc6480dc67b40f050bad0a7deba9491e60d52022051b4098",
+    "standoff/after/media/final.png": "c54771426b529ccce6d1f373b21d33791c16698bab4d5d7b4e16a9cd59d4cac1",
+    "standoff/after/media/frames.json": "21961820bc1e394ead369f95b2bce74df6d037b0d605dec72b05ad0bc55ed994",
+    "standoff/after/media/initial.png": "69a9b04f63b50a2b198be4a926ad08c4005c27e8121640a2153398c681859775",
+    "standoff/after/media/manifest.json": "852ef921ae8d01c2305fd0aae49f0579e7e8a9bad6c11a32bd438eb3875cc4d1",
+    "standoff/after/media/preview.gif": "a20dcef07ad6338ab76fb22d228d92e0cf387bb7fe4fe671b9baa10443f50f8c",
+    "standoff/after/media/seal.json": "5c81103e22066664bfa0bdc9fd878710d33300c774cd2950c37d6c0da3c90df3",
+    "standoff/after/physical/controller.json": "68dca8020e865f0833a2888f16e783ab83f38aa40283053f1bafe6ec6279d807",
+    "standoff/after/physical/execution.json": "873564496fb47e2b1bc552e58f2bb1300ea0f2e96a83c546274a4b8ee839eaa7",
+    "standoff/after/physical/manifest.json": "99db3eaed29309c3a786f6bee2cb41692f18cf44ab79aed14bbe27023b31b5ec",
+    "standoff/after/physical/model.mjb": "632f8f56704cc7bb96da37e0c0de72adb0c9f26482d6971abfcfd37c56d134c0",
+    "standoff/after/physical/model.xml": "d59d146884647612fdeadbf28d5cf71ffe921f7b4f076580c2369633051d234c",
+    "standoff/after/physical/outcome.json": "b622b3862710dadecf4ff5e3999c7b5fff5f2b7f05217c09300a790540059634",
+    "standoff/after/physical/repeats.json": "164c8e088bfbf14b2f05058f15c1d4779bc2e785e7dff6b90443b9d9a6004408",
+    "standoff/after/physical/robot.json": "512e1760ba1634acc8508410e49012749a7b8dd461647e97d585a2d5e9315451",
+    "standoff/after/physical/robot.urdf": "e471721a99f33a062ff4f96fef38d7523b1e8196bd7c95406ddb2ebe4778cd3d",
+    "standoff/after/physical/seal.json": "ac92b5c61c91714d41a7573395c839266f6952611cc5f7f2d82828f0d4cc4aec",
+    "standoff/after/physical/source.json": "3a1e9a0b669f84e5ef628985871f0e362f32ded6a3bc8c783cd551a5a47714b0",
+    "standoff/after/physical/source.zip": "717b8dc780169dec31eb23ffbb3d44540a39480e3c69c384c5733897c8455696",
+    "standoff/after/physical/task.json": "817675f019ba4e57aeefb424e2911b1e232aa454ff47b71b92cdbd95cb24c428",
+    "standoff/after/physical/trace.npz": "62ab3b63329781bdc3ada629527d76a89c0a6ed61a29b6da26f974336a0186ff",
+    "standoff/after/physical/world.json": "bfd8e0781ffcbe5668b4c78162ff9831c0a2dad8418251807fe5e9499eed7778",
+    "standoff/before/media/encoding.json": "796d07184a62192d9591c0d7e6d8f144239a4247a0dc419818e3fac18f9d310a",
+    "standoff/before/media/episode.mp4": "5735ea28bdf1bc634ab595f03cdb5bf3fb1bcb59f17e83936396858515798e04",
+    "standoff/before/media/final.png": "eaa50ce8581c6377296d3a87ee368cde7435e19ddf17f6c5762a100765c39a25",
+    "standoff/before/media/frames.json": "ca0523fd0c6dee814fc5c20ad92dbe4ac649d675360518222f62e9554aeaa869",
+    "standoff/before/media/initial.png": "4d38050fd67d519bcc25d00121aa4a7cd9bd107ee9c30871b787f502d060ff7b",
+    "standoff/before/media/manifest.json": "f83be3808bc477c291330f5d49ec335275155959a4c780c94b6bec75e6177eeb",
+    "standoff/before/media/preview.gif": "6615b596c6e9e5129d7ff19585a04779e7b0a412ec205bcfb65d5741155447bf",
+    "standoff/before/media/seal.json": "71ecd5aaa014a07c7dc5e74dfe125998d4cb9f9add464fc8cd2e829cc95f1b46",
+    "standoff/before/physical/controller.json": "68dca8020e865f0833a2888f16e783ab83f38aa40283053f1bafe6ec6279d807",
+    "standoff/before/physical/execution.json": "9bf9622f2e6e1a99408cb82fbb7ecd9b173e94ba735e22a333869e57227917f0",
+    "standoff/before/physical/manifest.json": "2c1baa732b41e2c0f2917fb971425c78bad20f3d62b4b5f016931a79036c54b4",
+    "standoff/before/physical/model.mjb": "632f8f56704cc7bb96da37e0c0de72adb0c9f26482d6971abfcfd37c56d134c0",
+    "standoff/before/physical/model.xml": "d59d146884647612fdeadbf28d5cf71ffe921f7b4f076580c2369633051d234c",
+    "standoff/before/physical/outcome.json": "cfbb02df89e8908b8bb6d8dec4b4b00efc59f1e07cbddaff49e34767e7006f54",
+    "standoff/before/physical/repeats.json": "cc48447b4a7796f056a52c26ecc0379d4c289e49060b49186b159948ec0648d7",
+    "standoff/before/physical/robot.json": "512e1760ba1634acc8508410e49012749a7b8dd461647e97d585a2d5e9315451",
+    "standoff/before/physical/robot.urdf": "e471721a99f33a062ff4f96fef38d7523b1e8196bd7c95406ddb2ebe4778cd3d",
+    "standoff/before/physical/seal.json": "a24fa3690fb24c85e92d2af3c4a5d205c740e339716db406aa0ddfafbe3ec88e",
+    "standoff/before/physical/source.json": "3a1e9a0b669f84e5ef628985871f0e362f32ded6a3bc8c783cd551a5a47714b0",
+    "standoff/before/physical/source.zip": "717b8dc780169dec31eb23ffbb3d44540a39480e3c69c384c5733897c8455696",
+    "standoff/before/physical/task.json": "5afd7e26697f54b0bda3024e429a20b8661308fc4369c58d8bdcbaa27848b3ce",
+    "standoff/before/physical/trace.npz": "35802fc21c0898c5147234a7bd54ec1aa48f340d6befa6b6e4ae8edd7793b2cc",
+    "standoff/before/physical/world.json": "bfd8e0781ffcbe5668b4c78162ff9831c0a2dad8418251807fe5e9499eed7778",
+    "turn-normalized-before-after-preview.gif": "2bd4861139ded2a6695acb93e4ba21fe1306fb5d33b75d2465eb570de88f73bf",
+    "turn-normalized-before-after.mp4": "842aa71a47aac63583e07699296324309d3c5b116497eaa71a7627c539b1a807",
+    "turn-normalized/after/media/encoding.json": "96dcbf2bee98001792f6b2cb9f4d540b032a9495512569a738dc6c5490b596f6",
+    "turn-normalized/after/media/episode.mp4": "fdc52743dc142dc5081ebbaeb33c416918392a53036447f17a2c65f3dc1467ad",
+    "turn-normalized/after/media/final.png": "de7bfa8a2f3a91f89799e684d7fa91ca6a2a7127577f43474d416c66254c4265",
+    "turn-normalized/after/media/frames.json": "636e2fd8c1d7ba5f6117a45b246d9054928f408b7db2b37636b35dd5bf7cfccf",
+    "turn-normalized/after/media/initial.png": "0c23d0a094fda1ddfb457bdac6a1afbf85ffb2938f2597d6d9e5dceb2eff3ace",
+    "turn-normalized/after/media/manifest.json": "37d619c32d103da1a0f9017168da7deef5593867b1005acc6aad0ab8c062403b",
+    "turn-normalized/after/media/preview.gif": "631db5cff4d7a07842d235f334334ce6f908339ffc2b05d2e67f0243a742ecc4",
+    "turn-normalized/after/media/seal.json": "59b3428d6d46ee45372cdce10dee372365ef2d53399c65b595e4ed7491d04cf7",
+    "turn-normalized/after/physical/controller.json": "68dca8020e865f0833a2888f16e783ab83f38aa40283053f1bafe6ec6279d807",
+    "turn-normalized/after/physical/execution.json": "5ba9526d0ae79cbd5d7cae9944a33bfbc397875e525074a42162b31bd6f0e61f",
+    "turn-normalized/after/physical/manifest.json": "2a4751bb79f496c5247eee781564dac0569fbf07120ddbfb38880c1c34815d12",
+    "turn-normalized/after/physical/model.mjb": "c19ba2fb59b9279800db90f0f501a0b5d83c03e3ea71d7a98285f53fad31ee34",
+    "turn-normalized/after/physical/model.xml": "67fb6c0f5fcfcdf84e1151845cbb57990cca198a421aa9da889f3dd646e961e7",
+    "turn-normalized/after/physical/outcome.json": "8c70904824434d77cf77d0fd1ad265de7ea6aaf81a3313f7f35106882ac4886d",
+    "turn-normalized/after/physical/repeats.json": "54e447b33a922a3414f175fe3d816ac3c8c87259ab4eed4c0332588be9a5d9ad",
+    "turn-normalized/after/physical/robot.json": "9e6cc7624eb99b7f095a8b3eded7961940e5aa52a101cce66e9834dc908f8a53",
+    "turn-normalized/after/physical/robot.urdf": "126c4beb1379d7a3e92f03e85109f892b90e25d633715f8a8f2a26a79ba74ecc",
+    "turn-normalized/after/physical/seal.json": "5a47d2ae59f5717ca6d23c825ef627a6644217e4c19e2984dec2d09d78bbdde8",
+    "turn-normalized/after/physical/source.json": "3a1e9a0b669f84e5ef628985871f0e362f32ded6a3bc8c783cd551a5a47714b0",
+    "turn-normalized/after/physical/source.zip": "717b8dc780169dec31eb23ffbb3d44540a39480e3c69c384c5733897c8455696",
+    "turn-normalized/after/physical/task.json": "29a694ca7297ad230be6bb39d6400b9834a740e48ae97a5895f178e3098beebc",
+    "turn-normalized/after/physical/trace.npz": "016dfc0534fc32ffd9666b61faf7e2fef319375906741c8cac744ea3736a0320",
+    "turn-normalized/after/physical/world.json": "f1d7a11939d3882ad51f219c1e1fbe01e30e0b6a5427333fc99b0303019fceed",
+    "turn-seeded-before-after-preview.gif": "790e6729b4021e0b284c91049e08056c553f9824b345c0850f375732296453be",
+    "turn-seeded-before-after.mp4": "5c049265b6be28741ff451d5000589660a20003d8a71f77fc7fa1801b2ac6dad",
+    "turn-seeded/after/media/encoding.json": "d5c094abc21771694ab18bdaa27e2fde9e11e7fa427630206d82b999d56e25e5",
+    "turn-seeded/after/media/episode.mp4": "346774e9abed328c559fa0e06229c1022c18b9b7d3a5b52d4835dfde29ee3f55",
+    "turn-seeded/after/media/final.png": "d05d39983f11949c8357e08e9e9960f74695f89b953af214e88a778f1ad80033",
+    "turn-seeded/after/media/frames.json": "e2261dc805b6d6877797a86b7a197cb3d7c95d36e9f233b2bb49e1559848ed5b",
+    "turn-seeded/after/media/initial.png": "089d7b474cd160e6ce969c54272c987d32b558b28ece2302bcd0583f4228e209",
+    "turn-seeded/after/media/manifest.json": "b9d5e213aa7632dd84506ccefcfcb3784f59f1af8ba24de484e200b2379cc254",
+    "turn-seeded/after/media/preview.gif": "59b437f0adc62d9db082d47cd71471ee32a9e9ede9c656a101b4747b3c3ff049",
+    "turn-seeded/after/media/seal.json": "3b95e5cc681553cd7703b63fd38da9b8107e80712d12b94297aa5aedeb48c652",
+    "turn-seeded/after/physical/controller.json": "68dca8020e865f0833a2888f16e783ab83f38aa40283053f1bafe6ec6279d807",
+    "turn-seeded/after/physical/execution.json": "9ad7ad7ac2c87ae23c7ccfa53d792213e2133362b779684326cdfa38d009f702",
+    "turn-seeded/after/physical/manifest.json": "1b14f84372f50d2afcc359953c75b35d41715fcc8545c374b1c9da20133f4aa2",
+    "turn-seeded/after/physical/model.mjb": "2f3c10bec72cf3123e3d64dbf5e910fb0d645736f476546ecb53311af316063a",
+    "turn-seeded/after/physical/model.xml": "d775357844ba35aa358594392023f8981f0e197862884e000143e36df853b8c5",
+    "turn-seeded/after/physical/outcome.json": "a54842f915658a32cfbeee58c726bf6a76021aeafab8a9deeb68f2f83d5f355e",
+    "turn-seeded/after/physical/repeats.json": "bf36b6c6ebb2f0b71b840887f270c46a3ccf1ee18192f75d2953be3a99ca601d",
+    "turn-seeded/after/physical/robot.json": "512e1760ba1634acc8508410e49012749a7b8dd461647e97d585a2d5e9315451",
+    "turn-seeded/after/physical/robot.urdf": "e471721a99f33a062ff4f96fef38d7523b1e8196bd7c95406ddb2ebe4778cd3d",
+    "turn-seeded/after/physical/seal.json": "99a8dccd07383a2bf917622339d9a8fa4e1478ef72a13a058db4cd3c446ca284",
+    "turn-seeded/after/physical/source.json": "3a1e9a0b669f84e5ef628985871f0e362f32ded6a3bc8c783cd551a5a47714b0",
+    "turn-seeded/after/physical/source.zip": "717b8dc780169dec31eb23ffbb3d44540a39480e3c69c384c5733897c8455696",
+    "turn-seeded/after/physical/task.json": "12492c4652fc2ce3fae212a4a819f65a86ab65c3b5e7848f44c4cb1cf0027bc8",
+    "turn-seeded/after/physical/trace.npz": "02184d10b808c96d48ac725cb1dadea824c7da8ffabd18e1e53b28195a36bb7a",
+    "turn-seeded/after/physical/world.json": "bfd8e0781ffcbe5668b4c78162ff9831c0a2dad8418251807fe5e9499eed7778"
+  },
+  "five_body": {
+    "bodies": [
+      {
+        "frames": 24,
+        "media_sha256": "41d404e9219d9bbb6eae3bc35470613cea1097c46948a75f55b162cacb5bdb02",
+        "outcome": "pre_execution_refusal",
+        "simulation_duration_s": 0.0,
+        "zoo_id": "zoo_compact_arm"
+      },
+      {
+        "frames": 165,
+        "media_sha256": "606e9f2c867c9f48f4153637f575b45a32b1cb1a941f9c3d856c3256c533c939",
+        "outcome": "success",
+        "simulation_duration_s": 13.640000000001308,
+        "zoo_id": "zoo_dual_arm"
+      },
+      {
+        "frames": 201,
+        "media_sha256": "1553acbb02dd17a3e3627e80019d303564c2136f1db28c0fca79a7bdc7fb1cfa",
+        "outcome": "runtime_failure",
+        "simulation_duration_s": 16.588000000001546,
+        "zoo_id": "zoo_hand_arm"
+      },
+      {
+        "frames": 175,
+        "media_sha256": "633e444cd5c15ded9b1d85f701d6812fd23ff3472985b321ccb4cff49df75cb5",
+        "outcome": "success",
+        "simulation_duration_s": 14.468000000001584,
+        "zoo_id": "zoo_jaw_arm"
+      },
+      {
+        "frames": 185,
+        "media_sha256": "892b497edd692f84e82318e73645e1c8c811fa54f5a737ec8f324e886e00a3ab",
+        "outcome": "success",
+        "simulation_duration_s": 15.302000000001863,
+        "zoo_id": "zoo_long_arm"
+      }
+    ],
+    "duration_s": 16.75,
+    "frames": 201,
+    "height": 816,
+    "inputs": [
+      "C:/Users/hocke/GitHub/rigby-g06/docs/results/g06-campaign/zoo_compact_arm/fixed-canonical/media/episode.mp4",
+      "C:/Users/hocke/GitHub/rigby-g06/docs/results/g06-campaign/zoo_dual_arm/fixed-canonical/media/episode.mp4",
+      "C:/Users/hocke/GitHub/rigby-g06/docs/results/g06-campaign/zoo_hand_arm/fixed-canonical/media/episode.mp4",
+      "C:/Users/hocke/GitHub/rigby-g06/docs/results/g06-campaign/zoo_jaw_arm/fixed-canonical/media/episode.mp4",
+      "C:/Users/hocke/GitHub/rigby-g06/docs/results/g06-campaign/zoo_long_arm/fixed-canonical/media/episode.mp4"
+    ],
+    "playback": "real time on the shared physics clock; a shorter episode holds its final recorded state",
+    "preview": {
+      "approximate_speed": 2.79,
+      "frames": 60,
+      "gif": "five-body-fixed-world-preview.gif",
+      "summary_of": "five-body-fixed-world.mp4"
+    },
+    "video": "five-body-fixed-world.mp4",
+    "width": 2880
+  },
+  "goal": "G06",
+  "pilot_commit": "f68ab68b0dc8b59ca7a6620b6b6afee56472351b",
+  "registration_sha256": "0846972af045f04cd46006fae1d280691c8c9ec03fba30cf361ade7b8de1109e",
+  "repairs": [
+    {
+      "after": {
+        "certified": false,
+        "failed_gate": "hold_not_sustained",
+        "frames": 201,
+        "lift_height_m": 0.06657563691658913,
+        "max_penetration_m": 0.007812657145003172,
+        "media_sha256": "d03057a269a4223aaed8fed27c3699a76c9efb101e58e676a31419a82b715bab",
+        "outcome": "runtime_failure",
+        "path_seed": "rest",
+        "physical_sha256": "beffcffbbbc95cfaead0b30fa5d18e3cb1cb17ddfe3a838f20405e64cf19ce36",
+        "robot_fixture_contacts": [],
+        "simulation_duration_s": 16.588000000001546,
+        "violations": [
+          "hold_not_sustained",
+          "object_not_carried",
+          "not_transported",
+          "placement_unstable",
+          "excessive_penetration"
+        ],
+        "wall_seconds": 2.3258177999960026
+      },
+      "after_certifies": false,
+      "before": {
+        "certified": false,
+        "failed_gate": "grasp_not_achieved",
+        "frames": 188,
+        "lift_height_m": 0.032970022040614444,
+        "max_penetration_m": 0.0,
+        "media_sha256": "1a27b7441f7b0a418c1542ef07bed43d76f61c5278a3e8363e75d38454c3707c",
+        "outcome": "runtime_failure",
+        "path_seed": "rest",
+        "physical_sha256": "5b697fe3f0f0eb72d74f25f1ad919941557cd02cbcbf2dac6f8dd0588678bbe9",
+        "robot_fixture_contacts": [
+          [
+            "digit_2",
+            "env_fixture_bench"
+          ],
+          [
+            "digit_2",
+            "env_fixture_platform"
+          ]
+        ],
+        "simulation_duration_s": 15.576000000001955,
+        "violations": [
+          "grasp_not_achieved",
+          "hold_not_sustained",
+          "not_transported",
+          "placement_unstable"
+        ],
+        "wall_seconds": 2.359527500011609
+      },
+      "body": "zoo_hand_arm",
+      "repair": "facing",
+      "side_by_side": {
+        "duration_s": 16.75,
+        "frames": 201,
+        "height": 408,
+        "inputs": [
+          "C:/Users/hocke/GitHub/rigby-g06/docs/results/g06-d06/facing/before/media/episode.mp4",
+          "C:/Users/hocke/GitHub/rigby-g06/docs/results/g06-d06/facing/after/media/episode.mp4"
+        ],
+        "preview": {
+          "approximate_speed": 2.79,
+          "frames": 60,
+          "gif": "facing-before-after-preview.gif",
+          "summary_of": "facing-before-after.mp4"
+        },
+        "video": "facing-before-after.mp4",
+        "width": 1920
+      }
+    },
+    {
+      "after": {
+        "certified": true,
+        "failed_gate": null,
+        "frames": 175,
+        "lift_height_m": 0.07455259621844368,
+        "max_penetration_m": 0.0008933038888627767,
+        "media_sha256": "852ef921ae8d01c2305fd0aae49f0579e7e8a9bad6c11a32bd438eb3875cc4d1",
+        "outcome": "success",
+        "path_seed": "rest",
+        "physical_sha256": "99db3eaed29309c3a786f6bee2cb41692f18cf44ab79aed14bbe27023b31b5ec",
+        "robot_fixture_contacts": [],
+        "simulation_duration_s": 14.468000000001584,
+        "violations": [],
+        "wall_seconds": 3.3026664000062738
+      },
+      "after_certifies": true,
+      "before": {
+        "certified": false,
+        "failed_gate": "hold_not_sustained",
+        "frames": 203,
+        "lift_height_m": 0.2035655108307955,
+        "max_penetration_m": 0.0017767739422709554,
+        "media_sha256": "f83be3808bc477c291330f5d49ec335275155959a4c780c94b6bec75e6177eeb",
+        "outcome": "runtime_failure",
+        "path_seed": "rest",
+        "physical_sha256": "2c1baa732b41e2c0f2917fb971425c78bad20f3d62b4b5f016931a79036c54b4",
+        "robot_fixture_contacts": [
+          [
+            "env_fixture_bench",
+            "finger_left"
+          ],
+          [
+            "env_fixture_bench",
+            "finger_right"
+          ],
+          [
+            "env_fixture_platform",
+            "finger_left"
+          ],
+          [
+            "env_fixture_platform",
+            "finger_right"
+          ]
+        ],
+        "simulation_duration_s": 16.804000000001427,
+        "violations": [
+          "hold_not_sustained",
+          "object_not_carried",
+          "not_transported",
+          "placement_unstable"
+        ],
+        "wall_seconds": 2.2461498999909963
+      },
+      "body": "zoo_jaw_arm",
+      "repair": "standoff",
+      "side_by_side": {
+        "duration_s": 16.916667,
+        "frames": 203,
+        "height": 408,
+        "inputs": [
+          "C:/Users/hocke/GitHub/rigby-g06/docs/results/g06-d06/standoff/before/media/episode.mp4",
+          "C:/Users/hocke/GitHub/rigby-g06/docs/results/g06-d06/standoff/after/media/episode.mp4"
+        ],
+        "preview": {
+          "approximate_speed": 2.82,
+          "frames": 60,
+          "gif": "standoff-before-after-preview.gif",
+          "summary_of": "standoff-before-after.mp4"
+        },
+        "video": "standoff-before-after.mp4",
+        "width": 1920
+      }
+    },
+    {
+      "after": {
+        "certified": true,
+        "failed_gate": null,
+        "frames": 176,
+        "lift_height_m": 0.07463101290650731,
+        "max_penetration_m": 0.0008056419097167409,
+        "media_sha256": "b9d5e213aa7632dd84506ccefcfcb3784f59f1af8ba24de484e200b2379cc254",
+        "outcome": "success",
+        "path_seed": "rest",
+        "physical_sha256": "1b14f84372f50d2afcc359953c75b35d41715fcc8545c374b1c9da20133f4aa2",
+        "robot_fixture_contacts": [],
+        "simulation_duration_s": 14.538000000001608,
+        "violations": [],
+        "wall_seconds": 2.759314599999925
+      },
+      "after_certifies": true,
+      "before": {
+        "bundle_retained": false,
+        "caption": "zoo_jaw_arm | BEFORE the turn phase | seed 5 | grasp_not_achieved",
+        "certified": false,
+        "failed_gate": "grasp_not_achieved",
+        "frames": 175,
+        "lift_height_m": 0.01061085199303563,
+        "max_penetration_m": 0.0,
+        "media": "docs/results/g06-campaign-pilot-1/zoo_jaw_arm/fixed/seed-005/media",
+        "media_sha256": "17924f26cbe8e8ae84bbb0a5aef51bfcd569186efafb6c61c4067a2a1a6654cb",
+        "outcome": "runtime_failure",
+        "path_seed": "rest",
+        "physical_sha256": "f5deff3009f50755f58d80b2083042c0a9aa9c2bdc123925be3256e5658da87e",
+        "pilot": true,
+        "simulation_duration_s": 14.42400000000157,
+        "violations": [
+          "grasp_not_achieved",
+          "object_not_lifted",
+          "hold_not_sustained",
+          "not_transported",
+          "placement_unstable"
+        ]
+      },
+      "before_is_pilot_episode": true,
+      "body": "zoo_jaw_arm",
+      "repair": "turn-seeded",
+      "side_by_side": {
+        "duration_s": 14.666667,
+        "frames": 176,
+        "height": 408,
+        "inputs": [
+          "C:/Users/hocke/GitHub/rigby-g06/docs/results/g06-campaign-pilot-1/zoo_jaw_arm/fixed/seed-005/media/episode.mp4",
+          "C:/Users/hocke/GitHub/rigby-g06/docs/results/g06-d06/turn-seeded/after/media/episode.mp4"
+        ],
+        "preview": {
+          "approximate_speed": 2.44,
+          "frames": 60,
+          "gif": "turn-seeded-before-after-preview.gif",
+          "summary_of": "turn-seeded-before-after.mp4"
+        },
+        "video": "turn-seeded-before-after.mp4",
+        "width": 1920
+      }
+    },
+    {
+      "after": {
+        "certified": true,
+        "failed_gate": null,
+        "frames": 184,
+        "lift_height_m": 0.11343240885459915,
+        "max_penetration_m": 0.0005289607668077062,
+        "media_sha256": "37d619c32d103da1a0f9017168da7deef5593867b1005acc6aad0ab8c062403b",
+        "outcome": "success",
+        "path_seed": "rest",
+        "physical_sha256": "2a4751bb79f496c5247eee781564dac0569fbf07120ddbfb38880c1c34815d12",
+        "robot_fixture_contacts": [],
+        "simulation_duration_s": 15.20200000000183,
+        "violations": [],
+        "wall_seconds": 3.1679427000053693
+      },
+      "after_certifies": true,
+      "before": {
+        "bundle_retained": false,
+        "caption": "zoo_long_arm | BEFORE the turn phase | normalized world x1.55 | grasp_not_achieved",
+        "certified": false,
+        "failed_gate": "grasp_not_achieved",
+        "frames": 181,
+        "lift_height_m": 0.013233176813676362,
+        "max_penetration_m": 0.0,
+        "media": "docs/results/g06-campaign-pilot-1/zoo_long_arm/normalized/media",
+        "media_sha256": "6d06c64a20aa317fdef3ce5ffae11795222b3f8c695515529d320eed311f89ad",
+        "outcome": "runtime_failure",
+        "path_seed": "rest",
+        "physical_sha256": "a9fc807d5f5ede01f2b84d4f888fbd9429dc8d2e4fcc118521fba15052356570",
+        "pilot": true,
+        "simulation_duration_s": 14.944000000001743,
+        "violations": [
+          "grasp_not_achieved",
+          "object_not_lifted",
+          "hold_not_sustained",
+          "not_transported",
+          "placement_unstable"
+        ]
+      },
+      "before_is_pilot_episode": true,
+      "body": "zoo_long_arm",
+      "repair": "turn-normalized",
+      "side_by_side": {
+        "duration_s": 15.333333,
+        "frames": 184,
+        "height": 408,
+        "inputs": [
+          "C:/Users/hocke/GitHub/rigby-g06/docs/results/g06-campaign-pilot-1/zoo_long_arm/normalized/media/episode.mp4",
+          "C:/Users/hocke/GitHub/rigby-g06/docs/results/g06-d06/turn-normalized/after/media/episode.mp4"
+        ],
+        "preview": {
+          "approximate_speed": 2.56,
+          "frames": 60,
+          "gif": "turn-normalized-before-after-preview.gif",
+          "summary_of": "turn-normalized-before-after.mp4"
+        },
+        "video": "turn-normalized-before-after.mp4",
+        "width": 1920
+      }
+    }
+  ],
+  "restart_seeds_needed_by": []
+}

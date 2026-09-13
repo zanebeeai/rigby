@@ -1,0 +1,44 @@
+{
+  "actual_physics_duration_s": 0.0,
+  "carry_offset_max_m": 0.0,
+  "certified": false,
+  "collision_policy": {
+    "contact_exclusions_total": 0,
+    "contact_exclusions_with_object": [],
+    "equality_constraints": 0,
+    "object_actuators": 0,
+    "object_geoms_collidable": true,
+    "object_state_writes": 0
+  },
+  "duration_s": 0.0,
+  "failed_gate": "unreachable_path",
+  "hold_s": 0.0,
+  "lift_height_m": 0.0,
+  "max_penetration_m": 0.0,
+  "opposition_achieved": false,
+  "path_seed": "",
+  "peak_force_n": 0.0,
+  "phases": [],
+  "physical_steps": 0,
+  "placed_inside": false,
+  "placement_dwell_s": 0.0,
+  "placement_success": false,
+  "refusal": {
+    "code": "unreachable_path",
+    "detail": "waypoint 1 is 0.0363 m from where it was asked to be, past a tolerance of 0.0040 m",
+    "stage": "path"
+  },
+  "released": true,
+  "robot_fixture_contacts": [],
+  "scope": "contact transfer in an authored world; independent placement evaluator",
+  "status": "pre_execution_refusal",
+  "unexpected_contacts": [],
+  "violations": [
+    {
+      "code": "unreachable_path",
+      "detail": "waypoint 1 is 0.0363 m from where it was asked to be, past a tolerance of 0.0040 m",
+      "limit": 0.0,
+      "measured": 0.0363034333591652
+    }
+  ]
+}

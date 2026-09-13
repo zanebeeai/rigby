@@ -1,0 +1,131 @@
+{
+  "actual_physics_duration_s": 16.838000000001546,
+  "carry_offset_max_m": 604.820420817721,
+  "certified": false,
+  "collision_policy": {
+    "contact_exclusions_total": 0,
+    "contact_exclusions_with_object": [],
+    "equality_constraints": 0,
+    "object_actuators": 0,
+    "object_geoms_collidable": true,
+    "object_state_writes": 0
+  },
+  "duration_s": 16.838000000001546,
+  "failed_gate": "hold_not_sustained",
+  "hold_s": 0.0,
+  "lift_height_m": 0.06657563691658913,
+  "max_penetration_m": 0.007812657145003172,
+  "opposition_achieved": true,
+  "path_seed": "rest",
+  "peak_force_n": 71.47091861981998,
+  "phases": [
+    {
+      "end_s": 3.2519999999998634,
+      "name": "approach",
+      "note": "",
+      "start_s": 0.25000000000000017
+    },
+    {
+      "end_s": 4.733999999999701,
+      "name": "turn",
+      "note": "",
+      "start_s": 3.2519999999998634
+    },
+    {
+      "end_s": 5.535999999999612,
+      "name": "descend",
+      "note": "",
+      "start_s": 4.733999999999701
+    },
+    {
+      "end_s": 8.037999999999354,
+      "name": "close",
+      "note": "closure never settled on the object",
+      "start_s": 5.535999999999612
+    },
+    {
+      "end_s": 9.037999999999688,
+      "name": "lift",
+      "note": "",
+      "start_s": 8.037999999999354
+    },
+    {
+      "end_s": 11.038000000000356,
+      "name": "hold",
+      "note": "",
+      "start_s": 9.037999999999688
+    },
+    {
+      "end_s": 12.238000000000756,
+      "name": "carry",
+      "note": "",
+      "start_s": 11.038000000000356
+    },
+    {
+      "end_s": 13.038000000001023,
+      "name": "lower",
+      "note": "",
+      "start_s": 12.238000000000756
+    },
+    {
+      "end_s": 13.53800000000119,
+      "name": "release",
+      "note": "",
+      "start_s": 13.038000000001023
+    },
+    {
+      "end_s": 14.338000000001458,
+      "name": "retreat",
+      "note": "",
+      "start_s": 13.53800000000119
+    },
+    {
+      "end_s": 16.838000000001546,
+      "name": "dwell",
+      "note": "",
+      "start_s": 14.338000000001458
+    }
+  ],
+  "physical_steps": 8294,
+  "placed_inside": false,
+  "placement_dwell_s": 0.0,
+  "placement_success": false,
+  "refusal": null,
+  "released": true,
+  "robot_fixture_contacts": [],
+  "scope": "contact transfer in an authored world; independent placement evaluator",
+  "status": "runtime_failure",
+  "unexpected_contacts": [],
+  "violations": [
+    {
+      "code": "hold_not_sustained",
+      "detail": "the object was not held continuously through the hold",
+      "limit": 2.0,
+      "measured": 0.0
+    },
+    {
+      "code": "object_not_carried",
+      "detail": "the object left the gripper instead of being carried",
+      "limit": 0.13965750000000002,
+      "measured": 604.820420817721
+    },
+    {
+      "code": "not_transported",
+      "detail": "the object did not end inside the destination region",
+      "limit": 1.0,
+      "measured": 0.0
+    },
+    {
+      "code": "placement_unstable",
+      "detail": "the object did not rest inside the region, released and still, for the dwell",
+      "limit": 2.0,
+      "measured": 0.0
+    },
+    {
+      "code": "excessive_penetration",
+      "detail": "the members were inside the object rather than around it",
+      "limit": 0.004,
+      "measured": 0.007812657145003172
+    }
+  ]
+}

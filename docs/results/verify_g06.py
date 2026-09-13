@@ -62,7 +62,12 @@ def check_media(media: Path, source_sha256: str) -> dict:
     # Real-time playback: the frame count is the ceiling of duration times fps
     # plus the final held state, so playback never differs from the simulated
     # duration by more than two frame periods.
-    assert abs(manifest["metadata"]["playback_duration_s"] - manifest["metadata"]["simulation_duration_s"]) <= 2.0 / manifest["metadata"]["fps"]
+    if manifest["metadata"].get("refusal_slate"):
+        # A refusal before motion has no physical duration; its clip is a
+        # labelled slate of the initial state.
+        assert manifest["metadata"]["outcome"] == "pre_execution_refusal" and manifest["metadata"]["playback_duration_s"] > 0
+    else:
+        assert abs(manifest["metadata"]["playback_duration_s"] - manifest["metadata"]["simulation_duration_s"]) <= 2.0 / manifest["metadata"]["fps"]
     for name in ("episode.mp4", "preview.gif", "frames.json"):
         assert (media / name).is_file(), (media, name)
     return manifest

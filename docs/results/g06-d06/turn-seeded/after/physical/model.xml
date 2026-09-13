@@ -1,0 +1,72 @@
+<mujoco model="zoo_jaw_arm">
+  <compiler angle="radian" meshdir="C:\Users\hocke\GitHub\rigby-g06\any-robot\assets\general\zoo\zoo_jaw_arm" texturedir="C:\Users\hocke\GitHub\rigby-g06\any-robot\assets\general\zoo\zoo_jaw_arm" />
+
+  <worldbody>
+    <body name="base">
+      <inertial pos="0 0 0.08" quat="0.5 0.5 -0.5 0.5" mass="8" diaginertia="0.0484 0.0412667 0.0412667" />
+      <geom size="0.11 0.08" pos="0 0 0.08" type="cylinder" />
+      <site name="robot_base" pos="0 0 0" />
+      <body name="link_0" pos="0 0 0.16">
+        <inertial pos="0 0 0.11" mass="1.88166" diaginertia="0.00901235 0.00901235 0.00284601" />
+        <joint name="joint_0" pos="0 0 0" axis="0 0 1" range="-2.85 2.85" actuatorfrcrange="-160 160" />
+        <geom size="0.055 0.11" pos="0 0 0.11" type="cylinder" />
+        <body name="link_1" pos="0 0 0.22">
+          <inertial pos="0 0 0.17" mass="2.25197" diaginertia="0.0230128 0.0230128 0.00263768" />
+          <joint name="joint_1" pos="0 0 0" axis="0 1 0" range="-2.85 2.85" actuatorfrcrange="-160 160" />
+          <geom size="0.0484 0.17" pos="0 0 0.17" type="cylinder" />
+          <body name="link_2" pos="0 0 0.34">
+            <inertial pos="0 0 0.14" mass="1.43617" diaginertia="0.0100343 0.0100343 0.00130266" />
+            <joint name="joint_2" pos="0 0 0" axis="0 1 0" range="-2.85 2.85" actuatorfrcrange="-160 160" />
+            <geom size="0.042592 0.14" pos="0 0 0.14" type="cylinder" />
+            <body name="link_3" pos="0 0 0.28">
+              <inertial pos="0 0 0.06" mass="0.476645" diaginertia="0.00073937 0.00073937 0.0003348" />
+              <joint name="joint_3" pos="0 0 0" axis="0 0 1" range="-2.85 2.85" actuatorfrcrange="-160 160" />
+              <geom size="0.037481 0.06" pos="0 0 0.06" type="cylinder" />
+              <body name="link_4" pos="0 0 0.12">
+                <inertial pos="0 0 0.045" mass="0.276835" diaginertia="0.00026216 0.00026216 0.00015058" />
+                <joint name="joint_4" pos="0 0 0" axis="0 1 0" range="-2.85 2.85" actuatorfrcrange="-160 160" />
+                <geom size="0.032983 0.045" pos="0 0 0.045" type="cylinder" />
+                <body name="link_5" pos="0 0 0.09">
+                  <inertial pos="0 0 0.03" mass="0.25" diaginertia="0.00012765 0.00012765 0.00010531" />
+                  <joint name="joint_5" pos="0 0 0" axis="0 0 1" range="-2.85 2.85" actuatorfrcrange="-160 160" />
+                  <geom size="0.029025 0.03" pos="0 0 0.03" type="cylinder" />
+                  <body name="palm" pos="0 0 0.06">
+                    <inertial pos="0 0 0.025" quat="0.5 0.5 0.5 0.5" mass="0.35" diaginertia="0.00030917 0.00030917 0.00014583" />
+                    <geom size="0.045 0.025 0.025" pos="0 0 0.025" type="box" />
+                    <site name="palm_grasp_point" pos="0 0 0.0875" />
+                    <site name="palm_grasp_center" pos="0 0 0.05" />
+                    <site name="palm_wrist" pos="0 0 0" />
+                    <body name="finger_left" pos="0.0505 0 0.05">
+                      <inertial pos="0 0 0.0375" mass="0.06" diaginertia="3.263e-05 2.911e-05 5.48e-06" />
+                      <joint name="grip_left" pos="0 0 0" axis="-1 0 0" type="slide" range="0 0.0425" actuatorfrcrange="-60 60" />
+                      <geom size="0.007 0.015 0.0375" pos="0 0 0.0375" type="box" />
+                      <site name="palm_tip" pos="0 0 0.075" />
+                      <site name="palm_contact_0" pos="0 0 0.075" />
+                    </body>
+                    <body name="finger_right" pos="-0.0505 0 0.05">
+                      <inertial pos="0 0 0.0375" mass="0.06" diaginertia="3.263e-05 2.911e-05 5.48e-06" />
+                      <joint name="grip_right" pos="0 0 0" axis="1 0 0" type="slide" range="0 0.0425" actuatorfrcrange="-60 60" />
+                      <geom size="0.007 0.015 0.0375" pos="0 0 0.0375" type="box" />
+                      <site name="palm_contact_1" pos="0 0 0.075" />
+                    </body>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  <body name="env_fixture_bench" pos="-0.150000 0.650000 0.245000"><geom name="env_fixture_bench_geom" type="box" size="0.050000 0.050000 0.015000" rgba="0.3500 0.3500 0.4000 1.0000" solref="0.002 1" solimp="0.95 0.99 0.001" /></body><body name="env_fixture_platform" pos="-0.010000 0.650000 0.245000"><geom name="env_fixture_platform_geom" type="box" size="0.050000 0.050000 0.015000" rgba="0.3000 0.4500 0.7500 1.0000" solref="0.002 1" solimp="0.95 0.99 0.001" /></body><body name="scene_block" pos="-0.135611 0.646689 0.275000"><freejoint name="scene_block_free" /><geom name="scene_block_geom" type="box" size="0.015000 0.015000 0.015000" mass="0.007823" friction="1.251 0.03 0.001" rgba="0.8500 0.4500 0.1500 1.0000" condim="4" solref="0.002 1" solimp="0.95 0.99 0.001" priority="1" /><site name="scene_block_center" pos="0 0 0" size="0.002" /></body></worldbody>
+
+  <actuator>
+    <general name="joint_0_motor" joint="joint_0" ctrllimited="true" ctrlrange="-160 160" forcelimited="true" forcerange="-160 160" />
+    <general name="joint_1_motor" joint="joint_1" ctrllimited="true" ctrlrange="-160 160" forcelimited="true" forcerange="-160 160" />
+    <general name="joint_2_motor" joint="joint_2" ctrllimited="true" ctrlrange="-160 160" forcelimited="true" forcerange="-160 160" />
+    <general name="joint_3_motor" joint="joint_3" ctrllimited="true" ctrlrange="-160 160" forcelimited="true" forcerange="-160 160" />
+    <general name="joint_4_motor" joint="joint_4" ctrllimited="true" ctrlrange="-160 160" forcelimited="true" forcerange="-160 160" />
+    <general name="joint_5_motor" joint="joint_5" ctrllimited="true" ctrlrange="-160 160" forcelimited="true" forcerange="-160 160" />
+    <general name="grip_left_motor" joint="grip_left" ctrllimited="true" ctrlrange="-60 60" forcelimited="true" forcerange="-60 60" />
+    <general name="grip_right_motor" joint="grip_right" ctrllimited="true" ctrlrange="-60 60" forcelimited="true" forcerange="-60 60" />
+  </actuator>
+</mujoco>
