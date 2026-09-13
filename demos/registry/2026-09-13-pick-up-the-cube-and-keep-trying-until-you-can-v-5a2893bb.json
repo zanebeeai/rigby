@@ -1,0 +1,45 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-keep-trying-until-you-can-v-5a2893bb",
+  "title": "G11 reuse: acquire_until_held on zoo_jaw_arm in mirrored (success)",
+  "prompt": "pick up the cube and keep trying until you can verify you are holding it",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T19:02:12Z",
+  "source": {
+    "commit": "d29eb0ce7d",
+    "branch": "feat/g11-skill-library",
+    "dirty": true,
+    "how": "python any-robot/scripts/g11_skill_store_campaign.py <phase> --out docs/results/g11-store --local any-robot/results/g11-store"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: acquire_until_held reused from the persisted store in the mirrored layout under certificate 274058bc6b9c v1; verdict success at 10.3 s of physics."
+  },
+  "notes": "See docs/results/g11-report.md. One tree run on physics from the skill store: a certificate promoted only after an independent validation set passed, reused only where its six-facet context matches exactly, invalidated when a dimension changes and revalidated by a new outcome; restarts open a fresh session on the checkpoint's physical state and reconstruct their belief from the sensors alone. Rendered from recorded states at real-time playback with the simulation clock and the tree's verdict in the banner; frames.json beside the MP4 maps every frame to its recorded sample.",
+  "media": [
+    {
+      "path": "docs/results/g11-store/reuse/zoo_jaw_arm-mirrored-acquire_until_held/media/episode.mp4",
+      "bytes": 108836,
+      "sha256": "a4c2642733a47b1bff9ea0478f20ccea73f719df0061f71db80d671c18ea8be5",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g11-store/reuse/zoo_jaw_arm-mirrored-acquire_until_held/media/preview.gif",
+      "bytes": 1025245,
+      "sha256": "a10c31ae9b576c066e79a750c70d3f74244233a18d604d396043f8c3169728f2",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G11",
+    "reuse",
+    "mirrored",
+    "acquire_until_held",
+    "zoo_jaw_arm",
+    "success"
+  ]
+}

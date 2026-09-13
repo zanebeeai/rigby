@@ -1,0 +1,43 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-keep-3ee2ce33",
+  "title": "D11: validate once, reuse, invalidate, repair, reuse again",
+  "prompt": "pick up the cube and set it on the platform; keep going until you can verify it is placed",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T19:02:39Z",
+  "source": {
+    "commit": "d29eb0ce7d",
+    "branch": "feat/g11-skill-library",
+    "dirty": true,
+    "how": "python any-robot/scripts/g11_d11_media.py --campaign docs/results/g11-store --local any-robot/results/g11-store --out docs/results/g11-d11"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "Five panels on one clock: the validation episode that promoted the skill; reuse in the mirrored layout from the persisted store; the retrieval refused after the cube grew, similarity shown and inert; the revalidation under the grown cube that issued version 2; reuse again with version 2."
+  },
+  "notes": "See docs/results/g11-report.md. One tree run on physics from the skill store: a certificate promoted only after an independent validation set passed, reused only where its six-facet context matches exactly, invalidated when a dimension changes and revalidated by a new outcome; restarts open a fresh session on the checkpoint's physical state and reconstruct their belief from the sensors alone. Rendered from recorded states at real-time playback with the simulation clock and the tree's verdict in the banner; frames.json beside the MP4 maps every frame to its recorded sample.",
+  "media": [
+    {
+      "path": "docs/results/g11-d11/d11-five-way.mp4",
+      "bytes": 170700,
+      "sha256": "652e0920f1cc3b9a5d855ac5346ccf9d2c7f814fb1df3e6a67824f3da71fb2f9",
+      "role": "comparison"
+    },
+    {
+      "path": "docs/results/g11-d11/d11-five-way-preview.gif",
+      "bytes": 1970638,
+      "sha256": "3603603747ed30cce31ff4a0ed436a889c098da812e55e1b01a8b604894ae219",
+      "role": "comparison"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G11",
+    "D11",
+    "five-way",
+    "zoo_jaw_arm"
+  ]
+}

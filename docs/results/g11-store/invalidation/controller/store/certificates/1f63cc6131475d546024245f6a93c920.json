@@ -1,0 +1,192 @@
+{
+  "certificate_id": "1f63cc6131475d546024245f6a93c920",
+  "context": {
+    "facets": [
+      {
+        "detail": {
+          "effector": "palm",
+          "manifest_sha256": "12a6d62e3e018bc807fb78bd86575a0d960cdeac0a7195bbc1547be5b80526c2",
+          "rig_id": "zoo_jaw_arm"
+        },
+        "dimension": "body",
+        "name": "zoo_jaw_arm",
+        "sha256": "73265e19908875980c5a7ca138b64fe219cd33b7422a8e11772d09c862dc4a61"
+      },
+      {
+        "detail": {
+          "arm": "rigby_general.gates.control.ComputedTorqueController",
+          "arm_config": {
+            "damping_ratio": 1.2,
+            "natural_frequency_hz": 7.0
+          },
+          "closure": "rigby_general.contact.closure.ClosureController",
+          "closure_config": {
+            "actuator_ceiling_fraction": 0.5,
+            "closing_force_fraction": 0.12,
+            "closure_rate_per_s": 0.55,
+            "contact_detection_fraction": 0.05,
+            "grip_safety_factor": 80.0,
+            "hold_duration_s": 0.15,
+            "hold_release_s": 0.1,
+            "max_penetration_m": 0.004,
+            "min_contact_force_n": 0.005,
+            "release_force_fraction": 0.25
+          }
+        },
+        "dimension": "controller",
+        "name": "computed-torque 7 Hz zeta 1.2",
+        "sha256": "5879f2e7f72e0b9c2660c961bfae6f3c8e1de9f59ee0cd9f13ec41979e5048ba"
+      },
+      {
+        "detail": {
+          "configuration_id": "front_overhead_contact",
+          "configuration_sha256": "3542effd25a01c0af43ec325e1922acd82fe821d2e65a2a5a7d27926279264a7",
+          "policy_sha256": "6d2912e8df7d0a098f5d75f59ad37fc5bdf3c5bdd28f7ef940df7973cb4d1ed1"
+        },
+        "dimension": "sensors",
+        "name": "front_overhead_contact",
+        "sha256": "655d73dfb630430b533576a0350a9aa04c7815392208790e92f66bcf6f4792e4"
+      },
+      {
+        "detail": {
+          "fixtures": [
+            {
+              "name": "bench",
+              "size_m": [
+                0.05,
+                0.05,
+                0.015
+              ],
+              "top_m": 0.26
+            },
+            {
+              "name": "platform",
+              "size_m": [
+                0.05,
+                0.05,
+                0.015
+              ],
+              "top_m": 0.26
+            },
+            {
+              "name": "table",
+              "size_m": [
+                0.4,
+                0.3,
+                0.005
+              ],
+              "top_m": 0.23
+            },
+            {
+              "name": "floor",
+              "size_m": [
+                1.0,
+                1.0,
+                0.01
+              ],
+              "top_m": -0.12
+            }
+          ],
+          "object_size_m": [
+            0.015,
+            0.015,
+            0.015
+          ],
+          "robot_mount_m": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "dimension": "geometry",
+        "name": "cube 30 mm on 4 fixtures",
+        "sha256": "7495991f28799041baf10b7a9eb6e2b14dfae80a5f7364f4d0066c6a998334e5"
+      },
+      {
+        "detail": {
+          "basis": "the G06 draw family, 0.8 to 1.2 of a 1.4 coefficient, with margin",
+          "object_friction_range": [
+            1.0,
+            1.8
+          ]
+        },
+        "dimension": "friction",
+        "name": "friction 1-1.8",
+        "sha256": "ae518b4bf15ea523830ebd3dbed99d37f7169804377dbb93cba3da7baf074f67"
+      },
+      {
+        "detail": {
+          "bundle_layout": "rigby.evidence-bundle/G01",
+          "certificate": "1.0",
+          "episode_protocol": "rigby.transfer-object-episode/1",
+          "execution_record": "1.0"
+        },
+        "dimension": "evidence_schema",
+        "name": "rigby.transfer-object-episode/1",
+        "sha256": "a578d5f44b4440e9c003a9df0aa2100b84b99d87cda26cfdcf8d09a1eb175bc2"
+      }
+    ],
+    "ranges": [
+      {
+        "high": 1.8,
+        "low": 1.0,
+        "quantity": "object_friction",
+        "units": "coefficient"
+      },
+      {
+        "high": 0.016,
+        "low": 0.004,
+        "quantity": "object_mass_kg",
+        "units": "kg"
+      },
+      {
+        "high": 0.8,
+        "low": 0.55,
+        "quantity": "object_distance_m",
+        "units": "m"
+      },
+      {
+        "high": 0.8,
+        "low": 0.55,
+        "quantity": "destination_distance_m",
+        "units": "m"
+      }
+    ],
+    "values": {
+      "destination_distance_m": 0.6500769185258003,
+      "object_distance_m": 0.6670832032063166,
+      "object_friction": 1.4,
+      "object_mass_kg": 0.00864
+    }
+  },
+  "cost": {
+    "dollars": 0.0,
+    "episodes": 6,
+    "generation_calls": 0,
+    "physics_s": 93.59400000001128,
+    "wall_s": 24.109584199963138
+  },
+  "decided_at_utc": "2026-09-13T18:52:40.568544+00:00",
+  "definition_sha256": "52fa3890e6658e52c6138472d24f8629ca4064c4a9ea0e0005f2bf4de4756240",
+  "invalidated_by": [],
+  "library_id": "transfer_object_v1",
+  "library_sha256": "8af1e9cda3a446e7c75f53c0074c92b01ae51fefabfa2fef0c4cb33ae74d9f47",
+  "reason": "independent set g11-revalidation-controller passed 6/6 (threshold 5), no false completion",
+  "schema_version": "1.0",
+  "skill_id": "observe_object",
+  "status": "promoted",
+  "supersedes": "d4bf21675f88c141720a2fc54f3d793a",
+  "validation": {
+    "episodes": 6,
+    "evidence": [
+      "31a3a6bef402b7fc1ef62042a9e8b58d2ae00fe67e64c0ce3737f31f7b397f15",
+      "e1232349453ff2ef9d4290ba7db2271500244a7c81271068db70ba6a62ab6a45"
+    ],
+    "false_completions": 0,
+    "rows_sha256": "306d0b3b59888d03da19eaf2b456adffbb48b4fef85406f10df6fd4ef9bd55a3",
+    "set_id": "g11-revalidation-controller",
+    "successes": 6,
+    "threshold": 5
+  },
+  "version": 2
+}

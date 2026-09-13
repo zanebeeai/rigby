@@ -1,0 +1,45 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-keep-053fda71",
+  "title": "G11 restart: zoo_jaw_arm after leaf 2 (acquire) (success)",
+  "prompt": "pick up the cube and set it on the platform; keep going until you can verify it is placed",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T19:02:30Z",
+  "source": {
+    "commit": "d29eb0ce7d",
+    "branch": "feat/g11-skill-library",
+    "dirty": true,
+    "how": "python any-robot/scripts/g11_skill_store_campaign.py <phase> --out docs/results/g11-store --local any-robot/results/g11-store"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "COMPLETED after a restart at leaf 2 (acquire): a fresh session on the checkpoint's state, closure engaged by contact, reconstructed held:cube, known:cube, reach:cube from the sensors, verdict success at 16.3 s; the oracle agrees."
+  },
+  "notes": "See docs/results/g11-report.md. One tree run on physics from the skill store: a certificate promoted only after an independent validation set passed, reused only where its six-facet context matches exactly, invalidated when a dimension changes and revalidated by a new outcome; restarts open a fresh session on the checkpoint's physical state and reconstruct their belief from the sensors alone. Rendered from recorded states at real-time playback with the simulation clock and the tree's verdict in the banner; frames.json beside the MP4 maps every frame to its recorded sample.",
+  "media": [
+    {
+      "path": "docs/results/g11-store/restart/zoo_jaw_arm-restart-after-02-acquire/after/media/episode.mp4",
+      "bytes": 82224,
+      "sha256": "294691e312b009d83dce4217ac06f6327810b78da9f997aaacb174a3fa593242",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g11-store/restart/zoo_jaw_arm-restart-after-02-acquire/after/media/preview.gif",
+      "bytes": 879812,
+      "sha256": "523f223fe618ad08b244cf8323cefc710981869b6a2164f2f183a72e156ecc39",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G11",
+    "restart",
+    "after",
+    "zoo_jaw_arm",
+    "boundary-2",
+    "success"
+  ]
+}

@@ -1,0 +1,152 @@
+{
+  "goal": "G11",
+  "generated_at_utc": "2026-09-13T19:01:37.070652+00:00",
+  "commit": "d29eb0ce7d93ea2346088632c05c1b402c767e63",
+  "registration_sha256": "8c9701398879b6240471db17d179b09be84fcb5b695417820d96ea6a04dabb4b",
+  "generation_calls": 0,
+  "store": {
+    "path": "any-robot/assets/general/skill-store-v1",
+    "version": 41,
+    "certificates": 12,
+    "by_status": {
+      "promoted": 3,
+      "candidate": 2,
+      "invalidated": 4,
+      "superseded": 3
+    },
+    "history_events": 41
+  },
+  "promotion": {
+    "zoo_dual_arm": {
+      "transfer_object": "10/12",
+      "status": "candidate",
+      "acquire_until_held": "candidate",
+      "observe_object": "promoted",
+      "false_completions": 0,
+      "unknown": 2,
+      "failures": 0,
+      "physics_s": 186.2,
+      "wall_s": 74.9
+    },
+    "zoo_jaw_arm": {
+      "transfer_object": "12/12",
+      "status": "promoted",
+      "acquire_until_held": "promoted",
+      "observe_object": "promoted",
+      "false_completions": 0,
+      "unknown": 0,
+      "failures": 0,
+      "physics_s": 187.21,
+      "wall_s": 51.3
+    },
+    "zoo_long_arm": {
+      "transfer_object": "12/12",
+      "status": "promoted",
+      "acquire_until_held": "promoted",
+      "observe_object": "promoted",
+      "false_completions": 0,
+      "unknown": 0,
+      "failures": 0,
+      "physics_s": 196.71,
+      "wall_s": 52.4
+    }
+  },
+  "reuse": {
+    "queries": 27,
+    "executed": 21,
+    "refused": 6,
+    "cache_hits": 21,
+    "validation_episodes_not_rerun": 252,
+    "successes": 21,
+    "false_completions": 0,
+    "per_body": {
+      "zoo_dual_arm": {
+        "executed": 3,
+        "successes": 3,
+        "refused": [
+          "mirrored/acquire_until_held",
+          "mirrored/transfer_object",
+          "near_heavy/acquire_until_held",
+          "near_heavy/transfer_object",
+          "platform_far/acquire_until_held",
+          "platform_far/transfer_object"
+        ]
+      },
+      "zoo_jaw_arm": {
+        "executed": 9,
+        "successes": 9,
+        "refused": []
+      },
+      "zoo_long_arm": {
+        "executed": 9,
+        "successes": 9,
+        "refused": []
+      }
+    },
+    "per_skill": {
+      "transfer_object": "6/6",
+      "acquire_until_held": "6/6",
+      "observe_object": "9/9"
+    }
+  },
+  "invalidation": {
+    "controller": {
+      "affected": 7,
+      "revalidation": "6/6",
+      "status": "promoted"
+    },
+    "evidence_schema": {
+      "affected": 7,
+      "revalidation": "6/6",
+      "status": "promoted"
+    },
+    "friction": {
+      "affected": 7,
+      "revalidation": "0/6",
+      "status": "candidate"
+    },
+    "geometry": {
+      "affected": 7,
+      "revalidation": "6/6",
+      "status": "promoted"
+    },
+    "sensors": {
+      "affected": 7,
+      "revalidation": "6/6",
+      "status": "promoted"
+    }
+  },
+  "restart": {
+    "restarts": 18,
+    "completed": 18,
+    "explicit_stops": 0,
+    "per_body": {
+      "zoo_dual_arm": {
+        "completed": 6,
+        "restarts": 6
+      },
+      "zoo_jaw_arm": {
+        "completed": 6,
+        "restarts": 6
+      },
+      "zoo_long_arm": {
+        "completed": 6,
+        "restarts": 6
+      }
+    },
+    "stops": [],
+    "held_reconstructed": 9,
+    "placed_reconstructed": 6
+  },
+  "d11": {
+    "panels": [
+      "validate",
+      "reuse",
+      "refused",
+      "revalidate",
+      "repaired"
+    ],
+    "repaired": "retrieved cb0e66bfec19 v2; success",
+    "tile": "d11-five-way.mp4"
+  }
+}

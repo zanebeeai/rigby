@@ -1,0 +1,45 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-look-at-the-cube-and-tell-me-whether-you-can-rea-50717dae",
+  "title": "G11 reuse: observe_object on zoo_jaw_arm in near_heavy (success)",
+  "prompt": "look at the cube and tell me whether you can reach it",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T19:02:14Z",
+  "source": {
+    "commit": "d29eb0ce7d",
+    "branch": "feat/g11-skill-library",
+    "dirty": true,
+    "how": "python any-robot/scripts/g11_skill_store_campaign.py <phase> --out docs/results/g11-store --local any-robot/results/g11-store"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: observe_object reused from the persisted store in the near_heavy layout under certificate d4bf21675f88 v1; verdict success at 1.1 s of physics."
+  },
+  "notes": "See docs/results/g11-report.md. One tree run on physics from the skill store: a certificate promoted only after an independent validation set passed, reused only where its six-facet context matches exactly, invalidated when a dimension changes and revalidated by a new outcome; restarts open a fresh session on the checkpoint's physical state and reconstruct their belief from the sensors alone. Rendered from recorded states at real-time playback with the simulation clock and the tree's verdict in the banner; frames.json beside the MP4 maps every frame to its recorded sample.",
+  "media": [
+    {
+      "path": "docs/results/g11-store/reuse/zoo_jaw_arm-near_heavy-observe_object/media/episode.mp4",
+      "bytes": 23547,
+      "sha256": "74596ba556e6cc2a4472ef1446804aca90afb79bf8fadb92e55379616dd3f3f7",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g11-store/reuse/zoo_jaw_arm-near_heavy-observe_object/media/preview.gif",
+      "bytes": 89204,
+      "sha256": "053bdea11df49b7c4787f74592a9a51e47f5065fcba0dbdba4a5e0cbc008deb3",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G11",
+    "reuse",
+    "near_heavy",
+    "observe_object",
+    "zoo_jaw_arm",
+    "success"
+  ]
+}

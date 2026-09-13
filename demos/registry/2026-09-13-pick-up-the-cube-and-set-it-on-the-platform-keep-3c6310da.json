@@ -1,0 +1,37 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-keep-3c6310da",
+  "title": "D11: 5 reuse again, repaired",
+  "prompt": "pick up the cube and set it on the platform; keep going until you can verify it is placed",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T19:02:38Z",
+  "source": {
+    "commit": "d29eb0ce7d",
+    "branch": "feat/g11-skill-library",
+    "dirty": true,
+    "how": "python any-robot/scripts/g11_d11_media.py --campaign docs/results/g11-store --local any-robot/results/g11-store --out docs/results/g11-d11"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "retrieved cb0e66bfec19 v2; success"
+  },
+  "notes": "See docs/results/g11-report.md. One tree run on physics from the skill store: a certificate promoted only after an independent validation set passed, reused only where its six-facet context matches exactly, invalidated when a dimension changes and revalidated by a new outcome; restarts open a fresh session on the checkpoint's physical state and reconstruct their belief from the sensors alone. Rendered from recorded states at real-time playback with the simulation clock and the tree's verdict in the banner; frames.json beside the MP4 maps every frame to its recorded sample.",
+  "media": [
+    {
+      "path": "docs/results/g11-d11/repaired/media/episode.mp4",
+      "bytes": 158739,
+      "sha256": "1a8150b006e6300a6237afae993f27548713ae6d8f28ba76a5e714a261de49f7",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G11",
+    "D11",
+    "repaired",
+    "zoo_jaw_arm"
+  ]
+}

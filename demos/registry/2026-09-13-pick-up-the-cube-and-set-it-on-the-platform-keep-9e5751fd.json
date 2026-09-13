@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-keep-9e5751fd",
+  "title": "G11 revalidation (controller): zoo_jaw_arm-g11-revalidation-controller-2001 (success)",
+  "prompt": "pick up the cube and set it on the platform; keep going until you can verify it is placed",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T19:02:20Z",
+  "source": {
+    "commit": "d29eb0ce7d",
+    "branch": "feat/g11-skill-library",
+    "dirty": true,
+    "how": "python any-robot/scripts/g11_skill_store_campaign.py <phase> --out docs/results/g11-store --local any-robot/results/g11-store"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: revalidation episode under the controller change (the arm's computed-torque tracking runs at half its natural frequency (7 Hz instead of 14 Hz), damping ratio unchanged); the set's decision: promoted; verdict success at 15.7 s of physics."
+  },
+  "notes": "See docs/results/g11-report.md. One tree run on physics from the skill store: a certificate promoted only after an independent validation set passed, reused only where its six-facet context matches exactly, invalidated when a dimension changes and revalidated by a new outcome; restarts open a fresh session on the checkpoint's physical state and reconstruct their belief from the sensors alone. Rendered from recorded states at real-time playback with the simulation clock and the tree's verdict in the banner; frames.json beside the MP4 maps every frame to its recorded sample.",
+  "media": [
+    {
+      "path": "docs/results/g11-store/invalidation/controller/zoo_jaw_arm-g11-revalidation-controller-2001/media/episode.mp4",
+      "bytes": 154643,
+      "sha256": "b3f23d5fbcbe230739504f730e3c4c1e5e89117562f7c011676f4cd9343c6a1f",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g11-store/invalidation/controller/zoo_jaw_arm-g11-revalidation-controller-2001/media/preview.gif",
+      "bytes": 1002727,
+      "sha256": "c24aa694d4eaf74078b519763822f34c00ac9b39f63e3e7702b13425dda62f10",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G11",
+    "revalidation",
+    "controller",
+    "zoo_jaw_arm",
+    "success"
+  ]
+}

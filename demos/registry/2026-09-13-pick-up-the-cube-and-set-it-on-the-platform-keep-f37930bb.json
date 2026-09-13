@@ -1,0 +1,37 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-keep-f37930bb",
+  "title": "D11: 2 reuse in the mirrored layout",
+  "prompt": "pick up the cube and set it on the platform; keep going until you can verify it is placed",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T19:02:37Z",
+  "source": {
+    "commit": "d29eb0ce7d",
+    "branch": "feat/g11-skill-library",
+    "dirty": true,
+    "how": "python any-robot/scripts/g11_d11_media.py --campaign docs/results/g11-store --local any-robot/results/g11-store --out docs/results/g11-d11"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "retrieved da718da89b50 v1 (12 validation episodes not re-run); success"
+  },
+  "notes": "See docs/results/g11-report.md. One tree run on physics from the skill store: a certificate promoted only after an independent validation set passed, reused only where its six-facet context matches exactly, invalidated when a dimension changes and revalidated by a new outcome; restarts open a fresh session on the checkpoint's physical state and reconstruct their belief from the sensors alone. Rendered from recorded states at real-time playback with the simulation clock and the tree's verdict in the banner; frames.json beside the MP4 maps every frame to its recorded sample.",
+  "media": [
+    {
+      "path": "docs/results/g11-d11/reuse/episode.mp4",
+      "bytes": 151588,
+      "sha256": "d0f6985e06936ff3aa55bda7ce28ae34d634521096c977b1eb3638b16696091f",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G11",
+    "D11",
+    "reuse",
+    "zoo_jaw_arm"
+  ]
+}
