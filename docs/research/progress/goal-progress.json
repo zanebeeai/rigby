@@ -4,7 +4,7 @@
   "goal_catalog": "docs/research/rigby-verifiable-goals.json",
   "goal_catalog_sha256": "3672ebf5fa10ff4216fa0213499d5988281f2ebbc611500e8526afe6e618b250",
   "started_at_utc": "2026-09-12T02:34:49.841258+00:00",
-  "current_goal": "G05",
+  "current_goal": "G06",
   "overall_status": "active",
   "authorization": {
     "commits_and_pull_requests": true,
@@ -392,7 +392,7 @@
     {
       "id": "G05",
       "title": "Close the six-body free-space composition gap",
-      "status": "in_progress",
+      "status": "complete",
       "discovered_prerequisites": [
         {
           "finding": "Reference clock 240 Hz differs from zoo MuJoCo timestep 0.002 s (500 Hz); existing timing/velocity claims require re-evaluation.",
@@ -403,40 +403,72 @@
           "finding": "Dual-arm legal IK keys overshoot left_joint_4 in the interior of the return and recovery quintics, not at a discontinuous phase seam. Uniform duration scaling cannot repair the position overshoot.",
           "evidence": "docs/results/g05-transition-diagnostic/offending-keyframes.json (PR 31)",
           "required_action": "Use bounded, continuous joint interpolation; preserve keys, limits and authored timing, verify continuous extrema and physical execution."
+        },
+        {
+          "finding": "With bounded references and native physics time, the dual-arm composition now executes but fails gripper joint-position and actuator-effort gates. Five bodies pass; all twelve fresh exact-region leaves pass at duration scale1.",
+          "evidence": "docs/results/g05-curves-diagnostic/zoo_dual_arm/summary.json (PR32)",
+          "required_action": "Diagnose the dual physical onset and constraint/controller behavior without changing limits or relabeling failure. Then complete structural/replay integration, predeclared variants, duration assessment and D05."
+        },
+        {
+          "finding": "The self-collision gate was inert on every zoo body: ingest excluded all non-adjacent link pairs from it, and the grounder's IK had joint limits as its only constraint. The dual-arm return folded the wrist 28 mm into its own forearm; it surfaced as motor saturation and a finger past its slide limit, never as a collision.",
+          "evidence": "docs/results/g05-report.md; any-robot/tests/test_general_self_collision.py (feat/g05-six-body-composition)",
+          "required_action": "Done: exclusions limited to proven-inseparable pairs; contact-margin guarded IK with typed refusals; least-deflection repair of a span the body itself blocks, recorded in program metadata."
         }
       ],
       "criteria": [
         {
           "id": "G05.A01",
           "requirement": "The exact reviewed reach/return prompt succeeds on all six bodies using freshly generated exact-region primitives, zero substitutions and unchanged limits; left_joint_4 no longer exceeds its range.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "docs/results/g05-campaign/summary.json",
+            "docs/results/g05-campaign/<body>/canonical/physical",
+            "docs/results/g05-validation.json",
+            "docs/results/g05-report.md"
+          ]
         },
         {
           "id": "G05.A02",
           "requirement": "For each body, evaluate at least 20 predeclared start/pace variants with at least 19 successful feasible trials; invalid requests produce correct typed refusals and are counted separately.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "any-robot/assets/general/research-protocols/g05-composition-v1/roster.json",
+            "docs/results/g05-campaign/<body>/trials.json",
+            "docs/results/g05-campaign-pilot-1/summary.json",
+            "docs/results/g05-campaign-pilot-2/summary.json",
+            "docs/results/g05-validation.json"
+          ]
         },
         {
           "id": "G05.A03",
           "requirement": "Retain all current physical gates, report tracking and wall/execution time, and keep canonical durations no slower than the recorded baseline unless a documented physical requirement is independently justified.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "docs/results/g05-validation.json (canonical_durations_s versus docs/results/g05-curves-report.md)",
+            "docs/results/g05-report.md"
+          ]
         }
       ],
       "demo_requirement": "D05: six synchronized bodies performing reach/return, plus the old and repaired dual-arm transition.",
-      "demo_status": "pending",
-      "assessment_complete": false,
-      "capability_supported": false,
+      "demo_status": "verified",
+      "assessment_complete": true,
+      "capability_supported": true,
       "commits": [
+        "291b832",
+        "2a4a0cc4ee7ec18e3dca2be35f2d0a6adbcbdd6b",
+        "46c9edf",
+        "5a6c0b3bb17eb721da6ba6c144743c24ba872301",
         "8d4d1c7cbeb0986e471dd1d743711d1b8e0d3119",
-        "2a4a0cc4ee7ec18e3dca2be35f2d0a6adbcbdd6b"
+        "b391e9c",
+        "c131ab9",
+        "c2e4538"
       ],
       "pull_requests": [
-        "https://github.com/zanebeeai/rigby/pull/31"
+        "https://github.com/zanebeeai/rigby/pull/31",
+        "https://github.com/zanebeeai/rigby/pull/32",
+        "https://github.com/zanebeeai/rigby/pull/33"
       ],
-      "evidence_worktree": "C:/Users/hocke/GitHub/rigby-g05",
+      "evidence_worktree": "C:/Users/hocke/GitHub/rigby-g05-composition",
       "prerequisite_milestones": [
         {
           "title": "Certify trajectories on native physics time",
@@ -456,6 +488,36 @@
             "generation_calls": 0
           },
           "scope": "Repairs control/observation time and stale post-step geometry without changing limits or authored durations. G05 criteria remain pending."
+        },
+        {
+          "title": "Bound generated joint curves between legal authored keys",
+          "status": "locally_verified",
+          "evidence_worktree": "C:/Users/hocke/GitHub/rigby-g05-curves",
+          "evidence": [
+            "docs/results/g05-curves-report.md",
+            "docs/results/g05-curves-validation.json",
+            "docs/results/verify_g05_curves.py",
+            "docs/results/g05-curves-review/REPORT.md"
+          ],
+          "source_commit": "5a6c0b3bb17eb721da6ba6c144743c24ba872301",
+          "pull_request": "https://github.com/zanebeeai/rigby/pull/32",
+          "local_validation": {
+            "core_passed": 87,
+            "known_windows_subprocess_test_deferred_to_PR27": 1,
+            "anyrobot_passed": 300,
+            "humanoid_selected_passed": 18,
+            "independent_curves": 1800,
+            "independent_intervals": 14543,
+            "six_body_scalar_intervals": 1023,
+            "payloads_verified": 59,
+            "fresh_exact_region_leaves": 12,
+            "canonical_successes": 5,
+            "canonical_runtime_failures": 1,
+            "native_physics_traces_verified": 6,
+            "generation_calls": 0
+          },
+          "payload_manifest_sha256": "e59c582bc58f1fe5b4daaf4b1f39bcf8af13fe16adbbf8c7484173a60ca20500",
+          "scope": "Per-scalar bounded polynomial references with unchanged keys, phases and authored timing. Uses pinned native-clock module from PR31 in a legacy-profile diagnostic. G05 criteria remain pending."
         }
       ],
       "integration_status": "open_pr_ci_infrastructure_blocked",
@@ -464,8 +526,41 @@
         "head_commit": "2a4a0cc4ee7ec18e3dca2be35f2d0a6adbcbdd6b",
         "annotation": "The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the 'Billing & plans' section in your settings",
         "action_owner": "Repository/account owner",
-        "action": "Restore GitHub Actions billing/allowance, then rerun CI. No workflow bypass or merge performed."
-      }
+        "action": "Restore GitHub Actions billing/allowance, then rerun CI on PRs 27-33 in order. No workflow bypass or merge performed."
+      },
+      "demo_evidence": [
+        "docs/results/g05-d05/index.json",
+        "docs/results/g05-d05/six-body-synchronized.mp4",
+        "docs/results/g05-d05/dual-arm-before-after.mp4",
+        "demos/registry (D05 entries)"
+      ],
+      "completed_at_utc": "2026-09-13T04:36:01.789457+00:00",
+      "supported_scope": "Free-space reach/return composition on the six public zoo bodies through the structural capability intake: fresh exact-region leaves, zero region substitutions, unchanged limits, all physical gates including an active self-collision gate, 20 predeclared start/pace variants per body, typed refusals for invalid starts and unafforded requests. No object manipulation, locomotion, VLM or unseen-topology claim.",
+      "local_validation": {
+        "feasible_trials": 120,
+        "feasible_successes": 120,
+        "successes_with_path_repair": 10,
+        "invalid_requests": 18,
+        "invalid_correctly_refused": 18,
+        "pilot_1_feasible_successes_before_any_path_repair": 110,
+        "pilot_2_feasible_successes_with_collision_repair_only": 115,
+        "canonical_successes": 6,
+        "canonical_full_videos": 6,
+        "canonical_durations_s": {
+          "zoo_compact_arm": 30.509918,
+          "zoo_dual_arm": 53.716499,
+          "zoo_hand_arm": 49.245976,
+          "zoo_jaw_arm": 47.844854,
+          "zoo_long_arm": 67.454452,
+          "zoo_tool_arm": 52.43766
+        },
+        "anyrobot_passed": 396,
+        "anyrobot_skipped": 5,
+        "core_passed": 263,
+        "core_skipped": 2,
+        "generation_calls": 0
+      },
+      "work_basis": "Integration branch feat/g05-six-body-composition cut from origin/main with the six open milestone branches merged in (PRs 27-32); lands after them. Scored intake is the G03 structural capability profile; the dual-arm before/after uses the legacy names for the frozen fixture."
     },
     {
       "id": "G06",
@@ -1340,10 +1435,10 @@
   ],
   "milestones": [],
   "next_actions": [
-    "Repair the G05 bounded-interpolation failure, then integrate native physics time, structural capability intake and replay for the predeclared six-body/120-variant campaign and D05 demos. Preserve all frozen criteria, including explicit duration comparison.",
-    "Restore GitHub Actions billing/allowance and rerun PRs 27-31; merge only after required checks are green.",
-    "Before scored manipulation benchmarks, integrate G01/G02/G03, independent task/body feasibility and trial rosters, and a shared retry/time-budget ledger.",
-    "Preserve all 30 goals and their frozen criteria; G04 independent language validation and later judge/learning/mobility tracks remain in scope."
+    "Begin G06 (contact primitives across the five gripper-bearing bodies) on the fixed fixture from the independent feasibility map; the now-active self-collision gate and grasp-scene contact exclusions (only proven-inseparable pairs) apply.",
+    "Restore GitHub Actions billing/allowance and rerun PRs 27-33; merge only after required checks are green, bottom of the stack first.",
+    "G04 independent language validation remains pending on U3_independent_review.",
+    "Preserve all 30 goals and their frozen criteria."
   ],
-  "updated_at_utc": "2026-09-13T00:55:03.781622+00:00"
+  "updated_at_utc": "2026-09-13T04:36:01.789457+00:00"
 }
