@@ -1,0 +1,370 @@
+{
+  "program": {
+    "assertions": [],
+    "contacts": [],
+    "duration_s": 39.701185,
+    "metadata": {
+      "duration_scale": 1.0,
+      "grounded_against": {
+        "characteristic_length_m": 0.2,
+        "neutral_speed_mps": 0.168625,
+        "reach_radius_m": 1.326253
+      },
+      "inventory_sha256": "b445d7b0455ea1c8b2b3c02423fcb5eb3d1e67c1100c054a1f316bff414175cd",
+      "role_normalized_hash": "849e3a197333744a9d116047c72ed37e632c3684e7dd74538763fbb8f4e0449c",
+      "schema_keys": [
+        "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+      ],
+      "schema_program_id": "primitive-retract_from_point-medial"
+    },
+    "phases": [
+      {
+        "end_s": 22.536555,
+        "energy": 0.45,
+        "kind": "action",
+        "phase_id": "phase_0",
+        "start_s": 0.0
+      },
+      {
+        "end_s": 39.701185,
+        "energy": 0.3,
+        "kind": "recovery",
+        "phase_id": "phase_recovery",
+        "start_s": 22.536555
+      }
+    ],
+    "program_id": "grounded-ddfaef8965d02bb99a3a4abc03dccf1a",
+    "rig_id": "zoo_dual_arm",
+    "scene_id": "empty",
+    "schema_version": "2.0",
+    "seed": 0,
+    "source_text": "withdraw from a point, medial",
+    "tracks": [
+      {
+        "interpolation": "quintic",
+        "keyframes": [
+          {
+            "hard": false,
+            "joint_values": {
+              "left_joint_0": 0.0,
+              "left_joint_1": 0.0,
+              "left_joint_2": 0.0,
+              "left_joint_3": 0.0,
+              "left_joint_4": 0.0
+            },
+            "position": null,
+            "rotation": null,
+            "time_s": 0.0
+          },
+          {
+            "hard": false,
+            "joint_values": {
+              "left_joint_0": -0.24459329810838204,
+              "left_joint_1": -0.6473851799371882,
+              "left_joint_2": 0.8458570554449212,
+              "left_joint_3": 0.8830570370841802,
+              "left_joint_4": 1.0965276092250942
+            },
+            "position": null,
+            "rotation": null,
+            "time_s": 4.707681
+          },
+          {
+            "hard": false,
+            "joint_values": {
+              "left_joint_0": -0.8883615320556904,
+              "left_joint_1": -1.0675359064639414,
+              "left_joint_2": 1.30368623331242,
+              "left_joint_3": 1.2898675994520565,
+              "left_joint_4": 1.60914161463821
+            },
+            "position": null,
+            "rotation": null,
+            "time_s": 7.63571
+          },
+          {
+            "hard": false,
+            "joint_values": {
+              "left_joint_0": -1.1852221787971928,
+              "left_joint_1": -1.545946550711989,
+              "left_joint_2": 1.5467096943861078,
+              "left_joint_3": 1.3177667492141387,
+              "left_joint_4": 1.9071536758746856
+            },
+            "position": null,
+            "rotation": null,
+            "time_s": 9.438142
+          },
+          {
+            "hard": false,
+            "joint_values": {
+              "left_joint_0": -1.3257433483000982,
+              "left_joint_1": -1.9510159446023867,
+              "left_joint_2": 1.5289711011196039,
+              "left_joint_3": 1.3612111775141882,
+              "left_joint_4": 2.0995460982742253
+            },
+            "position": null,
+            "rotation": null,
+            "time_s": 10.685593
+          },
+          {
+            "hard": false,
+            "joint_values": {
+              "left_joint_0": -1.3775506300896354,
+              "left_joint_1": -2.1977320036827943,
+              "left_joint_2": 1.2508054221344274,
+              "left_joint_3": 1.4811738425945122,
+              "left_joint_4": 2.0889961602997738
+            },
+            "position": null,
+            "rotation": null,
+            "time_s": 11.726943
+          },
+          {
+            "hard": false,
+            "joint_values": {
+              "left_joint_0": -1.3429482665686383,
+              "left_joint_1": -1.9234106878444097,
+              "left_joint_2": 1.5001392207249198,
+              "left_joint_3": 1.3391727103532753,
+              "left_joint_4": 2.1818420393109696
+            },
+            "position": null,
+            "rotation": null,
+            "time_s": 12.807649
+          },
+          {
+            "hard": false,
+            "joint_values": {
+              "left_joint_0": -1.2067883069242267,
+              "left_joint_1": -1.4999034234139708,
+              "left_joint_2": 1.5057401561394115,
+              "left_joint_3": 1.3057480010424833,
+              "left_joint_4": 2.015922688889525
+            },
+            "position": null,
+            "rotation": null,
+            "time_s": 14.064936
+          },
+          {
+            "hard": false,
+            "joint_values": {
+              "left_joint_0": -0.8904217867138366,
+              "left_joint_1": -1.0356911074421027,
+              "left_joint_2": 1.2621041361873682,
+              "left_joint_3": 1.3106587223271398,
+              "left_joint_4": 1.685612679609624
+            },
+            "position": null,
+            "rotation": null,
+            "time_s": 15.902664
+          },
+          {
+            "hard": false,
+            "joint_values": {
+              "left_joint_0": -0.5072547159164332,
+              "left_joint_1": -0.7216872721289068,
+              "left_joint_2": 0.91310284164405,
+              "left_joint_3": 0.8816484688968943,
+              "left_joint_4": 0.9879077871066853
+            },
+            "position": null,
+            "rotation": null,
+            "time_s": 18.59382
+          },
+          {
+            "hard": false,
+            "joint_values": {
+              "left_joint_0": -0.509642598236054,
+              "left_joint_1": -0.0931028621429557,
+              "left_joint_2": 0.1532560388584016,
+              "left_joint_3": 0.38182916623202123,
+              "left_joint_4": -0.014995804649845686
+            },
+            "position": null,
+            "rotation": null,
+            "time_s": 22.536555
+          },
+          {
+            "hard": false,
+            "joint_values": {
+              "left_joint_0": -0.5072547159164332,
+              "left_joint_1": -0.7216872721289068,
+              "left_joint_2": 0.91310284164405,
+              "left_joint_3": 0.8816484688968943,
+              "left_joint_4": 0.9879077871066853
+            },
+            "position": null,
+            "rotation": null,
+            "time_s": 25.522624
+          },
+          {
+            "hard": false,
+            "joint_values": {
+              "left_joint_0": -0.8904217867138366,
+              "left_joint_1": -1.0356911074421027,
+              "left_joint_2": 1.2621041361873682,
+              "left_joint_3": 1.3106587223271398,
+              "left_joint_4": 1.685612679609624
+            },
+            "position": null,
+            "rotation": null,
+            "time_s": 27.599987
+          },
+          {
+            "hard": false,
+            "joint_values": {
+              "left_joint_0": -1.2067883069242267,
+              "left_joint_1": -1.4999034234139708,
+              "left_joint_2": 1.5057401561394115,
+              "left_joint_3": 1.3057480010424833,
+              "left_joint_4": 2.015922688889525
+            },
+            "position": null,
+            "rotation": null,
+            "time_s": 28.982144
+          },
+          {
+            "hard": false,
+            "joint_values": {
+              "left_joint_0": -1.3429482665686383,
+              "left_joint_1": -1.9234106878444097,
+              "left_joint_2": 1.5001392207249198,
+              "left_joint_3": 1.3391727103532753,
+              "left_joint_4": 2.1818420393109696
+            },
+            "position": null,
+            "rotation": null,
+            "time_s": 30.243104
+          },
+          {
+            "hard": false,
+            "joint_values": {
+              "left_joint_0": -1.3775506300896354,
+              "left_joint_1": -2.1977320036827943,
+              "left_joint_2": 1.2508054221344274,
+              "left_joint_3": 1.4811738425945122,
+              "left_joint_4": 2.0889961602997738
+            },
+            "position": null,
+            "rotation": null,
+            "time_s": 31.059875
+          },
+          {
+            "hard": false,
+            "joint_values": {
+              "left_joint_0": -1.3257433483000982,
+              "left_joint_1": -1.9510159446023867,
+              "left_joint_2": 1.5289711011196039,
+              "left_joint_3": 1.3612111775141882,
+              "left_joint_4": 2.0995460982742253
+            },
+            "position": null,
+            "rotation": null,
+            "time_s": 31.888092
+          },
+          {
+            "hard": false,
+            "joint_values": {
+              "left_joint_0": -1.1852221787971928,
+              "left_joint_1": -1.545946550711989,
+              "left_joint_2": 1.5467096943861078,
+              "left_joint_3": 1.3177667492141387,
+              "left_joint_4": 1.9071536758746856
+            },
+            "position": null,
+            "rotation": null,
+            "time_s": 33.094155
+          },
+          {
+            "hard": false,
+            "joint_values": {
+              "left_joint_0": -0.8883615320556904,
+              "left_joint_1": -1.0675359064639414,
+              "left_joint_2": 1.30368623331242,
+              "left_joint_3": 1.2898675994520565,
+              "left_joint_4": 1.60914161463821
+            },
+            "position": null,
+            "rotation": null,
+            "time_s": 34.518587
+          },
+          {
+            "hard": false,
+            "joint_values": {
+              "left_joint_0": -0.24459329810838204,
+              "left_joint_1": -0.6473851799371882,
+              "left_joint_2": 0.8458570554449212,
+              "left_joint_3": 0.8830570370841802,
+              "left_joint_4": 1.0965276092250942
+            },
+            "position": null,
+            "rotation": null,
+            "time_s": 36.435357
+          },
+          {
+            "hard": false,
+            "joint_values": {
+              "left_joint_0": 0.0,
+              "left_joint_1": 0.0,
+              "left_joint_2": 0.0,
+              "left_joint_3": 0.0,
+              "left_joint_4": 0.0
+            },
+            "position": null,
+            "rotation": null,
+            "time_s": 39.700185
+          },
+          {
+            "hard": false,
+            "joint_values": {
+              "left_joint_0": 0.0,
+              "left_joint_1": 0.0,
+              "left_joint_2": 0.0,
+              "left_joint_3": 0.0,
+              "left_joint_4": 0.0
+            },
+            "position": null,
+            "rotation": null,
+            "time_s": 39.701185
+          }
+        ],
+        "owner": "chain_left_palm",
+        "ownership": "exclusive",
+        "priority": 0,
+        "target": "left_palm_grasp_center",
+        "track_id": "chain_left_palm"
+      }
+    ]
+  },
+  "result": {
+    "compilation": {
+      "accepted": true,
+      "duration_s": 39.701185,
+      "sample_count": 9530
+    },
+    "duration_s": 39.701185,
+    "extrema_violations": [],
+    "figure_sites": [
+      "left_palm_grasp_center"
+    ],
+    "phases": [
+      {
+        "end_s": 22.536555,
+        "energy": 0.45,
+        "kind": "action",
+        "phase_id": "phase_0",
+        "start_s": 0.0
+      },
+      {
+        "end_s": 39.701185,
+        "energy": 0.3,
+        "kind": "recovery",
+        "phase_id": "phase_recovery",
+        "start_s": 22.536555
+      }
+    ],
+    "source_joints": {}
+  }
+}

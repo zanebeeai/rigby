@@ -1,0 +1,258 @@
+{
+  "program": {
+    "assertions": [],
+    "contacts": [],
+    "duration_s": 23.181927,
+    "metadata": {
+      "duration_scale": 1.0,
+      "grounded_against": {
+        "characteristic_length_m": 0.2,
+        "neutral_speed_mps": 0.168625,
+        "reach_radius_m": 1.326253
+      },
+      "inventory_sha256": "b445d7b0455ea1c8b2b3c02423fcb5eb3d1e67c1100c054a1f316bff414175cd",
+      "role_normalized_hash": "42bdc39f205059c4d463949f1587ca264c0f07da176efe23ca1aa814296fde75",
+      "schema_keys": [
+        "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute"
+      ],
+      "schema_program_id": "primitive-reach_to_edge-distal"
+    },
+    "phases": [
+      {
+        "end_s": 12.739785,
+        "energy": 0.45,
+        "kind": "action",
+        "phase_id": "phase_0",
+        "start_s": 0.0
+      },
+      {
+        "end_s": 23.181927,
+        "energy": 0.3,
+        "kind": "recovery",
+        "phase_id": "phase_recovery",
+        "start_s": 12.739785
+      }
+    ],
+    "program_id": "grounded-69e31670226273acebe3b9559bf2768b",
+    "rig_id": "body_c928a9ae9ac9408b",
+    "scene_id": "empty",
+    "schema_version": "2.0",
+    "seed": 0,
+    "source_text": "extend to the edge of what the robot can reach, distal",
+    "tracks": [
+      {
+        "interpolation": "quintic",
+        "keyframes": [
+          {
+            "hard": false,
+            "joint_values": {
+              "axis_0001": 0.0,
+              "axis_0002": 0.0,
+              "axis_0003": 0.0,
+              "axis_0004": 0.0,
+              "axis_0005": 0.0
+            },
+            "position": null,
+            "rotation": null,
+            "time_s": 0.0
+          },
+          {
+            "hard": false,
+            "joint_values": {
+              "axis_0001": -0.34170207385082524,
+              "axis_0002": -0.34850916648057867,
+              "axis_0003": 0.4500680715935041,
+              "axis_0004": 1.3815153705553527,
+              "axis_0005": 1.4379338703699445
+            },
+            "position": null,
+            "rotation": null,
+            "time_s": 5.664129
+          },
+          {
+            "hard": false,
+            "joint_values": {
+              "axis_0001": -1.1585904559478757,
+              "axis_0002": -0.8198598962859798,
+              "axis_0003": 0.654778701965192,
+              "axis_0004": 1.4336319953513468,
+              "axis_0005": 1.9089543301509784
+            },
+            "position": null,
+            "rotation": null,
+            "time_s": 8.561741
+          },
+          {
+            "hard": false,
+            "joint_values": {
+              "axis_0001": -1.3440657379390502,
+              "axis_0002": -1.163924693967794,
+              "axis_0003": 0.6433995578701451,
+              "axis_0004": 1.4624389482740279,
+              "axis_0005": 2.0911731420890076
+            },
+            "position": null,
+            "rotation": null,
+            "time_s": 9.727007
+          },
+          {
+            "hard": false,
+            "joint_values": {
+              "axis_0001": -1.3880032372087632,
+              "axis_0002": -1.3787786910203181,
+              "axis_0003": 0.4119309691726256,
+              "axis_0004": 1.5579588231324448,
+              "axis_0005": 1.9077529742295587
+            },
+            "position": null,
+            "rotation": null,
+            "time_s": 10.751262
+          },
+          {
+            "hard": false,
+            "joint_values": {
+              "axis_0001": -1.440516185856747,
+              "axis_0002": -1.499361770704968,
+              "axis_0003": 0.15677319507685908,
+              "axis_0004": 1.673491063421467,
+              "axis_0005": 1.237934681694983
+            },
+            "position": null,
+            "rotation": null,
+            "time_s": 12.739785
+          },
+          {
+            "hard": false,
+            "joint_values": {
+              "axis_0001": -1.3880032372087632,
+              "axis_0002": -1.3787786910203181,
+              "axis_0003": 0.4119309691726256,
+              "axis_0004": 1.5579588231324448,
+              "axis_0005": 1.9077529742295587
+            },
+            "position": null,
+            "rotation": null,
+            "time_s": 14.737877
+          },
+          {
+            "hard": false,
+            "joint_values": {
+              "axis_0001": -1.3440657379390502,
+              "axis_0002": -1.163924693967794,
+              "axis_0003": 0.6433995578701451,
+              "axis_0004": 1.4624389482740279,
+              "axis_0005": 2.0911731420890076
+            },
+            "position": null,
+            "rotation": null,
+            "time_s": 15.428356
+          },
+          {
+            "hard": false,
+            "joint_values": {
+              "axis_0001": -1.1585904559478757,
+              "axis_0002": -0.8198598962859798,
+              "axis_0003": 0.654778701965192,
+              "axis_0004": 1.4336319953513468,
+              "axis_0005": 1.9089543301509784
+            },
+            "position": null,
+            "rotation": null,
+            "time_s": 16.454713
+          },
+          {
+            "hard": false,
+            "joint_values": {
+              "axis_0001": -0.34170207385082524,
+              "axis_0002": -0.34850916648057867,
+              "axis_0003": 0.4500680715935041,
+              "axis_0004": 1.3815153705553527,
+              "axis_0005": 1.4379338703699445
+            },
+            "position": null,
+            "rotation": null,
+            "time_s": 18.89152
+          },
+          {
+            "hard": false,
+            "joint_values": {
+              "axis_0001": 0.0,
+              "axis_0002": 0.0,
+              "axis_0003": 0.0,
+              "axis_0004": 0.0,
+              "axis_0005": 0.0
+            },
+            "position": null,
+            "rotation": null,
+            "time_s": 23.180927
+          },
+          {
+            "hard": false,
+            "joint_values": {
+              "axis_0001": 0.0,
+              "axis_0002": 0.0,
+              "axis_0003": 0.0,
+              "axis_0004": 0.0,
+              "axis_0005": 0.0
+            },
+            "position": null,
+            "rotation": null,
+            "time_s": 23.181927
+          }
+        ],
+        "owner": "chain_body_0007",
+        "ownership": "exclusive",
+        "priority": 0,
+        "target": "body_0007_grasp_center",
+        "track_id": "chain_body_0007"
+      }
+    ]
+  },
+  "result": {
+    "compilation": {
+      "accepted": true,
+      "duration_s": 23.181927,
+      "sample_count": 5565
+    },
+    "duration_s": 23.181927,
+    "extrema_violations": [],
+    "figure_sites": [
+      "body_0007_grasp_center"
+    ],
+    "phases": [
+      {
+        "end_s": 12.739785,
+        "energy": 0.45,
+        "kind": "action",
+        "phase_id": "phase_0",
+        "start_s": 0.0
+      },
+      {
+        "end_s": 23.181927,
+        "energy": 0.3,
+        "kind": "recovery",
+        "phase_id": "phase_recovery",
+        "start_s": 12.739785
+      }
+    ],
+    "source_joints": {
+      "axis_0000": "torso_fixed",
+      "axis_0001": "left_joint_0",
+      "axis_0002": "left_joint_1",
+      "axis_0003": "left_joint_2",
+      "axis_0004": "left_joint_3",
+      "axis_0005": "left_joint_4",
+      "axis_0006": "left_palm_fixed",
+      "axis_0007": "left_grip_left",
+      "axis_0008": "left_grip_right",
+      "axis_0009": "right_joint_0",
+      "axis_0010": "right_joint_1",
+      "axis_0011": "right_joint_2",
+      "axis_0012": "right_joint_3",
+      "axis_0013": "right_joint_4",
+      "axis_0014": "right_palm_fixed",
+      "axis_0015": "right_grip_left",
+      "axis_0016": "right_grip_right"
+    }
+  }
+}
