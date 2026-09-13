@@ -1,0 +1,166 @@
+{
+  "created_at_utc": "2026-09-13T09:35:40.020870+00:00",
+  "evidence_commit": "5c477d991780d9c78b2db63e1c636abea8d008cd",
+  "example_depth": 5,
+  "generation_calls": 0,
+  "goal": "G07",
+  "library_sha256": "3accc16dbf04b9c496cc3bc83e588a6b930014fa99e5d38d181090dcc4d73569",
+  "node_kinds_executed": [
+    "observe",
+    "primitive",
+    "repeat_until",
+    "selector",
+    "sequence",
+    "parallel (tests only: disjoint ownership by construction, run one after another)"
+  ],
+  "physical": {
+    "compact-refused": "failure",
+    "dual-selector": "success",
+    "hand-budget": "failure",
+    "jaw-interrupt": "interrupted"
+  },
+  "physical_detail": {
+    "compact-refused": {
+      "frames": 24,
+      "leaves": [
+        {
+          "certified": false,
+          "duration_s": 0.0,
+          "effector": "palm",
+          "executed": false,
+          "gate": "unreachable_path",
+          "interrupted": false,
+          "node": "0.1.0.0.0"
+        },
+        {
+          "certified": false,
+          "duration_s": 0.0,
+          "effector": "palm",
+          "executed": false,
+          "gate": "unreachable_path",
+          "interrupted": false,
+          "node": "0.1.0.0.1"
+        }
+      ],
+      "root_reason": "child_failed:0.1",
+      "simulation_duration_s": 0.0,
+      "zoo_id": "zoo_compact_arm"
+    },
+    "dual-selector": {
+      "frames": 165,
+      "leaves": [
+        {
+          "certified": false,
+          "duration_s": 0.0,
+          "effector": "right_palm",
+          "executed": false,
+          "gate": "self_collision_path",
+          "interrupted": false,
+          "node": "0.1.0.0.0"
+        },
+        {
+          "certified": true,
+          "duration_s": 13.890000000001308,
+          "effector": "left_palm",
+          "executed": true,
+          "gate": null,
+          "interrupted": false,
+          "node": "0.1.0.0.1"
+        }
+      ],
+      "root_reason": "",
+      "simulation_duration_s": 13.640000000001308,
+      "zoo_id": "zoo_dual_arm"
+    },
+    "hand-budget": {
+      "frames": 673,
+      "leaves": [
+        {
+          "certified": false,
+          "duration_s": 16.838000000001546,
+          "effector": "palm",
+          "executed": true,
+          "gate": "hold_not_sustained",
+          "interrupted": false,
+          "node": "0.1.0.0.0"
+        },
+        {
+          "certified": false,
+          "duration_s": 29.959999999994274,
+          "effector": "palm",
+          "executed": true,
+          "gate": "grasp_not_achieved",
+          "interrupted": false,
+          "node": "0.1.0.0.1"
+        },
+        {
+          "certified": false,
+          "duration_s": 43.06600000000667,
+          "effector": "palm",
+          "executed": true,
+          "gate": "grasp_not_achieved",
+          "interrupted": false,
+          "node": "0.1.0.0.0"
+        },
+        {
+          "certified": false,
+          "duration_s": 56.16800000002268,
+          "effector": "palm",
+          "executed": true,
+          "gate": "grasp_not_achieved",
+          "interrupted": false,
+          "node": "0.1.0.0.1"
+        }
+      ],
+      "root_reason": "child_failed:0.1",
+      "simulation_duration_s": 55.91800000002268,
+      "zoo_id": "zoo_hand_arm"
+    },
+    "jaw-interrupt": {
+      "frames": 70,
+      "leaves": [
+        {
+          "certified": false,
+          "duration_s": 5.999999999999561,
+          "effector": "palm",
+          "executed": true,
+          "gate": "interrupted",
+          "interrupted": true,
+          "node": "0.1.0.0.0"
+        }
+      ],
+      "root_reason": "interrupted",
+      "simulation_duration_s": 5.749999999999561,
+      "zoo_id": "zoo_jaw_arm"
+    }
+  },
+  "round_trip": {
+    "library_equal": true,
+    "library_sha256_equal": true,
+    "tree_sha256_equal": true
+  },
+  "scripted": {
+    "failure-budget-exhausted": "failure",
+    "failure-no-progress": "failure",
+    "interrupted-mid-leaf": "interrupted",
+    "success-first-alternative": "success",
+    "success-second-alternative": "success",
+    "unknown-nothing-observed": "unknown"
+  },
+  "tests": {
+    "anyrobot_failed": 0,
+    "anyrobot_passed": 409,
+    "anyrobot_policyworker_failed": 0,
+    "anyrobot_policyworker_passed": 1,
+    "anyrobot_policyworker_skipped": 0,
+    "anyrobot_skipped": 5,
+    "core_failed": 0,
+    "core_passed": 322,
+    "core_skipped": 2,
+    "exotic_failed": 0,
+    "exotic_passed": 10,
+    "exotic_skipped": 0
+  },
+  "tests_note": "test_rgb_encoders_and_truth_stay_separate_in_actual_simulator starts a policy worker subprocess with a 10 s startup budget; on this Windows machine two earlier full-suite runs failed it on that wall-clock budget while other work shared the CPU (no code path of this branch); the cited run is the third, whole suite, and the test also passes alone; both records are kept.",
+  "tree_sha256": "83682d0cfaf460fcc1764fbe124268e89b70522bafc00bfafe3c8d8c1cd53708"
+}
