@@ -1,0 +1,27 @@
+{
+  "schema": "benchmark.feasibility-rules.v1",
+  "rule_id": "independent_geometry_and_mechanics_before_scoring",
+  "registration_sha256": "1dab70141652d41aae1e511937696f7c9bbf9cb891aecd19ed7565734f32fc49",
+  "scope": "Rules registered before scoring; G02 engineering probes leave every body unassessed.",
+  "classes": ["feasible", "infeasible", "unknown"],
+  "assessment_time": "Freeze and hash the per-trial feasibility map before running the controller being evaluated.",
+  "independence": "The assessor must not derive feasibility from the evaluated controller's success or failure.",
+  "feasible": "Supply an independently checked mechanical witness or independent physical rollout satisfying the same complete goal, world, body, start rules and budgets. Pin the witness, verifier, body and world hashes. Approximate reach radius alone is insufficient.",
+  "infeasible": "Supply a checkable violation of a necessary condition: missing required mechanical degree of freedom/contact mechanism, a proven reachable-set upper bound excluding every valid goal path, a collision/clearance impossibility bound, or a force/torque upper bound insufficient for the specified task. Pin assumptions and verifier outputs. Failed IK, failed grasp search, controller failure and timeout are insufficient evidence.",
+  "unknown": "Use when neither witness nor impossibility certificate is available, or when their assumptions do not match the trial. Do not silently reclassify unknown as infeasible.",
+  "scoring": {
+    "all_attempted_success_rate": "Successful registered trials divided by every attempted registered trial, including infeasible and unknown entries and typed refusals.",
+    "feasible_success_rate": "Successful preregistered feasible trials divided by all preregistered feasible trials; report undefined if the denominator is zero.",
+    "coverage": "Report every declared body and every feasibility class, denominators, refusals and missing trials. Exclusions remain visible.",
+    "modes": "Report strict_fixed_world and capability_normalized separately; never pool their rates.",
+    "no_retroactive_selection": "Do not choose seed subsets, normalize a strict trial, change semantics, change the feasibility map or increase budgets in response to controller outcomes. New protocols require new registrations and separate results."
+  },
+  "score_admission": [
+    "A separately committed trial roster and feasibility map with independent evidence exist.",
+    "G01 physical state/action replay and offline verification are integrated with this runner.",
+    "An aggregate ledger enforces maximum_attempts and shared simulation/wall budgets across retries.",
+    "The independent custodian supplies confirmatory split manifests without exposing their identities to development.",
+    "The protocol, rules, runtime versions and source commit are externally pinned before scored runs."
+  ],
+  "current_scoring_enabled": false
+}
