@@ -1166,15 +1166,22 @@ def _solve_segment(
     seed: np.ndarray,
     guard: "ik.CollisionGuard | None",
 ) -> tuple["ik.IkSolution", list[np.ndarray], dict | None]:
-    """Solve a segment's points straight; if the body itself stands across a
-    span, solve again along the least deflection that clears it.
+    """Solve a segment's points straight; if a span cannot be followed, solve
+    again along the least deflection that can.
 
-    A straight line from behind a body's head to a point in front of its base
-    runs through the base. The schema still means what it said -- from there to
-    here -- and the least path that goes round is the honest execution of it,
-    provided the deflection is recorded: every repair is returned with the span,
-    the via point and the pair that blocked the straight path, and lands in the
-    program's metadata. A span no deflection clears keeps its typed refusal.
+    Two things stop a straight span, and both are properties of the line, not
+    of the request. The body itself can stand across it: a straight line from
+    behind a body's head to a point in front of its base runs through the
+    base. Or the line can lead the solver into a fold it cannot straighten out
+    of: coming back to a fully extended rest pose from a bent configuration,
+    the damped solver stalls a few centimetres short, at a singularity, with
+    every joint well inside its range. The schema still means what it said --
+    from there to here -- and the least path that goes round is the honest
+    execution of it, provided the deflection is recorded: every repair is
+    returned with the span, the via point, what stopped the straight line and
+    the refusal text, and lands in the program's metadata. A span no
+    deflection clears keeps its typed refusal. A first point that cannot be
+    reached at all is not a span problem and is refused as it was.
     """
 
     frame = binding.frame
@@ -1185,7 +1192,7 @@ def _solve_segment(
         )
         return solution, dense, None
     except ik.IkFailure as error:
-        if error.collision is None or guard is None or len(points) < 2:
+        if error.index == 0 or len(points) < 2:
             raise
         blocked = error
     # Which span the failing waypoint belongs to: densify keeps the first point
@@ -1204,11 +1211,13 @@ def _solve_segment(
                 continue
             return solution, dense, {
                 "span": span,
+                "kind": "self_collision" if blocked.collision is not None else "unreachable_straight",
                 "direction": direction,
                 "deflection_fraction_of_reach": fraction,
                 "deflection_m": float(np.linalg.norm(via - (points[span] + points[span + 1]) / 2.0)),
                 "via_point_m": [float(v) for v in via],
-                "blocked_by": list(blocked.collision),
+                "blocked_by": list(blocked.collision) if blocked.collision is not None else None,
+                "straight_residual_m": float(blocked.residual_m),
                 "straight_refusal": str(blocked)[:240],
             }
     raise blocked

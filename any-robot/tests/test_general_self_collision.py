@@ -343,7 +343,12 @@ def test_a_span_the_body_blocks_is_routed_round_it_and_recorded(zoo, inventory) 
                 continue
             repair = grounded.path_repairs[0]
             assert repair["direction"] in {"outward", "up"} and repair["deflection_m"] > 0.0
-            assert len(repair["blocked_by"]) == 2 and "straight_refusal" in repair
+            assert repair["kind"] in {"self_collision", "unreachable_straight"}
+            if repair["kind"] == "self_collision":
+                assert len(repair["blocked_by"]) == 2
+            else:
+                assert repair["blocked_by"] is None and repair["straight_residual_m"] > ik.DEFAULT_TOLERANCE_M
+            assert "straight_refusal" in repair
             assert json.loads(json.dumps(grounded.program.metadata["path_repairs"])) == json.loads(
                 json.dumps(list(grounded.path_repairs))
             )
