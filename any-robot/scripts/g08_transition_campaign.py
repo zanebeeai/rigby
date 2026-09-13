@@ -4,7 +4,9 @@ Every case is two skills composed through the boundary check: the first
 runs, the boundary it leaves is measured and held against the second's
 initiation set, a path repair runs and the boundary is verified again
 within the budget, and the second runs only if the boundary is compatible.
-A feasible case succeeds when the first skill certifies on its own gates,
+Every rendered case's replayable bundle is sealed under --local with its
+digest in the row; its full-duration video, frame map and summary go under
+--out. A feasible case succeeds when the first skill certifies on its own gates,
 the boundary is compatible after any repair, the second skill certifies,
 and no joint gate fires on a transition or on the second skill. An
 injected case is handled correctly when it is rejected before the second
@@ -248,7 +250,11 @@ def main() -> int:
             row["trace_file_sha256"] = save_trace(args.local / group / f"{case['case_id']}.npz", recorder)
             keep = group == "injected" or not result.composed_success or rendered_successes.get(case["zoo_id"], 0) < args.render_successes
             if keep:
-                bundle_dir = (args.out if group == "injected" or not result.composed_success else args.local) / group / case["case_id"] / "physical"
+                # A composition's record runs to several megabytes; every
+                # sealed bundle lives in the local results tree with its digest
+                # in the row, and its full-duration video, frame map and summary
+                # go under --out beside the rows.
+                bundle_dir = args.local / group / case["case_id"] / "physical"
                 sealed = seal(bundle_dir, body=body, case=case, result=result, recorder=recorder, label=f"{case['case_id']}", corpus_sha256=registration["files"]["corpus.json"],
                               caption=f"{case['zoo_id']} | {case['first']['skill']} then {case['second']['skill']} | {case['kind']} | {row['handling']}")
                 media = render_bundle(bundle_dir, args.out / group / case["case_id"] / "media", expected_digest=sealed["sha256"])

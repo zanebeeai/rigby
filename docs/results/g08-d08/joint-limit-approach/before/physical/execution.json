@@ -1,0 +1,114 @@
+{
+  "active_skill_tree": "Sequence(joint_move, [boundary check, repairs], transfer)",
+  "composition": {
+    "boundary": {
+      "belief_age_s": 0.0,
+      "contact_mode": "free",
+      "held": {},
+      "joints": [
+        {
+          "maximum": 2.85,
+          "minimum": -2.85,
+          "name": "left_joint_0",
+          "position": -0.4919486512308589,
+          "velocity": -2.097532105836533e-05
+        },
+        {
+          "maximum": 2.85,
+          "minimum": -2.85,
+          "name": "left_joint_1",
+          "position": -0.03722626234257273,
+          "velocity": -1.5872241995301973e-06
+        },
+        {
+          "maximum": 2.85,
+          "minimum": -2.85,
+          "name": "left_joint_2",
+          "position": 0.0840263029339296,
+          "velocity": 3.582647656092958e-06
+        },
+        {
+          "maximum": 2.85,
+          "minimum": -2.85,
+          "name": "left_joint_3",
+          "position": 2.8499967008247364,
+          "velocity": 0.00012151592577709862
+        },
+        {
+          "maximum": 2.85,
+          "minimum": -2.85,
+          "name": "left_joint_4",
+          "position": 0.08962879240468956,
+          "velocity": 3.821522210588792e-06
+        }
+      ]
+    },
+    "composed_success": false,
+    "contact": {
+      "contacted_members": [],
+      "opposition": false,
+      "peak_force_n": 0.0,
+      "penetration_m": 0.0,
+      "supports": [
+        "env_fixture_bench"
+      ]
+    },
+    "cost": {
+      "joint_travel_rad": 0.0,
+      "peak_speed_fraction": 0.0,
+      "physics_s": 0.0,
+      "repairs": []
+    },
+    "final_boundary": null,
+    "final_contact": {},
+    "first": {
+      "certified": true,
+      "executed": true,
+      "gate": null,
+      "phases": [
+        "move"
+      ],
+      "physics_s": 3.391999999999848,
+      "skill": "joint_move"
+    },
+    "gate_violations": [],
+    "re_verified": false,
+    "rejected": false,
+    "rejection": null,
+    "repairs": [],
+    "second": {
+      "certified": false,
+      "executed": false,
+      "gate": "unreachable_path",
+      "measurements": {
+        "hold_s": 0.0,
+        "lift_height_m": 0.0,
+        "max_penetration_m": 0.0,
+        "path_seed": "",
+        "peak_force_n": 0.0,
+        "placement_dwell_s": 0.0,
+        "placement_success": false
+      },
+      "phases": [],
+      "physics_s": 0.0,
+      "skill": "transfer"
+    },
+    "validated": false,
+    "verdicts": [
+      {
+        "compatible": false,
+        "repair": "joint_move",
+        "violations": [
+          {
+            "code": "joint_inside_margin",
+            "detail": "within 2% of range of a limit",
+            "limit": 2.736,
+            "measured": 2.8499967008247364,
+            "repair": "joint_move",
+            "subject": "left_joint_3"
+          }
+        ]
+      }
+    ]
+  }
+}

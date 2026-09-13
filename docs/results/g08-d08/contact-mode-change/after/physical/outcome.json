@@ -1,0 +1,145 @@
+{
+  "actual_physics_duration_s": 9.868000000000048,
+  "boundary": {
+    "belief_age_s": 0.0,
+    "contact_mode": "holding",
+    "held": {
+      "cube": "effector:palm"
+    },
+    "joints": [
+      {
+        "maximum": 2.85,
+        "minimum": -2.85,
+        "name": "joint_0",
+        "position": -1.5505453884909588,
+        "velocity": -0.17927641658189605
+      },
+      {
+        "maximum": 2.85,
+        "minimum": -2.85,
+        "name": "joint_1",
+        "position": -0.8270737107728909,
+        "velocity": 0.017193406017773735
+      },
+      {
+        "maximum": 2.85,
+        "minimum": -2.85,
+        "name": "joint_2",
+        "position": -0.7292035441405862,
+        "velocity": -0.027960806881586746
+      },
+      {
+        "maximum": 2.85,
+        "minimum": -2.85,
+        "name": "joint_3",
+        "position": 0.0005756790516426229,
+        "velocity": 0.00017837531932640574
+      },
+      {
+        "maximum": 2.85,
+        "minimum": -2.85,
+        "name": "joint_4",
+        "position": -1.5851769157695563,
+        "velocity": 0.010705738274296394
+      },
+      {
+        "maximum": 2.85,
+        "minimum": -2.85,
+        "name": "joint_5",
+        "position": -1.309563178330107,
+        "velocity": -0.17886382850631244
+      }
+    ]
+  },
+  "case_id": "zoo_jaw_arm-contact-mode-change",
+  "composed_success": false,
+  "contact": {
+    "contacted_members": [
+      "finger_left",
+      "finger_right"
+    ],
+    "opposition": true,
+    "peak_force_n": 2.4216688643372937,
+    "penetration_m": 0.00012145628142927205,
+    "supports": []
+  },
+  "cost": {
+    "joint_travel_rad": 0.0,
+    "peak_speed_fraction": 0.0,
+    "physics_s": 0.0,
+    "repairs": []
+  },
+  "expect": "rejected",
+  "final_boundary": null,
+  "final_contact": {},
+  "first": {
+    "certified": true,
+    "executed": true,
+    "gate": null,
+    "phases": [
+      "approach",
+      "turn",
+      "descend",
+      "close",
+      "lift",
+      "hold",
+      "carry"
+    ],
+    "physics_s": 9.868000000000048,
+    "skill": "acquire_carry"
+  },
+  "gate_violations": [],
+  "handled_correctly": true,
+  "handling": "rejected:contact_mode_mismatch",
+  "kind": "holding_into_free",
+  "physical_steps": 4934,
+  "re_verified": false,
+  "refusal": null,
+  "rejected": true,
+  "rejection": "contact_mode_mismatch",
+  "repairs": [],
+  "scope": "two certified skills composed through the boundary check; repairs on physics; the second skill only after a compatible boundary",
+  "second": null,
+  "status": "rejected",
+  "validated": true,
+  "verdicts": [
+    {
+      "compatible": false,
+      "repair": "contact_change",
+      "violations": [
+        {
+          "code": "velocity_too_high",
+          "detail": "",
+          "limit": 0.11000000000000001,
+          "measured": 0.17927641658189605,
+          "repair": "settle",
+          "subject": "joint_0"
+        },
+        {
+          "code": "velocity_too_high",
+          "detail": "",
+          "limit": 0.11000000000000001,
+          "measured": 0.17886382850631244,
+          "repair": "settle",
+          "subject": "joint_5"
+        },
+        {
+          "code": "contact_mode_mismatch",
+          "detail": "ends holding, the next skill begins free",
+          "limit": 0.0,
+          "measured": 0.0,
+          "repair": "contact_change",
+          "subject": "effector:palm"
+        },
+        {
+          "code": "ownership_mismatch",
+          "detail": "cube is held by effector:palm; the next skill expects it not held",
+          "limit": 0.0,
+          "measured": 0.0,
+          "repair": "contact_change",
+          "subject": "cube"
+        }
+      ]
+    }
+  ]
+}

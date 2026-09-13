@@ -1,0 +1,128 @@
+{
+  "active_skill_tree": "Sequence(place, [boundary check, repairs], return_home)",
+  "composition": {
+    "boundary": {
+      "belief_age_s": 0.0,
+      "contact_mode": "free",
+      "held": {},
+      "joints": [
+        {
+          "maximum": 2.85,
+          "minimum": -2.85,
+          "name": "joint_0",
+          "position": -1.5554129250143027,
+          "velocity": 4.0683648728181494e-14
+        },
+        {
+          "maximum": 2.85,
+          "minimum": -2.85,
+          "name": "joint_1",
+          "position": -0.8266103064880894,
+          "velocity": -4.710408999091299e-15
+        },
+        {
+          "maximum": 2.85,
+          "minimum": -2.85,
+          "name": "joint_2",
+          "position": -0.729952793147546,
+          "velocity": -3.7611534786871975e-12
+        },
+        {
+          "maximum": 2.85,
+          "minimum": -2.85,
+          "name": "joint_3",
+          "position": 3.8365158669892865e-16,
+          "velocity": 5.149229920973236e-16
+        },
+        {
+          "maximum": 2.85,
+          "minimum": -2.85,
+          "name": "joint_4",
+          "position": -1.5850295539526624,
+          "velocity": 2.2033890222852513e-13
+        },
+        {
+          "maximum": 2.85,
+          "minimum": -2.85,
+          "name": "joint_5",
+          "position": -1.3146993943623433,
+          "velocity": 4.069089331766917e-14
+        }
+      ]
+    },
+    "composed_success": true,
+    "contact": {
+      "contacted_members": [],
+      "opposition": false,
+      "peak_force_n": 0.0,
+      "penetration_m": 0.0,
+      "supports": [
+        "env_fixture_platform"
+      ]
+    },
+    "cost": {
+      "joint_travel_rad": 0.0,
+      "peak_speed_fraction": 0.0,
+      "physics_s": 0.0,
+      "repairs": []
+    },
+    "final_boundary": {
+      "contact_mode": "free",
+      "held": {},
+      "resting_on": {
+        "cube": "env_fixture_platform"
+      },
+      "time_s": 16.876000000001525
+    },
+    "final_contact": {
+      "contacted_members": [],
+      "opposition": false,
+      "peak_force_n": 0.0,
+      "penetration_m": 0.0,
+      "supports": [
+        "env_fixture_platform"
+      ]
+    },
+    "first": {
+      "certified": true,
+      "executed": true,
+      "gate": null,
+      "phases": [
+        "lower",
+        "release",
+        "retreat",
+        "dwell"
+      ],
+      "physics_s": 4.600000000001536,
+      "skill": "place"
+    },
+    "gate_violations": [],
+    "re_verified": false,
+    "rejected": false,
+    "rejection": null,
+    "repairs": [],
+    "second": {
+      "certified": true,
+      "executed": true,
+      "gate": null,
+      "measurements": {
+        "joint_travel_rad": 6.011675058728259,
+        "own_gate_violations": [],
+        "peak_speed_fraction": 0.6561821626028327
+      },
+      "phases": [
+        "move"
+      ],
+      "physics_s": 2.0579999999999075,
+      "skill": "return_home"
+    },
+    "validated": true,
+    "verdicts": [
+      {
+        "compatible": true,
+        "repair": "none",
+        "violations": []
+      }
+    ]
+  }
+}

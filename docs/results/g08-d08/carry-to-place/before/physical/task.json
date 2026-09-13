@@ -1,0 +1,113 @@
+{
+  "attempts": 1,
+  "case": {
+    "case_id": "zoo_jaw_arm-carry-to-place",
+    "expect": "repaired_then_reverified",
+    "first": {
+      "skill": "acquire_carry_cut",
+      "stop_fraction": 0.5
+    },
+    "kind": "velocity_too_high",
+    "note": "the acquisition's carry is cut half way; the placement must not begin from a moving arm",
+    "second": {
+      "skill": "place"
+    },
+    "zoo_id": "zoo_jaw_arm"
+  },
+  "clock_disclosure": {
+    "phase_timing_on_native_physics_time": true,
+    "physics_timestep_s": 0.002
+  },
+  "corpus_sha256": "e53ee2ac1260f0d4d9691ce64d7eb525f7bab12a2acc0999adcb7b63466b6236",
+  "environment": {
+    "authored_for_aperture_m": null,
+    "authored_for_reach_m": null,
+    "description": "A 30 mm cube on a low bench to the left of and slightly behind the mount, and an empty platform of the same height beside it, both in absolute metres. Nothing about the world depends on which body enters it.",
+    "environment_id": "g06_transfer_v1",
+    "fixtures": [
+      {
+        "name": "bench",
+        "position_m": [
+          -0.15,
+          0.65,
+          0.245
+        ],
+        "rgba": [
+          0.35,
+          0.35,
+          0.4,
+          1.0
+        ],
+        "size_m": [
+          0.05,
+          0.05,
+          0.015
+        ]
+      },
+      {
+        "name": "platform",
+        "position_m": [
+          -0.01,
+          0.65,
+          0.245
+        ],
+        "rgba": [
+          0.3,
+          0.45,
+          0.75,
+          1.0
+        ],
+        "size_m": [
+          0.05,
+          0.05,
+          0.015
+        ]
+      }
+    ],
+    "objects": [
+      {
+        "friction": 1.4,
+        "mass_kg": 0.00864,
+        "name": "cube",
+        "position_m": [
+          -0.15,
+          0.65,
+          0.275
+        ],
+        "rgba": [
+          0.85,
+          0.45,
+          0.15,
+          1.0
+        ],
+        "size_m": [
+          0.015,
+          0.015,
+          0.015
+        ]
+      }
+    ],
+    "robot_mount_m": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "goal": "G08",
+  "interventions": [],
+  "label": "zoo_jaw_arm-carry-to-place-before",
+  "limits": "Manifest joint/actuator limits; initiation margins 2 percent of range and 5 percent of velocity limit; belief age 5 s; penetration 4 mm; no relaxed thresholds.",
+  "observation_contract": {
+    "inputs": [
+      "joint encoders",
+      "model parameters",
+      "contact forces on the gripper"
+    ],
+    "policy": "fully_observed_model_based_baseline",
+    "vlm": false
+  },
+  "protocol": "rigby.transition-composition/1",
+  "repair_budget": 2,
+  "retry_limit": 0,
+  "validated": false
+}
