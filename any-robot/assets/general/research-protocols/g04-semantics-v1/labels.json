@@ -1,0 +1,913 @@
+{
+  "schema": "g04.labels.v1",
+  "provenance": "internal",
+  "authored_by": "the G04 engineering pass inside this repository, 13 Sep 2026; the same pass that wrote the model planner",
+  "independent_review": {
+    "status": "pending",
+    "external_input": "U3_independent_review",
+    "claim_withheld": "the catalog's 'independently authored/reviewed' language gate"
+  },
+  "cases": {
+    "C001": {
+      "prompt": "reach out in front of you",
+      "label_provenance": "internal",
+      "family": "entry"
+    },
+    "C002": {
+      "prompt": "reach out a little",
+      "label_provenance": "internal",
+      "family": "extent"
+    },
+    "C003": {
+      "prompt": "reach far out",
+      "label_provenance": "internal",
+      "family": "extent"
+    },
+    "C004": {
+      "prompt": "reach right there",
+      "label_provenance": "internal",
+      "family": "extent"
+    },
+    "C005": {
+      "prompt": "reach out as far as you can",
+      "label_provenance": "internal",
+      "family": "entry"
+    },
+    "C006": {
+      "prompt": "swing over to it",
+      "label_provenance": "internal",
+      "family": "entry"
+    },
+    "C007": {
+      "prompt": "lower down onto the table",
+      "label_provenance": "internal",
+      "family": "entry"
+    },
+    "C008": {
+      "prompt": "come down onto the table over an arc",
+      "label_provenance": "internal",
+      "family": "entry"
+    },
+    "C009": {
+      "prompt": "reach into the box",
+      "label_provenance": "internal",
+      "family": "entry"
+    },
+    "C010": {
+      "prompt": "come back",
+      "label_provenance": "internal",
+      "family": "entry"
+    },
+    "C011": {
+      "prompt": "lift off the table",
+      "label_provenance": "internal",
+      "family": "entry"
+    },
+    "C012": {
+      "prompt": "move away",
+      "label_provenance": "internal",
+      "family": "entry"
+    },
+    "C013": {
+      "prompt": "move toward it",
+      "label_provenance": "internal",
+      "family": "entry"
+    },
+    "C014": {
+      "prompt": "sweep across the workspace",
+      "label_provenance": "internal",
+      "family": "entry"
+    },
+    "C015": {
+      "prompt": "arc across the workspace",
+      "label_provenance": "internal",
+      "family": "entry"
+    },
+    "C016": {
+      "prompt": "trace a circle",
+      "label_provenance": "internal",
+      "family": "entry"
+    },
+    "C017": {
+      "prompt": "wave",
+      "label_provenance": "internal",
+      "family": "entry"
+    },
+    "C018": {
+      "prompt": "go back and forth",
+      "label_provenance": "internal",
+      "family": "entry"
+    },
+    "C019": {
+      "prompt": "pass through the waypoint on the way over",
+      "label_provenance": "internal",
+      "family": "entry"
+    },
+    "C020": {
+      "prompt": "beckon",
+      "label_provenance": "internal",
+      "family": "frame"
+    },
+    "C021": {
+      "prompt": "shoo it away",
+      "label_provenance": "internal",
+      "family": "frame"
+    },
+    "C022": {
+      "prompt": "close in until you touch it",
+      "label_provenance": "internal",
+      "family": "entry"
+    },
+    "C023": {
+      "prompt": "pick it up",
+      "label_provenance": "internal",
+      "family": "entry"
+    },
+    "C024": {
+      "prompt": "hand it over",
+      "label_provenance": "internal",
+      "family": "entry"
+    },
+    "C025": {
+      "prompt": "look at it",
+      "label_provenance": "internal",
+      "family": "entry"
+    },
+    "C026": {
+      "prompt": "turn the wrist",
+      "label_provenance": "internal",
+      "family": "entry"
+    },
+    "C027": {
+      "prompt": "hold still",
+      "label_provenance": "internal",
+      "family": "entry"
+    },
+    "C028": {
+      "prompt": "press down on it",
+      "label_provenance": "internal",
+      "family": "entry"
+    },
+    "C029": {
+      "prompt": "make a peace sign",
+      "label_provenance": "internal",
+      "family": "posture"
+    },
+    "C030": {
+      "prompt": "make a fist",
+      "label_provenance": "internal",
+      "family": "posture"
+    },
+    "C031": {
+      "prompt": "give a thumbs up",
+      "label_provenance": "internal",
+      "family": "posture"
+    },
+    "C032": {
+      "prompt": "open your hand",
+      "label_provenance": "internal",
+      "family": "posture"
+    },
+    "C033": {
+      "prompt": "point with one finger",
+      "label_provenance": "internal",
+      "family": "posture"
+    },
+    "C034": {
+      "prompt": "three fingers up",
+      "label_provenance": "internal",
+      "family": "posture"
+    },
+    "C035": {
+      "prompt": "reach out quickly",
+      "label_provenance": "internal",
+      "family": "speed"
+    },
+    "C036": {
+      "prompt": "reach out slowly",
+      "label_provenance": "internal",
+      "family": "speed"
+    },
+    "C037": {
+      "prompt": "reach out as fast as you can",
+      "label_provenance": "internal",
+      "family": "speed"
+    },
+    "C038": {
+      "prompt": "reach out very slowly",
+      "label_provenance": "internal",
+      "family": "speed"
+    },
+    "C039": {
+      "prompt": "give a wide wave",
+      "label_provenance": "internal",
+      "family": "amplitude"
+    },
+    "C040": {
+      "prompt": "give a small wave",
+      "label_provenance": "internal",
+      "family": "amplitude"
+    },
+    "C041": {
+      "prompt": "give a huge wave",
+      "label_provenance": "internal",
+      "family": "amplitude"
+    },
+    "C042": {
+      "prompt": "lift it firmly",
+      "label_provenance": "internal",
+      "family": "effort"
+    },
+    "C043": {
+      "prompt": "lower it gently",
+      "label_provenance": "internal",
+      "family": "effort"
+    },
+    "C044": {
+      "prompt": "sweep across smoothly",
+      "label_provenance": "internal",
+      "family": "smoothness"
+    },
+    "C045": {
+      "prompt": "wave jerkily",
+      "label_provenance": "internal",
+      "family": "smoothness"
+    },
+    "C046": {
+      "prompt": "reach out precisely",
+      "label_provenance": "internal",
+      "family": "precision"
+    },
+    "C047": {
+      "prompt": "reach out roughly",
+      "label_provenance": "internal",
+      "family": "precision"
+    },
+    "C048": {
+      "prompt": "wave twice",
+      "label_provenance": "internal",
+      "family": "repetition"
+    },
+    "C049": {
+      "prompt": "wave three times",
+      "label_provenance": "internal",
+      "family": "repetition"
+    },
+    "C050": {
+      "prompt": "circle around 4 times",
+      "label_provenance": "internal",
+      "family": "repetition"
+    },
+    "C051": {
+      "prompt": "go back and forth a couple of times",
+      "label_provenance": "internal",
+      "family": "repetition"
+    },
+    "C052": {
+      "prompt": "reach out then come back",
+      "label_provenance": "internal",
+      "family": "sequence"
+    },
+    "C053": {
+      "prompt": "reach out as far as you can and then come back",
+      "label_provenance": "internal",
+      "family": "sequence"
+    },
+    "C054": {
+      "prompt": "lower onto the table, then lift off",
+      "label_provenance": "internal",
+      "family": "sequence"
+    },
+    "C055": {
+      "prompt": "wave twice then hold still",
+      "label_provenance": "internal",
+      "family": "sequence"
+    },
+    "C056": {
+      "prompt": "pick it up then hand it over",
+      "label_provenance": "internal",
+      "family": "sequence"
+    },
+    "C057": {
+      "prompt": "look at it then move toward it",
+      "label_provenance": "internal",
+      "family": "sequence"
+    },
+    "C058": {
+      "prompt": "reach far out, then come back halfway",
+      "label_provenance": "internal",
+      "family": "sequence"
+    },
+    "C059": {
+      "prompt": "make a fist then open your hand",
+      "label_provenance": "internal",
+      "family": "sequence"
+    },
+    "C060": {
+      "prompt": "turn the wrist then hold still",
+      "label_provenance": "internal",
+      "family": "sequence"
+    },
+    "L001": {
+      "prompt": "extend your arm out in front",
+      "label_provenance": "internal",
+      "family": "paraphrase"
+    },
+    "L002": {
+      "prompt": "stretch out ahead",
+      "label_provenance": "internal",
+      "family": "paraphrase"
+    },
+    "L003": {
+      "prompt": "put your hand out there",
+      "label_provenance": "internal",
+      "family": "paraphrase"
+    },
+    "L004": {
+      "prompt": "go all the way out",
+      "label_provenance": "internal",
+      "family": "paraphrase"
+    },
+    "L005": {
+      "prompt": "extend fully",
+      "label_provenance": "internal",
+      "family": "paraphrase"
+    },
+    "L006": {
+      "prompt": "stretch to your maximum reach",
+      "label_provenance": "internal",
+      "family": "paraphrase"
+    },
+    "L007": {
+      "prompt": "bring it back",
+      "label_provenance": "internal",
+      "family": "paraphrase"
+    },
+    "L008": {
+      "prompt": "return to where you were",
+      "label_provenance": "internal",
+      "family": "paraphrase"
+    },
+    "L009": {
+      "prompt": "pull back a little",
+      "label_provenance": "internal",
+      "family": "paraphrase"
+    },
+    "L010": {
+      "prompt": "withdraw slowly",
+      "label_provenance": "internal",
+      "family": "paraphrase"
+    },
+    "L011": {
+      "prompt": "wiggle your hand",
+      "label_provenance": "internal",
+      "family": "paraphrase"
+    },
+    "L012": {
+      "prompt": "shake it",
+      "label_provenance": "internal",
+      "family": "paraphrase"
+    },
+    "L013": {
+      "prompt": "give a wave",
+      "label_provenance": "internal",
+      "family": "paraphrase"
+    },
+    "L014": {
+      "prompt": "shuttle side to side",
+      "label_provenance": "internal",
+      "family": "paraphrase"
+    },
+    "L015": {
+      "prompt": "go to and fro",
+      "label_provenance": "internal",
+      "family": "paraphrase"
+    },
+    "L016": {
+      "prompt": "trace a loop around",
+      "label_provenance": "internal",
+      "family": "paraphrase"
+    },
+    "L017": {
+      "prompt": "orbit the axis",
+      "label_provenance": "internal",
+      "family": "paraphrase"
+    },
+    "L018": {
+      "prompt": "scan across the bench",
+      "label_provenance": "internal",
+      "family": "paraphrase"
+    },
+    "L019": {
+      "prompt": "traverse the workspace",
+      "label_provenance": "internal",
+      "family": "paraphrase"
+    },
+    "L020": {
+      "prompt": "descend onto the surface",
+      "label_provenance": "internal",
+      "family": "paraphrase"
+    },
+    "L021": {
+      "prompt": "come down to the table top",
+      "label_provenance": "internal",
+      "family": "paraphrase"
+    },
+    "L022": {
+      "prompt": "come up off the table",
+      "label_provenance": "internal",
+      "family": "paraphrase"
+    },
+    "L023": {
+      "prompt": "raise your hand",
+      "label_provenance": "internal",
+      "family": "paraphrase"
+    },
+    "L024": {
+      "prompt": "grab the block",
+      "label_provenance": "internal",
+      "family": "paraphrase"
+    },
+    "L025": {
+      "prompt": "take hold of it",
+      "label_provenance": "internal",
+      "family": "paraphrase"
+    },
+    "L026": {
+      "prompt": "pass it to the other hand",
+      "label_provenance": "internal",
+      "family": "paraphrase"
+    },
+    "L027": {
+      "prompt": "aim the camera at it",
+      "label_provenance": "internal",
+      "family": "paraphrase"
+    },
+    "L028": {
+      "prompt": "rotate the tool",
+      "label_provenance": "internal",
+      "family": "paraphrase"
+    },
+    "L029": {
+      "prompt": "stay where you are",
+      "label_provenance": "internal",
+      "family": "paraphrase"
+    },
+    "L030": {
+      "prompt": "clench your fist",
+      "label_provenance": "internal",
+      "family": "paraphrase"
+    },
+    "L031": {
+      "prompt": "reach out just a little",
+      "label_provenance": "internal",
+      "family": "minimal_contrast"
+    },
+    "L032": {
+      "prompt": "reach out a long way",
+      "label_provenance": "internal",
+      "family": "minimal_contrast"
+    },
+    "L033": {
+      "prompt": "wave slowly",
+      "label_provenance": "internal",
+      "family": "minimal_contrast"
+    },
+    "L034": {
+      "prompt": "wave quickly",
+      "label_provenance": "internal",
+      "family": "minimal_contrast"
+    },
+    "L035": {
+      "prompt": "wave once",
+      "label_provenance": "internal",
+      "family": "minimal_contrast"
+    },
+    "L036": {
+      "prompt": "wave twice over",
+      "label_provenance": "internal",
+      "family": "minimal_contrast"
+    },
+    "L037": {
+      "prompt": "move toward the block",
+      "label_provenance": "internal",
+      "family": "minimal_contrast"
+    },
+    "L038": {
+      "prompt": "move away from the block",
+      "label_provenance": "internal",
+      "family": "minimal_contrast"
+    },
+    "L039": {
+      "prompt": "lift up off the table",
+      "label_provenance": "internal",
+      "family": "minimal_contrast"
+    },
+    "L040": {
+      "prompt": "lower down to the table",
+      "label_provenance": "internal",
+      "family": "minimal_contrast"
+    },
+    "L041": {
+      "prompt": "reach out gently",
+      "label_provenance": "internal",
+      "family": "minimal_contrast"
+    },
+    "L042": {
+      "prompt": "reach out firmly",
+      "label_provenance": "internal",
+      "family": "minimal_contrast"
+    },
+    "L043": {
+      "prompt": "give a little wave",
+      "label_provenance": "internal",
+      "family": "minimal_contrast"
+    },
+    "L044": {
+      "prompt": "give a big wave",
+      "label_provenance": "internal",
+      "family": "minimal_contrast"
+    },
+    "L045": {
+      "prompt": "sweep across",
+      "label_provenance": "internal",
+      "family": "minimal_contrast"
+    },
+    "L046": {
+      "prompt": "arc across",
+      "label_provenance": "internal",
+      "family": "minimal_contrast"
+    },
+    "L047": {
+      "prompt": "reach out",
+      "label_provenance": "internal",
+      "family": "minimal_contrast"
+    },
+    "L048": {
+      "prompt": "reach out as far as possible",
+      "label_provenance": "internal",
+      "family": "minimal_contrast"
+    },
+    "L049": {
+      "prompt": "close your hand",
+      "label_provenance": "internal",
+      "family": "minimal_contrast"
+    },
+    "L050": {
+      "prompt": "spread your fingers",
+      "label_provenance": "internal",
+      "family": "minimal_contrast"
+    },
+    "L051": {
+      "prompt": "don't wave, just reach out",
+      "label_provenance": "internal",
+      "family": "negation"
+    },
+    "L052": {
+      "prompt": "reach out but do not go all the way",
+      "label_provenance": "internal",
+      "family": "negation"
+    },
+    "L053": {
+      "prompt": "do not move",
+      "label_provenance": "internal",
+      "family": "negation"
+    },
+    "L054": {
+      "prompt": "wave, but not quickly",
+      "label_provenance": "internal",
+      "family": "negation"
+    },
+    "L055": {
+      "prompt": "come back, not out",
+      "label_provenance": "internal",
+      "family": "negation"
+    },
+    "L056": {
+      "prompt": "no waving; hold still",
+      "label_provenance": "internal",
+      "family": "negation"
+    },
+    "L057": {
+      "prompt": "reach out, not too far",
+      "label_provenance": "internal",
+      "family": "negation"
+    },
+    "L058": {
+      "prompt": "don't pick it up, just touch it",
+      "label_provenance": "internal",
+      "family": "negation"
+    },
+    "L059": {
+      "prompt": "never mind the circle, sweep across instead",
+      "label_provenance": "internal",
+      "family": "negation"
+    },
+    "L060": {
+      "prompt": "don't hold still, wave",
+      "label_provenance": "internal",
+      "family": "negation"
+    },
+    "L061": {
+      "prompt": "lower it, but not all the way down",
+      "label_provenance": "internal",
+      "family": "negation"
+    },
+    "L062": {
+      "prompt": "not a fist, a thumbs up",
+      "label_provenance": "internal",
+      "family": "negation"
+    },
+    "L063": {
+      "prompt": "come here",
+      "label_provenance": "internal",
+      "family": "ambiguous_deixis"
+    },
+    "L064": {
+      "prompt": "bring it in toward you",
+      "label_provenance": "internal",
+      "family": "ambiguous_deixis"
+    },
+    "L065": {
+      "prompt": "push it away from you",
+      "label_provenance": "internal",
+      "family": "ambiguous_deixis"
+    },
+    "L066": {
+      "prompt": "move it away",
+      "label_provenance": "internal",
+      "family": "ambiguous_deixis"
+    },
+    "L067": {
+      "prompt": "go over there",
+      "label_provenance": "internal",
+      "family": "ambiguous_deixis"
+    },
+    "L068": {
+      "prompt": "back away from it",
+      "label_provenance": "internal",
+      "family": "ambiguous_deixis"
+    },
+    "L069": {
+      "prompt": "closer",
+      "label_provenance": "internal",
+      "family": "ambiguous_deixis"
+    },
+    "L070": {
+      "prompt": "beckon them over",
+      "label_provenance": "internal",
+      "family": "ambiguous_deixis"
+    },
+    "L071": {
+      "prompt": "wave them off",
+      "label_provenance": "internal",
+      "family": "ambiguous_deixis"
+    },
+    "L072": {
+      "prompt": "reach toward me",
+      "label_provenance": "internal",
+      "family": "ambiguous_deixis"
+    },
+    "L073": {
+      "prompt": "reach out 5 cm",
+      "label_provenance": "internal",
+      "family": "explicit_quantity"
+    },
+    "L074": {
+      "prompt": "reach out five centimetres",
+      "label_provenance": "internal",
+      "family": "explicit_quantity"
+    },
+    "L075": {
+      "prompt": "extend 10 cm",
+      "label_provenance": "internal",
+      "family": "explicit_quantity"
+    },
+    "L076": {
+      "prompt": "move forward 0.1 m",
+      "label_provenance": "internal",
+      "family": "explicit_quantity"
+    },
+    "L077": {
+      "prompt": "reach out 3 inches",
+      "label_provenance": "internal",
+      "family": "explicit_quantity"
+    },
+    "L078": {
+      "prompt": "go out 50 mm",
+      "label_provenance": "internal",
+      "family": "explicit_quantity"
+    },
+    "L079": {
+      "prompt": "reach out 5 cm then come back",
+      "label_provenance": "internal",
+      "family": "explicit_quantity"
+    },
+    "L080": {
+      "prompt": "come back 5 cm",
+      "label_provenance": "internal",
+      "family": "explicit_quantity"
+    },
+    "L081": {
+      "prompt": "move 5 cm closer to it",
+      "label_provenance": "internal",
+      "family": "explicit_quantity"
+    },
+    "L082": {
+      "prompt": "back off 5 cm",
+      "label_provenance": "internal",
+      "family": "explicit_quantity"
+    },
+    "L083": {
+      "prompt": "reach out 5 cm slowly",
+      "label_provenance": "internal",
+      "family": "explicit_quantity"
+    },
+    "L084": {
+      "prompt": "reach out about 5 cm",
+      "label_provenance": "internal",
+      "family": "explicit_quantity"
+    },
+    "L085": {
+      "prompt": "reach out a bit",
+      "label_provenance": "internal",
+      "family": "explicit_quantity"
+    },
+    "L086": {
+      "prompt": "reach out roughly five centimetres",
+      "label_provenance": "internal",
+      "family": "explicit_quantity"
+    },
+    "L087": {
+      "prompt": "lift 5 cm",
+      "label_provenance": "internal",
+      "family": "explicit_quantity"
+    },
+    "L088": {
+      "prompt": "wave 5 cm",
+      "label_provenance": "internal",
+      "family": "explicit_quantity"
+    },
+    "L089": {
+      "prompt": "reach out 5 cm, then come back 5 cm",
+      "label_provenance": "internal",
+      "family": "explicit_quantity"
+    },
+    "L090": {
+      "prompt": "reach out half a metre",
+      "label_provenance": "internal",
+      "family": "explicit_quantity"
+    },
+    "L091": {
+      "prompt": "reach out 2 m",
+      "label_provenance": "internal",
+      "family": "explicit_quantity"
+    },
+    "L092": {
+      "prompt": "reach out twenty centimeters",
+      "label_provenance": "internal",
+      "family": "explicit_quantity"
+    },
+    "L093": {
+      "prompt": "wave as fast as you can",
+      "label_provenance": "internal",
+      "family": "manner"
+    },
+    "L094": {
+      "prompt": "reach out really slowly",
+      "label_provenance": "internal",
+      "family": "manner"
+    },
+    "L095": {
+      "prompt": "sweep across steadily",
+      "label_provenance": "internal",
+      "family": "manner"
+    },
+    "L096": {
+      "prompt": "wave abruptly",
+      "label_provenance": "internal",
+      "family": "manner"
+    },
+    "L097": {
+      "prompt": "reach out exactly to the point",
+      "label_provenance": "internal",
+      "family": "manner"
+    },
+    "L098": {
+      "prompt": "give a tiny wave",
+      "label_provenance": "internal",
+      "family": "manner"
+    },
+    "L099": {
+      "prompt": "give a sweeping wave",
+      "label_provenance": "internal",
+      "family": "manner"
+    },
+    "L100": {
+      "prompt": "lift it carefully",
+      "label_provenance": "internal",
+      "family": "manner"
+    },
+    "L101": {
+      "prompt": "press hard on it",
+      "label_provenance": "internal",
+      "family": "manner"
+    },
+    "L102": {
+      "prompt": "wave three times quickly",
+      "label_provenance": "internal",
+      "family": "manner"
+    },
+    "L103": {
+      "prompt": "circle around twice slowly",
+      "label_provenance": "internal",
+      "family": "manner"
+    },
+    "L104": {
+      "prompt": "reach out briskly and precisely",
+      "label_provenance": "internal",
+      "family": "manner"
+    },
+    "L105": {
+      "prompt": "reach out, then wave, then come back",
+      "label_provenance": "internal",
+      "family": "sequence"
+    },
+    "L106": {
+      "prompt": "lower onto the table, after that lift off, finally hold still",
+      "label_provenance": "internal",
+      "family": "sequence"
+    },
+    "L107": {
+      "prompt": "make a fist, next open your hand, then give a thumbs up",
+      "label_provenance": "internal",
+      "family": "sequence"
+    },
+    "L108": {
+      "prompt": "look at it, then move toward it, then pick it up, and finally hand it over",
+      "label_provenance": "internal",
+      "family": "sequence"
+    },
+    "L109": {
+      "prompt": "wave twice and then hold still",
+      "label_provenance": "internal",
+      "family": "sequence"
+    },
+    "L110": {
+      "prompt": "reach out as far as you can before returning",
+      "label_provenance": "internal",
+      "family": "sequence"
+    },
+    "L111": {
+      "prompt": "sweep across, followed by a circle",
+      "label_provenance": "internal",
+      "family": "sequence"
+    },
+    "L112": {
+      "prompt": "trace a circle, then trace it again",
+      "label_provenance": "internal",
+      "family": "sequence"
+    },
+    "L113": {
+      "prompt": "drive across the room",
+      "label_provenance": "internal",
+      "family": "unsupported"
+    },
+    "L114": {
+      "prompt": "sing me a song",
+      "label_provenance": "internal",
+      "family": "unsupported"
+    },
+    "L115": {
+      "prompt": "fold the laundry",
+      "label_provenance": "internal",
+      "family": "unsupported"
+    },
+    "L116": {
+      "prompt": "jump up and down",
+      "label_provenance": "internal",
+      "family": "unsupported"
+    },
+    "L117": {
+      "prompt": "walk to the door",
+      "label_provenance": "internal",
+      "family": "unsupported"
+    },
+    "L118": {
+      "prompt": "tell me a joke",
+      "label_provenance": "internal",
+      "family": "unsupported"
+    },
+    "L119": {
+      "prompt": "levitate",
+      "label_provenance": "internal",
+      "family": "unsupported"
+    },
+    "L120": {
+      "prompt": "turn yourself off",
+      "label_provenance": "internal",
+      "family": "unsupported"
+    }
+  },
+  "sha256_of_cases": "fbc5bea697c7e09a70775c3d6d2a005eeba1dafd75f891b709061639aa1bc1a7"
+}

@@ -1,0 +1,4737 @@
+{
+  "schema": "g04.semantic-cases.v1",
+  "fixture_id": "g04-semantics-v1",
+  "inventory_id": "rigby-general-schema-inventory-v1",
+  "authored_at_utc": "2026-09-13T17:11:58.455917+00:00",
+  "label_provenance": "internal",
+  "counts": {
+    "canonical": 60,
+    "language": 120,
+    "families": {
+      "canonical": {
+        "entry": 23,
+        "extent": 3,
+        "frame": 2,
+        "posture": 6,
+        "speed": 4,
+        "amplitude": 3,
+        "effort": 2,
+        "smoothness": 2,
+        "precision": 2,
+        "repetition": 4,
+        "sequence": 9
+      },
+      "language": {
+        "paraphrase": 30,
+        "minimal_contrast": 20,
+        "negation": 12,
+        "ambiguous_deixis": 10,
+        "explicit_quantity": 20,
+        "manner": 12,
+        "sequence": 8,
+        "unsupported": 8
+      }
+    }
+  },
+  "reading": {
+    "segments": "in order, one inventory entry each; remove is the qualitative degree; manner holds only the non-zero ordinals; repetition_count an explicit count or null; posture only for configure_effector, whose remove is adjacent (the class reserves coincident for nothing a request can say)",
+    "quantities": "distances the request states in so many words, exactly as written, in metres; a reading that reports any other quantity is a prohibited substitution",
+    "refusal": "the typed codes an unsupported request may be refused with; any of them is correct, an invented motion is not",
+    "prohibited": "what the reading must not contain: kind quantity (no quantity at all), entry (that entry), remove (that remove on any segment), speed_above (any speed ordinal above the value), posture (that posture)"
+  },
+  "cases": [
+    {
+      "case_id": "C001",
+      "kind": "canonical",
+      "family": "entry",
+      "prompt": "reach out in front of you",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "reach_to_point",
+        "medial"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C002",
+      "kind": "canonical",
+      "family": "extent",
+      "prompt": "reach out a little",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "proximal",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "proximal"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C003",
+      "kind": "canonical",
+      "family": "extent",
+      "prompt": "reach far out",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "distal",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "distal"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C004",
+      "kind": "canonical",
+      "family": "extent",
+      "prompt": "reach right there",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "adjacent",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "adjacent"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C005",
+      "kind": "canonical",
+      "family": "entry",
+      "prompt": "reach out as far as you can",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_edge",
+            "remove": "distal",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "reach_to_edge",
+        "boundary"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C006",
+      "kind": "canonical",
+      "family": "entry",
+      "prompt": "swing over to it",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "swing_to_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "swing_to_point",
+        "arced"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C007",
+      "kind": "canonical",
+      "family": "entry",
+      "prompt": "lower down onto the table",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "descend_to_surface",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "descend_to_surface",
+        "world_ground"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C008",
+      "kind": "canonical",
+      "family": "entry",
+      "prompt": "come down onto the table over an arc",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "arc_to_surface",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "arc_to_surface"
+      ],
+      "label_provenance": "internal",
+      "notes": "no offline cue: the recognizer reads the surface descent as straight"
+    },
+    {
+      "case_id": "C009",
+      "kind": "canonical",
+      "family": "entry",
+      "prompt": "reach into the box",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "enter_volume",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "enter_volume",
+        "volume"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C010",
+      "kind": "canonical",
+      "family": "entry",
+      "prompt": "come back",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "retract_from_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "retract_from_point",
+        "from"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C011",
+      "kind": "canonical",
+      "family": "entry",
+      "prompt": "lift off the table",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "retract_from_surface",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "retract_from_surface"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C012",
+      "kind": "canonical",
+      "family": "entry",
+      "prompt": "move away",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "move_away",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "move_away",
+        "away"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C013",
+      "kind": "canonical",
+      "family": "entry",
+      "prompt": "move toward it",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "move_toward",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "move_toward",
+        "toward"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C014",
+      "kind": "canonical",
+      "family": "entry",
+      "prompt": "sweep across the workspace",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "traverse_line",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "traverse_line",
+        "via",
+        "line"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C015",
+      "kind": "canonical",
+      "family": "entry",
+      "prompt": "arc across the workspace",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "traverse_line_arced",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "traverse_line_arced"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C016",
+      "kind": "canonical",
+      "family": "entry",
+      "prompt": "trace a circle",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "circle_axis",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "circle_axis",
+        "gravity_axis",
+        "circular"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C017",
+      "kind": "canonical",
+      "family": "entry",
+      "prompt": "wave",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "oscillate_about_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "oscillate_about_point",
+        "oscillating"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C018",
+      "kind": "canonical",
+      "family": "entry",
+      "prompt": "go back and forth",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "oscillate_along_line",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "oscillate_along_line"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C019",
+      "kind": "canonical",
+      "family": "entry",
+      "prompt": "pass through the waypoint on the way over",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "pass_through_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "pass_through_point"
+      ],
+      "label_provenance": "internal",
+      "notes": "no offline cue"
+    },
+    {
+      "case_id": "C020",
+      "kind": "canonical",
+      "family": "frame",
+      "prompt": "beckon",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "draw_hither",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "draw_hither",
+        "hither",
+        "intrinsic",
+        "front_axis"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C021",
+      "kind": "canonical",
+      "family": "frame",
+      "prompt": "shoo it away",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "push_thither",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "push_thither",
+        "thither",
+        "intrinsic"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C022",
+      "kind": "canonical",
+      "family": "entry",
+      "prompt": "close in until you touch it",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "approach_to_contact",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "approach_to_contact",
+        "target_object",
+        "contact_made"
+      ],
+      "label_provenance": "internal",
+      "notes": "no offline cue; contact scene required to ground"
+    },
+    {
+      "case_id": "C023",
+      "kind": "canonical",
+      "family": "entry",
+      "prompt": "pick it up",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "transport_object",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "transport_object",
+        "target_object"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C024",
+      "kind": "canonical",
+      "family": "entry",
+      "prompt": "hand it over",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "hand_across",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "hand_across",
+        "secondary_effector"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C025",
+      "kind": "canonical",
+      "family": "entry",
+      "prompt": "look at it",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "track_with_gaze",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "track_with_gaze",
+        "sensor"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C026",
+      "kind": "canonical",
+      "family": "entry",
+      "prompt": "turn the wrist",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "orient_effector",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "orient_effector",
+        "stative"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C027",
+      "kind": "canonical",
+      "family": "entry",
+      "prompt": "hold still",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "hold_still",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "hold_still",
+        "dwell"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C028",
+      "kind": "canonical",
+      "family": "entry",
+      "prompt": "press down on it",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "press",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "press",
+        "apply_force"
+      ],
+      "label_provenance": "internal",
+      "notes": "no offline cue"
+    },
+    {
+      "case_id": "C029",
+      "kind": "canonical",
+      "family": "posture",
+      "prompt": "make a peace sign",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "configure_effector",
+            "remove": "adjacent",
+            "manner": {},
+            "repetition_count": null,
+            "posture": {
+              "group": "opposed",
+              "selected_count": 2,
+              "selected": "extended",
+              "remainder": "flexed",
+              "opposing": "flexed"
+            },
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "configure_effector",
+        "posture"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C030",
+      "kind": "canonical",
+      "family": "posture",
+      "prompt": "make a fist",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "configure_effector",
+            "remove": "adjacent",
+            "manner": {},
+            "repetition_count": null,
+            "posture": {
+              "group": "opposed",
+              "selected_count": 0,
+              "selected": "extended",
+              "remainder": "flexed",
+              "opposing": "flexed"
+            },
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "posture"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C031",
+      "kind": "canonical",
+      "family": "posture",
+      "prompt": "give a thumbs up",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "configure_effector",
+            "remove": "adjacent",
+            "manner": {},
+            "repetition_count": null,
+            "posture": {
+              "group": "opposed",
+              "selected_count": 0,
+              "selected": "extended",
+              "remainder": "flexed",
+              "opposing": "extended"
+            },
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "posture",
+        "opposing"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C032",
+      "kind": "canonical",
+      "family": "posture",
+      "prompt": "open your hand",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "configure_effector",
+            "remove": "adjacent",
+            "manner": {},
+            "repetition_count": null,
+            "posture": {
+              "group": "opposed",
+              "selected_count": 0,
+              "selected": "extended",
+              "remainder": "extended",
+              "opposing": "extended"
+            },
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "posture"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C033",
+      "kind": "canonical",
+      "family": "posture",
+      "prompt": "point with one finger",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "configure_effector",
+            "remove": "adjacent",
+            "manner": {},
+            "repetition_count": null,
+            "posture": {
+              "group": "opposed",
+              "selected_count": 1,
+              "selected": "extended",
+              "remainder": "flexed",
+              "opposing": "flexed"
+            },
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "posture"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C034",
+      "kind": "canonical",
+      "family": "posture",
+      "prompt": "three fingers up",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "configure_effector",
+            "remove": "adjacent",
+            "manner": {},
+            "repetition_count": null,
+            "posture": {
+              "group": "opposed",
+              "selected_count": 3,
+              "selected": "extended",
+              "remainder": "flexed",
+              "opposing": "flexed"
+            },
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "posture"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C035",
+      "kind": "canonical",
+      "family": "speed",
+      "prompt": "reach out quickly",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {
+              "speed": 1
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "speed+1"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C036",
+      "kind": "canonical",
+      "family": "speed",
+      "prompt": "reach out slowly",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {
+              "speed": -1
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "speed-1"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C037",
+      "kind": "canonical",
+      "family": "speed",
+      "prompt": "reach out as fast as you can",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {
+              "speed": 2
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "speed+2"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C038",
+      "kind": "canonical",
+      "family": "speed",
+      "prompt": "reach out very slowly",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {
+              "speed": -2
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "speed-2"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C039",
+      "kind": "canonical",
+      "family": "amplitude",
+      "prompt": "give a wide wave",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "oscillate_about_point",
+            "remove": "medial",
+            "manner": {
+              "amplitude": 1
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "amplitude+1"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C040",
+      "kind": "canonical",
+      "family": "amplitude",
+      "prompt": "give a small wave",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "oscillate_about_point",
+            "remove": "medial",
+            "manner": {
+              "amplitude": -1
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "amplitude-1"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C041",
+      "kind": "canonical",
+      "family": "amplitude",
+      "prompt": "give a huge wave",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "oscillate_about_point",
+            "remove": "medial",
+            "manner": {
+              "amplitude": 2
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "amplitude+2"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C042",
+      "kind": "canonical",
+      "family": "effort",
+      "prompt": "lift it firmly",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "retract_from_surface",
+            "remove": "medial",
+            "manner": {
+              "effort": 1
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "effort+1"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C043",
+      "kind": "canonical",
+      "family": "effort",
+      "prompt": "lower it gently",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "descend_to_surface",
+            "remove": "medial",
+            "manner": {
+              "speed": -1,
+              "effort": -1
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "effort-1",
+        "speed-1"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C044",
+      "kind": "canonical",
+      "family": "smoothness",
+      "prompt": "sweep across smoothly",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "traverse_line",
+            "remove": "medial",
+            "manner": {
+              "smoothness": 1
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "smoothness+1"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C045",
+      "kind": "canonical",
+      "family": "smoothness",
+      "prompt": "wave jerkily",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "oscillate_about_point",
+            "remove": "medial",
+            "manner": {
+              "smoothness": -1
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "smoothness-1"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C046",
+      "kind": "canonical",
+      "family": "precision",
+      "prompt": "reach out precisely",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {
+              "precision": 1
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "precision+1"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C047",
+      "kind": "canonical",
+      "family": "precision",
+      "prompt": "reach out roughly",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {
+              "precision": -1
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "precision-1"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C048",
+      "kind": "canonical",
+      "family": "repetition",
+      "prompt": "wave twice",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "oscillate_about_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": 2,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "repetition_count"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C049",
+      "kind": "canonical",
+      "family": "repetition",
+      "prompt": "wave three times",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "oscillate_about_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": 3,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "repetition_count"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C050",
+      "kind": "canonical",
+      "family": "repetition",
+      "prompt": "circle around 4 times",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "circle_axis",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": 4,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "repetition_count"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C051",
+      "kind": "canonical",
+      "family": "repetition",
+      "prompt": "go back and forth a couple of times",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "oscillate_along_line",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": 2,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "repetition_count"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C052",
+      "kind": "canonical",
+      "family": "sequence",
+      "prompt": "reach out then come back",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          },
+          {
+            "entry_id": "retract_from_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "sequence"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C053",
+      "kind": "canonical",
+      "family": "sequence",
+      "prompt": "reach out as far as you can and then come back",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_edge",
+            "remove": "distal",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          },
+          {
+            "entry_id": "retract_from_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "sequence",
+        "distal"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C054",
+      "kind": "canonical",
+      "family": "sequence",
+      "prompt": "lower onto the table, then lift off",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "descend_to_surface",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          },
+          {
+            "entry_id": "retract_from_surface",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "sequence",
+        "world_ground"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C055",
+      "kind": "canonical",
+      "family": "sequence",
+      "prompt": "wave twice then hold still",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "oscillate_about_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": 2,
+            "posture": null,
+            "quantities": []
+          },
+          {
+            "entry_id": "hold_still",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "sequence",
+        "repetition_count",
+        "dwell"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C056",
+      "kind": "canonical",
+      "family": "sequence",
+      "prompt": "pick it up then hand it over",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "transport_object",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          },
+          {
+            "entry_id": "hand_across",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "sequence",
+        "target_object",
+        "secondary_effector"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C057",
+      "kind": "canonical",
+      "family": "sequence",
+      "prompt": "look at it then move toward it",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "track_with_gaze",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          },
+          {
+            "entry_id": "move_toward",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "sequence",
+        "sensor"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C058",
+      "kind": "canonical",
+      "family": "sequence",
+      "prompt": "reach far out, then come back halfway",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "distal",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          },
+          {
+            "entry_id": "retract_from_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "sequence",
+        "distal",
+        "medial"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C059",
+      "kind": "canonical",
+      "family": "sequence",
+      "prompt": "make a fist then open your hand",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "configure_effector",
+            "remove": "adjacent",
+            "manner": {},
+            "repetition_count": null,
+            "posture": {
+              "group": "opposed",
+              "selected_count": 0,
+              "selected": "extended",
+              "remainder": "flexed",
+              "opposing": "flexed"
+            },
+            "quantities": []
+          },
+          {
+            "entry_id": "configure_effector",
+            "remove": "adjacent",
+            "manner": {},
+            "repetition_count": null,
+            "posture": {
+              "group": "opposed",
+              "selected_count": 0,
+              "selected": "extended",
+              "remainder": "extended",
+              "opposing": "extended"
+            },
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "sequence",
+        "posture"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "C060",
+      "kind": "canonical",
+      "family": "sequence",
+      "prompt": "turn the wrist then hold still",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "orient_effector",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          },
+          {
+            "entry_id": "hold_still",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [
+        "sequence",
+        "stative"
+      ],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L001",
+      "kind": "language",
+      "family": "paraphrase",
+      "prompt": "extend your arm out in front",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L002",
+      "kind": "language",
+      "family": "paraphrase",
+      "prompt": "stretch out ahead",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L003",
+      "kind": "language",
+      "family": "paraphrase",
+      "prompt": "put your hand out there",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "distal",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L004",
+      "kind": "language",
+      "family": "paraphrase",
+      "prompt": "go all the way out",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_edge",
+            "remove": "distal",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": "'all the way' is the edge of reach; the recognizer reads a distal point"
+    },
+    {
+      "case_id": "L005",
+      "kind": "language",
+      "family": "paraphrase",
+      "prompt": "extend fully",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_edge",
+            "remove": "distal",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L006",
+      "kind": "language",
+      "family": "paraphrase",
+      "prompt": "stretch to your maximum reach",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_edge",
+            "remove": "distal",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L007",
+      "kind": "language",
+      "family": "paraphrase",
+      "prompt": "bring it back",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "retract_from_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L008",
+      "kind": "language",
+      "family": "paraphrase",
+      "prompt": "return to where you were",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "retract_from_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L009",
+      "kind": "language",
+      "family": "paraphrase",
+      "prompt": "pull back a little",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "retract_from_point",
+            "remove": "proximal",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L010",
+      "kind": "language",
+      "family": "paraphrase",
+      "prompt": "withdraw slowly",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "retract_from_point",
+            "remove": "medial",
+            "manner": {
+              "speed": -1
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L011",
+      "kind": "language",
+      "family": "paraphrase",
+      "prompt": "wiggle your hand",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "oscillate_about_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L012",
+      "kind": "language",
+      "family": "paraphrase",
+      "prompt": "shake it",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "oscillate_about_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L013",
+      "kind": "language",
+      "family": "paraphrase",
+      "prompt": "give a wave",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "oscillate_about_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L014",
+      "kind": "language",
+      "family": "paraphrase",
+      "prompt": "shuttle side to side",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "oscillate_along_line",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L015",
+      "kind": "language",
+      "family": "paraphrase",
+      "prompt": "go to and fro",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "oscillate_along_line",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L016",
+      "kind": "language",
+      "family": "paraphrase",
+      "prompt": "trace a loop around",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "circle_axis",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L017",
+      "kind": "language",
+      "family": "paraphrase",
+      "prompt": "orbit the axis",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "circle_axis",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L018",
+      "kind": "language",
+      "family": "paraphrase",
+      "prompt": "scan across the bench",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "traverse_line",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L019",
+      "kind": "language",
+      "family": "paraphrase",
+      "prompt": "traverse the workspace",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "traverse_line",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L020",
+      "kind": "language",
+      "family": "paraphrase",
+      "prompt": "descend onto the surface",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "descend_to_surface",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L021",
+      "kind": "language",
+      "family": "paraphrase",
+      "prompt": "come down to the table top",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "descend_to_surface",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L022",
+      "kind": "language",
+      "family": "paraphrase",
+      "prompt": "come up off the table",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "retract_from_surface",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L023",
+      "kind": "language",
+      "family": "paraphrase",
+      "prompt": "raise your hand",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "retract_from_surface",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L024",
+      "kind": "language",
+      "family": "paraphrase",
+      "prompt": "grab the block",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "transport_object",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L025",
+      "kind": "language",
+      "family": "paraphrase",
+      "prompt": "take hold of it",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "transport_object",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L026",
+      "kind": "language",
+      "family": "paraphrase",
+      "prompt": "pass it to the other hand",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "hand_across",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L027",
+      "kind": "language",
+      "family": "paraphrase",
+      "prompt": "aim the camera at it",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "track_with_gaze",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L028",
+      "kind": "language",
+      "family": "paraphrase",
+      "prompt": "rotate the tool",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "orient_effector",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L029",
+      "kind": "language",
+      "family": "paraphrase",
+      "prompt": "stay where you are",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "hold_still",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L030",
+      "kind": "language",
+      "family": "paraphrase",
+      "prompt": "clench your fist",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "configure_effector",
+            "remove": "adjacent",
+            "manner": {},
+            "repetition_count": null,
+            "posture": {
+              "group": "opposed",
+              "selected_count": 0,
+              "selected": "extended",
+              "remainder": "flexed",
+              "opposing": "flexed"
+            },
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L031",
+      "kind": "language",
+      "family": "minimal_contrast",
+      "prompt": "reach out just a little",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "proximal",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [
+        {
+          "kind": "remove",
+          "remove": "distal"
+        },
+        {
+          "kind": "quantity"
+        }
+      ],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L032",
+      "kind": "language",
+      "family": "minimal_contrast",
+      "prompt": "reach out a long way",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "distal",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [
+        {
+          "kind": "remove",
+          "remove": "proximal"
+        },
+        {
+          "kind": "quantity"
+        }
+      ],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": "'a long way' is far; no recognizer cue"
+    },
+    {
+      "case_id": "L033",
+      "kind": "language",
+      "family": "minimal_contrast",
+      "prompt": "wave slowly",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "oscillate_about_point",
+            "remove": "medial",
+            "manner": {
+              "speed": -1
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L034",
+      "kind": "language",
+      "family": "minimal_contrast",
+      "prompt": "wave quickly",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "oscillate_about_point",
+            "remove": "medial",
+            "manner": {
+              "speed": 1
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L035",
+      "kind": "language",
+      "family": "minimal_contrast",
+      "prompt": "wave once",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "oscillate_about_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": 1,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L036",
+      "kind": "language",
+      "family": "minimal_contrast",
+      "prompt": "wave twice over",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "oscillate_about_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": 2,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L037",
+      "kind": "language",
+      "family": "minimal_contrast",
+      "prompt": "move toward the block",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "move_toward",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [
+        {
+          "kind": "entry",
+          "entry_id": "move_away"
+        }
+      ],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L038",
+      "kind": "language",
+      "family": "minimal_contrast",
+      "prompt": "move away from the block",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "move_away",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [
+        {
+          "kind": "entry",
+          "entry_id": "move_toward"
+        }
+      ],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L039",
+      "kind": "language",
+      "family": "minimal_contrast",
+      "prompt": "lift up off the table",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "retract_from_surface",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [
+        {
+          "kind": "entry",
+          "entry_id": "descend_to_surface"
+        }
+      ],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L040",
+      "kind": "language",
+      "family": "minimal_contrast",
+      "prompt": "lower down to the table",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "descend_to_surface",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [
+        {
+          "kind": "entry",
+          "entry_id": "retract_from_surface"
+        }
+      ],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L041",
+      "kind": "language",
+      "family": "minimal_contrast",
+      "prompt": "reach out gently",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {
+              "speed": -1,
+              "effort": -1
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L042",
+      "kind": "language",
+      "family": "minimal_contrast",
+      "prompt": "reach out firmly",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {
+              "effort": 1
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L043",
+      "kind": "language",
+      "family": "minimal_contrast",
+      "prompt": "give a little wave",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "oscillate_about_point",
+            "remove": "medial",
+            "manner": {
+              "amplitude": -1
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": "'little' marks amplitude; the point of a wave is not a remove"
+    },
+    {
+      "case_id": "L044",
+      "kind": "language",
+      "family": "minimal_contrast",
+      "prompt": "give a big wave",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "oscillate_about_point",
+            "remove": "medial",
+            "manner": {
+              "amplitude": 1
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L045",
+      "kind": "language",
+      "family": "minimal_contrast",
+      "prompt": "sweep across",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "traverse_line",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [
+        {
+          "kind": "entry",
+          "entry_id": "traverse_line_arced"
+        }
+      ],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L046",
+      "kind": "language",
+      "family": "minimal_contrast",
+      "prompt": "arc across",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "traverse_line_arced",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [
+        {
+          "kind": "entry",
+          "entry_id": "traverse_line"
+        }
+      ],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L047",
+      "kind": "language",
+      "family": "minimal_contrast",
+      "prompt": "reach out",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [
+        {
+          "kind": "remove",
+          "remove": "distal"
+        },
+        {
+          "kind": "quantity"
+        }
+      ],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L048",
+      "kind": "language",
+      "family": "minimal_contrast",
+      "prompt": "reach out as far as possible",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_edge",
+            "remove": "distal",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [
+        {
+          "kind": "remove",
+          "remove": "medial"
+        }
+      ],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L049",
+      "kind": "language",
+      "family": "minimal_contrast",
+      "prompt": "close your hand",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "configure_effector",
+            "remove": "adjacent",
+            "manner": {},
+            "repetition_count": null,
+            "posture": {
+              "group": "opposed",
+              "selected_count": 0,
+              "selected": "extended",
+              "remainder": "flexed",
+              "opposing": "flexed"
+            },
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [
+        {
+          "kind": "posture",
+          "posture": {
+            "group": "opposed",
+            "selected_count": 0,
+            "selected": "extended",
+            "remainder": "extended",
+            "opposing": "extended"
+          }
+        }
+      ],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L050",
+      "kind": "language",
+      "family": "minimal_contrast",
+      "prompt": "spread your fingers",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "configure_effector",
+            "remove": "adjacent",
+            "manner": {},
+            "repetition_count": null,
+            "posture": {
+              "group": "opposed",
+              "selected_count": 0,
+              "selected": "extended",
+              "remainder": "extended",
+              "opposing": "extended"
+            },
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [
+        {
+          "kind": "posture",
+          "posture": {
+            "group": "opposed",
+            "selected_count": 0,
+            "selected": "extended",
+            "remainder": "flexed",
+            "opposing": "flexed"
+          }
+        }
+      ],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L051",
+      "kind": "language",
+      "family": "negation",
+      "prompt": "don't wave, just reach out",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [
+        {
+          "kind": "entry",
+          "entry_id": "oscillate_about_point"
+        }
+      ],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L052",
+      "kind": "language",
+      "family": "negation",
+      "prompt": "reach out but do not go all the way",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [
+        {
+          "kind": "remove",
+          "remove": "distal"
+        },
+        {
+          "kind": "entry",
+          "entry_id": "reach_to_edge"
+        }
+      ],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L053",
+      "kind": "language",
+      "family": "negation",
+      "prompt": "do not move",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "hold_still",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [
+        {
+          "kind": "entry",
+          "entry_id": "reach_to_point"
+        }
+      ],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L054",
+      "kind": "language",
+      "family": "negation",
+      "prompt": "wave, but not quickly",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "oscillate_about_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [
+        {
+          "kind": "speed_above",
+          "value": 0
+        }
+      ],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": "'not quickly' removes the mark; it does not add a slow one"
+    },
+    {
+      "case_id": "L055",
+      "kind": "language",
+      "family": "negation",
+      "prompt": "come back, not out",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "retract_from_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [
+        {
+          "kind": "entry",
+          "entry_id": "reach_to_point"
+        }
+      ],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L056",
+      "kind": "language",
+      "family": "negation",
+      "prompt": "no waving; hold still",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "hold_still",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [
+        {
+          "kind": "entry",
+          "entry_id": "oscillate_about_point"
+        }
+      ],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L057",
+      "kind": "language",
+      "family": "negation",
+      "prompt": "reach out, not too far",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [
+        {
+          "kind": "remove",
+          "remove": "distal"
+        }
+      ],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L058",
+      "kind": "language",
+      "family": "negation",
+      "prompt": "don't pick it up, just touch it",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "approach_to_contact",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [
+        {
+          "kind": "entry",
+          "entry_id": "transport_object"
+        }
+      ],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L059",
+      "kind": "language",
+      "family": "negation",
+      "prompt": "never mind the circle, sweep across instead",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "traverse_line",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [
+        {
+          "kind": "entry",
+          "entry_id": "circle_axis"
+        }
+      ],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L060",
+      "kind": "language",
+      "family": "negation",
+      "prompt": "don't hold still, wave",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "oscillate_about_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [
+        {
+          "kind": "entry",
+          "entry_id": "hold_still"
+        }
+      ],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L061",
+      "kind": "language",
+      "family": "negation",
+      "prompt": "lower it, but not all the way down",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "descend_to_surface",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [
+        {
+          "kind": "remove",
+          "remove": "distal"
+        }
+      ],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L062",
+      "kind": "language",
+      "family": "negation",
+      "prompt": "not a fist, a thumbs up",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "configure_effector",
+            "remove": "adjacent",
+            "manner": {},
+            "repetition_count": null,
+            "posture": {
+              "group": "opposed",
+              "selected_count": 0,
+              "selected": "extended",
+              "remainder": "flexed",
+              "opposing": "extended"
+            },
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [
+        {
+          "kind": "posture",
+          "posture": {
+            "group": "opposed",
+            "selected_count": 0,
+            "selected": "extended",
+            "remainder": "flexed",
+            "opposing": "flexed"
+          }
+        }
+      ],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L063",
+      "kind": "language",
+      "family": "ambiguous_deixis",
+      "prompt": "come here",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "draw_hither",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": "hither: toward the robot's own front; grounds only on a confirmed frame"
+    },
+    {
+      "case_id": "L064",
+      "kind": "language",
+      "family": "ambiguous_deixis",
+      "prompt": "bring it in toward you",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "draw_hither",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": "'toward you' is the robot's own front"
+    },
+    {
+      "case_id": "L065",
+      "kind": "language",
+      "family": "ambiguous_deixis",
+      "prompt": "push it away from you",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "push_thither",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L066",
+      "kind": "language",
+      "family": "ambiguous_deixis",
+      "prompt": "move it away",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "move_away",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": "no deictic centre named: neutral departure"
+    },
+    {
+      "case_id": "L067",
+      "kind": "language",
+      "family": "ambiguous_deixis",
+      "prompt": "go over there",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": "'over there' names no remove the closed class distinguishes; unmarked"
+    },
+    {
+      "case_id": "L068",
+      "kind": "language",
+      "family": "ambiguous_deixis",
+      "prompt": "back away from it",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "move_away",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L069",
+      "kind": "language",
+      "family": "ambiguous_deixis",
+      "prompt": "closer",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "move_toward",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L070",
+      "kind": "language",
+      "family": "ambiguous_deixis",
+      "prompt": "beckon them over",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "draw_hither",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L071",
+      "kind": "language",
+      "family": "ambiguous_deixis",
+      "prompt": "wave them off",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "push_thither",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [
+        {
+          "kind": "entry",
+          "entry_id": "oscillate_about_point"
+        }
+      ],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": "'wave off' is a dismissal, not a wave"
+    },
+    {
+      "case_id": "L072",
+      "kind": "language",
+      "family": "ambiguous_deixis",
+      "prompt": "reach toward me",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "move_toward",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": "'me' is speaker-relative and the IR has no speaker; the neutral approach is the only honest reading"
+    },
+    {
+      "case_id": "L073",
+      "kind": "language",
+      "family": "explicit_quantity",
+      "prompt": "reach out 5 cm",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": [
+              {
+                "text": "5 cm",
+                "value_m": 0.05
+              }
+            ]
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L074",
+      "kind": "language",
+      "family": "explicit_quantity",
+      "prompt": "reach out five centimetres",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": [
+              {
+                "text": "five centimetres",
+                "value_m": 0.05
+              }
+            ]
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L075",
+      "kind": "language",
+      "family": "explicit_quantity",
+      "prompt": "extend 10 cm",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": [
+              {
+                "text": "10 cm",
+                "value_m": 0.1
+              }
+            ]
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L076",
+      "kind": "language",
+      "family": "explicit_quantity",
+      "prompt": "move forward 0.1 m",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": [
+              {
+                "text": "0.1 m",
+                "value_m": 0.1
+              }
+            ]
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L077",
+      "kind": "language",
+      "family": "explicit_quantity",
+      "prompt": "reach out 3 inches",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": [
+              {
+                "text": "3 inches",
+                "value_m": 0.0762
+              }
+            ]
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L078",
+      "kind": "language",
+      "family": "explicit_quantity",
+      "prompt": "go out 50 mm",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": [
+              {
+                "text": "50 mm",
+                "value_m": 0.05
+              }
+            ]
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L079",
+      "kind": "language",
+      "family": "explicit_quantity",
+      "prompt": "reach out 5 cm then come back",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": [
+              {
+                "text": "5 cm",
+                "value_m": 0.05
+              }
+            ]
+          },
+          {
+            "entry_id": "retract_from_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L080",
+      "kind": "language",
+      "family": "explicit_quantity",
+      "prompt": "come back 5 cm",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "retract_from_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": [
+              {
+                "text": "5 cm",
+                "value_m": 0.05
+              }
+            ]
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L081",
+      "kind": "language",
+      "family": "explicit_quantity",
+      "prompt": "move 5 cm closer to it",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "move_toward",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": [
+              {
+                "text": "5 cm",
+                "value_m": 0.05
+              }
+            ]
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L082",
+      "kind": "language",
+      "family": "explicit_quantity",
+      "prompt": "back off 5 cm",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "move_away",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": [
+              {
+                "text": "5 cm",
+                "value_m": 0.05
+              }
+            ]
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L083",
+      "kind": "language",
+      "family": "explicit_quantity",
+      "prompt": "reach out 5 cm slowly",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {
+              "speed": -1
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": [
+              {
+                "text": "5 cm",
+                "value_m": 0.05
+              }
+            ]
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L084",
+      "kind": "language",
+      "family": "explicit_quantity",
+      "prompt": "reach out about 5 cm",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {
+              "precision": -1
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": [
+              {
+                "text": "5 cm",
+                "value_m": 0.05
+              }
+            ]
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L085",
+      "kind": "language",
+      "family": "explicit_quantity",
+      "prompt": "reach out a bit",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "proximal",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [
+        {
+          "kind": "quantity"
+        }
+      ],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": "a bit is a remove, never a number"
+    },
+    {
+      "case_id": "L086",
+      "kind": "language",
+      "family": "explicit_quantity",
+      "prompt": "reach out roughly five centimetres",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {
+              "precision": -1
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": [
+              {
+                "text": "five centimetres",
+                "value_m": 0.05
+              }
+            ]
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L087",
+      "kind": "language",
+      "family": "explicit_quantity",
+      "prompt": "lift 5 cm",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "retract_from_surface",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": [
+              {
+                "text": "5 cm",
+                "value_m": 0.05
+              }
+            ]
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": "kept as stated; grounding refuses a distance on a surface departure, typed"
+    },
+    {
+      "case_id": "L088",
+      "kind": "language",
+      "family": "explicit_quantity",
+      "prompt": "wave 5 cm",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "oscillate_about_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": [
+              {
+                "text": "5 cm",
+                "value_m": 0.05
+              }
+            ]
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": "kept as stated; grounding refuses a distance on an oscillation, typed"
+    },
+    {
+      "case_id": "L089",
+      "kind": "language",
+      "family": "explicit_quantity",
+      "prompt": "reach out 5 cm, then come back 5 cm",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": [
+              {
+                "text": "5 cm",
+                "value_m": 0.05
+              }
+            ]
+          },
+          {
+            "entry_id": "retract_from_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": [
+              {
+                "text": "5 cm",
+                "value_m": 0.05
+              }
+            ]
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L090",
+      "kind": "language",
+      "family": "explicit_quantity",
+      "prompt": "reach out half a metre",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": [
+              {
+                "text": "half a metre",
+                "value_m": 0.5
+              }
+            ]
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L091",
+      "kind": "language",
+      "family": "explicit_quantity",
+      "prompt": "reach out 2 m",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": [
+              {
+                "text": "2 m",
+                "value_m": 2.0
+              }
+            ]
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": "kept as stated; beyond every zoo body's reach, grounding refuses typed"
+    },
+    {
+      "case_id": "L092",
+      "kind": "language",
+      "family": "explicit_quantity",
+      "prompt": "reach out twenty centimeters",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": [
+              {
+                "text": "twenty centimeters",
+                "value_m": 0.2
+              }
+            ]
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L093",
+      "kind": "language",
+      "family": "manner",
+      "prompt": "wave as fast as you can",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "oscillate_about_point",
+            "remove": "medial",
+            "manner": {
+              "speed": 2
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L094",
+      "kind": "language",
+      "family": "manner",
+      "prompt": "reach out really slowly",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {
+              "speed": -1
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": "'really' intensifies without reaching the -2 pole the class reserves for crawl, inch, very slowly"
+    },
+    {
+      "case_id": "L095",
+      "kind": "language",
+      "family": "manner",
+      "prompt": "sweep across steadily",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "traverse_line",
+            "remove": "medial",
+            "manner": {
+              "smoothness": 1
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L096",
+      "kind": "language",
+      "family": "manner",
+      "prompt": "wave abruptly",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "oscillate_about_point",
+            "remove": "medial",
+            "manner": {
+              "smoothness": -1
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L097",
+      "kind": "language",
+      "family": "manner",
+      "prompt": "reach out exactly to the point",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {
+              "precision": 1
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L098",
+      "kind": "language",
+      "family": "manner",
+      "prompt": "give a tiny wave",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "oscillate_about_point",
+            "remove": "medial",
+            "manner": {
+              "amplitude": -2
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L099",
+      "kind": "language",
+      "family": "manner",
+      "prompt": "give a sweeping wave",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "oscillate_about_point",
+            "remove": "medial",
+            "manner": {
+              "amplitude": 2
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [
+        {
+          "kind": "entry",
+          "entry_id": "traverse_line"
+        }
+      ],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": "'sweeping' here is the size of a wave, not a traverse"
+    },
+    {
+      "case_id": "L100",
+      "kind": "language",
+      "family": "manner",
+      "prompt": "lift it carefully",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "retract_from_surface",
+            "remove": "medial",
+            "manner": {
+              "speed": -1,
+              "effort": -1
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L101",
+      "kind": "language",
+      "family": "manner",
+      "prompt": "press hard on it",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "press",
+            "remove": "medial",
+            "manner": {
+              "effort": 1
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L102",
+      "kind": "language",
+      "family": "manner",
+      "prompt": "wave three times quickly",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "oscillate_about_point",
+            "remove": "medial",
+            "manner": {
+              "speed": 1
+            },
+            "repetition_count": 3,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L103",
+      "kind": "language",
+      "family": "manner",
+      "prompt": "circle around twice slowly",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "circle_axis",
+            "remove": "medial",
+            "manner": {
+              "speed": -1
+            },
+            "repetition_count": 2,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L104",
+      "kind": "language",
+      "family": "manner",
+      "prompt": "reach out briskly and precisely",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {
+              "speed": 1,
+              "precision": 1
+            },
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L105",
+      "kind": "language",
+      "family": "sequence",
+      "prompt": "reach out, then wave, then come back",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          },
+          {
+            "entry_id": "oscillate_about_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          },
+          {
+            "entry_id": "retract_from_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L106",
+      "kind": "language",
+      "family": "sequence",
+      "prompt": "lower onto the table, after that lift off, finally hold still",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "descend_to_surface",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          },
+          {
+            "entry_id": "retract_from_surface",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          },
+          {
+            "entry_id": "hold_still",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L107",
+      "kind": "language",
+      "family": "sequence",
+      "prompt": "make a fist, next open your hand, then give a thumbs up",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "configure_effector",
+            "remove": "adjacent",
+            "manner": {},
+            "repetition_count": null,
+            "posture": {
+              "group": "opposed",
+              "selected_count": 0,
+              "selected": "extended",
+              "remainder": "flexed",
+              "opposing": "flexed"
+            },
+            "quantities": []
+          },
+          {
+            "entry_id": "configure_effector",
+            "remove": "adjacent",
+            "manner": {},
+            "repetition_count": null,
+            "posture": {
+              "group": "opposed",
+              "selected_count": 0,
+              "selected": "extended",
+              "remainder": "extended",
+              "opposing": "extended"
+            },
+            "quantities": []
+          },
+          {
+            "entry_id": "configure_effector",
+            "remove": "adjacent",
+            "manner": {},
+            "repetition_count": null,
+            "posture": {
+              "group": "opposed",
+              "selected_count": 0,
+              "selected": "extended",
+              "remainder": "flexed",
+              "opposing": "extended"
+            },
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L108",
+      "kind": "language",
+      "family": "sequence",
+      "prompt": "look at it, then move toward it, then pick it up, and finally hand it over",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "track_with_gaze",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          },
+          {
+            "entry_id": "move_toward",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          },
+          {
+            "entry_id": "transport_object",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          },
+          {
+            "entry_id": "hand_across",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L109",
+      "kind": "language",
+      "family": "sequence",
+      "prompt": "wave twice and then hold still",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "oscillate_about_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": 2,
+            "posture": null,
+            "quantities": []
+          },
+          {
+            "entry_id": "hold_still",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L110",
+      "kind": "language",
+      "family": "sequence",
+      "prompt": "reach out as far as you can before returning",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "reach_to_edge",
+            "remove": "distal",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          },
+          {
+            "entry_id": "retract_from_point",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": "'before returning' names the return; the recognizer splits on it and finds an empty clause"
+    },
+    {
+      "case_id": "L111",
+      "kind": "language",
+      "family": "sequence",
+      "prompt": "sweep across, followed by a circle",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "traverse_line",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          },
+          {
+            "entry_id": "circle_axis",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L112",
+      "kind": "language",
+      "family": "sequence",
+      "prompt": "trace a circle, then trace it again",
+      "expected": {
+        "segments": [
+          {
+            "entry_id": "circle_axis",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          },
+          {
+            "entry_id": "circle_axis",
+            "remove": "medial",
+            "manner": {},
+            "repetition_count": null,
+            "posture": null,
+            "quantities": []
+          }
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": "'again' repeats the last motion; no recognizer cue"
+    },
+    {
+      "case_id": "L113",
+      "kind": "language",
+      "family": "unsupported",
+      "prompt": "drive across the room",
+      "expected": {
+        "refusal": [
+          "unsupported_morphology",
+          "unafforded_schema"
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": "locomotion: the firewall refuses before any reading"
+    },
+    {
+      "case_id": "L114",
+      "kind": "language",
+      "family": "unsupported",
+      "prompt": "sing me a song",
+      "expected": {
+        "refusal": [
+          "unsupported_morphology",
+          "unafforded_schema"
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L115",
+      "kind": "language",
+      "family": "unsupported",
+      "prompt": "fold the laundry",
+      "expected": {
+        "refusal": [
+          "unsupported_morphology",
+          "unafforded_schema"
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L116",
+      "kind": "language",
+      "family": "unsupported",
+      "prompt": "jump up and down",
+      "expected": {
+        "refusal": [
+          "unsupported_morphology",
+          "unafforded_schema"
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L117",
+      "kind": "language",
+      "family": "unsupported",
+      "prompt": "walk to the door",
+      "expected": {
+        "refusal": [
+          "unsupported_morphology",
+          "unafforded_schema"
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L118",
+      "kind": "language",
+      "family": "unsupported",
+      "prompt": "tell me a joke",
+      "expected": {
+        "refusal": [
+          "unsupported_morphology",
+          "unafforded_schema"
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L119",
+      "kind": "language",
+      "family": "unsupported",
+      "prompt": "levitate",
+      "expected": {
+        "refusal": [
+          "unsupported_morphology",
+          "unafforded_schema"
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    },
+    {
+      "case_id": "L120",
+      "kind": "language",
+      "family": "unsupported",
+      "prompt": "turn yourself off",
+      "expected": {
+        "refusal": [
+          "unsupported_morphology",
+          "unafforded_schema"
+        ]
+      },
+      "prohibited": [],
+      "spans": [],
+      "label_provenance": "internal",
+      "notes": ""
+    }
+  ]
+}
