@@ -32,6 +32,7 @@ from enum import StrEnum
 import mujoco
 import numpy as np
 from rigby_core.motion.trajectory import CandidateTrajectoryV1
+from rigby_core.simulation.recording import PhysicsRecorder
 
 from ..contracts import RobotAssetManifestV1
 from .control import ComputedTorqueController, ControllerConfig
@@ -153,6 +154,7 @@ def simulate(
     trajectory: CandidateTrajectoryV1,
     *,
     site_name: str | None = None,
+    recorder: PhysicsRecorder | None = None,
 ) -> RolloutTrace:
     """Roll the planned trajectory forward under the certified controller."""
 
@@ -213,6 +215,9 @@ def simulate(
         qvel[step] = data.qvel
         ctrl[step] = command
         demand[step] = controller.last_demand
+
+        if recorder is not None:
+            recorder.capture(data, command, control_time_s=now, demand=controller.last_demand)
 
         if site_id >= 0:
             # Where the plan wanted the effector, versus where it actually is.
