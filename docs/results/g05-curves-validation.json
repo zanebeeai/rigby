@@ -1,0 +1,32 @@
+{
+  "schema": "g05.bounded_curves_validation.v1",
+  "source_commit": "5a6c0b3bb17eb721da6ba6c144743c24ba872301",
+  "native_clock_commit": "8d4d1c7cbeb0986e471dd1d743711d1b8e0d3119",
+  "baseline_commit": "cfbe16e90544fc22b3acc9d95ce7b2d9cc6a24ba",
+  "payload_manifest_sha256": "e59c582bc58f1fe5b4daaf4b1f39bcf8af13fe16adbbf8c7484173a60ca20500",
+  "payload_count": 59,
+  "payload_bytes": 44785883,
+  "scalar_intervals_verified": 1023,
+  "test_reports": {
+    "g05-curves-anyrobot-tests.xml": "91e3087f78d84906b3943aae650a3e58fcbb5cd2e169ec6c8b38c4b1683114f2",
+    "g05-curves-core-tests.xml": "cf464fd1b274630d3a501ff1e3f19cb579451adfbf341af588c439c30a4fb3bd",
+    "g05-curves-humanoid-tests.xml": "3519f7ce04958c53d2de37baf4bba96bf9dcfed3362bfa418f41410f11dea061"
+  },
+  "tests": {
+    "core_passed": 87,
+    "core_known_windows_subprocess_test_deselected": 1,
+    "anyrobot_passed": 300,
+    "humanoid_selected_passed": 18
+  },
+  "independent_review": {
+    "curves": 1800,
+    "intervals": 14543,
+    "failures": 0
+  },
+  "fresh_exact_region_leaf_successes": 12,
+  "canonical_successes": 5,
+  "canonical_runtime_failures": 1,
+  "all_six_repeats": 3,
+  "generation_calls": 0,
+  "G05_complete": false
+}

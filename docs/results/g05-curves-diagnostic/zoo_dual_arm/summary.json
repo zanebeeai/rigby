@@ -1,0 +1,68 @@
+{
+  "accepted": false,
+  "actual_physics_duration_s": 60.59200000002809,
+  "authored_duration_s": 60.591332,
+  "bound_schema_keys": [
+    "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+    "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+  ],
+  "certified_primitives_used": 2,
+  "duration_s": 60.591,
+  "duration_scales": [
+    1.0,
+    1.0
+  ],
+  "elapsed_seconds": 11.004,
+  "failure": {
+    "code": "deterministic_gate_failed",
+    "detail": "joint_position_limit: left_grip_left went below its lower limit",
+    "stage": "certification"
+  },
+  "fresh_exact_region_leaves": 2,
+  "intake_profile": "legacy",
+  "keys_and_phases_unchanged": true,
+  "leaf_failures": 0,
+  "max_endpoint_range_excess": 1.1102230246251565e-15,
+  "native_timestep_s": 0.002,
+  "prompt": "reach out as far as you can and then come back",
+  "region_substitutions": 0,
+  "repeats": 3,
+  "replay_agreement": true,
+  "replay_hashes": [
+    "a74bea55291b4cf07c4841dc7de3558deefde9d4638749d65996dfd187de71e6",
+    "a74bea55291b4cf07c4841dc7de3558deefde9d4638749d65996dfd187de71e6",
+    "a74bea55291b4cf07c4841dc7de3558deefde9d4638749d65996dfd187de71e6"
+  ],
+  "robot_id": "zoo_dual_arm",
+  "role_normalized_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6",
+  "scalar_intervals_checked": 155,
+  "schema_keys": [
+    "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+    "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+  ],
+  "total_wall_seconds": 20.73406950000208,
+  "tracking_error_m": 0.038904,
+  "violations": [
+    {
+      "code": "joint_position_limit",
+      "detail": "left_grip_left went below its lower limit",
+      "limit": 0.0,
+      "measured": -0.01117921345750488,
+      "subject": "left_grip_left"
+    },
+    {
+      "code": "actuator_effort_limit",
+      "detail": "left_joint_4_motor demanded more force than it has, for 14% of the motion",
+      "limit": 95.0,
+      "measured": 2922.426943958643,
+      "subject": "left_joint_4_motor"
+    },
+    {
+      "code": "actuator_effort_limit",
+      "detail": "left_grip_left_motor demanded more force than it has, for 9% of the motion",
+      "limit": 45.0,
+      "measured": 3194.9179797578154,
+      "subject": "left_grip_left_motor"
+    }
+  ]
+}
