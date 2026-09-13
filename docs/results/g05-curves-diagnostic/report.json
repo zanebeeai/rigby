@@ -1,0 +1,292 @@
+{
+  "api_calls": 0,
+  "baseline_commit": "cfbe16e90544fc22b3acc9d95ce7b2d9cc6a24ba",
+  "bodies": [
+    {
+      "accepted": true,
+      "actual_physics_duration_s": 30.50999999999397,
+      "authored_duration_s": 30.509918,
+      "bound_schema_keys": [
+        "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+        "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+      ],
+      "certified_primitives_used": 2,
+      "duration_s": 30.51,
+      "duration_scales": [
+        1.0,
+        1.0
+      ],
+      "elapsed_seconds": 4.28,
+      "fresh_exact_region_leaves": 2,
+      "intake_profile": "legacy",
+      "keys_and_phases_unchanged": true,
+      "leaf_failures": 0,
+      "max_endpoint_range_excess": 2.55351295663786e-15,
+      "native_timestep_s": 0.002,
+      "prompt": "reach out as far as you can and then come back",
+      "region_substitutions": 0,
+      "repeats": 3,
+      "replay_agreement": true,
+      "replay_hashes": [
+        "0864d57fa1521f5a4aee4966b3ebfdad3b9ab9b60d6f08464df997198b24c629",
+        "0864d57fa1521f5a4aee4966b3ebfdad3b9ab9b60d6f08464df997198b24c629",
+        "0864d57fa1521f5a4aee4966b3ebfdad3b9ab9b60d6f08464df997198b24c629"
+      ],
+      "robot_id": "zoo_compact_arm",
+      "role_normalized_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6",
+      "scalar_intervals_checked": 124,
+      "schema_keys": [
+        "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+        "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+      ],
+      "total_wall_seconds": 10.606080500001553,
+      "tracking_error_m": 9.5e-05,
+      "violations": []
+    },
+    {
+      "accepted": false,
+      "actual_physics_duration_s": 60.59200000002809,
+      "authored_duration_s": 60.591332,
+      "bound_schema_keys": [
+        "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+        "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+      ],
+      "certified_primitives_used": 2,
+      "duration_s": 60.591,
+      "duration_scales": [
+        1.0,
+        1.0
+      ],
+      "elapsed_seconds": 11.004,
+      "failure": {
+        "code": "deterministic_gate_failed",
+        "detail": "joint_position_limit: left_grip_left went below its lower limit",
+        "stage": "certification"
+      },
+      "fresh_exact_region_leaves": 2,
+      "intake_profile": "legacy",
+      "keys_and_phases_unchanged": true,
+      "leaf_failures": 0,
+      "max_endpoint_range_excess": 1.1102230246251565e-15,
+      "native_timestep_s": 0.002,
+      "prompt": "reach out as far as you can and then come back",
+      "region_substitutions": 0,
+      "repeats": 3,
+      "replay_agreement": true,
+      "replay_hashes": [
+        "a74bea55291b4cf07c4841dc7de3558deefde9d4638749d65996dfd187de71e6",
+        "a74bea55291b4cf07c4841dc7de3558deefde9d4638749d65996dfd187de71e6",
+        "a74bea55291b4cf07c4841dc7de3558deefde9d4638749d65996dfd187de71e6"
+      ],
+      "robot_id": "zoo_dual_arm",
+      "role_normalized_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6",
+      "scalar_intervals_checked": 155,
+      "schema_keys": [
+        "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+        "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+      ],
+      "total_wall_seconds": 20.73406950000208,
+      "tracking_error_m": 0.038904,
+      "violations": [
+        {
+          "code": "joint_position_limit",
+          "detail": "left_grip_left went below its lower limit",
+          "limit": 0.0,
+          "measured": -0.01117921345750488,
+          "subject": "left_grip_left"
+        },
+        {
+          "code": "actuator_effort_limit",
+          "detail": "left_joint_4_motor demanded more force than it has, for 14% of the motion",
+          "limit": 95.0,
+          "measured": 2922.426943958643,
+          "subject": "left_joint_4_motor"
+        },
+        {
+          "code": "actuator_effort_limit",
+          "detail": "left_grip_left_motor demanded more force than it has, for 9% of the motion",
+          "limit": 45.0,
+          "measured": 3194.9179797578154,
+          "subject": "left_grip_left_motor"
+        }
+      ]
+    },
+    {
+      "accepted": true,
+      "actual_physics_duration_s": 49.24600000001422,
+      "authored_duration_s": 49.245976,
+      "bound_schema_keys": [
+        "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+        "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+      ],
+      "certified_primitives_used": 2,
+      "duration_s": 49.246,
+      "duration_scales": [
+        1.0,
+        1.0
+      ],
+      "elapsed_seconds": 7.141,
+      "fresh_exact_region_leaves": 2,
+      "intake_profile": "legacy",
+      "keys_and_phases_unchanged": true,
+      "leaf_failures": 0,
+      "max_endpoint_range_excess": 8.881784197001252e-16,
+      "native_timestep_s": 0.002,
+      "prompt": "reach out as far as you can and then come back",
+      "region_substitutions": 0,
+      "repeats": 3,
+      "replay_agreement": true,
+      "replay_hashes": [
+        "4e7193b2151c04aca3ef116011a2eefef2be146279542d5891acd4fb67d512f0",
+        "4e7193b2151c04aca3ef116011a2eefef2be146279542d5891acd4fb67d512f0",
+        "4e7193b2151c04aca3ef116011a2eefef2be146279542d5891acd4fb67d512f0"
+      ],
+      "robot_id": "zoo_hand_arm",
+      "role_normalized_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6",
+      "scalar_intervals_checked": 217,
+      "schema_keys": [
+        "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+        "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+      ],
+      "total_wall_seconds": 17.384746199997608,
+      "tracking_error_m": 9.4e-05,
+      "violations": []
+    },
+    {
+      "accepted": true,
+      "actual_physics_duration_s": 47.84600000001251,
+      "authored_duration_s": 47.844854,
+      "bound_schema_keys": [
+        "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+        "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+      ],
+      "certified_primitives_used": 2,
+      "duration_s": 47.845,
+      "duration_scales": [
+        1.0,
+        1.0
+      ],
+      "elapsed_seconds": 7.311,
+      "fresh_exact_region_leaves": 2,
+      "intake_profile": "legacy",
+      "keys_and_phases_unchanged": true,
+      "leaf_failures": 0,
+      "max_endpoint_range_excess": 1.5126788710517758e-15,
+      "native_timestep_s": 0.002,
+      "prompt": "reach out as far as you can and then come back",
+      "region_substitutions": 0,
+      "repeats": 3,
+      "replay_agreement": true,
+      "replay_hashes": [
+        "e80c3eedf02cd9f340a7a79077206d9870f46e081bf7ac4ee066345714f110e6",
+        "e80c3eedf02cd9f340a7a79077206d9870f46e081bf7ac4ee066345714f110e6",
+        "e80c3eedf02cd9f340a7a79077206d9870f46e081bf7ac4ee066345714f110e6"
+      ],
+      "robot_id": "zoo_jaw_arm",
+      "role_normalized_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6",
+      "scalar_intervals_checked": 186,
+      "schema_keys": [
+        "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+        "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+      ],
+      "total_wall_seconds": 16.483345600005123,
+      "tracking_error_m": 0.000128,
+      "violations": []
+    },
+    {
+      "accepted": true,
+      "actual_physics_duration_s": 67.45600000002419,
+      "authored_duration_s": 67.454452,
+      "bound_schema_keys": [
+        "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+        "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+      ],
+      "certified_primitives_used": 2,
+      "duration_s": 67.454,
+      "duration_scales": [
+        1.0,
+        1.0
+      ],
+      "elapsed_seconds": 10.336,
+      "fresh_exact_region_leaves": 2,
+      "intake_profile": "legacy",
+      "keys_and_phases_unchanged": true,
+      "leaf_failures": 0,
+      "max_endpoint_range_excess": 2.1094237467877974e-15,
+      "native_timestep_s": 0.002,
+      "prompt": "reach out as far as you can and then come back",
+      "region_substitutions": 0,
+      "repeats": 3,
+      "replay_agreement": true,
+      "replay_hashes": [
+        "dafdb9e8214c16258c8b9910e712ba4850dbaa58ae0c37b07935512ef9dc47e9",
+        "dafdb9e8214c16258c8b9910e712ba4850dbaa58ae0c37b07935512ef9dc47e9",
+        "dafdb9e8214c16258c8b9910e712ba4850dbaa58ae0c37b07935512ef9dc47e9"
+      ],
+      "robot_id": "zoo_long_arm",
+      "role_normalized_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6",
+      "scalar_intervals_checked": 186,
+      "schema_keys": [
+        "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+        "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+      ],
+      "total_wall_seconds": 23.103894699990633,
+      "tracking_error_m": 9e-05,
+      "violations": []
+    },
+    {
+      "accepted": true,
+      "actual_physics_duration_s": 52.43800000001812,
+      "authored_duration_s": 52.43766,
+      "bound_schema_keys": [
+        "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+        "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+      ],
+      "certified_primitives_used": 2,
+      "duration_s": 52.438,
+      "duration_scales": [
+        1.0,
+        1.0
+      ],
+      "elapsed_seconds": 7.411,
+      "fresh_exact_region_leaves": 2,
+      "intake_profile": "legacy",
+      "keys_and_phases_unchanged": true,
+      "leaf_failures": 0,
+      "max_endpoint_range_excess": 9.992007221626409e-16,
+      "native_timestep_s": 0.002,
+      "prompt": "reach out as far as you can and then come back",
+      "region_substitutions": 0,
+      "repeats": 3,
+      "replay_agreement": true,
+      "replay_hashes": [
+        "40e40cc6e1cd4a78106202d729a1e6dab9720b57b174d119e78ba7fc880d9cfc",
+        "40e40cc6e1cd4a78106202d729a1e6dab9720b57b174d119e78ba7fc880d9cfc",
+        "40e40cc6e1cd4a78106202d729a1e6dab9720b57b174d119e78ba7fc880d9cfc"
+      ],
+      "robot_id": "zoo_tool_arm",
+      "role_normalized_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6",
+      "scalar_intervals_checked": 155,
+      "schema_keys": [
+        "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+        "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+      ],
+      "total_wall_seconds": 18.2678048999951,
+      "tracking_error_m": 9.3e-05,
+      "violations": []
+    }
+  ],
+  "canonical_successes": 5,
+  "goal_G05_complete": false,
+  "limitations": [
+    "Legacy-profile prerequisite diagnostic, not the G05 120-variant campaign.",
+    "G01 replay/media and G03 structural-profile integration remain pending.",
+    "Authored durations unchanged; comparison to old actual physics durations remains a G05 requirement.",
+    "Per-scalar curve bounds do not establish task success or bounds after additive/refinement operations."
+  ],
+  "mujoco_version": "3.11.0",
+  "native_clock_commit": "8d4d1c7cbeb0986e471dd1d743711d1b8e0d3119",
+  "prompt": "reach out as far as you can and then come back",
+  "schema": "g05.bounded_curves_diagnostic.v1",
+  "source_commit": "5a6c0b3bb17eb721da6ba6c144743c24ba872301"
+}
