@@ -5,8 +5,14 @@ numpy 2.5.1, scipy 1.18.0, mujoco 3.11.0, no `RIGBY_*` flags set.
 
 ```
 uv run python -m evals.corpus verify   ->  1 matched, 46 moved, 0 unblessed here   (exit 1)
-uv run pytest                          ->  22 failed, 3 errored                    (exit 1)
+uv run pytest                          ->  2626 collected, 2493 passed,
+                                           119 failed, 3 errored                   (exit 1)
 ```
+
+> **Correction, 2026-09-13.** This document and PR 38 first reported "22 failed, 3 errored".
+> That was wrong: the figure was counted from a run captured with `tail -25`, so it counted only
+> the `FAILED` lines that survived truncation. The corpus figures above were measured directly
+> and are unaffected.
 
 The single match is `knownbad-eigenvalues-unsupported`, which compiles zero frames.
 
@@ -92,13 +98,19 @@ The options, none of which is this PR's to choose:
 
 ## 3. The remaining suite failures
 
-20 of the 22 failures are `test_corpus_determinism` on the cases above. The rest:
+Of the 119 failures:
 
-| test | cause |
-|---|---|
-| `test_prompt_family_matrix[placing object-…]` | the §1 regression, `assert 3 == 0` on discontinuities |
-| `test_published_rates` | two rates in `results/10f2-20260829/SUMMARY.md`, a local gitignored artifact |
-| `test_corpus_loads_offline` ×3 (errors) | fixture assertion at `:45` |
+| count | test | cause |
+|---|---|---|
+| 67 | `test_analysis_equivalence` | committed fixtures derived from compiler metrics that have moved |
+| 48 | `test_corpus_determinism` | the 46 moved digests |
+| 2 | `test_corpus_cli` | the same |
+| 1 | `test_prompt_family_matrix[placing object-…]` | the §1 regression, `assert 3 == 0` on discontinuities |
+| 1 | `test_ci_workflow` | unrelated, present on `main` |
+| 3 (errors) | `test_corpus_loads_offline` | fixture assertion at `:45` |
+
+`test_published_rates` fails on a checkout whose gitignored `results/10f2-20260829/SUMMARY.md`
+is present; it is not collected on a clean tree.
 
 `CONTRIBUTING.md` §6 listed `object-throw-far`, `knownbad-sequence-throw-then-catch` and
 `placing object` in `test_prompt_family_matrix` as "Known Windows-only differences … not
