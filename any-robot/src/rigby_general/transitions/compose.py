@@ -240,14 +240,17 @@ def joint_limit_violations(model, manifest: RobotAssetManifestV1, arm_joints: tu
 
 def compose(model, manifest: RobotAssetManifestV1, effector: EffectorV1, frame: WorkspaceFrame, first: Skill, second: Skill, recorder: PhysicsRecorder | None, *,
             guard: "ik.CollisionGuard | None", validate: bool = True, max_repairs: int = 2, belief_age_s: float = 0.0, first_resume: TransferStart | None = None,
-            should_stop: Callable[[float], bool] | None = None) -> CompositionRecord:
+            should_stop: Callable[[float], bool] | None = None, first_done: SkillOutcome | None = None) -> CompositionRecord:
     """Run ``first``, check its boundary against ``second``, repair and
     re-verify within ``max_repairs``, then run ``second``; or, with
     ``validate`` off, run ``second`` straight from wherever ``first`` ended,
     which is what the check is there to prevent."""
 
     arm = arm_joint_names(model, effector, frame)
-    outcome = first.run(first_resume, recorder, should_stop)
+    # ``first_done`` is a first skill that already ran (the second of an
+    # earlier composition on the same record): its boundary is checked
+    # against ``second`` without running it again.
+    outcome = first_done if first_done is not None else first.run(first_resume, recorder, should_stop)
     empty_cost = TransitionCostV1(physics_s=0.0, joint_travel_rad=0.0, peak_speed_fraction=0.0)
     if not outcome.executed or outcome.continuation is None:
         return CompositionRecord(first=outcome, boundary=None, contact={}, verdicts=[], repairs=[], validated=validate, rejected=True,
