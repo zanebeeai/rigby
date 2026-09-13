@@ -27,7 +27,7 @@ from ..config import base_tree_fingerprint
 from ..gates.certify import GatePolicy, evaluate_gates, simulate
 from ..gates.control import ControllerConfig
 from ..pipeline import IngestedRobot
-from ..planner import OfflineSchemaPlanner
+from ..planner import OfflineSchemaPlanner, SchemaPlanner
 from ..primitives import PrimitiveRecord
 from ..run import RunResult, answer
 from ..schema.inventory import afforded_entries, load_inventory
@@ -43,11 +43,15 @@ def run_prompt(
     *,
     start_qpos: np.ndarray | None = None,
     repeats: int = REPEATS,
+    planner: SchemaPlanner | None = None,
 ) -> tuple[list[RunResult], list[PrimitiveRecord], list, object]:
     """Bake the prompt's leaves fresh, then answer the prompt ``repeats`` times.
 
     Returns the runs, the certified leaf records, the refused leaf bakes and the
-    requested schema program (``None`` when planning itself refused).
+    requested schema program (``None`` when planning itself refused). The
+    planner defaults to the offline recognizer; a model planner passed in is
+    used for the bake's reading and for every answer, so the leaves baked are
+    the ones that reading needs.
     """
 
     inventory = load_inventory()
@@ -57,7 +61,7 @@ def run_prompt(
         manifest = manifest.model_copy(
             update={"rest_qpos": tuple(float(value) for value in np.asarray(start_qpos, dtype=float))}
         )
-    planner = OfflineSchemaPlanner(inventory)
+    planner = planner if planner is not None else OfflineSchemaPlanner(inventory)
     afforded = afforded_entries(inventory, robot.morphology)
     records: list[PrimitiveRecord] = []
     failures: list = []
@@ -94,6 +98,7 @@ def capture_prompt(
     protocol_reference: dict | None = None,
     extra_payloads: dict[str, bytes] | None = None,
     caption: str | None = None,
+    planner: SchemaPlanner | None = None,
 ) -> dict:
     """Bake, answer, record and seal one trial. Mirrors the canonical capture.
 
@@ -103,7 +108,7 @@ def capture_prompt(
 
     model, manifest = robot.finalized.model, robot.manifest
     start = np.asarray(manifest.rest_qpos if start_qpos is None else start_qpos, dtype=float)
-    runs, records, failures, program = run_prompt(robot, prompt, start_qpos=start)
+    runs, records, failures, program = run_prompt(robot, prompt, start_qpos=start, planner=planner)
     run = runs[0]
     discrete_outcomes = [
         {"accepted": r.accepted, "failure_code": r.failure_code, "failure_stage": r.failure_stage,

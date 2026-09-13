@@ -246,6 +246,7 @@ class OfflineSchemaPlanner:
     def __init__(self, inventory: SchemaInventory) -> None:
         self.inventory = inventory
         self.last_trace: tuple[PlannerTrace, ...] = ()
+        self.last_clauses: tuple[str, ...] = ()
 
     def plan(
         self, prompt: str, *, afforded: tuple[SchemaEntry, ...]
@@ -341,6 +342,7 @@ class OfflineSchemaPlanner:
             for first, second in zip(segments, segments[1:])
         )
         self.last_trace = tuple(traces)
+        self.last_clauses = tuple(clauses[:8])
 
         return MotionSchemaProgramV1(
             program_id=f"offline-{abs(hash(text)) % (10**12):012d}",
@@ -348,6 +350,16 @@ class OfflineSchemaPlanner:
             segments=tuple(segments),
             links=links,
         )
+
+    def plan_request(self, prompt: str, *, afforded: tuple[SchemaEntry, ...]):
+        """The program and, beside it, every distance the request stated."""
+
+        from .quantities import PlannedRequestV1, extract_quantities
+
+        program = self.plan(prompt, afforded=afforded)
+        present = {segment.segment_id for segment in program.segments}
+        quantities = tuple(q for q in extract_quantities(list(self.last_clauses)) if q.segment_id in present)
+        return PlannedRequestV1(program=program, quantities=quantities, planner_id=self.planner_id)
 
 
 def _match_path(clause: str) -> str | None:

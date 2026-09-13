@@ -57,6 +57,9 @@ class GeneralFailureCode(StrEnum):
     METRIC_LEAK = "metric_leak"
     """A schema program carried a metric value it structurally must not hold."""
 
+    PROHIBITED_SUBSTITUTION = "prohibited_substitution"
+    """The planner reported a quantity the request never stated, or changed one it did."""
+
     BAKE_BUDGET_EXHAUSTED = "bake_budget_exhausted"
     """The primitive bake hit its time or attempt ceiling before completing."""
 

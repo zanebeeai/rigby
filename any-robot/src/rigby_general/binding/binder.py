@@ -109,6 +109,7 @@ def bind(
     *,
     allow_region_substitution: bool = True,
     seed: int = 0,
+    requested_distances_m: dict[str, float] | None = None,
 ) -> BoundMotion:
     """Check every segment against the library, then ground the whole program.
 
@@ -197,6 +198,7 @@ def bind(
         inventory,
         seed=seed,
         duration_scale=max(pace, 1.0),
+        requested_distances_m=requested_distances_m,
     )
     return BoundMotion(
         grounded=grounded,
