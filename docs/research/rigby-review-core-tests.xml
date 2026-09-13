@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="59" time="5.566" timestamp="2026-09-11T21:20:33.021360-04:00" hostname="gertie"><testcase classname="tests.test_core_artifacts" name="test_it_satisfies_the_protocol_its_consumers_type_against" time="0.001" /><testcase classname="tests.test_core_artifacts" name="test_bytes_round_trip_and_the_reference_describes_them" time="0.036" /><testcase classname="tests.test_core_artifacts" name="test_an_empty_payload_is_a_real_artifact" time="0.015" /><testcase classname="tests.test_core_artifacts" name="test_a_file_round_trips_and_defaults_its_filename" time="0.026" /><testcase classname="tests.test_core_artifacts" name="test_put_json_is_canonical_so_key_order_cannot_fork_an_artifact" time="0.028" /><testcase classname="tests.test_core_artifacts" name="test_the_same_bytes_are_stored_once" time="0.030" /><testcase classname="tests.test_core_artifacts" name="test_a_rewrite_of_existing_content_verifies_rather_than_overwrites" time="0.035" /><testcase classname="tests.test_core_artifacts" name="test_objects_are_sharded_by_digest_prefix" time="0.030" /><testcase classname="tests.test_core_artifacts" name="test_no_partial_file_is_left_behind_after_a_write" time="0.052" /><testcase classname="tests.test_core_artifacts" name="test_corrupted_content_is_an_error_and_not_a_value" time="0.054" /><testcase classname="tests.test_core_artifacts" name="test_a_truncated_object_is_caught_by_size_as_well_as_by_hash" time="0.060" /><testcase classname="tests.test_core_artifacts" name="test_verification_can_be_skipped_but_is_on_by_default" time="0.076" /><testcase classname="tests.test_core_artifacts" name="test_exists_reports_corruption_as_absence_only_when_asked_to_verify" time="0.045" /><testcase classname="tests.test_core_artifacts" name="test_a_reference_to_content_that_was_never_stored_is_missing" time="0.009" /><testcase classname="tests.test_core_artifacts" name="test_a_digest_shaped_like_a_path_traversal_is_refused" time="0.007" /><testcase classname="tests.test_core_artifacts" name="test_two_stores_over_the_same_root_see_each_others_objects" time="0.052" /><testcase classname="tests.test_core_hashing" name="test_key_order_does_not_change_the_digest" time="0.001" /><testcase classname="tests.test_core_hashing" name="test_the_digest_is_stable_across_processes" time="0.793"><failure message="subprocess.CalledProcessError: Command '['C:\\Users\\hocke\\GitHub\\rigby\\.venv\\Scripts\\python.exe', '-c', &quot;from rigby_core.hashing import content_hash;print(content_hash({'b': [1, 2, {'d': 4, 'c': 3}], 'a': 'x'}))&quot;]' returned non-zero exit status 1.">def test_the_digest_is_stable_across_processes() -&gt; None:
+        """A fresh interpreter with a different hash seed must agree.
+
+        Set randomization explicitly rather than trusting the default: this is the
+        failure that only appears on someone else's machine, months later, as a
+        corpus digest that will not reproduce.
+        """
+
+        program = (
+            "from rigby_core.hashing import content_hash;"
+            "print(content_hash({'b': [1, 2, {'d': 4, 'c': 3}], 'a': 'x'}))"
+        )
+        digests = set()
+        for seed in ("0", "524287"):
+&gt;           completed = subprocess.run(
+                [sys.executable, "-c", program],
+                capture_output=True,
+                text=True,
+                check=True,
+                env={"PYTHONHASHSEED": seed, "PATH": "/usr/bin:/bin"},
+            )
+
+tests\test_core_hashing.py:70:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+input = None, capture_output = True, timeout = None, check = True
+popenargs = (['C:\\Users\\hocke\\GitHub\\rigby\\.venv\\Scripts\\python.exe', '-c', "from rigby_core.hashing import content_hash;print(content_hash({'b': [1, 2, {'d': 4, 'c': 3}], 'a': 'x'}))"],)
+kwargs = {'env': {'PATH': '/usr/bin:/bin', 'PYTHONHASHSEED': '0'}, 'stderr': -1, 'stdout': -1, 'text': True}
+process = &lt;Popen: returncode: 1 args: ['C:\\Users\\hocke\\GitHub\\rigby\\.venv\\Script...&gt;
+stdout = ''
+stderr = 'Traceback (most recent call last):\n  File "&lt;string&gt;", line 1, in &lt;module&gt;\n  File "C:\\Users\\hocke\\GitHub\\rigby\\... be loaded or initialized\n- couldn\'t import psycopg \'python\' implementation: name \'base_events\' is not defined\n'
+retcode = 1
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output &amp; stderr attributes if those streams
+        were captured.
+
+        If timeout is given, and the process takes too long, a TimeoutExpired
+        exception will be raised.
+
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+&gt;               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['C:\\Users\\hocke\\GitHub\\rigby\\.venv\\Scripts\\python.exe', '-c', "from rigby_core.hashing import content_hash;print(content_hash({'b': [1, 2, {'d': 4, 'c': 3}], 'a': 'x'}))"]' returned non-zero exit status 1.
+
+..\..\..\AppData\Local\Programs\Python\Python312\Lib\subprocess.py:571: CalledProcessError</failure></testcase><testcase classname="tests.test_core_hashing" name="test_a_set_hashes_by_value_not_by_iteration_order" time="0.001" /><testcase classname="tests.test_core_hashing" name="test_negative_zero_is_folded_into_zero" time="0.001" /><testcase classname="tests.test_core_hashing" name="test_aware_datetimes_normalize_to_utc_and_naive_ones_are_refused" time="0.001" /><testcase classname="tests.test_core_hashing" name="test_dates_paths_enums_and_models_all_reduce_to_plain_json" time="0.002" /><testcase classname="tests.test_core_hashing" name="test_a_path_hashes_the_same_on_every_platform" time="0.000" /><testcase classname="tests.test_core_hashing" name="test_bytes_are_tagged_rather_than_decoded" time="0.001" /><testcase classname="tests.test_core_hashing" name="test_non_finite_floats_are_refused[nan]" time="0.001" /><testcase classname="tests.test_core_hashing" name="test_non_finite_floats_are_refused[inf]" time="0.001" /><testcase classname="tests.test_core_hashing" name="test_non_finite_floats_are_refused[-inf]" time="0.001" /><testcase classname="tests.test_core_hashing" name="test_non_string_mapping_keys_are_refused" time="0.001" /><testcase classname="tests.test_core_hashing" name="test_an_unsupported_type_is_refused_rather_than_stringified" time="0.001" /><testcase classname="tests.test_core_hashing" name="test_canonical_json_bytes_is_utf8_of_canonical_json" time="0.001" /><testcase classname="tests.test_core_hashing" name="test_content_hash_is_sha256_of_those_bytes" time="0.001" /><testcase classname="tests.test_core_hashing" name="test_hash_file_matches_sha256_of_the_whole_file_across_chunk_sizes" time="0.017" /><testcase classname="tests.test_core_hashing" name="test_hash_file_of_an_empty_file_is_the_empty_digest" time="0.004" /><testcase classname="tests.test_core_hashing" name="test_validate_sha256_normalizes_case_and_rejects_everything_else" time="0.001" /><testcase classname="tests.test_core_is_neutral" name="test_the_package_root_is_where_we_think_it_is" time="0.002" /><testcase classname="tests.test_core_is_neutral" name="test_no_module_imports_a_downstream_package[__init__.py0]" time="0.001" /><testcase classname="tests.test_core_is_neutral" name="test_no_module_imports_a_downstream_package[artifacts.py]" time="0.004" /><testcase classname="tests.test_core_is_neutral" name="test_no_module_imports_a_downstream_package[contracts.py]" time="0.015" /><testcase classname="tests.test_core_is_neutral" name="test_no_module_imports_a_downstream_package[demos.py]" time="0.005" /><testcase classname="tests.test_core_is_neutral" name="test_no_module_imports_a_downstream_package[errors.py0]" time="0.002" /><testcase classname="tests.test_core_is_neutral" name="test_no_module_imports_a_downstream_package[hashing.py]" time="0.003" /><testcase classname="tests.test_core_is_neutral" name="test_no_module_imports_a_downstream_package[jobs.py]" time="0.008" /><testcase classname="tests.test_core_is_neutral" name="test_no_module_imports_a_downstream_package[__init__.py1]" time="0.001" /><testcase classname="tests.test_core_is_neutral" name="test_no_module_imports_a_downstream_package[accents.py]" time="0.002" /><testcase classname="tests.test_core_is_neutral" name="test_no_module_imports_a_downstream_package[compiler.py]" time="0.015" /><testcase classname="tests.test_core_is_neutral" name="test_no_module_imports_a_downstream_package[errors.py1]" time="0.002" /><testcase classname="tests.test_core_is_neutral" name="test_no_module_imports_a_downstream_package[ownership.py]" time="0.007" /><testcase classname="tests.test_core_is_neutral" name="test_no_module_imports_a_downstream_package[refinement.py]" time="0.015" /><testcase classname="tests.test_core_is_neutral" name="test_no_module_imports_a_downstream_package[rotations.py]" time="0.004" /><testcase classname="tests.test_core_is_neutral" name="test_no_module_imports_a_downstream_package[timing.py]" time="0.006" /><testcase classname="tests.test_core_is_neutral" name="test_no_module_imports_a_downstream_package[trajectory.py]" time="0.005" /><testcase classname="tests.test_core_is_neutral" name="test_no_module_imports_a_downstream_package[postgres_jobs.py]" time="0.006" /><testcase classname="tests.test_core_is_neutral" name="test_no_module_imports_a_downstream_package[records.py]" time="0.005" /><testcase classname="tests.test_core_is_neutral" name="test_no_module_imports_a_downstream_package[__init__.py2]" time="0.002" /><testcase classname="tests.test_core_is_neutral" name="test_no_module_imports_a_downstream_package[controller.py]" time="0.011" /><testcase classname="tests.test_demos" name="test_register_copies_media_and_records_provenance" time="0.751" /><testcase classname="tests.test_demos" name="test_same_prompt_different_media_gets_a_different_id" time="1.041" /><testcase classname="tests.test_demos" name="test_register_refuses_what_the_validator_would" time="0.406" /><testcase classname="tests.test_demos" name="test_index_renders_every_entry" time="0.769" /></testsuite></testsuites>

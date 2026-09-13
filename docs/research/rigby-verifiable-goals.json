@@ -1,0 +1,920 @@
+{
+  "schema_version": "1.0",
+  "document_kind": "proposed_research_goal_catalog",
+  "reviewed_commit": "cfbe16e90544fc22b3acc9d95ce7b2d9cc6a24ba",
+  "execution_status": "planning_only",
+  "notes": [
+    "No goals have been activated or marked achieved by writing this catalog.",
+    "Thresholds are proposed engineering/research gates, not existing results. Freeze protocols before evaluating and retain any stricter applicable acceptance requirements.",
+    "Research assessment completion and capability/hypothesis success are separate outcomes.",
+    "Dependencies describe required capabilities; goals with incomplete dependencies may receive independent preparatory work, but cannot pass their dependent acceptance gate.",
+    "Milestone demo filenames below are future requirements; no new milestone videos are claimed to exist."
+  ],
+  "recommended_initial_order": [
+    "G00",
+    "G01",
+    "G02",
+    "G03",
+    "G05",
+    "G06",
+    "G07",
+    "G08",
+    "G09",
+    "G10"
+  ],
+  "recommended_following_order": [
+    "G11",
+    "G12",
+    "G15",
+    "G16",
+    "G17",
+    "G18",
+    "G23",
+    "G24",
+    "G22",
+    "G25"
+  ],
+  "supporting_tracks": [
+    {
+      "name": "Semantics",
+      "goals": [
+        "G04"
+      ],
+      "start_after": [
+        "G03"
+      ]
+    },
+    {
+      "name": "Visual verification",
+      "goals": [
+        "G13",
+        "G14"
+      ],
+      "start_after": [
+        "G06",
+        "G09"
+      ]
+    },
+    {
+      "name": "Synthetic control",
+      "goals": [
+        "G19",
+        "G20",
+        "G21"
+      ],
+      "start_after": [
+        "G10"
+      ],
+      "conditional": "Scale only after measured pilot value/capacity."
+    }
+  ],
+  "optional_goals": [
+    "G26",
+    "G27",
+    "G28",
+    "G29"
+  ],
+  "inputs": [
+    {
+      "id": "U1_model_access_budget",
+      "title": "Model endpoint and spending ceiling",
+      "needed_for": [
+        "G14",
+        "G22",
+        "G26"
+      ],
+      "needed_when": "Before new paid VLM/LLM evaluation or a model-dependent baseline run.",
+      "what_to_provide": "An approved existing model endpoint/account and a total/per-run spending ceiling; configure credentials through the project's secret mechanism, not in chat. If an already authorized setup exists, reuse it.",
+      "fallback": "Build prompts, evidence variants, mocks, labels and offline evaluation first. Use deterministic/sensor termination while VLM validation is pending.",
+      "status": "Not checked or assumed authorized for this plan; no new paid calls made."
+    },
+    {
+      "id": "U2_compute_scale",
+      "title": "Long-run compute and evidence storage",
+      "needed_for": [
+        "G13",
+        "G15",
+        "G21",
+        "G22",
+        "G24",
+        "G29"
+      ],
+      "needed_when": "After local pilots measure GPU-hours, simulation throughput and bytes per episode; before exceeding local capacity for large corpora, long-video archives or training, or running paid remote jobs.",
+      "what_to_provide": "A permitted compute destination, access if external, GPU-hour/cost ceiling and persistent storage/quota. Specify acceptable long-run use of the local laptop if relevant.",
+      "fallback": "Use existing CPU simulation, compressed numeric traces, streamed video and small local learning experiments; defer 10k/100k-scale training and complete the semantic/hierarchy demo independently.",
+      "status": "Local GPU reports 8,188 MiB; RAM 15.3 GiB; C: free space about 65.7 GiB at inspection. Torch is absent from the current virtual environment. No throughput or CUDA-training compatibility claim is made."
+    },
+    {
+      "id": "U3_independent_review",
+      "title": "Independent labels, holdout custody and scientific review",
+      "needed_for": [
+        "G04",
+        "G13",
+        "G14",
+        "G21",
+        "G22",
+        "G25",
+        "G26"
+      ],
+      "needed_when": "Before declaring language/judge calibration independent, claiming blind topology generalization, or collecting a real human study.",
+      "what_to_provide": "A reviewer who can label/adjudicate ambiguous cases and hold fresh test identities, or existing independently authored labels and a trusted evaluation procedure. Human-preference claims additionally need actual raters.",
+      "fallback": "Start with existing fixtures, simulator truth and generated holdouts labeled as internal. Keep scientific independence unclaimed until review occurs.",
+      "status": "Existing sealed manifests can be used through their intended evaluator after model freeze; this plan did not read their identities. Already inspected zoo bodies cannot be relabeled unseen."
+    },
+    {
+      "id": "U4_exact_assets",
+      "title": "Preferred proprietary or exact robot/environment assets",
+      "needed_for": [
+        "G16"
+      ],
+      "needed_when": "Only if the demo must use particular supplied designs rather than procedural models.",
+      "what_to_provide": "URDF/MJCF and meshes, actuator/sensor/physical parameters, desired embodiment details and applicable use/redistribution constraints.",
+      "fallback": "Procedurally create a dog-plus-arm, wheeled-biped and rigid articulated octopus-like body, and use a procedurally authored common room.",
+      "status": "No exact external asset is a prerequisite for starting the simulation path."
+    },
+    {
+      "id": "U5_hardware",
+      "title": "Physical robot access and on-site operation",
+      "needed_for": [
+        "G27"
+      ],
+      "needed_when": "Before hardware integration/execution.",
+      "what_to_provide": "The actual robot, driver/API details, network access, limits, calibrated sensors, controlled workspace, an on-site operator and the approved physical experiment scope.",
+      "fallback": "Complete simulation transfer and replayable evidence first.",
+      "status": "No hardware availability assumed."
+    },
+    {
+      "id": "U6_soft_mechanics",
+      "title": "A defined soft-body target and validation data",
+      "needed_for": [
+        "G28"
+      ],
+      "needed_when": "Before claiming realistic compliant/continuum/fluid behavior.",
+      "what_to_provide": "The intended mechanics and material/contact parameters, plus independent reference measurements or an accepted validation model.",
+      "fallback": "Use rigid segmented tentacles and describe them accurately.",
+      "status": "Optional extension; not a prerequisite for exotic rigid-body demos."
+    }
+  ],
+  "goals": [
+    {
+      "id": "G00",
+      "title": "Establish the executable baseline and protect existing capabilities",
+      "phase": 0,
+      "kind": "engineering",
+      "depends_on": [],
+      "acceptance": [
+        "Reproduce the review probes at a recorded commit, then fix the Windows hash-test environment issue without changing hashing semantics; core and any-robot suites pass with no new skips or weakened assertions.",
+        "Record the selected humanoid and frontend suites, existing expected failures, basic drawer acceptance, and gesture/finger export smoke checks. A green expected-failure test is never counted as task success.",
+        "Correct stale capability/sensor/collision descriptions and the zoo manifest robot count; map every active acceptance requirement to measured, deferred, failed or out-of-scope evidence."
+      ],
+      "evidence": [
+        "baseline.json, JUnit reports, capability-claims.csv, acceptance-crosswalk.json",
+        "A preserved pre-change reference bundle for the two fresh probes"
+      ],
+      "demo": null,
+      "inputs": [],
+      "failure": "Investigate regressions locally; preserve and name unresolved product failures instead of broadening exclusions.",
+      "status": "planned",
+      "demo_required": false
+    },
+    {
+      "id": "G01",
+      "title": "Make every major result replayable and visually inspectable",
+      "phase": 0,
+      "kind": "engineering",
+      "depends_on": [
+        "G00"
+      ],
+      "acceptance": [
+        "Create the evidence-bundle contract described below and a single runner that can simulate, verify, render, and re-render recorded trajectories offline.",
+        "Demonstrate one success, one runtime failure and one pre-execution refusal; tampering with a trace, model, world or outcome file is detected.",
+        "Re-run the six-body canonical prompt three times under pinned dependencies; compare deterministic state/action data while excluding run IDs and wall-clock metadata. Declare any required numerical tolerance before evaluation.",
+        "MP4/WebM contains the full episode at real-time playback with timestamps; GIFs are explicitly labeled summaries. Verify that the existing 90-frame render cap cannot silently replace a full-duration video."
+      ],
+      "evidence": [
+        "Versioned evidence schema and replay CLI",
+        "Hash-validation and frame/time alignment checks"
+      ],
+      "demo": "D01: baseline success/failure replay, plus a six-body GIF preview and full-duration videos.",
+      "inputs": [],
+      "failure": "Repair trace/state coverage or renderer timing; a plan animation is not accepted as execution evidence.",
+      "status": "planned",
+      "demo_required": true
+    },
+    {
+      "id": "G02",
+      "title": "Freeze task contracts, observation boundaries and benchmark protocol",
+      "phase": 0,
+      "kind": "engineering",
+      "depends_on": [
+        "G00",
+        "G01"
+      ],
+      "acceptance": [
+        "Implement separate strict fixed-world and capability-normalized modes. A mutation test proves strict mode rejects world fitting and undocumented semantic substitutions.",
+        "Hash resolved non-robot geometry, object dynamics, placements, lighting, goals, physics, start-zone rules and sensor policy; the fixed-world hash remains identical across robot swaps. Declared robot-mounted sensor transforms live in the body manifest.",
+        "Register root goals, dwell times, attempt/time budgets, perturbation distributions, feasibility rules, metrics and split policy before scored runs. Do not inspect existing sealed holdout identities.",
+        "Keep simulator ground truth in an independent evaluator. Access tests prove the acting policy cannot read privileged evaluator fields; fully observed planning is a separately labeled baseline."
+      ],
+      "evidence": [
+        "benchmark-protocol.v1.json, world manifests, split hashes, observation-access tests",
+        "Crosswalk to existing acceptance_criteria.general.yaml; no existing requirement silently relaxed"
+      ],
+      "demo": null,
+      "inputs": [],
+      "failure": "Resolve a world/goal/access mismatch before collecting transfer scores.",
+      "status": "planned",
+      "demo_required": false
+    },
+    {
+      "id": "G03",
+      "title": "Derive a body capability contract automatically",
+      "phase": 1,
+      "kind": "engineering",
+      "depends_on": [
+        "G02"
+      ],
+      "acceptance": [
+        "Ingest all six zoo bodies and at least three available valid third-party descriptions without robot-ID, joint-name or link-name branches in shared control code.",
+        "On an independently checked geometry fixture, derive sites within 1 mm, classify all declared effectors correctly, and identify capability/limit/inertia problems by typed error; separately retain existing sealed-label accuracy requirements.",
+        "Record geometry, actuation, contact and sensor assumptions with provenance and uncertainty. Unknown grip, suction, rolling or balance ability must not be inferred from appearance alone.",
+        "Joint/link renaming and ordering changes preserve capabilities and transform-equivalent motion; include at least 20 renamings/permutations per zoo body."
+      ],
+      "evidence": [
+        "body-manifest.json per robot, morphology measurements, static scan, admission report",
+        "Robot/fixture contact feasibility map with independent mechanical reasoning"
+      ],
+      "demo": "D03: automated body inspection gallery showing inferred chains, effectors, workspace and named unsupported capabilities.",
+      "inputs": [],
+      "failure": "Fix general inference or reject an invalid model explicitly; do not patch a benchmark robot by name.",
+      "status": "planned",
+      "demo_required": true
+    },
+    {
+      "id": "G04",
+      "title": "Verify semantic fidelity beyond identical hashes",
+      "phase": 1,
+      "kind": "engineering",
+      "depends_on": [
+        "G02",
+        "G03"
+      ],
+      "acceptance": [
+        "Freeze 60 shared semantic cases spanning the inventory, reference frames, qualitative extent/speed, repetition and object roles; corresponding requested semantic programs agree across applicable bodies.",
+        "Add at least 120 independently authored/reviewed language cases with paraphrases, minimal contrasts, negation, ambiguous deixis and explicit quantities. Canonical symbolic cases must be exact; language correctness target is at least 95%, with all prohibited substitutions rejected.",
+        "Preserve '5 cm' as an exact requested quantity while grounding 'a little' from context; verify two distinct body-relative distances without changing the semantic reading.",
+        "Publish errors and unsupported language coverage separately. If independent labels are unavailable, complete the engineering fixture but leave the research-language gate pending."
+      ],
+      "evidence": [
+        "semantic-cases.json, labels/provenance, per-case expected/actual programs and confusion report"
+      ],
+      "demo": "D04: synchronized 'a little' versus 'as far as possible' versus '5 cm' on three bodies, with the semantic fields and measured distances visible.",
+      "inputs": [
+        "U3_independent_review"
+      ],
+      "failure": "Repair the representation/parser on development cases; freeze a new held-out test set if the old test set informed changes.",
+      "status": "planned",
+      "demo_required": true
+    },
+    {
+      "id": "G05",
+      "title": "Close the six-body free-space composition gap",
+      "phase": 1,
+      "kind": "engineering",
+      "depends_on": [
+        "G01",
+        "G03"
+      ],
+      "acceptance": [
+        "The exact reviewed reach/return prompt succeeds on all six bodies using freshly generated exact-region primitives, zero substitutions and unchanged limits; left_joint_4 no longer exceeds its range.",
+        "For each body, evaluate at least 20 predeclared start/pace variants with at least 19 successful feasible trials; invalid requests produce correct typed refusals and are counted separately.",
+        "Retain all current physical gates, report tracking and wall/execution time, and keep canonical durations no slower than the recorded baseline unless a documented physical requirement is independently justified."
+      ],
+      "evidence": [
+        "Fresh primitive and composition traces for 6 canonical plus 120 variant trials",
+        "Joint-boundary regression and deterministic replay results"
+      ],
+      "demo": "D05: six synchronized bodies performing reach/return, plus the old and repaired dual-arm transition.",
+      "inputs": [],
+      "failure": "Diagnose and repair transition/control feasibility; slowing until an arbitrary time budget disappears is not a pass.",
+      "status": "planned",
+      "demo_required": true
+    },
+    {
+      "id": "G06",
+      "title": "Make contact primitives physically useful across grippers",
+      "phase": 1,
+      "kind": "engineering",
+      "depends_on": [
+        "G02",
+        "G03",
+        "G05"
+      ],
+      "acceptance": [
+        "For every one of the five gripper-bearing zoo bodies, attempt approach, opposition/closure, lift, sustained hold, transport and release. Every enabled body must pass the canonical normalized grasp. Record remaining bodies as failed or independently demonstrated mechanically unsupported, with concrete diagnostics.",
+        "On a fixed fixture selected and frozen from the independent feasibility map, achieve at least 90/100 successful trials per enabled body. Completion requires at least three structural/effector configurations, including a bimanual or multifinger configuration, not three length variants of one gripper. An unsuccessful/refused body does not count toward this minimum.",
+        "Measure stable object support for at least 2 s, transport into the target region, and stable released placement for at least 2 s; freeze displacement, load and penetration tolerances before evaluation.",
+        "No hidden object state writes, welds, object actuators or arm/object collision exclusions may create a successful manipulation result. Invalid source-model collision hulls require documented model treatment."
+      ],
+      "evidence": [
+        "Per-phase contact traces, full collision policy, object-pose/force curves, 100-trial reports per enabled body",
+        "Failure taxonomy for all five bodies, including multifinger and dual-arm failures"
+      ],
+      "demo": "D06: acquisition-to-release on all five attempted bodies, including failures; synchronized fixed-world comparison for the enabled set.",
+      "inputs": [],
+      "failure": "A failed body stays visible and cannot be removed post hoc to raise success. Mechanical infeasibility is an outcome, not a successful enabled capability.",
+      "status": "planned",
+      "demo_required": true
+    },
+    {
+      "id": "G07",
+      "title": "Implement recursive superprimitive contracts",
+      "phase": 2,
+      "kind": "engineering",
+      "depends_on": [
+        "G02",
+        "G03"
+      ],
+      "acceptance": [
+        "Use one neutral typed contract for leaves and composites: arguments, requirements, initiation, invariants, effects, termination, timeout, recovery, resource ownership and validity context.",
+        "Execute Sequence, Selector, Observe, Primitive and bounded RepeatUntil at nesting depth at least 4; represent Parallel with explicit resource conflicts.",
+        "Reject cycles, unbounded retries, unknown predicates and incompatible resource ownership; test success, failure, unknown and interruption at each node.",
+        "Round-trip persisted definitions without changing meaning; no thumb/finger/arm names are required by the neutral contract."
+      ],
+      "evidence": [
+        "Contract schema, nested example programs, serialization and failure-propagation tests"
+      ],
+      "demo": null,
+      "inputs": [],
+      "failure": "Fix semantics and error propagation before adding more skills or relying on LLM-generated trees.",
+      "status": "planned",
+      "demo_required": false
+    },
+    {
+      "id": "G08",
+      "title": "Validate and repair transitions between certified skills",
+      "phase": 2,
+      "kind": "engineering",
+      "depends_on": [
+        "G05",
+        "G06",
+        "G07"
+      ],
+      "acceptance": [
+        "Check terminal/initiation compatibility for pose, velocity, contact mode, object ownership, belief freshness and limb/support resources.",
+        "On at least 100 frozen feasible boundary cases spanning every enabled body, achieve at least 95 successful composed executions; record transition cost.",
+        "Inject at least 40 incompatible boundaries and require every one to be rejected or repaired and re-verified before execution. Include the reviewed dual-arm failure.",
+        "Apply continuity requirements appropriate to the contact mode; confirm that a smooth path cannot bypass object-hold or support checks."
+      ],
+      "evidence": [
+        "Transition corpus, feasibility/repair report and controller traces"
+      ],
+      "demo": "D08: before/after transition repair, including joint-limit approach, carry-to-place and a contact-mode change.",
+      "inputs": [],
+      "failure": "Return a typed composition failure or insert a verified transition; leaf certificates alone cannot certify the parent.",
+      "status": "planned",
+      "demo_required": true
+    },
+    {
+      "id": "G09",
+      "title": "Generate observable conditionals and monitor progress honestly",
+      "phase": 2,
+      "kind": "engineering",
+      "depends_on": [
+        "G02",
+        "G03",
+        "G07"
+      ],
+      "acceptance": [
+        "Represent each conditional with entities, evidence sources, temporal window, decision rule, uncertainty/abstention and fallback.",
+        "Cover at least six predicates: reachable, opposition established, held, moving with robot, stably placed, area clear. Evaluate at least 20 independently labeled episodes per predicate using declared sensors.",
+        "On at least 60 cases with occlusion, stale frames or absent sensors, produce unknown/re-observe/failure rather than an unsupported success; no false success in this engineered negative set.",
+        "The same predicate contract binds to different sensor configurations without privileged evaluator leakage. Thresholds are set by task policy/calibration, not guessed from URDF text."
+      ],
+      "evidence": [
+        "Predicate/evidence schemas, labeled episode set, access tests and false-success report"
+      ],
+      "demo": "D09: visible grasp, hidden slip and occluded placement, with sensor provenance and pass/fail/unknown overlays.",
+      "inputs": [],
+      "failure": "Add an observation/test action or abstain; keep a fully observed oracle baseline separately labeled.",
+      "status": "planned",
+      "demo_required": true
+    },
+    {
+      "id": "G10",
+      "title": "Deliver the first reusable closed-loop TransferObject skill",
+      "phase": 2,
+      "kind": "engineering",
+      "depends_on": [
+        "G06",
+        "G08",
+        "G09"
+      ],
+      "acceptance": [
+        "Run one root skill definition through Acquire, VerifyHold, Transport, Release and VerifyPlacement on the frozen enabled bodies and identical physical scene.",
+        "At least 90/100 nominal successful episodes per body under a frozen 120 s default episode cap; report cap changes as protocol revisions before evaluation.",
+        "For each body, run 20 trials each of displaced object, induced slip and temporary occlusion; recover and finish at least 16/20 in each class, with no false completion across all trials.",
+        "Retry budgets are at most 3 per subgoal and execution is resumable from observed state; a recovery does not restart the environment or teleport an object."
+      ],
+      "evidence": [
+        "Nominal/disturbance per-body reports, retry accounting and root/leaf state traces"
+      ],
+      "demo": "D10: three-body fixed-world transfer, plus uninterrupted slip and occlusion recoveries.",
+      "inputs": [],
+      "failure": "Keep failures typed and visible; identify whether the limiting cause is semantics, perception, transition or control.",
+      "status": "planned",
+      "demo_required": true
+    },
+    {
+      "id": "G11",
+      "title": "Promote, retrieve and reuse skills with validity conditions",
+      "phase": 2,
+      "kind": "engineering",
+      "depends_on": [
+        "G07",
+        "G10"
+      ],
+      "acceptance": [
+        "Promote a candidate only after its independent validation set passes; store definition, body/controller/sensor context, cost and evidence hashes.",
+        "Execute the same TransferObject and at least two subskills from persisted storage on three new object/layout instances per enabled body without manual edits; log cache reuse.",
+        "Change geometry, controller, sensors, friction assumptions and evidence schema in separate tests; invalidate or revalidate every affected certificate.",
+        "Interrupt and restart at at least 10 safe boundaries; reconstruct state from observations and complete or stop explicitly. Do not treat retrieval similarity as proof of validity."
+      ],
+      "evidence": [
+        "Versioned library, promotion decisions, retrieval traces, invalidation and restart tests"
+      ],
+      "demo": "D11: learn/validate once, reuse in a new layout, then invalidate and repair after a physical-context change.",
+      "inputs": [],
+      "failure": "Retain the skill as an unverified candidate; neither retrieval nor a saved success video grants certification.",
+      "status": "planned",
+      "demo_required": true
+    },
+    {
+      "id": "G12",
+      "title": "Acquire missing motor skills within a bounded search budget",
+      "phase": 2,
+      "kind": "research",
+      "depends_on": [
+        "G08",
+        "G09",
+        "G11"
+      ],
+      "acceptance": [
+        "Freeze three acquisition problems in at least two body families before search; at least one requires new contact timing/trajectory/controller parameters rather than only a new sequence or rename.",
+        "Starting without a validated implementation, synthesize one through simulation/optimization and store its contract. Default ceiling: 200 attempts or 30 simulator-worker minutes per problem, whichever comes first.",
+        "Evaluate on 50 unseen perturbation trials per body/problem; success target is at least 40/50 with all hard gates satisfied and zero manual trajectory edits during acquisition.",
+        "Separate instantiation, composition and motor-skill discovery in the ledger. An unsupported discovery hypothesis is a valid reported research result, but does not meet the capability target."
+      ],
+      "evidence": [
+        "Frozen missing-skill specifications, all search attempts, teacher/optimizer provenance, held-out outcomes"
+      ],
+      "demo": "D12: missing skill → failed attempts → acquired execution → reuse, with search budget and an uninterrupted final trial.",
+      "inputs": [],
+      "failure": "Stop at the budget; publish the limiting capability and keep that skill unpromoted. Do not rebrand an existing motion as discovery.",
+      "status": "planned",
+      "demo_required": true
+    },
+    {
+      "id": "G13",
+      "title": "Build a calibration corpus from real execution outcomes",
+      "phase": 3,
+      "kind": "engineering",
+      "depends_on": [
+        "G01",
+        "G02",
+        "G06",
+        "G09"
+      ],
+      "acceptance": [
+        "Collect at least 600 independent source episodes: 300 successes and 300 natural failures, covering at least five enabled bodies and six task/failure families. Mutations are auxiliary and stay grouped with their source.",
+        "Reserve 120 success and 120 failure episodes for a sealed evaluation slice; retain at least two morphology identities or one distinct family outside calibration tuning.",
+        "Provide full video, sparse/dense sampled views and global-plus-local crops from the same episodes; hide labels, model verdicts and privileged telemetry from judging inputs.",
+        "Use independent simulator truth for measurable physical outcomes. Human reviewers resolve semantic/visual ambiguity and record unknown instead of forced labels."
+      ],
+      "evidence": [
+        "Corpus manifest, split hashes, label provenance, duplication/leakage checks and evidence variants"
+      ],
+      "demo": "D13: labeled failure atlas with complete source-episode links, including near successes and occluded failures.",
+      "inputs": [
+        "U3_independent_review"
+      ],
+      "failure": "Expand missing strata or quarantine ambiguous labels; do not inflate n with frames or correlated mutations.",
+      "status": "planned",
+      "demo_required": true
+    },
+    {
+      "id": "G14",
+      "title": "Calibrate VLM judging before enabling autonomous termination",
+      "phase": 3,
+      "kind": "research",
+      "depends_on": [
+        "G09",
+        "G13"
+      ],
+      "acceptance": [
+        "Freeze model/version/prompt, decision threshold, abstention policy and evidence format before sealed evaluation; compare sparse frames, dense/video evidence, and global-plus-local views at matched call/candidate budgets.",
+        "Beat always-accept/reject/first/base baselines; proposed promotion targets are balanced accuracy at least 0.85, sensitivity at least 0.85 and decided-case coverage at least 0.80, with per-body/class results and confidence intervals.",
+        "For noncritical semantic termination, require one-sided 95% false-success upper bound at most 5% on the eligible decided failure population; keep unknowns separate and report all-trial metrics. Critical physical termination retains deterministic/sensor checks.",
+        "For any stronger per-failure-class claim, collect the required independent sample count; the pooled corpus cannot establish each rare-class rate. Complete oracle/no-VLM/calibrated-VLM downstream comparisons."
+      ],
+      "evidence": [
+        "Frozen judge configuration, every raw response, cost ledger, confidence/coverage report and downstream outcome comparison"
+      ],
+      "demo": "D14: old versus calibrated decisions on the same hidden-slip/near-complete sequences, including abstentions and remaining errors.",
+      "inputs": [
+        "U1_model_access_budget",
+        "U3_independent_review"
+      ],
+      "failure": "Report the instrument as unsuitable and keep VLM-only termination disabled; simulation/control work continues using declared sensors and oracle baselines.",
+      "status": "planned",
+      "demo_required": true
+    },
+    {
+      "id": "G15",
+      "title": "Demonstrate recursive long-horizon manipulation before mobility",
+      "phase": 4,
+      "kind": "engineering",
+      "depends_on": [
+        "G10",
+        "G11"
+      ],
+      "acceptance": [
+        "Generate ClearWorkArea trees of depth at least 4 for 3, 5 and 10 objects, using shared subskills and per-object grounding rather than manually authored per-instance scripts.",
+        "On three frozen enabled bodies, run 50 paired nominal seeds for each chain length; proposed whole-task success targets are 90%, 80% and 60% for 3/5/10 objects respectively, with confidence intervals.",
+        "Run 30 paired disturbed seeds per body for 5 objects; hierarchy with recovery should improve full completion by at least 15 percentage points over the same leaves in a flat/no-recovery executor, under equal time and retry budgets.",
+        "Root success requires every designated object correctly/stably placed and the work area clear; no averaging successful children over an unfinished root task. Track planning calls and time saved by reuse."
+      ],
+      "evidence": [
+        "All generated trees, subskill reuse counts, chain-length curves and paired outcomes"
+      ],
+      "demo": "D15: uninterrupted 3/5/10-object clearance videos with a live tree and a disturbance/recovery example.",
+      "inputs": [],
+      "failure": "Publish chain-length failures and failure correlation; preserve the defined root goal while repairing the responsible subtree.",
+      "status": "planned",
+      "demo_required": true
+    },
+    {
+      "id": "G16",
+      "title": "Build and validate the three exotic mobile embodiments",
+      "phase": 5,
+      "kind": "engineering",
+      "depends_on": [
+        "G03",
+        "G10"
+      ],
+      "acceptance": [
+        "Provide dog-plus-arm, wheeled-biped and rigid segmented octopus-like models with physical/actuator/sensor manifests; these are development/showcase bodies, not automatically held-out research bodies.",
+        "Validate inertias, limits, collision geometry, support/contact roles and recoverable initial states. Body definitions may differ; shared task code contains no robot-ID special cases.",
+        "Freeze one common feasible world and goal set for the three bodies before policy tuning, supported by reach/support/traction analysis and a labeled expert feasibility baseline.",
+        "Record origin and redistribution terms of every asset; procedural models are the default if no preferred models are supplied. The shared task/world remains independent of which locomotion controller later succeeds."
+      ],
+      "evidence": [
+        "Three versioned robot packages, integrity reports, feasibility map and asset provenance"
+      ],
+      "demo": "D16: physical inspection and contact/support tests for all three bodies, including any unsupported maneuvers.",
+      "inputs": [],
+      "failure": "Repair the model or narrow its declared capability; exact external designs require U4, but procedural substitutes permit progress.",
+      "status": "planned",
+      "demo_required": true
+    },
+    {
+      "id": "G17",
+      "title": "Establish independent locomotion control",
+      "phase": 5,
+      "kind": "engineering",
+      "depends_on": [
+        "G02",
+        "G16"
+      ],
+      "acceptance": [
+        "For each body, execute travel, stop, turn and return on the common course in at least 100 frozen trials; at least 90 reach the goal and remain stable for 2 s.",
+        "Run 30 predetermined perturbation trials per body with at least 24 recoveries; include traction/support disturbances appropriate to the declared mechanics and report them separately.",
+        "Controller logs identify analytic, per-body trained, automatically adapted or shared policy provenance. No root teleportation, artificial support or hidden stabilizing wrench may count as success.",
+        "Publish fall, collision, energy, speed, controller latency and time-budget outcomes; locomotion control must work without the high-level language planner."
+      ],
+      "evidence": [
+        "Locomotion benchmark report, actuation/support logs and controller provenance"
+      ],
+      "demo": "D17: synchronized walk/roll/crawl course plus uninterrupted perturbation recoveries.",
+      "inputs": [],
+      "failure": "Use a bounded per-body controller development experiment; if it needs training beyond local capacity, defer to U2 without blocking completed fixed-base work.",
+      "status": "planned",
+      "demo_required": true
+    },
+    {
+      "id": "G18",
+      "title": "Combine locomotion with manipulation",
+      "phase": 5,
+      "kind": "engineering",
+      "depends_on": [
+        "G08",
+        "G09",
+        "G10",
+        "G17"
+      ],
+      "acceptance": [
+        "Execute approach object → stabilize → acquire → move while holding → place → return, with the same root contract on the three bodies.",
+        "Achieve at least 80/100 nominal full-task successes per body in the fixed world; verify object control during base motion and correct support-resource allocation.",
+        "Run 30 disturbances per body distributed over navigation, carrying and placement; at least 24 end in recovery and true completion, with all remaining trials explicitly failed.",
+        "Validate shared limbs/support contacts: a limb used to hold an object cannot simultaneously be assumed available for stance without a verified combined controller."
+      ],
+      "evidence": [
+        "Loco-manipulation traces, resource schedules, support/contact invariants and outcome reports"
+      ],
+      "demo": "D18: uninterrupted retrieve-and-deliver on dog, wheels and articulated tentacles, with carrying perturbations.",
+      "inputs": [],
+      "failure": "Identify and repair the coupling failure; passing navigation and grasp separately is insufficient.",
+      "status": "planned",
+      "demo_required": true
+    },
+    {
+      "id": "G19",
+      "title": "Generate a useful synthetic control dataset",
+      "phase": 6,
+      "kind": "engineering",
+      "depends_on": [
+        "G02",
+        "G08",
+        "G10"
+      ],
+      "acceptance": [
+        "Produce a 1,000-episode pilot from at least four development morphologies, six primitive/contact/transition families and recorded disturbance distributions; include at least 20% failure/recovery or near-boundary episodes.",
+        "Store actual state, action, reference, contacts, declared observations, body graph, dynamics, seed and independent outcomes. Demonstrate reconstruction of any sampled episode.",
+        "Freeze train/development/topology-test splits before generation; no holdout teacher trajectories enter training. Validate coverage and data integrity with a sampled replay audit.",
+        "Measure bytes/episode and simulation throughput before scaling. Default local disk ceiling is 10 GiB for research outputs until capacity is reassessed; 10k/100k points are conditional expansions, not required upfront."
+      ],
+      "evidence": [
+        "Dataset schema, generation config, split hashes, coverage/data-quality report and throughput/storage measurements"
+      ],
+      "demo": "D19: dataset coverage reel with linked full traces and a side-by-side clean/disturbed/recovery episode.",
+      "inputs": [],
+      "failure": "Improve teacher/coverage quality before increasing volume; a library of reference positions alone does not meet this dataset contract.",
+      "status": "planned",
+      "demo_required": true
+    },
+    {
+      "id": "G20",
+      "title": "Test a small per-body residual tracker",
+      "phase": 6,
+      "kind": "research",
+      "depends_on": [
+        "G19"
+      ],
+      "acceptance": [
+        "Install an isolated reproducible training environment and compare analytic control, a small per-body tracker, and a history-conditioned residual tracker under identical observations and references.",
+        "Run at least three training seeds and 100 held-out disturbance trials per selected body; include tracking, task success, latency and effort outcomes.",
+        "Adoption target: at least 10 percentage points more disturbed task success or at least 20% lower tracking error, with no material task-success regression and no critical false acceptance; report paired confidence intervals.",
+        "Collect corrections on states reached by the learned policy and compare this with clean-success-only imitation. Bound training by a measured pilot budget before continuing."
+      ],
+      "evidence": [
+        "Training configs/logs/checkpoints, data budgets, learning curves and matched analytic-policy comparison"
+      ],
+      "demo": "D20: identical disturbance replay under analytic and learned controllers, including cases where learning loses.",
+      "inputs": [],
+      "failure": "If the measured gain is absent, retain analytic control and record the negative result. U2 is needed only for expansion beyond available local capacity.",
+      "status": "planned",
+      "demo_required": true
+    },
+    {
+      "id": "G21",
+      "title": "Test a shared controller on unseen topology",
+      "phase": 6,
+      "kind": "research",
+      "depends_on": [
+        "G16",
+        "G17",
+        "G19",
+        "G20"
+      ],
+      "acceptance": [
+        "Expand the dataset to the stated mobile/manipulation scope with variable-size morphology inputs; compare graph/joint tokens, padded vectors and per-body policies.",
+        "Use at least three unseen topology families and multiple bodies per family; freeze models and data before revealing test identities. Evaluate at least 100 trials per reported task/body cell over three training seeds.",
+        "Report zero-shot results separately from 10-episode and 100-episode adaptation; zero-shot permits no test-body expert rollouts, finetuning or body-specific code.",
+        "Adoption target: at least 10 percentage points better zero-shot full-task success than the padded-vector baseline with a paired confidence interval excluding zero, while preserving physical gates and reported control latency."
+      ],
+      "evidence": [
+        "Morphology split protocol, teacher/data leakage audit, checkpoints, scaling curves and per-body outcomes"
+      ],
+      "demo": "D21: first execution on a previously withheld topology, followed by explicitly labeled few-shot adaptation comparisons.",
+      "inputs": [
+        "U2_compute_scale",
+        "U3_independent_review"
+      ],
+      "failure": "Publish the generalization limit; do not call a per-body trained/adapted controller universal zero-shot control.",
+      "status": "planned",
+      "demo_required": true
+    },
+    {
+      "id": "G22",
+      "title": "Run the controlled research benchmark and ablations",
+      "phase": 8,
+      "kind": "research",
+      "depends_on": [
+        "G02",
+        "G04",
+        "G12",
+        "G15",
+        "G18"
+      ],
+      "acceptance": [
+        "Freeze candidate code, seeds, feasible/infeasible task map and independent labels before confirmatory evaluation; use a 6–10-body, 6-task-family, 20-seed pilot to choose and register the final sample design.",
+        "Measure all five hypotheses from the research plan: semantic factorization, body-authoring cost, hierarchy/recovery, synthetic control and visual verification. Conditional branches may be reported unsupported/not enabled; they may not disappear from the results table.",
+        "Compare equally expressive Talmy/generic representations, same leaves with flat/hierarchical execution, equal-budget language/constraint baselines, measured/manual body adapters, and applicable control/verifier variants.",
+        "Publish every per-cell outcome, unconditional and feasible-only success, refusal precision/recall, coverage, chain length, data/compute/manual labor and confidence intervals. Results are grouped by source episode/body; no frame-level pseudo-replication."
+      ],
+      "evidence": [
+        "Preregistered protocol, executable benchmark, result tables and ablation plots",
+        "Claim matrix: supported, unsupported, underpowered or not tested"
+      ],
+      "demo": "D22: deterministic paired comparison reels linked to every complete benchmark episode, including negative ablations.",
+      "inputs": [
+        "U1_model_access_budget",
+        "U2_compute_scale",
+        "U3_independent_review"
+      ],
+      "failure": "Completion means a valid experiment and defensible claim matrix, not a guaranteed positive result. A failed hypothesis is not repaired by editing its held-out evaluator.",
+      "status": "planned",
+      "demo_required": true
+    },
+    {
+      "id": "G23",
+      "title": "Build the synchronized research/demo viewer and exports",
+      "phase": 7,
+      "kind": "engineering",
+      "depends_on": [
+        "G01",
+        "G07",
+        "G10"
+      ],
+      "acceptance": [
+        "Display physical views, root goal and active subtree, observed/unknown predicates, body/controller provenance, world hash, sim time, interventions and final outcome.",
+        "Load evidence bundles offline; scrubbing aligns video/state/tree within one video frame. Selecting any trial, including failure, opens its full episode and rerun command.",
+        "Export rigid per-link GLB and round-trip within the existing 1 mm requirement where that export capability is claimed; keep diagnostic video/trace available when an exporter is unsupported.",
+        "Preserve existing humanoid Motion Studio/gesture regressions; separate captured execution from editable planned animation in the UI."
+      ],
+      "evidence": [
+        "Viewer checks, synchronization report, GLB round-trip report and bundled demo index"
+      ],
+      "demo": "D23: screen recording of opening, replaying, scrubbing and rerunning a success and failure bundle.",
+      "inputs": [],
+      "failure": "Keep evidence usable through standalone videos and CLI while repairing UI/export; do not label missing GLB support as passed.",
+      "status": "planned",
+      "demo_required": true
+    },
+    {
+      "id": "G24",
+      "title": "Deliver the flagship same-room exotic cleanup demonstration",
+      "phase": 7,
+      "kind": "engineering",
+      "depends_on": [
+        "G15",
+        "G18",
+        "G23"
+      ],
+      "acceptance": [
+        "Use the identical instruction and world with three designated objects/trays on dog-plus-arm, wheeled-biped and articulated-octopus bodies; generate a depth-at-least-4 task tree with reused subskills.",
+        "Run 50 predetermined nominal seeds per body and achieve at least 40/50 full completions under a frozen default 10-minute simulation cap. No human action during an episode.",
+        "Run 30 predetermined disturbed seeds per body with at least 24 true full completions; count remaining failures and every retry/intervention.",
+        "Use only declared observations for the deployed policy; VLM-only termination is permitted only for the predicates/populations accepted in G14. Publish an oracle-assisted version separately if used. Goal includes stable placement, clear marked region and return to start."
+      ],
+      "evidence": [
+        "150 nominal and 90 disturbed full episodes, semantic/world hashes, trees, outcome distributions and observation/controller labels"
+      ],
+      "demo": "D24: synchronized uninterrupted three-body cleanup video, short GIF preview, and an offline gallery containing every trial.",
+      "inputs": [],
+      "failure": "Publish the failed subgoal and evidence. Optional learned control is not required if analytic/per-body controllers meet the declared demo contract.",
+      "status": "planned",
+      "demo_required": true
+    },
+    {
+      "id": "G25",
+      "title": "Package a reproducible research release",
+      "phase": 9,
+      "kind": "engineering",
+      "depends_on": [
+        "G22",
+        "G24"
+      ],
+      "acceptance": [
+        "Produce a capability/claim table linking every statement to code, protocol, quantitative result and replayable media; identify negative and untested findings.",
+        "A fresh checkout reproduces a small smoke bundle and re-renders an archived full episode without API calls. Large models/data have checksums, acquisition instructions, provenance and license inventory.",
+        "Provide literature/baseline mapping, data/compute accounting, benchmark protocol, limitations and a clear separation of semantic transfer, per-body adaptation and universal control.",
+        "Prepare the manuscript/demo package locally. Public publication, repository push or collaborator messaging occurs only when requested."
+      ],
+      "evidence": [
+        "Release manifest, reproduction transcript, draft manuscript, sources and claims ledger"
+      ],
+      "demo": "D25: final demo reel with captions linking each segment to its uninterrupted run and quantitative claim.",
+      "inputs": [
+        "U3_independent_review"
+      ],
+      "failure": "Release narrower supported claims if optional branches fail; incomplete evidence remains clearly marked.",
+      "status": "planned",
+      "demo_required": true
+    },
+    {
+      "id": "G26",
+      "title": "Close optional legacy humanoid, RAG and human-preference acceptance",
+      "phase": 10,
+      "kind": "optional",
+      "depends_on": [
+        "G00",
+        "G11",
+        "G14"
+      ],
+      "acceptance": [
+        "Map existing v2 benchmark, human-study, RAG A/B, export and physical-task requirements to real collected evidence rather than synthetic test fixtures; preserve their original acceptance thresholds.",
+        "Run the required human preference/calibration study with independent raters and actual records before claiming human agreement; measure retrieval benefit with a controlled no-retrieval baseline.",
+        "Re-run button/drawer robustness and other claimed physical tasks; unresolved grasp/container/bimanual cases remain failed rather than being absorbed into a suite pass rate."
+      ],
+      "evidence": [
+        "Legacy acceptance ledger, real participant/benchmark records, RAG A/B report and physical-task diagnostics"
+      ],
+      "demo": "D26: updated humanoid capability reel with measured tasks, supported retrieval benefits and labeled unresolved failures.",
+      "inputs": [
+        "U1_model_access_budget",
+        "U3_independent_review"
+      ],
+      "failure": "This extends the existing product's acceptance program and does not block the core exotic-body research release.",
+      "status": "planned",
+      "demo_required": true
+    },
+    {
+      "id": "G27",
+      "title": "Transfer one additional embodiment to physical hardware",
+      "phase": 10,
+      "kind": "optional",
+      "depends_on": [
+        "G18",
+        "G25"
+      ],
+      "acceptance": [
+        "Obtain the actual robot/actuator/sensor specs, validated model, driver interface, workspace constraints and an on-site operator; calibrate physical parameters and observations.",
+        "Reproduce a bounded transfer task for at least 30 physical trials, with at least 24 true completions and independent placement/contact evidence; report sim/real discrepancies and interventions.",
+        "Demonstrate one bounded recovery and validate stopping behavior before attempting unattended long-horizon tasks; preserve limits and observation contracts."
+      ],
+      "evidence": [
+        "Calibration data, hardware configs, operator/intervention log and sim/real comparison"
+      ],
+      "demo": "D27: uninterrupted real-robot trials and synchronized simulation/real comparisons.",
+      "inputs": [
+        "U5_hardware"
+      ],
+      "failure": "Hardware access and supervision are real prerequisites; simulation work remains independent.",
+      "status": "planned",
+      "demo_required": true
+    },
+    {
+      "id": "G28",
+      "title": "Explore compliant or soft embodiments as a separate mechanics extension",
+      "phase": 10,
+      "kind": "optional",
+      "depends_on": [
+        "G16",
+        "G24"
+      ],
+      "acceptance": [
+        "Define whether the target is compliant joints, a continuum body or fluid interaction, and select an appropriate physical model with measured/validated parameters.",
+        "Validate at least three deformation/contact responses against independent reference data before transferring skill contracts.",
+        "Execute one bounded acquisition/transport or locomotion task under declared observation/control limits, with separate success metrics and no claim that rigid URDF tests validate soft mechanics."
+      ],
+      "evidence": [
+        "Mechanics-validation report, model parameters and task traces"
+      ],
+      "demo": "D28: deformation/contact validation plus uninterrupted soft/compliant task execution.",
+      "inputs": [
+        "U6_soft_mechanics"
+      ],
+      "failure": "Keep the rigid articulated octopus demo scoped to rigid mechanics until the new model is validated.",
+      "status": "planned",
+      "demo_required": true
+    },
+    {
+      "id": "G29",
+      "title": "Test a learned short-horizon reference generator",
+      "phase": 10,
+      "kind": "optional",
+      "depends_on": [
+        "G08",
+        "G19",
+        "G20"
+      ],
+      "acceptance": [
+        "Compare analytic/optimization reference generation with a small autoregressive generator using the same semantic constraints and a fixed feedback tracker.",
+        "On at least three body families and 100 held-out reference/task cases per body, record hard-constraint feasibility, semantic fidelity, generation latency and physical success.",
+        "Adoption target: at least 20% lower reference-generation latency or at least 10 percentage points greater coverage at equal physical success, with no critical feasibility regression; all references still pass validation.",
+        "Separate this model's data/compute and errors from the low-level tracker; human motion data are optional and must not become an undeclared embodiment prior."
+      ],
+      "evidence": [
+        "Generator training configs, same-tracker comparisons and feasible-reference/physical-outcome report"
+      ],
+      "demo": "D29: identical constraints realized by analytic and learned references, with resulting physical execution and failure cases.",
+      "inputs": [
+        "U2_compute_scale"
+      ],
+      "failure": "Keep the analytic generator if the learned model adds no measured value. This is optional and does not block recursive skills or the flagship demo.",
+      "status": "planned",
+      "demo_required": true
+    }
+  ]
+}

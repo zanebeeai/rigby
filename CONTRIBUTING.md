@@ -197,8 +197,8 @@ Billing settings, not in the code; verify locally and say so in the PR.
 September merges, not regressions): `object-throw-far` and
 `knownbad-sequence-throw-then-catch` drift past the corpus tolerance because
 `win32-amd64` is not a blessed platform; `placing object` in
-`test_prompt_family_matrix` reports discontinuities; `test_core_hashing`'s
-subprocess uses a Unix `PATH`. `test_corpus_loads_offline` errors when the
+`test_prompt_family_matrix` reports discontinuities.
+`test_corpus_loads_offline` errors when the
 checkout path is long.
 
 ## 7. The corpus, blessing, and behaviours behind flags

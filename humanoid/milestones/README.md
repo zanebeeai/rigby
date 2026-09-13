@@ -1,5 +1,11 @@
 # Milestones
 
+This is a historical recording ledger. Its sensor policy and success rates
+belong to the recorded versions. The current gripper uses visual belief,
+fingertip-force, range and obstruction measurements; see
+`src/rigby_poc/gripper/sensing/gripper_camera.py` and the current research review.
+
+
 Everything worth keeping from the gripper work, in one place. Each run in
 `runs/` is a complete recording: every frame's joint poses, link geometry, block
 position and orientation, contact forces, and penetration depth.

@@ -1,5 +1,11 @@
 # Videos
 
+This is a historical recording ledger. Its sensor policy and success rates
+belong to the recorded versions. The current gripper uses visual belief,
+fingertip-force, range and obstruction measurements; see
+`src/rigby_poc/gripper/sensing/gripper_camera.py` and the current research review.
+
+
 Two recordings of the same task -- pick the block off the bench and place it in
 the elevated bin -- separated by what the machine was allowed to know.
 

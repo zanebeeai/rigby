@@ -1,0 +1,3006 @@
+{
+  "schema_version": "1.0",
+  "goal": "G00 existing acceptance-contract crosswalk",
+  "audited_at_utc": "2026-09-12T02:36:24.899Z",
+  "source_commit": "cfbe16e90544fc22b3acc9d95ce7b2d9cc6a24ba",
+  "source_sha256": {
+    "any-robot/acceptance_criteria.general.yaml": "b9c6ac162e61a850bbac2545e39f7923722a6fe54ec45ae24f5b49cc27c25038",
+    "any-robot/src/rigby_general/audit.py": "8a3664b78ceee2a2775eee9ce61e77249136e1a28cb54303a9c2e8bd2660b8b6",
+    "humanoid/acceptance_criteria.yaml": "0fa2306d8e60a8555c125a755a2daf6f49a74ca48c032c59e3d92c1d3c11ed5e",
+    "humanoid/docs/v2/completion-audit.md": "af48560a5d10646f4c5b3e9727c3afbb68559a6dc1f318defdee4efe04d285e1",
+    "humanoid/docs/v2/release-checklist.json": "4406e9d62f0be02724794d2c8c0436bd27e35e03841fcbd62f267d1847964249"
+  },
+  "scope": "Static audit of existing contracts and retained evidence. New future-goal targets are excluded. No sealed robot/prompt manifest or sealed label identities opened; no model calls, simulations or expensive suites run in this subtask.",
+  "status_definitions": {
+    "measured": "Actual evidence in its stated limited scope; not full requirement completion.",
+    "deferred": "Verification remains open: explicitly deferred implementation, absent benchmark, or incomplete current measurement. The reason is retained per requirement.",
+    "failed": "Retained observed evidence contradicts the capability in the measured scope; not extrapolated to unseen configurations.",
+    "out_of_scope": "Explicitly excluded by current acceptance contract."
+  },
+  "evidence_age_policy": "Prior-review fresh artifacts were generated September 11 local; they are not new G00 runs. August v2/calibration reports are historical. Parent-agent new baselines must be linked separately.",
+  "false_positive_reproduction_policy": "Coverage gaps are source-code observations, not reproduced false-positive runs.",
+  "full_existing_contract_verified": false,
+  "status_counts": {
+    "deferred": 68,
+    "measured": 2,
+    "out_of_scope": 1,
+    "failed": 4
+  },
+  "requirements": [
+    {
+      "id": "general.zero_per_robot_code",
+      "scope": "G-GEN-1",
+      "authoritative_source": {
+        "path": "any-robot/acceptance_criteria.general.yaml",
+        "line": 42,
+        "selector": "zero_per_robot_code"
+      },
+      "current_measurement_implementation": {
+        "path": "any-robot/src/rigby_general/audit.py",
+        "line": 119,
+        "symbol": "_scan_for_robot_identifiers"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_audit_output",
+          "path": "any-robot/docs/audit-report.json",
+          "measurements": [
+            {
+              "id": "zero_per_robot_code",
+              "measured": 0,
+              "passed": true
+            }
+          ],
+          "limitation": "Stored result, not rerun in this subtask; an emitted pass covers only the narrower code path."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Scans robot directory IDs in Python only, not link/joint names or authored body configuration.",
+      "needed_to_verify": "Check the full sealed vocabulary and configuration provenance through an isolated evaluator.",
+      "contract": {
+        "id": "zero_per_robot_code",
+        "statement": "No benchmark robot identifier, link name, or joint name appears anywhere under src/rigby_general/. Ingest and bake configuration is derived from the uploaded model, never authored.",
+        "metric": "static_scan_hits",
+        "threshold": 0,
+        "comparator": "eq",
+        "rationale": "The anti-cheat half of the goal. Special-casing one robot would make every other number meaningless."
+      },
+      "measurement_status": "current_full_measurement_missing"
+    },
+    {
+      "id": "general.ingest_success",
+      "scope": "G-GEN-1",
+      "authoritative_source": {
+        "path": "any-robot/acceptance_criteria.general.yaml",
+        "line": 54,
+        "selector": "ingest_success"
+      },
+      "current_measurement_implementation": {
+        "path": "any-robot/src/rigby_general/audit.py",
+        "line": 165,
+        "symbol": "run_audit"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_audit_output",
+          "path": "any-robot/docs/audit-report.json",
+          "measurements": [
+            {
+              "id": "ingest_success",
+              "measured": 1,
+              "passed": true
+            }
+          ],
+          "limitation": "Stored result, not rerun in this subtask; an emitted pass covers only the narrower code path."
+        },
+        {
+          "kind": "prior_review_fresh_simulation",
+          "path": "docs/research/embodiment-probe.json",
+          "summary": "Six public bodies share one semantic hash; twelve leaves certify, five of six compositions pass; no substitutions. Narrow two-schema library, not the sealed matrix."
+        }
+      ],
+      "status": "measured",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Uses local zoo URDFs instead of pinned upstream benchmark membership; no exact count/coverage assertion here.",
+      "needed_to_verify": "Verify every required unmodified asset, integrity result and manifest hash.",
+      "contract": {
+        "id": "ingest_success",
+        "statement": "Every robot compiles to MJCF, yields a RobotMorphologyV1, and passes the inertia and collider integrity checks.",
+        "metric": "robots_ingested_fraction",
+        "threshold": 1,
+        "comparator": "gte"
+      }
+    },
+    {
+      "id": "general.site_derivation_accuracy",
+      "scope": "G-GEN-1",
+      "authoritative_source": {
+        "path": "any-robot/acceptance_criteria.general.yaml",
+        "line": 62,
+        "selector": "site_derivation_accuracy"
+      },
+      "current_measurement_implementation": {
+        "path": "any-robot/src/rigby_general/audit.py",
+        "line": 184,
+        "symbol": "run_audit"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_audit_output",
+          "path": "any-robot/docs/audit-report.json",
+          "measurements": [
+            {
+              "id": "site_derivation_accuracy",
+              "measured": 1,
+              "passed": true
+            }
+          ],
+          "limitation": "Stored result, not rerun in this subtask; an emitted pass covers only the narrower code path."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Reads unpinned zoo ground_truth.json at line 190. Score is expected-site recall; extra sites are not penalized.",
+      "needed_to_verify": "Verify independent label hashes, robot coverage and declared missing/extra-site scoring.",
+      "contract": {
+        "id": "site_derivation_accuracy",
+        "statement": "Derived semantic sites agree with the sealed human-labelled ground truth.",
+        "metric": "min_per_robot_site_accuracy",
+        "threshold": 0.95,
+        "comparator": "gte",
+        "ground_truth": "assets/general/groundtruth/sites/",
+        "note": "Labels are SHA-pinned per robot exactly as benchmark_spec.json is, so the accuracy cannot be raised by editing the answer key."
+      },
+      "measurement_status": "current_full_measurement_missing"
+    },
+    {
+      "id": "general.effector_classification",
+      "scope": "G-GEN-1",
+      "authoritative_source": {
+        "path": "any-robot/acceptance_criteria.general.yaml",
+        "line": 73,
+        "selector": "effector_classification"
+      },
+      "current_measurement_implementation": {
+        "path": "any-robot/src/rigby_general/audit.py",
+        "line": 184,
+        "symbol": "run_audit"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_audit_output",
+          "path": "any-robot/docs/audit-report.json",
+          "measurements": [
+            {
+              "id": "effector_classification",
+              "measured": 1,
+              "passed": true
+            }
+          ],
+          "limitation": "Stored result, not rerun in this subtask; an emitted pass covers only the narrower code path."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Compares kind multisets on local ingests without sealed-label verification or required family coverage checks.",
+      "needed_to_verify": "Measure all effectors against independent labels and enforce three effector/two morphology families.",
+      "contract": {
+        "id": "effector_classification",
+        "statement": "The behavioural gripper test classifies every effector correctly, across at least one parallel-jaw, one multi-finger, and one tool-tip-only robot.",
+        "metric": "effector_classification_accuracy",
+        "threshold": 1,
+        "comparator": "eq"
+      },
+      "measurement_status": "current_full_measurement_missing"
+    },
+    {
+      "id": "general.bake_coverage",
+      "scope": "G-GEN-1",
+      "authoritative_source": {
+        "path": "any-robot/acceptance_criteria.general.yaml",
+        "line": 81,
+        "selector": "bake_coverage"
+      },
+      "current_measurement_implementation": {
+        "path": "any-robot/src/rigby_general/audit.py",
+        "line": 228,
+        "symbol": "run_audit"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_audit_output",
+          "path": "any-robot/docs/audit-report.json",
+          "measurements": [
+            {
+              "id": "bake_coverage",
+              "measured": 1,
+              "passed": true
+            },
+            {
+              "id": "certified_binding_yield",
+              "measured": 0.555556,
+              "passed": true
+            }
+          ],
+          "limitation": "Stored result, not rerun in this subtask; an emitted pass covers only the narrower code path."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Missing summaries are skipped and only noted in detail. Stored summary coverage/yield is trusted without current certificate/fingerprint verification.",
+      "needed_to_verify": "Require a valid current summary and certificates for every body; recompute all afforded coverage and yield.",
+      "contract": {
+        "id": "bake_coverage",
+        "statement": "Every schema a robot's morphology affords under the declared affordance rule has at least one certified primitive, and the overall certified yield across attempted bindings clears the floor.",
+        "metrics": {
+          "afforded_schema_coverage": {
+            "threshold": 1,
+            "comparator": "eq"
+          },
+          "certified_binding_yield": {
+            "threshold": 0.5,
+            "comparator": "gte",
+            "note": "Lowered from 0.60 after measurement. Yield across regions is a weak signal: an `adjacent` circle on a 0.39 m arm is genuinely infeasible, and refusing it is correct behaviour rather than a shortfall. Coverage -- every afforded schema holding at least one certified primitive -- is the requirement that actually says the robot is usable, and it is held at 1.0. Measured yields: 0.56 to 0.81."
+          }
+        }
+      },
+      "measurement_status": "current_full_measurement_missing"
+    },
+    {
+      "id": "general.bake_budget",
+      "scope": "G-GEN-1",
+      "authoritative_source": {
+        "path": "any-robot/acceptance_criteria.general.yaml",
+        "line": 101,
+        "selector": "bake_budget"
+      },
+      "current_measurement_implementation": {
+        "path": "any-robot/src/rigby_general/audit.py",
+        "line": 228,
+        "symbol": "run_audit"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_audit_output",
+          "path": "any-robot/docs/audit-report.json",
+          "measurements": [
+            {
+              "id": "bake_budget",
+              "measured": 236.096,
+              "passed": true
+            }
+          ],
+          "limitation": "Stored result, not rerun in this subtask; an emitted pass covers only the narrower code path."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Uses maximum stored elapsed time rather than declared p95; never measures the 500-attempt ceiling.",
+      "needed_to_verify": "Retain complete attempt/timing data on the reference machine and compute both declared metrics.",
+      "contract": {
+        "id": "bake_budget",
+        "statement": "Bake time and attempt count stay inside their ceilings.",
+        "metrics": {
+          "bake_p95_seconds": {
+            "threshold": 1200,
+            "comparator": "lte"
+          },
+          "bake_max_attempts": {
+            "threshold": 500,
+            "comparator": "lte"
+          }
+        },
+        "note": "Measured on the reference machine described in the operator runbook."
+      },
+      "measurement_status": "current_full_measurement_missing"
+    },
+    {
+      "id": "general.schema_invariance",
+      "scope": "G-GEN-1",
+      "authoritative_source": {
+        "path": "any-robot/acceptance_criteria.general.yaml",
+        "line": 112,
+        "selector": "schema_invariance"
+      },
+      "current_measurement_implementation": {
+        "path": "any-robot/src/rigby_general/audit.py",
+        "line": 272,
+        "symbol": "run_audit"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_audit_output",
+          "path": "any-robot/docs/audit-report.json",
+          "measurements": [
+            {
+              "id": "schema_invariance",
+              "measured": 1,
+              "passed": true
+            }
+          ],
+          "limitation": "Stored result, not rerun in this subtask; an emitted pass covers only the narrower code path."
+        },
+        {
+          "kind": "prior_review_fresh_simulation",
+          "path": "docs/research/embodiment-probe.json",
+          "summary": "Six public bodies share one semantic hash; twelve leaves certify, five of six compositions pass; no substitutions. Narrow two-schema library, not the sealed matrix."
+        }
+      ],
+      "status": "measured",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Uses ten public prompts, not sixty sealed shared prompts; body-level planner exceptions are skipped, so one surviving body can count as agreement.",
+      "needed_to_verify": "Require every body to parse each supported shared prompt before comparing hashes; count refusals separately.",
+      "contract": {
+        "id": "schema_invariance",
+        "statement": "For the shared cross-robot prompt subset, the role-normalized MotionSchemaProgramV1 hash is identical across all six robots.",
+        "metric": "cross_robot_schema_hash_agreement",
+        "threshold": 1,
+        "comparator": "eq",
+        "load_bearing": true,
+        "rationale": "The falsification test for the magnitude-neutrality thesis. Talmy's claim is that closed-class spatial terms abstract away metric shape, size, and distance; if that holds, the language-level output cannot depend on the body. A single mismatch means the semantic layer has leaked body knowledge and the design is wrong -- not that a threshold needs relaxing."
+      }
+    },
+    {
+      "id": "general.grounding_soundness",
+      "scope": "G-GEN-1",
+      "authoritative_source": {
+        "path": "any-robot/acceptance_criteria.general.yaml",
+        "line": 127,
+        "selector": "grounding_soundness"
+      },
+      "current_measurement_implementation": {
+        "path": "any-robot/src/rigby_general/audit.py",
+        "line": null,
+        "symbol": "No corresponding audit requirement"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_audit_output",
+          "path": "any-robot/docs/audit-report.json",
+          "measurements": [],
+          "limitation": "Stored result, not rerun in this subtask; an emitted pass covers only the narrower code path."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "YAML explicitly defers benchmark counts; metric-free syntax does not establish target-body binding/limit validity.",
+      "needed_to_verify": "Recompute every DOF/site/contact reference and metric limit against each measured body.",
+      "contract": {
+        "id": "grounding_soundness",
+        "statement": "No grounded program references a DOF, site, or contact pair the target robot lacks, and no grounded metric value falls outside the measured limits.",
+        "metrics": {
+          "invented_binding_count": {
+            "threshold": 0,
+            "comparator": "eq"
+          },
+          "out_of_limit_value_count": {
+            "threshold": 0,
+            "comparator": "eq"
+          }
+        },
+        "note": "The structural half is already enforced at import time by schema.program.assert_metric_free; this measures the grounder's half."
+      }
+    },
+    {
+      "id": "general.supported_certified_winner_rate",
+      "scope": "G-GEN-1",
+      "authoritative_source": {
+        "path": "any-robot/acceptance_criteria.general.yaml",
+        "line": 142,
+        "selector": "supported_certified_winner_rate"
+      },
+      "current_measurement_implementation": {
+        "path": "any-robot/src/rigby_general/audit.py",
+        "line": null,
+        "symbol": "No corresponding audit requirement"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_audit_output",
+          "path": "any-robot/docs/audit-report.json",
+          "measurements": [],
+          "limitation": "Stored result, not rerun in this subtask; an emitted pass covers only the narrower code path."
+        },
+        {
+          "kind": "prior_review_fresh_simulation",
+          "path": "docs/research/embodiment-probe.json",
+          "summary": "Six public bodies share one semantic hash; twelve leaves certify, five of six compositions pass; no substitutions. Narrow two-schema library, not the sealed matrix."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "No complete 200-supported-case-per-body measurement; general selection has no wired visual judge.",
+      "needed_to_verify": "Execute the sealed matrix with physical gates and validated independent judging; retain per-body outcomes.",
+      "contract": {
+        "id": "supported_certified_winner_rate",
+        "statement": "Supported prompts end in a certified, gate-passing, judge-accepted motion.",
+        "metric": "min_per_robot_certified_winner_rate",
+        "threshold": 0.9,
+        "comparator": "gte"
+      }
+    },
+    {
+      "id": "general.adversarial_typed_outcomes",
+      "scope": "G-GEN-1",
+      "authoritative_source": {
+        "path": "any-robot/acceptance_criteria.general.yaml",
+        "line": 149,
+        "selector": "adversarial_typed_outcomes"
+      },
+      "current_measurement_implementation": {
+        "path": "any-robot/src/rigby_general/audit.py",
+        "line": 302,
+        "symbol": "run_audit"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_audit_output",
+          "path": "any-robot/docs/audit-report.json",
+          "measurements": [
+            {
+              "id": "adversarial_typed_outcomes",
+              "measured": 1,
+              "passed": true
+            }
+          ],
+          "limitation": "Stored result, not rerun in this subtask; an emitted pass covers only the narrower code path."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Ten public prompts on first ingested body only; any exception with a code attribute counts, without matching the expected code.",
+      "needed_to_verify": "Run 100 adversarial cases per body and compare exact expected typed outcomes.",
+      "contract": {
+        "id": "adversarial_typed_outcomes",
+        "statement": "Adversarial prompts return the expected typed failure, including out-of-morphology requests such as asking a single-arm robot to use its other hand.",
+        "metric": "adversarial_typed_outcome_rate",
+        "threshold": 1,
+        "comparator": "eq"
+      },
+      "measurement_status": "current_full_measurement_missing"
+    },
+    {
+      "id": "general.critical_deterministic_false_accepts",
+      "scope": "G-GEN-1",
+      "authoritative_source": {
+        "path": "any-robot/acceptance_criteria.general.yaml",
+        "line": 158,
+        "selector": "critical_deterministic_false_accepts"
+      },
+      "current_measurement_implementation": {
+        "path": "any-robot/src/rigby_general/audit.py",
+        "line": null,
+        "symbol": "No corresponding audit requirement"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_audit_output",
+          "path": "any-robot/docs/audit-report.json",
+          "measurements": [],
+          "limitation": "Stored result, not rerun in this subtask; an emitted pass covers only the narrower code path."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Fail-closed run.answer code is not a retained benchmark false-accept count.",
+      "needed_to_verify": "Inject failures across selection routes and independently count gate-failing selected candidates.",
+      "contract": {
+        "id": "critical_deterministic_false_accepts",
+        "statement": "No candidate failing a deterministic gate is ever selected.",
+        "metric": "deterministic_false_accepts",
+        "threshold": 0,
+        "comparator": "eq"
+      }
+    },
+    {
+      "id": "general.deterministic_replay",
+      "scope": "G-GEN-1",
+      "authoritative_source": {
+        "path": "any-robot/acceptance_criteria.general.yaml",
+        "line": 164,
+        "selector": "deterministic_replay"
+      },
+      "current_measurement_implementation": {
+        "path": "any-robot/src/rigby_general/audit.py",
+        "line": 325,
+        "symbol": "run_audit"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_audit_output",
+          "path": "any-robot/docs/audit-report.json",
+          "measurements": [
+            {
+              "id": "deterministic_measurement",
+              "measured": 1,
+              "passed": true
+            }
+          ],
+          "limitation": "Stored result, not rerun in this subtask; an emitted pass covers only the narrower code path."
+        },
+        {
+          "kind": "prior_review_fresh_simulation",
+          "path": "docs/research/embodiment-probe.json",
+          "summary": "Six public bodies share one semantic hash; twelve leaves certify, five of six compositions pass; no substitutions. Narrow two-schema library, not the sealed matrix."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Emitted deterministic_measurement compares two morphology ingests on at most two bodies, not three authoritative motion traces.",
+      "needed_to_verify": "Replay every certified winner three times with pinned physics/controller inputs and compare complete traces.",
+      "contract": {
+        "id": "deterministic_replay",
+        "statement": "Three repeats of a certified motion produce a byte-identical trace.",
+        "metric": "replay_agreement",
+        "threshold": 1,
+        "comparator": "eq"
+      },
+      "measurement_status": "current_full_measurement_missing"
+    },
+    {
+      "id": "general.judge_independence",
+      "scope": "G-GEN-1",
+      "authoritative_source": {
+        "path": "any-robot/acceptance_criteria.general.yaml",
+        "line": 170,
+        "selector": "judge_independence"
+      },
+      "current_measurement_implementation": {
+        "path": "any-robot/src/rigby_general/audit.py",
+        "line": null,
+        "symbol": "No corresponding audit requirement"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_audit_output",
+          "path": "any-robot/docs/audit-report.json",
+          "measurements": [],
+          "limitation": "Stored result, not rerun in this subtask; an emitted pass covers only the narrower code path."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "General judge is not wired; identity separation and reverse-order consistency are unmeasured.",
+      "needed_to_verify": "Declare identities, retain blinded/reversed evidence and measure calibrated judge consistency.",
+      "contract": {
+        "id": "judge_independence",
+        "statement": "The certifier identity never appears among the judge identities, and the blinded judge agrees with itself under reversed presentation order.",
+        "metrics": {
+          "certifier_judge_overlap": {
+            "threshold": 0,
+            "comparator": "eq"
+          },
+          "judge_order_consistency": {
+            "threshold": 0.95,
+            "comparator": "gte"
+          }
+        }
+      }
+    },
+    {
+      "id": "general.latency_p95",
+      "scope": "G-GEN-1",
+      "authoritative_source": {
+        "path": "any-robot/acceptance_criteria.general.yaml",
+        "line": 182,
+        "selector": "latency_p95"
+      },
+      "current_measurement_implementation": {
+        "path": "any-robot/src/rigby_general/audit.py",
+        "line": null,
+        "symbol": "No corresponding audit requirement"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_audit_output",
+          "path": "any-robot/docs/audit-report.json",
+          "measurements": [],
+          "limitation": "Stored result, not rerun in this subtask; an emitted pass covers only the narrower code path."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "No full prompt-to-winner latency distribution; informal component timings are insufficient.",
+      "needed_to_verify": "Record monotonic end-to-end timings over the benchmark, excluding only VLM time.",
+      "contract": {
+        "id": "latency_p95",
+        "statement": "Prompt to certified winner, excluding VLM calls.",
+        "metric": "pipeline_p95_seconds",
+        "threshold": 90,
+        "comparator": "lte"
+      }
+    },
+    {
+      "id": "general.holdout_margin",
+      "scope": "G-GEN-1",
+      "authoritative_source": {
+        "path": "any-robot/acceptance_criteria.general.yaml",
+        "line": 188,
+        "selector": "holdout_margin"
+      },
+      "current_measurement_implementation": {
+        "path": "any-robot/src/rigby_general/audit.py",
+        "line": null,
+        "symbol": "No corresponding audit requirement"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_audit_output",
+          "path": "any-robot/docs/audit-report.json",
+          "measurements": [],
+          "limitation": "Stored result, not rerun in this subtask; an emitted pass covers only the narrower code path."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "No isolated heldout comparison is computed; public zoo results cannot establish blind topology transfer.",
+      "needed_to_verify": "Have an isolated evaluator verify heldout membership and per-requirement shortfall without exposing identities.",
+      "contract": {
+        "id": "holdout_margin",
+        "statement": "Both sealed hold-out robots meet every threshold above within 0.05 absolute of the development-robot mean.",
+        "metric": "max_holdout_shortfall",
+        "threshold": 0.05,
+        "comparator": "lte",
+        "rationale": "The other anti-cheat half. Development-set performance proves nothing about an arbitrary robot if the implementation saw the development set."
+      }
+    },
+    {
+      "id": "general.export_roundtrip",
+      "scope": "G-GEN-1",
+      "authoritative_source": {
+        "path": "any-robot/acceptance_criteria.general.yaml",
+        "line": 199,
+        "selector": "export_roundtrip"
+      },
+      "current_measurement_implementation": {
+        "path": "any-robot/src/rigby_general/audit.py",
+        "line": null,
+        "symbol": "No corresponding audit requirement"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_audit_output",
+          "path": "any-robot/docs/audit-report.json",
+          "measurements": [],
+          "limitation": "Stored result, not rerun in this subtask; an emitted pass covers only the narrower code path."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "General contract explicitly says rigid-link GLB export/reimport is unbuilt; video/joint traces are different artifacts.",
+      "needed_to_verify": "Independently reimport every winner and verify every required link within 1 mm.",
+      "contract": {
+        "id": "export_roundtrip",
+        "statement": "Every winner exports to GLB and reimports within tolerance. Robot export is rigid per-link TRS, so there is no skinning or bind-pose error to absorb.",
+        "metric": "max_per_link_position_error_m",
+        "threshold": 0.001,
+        "comparator": "lte"
+      }
+    },
+    {
+      "id": "general.benchmark_membership",
+      "scope": "G-GEN-1",
+      "authoritative_source": {
+        "path": "any-robot/acceptance_criteria.general.yaml",
+        "line": 18,
+        "selector": "robots and prompts"
+      },
+      "current_measurement_implementation": {
+        "path": "any-robot/src/rigby_general/audit.py",
+        "line": 141,
+        "symbol": "run_audit"
+      },
+      "available_evidence": [],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Local directory discovery does not enforce pinned sources, four development plus two heldouts, or all required morphology/effector/prompt coverage.",
+      "needed_to_verify": "Verify hashes and exact cardinalities using an isolated evaluator.",
+      "contract": {
+        "development_count": 4,
+        "holdout_count": 2,
+        "supported_per_robot": 200,
+        "adversarial_per_robot": 100,
+        "cross_robot_shared_subset": 60
+      },
+      "measurement_status": "current_full_measurement_missing"
+    },
+    {
+      "id": "general.release_rule",
+      "scope": "G-GEN-1",
+      "authoritative_source": {
+        "path": "any-robot/acceptance_criteria.general.yaml",
+        "line": 272
+      },
+      "current_measurement_implementation": {
+        "path": "any-robot/src/rigby_general/audit.py",
+        "line": 102,
+        "symbol": "AuditReport.release_allowed"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_audit_output",
+          "path": "any-robot/docs/audit-report.json",
+          "summary": "release_allowed=true; ten emitted rows; notes empty."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "YAML excludes deferred requirements from release; code conjuncts only emitted rows and omits explicit deferrals. This is not full sixteen-clause completion.",
+      "needed_to_verify": "Report every declared clause and distinguish partial audit pass from full acceptance.",
+      "measurement_status": "current_full_measurement_missing"
+    },
+    {
+      "id": "general.contact_scope",
+      "scope": "G-GEN-1 scope note",
+      "authoritative_source": {
+        "path": "any-robot/acceptance_criteria.general.yaml",
+        "line": 252
+      },
+      "current_measurement_implementation": {
+        "path": "any-robot/scripts/grasp_report.py"
+      },
+      "available_evidence": [
+        {
+          "kind": "prior_review_fresh_simulation",
+          "path": "docs/research/grasp-report.json",
+          "summary": "Three successes of five body-scaled single grasp trials; two failures."
+        }
+      ],
+      "status": "out_of_scope",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Contact remains unadmitted to the general inventory; the updated YAML explicitly records the three-of-five body-scaled measurement.",
+      "needed_to_verify": "Track contact separately until its admission gate passes; retain historical and current results separately."
+    },
+    {
+      "id": "poc.evaluation_policy",
+      "scope": "humanoid POC acceptance",
+      "authoritative_source": {
+        "path": "humanoid/acceptance_criteria.yaml",
+        "line": 3,
+        "selector": "evaluation_policy"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/evals/autonomous_goal_audit.py",
+        "line": 90,
+        "symbol": "build_audit"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_model_measurement",
+          "path": "humanoid/docs/evidence/10f-calibration-report.md",
+          "summary": "2026-08-26: 881/1288 corrupted clips accepted, balanced accuracy 0.573; instrument invalid on that corpus."
+        },
+        {
+          "kind": "historical_small_calibration",
+          "path": "humanoid/docs/evidence/frozen-judge-calibration.json",
+          "summary": "Old ten-pair 90% agreement; not validation of the later deployed instrument."
+        }
+      ],
+      "status": "failed",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Old frozen artifact passes while later corpus report invalidates its tested grader; configurations differ.",
+      "needed_to_verify": "Calibrate the deployed instrument and evidence format independently.",
+      "contract": "autonomous_vlm_after_frozen_human_calibration"
+    },
+    {
+      "id": "poc.autonomous_pipeline",
+      "scope": "humanoid POC acceptance",
+      "authoritative_source": {
+        "path": "humanoid/acceptance_criteria.yaml",
+        "line": 4,
+        "selector": "autonomous_pipeline"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/evals/autonomous_goal_audit.py",
+        "line": 45,
+        "symbol": "_audit_run"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_model_measurement",
+          "path": "humanoid/docs/evidence/10f-calibration-report.md",
+          "summary": "2026-08-26: 881/1288 corrupted clips accepted, balanced accuracy 0.573; instrument invalid on that corpus."
+        },
+        {
+          "kind": "historical_small_calibration",
+          "path": "humanoid/docs/evidence/frozen-judge-calibration.json",
+          "summary": "Old ten-pair 90% agreement; not validation of the later deployed instrument."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Smoke audit checks selected winner and at least five candidates, not all declared stages, budgets and bounds.",
+      "needed_to_verify": "Retain complete real model-backed runs, stage/budget logs and validated judge evidence.",
+      "contract": {
+        "human_reviews_required_after_calibration": 0,
+        "candidate_count": 5,
+        "max_rounds": 2,
+        "max_model_calls": 4,
+        "required_stages": [
+          "planning",
+          "candidates",
+          "structural_checks",
+          "visual_evidence",
+          "vlm_judge",
+          "finalize"
+        ],
+        "required_views": [
+          "ego",
+          "orbit"
+        ],
+        "egocentric_full_fov_deg": 94,
+        "minimum_selected_scores": {
+          "semantic_match": 4,
+          "gesture_recognizability": 4,
+          "anatomical_naturalness": 4,
+          "overall": 4
+        }
+      },
+      "measurement_status": "current_full_measurement_missing"
+    },
+    {
+      "id": "poc.runs_required",
+      "scope": "humanoid POC acceptance",
+      "authoritative_source": {
+        "path": "humanoid/acceptance_criteria.yaml",
+        "line": 19,
+        "selector": "runs_required"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/evals/review.py",
+        "line": 284,
+        "symbol": "_recompute_certification"
+      },
+      "available_evidence": [
+        {
+          "kind": "code_contract_tests",
+          "path": "humanoid/tests/test_acceptance_harness.py",
+          "summary": "Constructed metrics and selected offline compilations; not complete physical/model acceptance."
+        },
+        {
+          "kind": "prior_review_test_snapshot",
+          "path": "docs/research/verification-summary.json",
+          "summary": "Earlier selected suites, not fresh execution in this subtask."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "No two current complete acceptance reports with bound reviews in inspected evidence.",
+      "needed_to_verify": "Execute and independently verify both full acceptance runs.",
+      "contract": 2,
+      "measurement_status": "current_full_measurement_missing"
+    },
+    {
+      "id": "poc.planner",
+      "scope": "humanoid POC acceptance",
+      "authoritative_source": {
+        "path": "humanoid/acceptance_criteria.yaml",
+        "line": 20,
+        "selector": "planner"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/evals/evidence.py",
+        "line": 92,
+        "symbol": "planner_gate"
+      },
+      "available_evidence": [
+        {
+          "kind": "code_contract_tests",
+          "path": "humanoid/tests/test_acceptance_harness.py",
+          "summary": "Constructed metrics and selected offline compilations; not complete physical/model acceptance."
+        },
+        {
+          "kind": "prior_review_test_snapshot",
+          "path": "docs/research/verification-summary.json",
+          "summary": "Earlier selected suites, not fresh execution in this subtask."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Fixture cardinality/provider tests are not a real OpenAI 60/20 matrix.",
+      "needed_to_verify": "Retain required provider calls and exact outcomes for all sixty supported/twenty unsupported cases.",
+      "contract": {
+        "required_provider": "openai",
+        "min_model_calls_per_case": 1,
+        "supported_total": 60,
+        "supported_min_fraction": 0.95,
+        "unsupported_total": 20,
+        "unsupported_min_fraction": 0.95
+      },
+      "measurement_status": "current_full_measurement_missing"
+    },
+    {
+      "id": "poc.gesture",
+      "scope": "humanoid POC acceptance",
+      "authoritative_source": {
+        "path": "humanoid/acceptance_criteria.yaml",
+        "line": 28,
+        "selector": "gesture"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/evals/evidence.py",
+        "line": 264,
+        "symbol": "gesture_gate"
+      },
+      "available_evidence": [
+        {
+          "kind": "code_contract_tests",
+          "path": "humanoid/tests/test_acceptance_harness.py",
+          "summary": "Constructed metrics and selected offline compilations; not complete physical/model acceptance."
+        },
+        {
+          "kind": "prior_review_test_snapshot",
+          "path": "docs/research/verification-summary.json",
+          "summary": "Earlier selected suites, not fresh execution in this subtask."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Compiled assertions exist; current full twenty-clip prompt-aware review is absent. Manual gate needs reconciliation with autonomous evaluation policy.",
+      "needed_to_verify": "Bind full ego/orbit ratings and finger evidence to all accepted clips; state active review policy.",
+      "contract": {
+        "clip_total": 20,
+        "finger_assertions_required_fraction": 1,
+        "review_min_score": 4,
+        "review_min_fraction": 0.8,
+        "required_views": [
+          "ego",
+          "orbit"
+        ]
+      },
+      "measurement_status": "current_full_measurement_missing"
+    },
+    {
+      "id": "poc.gesture_diversity",
+      "scope": "humanoid POC acceptance",
+      "authoritative_source": {
+        "path": "humanoid/acceptance_criteria.yaml",
+        "line": 35,
+        "selector": "gesture_diversity"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/evals/evidence.py",
+        "line": 328,
+        "symbol": "gesture_diversity_gate"
+      },
+      "available_evidence": [
+        {
+          "kind": "code_contract_tests",
+          "path": "humanoid/tests/test_acceptance_harness.py",
+          "summary": "Constructed metrics and selected offline compilations; not complete physical/model acceptance."
+        },
+        {
+          "kind": "prior_review_test_snapshot",
+          "path": "docs/research/verification-summary.json",
+          "summary": "Earlier selected suites, not fresh execution in this subtask."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Twenty offline fixture compilations and duplicate detection are narrow compiler evidence.",
+      "needed_to_verify": "Recompute all declared descriptors, hashes, ranges and distances from actual accepted clips.",
+      "contract": {
+        "clip_total": 20,
+        "required_unique_profiles": 20,
+        "required_unique_motion_hashes": 20,
+        "required_unique_descriptors": 20,
+        "min_pairwise_normalized_distance": 0.5,
+        "min_changed_dimensions_per_pair": 3,
+        "changed_dimension_delta": 0.18,
+        "descriptor_ranges": {
+          "duration_s": [
+            1,
+            3.5
+          ],
+          "easing": [
+            0,
+            1
+          ],
+          "wrist_lateral_m": [
+            -0.25,
+            0.25
+          ],
+          "wrist_height_m": [
+            1.18,
+            1.52
+          ],
+          "wrist_depth_m": [
+            0.24,
+            0.42
+          ],
+          "wrist_pitch_rad": [
+            -0.4,
+            0.4
+          ],
+          "wrist_yaw_rad": [
+            -0.4,
+            0.4
+          ],
+          "wrist_roll_rad": [
+            -0.7,
+            0.7
+          ],
+          "elbow_swivel_rad": [
+            -0.3,
+            0.5
+          ],
+          "torso_rotation_rad": [
+            0,
+            0.12
+          ]
+        }
+      },
+      "measurement_status": "current_full_measurement_missing"
+    },
+    {
+      "id": "poc.grasp",
+      "scope": "humanoid POC acceptance",
+      "authoritative_source": {
+        "path": "humanoid/acceptance_criteria.yaml",
+        "line": 56,
+        "selector": "grasp"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/evals/evidence.py",
+        "line": 556,
+        "symbol": "grasp_and_physical_gates"
+      },
+      "available_evidence": [
+        {
+          "kind": "code_contract_tests",
+          "path": "humanoid/tests/test_acceptance_harness.py",
+          "summary": "Constructed metrics and selected offline compilations; not complete physical/model acceptance."
+        },
+        {
+          "kind": "prior_review_test_snapshot",
+          "path": "docs/research/verification-summary.json",
+          "summary": "Earlier selected suites, not fresh execution in this subtask."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "150 fixture definitions and tests are not 150 successful physical trials.",
+      "needed_to_verify": "Run all 150 specified trials with independent physical measurements and retain all failures.",
+      "contract": {
+        "expected_trials": 150,
+        "min_success_fraction": 0.9,
+        "shapes": [
+          {
+            "id": "cube-060",
+            "dimensions_m": [
+              0.06,
+              0.06,
+              0.06
+            ],
+            "mass_kg": 0.2
+          },
+          {
+            "id": "wide-090",
+            "dimensions_m": [
+              0.09,
+              0.05,
+              0.06
+            ],
+            "mass_kg": 0.25
+          },
+          {
+            "id": "tall-120",
+            "dimensions_m": [
+              0.05,
+              0.05,
+              0.12
+            ],
+            "mass_kg": 0.3
+          },
+          {
+            "id": "thin-040",
+            "dimensions_m": [
+              0.04,
+              0.07,
+              0.08
+            ],
+            "mass_kg": 0.15
+          },
+          {
+            "id": "deep-100",
+            "dimensions_m": [
+              0.07,
+              0.1,
+              0.05
+            ],
+            "mass_kg": 0.4
+          }
+        ],
+        "poses": [
+          {
+            "id": "center-near",
+            "position_m": [
+              0,
+              1.05,
+              0.23
+            ],
+            "rotation_deg": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "id": "center-far",
+            "position_m": [
+              0,
+              1.1,
+              0.35
+            ],
+            "rotation_deg": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "id": "left",
+            "position_m": [
+              -0.04,
+              1.05,
+              0.28
+            ],
+            "rotation_deg": [
+              0,
+              10,
+              0
+            ]
+          },
+          {
+            "id": "right",
+            "position_m": [
+              0.04,
+              1.05,
+              0.28
+            ],
+            "rotation_deg": [
+              0,
+              -10,
+              0
+            ]
+          },
+          {
+            "id": "high-yawed",
+            "position_m": [
+              0.04,
+              1.12,
+              0.3
+            ],
+            "rotation_deg": [
+              0,
+              35,
+              0
+            ]
+          }
+        ],
+        "hands": [
+          "left",
+          "right"
+        ],
+        "paraphrases": [
+          "Grab the block in front of you with your {hand} hand.",
+          "Pick up the block using your {hand} hand.",
+          "Reach out with the {hand} hand, grasp the block, and lift it."
+        ]
+      },
+      "measurement_status": "current_full_measurement_missing"
+    },
+    {
+      "id": "poc.physical_proof",
+      "scope": "humanoid POC acceptance",
+      "authoritative_source": {
+        "path": "humanoid/acceptance_criteria.yaml",
+        "line": 80,
+        "selector": "physical_proof"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/evals/evidence.py",
+        "line": 434,
+        "symbol": "physical_trial"
+      },
+      "available_evidence": [
+        {
+          "kind": "code_contract_tests",
+          "path": "humanoid/tests/test_acceptance_harness.py",
+          "summary": "Constructed metrics and selected offline compilations; not complete physical/model acceptance."
+        },
+        {
+          "kind": "prior_review_test_snapshot",
+          "path": "docs/research/verification-summary.json",
+          "summary": "Earlier selected suites, not fresh execution in this subtask."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Reject-weld/missing-metric tests validate gate logic. Parallel-gripper demos cannot replace articulated humanoid evidence.",
+      "needed_to_verify": "Measure actual lift, hold, drift, slip, opposition, lost table contact and no attachment for each trial.",
+      "contract": {
+        "min_lift_m": 0.1,
+        "min_hold_s": 1,
+        "max_vertical_drift_m": 0.015,
+        "max_palm_relative_slip_m": 0.02,
+        "requires_lost_table_contact": true,
+        "requires_opposing_contacts": true,
+        "allows_weld_or_attachment": false
+      },
+      "measurement_status": "current_full_measurement_missing"
+    },
+    {
+      "id": "poc.safety",
+      "scope": "humanoid POC acceptance",
+      "authoritative_source": {
+        "path": "humanoid/acceptance_criteria.yaml",
+        "line": 89,
+        "selector": "safety"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/evals/evidence.py",
+        "line": 515,
+        "symbol": "safety_trial / safety_gate"
+      },
+      "available_evidence": [
+        {
+          "kind": "code_contract_tests",
+          "path": "humanoid/tests/test_acceptance_harness.py",
+          "summary": "Constructed metrics and selected offline compilations; not complete physical/model acceptance."
+        },
+        {
+          "kind": "prior_review_test_snapshot",
+          "path": "docs/research/verification-summary.json",
+          "summary": "Earlier selected suites, not fresh execution in this subtask."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Threshold tests are not full trajectory measurements; collision masks affect metric meaning.",
+      "needed_to_verify": "Recompute every safety dimension, including measured foot drift and collisions, with simulator policy provenance.",
+      "contract": {
+        "max_joint_limit_violations": 0,
+        "max_root_drift_m": 0.001,
+        "max_foot_drift_m": 0.001,
+        "max_unresolved_non_hand_collisions": 0,
+        "max_nan_count": 0,
+        "max_discontinuities": 0,
+        "max_penetration_m": 0.004
+      },
+      "measurement_status": "current_full_measurement_missing"
+    },
+    {
+      "id": "poc.structural_physics",
+      "scope": "humanoid POC acceptance",
+      "authoritative_source": {
+        "path": "humanoid/acceptance_criteria.yaml",
+        "line": 98,
+        "selector": "structural_physics"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/evals/evidence.py",
+        "line": 595,
+        "symbol": "structural_physics_gate"
+      },
+      "available_evidence": [
+        {
+          "kind": "code_contract_tests",
+          "path": "humanoid/tests/test_acceptance_harness.py",
+          "summary": "Constructed metrics and selected offline compilations; not complete physical/model acceptance."
+        },
+        {
+          "kind": "prior_review_test_snapshot",
+          "path": "docs/research/verification-summary.json",
+          "summary": "Earlier selected suites, not fresh execution in this subtask."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Constructed digit/coordinate checks do not establish executed full physical acceptance.",
+      "needed_to_verify": "Verify real independently actuated/contactable digits and trajectory conversion for all matrix trials.",
+      "contract": {
+        "required_digits": [
+          "thumb",
+          "index",
+          "middle",
+          "ring",
+          "little"
+        ],
+        "requires_independent_actuation": true,
+        "requires_contactable_digits": true,
+        "allows_parallel_gripper_proxy": false,
+        "app_up_axis": "Y",
+        "simulation_up_axis": "Z",
+        "requires_explicit_trajectory_conversion": true,
+        "max_coordinate_roundtrip_error_m": 1e-06
+      },
+      "measurement_status": "current_full_measurement_missing"
+    },
+    {
+      "id": "poc.semantic_forward_space",
+      "scope": "humanoid POC acceptance",
+      "authoritative_source": {
+        "path": "humanoid/acceptance_criteria.yaml",
+        "line": 108,
+        "selector": "semantic_forward_space"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/evals/orientation.py",
+        "line": null,
+        "symbol": "semantic_forward_gate"
+      },
+      "available_evidence": [
+        {
+          "kind": "code_contract_tests",
+          "path": "humanoid/tests/test_acceptance_harness.py",
+          "summary": "Constructed metrics and selected offline compilations; not complete physical/model acceptance."
+        },
+        {
+          "kind": "prior_review_test_snapshot",
+          "path": "docs/research/verification-summary.json",
+          "summary": "Earlier selected suites, not fresh execution in this subtask."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Constructed forward/reach tests do not evaluate every accepted clip.",
+      "needed_to_verify": "Measure actual target observables against rig forward and reach in the complete run.",
+      "contract": {
+        "rig_profile_axis_field": "forward_axis",
+        "min_forward_projection_m": 0.1,
+        "required_fraction": 1,
+        "max_arm_reach_from_rig_profile": true,
+        "reach_tolerance_m": 0,
+        "gesture_target_observables": [
+          "wrist_lateral_m",
+          "wrist_height_m",
+          "wrist_depth_m"
+        ]
+      },
+      "measurement_status": "current_full_measurement_missing"
+    },
+    {
+      "id": "poc.egocentric_camera_orientation",
+      "scope": "humanoid POC acceptance",
+      "authoritative_source": {
+        "path": "humanoid/acceptance_criteria.yaml",
+        "line": 116,
+        "selector": "egocentric_camera_orientation"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/evals/orientation.py",
+        "line": null,
+        "symbol": "camera_orientation_gate"
+      },
+      "available_evidence": [
+        {
+          "kind": "code_contract_tests",
+          "path": "humanoid/tests/test_acceptance_harness.py",
+          "summary": "Constructed metrics and selected offline compilations; not complete physical/model acceptance."
+        },
+        {
+          "kind": "prior_review_test_snapshot",
+          "path": "docs/research/verification-summary.json",
+          "summary": "Earlier selected suites, not fresh execution in this subtask."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Source-branch tests do not provide a new complete acceptance report.",
+      "needed_to_verify": "Inspect all ego branches and runtime camera direction against the rig-forward gate.",
+      "contract": {
+        "max_angle_from_rig_forward_deg": 60,
+        "minimum_camera_branches": 2,
+        "source": "frontend/src/scene.ts",
+        "requires_all_ego_branches": true
+      },
+      "measurement_status": "current_full_measurement_missing"
+    },
+    {
+      "id": "poc.parametric_control",
+      "scope": "humanoid POC acceptance",
+      "authoritative_source": {
+        "path": "humanoid/acceptance_criteria.yaml",
+        "line": 122,
+        "selector": "parametric_control"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/evals/evidence.py",
+        "line": 658,
+        "symbol": "parametric_gate"
+      },
+      "available_evidence": [
+        {
+          "kind": "code_contract_tests",
+          "path": "humanoid/tests/test_acceptance_harness.py",
+          "summary": "Constructed metrics and selected offline compilations; not complete physical/model acceptance."
+        },
+        {
+          "kind": "prior_review_test_snapshot",
+          "path": "docs/research/verification-summary.json",
+          "summary": "Earlier selected suites, not fresh execution in this subtask."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Fixture tests do not prove all physical parameter responses.",
+      "needed_to_verify": "Run all 28 control sweeps; retain observables, compile latency, zero planner calls and mirror error.",
+      "contract": {
+        "max_compile_ms": 3000,
+        "max_planner_calls": 0,
+        "mirror_tolerance_m": 0.02,
+        "controls": [
+          {
+            "name": "duration_s",
+            "target": "program",
+            "levels": [
+              0.5,
+              0.8,
+              1.1
+            ],
+            "observable": "duration_s",
+            "behavior": "increasing"
+          },
+          {
+            "name": "arm_height",
+            "target": "program",
+            "levels": [
+              -0.5,
+              0,
+              0.5
+            ],
+            "observable": "wrist_height_m",
+            "behavior": "increasing"
+          },
+          {
+            "name": "arm_depth",
+            "target": "program",
+            "levels": [
+              -0.5,
+              0,
+              0.5
+            ],
+            "observable": "wrist_depth_m",
+            "behavior": "increasing"
+          },
+          {
+            "name": "lateral_offset",
+            "target": "program",
+            "levels": [
+              -0.5,
+              0,
+              0.5
+            ],
+            "observable": "wrist_lateral_m",
+            "behavior": "increasing"
+          },
+          {
+            "name": "wrist_pitch",
+            "target": "program",
+            "levels": [
+              -0.5,
+              0,
+              0.5
+            ],
+            "observable": "wrist_pitch_rad",
+            "behavior": "increasing"
+          },
+          {
+            "name": "wrist_yaw",
+            "target": "program",
+            "levels": [
+              -0.5,
+              0,
+              0.5
+            ],
+            "observable": "wrist_yaw_rad",
+            "behavior": "increasing"
+          },
+          {
+            "name": "wrist_roll",
+            "target": "program",
+            "levels": [
+              -0.5,
+              0,
+              0.5
+            ],
+            "observable": "wrist_roll_rad",
+            "behavior": "increasing"
+          },
+          {
+            "name": "elbow_swivel",
+            "target": "program",
+            "levels": [
+              -0.5,
+              0,
+              0.5
+            ],
+            "observable": "elbow_swivel_rad",
+            "behavior": "increasing"
+          },
+          {
+            "name": "torso_participation",
+            "target": "program",
+            "levels": [
+              0,
+              0.5,
+              1
+            ],
+            "observable": "torso_participation",
+            "behavior": "increasing"
+          },
+          {
+            "name": "thumb_curl",
+            "target": "program",
+            "levels": [
+              -0.5,
+              0,
+              0.5
+            ],
+            "observable": "thumb_curl",
+            "behavior": "increasing"
+          },
+          {
+            "name": "index_curl",
+            "target": "program",
+            "levels": [
+              -0.5,
+              0,
+              0.5
+            ],
+            "observable": "index_curl",
+            "behavior": "increasing"
+          },
+          {
+            "name": "middle_curl",
+            "target": "program",
+            "levels": [
+              -0.5,
+              0,
+              0.5
+            ],
+            "observable": "middle_curl",
+            "behavior": "increasing"
+          },
+          {
+            "name": "ring_curl",
+            "target": "program",
+            "levels": [
+              -0.5,
+              0,
+              0.5
+            ],
+            "observable": "ring_curl",
+            "behavior": "increasing"
+          },
+          {
+            "name": "little_curl",
+            "target": "program",
+            "levels": [
+              -0.5,
+              0,
+              0.5
+            ],
+            "observable": "little_curl",
+            "behavior": "increasing"
+          },
+          {
+            "name": "finger_splay",
+            "target": "program",
+            "levels": [
+              -0.5,
+              0,
+              0.5
+            ],
+            "observable": "finger_splay",
+            "behavior": "increasing"
+          },
+          {
+            "name": "thumb_opposition",
+            "target": "program",
+            "levels": [
+              0.25,
+              0.55,
+              0.9
+            ],
+            "observable": "thumb_opposition",
+            "behavior": "increasing"
+          },
+          {
+            "name": "grip_force",
+            "target": "program",
+            "levels": [
+              0.25,
+              0.6,
+              0.95
+            ],
+            "observable": "grip_force",
+            "behavior": "increasing"
+          },
+          {
+            "name": "lift_height_m",
+            "target": "program",
+            "levels": [
+              0.06,
+              0.12,
+              0.18
+            ],
+            "observable": "lift_height_m",
+            "behavior": "increasing"
+          },
+          {
+            "name": "hold_duration_s",
+            "target": "program",
+            "levels": [
+              0.5,
+              1,
+              1.5
+            ],
+            "observable": "hold_duration_s",
+            "behavior": "increasing"
+          },
+          {
+            "name": "block_width_m",
+            "target": "scene",
+            "levels": [
+              0.04,
+              0.07,
+              0.1
+            ],
+            "observable": "block_width_m",
+            "behavior": "increasing"
+          },
+          {
+            "name": "block_height_m",
+            "target": "scene",
+            "levels": [
+              0.05,
+              0.08,
+              0.12
+            ],
+            "observable": "block_height_m",
+            "behavior": "increasing"
+          },
+          {
+            "name": "block_depth_m",
+            "target": "scene",
+            "levels": [
+              0.04,
+              0.07,
+              0.1
+            ],
+            "observable": "block_depth_m",
+            "behavior": "increasing"
+          },
+          {
+            "name": "block_mass_kg",
+            "target": "scene",
+            "levels": [
+              0.1,
+              0.3,
+              0.5
+            ],
+            "observable": "block_mass_kg",
+            "behavior": "increasing"
+          },
+          {
+            "name": "block_friction",
+            "target": "scene",
+            "levels": [
+              0.4,
+              1.1,
+              1.8
+            ],
+            "observable": "block_friction",
+            "behavior": "increasing"
+          },
+          {
+            "name": "block_x_m",
+            "target": "scene",
+            "levels": [
+              -0.12,
+              0,
+              0.12
+            ],
+            "observable": "block_x",
+            "behavior": "increasing"
+          },
+          {
+            "name": "block_y_m",
+            "target": "scene",
+            "levels": [
+              1,
+              1.08,
+              1.16
+            ],
+            "observable": "block_y",
+            "behavior": "increasing"
+          },
+          {
+            "name": "block_z_m",
+            "target": "scene",
+            "levels": [
+              0.15,
+              0.22,
+              0.29
+            ],
+            "observable": "block_z",
+            "behavior": "increasing"
+          },
+          {
+            "name": "handedness",
+            "target": "program",
+            "levels": [
+              "left",
+              "right"
+            ],
+            "observable": "wrist_lateral_m",
+            "behavior": "mirrored"
+          }
+        ]
+      },
+      "measurement_status": "current_full_measurement_missing"
+    },
+    {
+      "id": "poc.latency",
+      "scope": "humanoid POC acceptance",
+      "authoritative_source": {
+        "path": "humanoid/acceptance_criteria.yaml",
+        "line": 157,
+        "selector": "latency"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/evals/evidence.py",
+        "line": 708,
+        "symbol": "latency_gate"
+      },
+      "available_evidence": [
+        {
+          "kind": "code_contract_tests",
+          "path": "humanoid/tests/test_acceptance_harness.py",
+          "summary": "Constructed metrics and selected offline compilations; not complete physical/model acceptance."
+        },
+        {
+          "kind": "prior_review_test_snapshot",
+          "path": "docs/research/verification-summary.json",
+          "summary": "Earlier selected suites, not fresh execution in this subtask."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "POC fifteen-second end-to-end p95 differs from v2 ninety-second local-only p95.",
+      "needed_to_verify": "Collect at least sixty real end-to-end samples with declared failure handling.",
+      "contract": {
+        "percentile": 0.95,
+        "max_end_to_end_ms": 15000,
+        "min_samples": 60
+      },
+      "measurement_status": "current_full_measurement_missing"
+    },
+    {
+      "id": "poc.export",
+      "scope": "humanoid POC acceptance",
+      "authoritative_source": {
+        "path": "humanoid/acceptance_criteria.yaml",
+        "line": 162,
+        "selector": "export"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/evals/evidence.py",
+        "line": 716,
+        "symbol": "export_gate"
+      },
+      "available_evidence": [
+        {
+          "kind": "code_contract_tests",
+          "path": "humanoid/tests/test_acceptance_harness.py",
+          "summary": "Constructed metrics and selected offline compilations; not complete physical/model acceptance."
+        },
+        {
+          "kind": "prior_review_test_snapshot",
+          "path": "docs/research/verification-summary.json",
+          "summary": "Earlier selected suites, not fresh execution in this subtask."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Existing GLB tests are not eleven exports from current accepted POC runs.",
+      "needed_to_verify": "Independently reimport eleven accepted exports and verify errors and provenance.",
+      "contract": {
+        "required_format": "glb",
+        "max_translation_error_m": 0.0001,
+        "max_rotation_error": 0.0001,
+        "requires_provenance": true,
+        "sample_count": 11
+      },
+      "measurement_status": "current_full_measurement_missing"
+    },
+    {
+      "id": "v2.goal_1.foundation_and_reproducibility",
+      "scope": "v2 completion aggregate",
+      "authoritative_source": {
+        "path": "humanoid/docs/v2/completion-audit.md",
+        "selector": "Goal 1"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/tests/test_v2_process_restart_acceptance.py"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_documented_measurement",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Historically proven process crash/recovery/replay, typed contracts and provenance."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Historical prose is not a fresh current-source release seal. Historically proven process crash/recovery/replay, typed contracts and provenance.",
+      "needed_to_verify": "Run current retained subprocess/database/API restart and exact-replay drill.",
+      "measurement_status": "current_full_measurement_missing"
+    },
+    {
+      "id": "v2.goal_2.canonical_physical_human",
+      "scope": "v2 completion aggregate",
+      "authoritative_source": {
+        "path": "humanoid/docs/v2/completion-audit.md",
+        "selector": "Goal 2"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/docs/v2/completion-audit.md"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_documented_measurement",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Historical free-root 67-actuator body, explicit inertias and all-profile GLB roundtrip."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Historical prose is not a fresh current-source release seal. Historical free-root 67-actuator body, explicit inertias and all-profile GLB roundtrip.",
+      "needed_to_verify": "Revalidate current model integrity and independent all-profile export.",
+      "measurement_status": "current_full_measurement_missing"
+    },
+    {
+      "id": "v2.goal_3.scene_and_object_compiler",
+      "scope": "v2 completion aggregate",
+      "authoritative_source": {
+        "path": "humanoid/docs/v2/completion-audit.md",
+        "selector": "Goal 3"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/tests/test_v2_production_drawer_acceptance.py"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_documented_measurement",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Two of six task families historically succeed; four lack certified production survivors."
+        }
+      ],
+      "status": "failed",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Historical prose is not a fresh current-source release seal. Two of six task families historically succeed; four lack certified production survivors.",
+      "needed_to_verify": "Certify all six families with physical gates, repeats, exports and robustness."
+    },
+    {
+      "id": "v2.goal_4.timing_and_motion_compiler",
+      "scope": "v2 completion aggregate",
+      "authoritative_source": {
+        "path": "humanoid/docs/v2/completion-audit.md",
+        "selector": "Goal 4"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/src/rigby_v2/calibration/motion_exit_study.py"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_documented_measurement",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Compiler/study plumbing exists; real blinded POC comparison is missing."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Historical prose is not a fresh current-source release seal. Compiler/study plumbing exists; real blinded POC comparison is missing.",
+      "needed_to_verify": "Collect >=30 real heldout pairs and independent retained ratings; pass all dimension gates."
+    },
+    {
+      "id": "v2.goal_5.whole_body_execution",
+      "scope": "v2 completion aggregate",
+      "authoritative_source": {
+        "path": "humanoid/docs/v2/completion-audit.md",
+        "selector": "Goal 5"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/tests/test_v2_production_grasp_place.py"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_documented_measurement",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Standing succeeds historically; required free-object grasp rises only millimetres against 120 mm."
+        }
+      ],
+      "status": "failed",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Historical prose is not a fresh current-source release seal. Standing succeeds historically; required free-object grasp rises only millimetres against 120 mm.",
+      "needed_to_verify": "Produce genuine articulated grasp/lift/hold/release and calibrated variations."
+    },
+    {
+      "id": "v2.goal_6.deterministic_certification",
+      "scope": "v2 completion aggregate",
+      "authoritative_source": {
+        "path": "humanoid/docs/v2/completion-audit.md",
+        "selector": "Goal 6"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/tests/test_v2_production_grasp_place.py"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_documented_measurement",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Gate tests and button/drawer survivors exist; free-object lifecycle survivor is missing."
+        }
+      ],
+      "status": "failed",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Historical prose is not a fresh current-source release seal. Gate tests and button/drawer survivors exist; free-object lifecycle survivor is missing.",
+      "needed_to_verify": "Retain a successful independently replayed/exported/robust free-object lifecycle."
+    },
+    {
+      "id": "v2.goal_7.evidence_best_of_five",
+      "scope": "v2 completion aggregate",
+      "authoritative_source": {
+        "path": "humanoid/docs/v2/completion-audit.md",
+        "selector": "Goal 7"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/src/rigby_v2/benchmark/live_runner.py"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_documented_measurement",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Exact-five/evidence contracts exist; complete live model-backed acceptance remains unproven."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Historical prose is not a fresh current-source release seal. Exact-five/evidence contracts exist; complete live model-backed acceptance remains unproven.",
+      "needed_to_verify": "Run real five-candidate selection with calibrated judging and reversed-order evidence.",
+      "measurement_status": "current_full_measurement_missing"
+    },
+    {
+      "id": "v2.goal_8.certified_rag",
+      "scope": "v2 completion aggregate",
+      "authoritative_source": {
+        "path": "humanoid/docs/v2/completion-audit.md",
+        "selector": "Goal 8"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/docs/v2/completion-audit.md"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_documented_measurement",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "One historical staged button record; three indexes; five-index release building; Cosmos unadmitted."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Historical prose is not a fresh current-source release seal. One historical staged button record; three indexes; five-index release building; Cosmos unadmitted.",
+      "needed_to_verify": "Admit pinned encoders, populate certified library and measure real retrieval/RAG A/B."
+    },
+    {
+      "id": "v2.goal_9.human_calibration_and_datasets",
+      "scope": "v2 completion aggregate",
+      "authoritative_source": {
+        "path": "humanoid/docs/v2/completion-audit.md",
+        "selector": "Goal 9"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/tests/test_v2_calibration_study.py"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_documented_measurement",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Study/import contracts exist; completed ratings are synthetic; real review evidence absent."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Historical prose is not a fresh current-source release seal. Study/import contracts exist; completed ratings are synthetic; real review evidence absent.",
+      "needed_to_verify": "Obtain 200 genuine pairs/600 retained ratings and required independent review evidence."
+    },
+    {
+      "id": "v2.goal_10.release_benchmark_and_migration",
+      "scope": "v2 completion aggregate",
+      "authoritative_source": {
+        "path": "humanoid/docs/v2/completion-audit.md",
+        "selector": "Goal 10"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/tests/test_v2_benchmark_execution.py"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_documented_measurement",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Historical firewall/restore/install evidence; 300 supported outcomes remain absent."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Historical prose is not a fresh current-source release seal. Historical firewall/restore/install evidence; 300 supported outcomes remain absent.",
+      "needed_to_verify": "Execute full production benchmark; supply genuine calibration/RAG evidence and verify checklist."
+    },
+    {
+      "id": "v2.release.fresh_machine_preflight",
+      "scope": "v2 release checklist",
+      "authoritative_source": {
+        "path": "humanoid/docs/v2/release-checklist.json",
+        "selector": "fresh_machine_preflight"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/src/rigby_v2/release_ops/checklist.py",
+        "line": 88,
+        "symbol": "evaluate_release_checklist"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_documented_checklist",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Included in twelve of fifteen historically verified; current raw evidence not revalidated here."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Artifact status/hash integrity does not independently establish that the underlying experiment proves its claim.",
+      "needed_to_verify": "Supply and verify current content-addressed experimental evidence for this exact requirement, then evaluate the full checklist.",
+      "contract": {
+        "id": "fresh_machine_preflight",
+        "description": "Offline read-only preflight passes on the reference Windows machine.",
+        "required": true
+      },
+      "measurement_status": "current_full_measurement_missing"
+    },
+    {
+      "id": "v2.release.dependency_lock_audit",
+      "scope": "v2 release checklist",
+      "authoritative_source": {
+        "path": "humanoid/docs/v2/release-checklist.json",
+        "selector": "dependency_lock_audit"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/src/rigby_v2/release_ops/checklist.py",
+        "line": 88,
+        "symbol": "evaluate_release_checklist"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_documented_checklist",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Included in twelve of fifteen historically verified; current raw evidence not revalidated here."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Artifact status/hash integrity does not independently establish that the underlying experiment proves its claim.",
+      "needed_to_verify": "Supply and verify current content-addressed experimental evidence for this exact requirement, then evaluate the full checklist.",
+      "contract": {
+        "id": "dependency_lock_audit",
+        "description": "Runtime and build dependencies are exactly pinned and match the lock evidence.",
+        "required": true
+      },
+      "measurement_status": "current_full_measurement_missing"
+    },
+    {
+      "id": "v2.release.wheel_smoke",
+      "scope": "v2 release checklist",
+      "authoritative_source": {
+        "path": "humanoid/docs/v2/release-checklist.json",
+        "selector": "wheel_smoke"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/src/rigby_v2/release_ops/checklist.py",
+        "line": 88,
+        "symbol": "evaluate_release_checklist"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_documented_checklist",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Included in twelve of fifteen historically verified; current raw evidence not revalidated here."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Artifact status/hash integrity does not independently establish that the underlying experiment proves its claim.",
+      "needed_to_verify": "Supply and verify current content-addressed experimental evidence for this exact requirement, then evaluate the full checklist.",
+      "contract": {
+        "id": "wheel_smoke",
+        "description": "Offline wheel build, contents, entry points, and import smoke pass.",
+        "required": true
+      },
+      "measurement_status": "current_full_measurement_missing"
+    },
+    {
+      "id": "v2.release.fresh_machine_install",
+      "scope": "v2 release checklist",
+      "authoritative_source": {
+        "path": "humanoid/docs/v2/release-checklist.json",
+        "selector": "fresh_machine_install"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/src/rigby_v2/release_ops/checklist.py",
+        "line": 88,
+        "symbol": "evaluate_release_checklist"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_documented_checklist",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Included in twelve of fifteen historically verified; current raw evidence not revalidated here."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Artifact status/hash integrity does not independently establish that the underlying experiment proves its claim.",
+      "needed_to_verify": "Supply and verify current content-addressed experimental evidence for this exact requirement, then evaluate the full checklist.",
+      "contract": {
+        "id": "fresh_machine_install",
+        "description": "Documented clean-machine install and first-run procedure passes without undeclared dependencies.",
+        "required": true
+      },
+      "measurement_status": "current_full_measurement_missing"
+    },
+    {
+      "id": "v2.release.startup_readiness",
+      "scope": "v2 release checklist",
+      "authoritative_source": {
+        "path": "humanoid/docs/v2/release-checklist.json",
+        "selector": "startup_readiness"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/src/rigby_v2/release_ops/checklist.py",
+        "line": 88,
+        "symbol": "evaluate_release_checklist"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_documented_checklist",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Included in twelve of fifteen historically verified; current raw evidence not revalidated here."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Artifact status/hash integrity does not independently establish that the underlying experiment proves its claim.",
+      "needed_to_verify": "Supply and verify current content-addressed experimental evidence for this exact requirement, then evaluate the full checklist.",
+      "contract": {
+        "id": "startup_readiness",
+        "description": "PostgreSQL, artifact store, API health, and worker job-store readiness all pass.",
+        "required": true
+      },
+      "measurement_status": "current_full_measurement_missing"
+    },
+    {
+      "id": "v2.release.database_backup_restore",
+      "scope": "v2 release checklist",
+      "authoritative_source": {
+        "path": "humanoid/docs/v2/release-checklist.json",
+        "selector": "database_backup_restore"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/src/rigby_v2/release_ops/checklist.py",
+        "line": 88,
+        "symbol": "evaluate_release_checklist"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_documented_checklist",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Included in twelve of fifteen historically verified; current raw evidence not revalidated here."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Artifact status/hash integrity does not independently establish that the underlying experiment proves its claim.",
+      "needed_to_verify": "Supply and verify current content-addressed experimental evidence for this exact requirement, then evaluate the full checklist.",
+      "contract": {
+        "id": "database_backup_restore",
+        "description": "A database and artifact backup is restored and integrity-checked.",
+        "required": true
+      },
+      "measurement_status": "current_full_measurement_missing"
+    },
+    {
+      "id": "v2.release.migration_replay",
+      "scope": "v2 release checklist",
+      "authoritative_source": {
+        "path": "humanoid/docs/v2/release-checklist.json",
+        "selector": "migration_replay"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/src/rigby_v2/release_ops/checklist.py",
+        "line": 88,
+        "symbol": "evaluate_release_checklist"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_documented_checklist",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Included in twelve of fifteen historically verified; current raw evidence not revalidated here."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Artifact status/hash integrity does not independently establish that the underlying experiment proves its claim.",
+      "needed_to_verify": "Supply and verify current content-addressed experimental evidence for this exact requirement, then evaluate the full checklist.",
+      "contract": {
+        "id": "migration_replay",
+        "description": "Schema migration and archived v1/v2 replay evidence passes.",
+        "required": true
+      },
+      "measurement_status": "current_full_measurement_missing"
+    },
+    {
+      "id": "v2.release.supported_benchmark_300",
+      "scope": "v2 release checklist",
+      "authoritative_source": {
+        "path": "humanoid/docs/v2/release-checklist.json",
+        "selector": "supported_benchmark_300"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/src/rigby_v2/release_ops/checklist.py",
+        "line": 88,
+        "symbol": "evaluate_release_checklist"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_documented_checklist",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Explicitly blocked."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Artifact status/hash integrity does not independently establish that the underlying experiment proves its claim.",
+      "needed_to_verify": "Supply and verify current content-addressed experimental evidence for this exact requirement, then evaluate the full checklist.",
+      "contract": {
+        "id": "supported_benchmark_300",
+        "description": "The immutable 300-prompt supported benchmark meets all acceptance thresholds.",
+        "required": true
+      }
+    },
+    {
+      "id": "v2.release.adversarial_benchmark_100",
+      "scope": "v2 release checklist",
+      "authoritative_source": {
+        "path": "humanoid/docs/v2/release-checklist.json",
+        "selector": "adversarial_benchmark_100"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/src/rigby_v2/release_ops/checklist.py",
+        "line": 88,
+        "symbol": "evaluate_release_checklist"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_documented_checklist",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Included in twelve of fifteen historically verified; current raw evidence not revalidated here."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Artifact status/hash integrity does not independently establish that the underlying experiment proves its claim.",
+      "needed_to_verify": "Supply and verify current content-addressed experimental evidence for this exact requirement, then evaluate the full checklist.",
+      "contract": {
+        "id": "adversarial_benchmark_100",
+        "description": "All 100 unsupported/adversarial cases return typed failures without fabricated success.",
+        "required": true
+      },
+      "measurement_status": "current_full_measurement_missing"
+    },
+    {
+      "id": "v2.release.deterministic_replay",
+      "scope": "v2 release checklist",
+      "authoritative_source": {
+        "path": "humanoid/docs/v2/release-checklist.json",
+        "selector": "deterministic_replay"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/src/rigby_v2/release_ops/checklist.py",
+        "line": 88,
+        "symbol": "evaluate_release_checklist"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_documented_checklist",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Included in twelve of fifteen historically verified; current raw evidence not revalidated here."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Artifact status/hash integrity does not independently establish that the underlying experiment proves its claim.",
+      "needed_to_verify": "Supply and verify current content-addressed experimental evidence for this exact requirement, then evaluate the full checklist.",
+      "contract": {
+        "id": "deterministic_replay",
+        "description": "Three identical replays agree on task outcome and required numerical tolerances.",
+        "required": true
+      },
+      "measurement_status": "current_full_measurement_missing"
+    },
+    {
+      "id": "v2.release.performance_p95",
+      "scope": "v2 release checklist",
+      "authoritative_source": {
+        "path": "humanoid/docs/v2/release-checklist.json",
+        "selector": "performance_p95"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/src/rigby_v2/release_ops/checklist.py",
+        "line": 88,
+        "symbol": "evaluate_release_checklist"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_documented_checklist",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Included in twelve of fifteen historically verified; current raw evidence not revalidated here."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Artifact status/hash integrity does not independently establish that the underlying experiment proves its claim.",
+      "needed_to_verify": "Supply and verify current content-addressed experimental evidence for this exact requirement, then evaluate the full checklist.",
+      "contract": {
+        "id": "performance_p95",
+        "description": "Five ten-second candidates complete simulation and evidence generation within 90 seconds p95, excluding VLM.",
+        "required": true
+      },
+      "measurement_status": "current_full_measurement_missing"
+    },
+    {
+      "id": "v2.release.human_calibration",
+      "scope": "v2 release checklist",
+      "authoritative_source": {
+        "path": "humanoid/docs/v2/release-checklist.json",
+        "selector": "human_calibration"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/src/rigby_v2/release_ops/checklist.py",
+        "line": 88,
+        "symbol": "evaluate_release_checklist"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_documented_checklist",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Explicitly blocked."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Artifact status/hash integrity does not independently establish that the underlying experiment proves its claim.",
+      "needed_to_verify": "Supply and verify current content-addressed experimental evidence for this exact requirement, then evaluate the full checklist.",
+      "contract": {
+        "id": "human_calibration",
+        "description": "Human calibration meets kappa, order-consistency, and critical false-accept thresholds.",
+        "required": true
+      }
+    },
+    {
+      "id": "v2.release.rag_ab_evaluation",
+      "scope": "v2 release checklist",
+      "authoritative_source": {
+        "path": "humanoid/docs/v2/release-checklist.json",
+        "selector": "rag_ab_evaluation"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/src/rigby_v2/release_ops/checklist.py",
+        "line": 88,
+        "symbol": "evaluate_release_checklist"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_documented_checklist",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Explicitly blocked."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Artifact status/hash integrity does not independently establish that the underlying experiment proves its claim.",
+      "needed_to_verify": "Supply and verify current content-addressed experimental evidence for this exact requirement, then evaluate the full checklist.",
+      "contract": {
+        "id": "rag_ab_evaluation",
+        "description": "Held-out RAG-on improvement has a positive 95% confidence interval and retrieval quality passes.",
+        "required": true
+      }
+    },
+    {
+      "id": "v2.release.license_dataset_review",
+      "scope": "v2 release checklist",
+      "authoritative_source": {
+        "path": "humanoid/docs/v2/release-checklist.json",
+        "selector": "license_dataset_review"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/src/rigby_v2/release_ops/checklist.py",
+        "line": 88,
+        "symbol": "evaluate_release_checklist"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_documented_checklist",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Included in twelve of fifteen historically verified; current raw evidence not revalidated here."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Artifact status/hash integrity does not independently establish that the underlying experiment proves its claim.",
+      "needed_to_verify": "Supply and verify current content-addressed experimental evidence for this exact requirement, then evaluate the full checklist.",
+      "contract": {
+        "id": "license_dataset_review",
+        "description": "Dataset namespace, research-only, attribution, and Deaf expert review obligations are audited.",
+        "required": true
+      },
+      "measurement_status": "current_full_measurement_missing"
+    },
+    {
+      "id": "v2.release.operator_dry_run",
+      "scope": "v2 release checklist",
+      "authoritative_source": {
+        "path": "humanoid/docs/v2/release-checklist.json",
+        "selector": "operator_dry_run"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/src/rigby_v2/release_ops/checklist.py",
+        "line": 88,
+        "symbol": "evaluate_release_checklist"
+      },
+      "available_evidence": [
+        {
+          "kind": "historical_documented_checklist",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Included in twelve of fifteen historically verified; current raw evidence not revalidated here."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Artifact status/hash integrity does not independently establish that the underlying experiment proves its claim.",
+      "needed_to_verify": "Supply and verify current content-addressed experimental evidence for this exact requirement, then evaluate the full checklist.",
+      "contract": {
+        "id": "operator_dry_run",
+        "description": "Backup, rollback, degraded-mode, and incident-response runbook is exercised by an operator.",
+        "required": true
+      },
+      "measurement_status": "current_full_measurement_missing"
+    },
+    {
+      "id": "v2.benchmark.benchmark_matrix",
+      "scope": "v2 benchmark numeric gate",
+      "authoritative_source": {
+        "path": "humanoid/src/rigby_v2/benchmark/evaluator.py",
+        "line": 208,
+        "selector": "benchmark_matrix"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/src/rigby_v2/benchmark/evaluator.py",
+        "symbol": "evaluate_release_gate"
+      },
+      "available_evidence": [
+        {
+          "kind": "code_fixture_test",
+          "path": "humanoid/tests/test_v2_benchmark_execution.py",
+          "summary": "FixtureCaseRunner constructs numeric values and successful outcomes. Four hundred fixture rows test plumbing, not policy success."
+        },
+        {
+          "kind": "historical_documented_measurement",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Adversarial firewall and local performance pilot exist; full supported/retrieval/human benchmark is missing."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Evaluator consumes runner-supplied fields; full verification requires actual source measurements and exact case binding.",
+      "needed_to_verify": "Run the complete sealed production matrix and independently recompute this metric from retained artifacts.",
+      "contract": {
+        "threshold": "300 supported + 100 adversarial"
+      }
+    },
+    {
+      "id": "v2.benchmark.critical_deterministic_false_accepts",
+      "scope": "v2 benchmark numeric gate",
+      "authoritative_source": {
+        "path": "humanoid/src/rigby_v2/benchmark/evaluator.py",
+        "line": 208,
+        "selector": "critical_deterministic_false_accepts"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/src/rigby_v2/benchmark/evaluator.py",
+        "symbol": "evaluate_release_gate"
+      },
+      "available_evidence": [
+        {
+          "kind": "code_fixture_test",
+          "path": "humanoid/tests/test_v2_benchmark_execution.py",
+          "summary": "FixtureCaseRunner constructs numeric values and successful outcomes. Four hundred fixture rows test plumbing, not policy success."
+        },
+        {
+          "kind": "historical_documented_measurement",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Adversarial firewall and local performance pilot exist; full supported/retrieval/human benchmark is missing."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Evaluator consumes runner-supplied fields; full verification requires actual source measurements and exact case binding.",
+      "needed_to_verify": "Run the complete sealed production matrix and independently recompute this metric from retained artifacts.",
+      "contract": {
+        "threshold": "0"
+      }
+    },
+    {
+      "id": "v2.benchmark.adversarial_typed_outcomes",
+      "scope": "v2 benchmark numeric gate",
+      "authoritative_source": {
+        "path": "humanoid/src/rigby_v2/benchmark/evaluator.py",
+        "line": 208,
+        "selector": "adversarial_typed_outcomes"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/src/rigby_v2/benchmark/evaluator.py",
+        "symbol": "evaluate_release_gate"
+      },
+      "available_evidence": [
+        {
+          "kind": "code_fixture_test",
+          "path": "humanoid/tests/test_v2_benchmark_execution.py",
+          "summary": "FixtureCaseRunner constructs numeric values and successful outcomes. Four hundred fixture rows test plumbing, not policy success."
+        },
+        {
+          "kind": "historical_documented_measurement",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Adversarial firewall and local performance pilot exist; full supported/retrieval/human benchmark is missing."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Evaluator consumes runner-supplied fields; full verification requires actual source measurements and exact case binding.",
+      "needed_to_verify": "Run the complete sealed production matrix and independently recompute this metric from retained artifacts.",
+      "contract": {
+        "threshold": "100%"
+      }
+    },
+    {
+      "id": "v2.benchmark.supported_certified_winner_rate",
+      "scope": "v2 benchmark numeric gate",
+      "authoritative_source": {
+        "path": "humanoid/src/rigby_v2/benchmark/evaluator.py",
+        "line": 208,
+        "selector": "supported_certified_winner_rate"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/src/rigby_v2/benchmark/evaluator.py",
+        "symbol": "evaluate_release_gate"
+      },
+      "available_evidence": [
+        {
+          "kind": "code_fixture_test",
+          "path": "humanoid/tests/test_v2_benchmark_execution.py",
+          "summary": "FixtureCaseRunner constructs numeric values and successful outcomes. Four hundred fixture rows test plumbing, not policy success."
+        },
+        {
+          "kind": "historical_documented_measurement",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Adversarial firewall and local performance pilot exist; full supported/retrieval/human benchmark is missing."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Evaluator consumes runner-supplied fields; full verification requires actual source measurements and exact case binding.",
+      "needed_to_verify": "Run the complete sealed production matrix and independently recompute this metric from retained artifacts.",
+      "contract": {
+        "threshold": ">=0.95"
+      }
+    },
+    {
+      "id": "v2.benchmark.physics_measurements_complete",
+      "scope": "v2 benchmark numeric gate",
+      "authoritative_source": {
+        "path": "humanoid/src/rigby_v2/benchmark/evaluator.py",
+        "line": 208,
+        "selector": "physics_measurements_complete"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/src/rigby_v2/benchmark/evaluator.py",
+        "symbol": "evaluate_release_gate"
+      },
+      "available_evidence": [
+        {
+          "kind": "code_fixture_test",
+          "path": "humanoid/tests/test_v2_benchmark_execution.py",
+          "summary": "FixtureCaseRunner constructs numeric values and successful outcomes. Four hundred fixture rows test plumbing, not policy success."
+        },
+        {
+          "kind": "historical_documented_measurement",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Adversarial firewall and local performance pilot exist; full supported/retrieval/human benchmark is missing."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Evaluator consumes runner-supplied fields; full verification requires actual source measurements and exact case binding.",
+      "needed_to_verify": "Run the complete sealed production matrix and independently recompute this metric from retained artifacts.",
+      "contract": {
+        "threshold": "0 missing"
+      }
+    },
+    {
+      "id": "v2.benchmark.max_fingertip_error_m",
+      "scope": "v2 benchmark numeric gate",
+      "authoritative_source": {
+        "path": "humanoid/src/rigby_v2/benchmark/evaluator.py",
+        "line": 208,
+        "selector": "max_fingertip_error_m"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/src/rigby_v2/benchmark/evaluator.py",
+        "symbol": "evaluate_release_gate"
+      },
+      "available_evidence": [
+        {
+          "kind": "code_fixture_test",
+          "path": "humanoid/tests/test_v2_benchmark_execution.py",
+          "summary": "FixtureCaseRunner constructs numeric values and successful outcomes. Four hundred fixture rows test plumbing, not policy success."
+        },
+        {
+          "kind": "historical_documented_measurement",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Adversarial firewall and local performance pilot exist; full supported/retrieval/human benchmark is missing."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Evaluator consumes runner-supplied fields; full verification requires actual source measurements and exact case binding.",
+      "needed_to_verify": "Run the complete sealed production matrix and independently recompute this metric from retained artifacts.",
+      "contract": {
+        "threshold": "<0.008"
+      }
+    },
+    {
+      "id": "v2.benchmark.max_penetration_m",
+      "scope": "v2 benchmark numeric gate",
+      "authoritative_source": {
+        "path": "humanoid/src/rigby_v2/benchmark/evaluator.py",
+        "line": 208,
+        "selector": "max_penetration_m"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/src/rigby_v2/benchmark/evaluator.py",
+        "symbol": "evaluate_release_gate"
+      },
+      "available_evidence": [
+        {
+          "kind": "code_fixture_test",
+          "path": "humanoid/tests/test_v2_benchmark_execution.py",
+          "summary": "FixtureCaseRunner constructs numeric values and successful outcomes. Four hundred fixture rows test plumbing, not policy success."
+        },
+        {
+          "kind": "historical_documented_measurement",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Adversarial firewall and local performance pilot exist; full supported/retrieval/human benchmark is missing."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Evaluator consumes runner-supplied fields; full verification requires actual source measurements and exact case binding.",
+      "needed_to_verify": "Run the complete sealed production matrix and independently recompute this metric from retained artifacts.",
+      "contract": {
+        "threshold": "<0.002"
+      }
+    },
+    {
+      "id": "v2.benchmark.repeat_task_outcome_identical",
+      "scope": "v2 benchmark numeric gate",
+      "authoritative_source": {
+        "path": "humanoid/src/rigby_v2/benchmark/evaluator.py",
+        "line": 208,
+        "selector": "repeat_task_outcome_identical"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/src/rigby_v2/benchmark/evaluator.py",
+        "symbol": "evaluate_release_gate"
+      },
+      "available_evidence": [
+        {
+          "kind": "code_fixture_test",
+          "path": "humanoid/tests/test_v2_benchmark_execution.py",
+          "summary": "FixtureCaseRunner constructs numeric values and successful outcomes. Four hundred fixture rows test plumbing, not policy success."
+        },
+        {
+          "kind": "historical_documented_measurement",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Adversarial firewall and local performance pilot exist; full supported/retrieval/human benchmark is missing."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Evaluator consumes runner-supplied fields; full verification requires actual source measurements and exact case binding.",
+      "needed_to_verify": "Run the complete sealed production matrix and independently recompute this metric from retained artifacts.",
+      "contract": {
+        "threshold": "1.0; >=3 repeats"
+      }
+    },
+    {
+      "id": "v2.benchmark.vlm_human_agreement",
+      "scope": "v2 benchmark numeric gate",
+      "authoritative_source": {
+        "path": "humanoid/src/rigby_v2/benchmark/evaluator.py",
+        "line": 208,
+        "selector": "vlm_human_agreement"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/src/rigby_v2/benchmark/evaluator.py",
+        "symbol": "evaluate_release_gate"
+      },
+      "available_evidence": [
+        {
+          "kind": "code_fixture_test",
+          "path": "humanoid/tests/test_v2_benchmark_execution.py",
+          "summary": "FixtureCaseRunner constructs numeric values and successful outcomes. Four hundred fixture rows test plumbing, not policy success."
+        },
+        {
+          "kind": "historical_documented_measurement",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Adversarial firewall and local performance pilot exist; full supported/retrieval/human benchmark is missing."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Evaluator consumes runner-supplied fields; full verification requires actual source measurements and exact case binding.",
+      "needed_to_verify": "Run the complete sealed production matrix and independently recompute this metric from retained artifacts.",
+      "contract": {
+        "threshold": ">=0.80"
+      }
+    },
+    {
+      "id": "v2.benchmark.judge_order_consistency",
+      "scope": "v2 benchmark numeric gate",
+      "authoritative_source": {
+        "path": "humanoid/src/rigby_v2/benchmark/evaluator.py",
+        "line": 208,
+        "selector": "judge_order_consistency"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/src/rigby_v2/benchmark/evaluator.py",
+        "symbol": "evaluate_release_gate"
+      },
+      "available_evidence": [
+        {
+          "kind": "code_fixture_test",
+          "path": "humanoid/tests/test_v2_benchmark_execution.py",
+          "summary": "FixtureCaseRunner constructs numeric values and successful outcomes. Four hundred fixture rows test plumbing, not policy success."
+        },
+        {
+          "kind": "historical_documented_measurement",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Adversarial firewall and local performance pilot exist; full supported/retrieval/human benchmark is missing."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Evaluator consumes runner-supplied fields; full verification requires actual source measurements and exact case binding.",
+      "needed_to_verify": "Run the complete sealed production matrix and independently recompute this metric from retained artifacts.",
+      "contract": {
+        "threshold": ">=0.95"
+      }
+    },
+    {
+      "id": "v2.benchmark.critical_judge_false_accept_rate",
+      "scope": "v2 benchmark numeric gate",
+      "authoritative_source": {
+        "path": "humanoid/src/rigby_v2/benchmark/evaluator.py",
+        "line": 208,
+        "selector": "critical_judge_false_accept_rate"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/src/rigby_v2/benchmark/evaluator.py",
+        "symbol": "evaluate_release_gate"
+      },
+      "available_evidence": [
+        {
+          "kind": "code_fixture_test",
+          "path": "humanoid/tests/test_v2_benchmark_execution.py",
+          "summary": "FixtureCaseRunner constructs numeric values and successful outcomes. Four hundred fixture rows test plumbing, not policy success."
+        },
+        {
+          "kind": "historical_documented_measurement",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Adversarial firewall and local performance pilot exist; full supported/retrieval/human benchmark is missing."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Evaluator consumes runner-supplied fields; full verification requires actual source measurements and exact case binding.",
+      "needed_to_verify": "Run the complete sealed production matrix and independently recompute this metric from retained artifacts.",
+      "contract": {
+        "threshold": "<=0.01"
+      }
+    },
+    {
+      "id": "v2.benchmark.retrieval_precision_at_3",
+      "scope": "v2 benchmark numeric gate",
+      "authoritative_source": {
+        "path": "humanoid/src/rigby_v2/benchmark/evaluator.py",
+        "line": 208,
+        "selector": "retrieval_precision_at_3"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/src/rigby_v2/benchmark/evaluator.py",
+        "symbol": "evaluate_release_gate"
+      },
+      "available_evidence": [
+        {
+          "kind": "code_fixture_test",
+          "path": "humanoid/tests/test_v2_benchmark_execution.py",
+          "summary": "FixtureCaseRunner constructs numeric values and successful outcomes. Four hundred fixture rows test plumbing, not policy success."
+        },
+        {
+          "kind": "historical_documented_measurement",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Adversarial firewall and local performance pilot exist; full supported/retrieval/human benchmark is missing."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Evaluator consumes runner-supplied fields; full verification requires actual source measurements and exact case binding.",
+      "needed_to_verify": "Run the complete sealed production matrix and independently recompute this metric from retained artifacts.",
+      "contract": {
+        "threshold": ">=0.90"
+      }
+    },
+    {
+      "id": "v2.benchmark.retrieval_recall_at_5",
+      "scope": "v2 benchmark numeric gate",
+      "authoritative_source": {
+        "path": "humanoid/src/rigby_v2/benchmark/evaluator.py",
+        "line": 208,
+        "selector": "retrieval_recall_at_5"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/src/rigby_v2/benchmark/evaluator.py",
+        "symbol": "evaluate_release_gate"
+      },
+      "available_evidence": [
+        {
+          "kind": "code_fixture_test",
+          "path": "humanoid/tests/test_v2_benchmark_execution.py",
+          "summary": "FixtureCaseRunner constructs numeric values and successful outcomes. Four hundred fixture rows test plumbing, not policy success."
+        },
+        {
+          "kind": "historical_documented_measurement",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Adversarial firewall and local performance pilot exist; full supported/retrieval/human benchmark is missing."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Evaluator consumes runner-supplied fields; full verification requires actual source measurements and exact case binding.",
+      "needed_to_verify": "Run the complete sealed production matrix and independently recompute this metric from retained artifacts.",
+      "contract": {
+        "threshold": ">=0.80"
+      }
+    },
+    {
+      "id": "v2.benchmark.rag_success_lift",
+      "scope": "v2 benchmark numeric gate",
+      "authoritative_source": {
+        "path": "humanoid/src/rigby_v2/benchmark/evaluator.py",
+        "line": 208,
+        "selector": "rag_success_lift"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/src/rigby_v2/benchmark/evaluator.py",
+        "symbol": "evaluate_release_gate"
+      },
+      "available_evidence": [
+        {
+          "kind": "code_fixture_test",
+          "path": "humanoid/tests/test_v2_benchmark_execution.py",
+          "summary": "FixtureCaseRunner constructs numeric values and successful outcomes. Four hundred fixture rows test plumbing, not policy success."
+        },
+        {
+          "kind": "historical_documented_measurement",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Adversarial firewall and local performance pilot exist; full supported/retrieval/human benchmark is missing."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Evaluator consumes runner-supplied fields; full verification requires actual source measurements and exact case binding.",
+      "needed_to_verify": "Run the complete sealed production matrix and independently recompute this metric from retained artifacts.",
+      "contract": {
+        "threshold": ">=0.05"
+      }
+    },
+    {
+      "id": "v2.benchmark.rag_lift_ci95_low",
+      "scope": "v2 benchmark numeric gate",
+      "authoritative_source": {
+        "path": "humanoid/src/rigby_v2/benchmark/evaluator.py",
+        "line": 208,
+        "selector": "rag_lift_ci95_low"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/src/rigby_v2/benchmark/evaluator.py",
+        "symbol": "evaluate_release_gate"
+      },
+      "available_evidence": [
+        {
+          "kind": "code_fixture_test",
+          "path": "humanoid/tests/test_v2_benchmark_execution.py",
+          "summary": "FixtureCaseRunner constructs numeric values and successful outcomes. Four hundred fixture rows test plumbing, not policy success."
+        },
+        {
+          "kind": "historical_documented_measurement",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Adversarial firewall and local performance pilot exist; full supported/retrieval/human benchmark is missing."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Evaluator consumes runner-supplied fields; full verification requires actual source measurements and exact case binding.",
+      "needed_to_verify": "Run the complete sealed production matrix and independently recompute this metric from retained artifacts.",
+      "contract": {
+        "threshold": ">0"
+      }
+    },
+    {
+      "id": "v2.benchmark.local_pipeline_p95_seconds",
+      "scope": "v2 benchmark numeric gate",
+      "authoritative_source": {
+        "path": "humanoid/src/rigby_v2/benchmark/evaluator.py",
+        "line": 208,
+        "selector": "local_pipeline_p95_seconds"
+      },
+      "current_measurement_implementation": {
+        "path": "humanoid/src/rigby_v2/benchmark/evaluator.py",
+        "symbol": "evaluate_release_gate"
+      },
+      "available_evidence": [
+        {
+          "kind": "code_fixture_test",
+          "path": "humanoid/tests/test_v2_benchmark_execution.py",
+          "summary": "FixtureCaseRunner constructs numeric values and successful outcomes. Four hundred fixture rows test plumbing, not policy success."
+        },
+        {
+          "kind": "historical_documented_measurement",
+          "path": "humanoid/docs/v2/completion-audit.md",
+          "summary": "Adversarial firewall and local performance pilot exist; full supported/retrieval/human benchmark is missing."
+        }
+      ],
+      "status": "deferred",
+      "full_requirement_verified": false,
+      "implementation_coverage_gap": "Evaluator consumes runner-supplied fields; full verification requires actual source measurements and exact case binding.",
+      "needed_to_verify": "Run the complete sealed production matrix and independently recompute this metric from retained artifacts.",
+      "contract": {
+        "threshold": "<=90, five 10s candidates excluding VLM"
+      }
+    }
+  ],
+  "source_commit_is_base": true,
+  "working_tree_snapshot": "Source hashes identify the audited files, including G00 narrative corrections to general acceptance; numeric requirements are unchanged.",
+  "fresh_parent_baseline": "docs/research/progress/g00-verification-summary.json"
+}
