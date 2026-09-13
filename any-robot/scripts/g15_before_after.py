@@ -5,11 +5,10 @@ rendered through the D15 renderer so both halves of a pair carry the same
 banner, the same live tree and the same clock:
 
 * ``pitch``: the long arm, five objects, one registered seed. Before: the
-  v1 layout, neighbours eight centimetres apart, where the arm's open jaw
-  came down on the fourth cube while it took the first. After: the v2
-  layout, twelve centimetres apart, the same draw (jitter, mass, friction)
-  under both. The physics differs only in where the cubes and the cells
-  stand.
+  v1 layout, neighbours eight centimetres apart, and the jaw open to its
+  limit, where the arm's finger came down on the fourth cube while it
+  took the first. After: the v3 layout and the jaw opened as wide as the
+  cube needs, the same draw (jitter, mass, friction) under both.
 * ``look``: the jaw arm, three objects, one registered seed, on the v1
   layout in both halves -- identical worlds, identical physics until the
   trees diverge. Before: the v1 library, the loop closed on the transfers'
@@ -48,7 +47,7 @@ from rigby_general.pipeline import ingest_robot
 from rigby_general.sensing import load_policy
 from rigby_general.contact import closure as closure_module
 from rigby_general.grounding import grounder
-from rigby_general.skills.clear_work_area import LAYOUT_V1, LAYOUT_V2
+from rigby_general.skills.clear_work_area import LAYOUT_V1, LAYOUT_V2, LAYOUT_V3
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import g10_corpus as g10  # noqa: E402
@@ -61,14 +60,15 @@ ROOT = Path(__file__).resolve().parents[1]
 REPO = ROOT.parent
 PAIRS = {
     "pitch": {"body": "zoo_long_arm", "objects": 5, "seed": 5001,
-              "before": {"layout": LAYOUT_V1, "observe_each_pass": True, "label": "v1 layout, 8 cm"}, "after": {"layout": LAYOUT_V2, "observe_each_pass": True, "label": "v2 layout, 12 cm"},
-              "what_changed": "the layout only: neighbours twelve centimetres apart instead of eight, at positions every enabled body reaches; the same draw, the same library"},
+              "before": {"layout": LAYOUT_V1, "observe_each_pass": True, "opening_sized": False, "label": "v1 layout, 8 cm, jaw open to its limit"},
+              "after": {"layout": LAYOUT_V3, "observe_each_pass": True, "opening_sized": True, "label": "v3 layout, jaw opened to the cube's width"},
+              "what_changed": "the layout (positions every enabled body has transferred from and to alone, ten centimetres between neighbours) and the jaw's opening (sized to the object rather than the joint limit); the same draw, the same library"},
     "look": {"body": "zoo_jaw_arm", "objects": 3, "seed": 5030,
-             "before": {"layout": LAYOUT_V1, "observe_each_pass": False, "label": "v1 tree, loop closed on verdicts"}, "after": {"layout": LAYOUT_V1, "observe_each_pass": True, "label": "v2 tree, every pass ends with a look"},
+             "before": {"layout": LAYOUT_V1, "observe_each_pass": False, "opening_sized": False, "label": "v1 tree, loop closed on verdicts"}, "after": {"layout": LAYOUT_V1, "observe_each_pass": True, "opening_sized": False, "label": "v3 tree, every pass ends with a look"},
              "what_changed": "the tree only: every pass ends with a look at the area and the cells, and what the cameras see decides which placements stand; the same world, the same draw, identical physics until the trees diverge"},
     "closure": {"body": "zoo_jaw_arm", "objects": 3, "seed": 5002,
-                "before": {"layout": LAYOUT_V2, "observe_each_pass": True, "closure_fix": False, "label": "soft grip limits, guard counting the fingers"},
-                "after": {"layout": LAYOUT_V2, "observe_each_pass": True, "closure_fix": True, "label": "grip limits that hold, guard leaving the fingers to the closure"},
+                "before": {"layout": LAYOUT_V2, "observe_each_pass": True, "closure_fix": False, "opening_sized": False, "label": "soft grip limits, guard counting the fingers"},
+                "after": {"layout": LAYOUT_V2, "observe_each_pass": True, "closure_fix": True, "opening_sized": False, "label": "grip limits that hold, guard leaving the fingers to the closure"},
                 "what_changed": "the closure only: grip-joint limits that hold against the closure's force (fingers cannot cross), and the arm planner's guard no longer counting the closure's own finger pair; the same world, the same draw, the same tree, identical physics until the first lost hold"},
 }
 
@@ -107,25 +107,26 @@ def main() -> int:
             # The campaign's own label seeds the sensors' noise streams: both halves draw the same noise as the campaign's episode of this seed,
             # so a pair's physics is identical until the trees or the worlds diverge.
             grounder.GUARD_LEAVES_CLOSURE_PAIRS = closure_module.CLOSURE_LIMITS_HOLD = variant.get("closure_fix", True)
+            closure_module.OPENING_SIZED = variant.get("opening_sized", True)
             try:
                 row = campaign.run_episode(body, source, robot, world, policy, flat=False, disturbance=None, seed_label=f"{body}-{count}-tree-{seed}", observe_each_pass=variant["observe_each_pass"])
             finally:
-                grounder.GUARD_LEAVES_CLOSURE_PAIRS = closure_module.CLOSURE_LIMITS_HOLD = True
+                grounder.GUARD_LEAVES_CLOSURE_PAIRS = closure_module.CLOSURE_LIMITS_HOLD = closure_module.OPENING_SIZED = True
             caption = f"{body} | {count} objects | {variant['label']} | seed {seed} | {row['verdict']}" + (f" | {row['root_reason']}" if row["root_reason"] else "")
             sealed = campaign.seal_episode(row, local=args.local / name, label=half, caption=caption,
                                            task_extra={"pair": name, "half": half, "seed": seed, "draw": draw, "objects": count, "layout": variant["layout"].as_json(), "observe_each_pass": variant["observe_each_pass"],
-                                                       "closure_fix": variant.get("closure_fix", True),
+                                                       "closure_fix": variant.get("closure_fix", True), "opening_sized": variant.get("opening_sized", True),
                                                        "library_id": row["library_id"], "registration_sha256": registration["registration_sha256"], "sensor_configuration": protocol.CONFIGURATION})
             public = campaign.public_row(row)
             public.update({"episode_id": episode_id, "zoo_id": body, "objects": count, "seed": seed, "executor": "tree", "sealed": sealed, "half": half, "label": variant["label"], "layout": variant["layout"].name,
-                           "observe_each_pass": variant["observe_each_pass"], "closure_fix": variant.get("closure_fix", True), "draw_sha256": hashlib.sha256(json_bytes(draw)).hexdigest()})
+                           "observe_each_pass": variant["observe_each_pass"], "closure_fix": variant.get("closure_fix", True), "opening_sized": variant.get("opening_sized", True), "draw_sha256": hashlib.sha256(json_bytes(draw)).hexdigest()})
             rendered = media.render_episode(sealed["segments"], args.out / name / half, title=f"{body} | {count} objects | seed {seed} | {half.upper()}: {variant['label']}", ffmpeg=ffmpeg, ffprobe=ffprobe, total=count,
                                             disturbance=None)
             (args.out / name / f"{half}-row.json").write_bytes(json_bytes(public))
             halves[half] = {"episode_id": episode_id, "verdict": row["verdict"], "root_reason": row["root_reason"], "false_completion": row["false_completion"], "placed_by_oracle": row["placed_by_oracle"],
                             "placed_by_belief": row["placed_by_belief"], "physics_s": row["physics_s"], "passes": row["passes"], "looks": row["looks"], "placements_undone_by_look": row["placements_undone_by_look"],
                             "segments": len(sealed["segments"]), "label": variant["label"], "layout": variant["layout"].name, "observe_each_pass": variant["observe_each_pass"], "library_id": row["library_id"],
-                            "closure_fix": variant.get("closure_fix", True),
+                            "closure_fix": variant.get("closure_fix", True), "opening_sized": variant.get("opening_sized", True),
                             "video": f"{name}/{half}/media/episode.mp4", "preview": f"{name}/{half}/media/preview.gif", "frames": f"{name}/{half}/media/frames.json", "media_sha256": rendered["sha256"], "frame_count": rendered["frames"],
                             "row": f"{name}/{half}-row.json", "oracle": row["oracle"]}
             print(json.dumps({"pair": name, "half": half, "verdict": row["verdict"], "reason": row["root_reason"], "placed": f"{row['placed_by_oracle']}/{count}", "false_completion": row["false_completion"], "physics_s": round(row["physics_s"], 1)}), flush=True)

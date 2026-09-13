@@ -9,14 +9,20 @@ generated tree and once through its flat twin. The caps, the retry and
 pass budgets, and the targets are fixed here and hashed; the campaign
 refuses a protocol that no longer matches.
 
-Version 2. The first registration (g15-clearance-v1, kept beside this one
+Version 3. The first registration (g15-clearance-v1, kept beside this one
 for its baseline evidence) put neighbours eight centimetres apart, inside
 the long arm's open jaw, and closed the clearing loop on the transfers'
 own verdicts, so a cube a later placement knocked out of its cell stayed
-"placed". This one puts neighbours twelve centimetres apart at positions
-every enabled body reaches, and every pass ends with a look at the area
-and the cells. The draws are unchanged: the same seed draws the same
-jitter, mass and friction under both.
+"placed". The second (g15-clearance-v2, kept as registered, its run
+stopped) put neighbours twelve centimetres apart at positions within
+every body's reach envelope and ended every pass with a look; its run
+found that the envelope is not the solver -- the dual arm's IK misses two
+of those positions by four millimetres every time -- and that the arm
+parked over the platform hides cubes from both cameras. This one keeps
+the pitch, takes only positions every enabled body has transferred from
+and to alone (the qualification table is registered with the layout),
+and has the arm stand clear before every look. The draws are unchanged:
+the same seed draws the same jitter, mass and friction under all three.
 
     python any-robot/scripts/g15_protocol.py
 """
@@ -42,8 +48,11 @@ import g10_corpus as g10  # noqa: E402
 
 
 ROOT = Path(__file__).resolve().parents[1]
-PROTOCOL = ROOT / "assets/general/research-protocols/g15-clearance-v2"
+PROTOCOL = ROOT / "assets/general/research-protocols/g15-clearance-v3"
+PROTOCOL_V2 = ROOT / "assets/general/research-protocols/g15-clearance-v2"
 PROTOCOL_V1 = ROOT / "assets/general/research-protocols/g15-clearance-v1"
+QUALIFICATION = PROTOCOL / "qualification.json"
+"""Every candidate position's single-object transfer on every enabled body: a slot with the reference cell, a cell with the reference slot; the layout takes the ones every body succeeded at."""
 BODIES = ("zoo_dual_arm", "zoo_jaw_arm", "zoo_long_arm")
 CHAIN_LENGTHS = (3, 5, 10)
 NOMINAL_SEEDS = tuple(range(5000, 5050))
@@ -91,12 +100,17 @@ def main() -> int:
             libraries[f"{count}-{'flat' if flat else 'tree'}"] = {"library_id": library.library_id, "sha256": library.content_hash(), "definitions": len(library.skills), "nodes": sum(1 for _ in tree.root.walk()),
                                                                    "max_depth": tree.max_depth, "transfer_instances": sum(1 for n in tree.root.walk() if n.skill_id == "transfer_object")}
     payload = {
-        "schema": "g15.clearance-corpus.v2", "bodies": list(BODIES), "chain_lengths": list(CHAIN_LENGTHS), "sensor_configuration": CONFIGURATION,
-        "layout": LAYOUT.as_json(), "tree": {"observe_each_pass": True, "note": "every pass ends with a look at the area and the cells from the declared cameras; what they see decides which placements stand"},
+        "schema": "g15.clearance-corpus.v3", "bodies": list(BODIES), "chain_lengths": list(CHAIN_LENGTHS), "sensor_configuration": CONFIGURATION,
+        "layout": LAYOUT.as_json(), "qualification_sha256": hashlib.sha256(QUALIFICATION.read_bytes()).hexdigest(),
+        "tree": {"observe_each_pass": True, "note": "every pass ends with the arm standing clear (its reference configuration) and a look at the area and the cells from the declared cameras; what they see decides which placements stand"},
         "worlds": {str(k): v for k, v in worlds.items()}, "libraries": libraries,
-        "revision": {"supersedes": "g15-clearance-v1", "why": ["v1 put neighbours 8 cm apart, inside the long arm's open jaw (17.2 cm across the outer finger faces): its finger came down on the next cube",
-                                                                "v1 closed the clearing loop on the transfers' verdicts, so a cube a later placement knocked out of its cell stayed placed and the root reported success",
-                                                                "v1's far slot row lay beyond the dual arm's reach"],
+        "revision": {"supersedes": ["g15-clearance-v2", "g15-clearance-v1"],
+                     "why": ["v1 put neighbours 8 cm apart, inside the long arm's open jaw (17.2 cm across the outer finger faces): its finger came down on the next cube",
+                             "v1 closed the clearing loop on the transfers' verdicts, so a cube a later placement knocked out of its cell stayed placed and the root reported success",
+                             "v1's far slot row lay beyond the dual arm's reach",
+                             "v2 took positions from the reach envelope; the dual arm's IK missed two of them by four millimetres every time (its fifth slot failed in every five-object episode)",
+                             "v2 looked with the arm parked over the platform, which hid cubes from both cameras: the long arm placed all ten and the look stayed undecided",
+                             "v3 takes only positions every enabled body has transferred from and to alone, and stands clear before every look"],
                      "draws_unchanged": True},
         "draw": {"nominal_seed": RNG_NOMINAL, "disturbed_seed": RNG_DISTURBED, "objects_per_draw": OBJECTS_PER_DRAW, "translation_half_width_m": TRANSLATION_HALF_WIDTH_M, "mass_multiplier_range": list(MASS_MULTIPLIER_RANGE),
                  "friction_multiplier_range": list(FRICTION_MULTIPLIER_RANGE), "rule": "numpy.random.default_rng(seed), one stream, per seed twelve objects drawn in order (translation xy, mass, friction); a world of n objects uses the first n; paired: the same seed on every body and every chain length"},
@@ -108,7 +122,8 @@ def main() -> int:
     }
     (PROTOCOL / "corpus.json").write_bytes(json_bytes(payload))
     files = {"corpus.json": hashlib.sha256((PROTOCOL / "corpus.json").read_bytes()).hexdigest(), "g09/policy.json": hashlib.sha256((g10.G09 / "policy.json").read_bytes()).hexdigest()}
-    registration = {"schema": "g15.registration.v2", "files": files, "policy_sha256": policy_digest(policy), "base_environment_sha256": hashlib.sha256(json_bytes(base.model_dump(mode="json"))).hexdigest(),
+    files["qualification.json"] = hashlib.sha256(QUALIFICATION.read_bytes()).hexdigest()
+    registration = {"schema": "g15.registration.v3", "files": files, "policy_sha256": policy_digest(policy), "base_environment_sha256": hashlib.sha256(json_bytes(base.model_dump(mode="json"))).hexdigest(),
                     "worlds": {str(k): v["environment_sha256"] for k, v in worlds.items()}, "layout": LAYOUT.name,
                     "libraries": {k: v["sha256"] for k, v in libraries.items()}, "episodes": {"nominal": len(BODIES) * len(CHAIN_LENGTHS) * len(NOMINAL_SEEDS), "disturbed": len(BODIES) * len(DISTURBED_SEEDS) * 2},
                     "generation_calls": 0, "registered_at_utc": datetime.now(timezone.utc).isoformat(), "note": "registered before any scored run; the campaign refuses a corpus, policy, world or library that does not hash to this"}

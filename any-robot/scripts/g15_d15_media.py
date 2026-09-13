@@ -256,36 +256,52 @@ def main() -> int:
     if not ffmpeg or not ffprobe:
         raise SystemExit("ffmpeg and ffprobe are required")
     args.out.mkdir(parents=True, exist_ok=True)
-    index = {"goal": "G15", "demo": "D15", "created_at_utc": datetime.now(timezone.utc).isoformat(), "commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=REPO, text=True).strip(), "body": args.body, "clearances": [], "generation_calls": 0}
+    bodies = [args.body] + [b for b in protocol.BODIES if b != args.body]
+    index = {"goal": "G15", "demo": "D15", "created_at_utc": datetime.now(timezone.utc).isoformat(), "commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=REPO, text=True).strip(), "body": args.body,
+             "body_rule": "the requested body where it has a sealed success at that chain length, else the first enabled body that has one", "clearances": [], "generation_calls": 0}
     for count in protocol.CHAIN_LENGTHS:
-        rows = json.loads((args.campaign / f"nominal-{args.body}-{count}" / "trials.json").read_bytes())
-        row = next((r for r in rows if r["skill_success"] and "sealed" in r), None)
+        row, body = None, None
+        for candidate in bodies:
+            rows = json.loads((args.campaign / f"nominal-{candidate}-{count}" / "trials.json").read_bytes())
+            row = next((r for r in rows if r["skill_success"] and "sealed" in r), None)
+            if row is not None:
+                body = candidate
+                break
         if row is None:
-            index["clearances"].append({"objects": count, "episode_id": None, "note": "no sealed successful episode"})
+            index["clearances"].append({"objects": count, "episode_id": None, "note": "no sealed successful episode on any body"})
             continue
-        rendered = render_episode(row["sealed"]["segments"], args.out / f"clearance-{count}", title=f"{args.body} | clear {count} objects | seed {row['seed']}", ffmpeg=ffmpeg, ffprobe=ffprobe, total=count)
-        index["clearances"].append({"objects": count, "episode_id": row["episode_id"], "seed": row["seed"], "verdict": row["verdict"], "physics_s": row["physics_s"], "passes": row["passes"], "segments": len(row["sealed"]["segments"]),
+        rendered = render_episode(row["sealed"]["segments"], args.out / f"clearance-{count}", title=f"{body} | clear {count} objects | seed {row['seed']}", ffmpeg=ffmpeg, ffprobe=ffprobe, total=count)
+        index["clearances"].append({"objects": count, "body": body, "episode_id": row["episode_id"], "seed": row["seed"], "verdict": row["verdict"], "physics_s": row["physics_s"], "passes": row["passes"], "segments": len(row["sealed"]["segments"]),
                                     "video": f"clearance-{count}/media/episode.mp4", "preview": f"clearance-{count}/media/preview.gif", "frames": f"clearance-{count}/media/frames.json", "media_sha256": rendered["sha256"], "frame_count": rendered["frames"]})
-        print(json.dumps({"clearance": count, "episode": row["episode_id"], "frames": rendered["frames"]}), flush=True)
-    # the disturbance example: one seed the tree recovered and the flat twin did not, else the first sealed pair
-    rows = json.loads((args.campaign / f"disturbed-{args.body}" / "trials.json").read_bytes())
-    by_seed: dict[int, dict[str, dict]] = {}
-    for r in rows:
-        by_seed.setdefault(r["seed"], {})[r["executor"]] = r
-    chosen = next((pair for pair in by_seed.values() if pair.get("tree", {}).get("skill_success") and not pair.get("flat", {}).get("skill_success") and "sealed" in pair["tree"] and "sealed" in pair["flat"]), None)
+        print(json.dumps({"clearance": count, "body": body, "episode": row["episode_id"], "frames": rendered["frames"]}), flush=True)
+    # the disturbance example: one seed the tree recovered and the flat twin did not, else the first sealed pair; the requested body first
+    chosen, body = None, None
+    for candidate in bodies:
+        rows = json.loads((args.campaign / f"disturbed-{candidate}" / "trials.json").read_bytes())
+        by_seed: dict[int, dict[str, dict]] = {}
+        for r in rows:
+            by_seed.setdefault(r["seed"], {})[r["executor"]] = r
+        chosen = next((pair for pair in by_seed.values() if pair.get("tree", {}).get("skill_success") and not pair.get("flat", {}).get("skill_success") and "sealed" in pair["tree"] and "sealed" in pair["flat"]), None)
+        if chosen is not None:
+            body = candidate
+            break
     if chosen is None:
-        chosen = next((pair for pair in by_seed.values() if "sealed" in pair.get("tree", {}) and "sealed" in pair.get("flat", {})), None)
+        rows = json.loads((args.campaign / f"disturbed-{args.body}" / "trials.json").read_bytes())
+        by_seed = {}
+        for r in rows:
+            by_seed.setdefault(r["seed"], {})[r["executor"]] = r
+        chosen, body = next((pair for pair in by_seed.values() if "sealed" in pair.get("tree", {}) and "sealed" in pair.get("flat", {})), None), args.body
     if chosen is not None:
         clips = {}
         for executor in ("tree", "flat"):
             r = chosen[executor]
             note = f"{r['disturbance']['kind']} on {r['disturbance']['object']} | {executor}: {r['verdict']}" + (f" ({r['root_reason']})" if r["root_reason"] else "")
-            rendered = render_episode(r["sealed"]["segments"], args.out / f"disturbed-{executor}", title=f"{args.body} | 5 objects | {executor} | seed {r['seed']}", ffmpeg=ffmpeg, ffprobe=ffprobe, total=5, disturbance=note)
+            rendered = render_episode(r["sealed"]["segments"], args.out / f"disturbed-{executor}", title=f"{body} | 5 objects | {executor} | seed {r['seed']}", ffmpeg=ffmpeg, ffprobe=ffprobe, total=5, disturbance=note)
             clips[executor] = {"episode_id": r["episode_id"], "verdict": r["verdict"], "root_reason": r["root_reason"], "placed": r["placed_by_oracle"], "video": f"disturbed-{executor}/media/episode.mp4", "preview": f"disturbed-{executor}/media/preview.gif",
                                "frames": f"disturbed-{executor}/media/frames.json", "media_sha256": rendered["sha256"], "frame_count": rendered["frames"]}
         pair = tile_pair(ffmpeg, ffprobe, args.out / clips["tree"]["video"], args.out / clips["flat"]["video"], args.out / "disturbed-pair.mp4")
         summary = gif_summary(ffmpeg, args.out / "disturbed-pair.mp4", args.out / "disturbed-pair-preview.gif", f"D15 {chosen['tree']['disturbance']['kind']}: tree (left) against flat (right), seed {chosen['tree']['seed']}", pair["duration_s"])
-        index["disturbance"] = {"seed": chosen["tree"]["seed"], "kind": chosen["tree"]["disturbance"]["kind"], "object": chosen["tree"]["disturbance"]["object"], "tree": clips["tree"], "flat": clips["flat"],
+        index["disturbance"] = {"seed": chosen["tree"]["seed"], "body": body, "kind": chosen["tree"]["disturbance"]["kind"], "object": chosen["tree"]["disturbance"]["object"], "tree": clips["tree"], "flat": clips["flat"],
                                 "pair": {**pair, "preview": summary, "layout": "left the generated tree, right its flat twin; the same seed, world and disturbance; a shorter clip holds its final state"}}
         print(json.dumps({"disturbance": index["disturbance"]["kind"], "seed": index["disturbance"]["seed"], "tree": clips["tree"]["verdict"], "flat": clips["flat"]["verdict"]}), flush=True)
     (args.out / "index.json").write_bytes(json_bytes(index))
