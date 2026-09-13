@@ -470,7 +470,12 @@ def attempt_transfer(
     downward = (facing, -np.asarray(frame.up, dtype=float)) if facing is not None else None
 
     seed_target = points[spans["descend"][1]] if "descend" in spans else points[-1]
-    seeds = restart_seeds(model, frame, arm_joints, rest, seed_target) if first_phase == PHASES[0] else [("rest", np.array(rest, dtype=float))]
+    # Restart seeds are configurations the arm may be placed in before the
+    # first recorded state; a transfer that continues a world another skill
+    # left must solve from where the arm actually stands, since a path whose
+    # first row is another solution of the same point would ask the
+    # controller to jump to it.
+    seeds = restart_seeds(model, frame, arm_joints, rest, seed_target) if (first_phase == PHASES[0] and resume is None) else [("rest", np.array(rest, dtype=float))]
     facing_from_span = 1 if "turn" in spans else 0
     try:
         path, marks, seed_used = _joint_path(model, solve_site, arm_joints, points, seeds, guard, per_span, facing=downward, facing_from_span=facing_from_span)

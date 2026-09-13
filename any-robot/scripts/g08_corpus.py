@@ -30,7 +30,7 @@ import mujoco
 import numpy as np
 
 from rigby_general.contact.grasp import _hand_facing, _scene_rest_qpos
-from rigby_general.contact.transfer import PHASES, _grasp_offset_m, _joint_path, _path, grasp_standoff_m, restart_seeds, transfer_scene_from_environment
+from rigby_general.contact.transfer import PHASES, _grasp_offset_m, _joint_path, _path, grasp_standoff_m, transfer_scene_from_environment
 from rigby_general.contracts import SiteSemantic
 from rigby_general.grounding import ik
 from rigby_general.grounding.grounder import _collision_guard, figure_site_for
@@ -104,7 +104,9 @@ class Body:
         standoff = grasp_standoff_m(model, manifest, effector, site, self.scene.scene.block_half_extent_m)
         points, spans = _path(self.scene, frame, home, _grasp_offset_m(manifest, effector), standoff)
         downward = (facing, -np.asarray(frame.up, dtype=float)) if facing is not None else None
-        seeds = restart_seeds(model, frame, self.arm, qpos, points[spans["descend"][1]])
+        # From a pose the arm actually stands in, the only seed is that pose:
+        # the transfer resumed there solves from it and nothing else.
+        seeds = [("pose", np.array(qpos, dtype=float))]
         try:
             path, marks, seed = _joint_path(model, site, self.arm, points, seeds, self.guard, 6, facing=downward)
         except ik.IkFailure as error:

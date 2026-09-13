@@ -4,7 +4,7 @@
     "zoo_jaw_arm",
     "zoo_long_arm"
   ],
-  "created_at_utc": "2026-09-13T09:59:26.148751+00:00",
+  "created_at_utc": "2026-09-13T10:04:55.497728+00:00",
   "draw": {
     "feasible_band_fraction": 0.2,
     "generator": "numpy.random.default_rng(seed), one stream, bodies in the order listed, feasible then injected",
@@ -15,54 +15,6 @@
   "feasible_cases": [
     {
       "case_id": "zoo_dual_arm-feasible-000",
-      "draw": 1,
-      "expect": "composed_success",
-      "first": {
-        "skill": "joint_move",
-        "targets": {
-          "left_joint_0": -0.9997742724745305,
-          "left_joint_1": -0.13951018172477947,
-          "left_joint_2": 0.8982705763776417,
-          "left_joint_3": 1.4388277449082887,
-          "left_joint_4": 0.4595150758310078
-        }
-      },
-      "kind": "feasible",
-      "second": {
-        "skill": "transfer"
-      },
-      "witness": {
-        "straight_joint_path_clear": true,
-        "transfer_path_seed": "midpoint"
-      },
-      "zoo_id": "zoo_dual_arm"
-    },
-    {
-      "case_id": "zoo_dual_arm-feasible-001",
-      "draw": 2,
-      "expect": "composed_success",
-      "first": {
-        "skill": "joint_move",
-        "targets": {
-          "left_joint_0": 0.33008548226043644,
-          "left_joint_1": 0.5716031984460206,
-          "left_joint_2": -0.5703021118232516,
-          "left_joint_3": -0.9020291231609684,
-          "left_joint_4": -0.7090559122213915
-        }
-      },
-      "kind": "feasible",
-      "second": {
-        "skill": "transfer"
-      },
-      "witness": {
-        "straight_joint_path_clear": true,
-        "transfer_path_seed": "midpoint"
-      },
-      "zoo_id": "zoo_dual_arm"
-    },
-    {
-      "case_id": "zoo_dual_arm-feasible-002",
       "draw": 3,
       "expect": "composed_success",
       "first": {
@@ -81,12 +33,12 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_dual_arm"
     },
     {
-      "case_id": "zoo_dual_arm-feasible-003",
+      "case_id": "zoo_dual_arm-feasible-001",
       "draw": 4,
       "expect": "composed_success",
       "first": {
@@ -105,12 +57,12 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_dual_arm"
     },
     {
-      "case_id": "zoo_dual_arm-feasible-004",
+      "case_id": "zoo_dual_arm-feasible-002",
       "draw": 5,
       "expect": "composed_success",
       "first": {
@@ -129,36 +81,12 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_dual_arm"
     },
     {
-      "case_id": "zoo_dual_arm-feasible-005",
-      "draw": 6,
-      "expect": "composed_success",
-      "first": {
-        "skill": "joint_move",
-        "targets": {
-          "left_joint_0": 0.31610283922168136,
-          "left_joint_1": -1.1026081524340445,
-          "left_joint_2": 0.07240665633834809,
-          "left_joint_3": -0.4906097041001125,
-          "left_joint_4": 0.7798268180301982
-        }
-      },
-      "kind": "feasible",
-      "second": {
-        "skill": "transfer"
-      },
-      "witness": {
-        "straight_joint_path_clear": true,
-        "transfer_path_seed": "midpoint"
-      },
-      "zoo_id": "zoo_dual_arm"
-    },
-    {
-      "case_id": "zoo_dual_arm-feasible-006",
+      "case_id": "zoo_dual_arm-feasible-003",
       "draw": 7,
       "expect": "composed_success",
       "first": {
@@ -177,12 +105,12 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_dual_arm"
     },
     {
-      "case_id": "zoo_dual_arm-feasible-007",
+      "case_id": "zoo_dual_arm-feasible-004",
       "draw": 8,
       "expect": "composed_success",
       "first": {
@@ -201,36 +129,12 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_dual_arm"
     },
     {
-      "case_id": "zoo_dual_arm-feasible-008",
-      "draw": 9,
-      "expect": "composed_success",
-      "first": {
-        "skill": "joint_move",
-        "targets": {
-          "left_joint_0": -0.5876721183571108,
-          "left_joint_1": -1.5283202987471245,
-          "left_joint_2": -1.5237279641390218,
-          "left_joint_3": 0.5707250303529303,
-          "left_joint_4": 1.2419612231383361
-        }
-      },
-      "kind": "feasible",
-      "second": {
-        "skill": "transfer"
-      },
-      "witness": {
-        "straight_joint_path_clear": true,
-        "transfer_path_seed": "midpoint"
-      },
-      "zoo_id": "zoo_dual_arm"
-    },
-    {
-      "case_id": "zoo_dual_arm-feasible-009",
+      "case_id": "zoo_dual_arm-feasible-005",
       "draw": 10,
       "expect": "composed_success",
       "first": {
@@ -249,12 +153,12 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_dual_arm"
     },
     {
-      "case_id": "zoo_dual_arm-feasible-010",
+      "case_id": "zoo_dual_arm-feasible-006",
       "draw": 11,
       "expect": "composed_success",
       "first": {
@@ -273,36 +177,12 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_dual_arm"
     },
     {
-      "case_id": "zoo_dual_arm-feasible-011",
-      "draw": 13,
-      "expect": "composed_success",
-      "first": {
-        "skill": "joint_move",
-        "targets": {
-          "left_joint_0": 0.06711993251714787,
-          "left_joint_1": -1.6613148915744764,
-          "left_joint_2": 1.5733127718909339,
-          "left_joint_3": -0.026618253840174466,
-          "left_joint_4": 1.239635305637246
-        }
-      },
-      "kind": "feasible",
-      "second": {
-        "skill": "transfer"
-      },
-      "witness": {
-        "straight_joint_path_clear": true,
-        "transfer_path_seed": "midpoint"
-      },
-      "zoo_id": "zoo_dual_arm"
-    },
-    {
-      "case_id": "zoo_dual_arm-feasible-012",
+      "case_id": "zoo_dual_arm-feasible-007",
       "draw": 14,
       "expect": "composed_success",
       "first": {
@@ -321,12 +201,12 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_dual_arm"
     },
     {
-      "case_id": "zoo_dual_arm-feasible-013",
+      "case_id": "zoo_dual_arm-feasible-008",
       "draw": 15,
       "expect": "composed_success",
       "first": {
@@ -345,12 +225,12 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_dual_arm"
     },
     {
-      "case_id": "zoo_dual_arm-feasible-014",
+      "case_id": "zoo_dual_arm-feasible-009",
       "draw": 16,
       "expect": "composed_success",
       "first": {
@@ -369,60 +249,12 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_dual_arm"
     },
     {
-      "case_id": "zoo_dual_arm-feasible-015",
-      "draw": 17,
-      "expect": "composed_success",
-      "first": {
-        "skill": "joint_move",
-        "targets": {
-          "left_joint_0": 1.694249046188553,
-          "left_joint_1": 0.07281807139925323,
-          "left_joint_2": 1.4964510333972192,
-          "left_joint_3": -1.0913253917695351,
-          "left_joint_4": -0.7054839478637198
-        }
-      },
-      "kind": "feasible",
-      "second": {
-        "skill": "transfer"
-      },
-      "witness": {
-        "straight_joint_path_clear": true,
-        "transfer_path_seed": "midpoint"
-      },
-      "zoo_id": "zoo_dual_arm"
-    },
-    {
-      "case_id": "zoo_dual_arm-feasible-016",
-      "draw": 18,
-      "expect": "composed_success",
-      "first": {
-        "skill": "joint_move",
-        "targets": {
-          "left_joint_0": 1.0990336831085217,
-          "left_joint_1": 1.3724873289422583,
-          "left_joint_2": -0.8250991046109057,
-          "left_joint_3": 0.3061273989819142,
-          "left_joint_4": 0.1411622131591388
-        }
-      },
-      "kind": "feasible",
-      "second": {
-        "skill": "transfer"
-      },
-      "witness": {
-        "straight_joint_path_clear": true,
-        "transfer_path_seed": "midpoint"
-      },
-      "zoo_id": "zoo_dual_arm"
-    },
-    {
-      "case_id": "zoo_dual_arm-feasible-017",
+      "case_id": "zoo_dual_arm-feasible-010",
       "draw": 19,
       "expect": "composed_success",
       "first": {
@@ -441,12 +273,12 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_dual_arm"
     },
     {
-      "case_id": "zoo_dual_arm-feasible-018",
+      "case_id": "zoo_dual_arm-feasible-011",
       "draw": 20,
       "expect": "composed_success",
       "first": {
@@ -465,12 +297,12 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_dual_arm"
     },
     {
-      "case_id": "zoo_dual_arm-feasible-019",
+      "case_id": "zoo_dual_arm-feasible-012",
       "draw": 21,
       "expect": "composed_success",
       "first": {
@@ -489,12 +321,12 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_dual_arm"
     },
     {
-      "case_id": "zoo_dual_arm-feasible-020",
+      "case_id": "zoo_dual_arm-feasible-013",
       "draw": 22,
       "expect": "composed_success",
       "first": {
@@ -513,12 +345,12 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_dual_arm"
     },
     {
-      "case_id": "zoo_dual_arm-feasible-021",
+      "case_id": "zoo_dual_arm-feasible-014",
       "draw": 23,
       "expect": "composed_success",
       "first": {
@@ -537,12 +369,12 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_dual_arm"
     },
     {
-      "case_id": "zoo_dual_arm-feasible-022",
+      "case_id": "zoo_dual_arm-feasible-015",
       "draw": 25,
       "expect": "composed_success",
       "first": {
@@ -561,60 +393,12 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_dual_arm"
     },
     {
-      "case_id": "zoo_dual_arm-feasible-023",
-      "draw": 26,
-      "expect": "composed_success",
-      "first": {
-        "skill": "joint_move",
-        "targets": {
-          "left_joint_0": 0.8702547318097285,
-          "left_joint_1": 0.7750664676210666,
-          "left_joint_2": -0.243532073079326,
-          "left_joint_3": 1.5336405182285913,
-          "left_joint_4": 0.0007110609420131198
-        }
-      },
-      "kind": "feasible",
-      "second": {
-        "skill": "transfer"
-      },
-      "witness": {
-        "straight_joint_path_clear": true,
-        "transfer_path_seed": "midpoint"
-      },
-      "zoo_id": "zoo_dual_arm"
-    },
-    {
-      "case_id": "zoo_dual_arm-feasible-024",
-      "draw": 27,
-      "expect": "composed_success",
-      "first": {
-        "skill": "joint_move",
-        "targets": {
-          "left_joint_0": 0.2831966373075905,
-          "left_joint_1": -1.0341650851093522,
-          "left_joint_2": 0.6276385120833554,
-          "left_joint_3": 1.070019880391015,
-          "left_joint_4": 1.678539917374593
-        }
-      },
-      "kind": "feasible",
-      "second": {
-        "skill": "transfer"
-      },
-      "witness": {
-        "straight_joint_path_clear": true,
-        "transfer_path_seed": "midpoint"
-      },
-      "zoo_id": "zoo_dual_arm"
-    },
-    {
-      "case_id": "zoo_dual_arm-feasible-025",
+      "case_id": "zoo_dual_arm-feasible-016",
       "draw": 28,
       "expect": "composed_success",
       "first": {
@@ -633,36 +417,12 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_dual_arm"
     },
     {
-      "case_id": "zoo_dual_arm-feasible-026",
-      "draw": 30,
-      "expect": "composed_success",
-      "first": {
-        "skill": "joint_move",
-        "targets": {
-          "left_joint_0": 0.831571514667591,
-          "left_joint_1": -0.5315106540271346,
-          "left_joint_2": 0.15104611981863303,
-          "left_joint_3": -1.4474246331256129,
-          "left_joint_4": 1.1781623428164196
-        }
-      },
-      "kind": "feasible",
-      "second": {
-        "skill": "transfer"
-      },
-      "witness": {
-        "straight_joint_path_clear": true,
-        "transfer_path_seed": "midpoint"
-      },
-      "zoo_id": "zoo_dual_arm"
-    },
-    {
-      "case_id": "zoo_dual_arm-feasible-027",
+      "case_id": "zoo_dual_arm-feasible-017",
       "draw": 32,
       "expect": "composed_success",
       "first": {
@@ -681,36 +441,12 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_dual_arm"
     },
     {
-      "case_id": "zoo_dual_arm-feasible-028",
-      "draw": 33,
-      "expect": "composed_success",
-      "first": {
-        "skill": "joint_move",
-        "targets": {
-          "left_joint_0": -0.9382601659122422,
-          "left_joint_1": 1.5875534549495867,
-          "left_joint_2": 0.5014309434143076,
-          "left_joint_3": -1.3042190997091667,
-          "left_joint_4": 0.06207833605612523
-        }
-      },
-      "kind": "feasible",
-      "second": {
-        "skill": "transfer"
-      },
-      "witness": {
-        "straight_joint_path_clear": true,
-        "transfer_path_seed": "midpoint"
-      },
-      "zoo_id": "zoo_dual_arm"
-    },
-    {
-      "case_id": "zoo_dual_arm-feasible-029",
+      "case_id": "zoo_dual_arm-feasible-018",
       "draw": 34,
       "expect": "composed_success",
       "first": {
@@ -729,12 +465,12 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_dual_arm"
     },
     {
-      "case_id": "zoo_dual_arm-feasible-030",
+      "case_id": "zoo_dual_arm-feasible-019",
       "draw": 35,
       "expect": "composed_success",
       "first": {
@@ -753,12 +489,12 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_dual_arm"
     },
     {
-      "case_id": "zoo_dual_arm-feasible-031",
+      "case_id": "zoo_dual_arm-feasible-020",
       "draw": 36,
       "expect": "composed_success",
       "first": {
@@ -777,12 +513,12 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_dual_arm"
     },
     {
-      "case_id": "zoo_dual_arm-feasible-032",
+      "case_id": "zoo_dual_arm-feasible-021",
       "draw": 37,
       "expect": "composed_success",
       "first": {
@@ -801,22 +537,286 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-022",
+      "draw": 39,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 1.6356855811620252,
+          "left_joint_1": -0.32844952060617727,
+          "left_joint_2": 0.7462572263555578,
+          "left_joint_3": 0.8198806974872519,
+          "left_joint_4": 1.3832748433161934
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-023",
+      "draw": 40,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": -0.7485430412359043,
+          "left_joint_1": -1.3789651867733541,
+          "left_joint_2": -0.7154801716021584,
+          "left_joint_3": 1.6848923547937007,
+          "left_joint_4": -1.2128737301587005
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-024",
+      "draw": 41,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 0.8609490490470679,
+          "left_joint_1": 1.3835499232018948,
+          "left_joint_2": 0.6083975221008506,
+          "left_joint_3": 1.4489157402841633,
+          "left_joint_4": 0.7247425167273822
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-025",
+      "draw": 42,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": -0.2788822234974926,
+          "left_joint_1": -1.6954643305771118,
+          "left_joint_2": 0.3734819289970983,
+          "left_joint_3": -0.19798820779934978,
+          "left_joint_4": -1.4912779035468604
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-026",
+      "draw": 44,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 0.6234509316298649,
+          "left_joint_1": 1.4317211281867546,
+          "left_joint_2": -0.17747488700135894,
+          "left_joint_3": 0.05714940710196892,
+          "left_joint_4": 0.18895289528765846
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-027",
+      "draw": 46,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 0.48167068137387403,
+          "left_joint_1": 0.3988054739747988,
+          "left_joint_2": 0.4910926437608989,
+          "left_joint_3": -0.19498323664200057,
+          "left_joint_4": -0.823398562786512
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-028",
+      "draw": 47,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 1.5122245430078807,
+          "left_joint_1": -0.5096199731637039,
+          "left_joint_2": -0.8396965349845876,
+          "left_joint_3": -0.5487729195461974,
+          "left_joint_4": -1.5842132823554023
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-029",
+      "draw": 48,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 1.1369009730416622,
+          "left_joint_1": 1.7083664806173462,
+          "left_joint_2": 1.3224206916393864,
+          "left_joint_3": -0.8606928748258408,
+          "left_joint_4": 0.852451588966558
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-030",
+      "draw": 51,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": -0.1595733446966381,
+          "left_joint_1": 0.9595576494756473,
+          "left_joint_2": -0.4531974929200766,
+          "left_joint_3": 1.4102482854861518,
+          "left_joint_4": 0.9467441451054359
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-031",
+      "draw": 55,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": -1.3707236956403264,
+          "left_joint_1": -1.6014893719635692,
+          "left_joint_2": -0.9409231804017022,
+          "left_joint_3": -0.46428369555236215,
+          "left_joint_4": 0.33323713716660164
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-032",
+      "draw": 56,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": -1.3464087648078775,
+          "left_joint_1": -0.25350380554437923,
+          "left_joint_2": -0.7243507978956699,
+          "left_joint_3": -0.9828472531133121,
+          "left_joint_4": -0.730188540593801
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_dual_arm"
     },
     {
       "case_id": "zoo_dual_arm-feasible-033",
-      "draw": 38,
+      "draw": 59,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "left_joint_0": -0.636008697213879,
-          "left_joint_1": -0.7928688104721319,
-          "left_joint_2": 0.4015398126799439,
-          "left_joint_3": 0.18927559352835766,
-          "left_joint_4": -0.13212009636192734
+          "left_joint_0": 0.41033275895775345,
+          "left_joint_1": -1.1745735989556894,
+          "left_joint_2": -1.0306575558457092,
+          "left_joint_3": 0.0579009224247804,
+          "left_joint_4": -1.4682081369295932
         }
       },
       "kind": "feasible",
@@ -825,123 +825,23 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "midpoint"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_dual_arm"
     },
     {
       "case_id": "zoo_jaw_arm-feasible-000",
-      "draw": 1,
-      "expect": "composed_success",
-      "first": {
-        "skill": "joint_move",
-        "targets": {
-          "joint_0": 1.6356855811620252,
-          "joint_1": -0.32844952060617727,
-          "joint_2": 0.7462572263555578,
-          "joint_3": 0.8198806974872519,
-          "joint_4": 1.3832748433161934,
-          "joint_5": -0.7485430412359043
-        }
-      },
-      "kind": "feasible",
-      "second": {
-        "skill": "transfer"
-      },
-      "witness": {
-        "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
-      },
-      "zoo_id": "zoo_jaw_arm"
-    },
-    {
-      "case_id": "zoo_jaw_arm-feasible-001",
-      "draw": 2,
-      "expect": "composed_success",
-      "first": {
-        "skill": "joint_move",
-        "targets": {
-          "joint_0": -1.3789651867733541,
-          "joint_1": -0.7154801716021584,
-          "joint_2": 1.6848923547937007,
-          "joint_3": -1.2128737301587005,
-          "joint_4": 0.8609490490470679,
-          "joint_5": 1.3835499232018948
-        }
-      },
-      "kind": "feasible",
-      "second": {
-        "skill": "transfer"
-      },
-      "witness": {
-        "straight_joint_path_clear": true,
-        "transfer_path_seed": "midpoint"
-      },
-      "zoo_id": "zoo_jaw_arm"
-    },
-    {
-      "case_id": "zoo_jaw_arm-feasible-002",
-      "draw": 3,
-      "expect": "composed_success",
-      "first": {
-        "skill": "joint_move",
-        "targets": {
-          "joint_0": 0.6083975221008506,
-          "joint_1": 1.4489157402841633,
-          "joint_2": 0.7247425167273822,
-          "joint_3": -0.2788822234974926,
-          "joint_4": -1.6954643305771118,
-          "joint_5": 0.3734819289970983
-        }
-      },
-      "kind": "feasible",
-      "second": {
-        "skill": "transfer"
-      },
-      "witness": {
-        "straight_joint_path_clear": true,
-        "transfer_path_seed": "midpoint"
-      },
-      "zoo_id": "zoo_jaw_arm"
-    },
-    {
-      "case_id": "zoo_jaw_arm-feasible-003",
-      "draw": 4,
-      "expect": "composed_success",
-      "first": {
-        "skill": "joint_move",
-        "targets": {
-          "joint_0": -0.19798820779934978,
-          "joint_1": -1.4912779035468604,
-          "joint_2": -0.6520883530575758,
-          "joint_3": -0.3111177380554593,
-          "joint_4": 0.6854674814151243,
-          "joint_5": 0.707403967325845
-        }
-      },
-      "kind": "feasible",
-      "second": {
-        "skill": "transfer"
-      },
-      "witness": {
-        "straight_joint_path_clear": true,
-        "transfer_path_seed": "turned"
-      },
-      "zoo_id": "zoo_jaw_arm"
-    },
-    {
-      "case_id": "zoo_jaw_arm-feasible-004",
       "draw": 5,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": -0.1768974684405722,
-          "joint_1": 0.6234509316298649,
-          "joint_2": 1.4317211281867546,
-          "joint_3": -0.17747488700135894,
-          "joint_4": 0.05714940710196892,
-          "joint_5": 0.18895289528765846
+          "joint_0": 1.1178314919679448,
+          "joint_1": -0.608413144950869,
+          "joint_2": 1.4550634884134408,
+          "joint_3": -1.2998185667416486,
+          "joint_4": 0.426938689961577,
+          "joint_5": 0.2896447726359568
         }
       },
       "kind": "feasible",
@@ -950,48 +850,23 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_jaw_arm"
     },
     {
-      "case_id": "zoo_jaw_arm-feasible-005",
-      "draw": 7,
-      "expect": "composed_success",
-      "first": {
-        "skill": "joint_move",
-        "targets": {
-          "joint_0": 0.3988054739747988,
-          "joint_1": 0.4910926437608989,
-          "joint_2": -0.19498323664200057,
-          "joint_3": -0.823398562786512,
-          "joint_4": 1.5122245430078807,
-          "joint_5": -0.5096199731637039
-        }
-      },
-      "kind": "feasible",
-      "second": {
-        "skill": "transfer"
-      },
-      "witness": {
-        "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
-      },
-      "zoo_id": "zoo_jaw_arm"
-    },
-    {
-      "case_id": "zoo_jaw_arm-feasible-006",
+      "case_id": "zoo_jaw_arm-feasible-001",
       "draw": 8,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": -0.8396965349845876,
-          "joint_1": -0.5487729195461974,
-          "joint_2": -1.5842132823554023,
-          "joint_3": 1.1369009730416622,
-          "joint_4": 1.7083664806173462,
-          "joint_5": 1.3224206916393864
+          "joint_0": -1.5037164587571101,
+          "joint_1": 0.19317579891948533,
+          "joint_2": -0.1367021732790532,
+          "joint_3": -0.5695708029723645,
+          "joint_4": -0.8162578529047988,
+          "joint_5": -0.9474698203832548
         }
       },
       "kind": "feasible",
@@ -1000,23 +875,23 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "midpoint"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_jaw_arm"
     },
     {
-      "case_id": "zoo_jaw_arm-feasible-007",
+      "case_id": "zoo_jaw_arm-feasible-002",
       "draw": 9,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": -0.8606928748258408,
-          "joint_1": 0.852451588966558,
-          "joint_2": 0.7125773943254883,
-          "joint_3": -0.7339387387507806,
-          "joint_4": -1.331468566102292,
-          "joint_5": 1.628390368606293
+          "joint_0": -1.4837521162701666,
+          "joint_1": 0.90107554356331,
+          "joint_2": -1.2585075849234397,
+          "joint_3": 0.5579390495118739,
+          "joint_4": -0.682917063259185,
+          "joint_5": -1.159170226432951
         }
       },
       "kind": "feasible",
@@ -1025,48 +900,23 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "midpoint"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_jaw_arm"
     },
     {
-      "case_id": "zoo_jaw_arm-feasible-008",
-      "draw": 10,
-      "expect": "composed_success",
-      "first": {
-        "skill": "joint_move",
-        "targets": {
-          "joint_0": 0.4281526951006356,
-          "joint_1": 1.1030692714983705,
-          "joint_2": 0.4799135235275136,
-          "joint_3": 0.5202527227428972,
-          "joint_4": -1.3973205792555783,
-          "joint_5": -1.0542040607124972
-        }
-      },
-      "kind": "feasible",
-      "second": {
-        "skill": "transfer"
-      },
-      "witness": {
-        "straight_joint_path_clear": true,
-        "transfer_path_seed": "midpoint"
-      },
-      "zoo_id": "zoo_jaw_arm"
-    },
-    {
-      "case_id": "zoo_jaw_arm-feasible-009",
+      "case_id": "zoo_jaw_arm-feasible-003",
       "draw": 11,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": -0.1595733446966381,
-          "joint_1": 0.9595576494756473,
-          "joint_2": -0.4531974929200766,
-          "joint_3": 1.4102482854861518,
-          "joint_4": 0.9467441451054359,
-          "joint_5": -1.0748755359045652
+          "joint_0": 0.7047713811699738,
+          "joint_1": -0.3118765570373139,
+          "joint_2": 0.1568978972669286,
+          "joint_3": 0.8771394965111319,
+          "joint_4": 1.4296633606870168,
+          "joint_5": 0.604140162572401
         }
       },
       "kind": "feasible",
@@ -1075,23 +925,23 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_jaw_arm"
     },
     {
-      "case_id": "zoo_jaw_arm-feasible-010",
+      "case_id": "zoo_jaw_arm-feasible-004",
       "draw": 12,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": -0.3732727622067089,
-          "joint_1": 0.35464032731704087,
-          "joint_2": -0.39164819513079396,
-          "joint_3": 0.15916663284215082,
-          "joint_4": -0.9323935273738552,
-          "joint_5": -0.7276451473144229
+          "joint_0": 1.2629098880241165,
+          "joint_1": -1.6068348850723355,
+          "joint_2": -0.6408169762578915,
+          "joint_3": -1.0276681896090372,
+          "joint_4": -0.3700877729935177,
+          "joint_5": -1.1025054826778669
         }
       },
       "kind": "feasible",
@@ -1100,23 +950,23 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_jaw_arm"
     },
     {
-      "case_id": "zoo_jaw_arm-feasible-011",
+      "case_id": "zoo_jaw_arm-feasible-005",
       "draw": 13,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": 0.4731768411057917,
-          "joint_1": 1.4699663829620015,
-          "joint_2": 1.140757147926624,
-          "joint_3": -0.32419000361554917,
-          "joint_4": -0.5480264047897379,
-          "joint_5": -0.8204533137916938
+          "joint_0": -1.5684239910488986,
+          "joint_1": -0.5601552444565201,
+          "joint_2": 0.3405613971735204,
+          "joint_3": -1.037468365210223,
+          "joint_4": -1.41726291560519,
+          "joint_5": 1.0130278912654678
         }
       },
       "kind": "feasible",
@@ -1125,23 +975,23 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "midpoint"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_jaw_arm"
     },
     {
-      "case_id": "zoo_jaw_arm-feasible-012",
+      "case_id": "zoo_jaw_arm-feasible-006",
       "draw": 14,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": -1.019353279625133,
-          "joint_1": 0.6398840923695341,
-          "joint_2": -1.3707236956403264,
-          "joint_3": -1.6014893719635692,
-          "joint_4": -0.9409231804017022,
-          "joint_5": -0.46428369555236215
+          "joint_0": -1.576502036804177,
+          "joint_1": -1.028950129573052,
+          "joint_2": -0.5276570681088959,
+          "joint_3": 0.3835875822633983,
+          "joint_4": -0.09561455086305903,
+          "joint_5": 0.37369806001780725
         }
       },
       "kind": "feasible",
@@ -1150,23 +1000,23 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_jaw_arm"
     },
     {
-      "case_id": "zoo_jaw_arm-feasible-013",
+      "case_id": "zoo_jaw_arm-feasible-007",
       "draw": 15,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": 0.33323713716660164,
-          "joint_1": -1.3464087648078775,
-          "joint_2": -0.25350380554437923,
-          "joint_3": -0.7243507978956699,
-          "joint_4": -0.9828472531133121,
-          "joint_5": -0.730188540593801
+          "joint_0": 0.9720509696568946,
+          "joint_1": -0.9079604614084061,
+          "joint_2": 0.23131399274496167,
+          "joint_3": 0.4659817932669532,
+          "joint_4": -1.3306949074259937,
+          "joint_5": 0.5751452824412242
         }
       },
       "kind": "feasible",
@@ -1175,23 +1025,23 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_jaw_arm"
     },
     {
-      "case_id": "zoo_jaw_arm-feasible-014",
+      "case_id": "zoo_jaw_arm-feasible-008",
       "draw": 16,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": 0.6268075155842823,
-          "joint_1": 1.5926155405416473,
-          "joint_2": -0.4610078011929277,
-          "joint_3": 0.4187863660830926,
-          "joint_4": -0.33851078991756256,
-          "joint_5": 1.0599844081633494
+          "joint_0": -0.673140963363049,
+          "joint_1": -1.430079974195628,
+          "joint_2": -0.3794775083605404,
+          "joint_3": -1.204754656037557,
+          "joint_4": -1.4373167455577032,
+          "joint_5": 0.2294000301849477
         }
       },
       "kind": "feasible",
@@ -1200,23 +1050,23 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "midpoint"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_jaw_arm"
     },
     {
-      "case_id": "zoo_jaw_arm-feasible-015",
+      "case_id": "zoo_jaw_arm-feasible-009",
       "draw": 17,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": -0.9836305744513323,
-          "joint_1": 1.208408612311302,
-          "joint_2": -0.18000024418193616,
-          "joint_3": 0.11007541216239436,
-          "joint_4": 0.41033275895775345,
-          "joint_5": -1.1745735989556894
+          "joint_0": 1.243442737370176,
+          "joint_1": -1.242601247348492,
+          "joint_2": 1.0982407122411897,
+          "joint_3": -1.2180856856506956,
+          "joint_4": 0.8415783731950648,
+          "joint_5": -1.3589260364760274
         }
       },
       "kind": "feasible",
@@ -1225,73 +1075,23 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "turned"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_jaw_arm"
     },
     {
-      "case_id": "zoo_jaw_arm-feasible-016",
-      "draw": 18,
-      "expect": "composed_success",
-      "first": {
-        "skill": "joint_move",
-        "targets": {
-          "joint_0": -1.0306575558457092,
-          "joint_1": 0.0579009224247804,
-          "joint_2": -1.4682081369295932,
-          "joint_3": 1.2374944705382567,
-          "joint_4": 0.41843676072096514,
-          "joint_5": 0.45163698177829126
-        }
-      },
-      "kind": "feasible",
-      "second": {
-        "skill": "transfer"
-      },
-      "witness": {
-        "straight_joint_path_clear": true,
-        "transfer_path_seed": "midpoint"
-      },
-      "zoo_id": "zoo_jaw_arm"
-    },
-    {
-      "case_id": "zoo_jaw_arm-feasible-017",
-      "draw": 19,
-      "expect": "composed_success",
-      "first": {
-        "skill": "joint_move",
-        "targets": {
-          "joint_0": -1.3453892668734888,
-          "joint_1": -0.3709610421370595,
-          "joint_2": 0.17188613230646776,
-          "joint_3": -1.0732129795794227,
-          "joint_4": -0.7085627731934907,
-          "joint_5": 0.20722228243513663
-        }
-      },
-      "kind": "feasible",
-      "second": {
-        "skill": "transfer"
-      },
-      "witness": {
-        "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
-      },
-      "zoo_id": "zoo_jaw_arm"
-    },
-    {
-      "case_id": "zoo_jaw_arm-feasible-018",
+      "case_id": "zoo_jaw_arm-feasible-010",
       "draw": 20,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": -0.8663638095459882,
-          "joint_1": 1.3606903320511696,
-          "joint_2": 0.03515959544182423,
-          "joint_3": 0.6023039290829333,
-          "joint_4": 0.8933229246262884,
-          "joint_5": 0.12603868804400964
+          "joint_0": 0.6411167284056929,
+          "joint_1": -0.45693501735954634,
+          "joint_2": 1.2169228724816117,
+          "joint_3": 1.5697404838423692,
+          "joint_4": -0.022301147467050253,
+          "joint_5": -1.5770760859158575
         }
       },
       "kind": "feasible",
@@ -1300,23 +1100,23 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_jaw_arm"
     },
     {
-      "case_id": "zoo_jaw_arm-feasible-019",
+      "case_id": "zoo_jaw_arm-feasible-011",
       "draw": 21,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": 1.396985587227951,
-          "joint_1": -0.13263917017014037,
-          "joint_2": 1.3303427188217096,
-          "joint_3": 0.5701660400553408,
-          "joint_4": -0.5108448642459555,
-          "joint_5": -0.37077003055711777
+          "joint_0": 1.4649774446888384,
+          "joint_1": 1.2693479011080848,
+          "joint_2": 0.22754306987232487,
+          "joint_3": -0.7095027078557035,
+          "joint_4": 0.9141546320540761,
+          "joint_5": 0.4255259517083325
         }
       },
       "kind": "feasible",
@@ -1325,48 +1125,23 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "midpoint"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_jaw_arm"
     },
     {
-      "case_id": "zoo_jaw_arm-feasible-020",
-      "draw": 22,
-      "expect": "composed_success",
-      "first": {
-        "skill": "joint_move",
-        "targets": {
-          "joint_0": -0.872363490434272,
-          "joint_1": 0.39440130267396656,
-          "joint_2": -0.3232728782109253,
-          "joint_3": 1.1178314919679448,
-          "joint_4": -0.608413144950869,
-          "joint_5": 1.4550634884134408
-        }
-      },
-      "kind": "feasible",
-      "second": {
-        "skill": "transfer"
-      },
-      "witness": {
-        "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
-      },
-      "zoo_id": "zoo_jaw_arm"
-    },
-    {
-      "case_id": "zoo_jaw_arm-feasible-021",
+      "case_id": "zoo_jaw_arm-feasible-012",
       "draw": 23,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": -1.2998185667416486,
-          "joint_1": 0.426938689961577,
-          "joint_2": 0.2896447726359568,
-          "joint_3": 1.1428253169767228,
-          "joint_4": 1.2219139455591006,
-          "joint_5": -0.8723063782610998
+          "joint_0": -1.0965079048439155,
+          "joint_1": 1.3765981083565806,
+          "joint_2": 1.291440161199171,
+          "joint_3": 1.1565186717271438,
+          "joint_4": 0.6576938305574136,
+          "joint_5": -1.605209399583446
         }
       },
       "kind": "feasible",
@@ -1375,23 +1150,23 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "turned"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_jaw_arm"
     },
     {
-      "case_id": "zoo_jaw_arm-feasible-022",
+      "case_id": "zoo_jaw_arm-feasible-013",
       "draw": 24,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": 0.9345266383803468,
-          "joint_1": -1.563653997014488,
-          "joint_2": -0.7521451957899478,
-          "joint_3": 0.06877528212229933,
-          "joint_4": 0.08265887573423036,
-          "joint_5": -1.6923569585711122
+          "joint_0": 0.07068469439840541,
+          "joint_1": 0.3170017974657413,
+          "joint_2": 1.2478452910385744,
+          "joint_3": -0.1181795418531546,
+          "joint_4": -0.2129288963893552,
+          "joint_5": 0.05579109429436402
         }
       },
       "kind": "feasible",
@@ -1400,73 +1175,23 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_jaw_arm"
     },
     {
-      "case_id": "zoo_jaw_arm-feasible-023",
-      "draw": 25,
-      "expect": "composed_success",
-      "first": {
-        "skill": "joint_move",
-        "targets": {
-          "joint_0": -0.015011772897235653,
-          "joint_1": 0.9218863949377276,
-          "joint_2": -0.8742667835561807,
-          "joint_3": -1.5037164587571101,
-          "joint_4": 0.19317579891948533,
-          "joint_5": -0.1367021732790532
-        }
-      },
-      "kind": "feasible",
-      "second": {
-        "skill": "transfer"
-      },
-      "witness": {
-        "straight_joint_path_clear": true,
-        "transfer_path_seed": "turned"
-      },
-      "zoo_id": "zoo_jaw_arm"
-    },
-    {
-      "case_id": "zoo_jaw_arm-feasible-024",
-      "draw": 26,
-      "expect": "composed_success",
-      "first": {
-        "skill": "joint_move",
-        "targets": {
-          "joint_0": -0.5695708029723645,
-          "joint_1": -0.8162578529047988,
-          "joint_2": -0.9474698203832548,
-          "joint_3": -1.4837521162701666,
-          "joint_4": 0.90107554356331,
-          "joint_5": -1.2585075849234397
-        }
-      },
-      "kind": "feasible",
-      "second": {
-        "skill": "transfer"
-      },
-      "witness": {
-        "straight_joint_path_clear": true,
-        "transfer_path_seed": "midpoint"
-      },
-      "zoo_id": "zoo_jaw_arm"
-    },
-    {
-      "case_id": "zoo_jaw_arm-feasible-025",
+      "case_id": "zoo_jaw_arm-feasible-014",
       "draw": 27,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": 0.5579390495118739,
-          "joint_1": -0.682917063259185,
-          "joint_2": -1.159170226432951,
-          "joint_3": 0.34173960475798193,
-          "joint_4": 0.5919822443523524,
-          "joint_5": 0.6850613315529146
+          "joint_0": -0.6439399954802252,
+          "joint_1": -0.8151274543544428,
+          "joint_2": -0.6620876534226248,
+          "joint_3": -1.4550179798399723,
+          "joint_4": -0.1580283724572873,
+          "joint_5": 0.6914308669717357
         }
       },
       "kind": "feasible",
@@ -1475,48 +1200,23 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "midpoint"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_jaw_arm"
     },
     {
-      "case_id": "zoo_jaw_arm-feasible-026",
-      "draw": 28,
-      "expect": "composed_success",
-      "first": {
-        "skill": "joint_move",
-        "targets": {
-          "joint_0": -0.237607683070149,
-          "joint_1": -1.192384361208012,
-          "joint_2": -1.495198640944968,
-          "joint_3": 0.7047713811699738,
-          "joint_4": -0.3118765570373139,
-          "joint_5": 0.1568978972669286
-        }
-      },
-      "kind": "feasible",
-      "second": {
-        "skill": "transfer"
-      },
-      "witness": {
-        "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
-      },
-      "zoo_id": "zoo_jaw_arm"
-    },
-    {
-      "case_id": "zoo_jaw_arm-feasible-027",
+      "case_id": "zoo_jaw_arm-feasible-015",
       "draw": 29,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": 0.8771394965111319,
-          "joint_1": 1.4296633606870168,
-          "joint_2": 0.604140162572401,
-          "joint_3": 1.2629098880241165,
-          "joint_4": -1.6068348850723355,
-          "joint_5": -0.6408169762578915
+          "joint_0": -0.5589126406417309,
+          "joint_1": 0.030350879807435893,
+          "joint_2": 0.1562872668207631,
+          "joint_3": 1.225496144867023,
+          "joint_4": -1.191187818116542,
+          "joint_5": 1.087421049719067
         }
       },
       "kind": "feasible",
@@ -1525,23 +1225,23 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "midpoint"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_jaw_arm"
     },
     {
-      "case_id": "zoo_jaw_arm-feasible-028",
+      "case_id": "zoo_jaw_arm-feasible-016",
       "draw": 30,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": -1.0276681896090372,
-          "joint_1": -0.3700877729935177,
-          "joint_2": -1.1025054826778669,
-          "joint_3": -1.5684239910488986,
-          "joint_4": -0.5601552444565201,
-          "joint_5": 0.3405613971735204
+          "joint_0": 0.870660182950477,
+          "joint_1": -0.5123101237214271,
+          "joint_2": -1.4293792552297042,
+          "joint_3": -0.34806069138534057,
+          "joint_4": -1.552852377611331,
+          "joint_5": -0.7088635893821875
         }
       },
       "kind": "feasible",
@@ -1550,23 +1250,23 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_jaw_arm"
     },
     {
-      "case_id": "zoo_jaw_arm-feasible-029",
+      "case_id": "zoo_jaw_arm-feasible-017",
       "draw": 31,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": -1.037468365210223,
-          "joint_1": -1.41726291560519,
-          "joint_2": 1.0130278912654678,
-          "joint_3": -1.576502036804177,
-          "joint_4": -1.028950129573052,
-          "joint_5": -0.5276570681088959
+          "joint_0": -0.3235942690471407,
+          "joint_1": 1.7027935104292489,
+          "joint_2": 0.054930968161526206,
+          "joint_3": 0.7360507302745787,
+          "joint_4": 1.1319076267814228,
+          "joint_5": 1.5221218333218758
         }
       },
       "kind": "feasible",
@@ -1575,48 +1275,23 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_jaw_arm"
     },
     {
-      "case_id": "zoo_jaw_arm-feasible-030",
-      "draw": 32,
-      "expect": "composed_success",
-      "first": {
-        "skill": "joint_move",
-        "targets": {
-          "joint_0": 0.3835875822633983,
-          "joint_1": -0.09561455086305903,
-          "joint_2": 0.37369806001780725,
-          "joint_3": 0.9720509696568946,
-          "joint_4": -0.9079604614084061,
-          "joint_5": 0.23131399274496167
-        }
-      },
-      "kind": "feasible",
-      "second": {
-        "skill": "transfer"
-      },
-      "witness": {
-        "straight_joint_path_clear": true,
-        "transfer_path_seed": "turned"
-      },
-      "zoo_id": "zoo_jaw_arm"
-    },
-    {
-      "case_id": "zoo_jaw_arm-feasible-031",
+      "case_id": "zoo_jaw_arm-feasible-018",
       "draw": 33,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": 0.4659817932669532,
-          "joint_1": -1.3306949074259937,
-          "joint_2": 0.5751452824412242,
-          "joint_3": -0.673140963363049,
-          "joint_4": -1.430079974195628,
-          "joint_5": -0.3794775083605404
+          "joint_0": 1.1248052076344197,
+          "joint_1": -0.5401013055647741,
+          "joint_2": 0.24400147586561882,
+          "joint_3": -1.588991333396452,
+          "joint_4": -1.1756799208054924,
+          "joint_5": -1.1420615070906721
         }
       },
       "kind": "feasible",
@@ -1625,23 +1300,23 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_jaw_arm"
     },
     {
-      "case_id": "zoo_jaw_arm-feasible-032",
+      "case_id": "zoo_jaw_arm-feasible-019",
       "draw": 34,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": -1.204754656037557,
-          "joint_1": -1.4373167455577032,
-          "joint_2": 0.2294000301849477,
-          "joint_3": 1.243442737370176,
-          "joint_4": -1.242601247348492,
-          "joint_5": 1.0982407122411897
+          "joint_0": 0.2562387623632896,
+          "joint_1": 1.0278980718988673,
+          "joint_2": 0.7496784646606818,
+          "joint_3": 0.12188976273433116,
+          "joint_4": -0.1415555152076502,
+          "joint_5": -1.3930766449648264
         }
       },
       "kind": "feasible",
@@ -1650,7 +1325,332 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-020",
+      "draw": 36,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -1.5863070431961965,
+          "joint_1": -0.7648033258576957,
+          "joint_2": 0.16186388111159045,
+          "joint_3": 0.0645627905894024,
+          "joint_4": -1.272746617196334,
+          "joint_5": -0.05477623762358341
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-021",
+      "draw": 37,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -0.08048716051736049,
+          "joint_1": 0.9688723640667418,
+          "joint_2": 0.5100867770657329,
+          "joint_3": 0.2598745517356611,
+          "joint_4": -0.45705370699430237,
+          "joint_5": 1.1701998733034698
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-022",
+      "draw": 38,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -0.8951961424956033,
+          "joint_1": 1.5110334692674745,
+          "joint_2": 1.3057017487227771,
+          "joint_3": 0.6662043343170865,
+          "joint_4": 0.12035390314654171,
+          "joint_5": 0.1799233677876504
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-023",
+      "draw": 41,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 0.11331017547101396,
+          "joint_1": -1.367027929428572,
+          "joint_2": 0.0012242618285858153,
+          "joint_3": -0.5108610168735177,
+          "joint_4": -0.4740914719561282,
+          "joint_5": 0.9561462566007037
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-024",
+      "draw": 42,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 0.1851861099189187,
+          "joint_1": -1.5551959156083714,
+          "joint_2": -0.3443535594784126,
+          "joint_3": 1.562906807887396,
+          "joint_4": -0.5836659160463049,
+          "joint_5": 1.1680296263656116
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-025",
+      "draw": 43,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 0.8399487346835319,
+          "joint_1": 0.6582811885324023,
+          "joint_2": 0.5542707713887789,
+          "joint_3": 0.9779445948379766,
+          "joint_4": 0.7310459405452496,
+          "joint_5": -0.9185884931995117
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-026",
+      "draw": 45,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -1.380188184333608,
+          "joint_1": -0.3984851248464123,
+          "joint_2": -1.0845853882978105,
+          "joint_3": 1.4538311734680973,
+          "joint_4": -0.17360755205762035,
+          "joint_5": 0.45441992158169997
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-027",
+      "draw": 46,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 0.01685398505301139,
+          "joint_1": 1.5855861119242851,
+          "joint_2": -1.679121404084349,
+          "joint_3": 1.0681384520399768,
+          "joint_4": 0.033237627225748856,
+          "joint_5": 1.3816018131562133
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-028",
+      "draw": 47,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -0.6423061645305235,
+          "joint_1": 1.057148038123696,
+          "joint_2": -0.4838341607484451,
+          "joint_3": 1.1790176061319562,
+          "joint_4": 1.4027500410351732,
+          "joint_5": -0.33179505002689624
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-029",
+      "draw": 49,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 0.373335529012063,
+          "joint_1": 0.6064339422341001,
+          "joint_2": -1.1940165353746806,
+          "joint_3": 1.220495994062298,
+          "joint_4": -1.6848387597645302,
+          "joint_5": -0.8351716388042955
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-030",
+      "draw": 50,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -0.3966641310840888,
+          "joint_1": -0.30653810349558186,
+          "joint_2": -0.6411042550311026,
+          "joint_3": -0.441763742125582,
+          "joint_4": -0.5575301750969615,
+          "joint_5": -1.0530448613702517
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-031",
+      "draw": 51,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 0.6839277739020617,
+          "joint_1": -0.9683427642603963,
+          "joint_2": 0.18283485149459144,
+          "joint_3": -0.1639850013601647,
+          "joint_4": -0.9509122237954586,
+          "joint_5": -0.41616456455805095
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-032",
+      "draw": 52,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -0.033052991304245216,
+          "joint_1": 1.2562526582709004,
+          "joint_2": -0.4025318107068745,
+          "joint_3": 1.6965003763184585,
+          "joint_4": 1.3471036657711335,
+          "joint_5": 0.8622721153473139
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_jaw_arm"
     },
@@ -1661,12 +1661,12 @@
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": -1.2180856856506956,
-          "joint_1": 0.8415783731950648,
-          "joint_2": -1.3589260364760274,
-          "joint_3": -1.4332684673411866,
-          "joint_4": -0.45173250964248646,
-          "joint_5": 0.9117635170584188
+          "joint_0": -0.9498159051212743,
+          "joint_1": 0.7781925006896193,
+          "joint_2": -0.4142020654459755,
+          "joint_3": -1.5374760371090792,
+          "joint_4": 0.8086855583201937,
+          "joint_5": -0.8797598024870837
         }
       },
       "kind": "feasible",
@@ -1675,7 +1675,7 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_long_arm"
     },
@@ -1686,12 +1686,12 @@
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": 0.5954442874515675,
-          "joint_1": 1.5962558712991397,
-          "joint_2": -0.364410134593284,
-          "joint_3": 0.476846242315236,
-          "joint_4": 0.41615042049742357,
-          "joint_5": 1.4784922312107542
+          "joint_0": -0.028258832931584932,
+          "joint_1": -0.21275425292853223,
+          "joint_2": 1.5331613523385146,
+          "joint_3": -0.6667187878081939,
+          "joint_4": 1.043685472510425,
+          "joint_5": -1.5376764554027125
         }
       },
       "kind": "feasible",
@@ -1700,7 +1700,7 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_long_arm"
     },
@@ -1711,12 +1711,12 @@
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": -0.9043608922669862,
-          "joint_1": -1.090544643720229,
-          "joint_2": 0.002673923867752892,
-          "joint_3": 0.6411167284056929,
-          "joint_4": -0.45693501735954634,
-          "joint_5": 1.2169228724816117
+          "joint_0": -0.30275054259679757,
+          "joint_1": -0.2420568723983798,
+          "joint_2": -0.7773926983143322,
+          "joint_3": -1.0087219013538973,
+          "joint_4": -0.7109291277110846,
+          "joint_5": -1.6082256673775377
         }
       },
       "kind": "feasible",
@@ -1725,23 +1725,23 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "midpoint"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_long_arm"
     },
     {
       "case_id": "zoo_long_arm-feasible-003",
-      "draw": 5,
+      "draw": 4,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": -0.7095027078557035,
-          "joint_1": 0.9141546320540761,
-          "joint_2": 0.4255259517083325,
-          "joint_3": -1.1232757633186417,
-          "joint_4": 0.7405837797776931,
-          "joint_5": 1.1852942295309505
+          "joint_0": -1.3178770570596052,
+          "joint_1": 0.06694659273625336,
+          "joint_2": -0.20360018386469703,
+          "joint_3": 0.27728753319859534,
+          "joint_4": -0.6240293289114962,
+          "joint_5": -1.5066341677431263
         }
       },
       "kind": "feasible",
@@ -1750,23 +1750,23 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_long_arm"
     },
     {
       "case_id": "zoo_long_arm-feasible-004",
-      "draw": 6,
+      "draw": 5,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": 1.1861124542705537,
-          "joint_1": -0.4562189148517888,
-          "joint_2": 1.5800838747927188,
-          "joint_3": -1.0965079048439155,
-          "joint_4": 1.3765981083565806,
-          "joint_5": 1.291440161199171
+          "joint_0": 0.8369489381663477,
+          "joint_1": -1.15172145486999,
+          "joint_2": 1.422163004253639,
+          "joint_3": -0.20062673080873816,
+          "joint_4": 0.08990545102256631,
+          "joint_5": 0.08634531532745782
         }
       },
       "kind": "feasible",
@@ -1775,23 +1775,23 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_long_arm"
     },
     {
       "case_id": "zoo_long_arm-feasible-005",
-      "draw": 7,
+      "draw": 6,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": 1.1565186717271438,
-          "joint_1": 0.6576938305574136,
-          "joint_2": -1.605209399583446,
-          "joint_3": 0.07068469439840541,
-          "joint_4": 0.3170017974657413,
-          "joint_5": 1.2478452910385744
+          "joint_0": 0.6086197360680008,
+          "joint_1": -0.1986226074070192,
+          "joint_2": -1.0858313434034272,
+          "joint_3": 1.0945243924905492,
+          "joint_4": -0.535959030961312,
+          "joint_5": -1.309423304900743
         }
       },
       "kind": "feasible",
@@ -1800,23 +1800,23 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "turned"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_long_arm"
     },
     {
       "case_id": "zoo_long_arm-feasible-006",
-      "draw": 8,
+      "draw": 7,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": -0.1181795418531546,
-          "joint_1": -0.2129288963893552,
-          "joint_2": 0.05579109429436402,
-          "joint_3": 0.06548028577794995,
-          "joint_4": 0.1702359696231277,
-          "joint_5": -1.41450075703394
+          "joint_0": -0.8308461587099498,
+          "joint_1": -0.08185578463534626,
+          "joint_2": 0.30907264983036153,
+          "joint_3": -1.3190973911348853,
+          "joint_4": -1.4401247629508527,
+          "joint_5": 0.8789463395534591
         }
       },
       "kind": "feasible",
@@ -1825,23 +1825,23 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_long_arm"
     },
     {
       "case_id": "zoo_long_arm-feasible-007",
-      "draw": 9,
+      "draw": 8,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": 1.0753701045121362,
-          "joint_1": 1.0423350621217153,
-          "joint_2": 1.2903456146835106,
-          "joint_3": 0.9651519108113136,
-          "joint_4": -0.08466377493576527,
-          "joint_5": 1.6293031924770567
+          "joint_0": 0.6049744302931201,
+          "joint_1": 0.24150125226020758,
+          "joint_2": -1.649999213424343,
+          "joint_3": 0.015158686586571157,
+          "joint_4": -1.5622370012477858,
+          "joint_5": 0.6436365126641115
         }
       },
       "kind": "feasible",
@@ -1850,23 +1850,23 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_long_arm"
     },
     {
       "case_id": "zoo_long_arm-feasible-008",
-      "draw": 10,
+      "draw": 9,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": -0.5629486697098323,
-          "joint_1": -1.50103797421558,
-          "joint_2": 1.5909393404406806,
-          "joint_3": -0.6439399954802252,
-          "joint_4": -0.8151274543544428,
-          "joint_5": -0.6620876534226248
+          "joint_0": 0.5645863501585531,
+          "joint_1": -0.6648003744589026,
+          "joint_2": -0.684899964714822,
+          "joint_3": -0.7516835445204889,
+          "joint_4": -1.6235618772660152,
+          "joint_5": 0.24248884517243963
         }
       },
       "kind": "feasible",
@@ -1875,23 +1875,23 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_long_arm"
     },
     {
       "case_id": "zoo_long_arm-feasible-009",
-      "draw": 11,
+      "draw": 10,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": -1.4550179798399723,
-          "joint_1": -0.1580283724572873,
-          "joint_2": 0.6914308669717357,
-          "joint_3": -0.12922739270314754,
-          "joint_4": 1.5137440847630872,
-          "joint_5": 0.9693163750653815
+          "joint_0": 0.523580451003371,
+          "joint_1": -0.40563551086390515,
+          "joint_2": -1.6279846293498141,
+          "joint_3": -1.1150195132272476,
+          "joint_4": -1.3830190305052983,
+          "joint_5": 1.5851293387380294
         }
       },
       "kind": "feasible",
@@ -1900,23 +1900,23 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_long_arm"
     },
     {
       "case_id": "zoo_long_arm-feasible-010",
-      "draw": 12,
+      "draw": 11,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": -0.4150591934714698,
-          "joint_1": -1.0347720518105452,
-          "joint_2": 1.348784114094888,
-          "joint_3": -0.5589126406417309,
-          "joint_4": 0.030350879807435893,
-          "joint_5": 0.1562872668207631
+          "joint_0": 1.447138049125682,
+          "joint_1": -1.1607148410791215,
+          "joint_2": 1.177033769495572,
+          "joint_3": 0.6210046317994693,
+          "joint_4": 1.3815637427751555,
+          "joint_5": 1.6894598036352284
         }
       },
       "kind": "feasible",
@@ -1925,23 +1925,23 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_long_arm"
     },
     {
       "case_id": "zoo_long_arm-feasible-011",
-      "draw": 13,
+      "draw": 12,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": 1.225496144867023,
-          "joint_1": -1.191187818116542,
-          "joint_2": 1.087421049719067,
-          "joint_3": 0.870660182950477,
-          "joint_4": -0.5123101237214271,
-          "joint_5": -1.4293792552297042
+          "joint_0": -0.4225407409416535,
+          "joint_1": -1.1770989980013777,
+          "joint_2": 1.4330682883009263,
+          "joint_3": -1.3233595864797323,
+          "joint_4": -0.534464505333081,
+          "joint_5": -1.1742190653028892
         }
       },
       "kind": "feasible",
@@ -1950,23 +1950,23 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_long_arm"
     },
     {
       "case_id": "zoo_long_arm-feasible-012",
-      "draw": 14,
+      "draw": 13,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": -0.34806069138534057,
-          "joint_1": -1.552852377611331,
-          "joint_2": -0.7088635893821875,
-          "joint_3": -0.3235942690471407,
-          "joint_4": 1.7027935104292489,
-          "joint_5": 0.054930968161526206
+          "joint_0": 1.3212081017040287,
+          "joint_1": 0.7576008678510449,
+          "joint_2": 0.8600396575446205,
+          "joint_3": 0.7535905114760886,
+          "joint_4": -0.719259859776473,
+          "joint_5": 1.6744019585322372
         }
       },
       "kind": "feasible",
@@ -1975,23 +1975,23 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "midpoint"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_long_arm"
     },
     {
       "case_id": "zoo_long_arm-feasible-013",
-      "draw": 15,
+      "draw": 14,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": 0.7360507302745787,
-          "joint_1": 1.1319076267814228,
-          "joint_2": 1.5221218333218758,
-          "joint_3": 0.8402146517672668,
-          "joint_4": -1.004737310127887,
-          "joint_5": 1.3526969625164256
+          "joint_0": -0.3112290146953234,
+          "joint_1": 0.29717783943529996,
+          "joint_2": 1.5521424633088587,
+          "joint_3": 0.1023948020417258,
+          "joint_4": 1.3669357213178142,
+          "joint_5": -0.43375290064894956
         }
       },
       "kind": "feasible",
@@ -2000,7 +2000,7 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "turned"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_long_arm"
     },
@@ -2011,12 +2011,12 @@
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": -0.8565765848697144,
-          "joint_1": 0.2985704093991335,
-          "joint_2": -0.8985829214540769,
-          "joint_3": 1.1248052076344197,
-          "joint_4": -0.5401013055647741,
-          "joint_5": 0.24400147586561882
+          "joint_0": 0.9639417113546047,
+          "joint_1": -0.9415213738822462,
+          "joint_2": 1.6645865716437003,
+          "joint_3": 0.627134415901665,
+          "joint_4": 0.37402971079608216,
+          "joint_5": 0.5395335153184848
         }
       },
       "kind": "feasible",
@@ -2025,98 +2025,23 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_long_arm"
     },
     {
       "case_id": "zoo_long_arm-feasible-015",
-      "draw": 17,
-      "expect": "composed_success",
-      "first": {
-        "skill": "joint_move",
-        "targets": {
-          "joint_0": -1.588991333396452,
-          "joint_1": -1.1756799208054924,
-          "joint_2": -1.1420615070906721,
-          "joint_3": 0.2562387623632896,
-          "joint_4": 1.0278980718988673,
-          "joint_5": 0.7496784646606818
-        }
-      },
-      "kind": "feasible",
-      "second": {
-        "skill": "transfer"
-      },
-      "witness": {
-        "straight_joint_path_clear": true,
-        "transfer_path_seed": "turned"
-      },
-      "zoo_id": "zoo_long_arm"
-    },
-    {
-      "case_id": "zoo_long_arm-feasible-016",
-      "draw": 18,
-      "expect": "composed_success",
-      "first": {
-        "skill": "joint_move",
-        "targets": {
-          "joint_0": 0.12188976273433116,
-          "joint_1": -0.1415555152076502,
-          "joint_2": -1.3930766449648264,
-          "joint_3": 0.535353838177334,
-          "joint_4": -0.638112422921435,
-          "joint_5": -1.298874860404934
-        }
-      },
-      "kind": "feasible",
-      "second": {
-        "skill": "transfer"
-      },
-      "witness": {
-        "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
-      },
-      "zoo_id": "zoo_long_arm"
-    },
-    {
-      "case_id": "zoo_long_arm-feasible-017",
-      "draw": 19,
-      "expect": "composed_success",
-      "first": {
-        "skill": "joint_move",
-        "targets": {
-          "joint_0": -0.8888815856460306,
-          "joint_1": 1.0378111785040263,
-          "joint_2": -1.3624621681472444,
-          "joint_3": -1.5863070431961965,
-          "joint_4": -0.7648033258576957,
-          "joint_5": 0.16186388111159045
-        }
-      },
-      "kind": "feasible",
-      "second": {
-        "skill": "transfer"
-      },
-      "witness": {
-        "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
-      },
-      "zoo_id": "zoo_long_arm"
-    },
-    {
-      "case_id": "zoo_long_arm-feasible-018",
       "draw": 20,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": 0.0645627905894024,
-          "joint_1": -1.272746617196334,
-          "joint_2": -0.05477623762358341,
-          "joint_3": -0.08048716051736049,
-          "joint_4": 0.9688723640667418,
-          "joint_5": 0.5100867770657329
+          "joint_0": 0.021809742708834623,
+          "joint_1": -0.42988466573951034,
+          "joint_2": -1.19502770899038,
+          "joint_3": -0.6371844171707812,
+          "joint_4": 0.5680861654929323,
+          "joint_5": 0.9654076406917276
         }
       },
       "kind": "feasible",
@@ -2125,23 +2050,23 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "turned"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_long_arm"
     },
     {
-      "case_id": "zoo_long_arm-feasible-019",
+      "case_id": "zoo_long_arm-feasible-016",
       "draw": 21,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": 0.2598745517356611,
-          "joint_1": -0.45705370699430237,
-          "joint_2": 1.1701998733034698,
-          "joint_3": -0.8951961424956033,
-          "joint_4": 1.5110334692674745,
-          "joint_5": 1.3057017487227771
+          "joint_0": -1.6399390526366244,
+          "joint_1": 0.9131657937731106,
+          "joint_2": -0.028977691881951317,
+          "joint_3": -1.5851654294410815,
+          "joint_4": 0.9258248017575958,
+          "joint_5": 0.2614101993758833
         }
       },
       "kind": "feasible",
@@ -2150,48 +2075,23 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_long_arm"
     },
     {
-      "case_id": "zoo_long_arm-feasible-020",
-      "draw": 22,
-      "expect": "composed_success",
-      "first": {
-        "skill": "joint_move",
-        "targets": {
-          "joint_0": 0.6662043343170865,
-          "joint_1": 0.12035390314654171,
-          "joint_2": 0.1799233677876504,
-          "joint_3": -1.6443232951169435,
-          "joint_4": 1.5636323267079169,
-          "joint_5": -0.8172146535817865
-        }
-      },
-      "kind": "feasible",
-      "second": {
-        "skill": "transfer"
-      },
-      "witness": {
-        "straight_joint_path_clear": true,
-        "transfer_path_seed": "midpoint"
-      },
-      "zoo_id": "zoo_long_arm"
-    },
-    {
-      "case_id": "zoo_long_arm-feasible-021",
+      "case_id": "zoo_long_arm-feasible-017",
       "draw": 23,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": 1.4065858410463155,
-          "joint_1": 0.7923642487973717,
-          "joint_2": -1.5405912147268368,
-          "joint_3": 0.3379059966614526,
-          "joint_4": 0.5264501407424507,
-          "joint_5": -0.8795214102298465
+          "joint_0": -0.17414054428582304,
+          "joint_1": 0.765784093991341,
+          "joint_2": 0.9491463261146653,
+          "joint_3": 1.6939340045639786,
+          "joint_4": -0.2596196643347488,
+          "joint_5": -0.0072568807976267635
         }
       },
       "kind": "feasible",
@@ -2200,23 +2100,23 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_long_arm"
     },
     {
-      "case_id": "zoo_long_arm-feasible-022",
+      "case_id": "zoo_long_arm-feasible-018",
       "draw": 24,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": 1.7088521538727086,
-          "joint_1": 1.081105150933392,
-          "joint_2": -0.21179096135344033,
-          "joint_3": 0.11331017547101396,
-          "joint_4": -1.367027929428572,
-          "joint_5": 0.0012242618285858153
+          "joint_0": 0.14729487530498164,
+          "joint_1": -0.61861679461199,
+          "joint_2": -0.6176117793173315,
+          "joint_3": -1.1421849840926397,
+          "joint_4": -1.3400486332695518,
+          "joint_5": 1.5155680606578645
         }
       },
       "kind": "feasible",
@@ -2225,48 +2125,23 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "midpoint"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_long_arm"
     },
     {
-      "case_id": "zoo_long_arm-feasible-023",
-      "draw": 25,
-      "expect": "composed_success",
-      "first": {
-        "skill": "joint_move",
-        "targets": {
-          "joint_0": -0.5108610168735177,
-          "joint_1": -0.4740914719561282,
-          "joint_2": 0.9561462566007037,
-          "joint_3": 0.1851861099189187,
-          "joint_4": -1.5551959156083714,
-          "joint_5": -0.3443535594784126
-        }
-      },
-      "kind": "feasible",
-      "second": {
-        "skill": "transfer"
-      },
-      "witness": {
-        "straight_joint_path_clear": true,
-        "transfer_path_seed": "midpoint"
-      },
-      "zoo_id": "zoo_long_arm"
-    },
-    {
-      "case_id": "zoo_long_arm-feasible-024",
+      "case_id": "zoo_long_arm-feasible-019",
       "draw": 26,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": 1.562906807887396,
-          "joint_1": -0.5836659160463049,
-          "joint_2": 1.1680296263656116,
-          "joint_3": 0.8399487346835319,
-          "joint_4": 0.6582811885324023,
-          "joint_5": 0.5542707713887789
+          "joint_0": 0.6336451597393378,
+          "joint_1": -1.0661396324552572,
+          "joint_2": -1.6930486536756684,
+          "joint_3": -0.470942634850934,
+          "joint_4": 0.4642338713640757,
+          "joint_5": 0.4137947629277119
         }
       },
       "kind": "feasible",
@@ -2275,23 +2150,23 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_long_arm"
     },
     {
-      "case_id": "zoo_long_arm-feasible-025",
+      "case_id": "zoo_long_arm-feasible-020",
       "draw": 27,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": 0.9779445948379766,
-          "joint_1": 0.7310459405452496,
-          "joint_2": -0.9185884931995117,
-          "joint_3": -0.06930272710589969,
-          "joint_4": -1.6309444076737434,
-          "joint_5": -1.3592638532099184
+          "joint_0": -0.21953594530795417,
+          "joint_1": -0.05392398193874515,
+          "joint_2": 1.6247471118690173,
+          "joint_3": 0.7565536132527537,
+          "joint_4": 1.6578505174960378,
+          "joint_5": 0.9442831383166679
         }
       },
       "kind": "feasible",
@@ -2300,148 +2175,23 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "midpoint"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_long_arm"
     },
     {
-      "case_id": "zoo_long_arm-feasible-026",
-      "draw": 28,
-      "expect": "composed_success",
-      "first": {
-        "skill": "joint_move",
-        "targets": {
-          "joint_0": -1.5874868906982416,
-          "joint_1": 1.031520400684037,
-          "joint_2": 1.4470173696872157,
-          "joint_3": -1.380188184333608,
-          "joint_4": -0.3984851248464123,
-          "joint_5": -1.0845853882978105
-        }
-      },
-      "kind": "feasible",
-      "second": {
-        "skill": "transfer"
-      },
-      "witness": {
-        "straight_joint_path_clear": true,
-        "transfer_path_seed": "midpoint"
-      },
-      "zoo_id": "zoo_long_arm"
-    },
-    {
-      "case_id": "zoo_long_arm-feasible-027",
-      "draw": 29,
-      "expect": "composed_success",
-      "first": {
-        "skill": "joint_move",
-        "targets": {
-          "joint_0": 1.4538311734680973,
-          "joint_1": -0.17360755205762035,
-          "joint_2": 0.45441992158169997,
-          "joint_3": 0.01685398505301139,
-          "joint_4": 1.5855861119242851,
-          "joint_5": -1.679121404084349
-        }
-      },
-      "kind": "feasible",
-      "second": {
-        "skill": "transfer"
-      },
-      "witness": {
-        "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
-      },
-      "zoo_id": "zoo_long_arm"
-    },
-    {
-      "case_id": "zoo_long_arm-feasible-028",
-      "draw": 30,
-      "expect": "composed_success",
-      "first": {
-        "skill": "joint_move",
-        "targets": {
-          "joint_0": 1.0681384520399768,
-          "joint_1": 0.033237627225748856,
-          "joint_2": 1.3816018131562133,
-          "joint_3": -0.6423061645305235,
-          "joint_4": 1.057148038123696,
-          "joint_5": -0.4838341607484451
-        }
-      },
-      "kind": "feasible",
-      "second": {
-        "skill": "transfer"
-      },
-      "witness": {
-        "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
-      },
-      "zoo_id": "zoo_long_arm"
-    },
-    {
-      "case_id": "zoo_long_arm-feasible-029",
-      "draw": 31,
-      "expect": "composed_success",
-      "first": {
-        "skill": "joint_move",
-        "targets": {
-          "joint_0": 1.1790176061319562,
-          "joint_1": 1.4027500410351732,
-          "joint_2": -0.33179505002689624,
-          "joint_3": 1.2535118355616226,
-          "joint_4": -0.5872164105431557,
-          "joint_5": -0.48640677828396583
-        }
-      },
-      "kind": "feasible",
-      "second": {
-        "skill": "transfer"
-      },
-      "witness": {
-        "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
-      },
-      "zoo_id": "zoo_long_arm"
-    },
-    {
-      "case_id": "zoo_long_arm-feasible-030",
-      "draw": 32,
-      "expect": "composed_success",
-      "first": {
-        "skill": "joint_move",
-        "targets": {
-          "joint_0": -1.564238351091992,
-          "joint_1": -0.17363242250804478,
-          "joint_2": 0.5534171394412501,
-          "joint_3": 0.373335529012063,
-          "joint_4": 0.6064339422341001,
-          "joint_5": -1.1940165353746806
-        }
-      },
-      "kind": "feasible",
-      "second": {
-        "skill": "transfer"
-      },
-      "witness": {
-        "straight_joint_path_clear": true,
-        "transfer_path_seed": "turned"
-      },
-      "zoo_id": "zoo_long_arm"
-    },
-    {
-      "case_id": "zoo_long_arm-feasible-031",
+      "case_id": "zoo_long_arm-feasible-021",
       "draw": 34,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": -0.441763742125582,
-          "joint_1": -0.5575301750969615,
-          "joint_2": -1.0530448613702517,
-          "joint_3": 0.6839277739020617,
-          "joint_4": -0.9683427642603963,
-          "joint_5": 0.18283485149459144
+          "joint_0": -1.5200932888681018,
+          "joint_1": -0.49723383151054157,
+          "joint_2": -1.5050564602725052,
+          "joint_3": -1.0927753616279228,
+          "joint_4": -0.4300479843505465,
+          "joint_5": -1.4945598803287514
         }
       },
       "kind": "feasible",
@@ -2450,23 +2200,273 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-022",
+      "draw": 38,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -1.629780006397681,
+          "joint_1": -1.1487324267541523,
+          "joint_2": 0.6583671500650774,
+          "joint_3": 1.2176161340855503,
+          "joint_4": 0.9992742010750537,
+          "joint_5": -1.5047815828188669
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-023",
+      "draw": 42,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -1.1279460766763854,
+          "joint_1": 1.3636019638111452,
+          "joint_2": 1.1467453093684745,
+          "joint_3": -1.1396792914831744,
+          "joint_4": 0.914183933349598,
+          "joint_5": 0.9350535048167696
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-024",
+      "draw": 43,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 1.2987156682124765,
+          "joint_1": 0.15344330599191114,
+          "joint_2": -0.2415733755773959,
+          "joint_3": -0.8291907053325512,
+          "joint_4": -0.2668566965073387,
+          "joint_5": 0.7326628604430141
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-025",
+      "draw": 45,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -0.9254122666104784,
+          "joint_1": -0.12035555790226571,
+          "joint_2": -1.070744000286135,
+          "joint_3": 1.703681603033829,
+          "joint_4": 0.7137608254291292,
+          "joint_5": 0.49563379352969417
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-026",
+      "draw": 46,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 0.24893310226370846,
+          "joint_1": 0.35600698426158495,
+          "joint_2": 1.183135170751204,
+          "joint_3": -0.16456393506266198,
+          "joint_4": 0.9335078331914781,
+          "joint_5": 1.224218992616382
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-027",
+      "draw": 48,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -1.242017592425446,
+          "joint_1": -0.8320402888833349,
+          "joint_2": 0.016352191309886743,
+          "joint_3": 1.4143073308150629,
+          "joint_4": -0.7675426809561469,
+          "joint_5": 1.4035092599031063
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-028",
+      "draw": 49,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 0.9437046422508821,
+          "joint_1": 1.5573816078233431,
+          "joint_2": 0.39040865296734095,
+          "joint_3": -1.6863278225855054,
+          "joint_4": -1.2562616099303945,
+          "joint_5": -0.7783307380416472
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-029",
+      "draw": 50,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 0.9251707013681099,
+          "joint_1": 1.1315377095403636,
+          "joint_2": -1.5484256070091655,
+          "joint_3": -1.408868843829055,
+          "joint_4": 0.3439129345884444,
+          "joint_5": -0.4071943153165887
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-030",
+      "draw": 52,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -1.113410657521784,
+          "joint_1": 0.2018969428574504,
+          "joint_2": 0.57159436932317,
+          "joint_3": -1.470494870034093,
+          "joint_4": -1.50841239891747,
+          "joint_5": -0.042032369834202665
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-031",
+      "draw": 58,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -0.9502199738654697,
+          "joint_1": 0.5251462774979392,
+          "joint_2": 1.2708480191368374,
+          "joint_3": -1.2554519098480488,
+          "joint_4": 0.61746307349989,
+          "joint_5": 1.4738718411650473
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_long_arm"
     },
     {
       "case_id": "zoo_long_arm-feasible-032",
-      "draw": 35,
+      "draw": 59,
       "expect": "composed_success",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": -0.1639850013601647,
-          "joint_1": -0.9509122237954586,
-          "joint_2": -0.41616456455805095,
-          "joint_3": -0.033052991304245216,
-          "joint_4": 1.2562526582709004,
-          "joint_5": -0.4025318107068745
+          "joint_0": 0.5640623535052671,
+          "joint_1": 0.4011923342185755,
+          "joint_2": -1.3468941731430681,
+          "joint_3": -1.0177209894852504,
+          "joint_4": -1.3472829037547673,
+          "joint_5": -1.3180982155034437
         }
       },
       "kind": "feasible",
@@ -2475,7 +2475,7 @@
       },
       "witness": {
         "straight_joint_path_clear": true,
-        "transfer_path_seed": "rest"
+        "transfer_path_seed": "pose"
       },
       "zoo_id": "zoo_long_arm"
     }
@@ -2497,10 +2497,10 @@
         "skill": "joint_move",
         "targets": {
           "left_joint_0": 3.021,
-          "left_joint_1": 1.3471036657711335,
-          "left_joint_2": 0.8622721153473139,
-          "left_joint_3": -0.9498159051212743,
-          "left_joint_4": 0.7781925006896193
+          "left_joint_1": 0.240166211200175,
+          "left_joint_2": 1.0765391579826065,
+          "left_joint_3": -0.6921332426966478,
+          "left_joint_4": -0.9423052337780379
         }
       },
       "kind": "joint_beyond_limit",
@@ -2518,11 +2518,11 @@
         "skill": "joint_move",
         "targets": {
           "joint_0": 3.021,
-          "joint_1": -1.5374760371090792,
-          "joint_2": 0.8086855583201937,
-          "joint_3": -0.8797598024870837,
-          "joint_4": -0.028258832931584932,
-          "joint_5": -0.21275425292853223
+          "joint_1": -1.2241942681005586,
+          "joint_2": -0.8383187609051176,
+          "joint_3": -1.5486347936399443,
+          "joint_4": -0.8155931022942762,
+          "joint_5": -1.4963622495145101
         }
       },
       "kind": "joint_beyond_limit",
@@ -2540,11 +2540,11 @@
         "skill": "joint_move",
         "targets": {
           "joint_0": 3.021,
-          "joint_1": -1.0087219013538973,
-          "joint_2": -0.7109291277110846,
-          "joint_3": -1.6082256673775377,
-          "joint_4": -1.3178770570596052,
-          "joint_5": 0.06694659273625336
+          "joint_1": -1.667962661883588,
+          "joint_2": 0.059522497425678944,
+          "joint_3": -1.5304134696817584,
+          "joint_4": -1.5869775476719197,
+          "joint_5": -0.9418232719073238
         }
       },
       "kind": "joint_beyond_limit",
@@ -2562,10 +2562,10 @@
         "skill": "joint_move",
         "targets": {
           "left_joint_0": 3.021,
-          "left_joint_1": 0.27728753319859534,
-          "left_joint_2": -0.6240293289114962,
-          "left_joint_3": -1.5066341677431263,
-          "left_joint_4": 0.8369489381663477
+          "left_joint_1": -0.1608482795769861,
+          "left_joint_2": 0.7750303045560343,
+          "left_joint_3": -0.42216148752682536,
+          "left_joint_4": 1.673550813729741
         }
       },
       "kind": "joint_beyond_limit",
@@ -2583,11 +2583,11 @@
         "skill": "joint_move",
         "targets": {
           "joint_0": 3.021,
-          "joint_1": 1.422163004253639,
-          "joint_2": -0.20062673080873816,
-          "joint_3": 0.08990545102256631,
-          "joint_4": 0.08634531532745782,
-          "joint_5": 0.6086197360680008
+          "joint_1": 1.2303746140947007,
+          "joint_2": 0.9317515756756416,
+          "joint_3": 1.1896584107763055,
+          "joint_4": 1.2686902475632067,
+          "joint_5": 0.3497355214425806
         }
       },
       "kind": "joint_beyond_limit",
@@ -2605,11 +2605,11 @@
         "skill": "joint_move",
         "targets": {
           "joint_0": 3.021,
-          "joint_1": -1.0858313434034272,
-          "joint_2": 1.0945243924905492,
-          "joint_3": -0.535959030961312,
-          "joint_4": -1.309423304900743,
-          "joint_5": -0.8308461587099498
+          "joint_1": 1.0708436479298613,
+          "joint_2": 0.6360450801429098,
+          "joint_3": -1.6876991778139443,
+          "joint_4": -0.606154025462788,
+          "joint_5": 0.6656961181516463
         }
       },
       "kind": "joint_beyond_limit",
@@ -2627,10 +2627,10 @@
         "skill": "joint_move",
         "targets": {
           "left_joint_0": 3.021,
-          "left_joint_1": 0.30907264983036153,
-          "left_joint_2": -1.3190973911348853,
-          "left_joint_3": -1.4401247629508527,
-          "left_joint_4": 0.8789463395534591
+          "left_joint_1": -1.4817156773142601,
+          "left_joint_2": 1.59646186368151,
+          "left_joint_3": -1.0568074269077377,
+          "left_joint_4": 1.4007055824522863
         }
       },
       "kind": "joint_beyond_limit",
@@ -2648,11 +2648,11 @@
         "skill": "joint_move",
         "targets": {
           "joint_0": 3.021,
-          "joint_1": 0.24150125226020758,
-          "joint_2": -1.649999213424343,
-          "joint_3": 0.015158686586571157,
-          "joint_4": -1.5622370012477858,
-          "joint_5": 0.6436365126641115
+          "joint_1": -0.3946228527140325,
+          "joint_2": 1.1663549139129477,
+          "joint_3": -0.12458073378198287,
+          "joint_4": 1.308102290247244,
+          "joint_5": 0.6021212872358568
         }
       },
       "kind": "joint_beyond_limit",
@@ -2670,11 +2670,11 @@
         "skill": "joint_move",
         "targets": {
           "joint_0": 3.021,
-          "joint_1": -0.6648003744589026,
-          "joint_2": -0.684899964714822,
-          "joint_3": -0.7516835445204889,
-          "joint_4": -1.6235618772660152,
-          "joint_5": 0.24248884517243963
+          "joint_1": -0.3307696919042078,
+          "joint_2": -0.7085550106405472,
+          "joint_3": 0.27787366661723745,
+          "joint_4": -0.6738076918097469,
+          "joint_5": 0.0013931236983570905
         }
       },
       "kind": "joint_beyond_limit",
@@ -2692,10 +2692,10 @@
         "skill": "joint_move",
         "targets": {
           "left_joint_0": 3.021,
-          "left_joint_1": -0.40563551086390515,
-          "left_joint_2": -1.6279846293498141,
-          "left_joint_3": -1.1150195132272476,
-          "left_joint_4": -1.3830190305052983
+          "left_joint_1": -0.5711087450462748,
+          "left_joint_2": -1.3535004743133698,
+          "left_joint_3": -0.5291434836673954,
+          "left_joint_4": -0.7060760442373968
         }
       },
       "kind": "joint_beyond_limit",
@@ -2713,10 +2713,10 @@
         "skill": "joint_move",
         "targets": {
           "left_joint_0": 2.793,
-          "left_joint_1": 1.447138049125682,
-          "left_joint_2": -1.1607148410791215,
-          "left_joint_3": 1.177033769495572,
-          "left_joint_4": 0.6210046317994693
+          "left_joint_1": -0.6754481331135103,
+          "left_joint_2": -1.4779247741874655,
+          "left_joint_3": -0.8864885507793191,
+          "left_joint_4": -0.0477417085415619
         }
       },
       "kind": "joint_inside_margin",
@@ -2734,11 +2734,11 @@
         "skill": "joint_move",
         "targets": {
           "joint_0": 2.793,
-          "joint_1": 1.6894598036352284,
-          "joint_2": -0.4225407409416535,
-          "joint_3": -1.1770989980013777,
-          "joint_4": 1.4330682883009263,
-          "joint_5": -1.3233595864797323
+          "joint_1": 1.521285408090316,
+          "joint_2": 0.277303259841746,
+          "joint_3": 0.8509705001777634,
+          "joint_4": 0.621728775165725,
+          "joint_5": -0.7121776378342776
         }
       },
       "kind": "joint_inside_margin",
@@ -2756,11 +2756,11 @@
         "skill": "joint_move",
         "targets": {
           "joint_0": 2.793,
-          "joint_1": -1.1742190653028892,
-          "joint_2": 1.3212081017040287,
-          "joint_3": 0.7576008678510449,
-          "joint_4": 0.8600396575446205,
-          "joint_5": 0.7535905114760886
+          "joint_1": -0.7565849084106735,
+          "joint_2": -1.4112569733090714,
+          "joint_3": -1.4972941116748206,
+          "joint_4": -0.6459602289591406,
+          "joint_5": -0.24296422232652692
         }
       },
       "kind": "joint_inside_margin",
@@ -2778,10 +2778,10 @@
         "skill": "joint_move",
         "targets": {
           "left_joint_0": 2.793,
-          "left_joint_1": 1.6744019585322372,
-          "left_joint_2": -0.3112290146953234,
-          "left_joint_3": 0.29717783943529996,
-          "left_joint_4": 1.5521424633088587
+          "left_joint_1": 1.3762912194128694,
+          "left_joint_2": -1.6220827100167838,
+          "left_joint_3": 0.023756288610630394,
+          "left_joint_4": 1.1632573908073973
         }
       },
       "kind": "joint_inside_margin",
@@ -2799,11 +2799,11 @@
         "skill": "joint_move",
         "targets": {
           "joint_0": 2.793,
-          "joint_1": 1.3669357213178142,
-          "joint_2": -0.43375290064894956,
-          "joint_3": 1.5208775857738197,
-          "joint_4": -0.38313772881407404,
-          "joint_5": -1.2830589792643865
+          "joint_1": -0.21616410681596765,
+          "joint_2": -1.5048630503629108,
+          "joint_3": 0.6154129075657897,
+          "joint_4": -1.0109040094832722,
+          "joint_5": 0.4848279508740019
         }
       },
       "kind": "joint_inside_margin",
@@ -2821,11 +2821,11 @@
         "skill": "joint_move",
         "targets": {
           "joint_0": 2.793,
-          "joint_1": 0.10566486858956248,
-          "joint_2": 0.6535505391780183,
-          "joint_3": 0.9639417113546047,
-          "joint_4": -0.9415213738822462,
-          "joint_5": 1.6645865716437003
+          "joint_1": 0.19014912032173092,
+          "joint_2": 0.1680084276696896,
+          "joint_3": -0.6814348547686431,
+          "joint_4": 0.23443554662100574,
+          "joint_5": 1.158045662823909
         }
       },
       "kind": "joint_inside_margin",
@@ -2841,13 +2841,13 @@
       "expect": "repaired_then_reverified",
       "first": {
         "skill": "joint_move",
-        "stop_fraction": 0.361752078373339,
+        "stop_fraction": 0.5174568870275319,
         "targets": {
-          "left_joint_0": 0.627134415901665,
-          "left_joint_1": 0.37402971079608216,
-          "left_joint_2": 0.5395335153184848,
-          "left_joint_3": 1.592278216412256,
-          "left_joint_4": -1.0582483489646655
+          "left_joint_0": 0.23898227150953733,
+          "left_joint_1": -1.1763160054636148,
+          "left_joint_2": 1.1828298923049587,
+          "left_joint_3": 1.0040551419286001,
+          "left_joint_4": -1.2727833937191733
         }
       },
       "kind": "velocity_too_high",
@@ -2862,14 +2862,14 @@
       "expect": "repaired_then_reverified",
       "first": {
         "skill": "joint_move",
-        "stop_fraction": 0.49090402440808467,
+        "stop_fraction": 0.3563132114527041,
         "targets": {
-          "joint_0": -0.5697500044836481,
-          "joint_1": -1.616790313464259,
-          "joint_2": -1.2587151795216187,
-          "joint_3": -1.040827428049698,
-          "joint_4": 0.804817332339582,
-          "joint_5": -1.0841814962175205
+          "joint_0": 0.2825955489963119,
+          "joint_1": -1.3703786781237386,
+          "joint_2": 0.5549245693555882,
+          "joint_3": -0.6553784976499852,
+          "joint_4": -0.18406185135459308,
+          "joint_5": 0.6439402862747126
         }
       },
       "kind": "velocity_too_high",
@@ -2884,14 +2884,14 @@
       "expect": "repaired_then_reverified",
       "first": {
         "skill": "joint_move",
-        "stop_fraction": 0.3569224846969656,
+        "stop_fraction": 0.45877420138428704,
         "targets": {
-          "joint_0": 1.0952246056657193,
-          "joint_1": 1.6222230115723009,
-          "joint_2": 0.6784741794122433,
-          "joint_3": -0.8333285249440838,
-          "joint_4": 1.197900760501593,
-          "joint_5": -1.4332032242754487
+          "joint_0": -0.9612188668331246,
+          "joint_1": -1.5710873229850395,
+          "joint_2": -1.5481887441529716,
+          "joint_3": -1.5253161163414497,
+          "joint_4": -1.5474729411239365,
+          "joint_5": 0.7448319494588125
         }
       },
       "kind": "velocity_too_high",
@@ -2906,13 +2906,13 @@
       "expect": "repaired_then_reverified",
       "first": {
         "skill": "joint_move",
-        "stop_fraction": 0.4832214131867212,
+        "stop_fraction": 0.5305638470527644,
         "targets": {
-          "left_joint_0": 0.38360897560230534,
-          "left_joint_1": 0.021809742708834623,
-          "left_joint_2": -0.42988466573951034,
-          "left_joint_3": -1.19502770899038,
-          "left_joint_4": -0.6371844171707812
+          "left_joint_0": 1.5729895515772885,
+          "left_joint_1": 0.5065725145516096,
+          "left_joint_2": -1.036518486095983,
+          "left_joint_3": 0.9494836317869058,
+          "left_joint_4": 0.0758724696767401
         }
       },
       "kind": "velocity_too_high",
@@ -2927,14 +2927,14 @@
       "expect": "repaired_then_reverified",
       "first": {
         "skill": "joint_move",
-        "stop_fraction": 0.46528714616233235,
+        "stop_fraction": 0.47631247930025705,
         "targets": {
-          "joint_0": 0.9654076406917276,
-          "joint_1": -1.6399390526366244,
-          "joint_2": 0.9131657937731106,
-          "joint_3": -0.028977691881951317,
-          "joint_4": -1.5851654294410815,
-          "joint_5": 0.9258248017575958
+          "joint_0": 0.6795246525990626,
+          "joint_1": 0.2833623528711702,
+          "joint_2": -0.592727011424053,
+          "joint_3": 0.4132245087715707,
+          "joint_4": -0.5516935872373792,
+          "joint_5": -1.0294528552916251
         }
       },
       "kind": "velocity_too_high",
@@ -2949,14 +2949,14 @@
       "expect": "repaired_then_reverified",
       "first": {
         "skill": "joint_move",
-        "stop_fraction": 0.45861373539795214,
+        "stop_fraction": 0.3747008772922868,
         "targets": {
-          "joint_0": -0.17414054428582304,
-          "joint_1": 0.765784093991341,
-          "joint_2": 0.9491463261146653,
-          "joint_3": 1.6939340045639786,
-          "joint_4": -0.2596196643347488,
-          "joint_5": -0.0072568807976267635
+          "joint_0": 1.224733200450098,
+          "joint_1": 1.059059531015499,
+          "joint_2": 0.6100552189091824,
+          "joint_3": -1.7092472382958115,
+          "joint_4": 0.9861621495587785,
+          "joint_5": -1.2873618830172888
         }
       },
       "kind": "velocity_too_high",
@@ -2971,13 +2971,13 @@
       "expect": "repaired_then_reverified",
       "first": {
         "skill": "joint_move",
-        "stop_fraction": 0.514033628816488,
+        "stop_fraction": 0.3510682813185796,
         "targets": {
-          "left_joint_0": -0.61861679461199,
-          "left_joint_1": -0.6176117793173315,
-          "left_joint_2": -1.1421849840926397,
-          "left_joint_3": -1.3400486332695518,
-          "left_joint_4": 1.5155680606578645
+          "left_joint_0": -0.11520674039216461,
+          "left_joint_1": 0.3185299475826713,
+          "left_joint_2": -0.8027680941060906,
+          "left_joint_3": 0.920321508930602,
+          "left_joint_4": -0.3853017606302447
         }
       },
       "kind": "velocity_too_high",
@@ -2992,14 +2992,14 @@
       "expect": "repaired_then_reverified",
       "first": {
         "skill": "joint_move",
-        "stop_fraction": 0.38765265307279195,
+        "stop_fraction": 0.4417912284523223,
         "targets": {
-          "joint_0": 1.2431105515381442,
-          "joint_1": -0.6386434810318657,
-          "joint_2": -0.34053567930381656,
-          "joint_3": -1.092797966647923,
-          "joint_4": 1.700192076705115,
-          "joint_5": 0.6336451597393378
+          "joint_0": -1.5680398969450218,
+          "joint_1": 0.63405317428195,
+          "joint_2": -0.22010739859572404,
+          "joint_3": 0.060597532466983406,
+          "joint_4": -1.5354357663798732,
+          "joint_5": -0.2858605304892827
         }
       },
       "kind": "velocity_too_high",
@@ -3093,11 +3093,11 @@
       "first": {
         "skill": "joint_move",
         "targets": {
-          "left_joint_0": -1.6930486536756684,
-          "left_joint_1": -0.470942634850934,
-          "left_joint_2": 0.4642338713640757,
-          "left_joint_3": 0.4137947629277119,
-          "left_joint_4": -0.21953594530795417
+          "left_joint_0": -0.02544889029785935,
+          "left_joint_1": -0.2689309411887657,
+          "left_joint_2": -1.2603620037056866,
+          "left_joint_3": 0.1202373996151096,
+          "left_joint_4": 0.28341996592679264
         }
       },
       "kind": "free_into_holding",
@@ -3113,12 +3113,12 @@
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": -0.05392398193874515,
-          "joint_1": 1.6247471118690173,
-          "joint_2": 0.7565536132527537,
-          "joint_3": 1.6578505174960378,
-          "joint_4": 0.9442831383166679,
-          "joint_5": 0.37253291926086085
+          "joint_0": 0.9489671939940298,
+          "joint_1": -1.2814008144138866,
+          "joint_2": 0.7372307437288024,
+          "joint_3": 0.025570127263623066,
+          "joint_4": -1.402162616119823,
+          "joint_5": 0.5792162226613944
         }
       },
       "kind": "free_into_holding",
@@ -3134,12 +3134,12 @@
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": 0.5078423009120532,
-          "joint_1": -1.6273838638572504,
-          "joint_2": 1.5677421184402696,
-          "joint_3": 0.9683958504134251,
-          "joint_4": 0.02691137926092213,
-          "joint_5": -1.64509676360455
+          "joint_0": 1.0520474441376537,
+          "joint_1": -0.27342646356008316,
+          "joint_2": 1.093660689095298,
+          "joint_3": -1.1468271021762284,
+          "joint_4": 1.4995637917289781,
+          "joint_5": -1.0061812741466007
         }
       },
       "kind": "free_into_holding",
@@ -3155,11 +3155,11 @@
       "first": {
         "skill": "joint_move",
         "targets": {
-          "left_joint_0": 1.4970307830061214,
-          "left_joint_1": -0.24736357065882264,
-          "left_joint_2": 1.1857920037124927,
-          "left_joint_3": -0.17298083174110612,
-          "left_joint_4": -1.4953761265365855
+          "left_joint_0": 0.10035286813943922,
+          "left_joint_1": 0.541798955554349,
+          "left_joint_2": -1.5116517939592042,
+          "left_joint_3": 0.553152747299094,
+          "left_joint_4": -1.6857797419521188
         }
       },
       "kind": "free_into_holding",
@@ -3175,12 +3175,12 @@
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": 0.2507793542286918,
-          "joint_1": -1.565025676438251,
-          "joint_2": 1.260205895828868,
-          "joint_3": 0.5831222763373134,
-          "joint_4": -1.1763222965673361,
-          "joint_5": -0.17264720990589422
+          "joint_0": -1.3406090785704723,
+          "joint_1": 0.30404023863043594,
+          "joint_2": -1.1410322968152689,
+          "joint_3": 1.586396358968785,
+          "joint_4": -0.18917783806228794,
+          "joint_5": 0.4835123432899122
         }
       },
       "kind": "free_into_holding",
@@ -3196,12 +3196,12 @@
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": -0.3649989765795889,
-          "joint_1": -1.2020286476061655,
-          "joint_2": -0.1898453782780869,
-          "joint_3": -0.05109982305916683,
-          "joint_4": 1.4066896186547124,
-          "joint_5": -1.4565783241652568
+          "joint_0": 1.0723465591183543,
+          "joint_1": 0.6236680526469169,
+          "joint_2": 0.8901410797063312,
+          "joint_3": 0.21631847958888906,
+          "joint_4": 0.43639472144454317,
+          "joint_5": 0.16415426727365046
         }
       },
       "kind": "free_into_holding",
@@ -3212,17 +3212,17 @@
       "zoo_id": "zoo_long_arm"
     },
     {
-      "belief_age_s": 29.562860780042065,
+      "belief_age_s": 26.820874684531216,
       "case_id": "zoo_dual_arm-belief_stale-00",
       "expect": "repaired_then_reverified",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "left_joint_0": 1.6368101474969987,
-          "left_joint_1": -0.07027568368685744,
-          "left_joint_2": 0.051892997993288725,
-          "left_joint_3": -1.1507964596428462,
-          "left_joint_4": 1.0444268720360208
+          "left_joint_0": -0.9520174351250246,
+          "left_joint_1": -0.7610796635775936,
+          "left_joint_2": -1.4216618132359826,
+          "left_joint_3": -1.1283180812185123,
+          "left_joint_4": -0.49174054966335734
         }
       },
       "kind": "belief_stale",
@@ -3233,18 +3233,18 @@
       "zoo_id": "zoo_dual_arm"
     },
     {
-      "belief_age_s": 33.12236472627589,
+      "belief_age_s": 29.36288839969491,
       "case_id": "zoo_jaw_arm-belief_stale-01",
       "expect": "repaired_then_reverified",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": -1.5200932888681018,
-          "joint_1": -0.49723383151054157,
-          "joint_2": -1.5050564602725052,
-          "joint_3": -1.0927753616279228,
-          "joint_4": -0.4300479843505465,
-          "joint_5": -1.4945598803287514
+          "joint_0": 1.071870197317033,
+          "joint_1": 0.20163076091237686,
+          "joint_2": -1.467524680450638,
+          "joint_3": -1.1251940744859374,
+          "joint_4": -1.4490480676024597,
+          "joint_5": 1.3621338022884508
         }
       },
       "kind": "belief_stale",
@@ -3255,18 +3255,18 @@
       "zoo_id": "zoo_jaw_arm"
     },
     {
-      "belief_age_s": 39.35068446662349,
+      "belief_age_s": 19.899633706615692,
       "case_id": "zoo_long_arm-belief_stale-02",
       "expect": "repaired_then_reverified",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": 1.2155990788000701,
-          "joint_1": 0.45819896900985446,
-          "joint_2": 1.2043062458115958,
-          "joint_3": -1.554190222824364,
-          "joint_4": 1.0323161502472886,
-          "joint_5": -1.591797378129932
+          "joint_0": -0.07083631587302586,
+          "joint_1": 0.16756950106553092,
+          "joint_2": 0.5633025209878895,
+          "joint_3": -1.538502163708247,
+          "joint_4": 1.009184973183078,
+          "joint_5": -0.2527746229159653
         }
       },
       "kind": "belief_stale",
@@ -3277,17 +3277,17 @@
       "zoo_id": "zoo_long_arm"
     },
     {
-      "belief_age_s": 8.750596431366727,
+      "belief_age_s": 13.345248648970085,
       "case_id": "zoo_dual_arm-belief_stale-03",
       "expect": "repaired_then_reverified",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "left_joint_0": 0.02613901573628663,
-          "left_joint_1": 0.7991306925154711,
-          "left_joint_2": 1.625306476241787,
-          "left_joint_3": 1.3826266206266316,
-          "left_joint_4": 0.9923995157542569
+          "left_joint_0": 1.0698763667223008,
+          "left_joint_1": 0.6991894953331896,
+          "left_joint_2": 1.0150812538272884,
+          "left_joint_3": -0.49431374716646626,
+          "left_joint_4": -1.5285241538777257
         }
       },
       "kind": "belief_stale",
@@ -3298,18 +3298,18 @@
       "zoo_id": "zoo_dual_arm"
     },
     {
-      "belief_age_s": 26.08591129521345,
+      "belief_age_s": 33.42707032955196,
       "case_id": "zoo_jaw_arm-belief_stale-04",
       "expect": "repaired_then_reverified",
       "first": {
         "skill": "joint_move",
         "targets": {
-          "joint_0": -1.1487324267541523,
-          "joint_1": 0.6583671500650774,
-          "joint_2": 1.2176161340855503,
-          "joint_3": 0.9992742010750537,
-          "joint_4": -1.5047815828188669,
-          "joint_5": -1.3873097465693829
+          "joint_0": 0.1611177430334163,
+          "joint_1": 0.648586261465895,
+          "joint_2": -0.4632120568663396,
+          "joint_3": -0.36977794375449924,
+          "joint_4": 0.8478810109581194,
+          "joint_5": 0.024778823469566724
         }
       },
       "kind": "belief_stale",
@@ -3328,11 +3328,11 @@
         ],
         "skill": "joint_move",
         "targets": {
-          "left_joint_0": 0.6427224936873537,
-          "left_joint_1": 1.0655059642690015,
-          "left_joint_2": 1.5187073257883692,
-          "left_joint_3": -0.8113281483462982,
-          "left_joint_4": -1.6139441752096708
+          "left_joint_0": -0.7499912484358509,
+          "left_joint_1": -1.322085852281926,
+          "left_joint_2": -0.496083867015372,
+          "left_joint_3": 0.38331037405459645,
+          "left_joint_4": -1.165476478088559
         }
       },
       "kind": "resource_conflict",
@@ -3351,12 +3351,12 @@
         ],
         "skill": "joint_move",
         "targets": {
-          "joint_0": 1.6837169449852998,
-          "joint_1": 1.4627448218900927,
-          "joint_2": 0.4222834133212299,
-          "joint_3": -0.5247287926471875,
-          "joint_4": 1.5578034443624968,
-          "joint_5": -1.7000980140183235
+          "joint_0": 0.943449350400225,
+          "joint_1": 0.9236210621945653,
+          "joint_2": 0.6099678327964906,
+          "joint_3": -0.38532057953105925,
+          "joint_4": 1.0844565958911856,
+          "joint_5": -1.1156513307785496
         }
       },
       "kind": "resource_conflict",
@@ -3375,12 +3375,12 @@
         ],
         "skill": "joint_move",
         "targets": {
-          "joint_0": 1.3545785118012441,
-          "joint_1": 1.488214264017362,
-          "joint_2": 0.11133633927804398,
-          "joint_3": -1.0970355181691946,
-          "joint_4": 1.547151279290413,
-          "joint_5": -1.1279460766763854
+          "joint_0": 0.640018902224496,
+          "joint_1": -0.5148421041264264,
+          "joint_2": -1.2817704637236171,
+          "joint_3": -1.0264078598856239,
+          "joint_4": -1.114820045438428,
+          "joint_5": 0.10747371765579472
         }
       },
       "kind": "resource_conflict",
@@ -3399,11 +3399,11 @@
         ],
         "skill": "joint_move",
         "targets": {
-          "left_joint_0": 1.3636019638111452,
-          "left_joint_1": 1.1467453093684745,
-          "left_joint_2": -1.1396792914831744,
-          "left_joint_3": 0.914183933349598,
-          "left_joint_4": 0.9350535048167696
+          "left_joint_0": -0.1550305076846592,
+          "left_joint_1": -0.24832525914872905,
+          "left_joint_2": -1.1168683426964592,
+          "left_joint_3": -0.3951686471573974,
+          "left_joint_4": -1.4353246812906268
         }
       },
       "kind": "resource_conflict",
@@ -3422,12 +3422,12 @@
         ],
         "skill": "joint_move",
         "targets": {
-          "joint_0": 1.2987156682124765,
-          "joint_1": 0.15344330599191114,
-          "joint_2": -0.2415733755773959,
-          "joint_3": -0.8291907053325512,
-          "joint_4": -0.2668566965073387,
-          "joint_5": 0.7326628604430141
+          "joint_0": -1.0887138993540564,
+          "joint_1": 0.6053072720665882,
+          "joint_2": 0.784104424454537,
+          "joint_3": 1.0231335509631876,
+          "joint_4": 0.8921163459682093,
+          "joint_5": -1.5291482474719005
         }
       },
       "kind": "resource_conflict",
@@ -3463,8 +3463,43 @@
   "rejected_draws": {
     "zoo_dual_arm": [
       {
+        "detail": "waypoint 0 is 0.0278 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 1,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0457 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 2,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0278 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 6,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 2 is 0.0064 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 9,
+        "reason": "unreachable_path"
+      },
+      {
         "detail": "waypoint 0 is 0.0268 m from where it was asked to be, past a tolerance of 0.0040 m",
         "draw": 12,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0278 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 13,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0278 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 17,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 5 is 0.0913 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 18,
         "reason": "unreachable_path"
       },
       {
@@ -3473,32 +3508,312 @@
         "reason": "unreachable_path"
       },
       {
+        "detail": "waypoint 5 is 0.0092 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 26,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0278 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 27,
+        "reason": "unreachable_path"
+      },
+      {
         "detail": "waypoint 4 is 0.0280 m from where it was asked to be, held off by left_link_0 against left_palm: no configuration reaching it kept them apart",
         "draw": 29,
         "reason": "self_collision_path"
       },
       {
+        "detail": "waypoint 0 is 0.0278 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 30,
+        "reason": "unreachable_path"
+      },
+      {
         "detail": "waypoint 3 is 0.0400 m from where it was asked to be, held off by left_link_2 against left_palm: no configuration reaching it kept them apart",
         "draw": 31,
         "reason": "self_collision_path"
+      },
+      {
+        "detail": "the span into waypoint 4 passes left_finger_left 10.5 mm through left_link_0, although both of its ends are clear",
+        "draw": 33,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 5 is 0.0264 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 38,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0278 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 43,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 4 is 0.0165 m from where it was asked to be, held off by left_finger_left against left_link_1: no configuration reaching it kept them apart",
+        "draw": 45,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 2 is 0.0064 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 49,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0528 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 50,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0803 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 52,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0278 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 53,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0198 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 54,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0070 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 57,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0278 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 58,
+        "reason": "unreachable_path"
       }
     ],
     "zoo_jaw_arm": [
       {
-        "detail": "the span into waypoint 4 passes finger_right 12.2 mm through link_1, although both of its ends are clear",
+        "detail": "waypoint 0 is 0.0318 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 1,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0557 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 2,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 4 is 0.0679 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 3,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0228 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 4,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0557 m from where it was asked to be, past a tolerance of 0.0040 m",
         "draw": 6,
-        "reason": "self_collision_path"
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0229 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 7,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0681 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 10,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0557 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 18,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0257 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 19,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 3 is 0.0277 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 22,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0319 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 25,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0303 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 26,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0072 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 28,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0190 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 32,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0244 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 35,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 3 is 0.0355 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 39,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0261 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 40,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0280 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 44,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0187 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 48,
+        "reason": "unreachable_path"
       }
     ],
     "zoo_long_arm": [
       {
-        "detail": "waypoint 3 is 0.0068 m from where it was asked to be, held off by link_1 against link_3: no configuration reaching it kept them apart",
-        "draw": 4,
+        "detail": "waypoint 6 is 0.1968 m from where it was asked to be, held off by link_1 against link_3: no configuration reaching it kept them apart",
+        "draw": 15,
         "reason": "self_collision_path"
       },
       {
-        "detail": "waypoint 3 is 0.0106 m from where it was asked to be, held off by base against palm: no configuration reaching it kept them apart",
+        "detail": "the span into waypoint 2 passes base 2.1 mm through finger_left, although both of its ends are clear",
+        "draw": 17,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 4 is 0.0092 m from where it was asked to be, held off by link_1 against link_3: no configuration reaching it kept them apart",
+        "draw": 18,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 4 is 0.0359 m from where it was asked to be, held off by link_1 against link_3: no configuration reaching it kept them apart",
+        "draw": 19,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 3 is 0.0097 m from where it was asked to be, held off by link_1 against link_3: no configuration reaching it kept them apart",
+        "draw": 22,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 6 is 0.1344 m from where it was asked to be, held off by base against link_1: no configuration reaching it kept them apart",
+        "draw": 25,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 3 is 0.0095 m from where it was asked to be, held off by link_1 against link_3: no configuration reaching it kept them apart",
+        "draw": 28,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 4 is 0.1225 m from where it was asked to be, held off by finger_right against link_0: no configuration reaching it kept them apart",
+        "draw": 29,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 4 is 0.1075 m from where it was asked to be, held off by base against link_1: no configuration reaching it kept them apart",
+        "draw": 30,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 5 is 0.0051 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 31,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0750 m from where it was asked to be, held off by link_2 against link_4: no configuration reaching it kept them apart",
+        "draw": 32,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 4 is 0.0257 m from where it was asked to be, held off by link_2 against link_4: no configuration reaching it kept them apart",
         "draw": 33,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 5 is 0.0147 m from where it was asked to be, held off by base against link_1: no configuration reaching it kept them apart",
+        "draw": 35,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 3 is 0.0650 m from where it was asked to be, held off by link_1 against link_3: no configuration reaching it kept them apart",
+        "draw": 36,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0213 m from where it was asked to be, held off by link_2 against link_4: no configuration reaching it kept them apart",
+        "draw": 37,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0040 m from where it was asked to be, held off by link_2 against link_4: no configuration reaching it kept them apart",
+        "draw": 39,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 3 is 0.2835 m from where it was asked to be, held off by base against link_5: no configuration reaching it kept them apart",
+        "draw": 40,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 3 is 0.0206 m from where it was asked to be, held off by base against link_5: no configuration reaching it kept them apart",
+        "draw": 41,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 5 is 0.0285 m from where it was asked to be, held off by base against link_1: no configuration reaching it kept them apart",
+        "draw": 44,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 4 is 0.1274 m from where it was asked to be, held off by base against link_2: no configuration reaching it kept them apart",
+        "draw": 47,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0133 m from where it was asked to be, held off by link_2 against link_4: no configuration reaching it kept them apart",
+        "draw": 51,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0749 m from where it was asked to be, held off by link_2 against link_4: no configuration reaching it kept them apart",
+        "draw": 53,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 3 is 0.0905 m from where it was asked to be, held off by link_2 against link_4: no configuration reaching it kept them apart",
+        "draw": 54,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0129 m from where it was asked to be, held off by link_2 against link_4: no configuration reaching it kept them apart",
+        "draw": 55,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0740 m from where it was asked to be, held off by link_2 against link_4: no configuration reaching it kept them apart",
+        "draw": 56,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 4 is 0.0991 m from where it was asked to be, held off by finger_left against link_1: no configuration reaching it kept them apart",
+        "draw": 57,
         "reason": "self_collision_path"
       }
     ]
