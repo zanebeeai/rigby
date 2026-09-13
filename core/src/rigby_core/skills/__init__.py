@@ -101,3 +101,19 @@ from .store import (
     ValidityVerdictV1,
     compare,
 )
+from .acquisition import (
+    AcceptanceV1,
+    AcquisitionOutcomeV1,
+    AcquisitionProblemV1,
+    AcquisitionStatus,
+    AttemptV1,
+    CeilingV1,
+    EffectV1,
+    EpisodeOutcomeV1,
+    EvolutionSearch,
+    ParameterSpecV1,
+    ProblemKind,
+    SearchProvenanceV1,
+    attempts_digest,
+    classify,
+)

@@ -1,0 +1,45 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-02ce0fec",
+  "title": "G12 hand-fixed-world: attempt 0 (defaults)",
+  "prompt": "pick up the cube and set it on the platform",
+  "tier": "any-robot",
+  "embodiment": "zoo_hand_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T20:07:59Z",
+  "source": {
+    "commit": "eeece832d5",
+    "branch": "feat/g12-skill-acquisition",
+    "dirty": true,
+    "how": "python any-robot/scripts/g12_acquisition_campaign.py <problem> --out docs/results/g12-acquisition --local any-robot/results/g12-acquisition"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "HOLD_NOT_SUSTAINED: attempt 0 failed on the development draw."
+  },
+  "notes": "See docs/results/g12-report.md. One contact transfer single-shot with every hard gate on under a parameter vector of the transfer family (closure advance, contact detection and squeeze, arm tracking bandwidth, duration scale), proposed by a seeded evolution strategy inside a registered ceiling or run once on a registered held-out draw; rendered from recorded states at real-time playback with the simulation clock and the outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample.",
+  "media": [
+    {
+      "path": "docs/results/g12-acquisition/hand-fixed-world/attempts/defaults/media/episode.mp4",
+      "bytes": 119195,
+      "sha256": "6d27b9ea60a545e257779aafaf78ed5304f8357a702c69b181495856fd76dfc7",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g12-acquisition/hand-fixed-world/attempts/defaults/media/preview.gif",
+      "bytes": 830606,
+      "sha256": "4e3b2af304aa3c644288a22c104cd99dc98087dbb6dec4e434bc28e2c30afb3d",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G12",
+    "hand-fixed-world",
+    "attempt",
+    "defaults",
+    "zoo_hand_arm",
+    "failure"
+  ]
+}

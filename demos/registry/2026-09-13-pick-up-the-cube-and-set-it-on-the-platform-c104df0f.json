@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-c104df0f",
+  "title": "G12 hand-fixed-world: held-out 3006 (object_not_lifted)",
+  "prompt": "pick up the cube and set it on the platform",
+  "tier": "any-robot",
+  "embodiment": "zoo_hand_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T20:08:03Z",
+  "source": {
+    "commit": "eeece832d5",
+    "branch": "feat/g12-skill-acquisition",
+    "dirty": true,
+    "how": "python any-robot/scripts/g12_acquisition_campaign.py <problem> --out docs/results/g12-acquisition --local any-robot/results/g12-acquisition"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "OBJECT_NOT_LIFTED under the settled vector on unseen draw 3006; the set scored 0/50."
+  },
+  "notes": "See docs/results/g12-report.md. One contact transfer single-shot with every hard gate on under a parameter vector of the transfer family (closure advance, contact detection and squeeze, arm tracking bandwidth, duration scale), proposed by a seeded evolution strategy inside a registered ceiling or run once on a registered held-out draw; rendered from recorded states at real-time playback with the simulation clock and the outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample.",
+  "media": [
+    {
+      "path": "docs/results/g12-acquisition/hand-fixed-world/holdout/hand-fixed-world-holdout-3006/media/episode.mp4",
+      "bytes": 122764,
+      "sha256": "2b9c823b2ffd0d0c71ea41ae1658a08a601b3d0e9b2d601874760812d862c57b",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g12-acquisition/hand-fixed-world/holdout/hand-fixed-world-holdout-3006/media/preview.gif",
+      "bytes": 842346,
+      "sha256": "2ec08c248e33762c3c2db97f42cef2a7145ef66b36e4551c1fd2436e66d0d42c",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G12",
+    "hand-fixed-world",
+    "holdout",
+    "zoo_hand_arm",
+    "failure"
+  ]
+}

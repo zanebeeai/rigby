@@ -1,0 +1,45 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-159769ff",
+  "title": "G12 long-heavy-large: attempt 0 (defaults)",
+  "prompt": "pick up the cube and set it on the platform",
+  "tier": "any-robot",
+  "embodiment": "zoo_long_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T20:08:24Z",
+  "source": {
+    "commit": "eeece832d5",
+    "branch": "feat/g12-skill-acquisition",
+    "dirty": true,
+    "how": "python any-robot/scripts/g12_acquisition_campaign.py <problem> --out docs/results/g12-acquisition --local any-robot/results/g12-acquisition"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "OBJECT_NOT_LIFTED: attempt 0 failed on the development draw."
+  },
+  "notes": "See docs/results/g12-report.md. One contact transfer single-shot with every hard gate on under a parameter vector of the transfer family (closure advance, contact detection and squeeze, arm tracking bandwidth, duration scale), proposed by a seeded evolution strategy inside a registered ceiling or run once on a registered held-out draw; rendered from recorded states at real-time playback with the simulation clock and the outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample.",
+  "media": [
+    {
+      "path": "docs/results/g12-acquisition/long-heavy-large/attempts/defaults/media/episode.mp4",
+      "bytes": 126361,
+      "sha256": "f8bc0d552714bbe1da62edad5c0ad8d782daacf61feb52cd495ed4ca59e380a6",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g12-acquisition/long-heavy-large/attempts/defaults/media/preview.gif",
+      "bytes": 1002459,
+      "sha256": "e9c942f399e1e06ddebb109be921fe7a782854bba7ff411ecaafd6439e7e9a96",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G12",
+    "long-heavy-large",
+    "attempt",
+    "defaults",
+    "zoo_long_arm",
+    "failure"
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-480c24ae",
+  "title": "G12 jaw-slick: held-out 3039 (hold_not_sustained)",
+  "prompt": "pick up the cube and set it on the platform",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T20:07:53Z",
+  "source": {
+    "commit": "eeece832d5",
+    "branch": "feat/g12-skill-acquisition",
+    "dirty": true,
+    "how": "python any-robot/scripts/g12_acquisition_campaign.py <problem> --out docs/results/g12-acquisition --local any-robot/results/g12-acquisition"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "HOLD_NOT_SUSTAINED under the settled vector on unseen draw 3039; the set scored 0/50."
+  },
+  "notes": "See docs/results/g12-report.md. One contact transfer single-shot with every hard gate on under a parameter vector of the transfer family (closure advance, contact detection and squeeze, arm tracking bandwidth, duration scale), proposed by a seeded evolution strategy inside a registered ceiling or run once on a registered held-out draw; rendered from recorded states at real-time playback with the simulation clock and the outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample.",
+  "media": [
+    {
+      "path": "docs/results/g12-acquisition/jaw-slick/holdout/jaw-slick-holdout-3039/media/episode.mp4",
+      "bytes": 116300,
+      "sha256": "97795f0bc8d95daf8301e6bd3580e61c6642947ecacc6cd40f9133ed14ecc2da",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g12-acquisition/jaw-slick/holdout/jaw-slick-holdout-3039/media/preview.gif",
+      "bytes": 712496,
+      "sha256": "b8c20d128e05f869b9f793179c14cb03ff2ab63d28543eeb5feec30738017f1c",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G12",
+    "jaw-slick",
+    "holdout",
+    "zoo_jaw_arm",
+    "failure"
+  ]
+}

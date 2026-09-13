@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-af2a4d25",
+  "title": "D12 hand-fixed-world: missing, failed, acquired, held-out, reuse",
+  "prompt": "pick up the cube and set it on the platform",
+  "tier": "any-robot",
+  "embodiment": "zoo_hand_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T20:08:23Z",
+  "source": {
+    "commit": "eeece832d5",
+    "branch": "feat/g12-skill-acquisition",
+    "dirty": true,
+    "how": "python any-robot/scripts/g12_d12_media.py --campaign docs/results/g12-acquisition --out docs/results/g12-d12"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "D12 hand-fixed-world | budget_exhausted (no kind) | search 200/200 attempts, 6.2/30 worker min | held-out 0/50 (threshold 40)"
+  },
+  "notes": "See docs/results/g12-report.md. One contact transfer single-shot with every hard gate on under a parameter vector of the transfer family (closure advance, contact detection and squeeze, arm tracking bandwidth, duration scale), proposed by a seeded evolution strategy inside a registered ceiling or run once on a registered held-out draw; rendered from recorded states at real-time playback with the simulation clock and the outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample.",
+  "media": [
+    {
+      "path": "docs/results/g12-d12/hand-fixed-world/hand-fixed-world-five-way.mp4",
+      "bytes": 113207,
+      "sha256": "c499eb89aa115d1ff246d2aaa3288b4cee42b57be556a6fb204c03109045ac79",
+      "role": "comparison"
+    },
+    {
+      "path": "docs/results/g12-d12/hand-fixed-world/hand-fixed-world-five-way-preview.gif",
+      "bytes": 2139414,
+      "sha256": "4310d126e32549506de74ec97c725a3ca0ce73f9cd1e2adad27994cb8a86eac6",
+      "role": "comparison"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G12",
+    "D12",
+    "hand-fixed-world",
+    "zoo_hand_arm",
+    "budget_exhausted"
+  ]
+}

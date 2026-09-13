@@ -151,6 +151,14 @@ def render_bundle(root: Path, destination: Path, *, expected_digest: str | None 
                 process.stdin.close()
                 if process.wait(timeout=120) != 0:
                     raise RuntimeError("ffmpeg failed: " + (staging / "ffmpeg.log").read_text(errors="replace")[-2000:])
+            except (BrokenPipeError, OSError) as error:
+                # The encoder died mid-pipe; its own words are worth more than errno.
+                try:
+                    process.kill()
+                    process.wait(timeout=10)
+                except Exception:  # noqa: BLE001
+                    pass
+                raise RuntimeError(f"ffmpeg closed the pipe ({error!r}): " + (staging / "ffmpeg.log").read_text(errors="replace")[-2000:]) from error
             finally:
                 if process.poll() is None:
                     process.kill()

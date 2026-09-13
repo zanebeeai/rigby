@@ -1,0 +1,155 @@
+{
+  "goal": "G12",
+  "generated_at_utc": "2026-09-13T20:06:30.011311+00:00",
+  "commit": "eeece832d56e757ccf316dfef66609499f99c8dc",
+  "registration_sha256": "6e72ee93825d1cf3f32cc0ad425b224f6189376bdda74d2d86397c519a8d6567",
+  "generation_calls": 0,
+  "manual_trajectory_edits": 0,
+  "problems": {
+    "jaw-slick": {
+      "status": "budget_exhausted",
+      "kind": null,
+      "attempts": 200,
+      "worker_minutes": 7.51,
+      "holdout": "0/50",
+      "changed": []
+    },
+    "hand-fixed-world": {
+      "status": "budget_exhausted",
+      "kind": null,
+      "attempts": 200,
+      "worker_minutes": 6.23,
+      "holdout": "0/50",
+      "changed": []
+    },
+    "long-heavy-large": {
+      "status": "acquired",
+      "kind": "discovery",
+      "attempts": 2,
+      "worker_minutes": 0.19,
+      "holdout": "47/50",
+      "changed": [
+        "closure.grip_safety_factor",
+        "closure.actuator_ceiling_fraction",
+        "closure.hold_duration_s",
+        "arm.natural_frequency_hz"
+      ]
+    }
+  },
+  "detail": {
+    "jaw-slick": {
+      "body": "zoo_jaw_arm",
+      "family": "single-arm jaw gripper",
+      "hypothesis": "discovery",
+      "ceiling_hit": "attempts",
+      "physics_minutes": 66.25,
+      "best_attempt": 0,
+      "settled_parameters": {
+        "arm.natural_frequency_hz": 14.0,
+        "closure.actuator_ceiling_fraction": 0.5,
+        "closure.closing_force_fraction": 0.12,
+        "closure.closure_rate_per_s": 0.55,
+        "closure.grip_safety_factor": 80.0,
+        "closure.hold_duration_s": 0.15,
+        "duration_scale": 1.0
+      },
+      "holdout_taxonomy": {
+        "hold_not_sustained": 47,
+        "object_not_lifted": 3
+      },
+      "accepted": false,
+      "limiting_capability": "within the contact transfer family no closure force, rate, tracking bandwidth or slowing of the lift held a cube at half the registered friction through the hold and carry on the jaw arm",
+      "certificate": null,
+      "certificate_status": null,
+      "reuse": null,
+      "episodes_run": 250
+    },
+    "hand-fixed-world": {
+      "body": "zoo_hand_arm",
+      "family": "multifinger hand",
+      "hypothesis": "discovery",
+      "ceiling_hit": "attempts",
+      "physics_minutes": 64.78,
+      "best_attempt": 0,
+      "settled_parameters": {
+        "arm.natural_frequency_hz": 14.0,
+        "closure.actuator_ceiling_fraction": 0.5,
+        "closure.closing_force_fraction": 0.12,
+        "closure.closure_rate_per_s": 0.55,
+        "closure.grip_safety_factor": 80.0,
+        "closure.hold_duration_s": 0.15,
+        "duration_scale": 1.0
+      },
+      "holdout_taxonomy": {
+        "hold_not_sustained": 43,
+        "object_not_lifted": 7
+      },
+      "accepted": false,
+      "limiting_capability": "the multifinger hand's digits are 47 mm long against a 30 mm cube and its closure is a single-parameter squeeze, so the only grasp that clears the bench is a fingertip pinch; within the contact transfer family no closure force, rate, tracking bandwidth or slowing of the lift gave that pinch a margin against the load of the lift. A wrap grasp, a compliant pad or a two-parameter closure is a different primitive, not a retuned one.",
+      "certificate": null,
+      "certificate_status": null,
+      "reuse": null,
+      "episodes_run": 250
+    },
+    "long-heavy-large": {
+      "body": "zoo_long_arm",
+      "family": "single-arm long-reach jaw gripper",
+      "hypothesis": "instantiation",
+      "ceiling_hit": null,
+      "physics_minutes": 1.39,
+      "best_attempt": 1,
+      "settled_parameters": {
+        "arm.natural_frequency_hz": 17.115242096698864,
+        "closure.actuator_ceiling_fraction": 0.40783960401004116,
+        "closure.closing_force_fraction": 0.12953010668500248,
+        "closure.closure_rate_per_s": 0.5637932052305796,
+        "closure.grip_safety_factor": 108.94763245072079,
+        "closure.hold_duration_s": 0.12839426644158916,
+        "duration_scale": 1.1177474063207324
+      },
+      "holdout_taxonomy": {
+        "hold_not_sustained": 2,
+        "object_not_lifted": 1
+      },
+      "accepted": true,
+      "limiting_capability": "",
+      "certificate": "e7329b941d20863fd34faba367b17f7b",
+      "certificate_status": "promoted",
+      "reuse": "success",
+      "episodes_run": 55
+    }
+  },
+  "ledger_separation": {
+    "instantiation": [],
+    "composition": {
+      "posed": [],
+      "evidence": "G11 reuse of transfer_object and its subskills from persisted leaves (docs/results/g11-store/reuse.json)"
+    },
+    "discovery": [
+      "long-heavy-large"
+    ],
+    "unsupported_hypothesis": [
+      "jaw-slick",
+      "hand-fixed-world"
+    ]
+  },
+  "capability_target": {
+    "per_problem": {
+      "jaw-slick": false,
+      "hand-fixed-world": false,
+      "long-heavy-large": true
+    },
+    "met": false
+  },
+  "store": {
+    "version": 42,
+    "certificates": 13
+  },
+  "d12": {
+    "problems": [
+      "jaw-slick",
+      "hand-fixed-world",
+      "long-heavy-large"
+    ]
+  }
+}

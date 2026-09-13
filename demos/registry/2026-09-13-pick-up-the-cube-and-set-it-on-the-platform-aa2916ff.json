@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-aa2916ff",
+  "title": "D12 long-heavy-large: missing, failed, acquired, held-out, reuse",
+  "prompt": "pick up the cube and set it on the platform",
+  "tier": "any-robot",
+  "embodiment": "zoo_long_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T20:08:28Z",
+  "source": {
+    "commit": "eeece832d5",
+    "branch": "feat/g12-skill-acquisition",
+    "dirty": true,
+    "how": "python any-robot/scripts/g12_d12_media.py --campaign docs/results/g12-acquisition --out docs/results/g12-d12"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "D12 long-heavy-large | acquired (discovery) | search 2/200 attempts, 0.2/30 worker min | held-out 47/50 (threshold 40)"
+  },
+  "notes": "See docs/results/g12-report.md. One contact transfer single-shot with every hard gate on under a parameter vector of the transfer family (closure advance, contact detection and squeeze, arm tracking bandwidth, duration scale), proposed by a seeded evolution strategy inside a registered ceiling or run once on a registered held-out draw; rendered from recorded states at real-time playback with the simulation clock and the outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample.",
+  "media": [
+    {
+      "path": "docs/results/g12-d12/long-heavy-large/long-heavy-large-five-way.mp4",
+      "bytes": 165021,
+      "sha256": "3a3fb071f4a0a0cb05bb13c10a7289e87e4a536f22b7b509198f0cfba90ae707",
+      "role": "comparison"
+    },
+    {
+      "path": "docs/results/g12-d12/long-heavy-large/long-heavy-large-five-way-preview.gif",
+      "bytes": 2523338,
+      "sha256": "b3ea3ccd01b3e3c68aa6a5ce1b7b7fa9bde1ee5da69d4ab00deba8ff14fbe80a",
+      "role": "comparison"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G12",
+    "D12",
+    "long-heavy-large",
+    "zoo_long_arm",
+    "acquired"
+  ]
+}

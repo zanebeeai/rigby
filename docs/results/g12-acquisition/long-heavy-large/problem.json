@@ -1,0 +1,2301 @@
+{
+  "attempts": [
+    {
+      "certified": 0,
+      "confirmation": [],
+      "episodes": [
+        {
+          "certified": false,
+          "failed_gate": "object_not_lifted",
+          "measurements": {
+            "hold_s": 0.0,
+            "lift_height_m": 0.013744269765857742,
+            "max_penetration_m": 0.001852657013535314,
+            "peak_force_n": 40.10393702137568,
+            "placement_dwell_s": 0.0
+          },
+          "physics_s": 17.52200000000103,
+          "seed": 4000,
+          "wall_s": 2.320044499996584
+        }
+      ],
+      "improved": true,
+      "index": 0,
+      "of": 2,
+      "parameters": {
+        "arm.natural_frequency_hz": 14.0,
+        "closure.actuator_ceiling_fraction": 0.5,
+        "closure.closing_force_fraction": 0.12,
+        "closure.closure_rate_per_s": 0.55,
+        "closure.grip_safety_factor": 80.0,
+        "closure.hold_duration_s": 0.15,
+        "duration_scale": 1.0
+      },
+      "physics_s": 17.52200000000103,
+      "sigma": 0.25,
+      "wall_s": 2.320044499996584
+    },
+    {
+      "certified": 2,
+      "confirmation": [
+        {
+          "certified": true,
+          "failed_gate": null,
+          "measurements": {
+            "hold_s": 2.0000000000000013,
+            "lift_height_m": 0.08747990518785459,
+            "max_penetration_m": 0.0017050311892028817,
+            "peak_force_n": 32.3511899781554,
+            "placement_dwell_s": 2.498000000000202
+          },
+          "physics_s": 16.460000000001617,
+          "seed": 4002,
+          "wall_s": 2.2377806000004057
+        },
+        {
+          "certified": true,
+          "failed_gate": null,
+          "measurements": {
+            "hold_s": 2.0000000000000013,
+            "lift_height_m": 0.08747307449442432,
+            "max_penetration_m": 0.0013812080110284324,
+            "peak_force_n": 30.922286797822665,
+            "placement_dwell_s": 2.4980000000002516
+          },
+          "physics_s": 16.40400000000165,
+          "seed": 4003,
+          "wall_s": 2.1394822000002023
+        }
+      ],
+      "episodes": [
+        {
+          "certified": true,
+          "failed_gate": null,
+          "measurements": {
+            "hold_s": 2.0000000000000013,
+            "lift_height_m": 0.09076492539397873,
+            "max_penetration_m": 0.0018696741134624063,
+            "peak_force_n": 49.2689377337024,
+            "placement_dwell_s": 2.4980000000002143
+          },
+          "physics_s": 16.446000000001625,
+          "seed": 4000,
+          "wall_s": 2.3970763999968767
+        },
+        {
+          "certified": true,
+          "failed_gate": null,
+          "measurements": {
+            "hold_s": 2.0000000000000013,
+            "lift_height_m": 0.08797654789454995,
+            "max_penetration_m": 0.0020340638796413433,
+            "peak_force_n": 23.439864415756325,
+            "placement_dwell_s": 2.498000000000177
+          },
+          "physics_s": 16.488000000001602,
+          "seed": 4001,
+          "wall_s": 2.294322600006126
+        }
+      ],
+      "improved": true,
+      "index": 1,
+      "of": 2,
+      "parameters": {
+        "arm.natural_frequency_hz": 17.115242096698864,
+        "closure.actuator_ceiling_fraction": 0.40783960401004116,
+        "closure.closing_force_fraction": 0.12953010668500248,
+        "closure.closure_rate_per_s": 0.5637932052305796,
+        "closure.grip_safety_factor": 108.94763245072079,
+        "closure.hold_duration_s": 0.12839426644158916,
+        "duration_scale": 1.1177474063207324
+      },
+      "physics_s": 65.79800000000648,
+      "sigma": 0.25,
+      "wall_s": 9.06866180000361
+    }
+  ],
+  "finished_at_utc": "2026-09-13T20:06:11.663802+00:00",
+  "holdout": {
+    "accepted": true,
+    "physics_s": 828.6680000000778,
+    "rows": [
+      {
+        "bundle": {
+          "bundle": "any-robot/results/g12-acquisition/long-heavy-large/holdout/long-heavy-large-holdout-3000/physical",
+          "outcome": "success",
+          "replay_agrees": true,
+          "sha256": "4842ed5e426757950eceaffe6218ecafc056677ecd66e809b8cdbb833c74afbc",
+          "simulation_duration_s": 16.70600000000162,
+          "trace_sha256": "a5e403e5649f688bcc90ae052a6e1f5dffd3165333e67c6a68b02dcfbab9d2f0"
+        },
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 1.0666416546189472,
+          "mass_multiplier": 0.9065088593579358,
+          "seed": 3000,
+          "translation_m": [
+            0.0036694249966571363,
+            -0.009899468453337912,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3000",
+        "failed_gate": null,
+        "frames": 199,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08748688589162995,
+          "max_penetration_m": 0.0013307758662443588,
+          "peak_force_n": 30.920127667002724,
+          "placement_dwell_s": 2.4980000000002054
+        },
+        "media": "holdout/long-heavy-large-holdout-3000/media",
+        "media_sha256": "ba523426891bf8a9e6d17ec98e059c861d3bf06b61c995baff34d5b78fb3c2a6",
+        "physics_s": 16.45600000000162,
+        "seed": 3000,
+        "wall_s": 3.119592500006547
+      },
+      {
+        "bundle": {
+          "bundle": "any-robot/results/g12-acquisition/long-heavy-large/holdout/long-heavy-large-holdout-3001/physical",
+          "outcome": "success",
+          "replay_agrees": true,
+          "sha256": "39ee5ca81c69e48ccd7efa6772ce1aee1936823aff353110d337ea45fa628fbf",
+          "simulation_duration_s": 16.678000000001635,
+          "trace_sha256": "7771b2203babd2b0d71385cf876dfaf80048b1ee6f9f668910f3e850acb62340"
+        },
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 0.9676136244813645,
+          "mass_multiplier": 1.0697073693224384,
+          "seed": 3001,
+          "translation_m": [
+            0.00802667774357214,
+            0.0070936788965071905,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3001",
+        "failed_gate": null,
+        "frames": 199,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08774392155882227,
+          "max_penetration_m": 0.0014320158547601952,
+          "peak_force_n": 37.33176600536381,
+          "placement_dwell_s": 2.4980000000002303
+        },
+        "media": "holdout/long-heavy-large-holdout-3001/media",
+        "media_sha256": "de3ab2cf803ef968b4ea9152b0d274563eb12ae35e824116f7a1d905cf95fb21",
+        "physics_s": 16.428000000001635,
+        "seed": 3001,
+        "wall_s": 3.008064399997238
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 0.891289333623683,
+          "mass_multiplier": 1.0505629990219219,
+          "seed": 3002,
+          "translation_m": [
+            -0.0165599317550446,
+            0.00872273877561451,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3002",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08946283262750493,
+          "max_penetration_m": 0.0019773035063183476,
+          "peak_force_n": 30.27120729729628,
+          "placement_dwell_s": 2.498000000000186
+        },
+        "physics_s": 16.478000000001607,
+        "seed": 3002,
+        "wall_s": 2.856406299979426
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 1.0156658392789326,
+          "mass_multiplier": 0.804727917339874,
+          "seed": 3003,
+          "translation_m": [
+            -0.0069281703255508024,
+            0.004256149361231372,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3003",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08751777854656129,
+          "max_penetration_m": 0.00162133262446896,
+          "peak_force_n": 32.2413036788384,
+          "placement_dwell_s": 2.4980000000001983
+        },
+        "physics_s": 16.464000000001615,
+        "seed": 3003,
+        "wall_s": 2.911422400007723
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 1.0350208239383785,
+          "mass_multiplier": 1.0922895659969554,
+          "seed": 3004,
+          "translation_m": [
+            0.011752982972777912,
+            0.007802780140761512,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3004",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08755907568292565,
+          "max_penetration_m": 0.0013839193299355515,
+          "peak_force_n": 33.51666286335147,
+          "placement_dwell_s": 2.4980000000002374
+        },
+        "physics_s": 16.42000000000164,
+        "seed": 3004,
+        "wall_s": 2.9157669999985956
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 1.1040680350791927,
+          "mass_multiplier": 0.9556164745273734,
+          "seed": 3005,
+          "translation_m": [
+            0.006223861164285291,
+            0.0009997210251102978,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3005",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.0874548029509169,
+          "max_penetration_m": 0.0013980133499943976,
+          "peak_force_n": 30.913256792500025,
+          "placement_dwell_s": 2.4980000000002214
+        },
+        "physics_s": 16.43800000000163,
+        "seed": 3005,
+        "wall_s": 2.955590099998517
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 0.9083034543346619,
+          "mass_multiplier": 1.1477365183351347,
+          "seed": 3006,
+          "translation_m": [
+            0.008829146216037583,
+            0.01645555463715855,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3006",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08899136245182804,
+          "max_penetration_m": 0.001509068127703581,
+          "peak_force_n": 43.31523717419487,
+          "placement_dwell_s": 2.4980000000002427
+        },
+        "physics_s": 16.414000000001643,
+        "seed": 3006,
+        "wall_s": 2.94644940001308
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 0.9279835873868314,
+          "mass_multiplier": 1.0502598317275949,
+          "seed": 3007,
+          "translation_m": [
+            0.003966794276477895,
+            -0.005974123848461046,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3007",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08799253701253507,
+          "max_penetration_m": 0.0013617712362760637,
+          "peak_force_n": 39.29685312655808,
+          "placement_dwell_s": 2.498000000000209
+        },
+        "physics_s": 16.45200000000162,
+        "seed": 3007,
+        "wall_s": 2.9311796000110917
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 0.9799937212555913,
+          "mass_multiplier": 0.9986415289049412,
+          "seed": 3008,
+          "translation_m": [
+            -0.014364930745100781,
+            0.008600091927077377,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3008",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08855193582094628,
+          "max_penetration_m": 0.001984124095897802,
+          "peak_force_n": 25.433698963067826,
+          "placement_dwell_s": 2.4980000000001894
+        },
+        "physics_s": 16.47400000000161,
+        "seed": 3008,
+        "wall_s": 2.8837644000013825
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 0.852026286241407,
+          "mass_multiplier": 0.9753017715044922,
+          "seed": 3009,
+          "translation_m": [
+            0.019698378109344068,
+            0.00486007546255739,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3009",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08837819387762874,
+          "max_penetration_m": 0.0012215530698357943,
+          "peak_force_n": 50.823382236694314,
+          "placement_dwell_s": 2.49800000000025
+        },
+        "physics_s": 16.406000000001647,
+        "seed": 3009,
+        "wall_s": 2.9814977000060026
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 1.0768672258497445,
+          "mass_multiplier": 1.1592950386769725,
+          "seed": 3010,
+          "translation_m": [
+            -0.00805608889319355,
+            0.015125223351419848,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3010",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08808039967854575,
+          "max_penetration_m": 0.0019332041417684433,
+          "peak_force_n": 24.4715441537303,
+          "placement_dwell_s": 2.498000000000209
+        },
+        "physics_s": 16.45200000000162,
+        "seed": 3010,
+        "wall_s": 2.9443015000142623
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 1.0632496925409527,
+          "mass_multiplier": 0.9164167228797736,
+          "seed": 3011,
+          "translation_m": [
+            -0.001687090526322918,
+            -0.010959657705895869,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3011",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08749133688443772,
+          "max_penetration_m": 0.0013981054161040533,
+          "peak_force_n": 31.25028359358913,
+          "placement_dwell_s": 2.498000000000193
+        },
+        "physics_s": 16.470000000001612,
+        "seed": 3011,
+        "wall_s": 2.9376317000132985
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 1.013450737961993,
+          "mass_multiplier": 0.977393274228876,
+          "seed": 3012,
+          "translation_m": [
+            -0.010967956385775017,
+            0.0019737239175929983,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3012",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08756018461038317,
+          "max_penetration_m": 0.0016577618486802006,
+          "peak_force_n": 34.05942556194849,
+          "placement_dwell_s": 2.4980000000001894
+        },
+        "physics_s": 16.47400000000161,
+        "seed": 3012,
+        "wall_s": 2.957778199983295
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 0.8342054780351276,
+          "mass_multiplier": 1.0250859872795661,
+          "seed": 3013,
+          "translation_m": [
+            -0.01133386240718528,
+            0.0055738464623599215,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3013",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.09024221535221832,
+          "max_penetration_m": 0.003208771012167185,
+          "peak_force_n": 50.61199792335663,
+          "placement_dwell_s": 2.498000000000191
+        },
+        "physics_s": 16.47200000000161,
+        "seed": 3013,
+        "wall_s": 2.9654396999976598
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 1.189988438358573,
+          "mass_multiplier": 0.9417708011763375,
+          "seed": 3014,
+          "translation_m": [
+            -0.0032198751642174006,
+            -0.009398834953330675,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3014",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08741083339514572,
+          "max_penetration_m": 0.001434735393616528,
+          "peak_force_n": 30.136077651672547,
+          "placement_dwell_s": 2.498000000000191
+        },
+        "physics_s": 16.47200000000161,
+        "seed": 3014,
+        "wall_s": 3.043113899999298
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 0.8156318354832933,
+          "mass_multiplier": 1.0975559859643977,
+          "seed": 3015,
+          "translation_m": [
+            -0.0002807315313358566,
+            0.0012499314667497909,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3015",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.09015404934655313,
+          "max_penetration_m": 0.0027433466061796,
+          "peak_force_n": 52.070323844611146,
+          "placement_dwell_s": 2.498000000000207
+        },
+        "physics_s": 16.45400000000162,
+        "seed": 3015,
+        "wall_s": 2.9866028999967966
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 0.9834235425989288,
+          "mass_multiplier": 0.9980910770718596,
+          "seed": 3016,
+          "translation_m": [
+            0.008941593741402892,
+            -0.010866212288654324,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3016",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08776268464198933,
+          "max_penetration_m": 0.0012304988074715753,
+          "peak_force_n": 39.66899691603838,
+          "placement_dwell_s": 2.4980000000002125
+        },
+        "physics_s": 16.448000000001624,
+        "seed": 3016,
+        "wall_s": 2.979013100004522
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 1.14224309063525,
+          "mass_multiplier": 0.8732544553007097,
+          "seed": 3017,
+          "translation_m": [
+            0.013118521197329671,
+            0.013794691386197638,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3017",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08742385445444667,
+          "max_penetration_m": 0.0014210826822735935,
+          "peak_force_n": 30.28214603185588,
+          "placement_dwell_s": 2.4980000000002462
+        },
+        "physics_s": 16.410000000001645,
+        "seed": 3017,
+        "wall_s": 2.9224906000017654
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 1.011994310954166,
+          "mass_multiplier": 1.0008658836758102,
+          "seed": 3018,
+          "translation_m": [
+            -0.013169869071296967,
+            -0.0009374846710530522,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3018",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08756907854694745,
+          "max_penetration_m": 0.0016610050728280477,
+          "peak_force_n": 34.42968981996246,
+          "placement_dwell_s": 2.4980000000001823
+        },
+        "physics_s": 16.482000000001605,
+        "seed": 3018,
+        "wall_s": 2.8407297000230756
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 0.8560914535174617,
+          "mass_multiplier": 0.8099542002624309,
+          "seed": 3019,
+          "translation_m": [
+            0.0072781808586297285,
+            -0.018585695608892193,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3019",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08806362898468229,
+          "max_penetration_m": 0.0011728225443581207,
+          "peak_force_n": 44.11109740545859,
+          "placement_dwell_s": 2.4980000000002036
+        },
+        "physics_s": 16.45800000000162,
+        "seed": 3019,
+        "wall_s": 2.921169800014468
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 0.881876188972073,
+          "mass_multiplier": 0.9679722543375959,
+          "seed": 3020,
+          "translation_m": [
+            -0.009566094982802795,
+            -0.005910163133064521,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3020",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08893329103451225,
+          "max_penetration_m": 0.0015586992542993678,
+          "peak_force_n": 41.76682937205425,
+          "placement_dwell_s": 2.498000000000184
+        },
+        "physics_s": 16.480000000001606,
+        "seed": 3020,
+        "wall_s": 2.9421016000269447
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 1.0469794531130132,
+          "mass_multiplier": 0.8004066370481558,
+          "seed": 3021,
+          "translation_m": [
+            0.013533598100801684,
+            -0.005919927841236308,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3021",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08761294828731037,
+          "max_penetration_m": 0.001205692315830868,
+          "peak_force_n": 33.18794748695653,
+          "placement_dwell_s": 2.4980000000002267
+        },
+        "physics_s": 16.432000000001633,
+        "seed": 3021,
+        "wall_s": 2.930838500004029
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 1.038645467297937,
+          "mass_multiplier": 1.1460050121581797,
+          "seed": 3022,
+          "translation_m": [
+            -0.015804008773286977,
+            -0.010840630328781114,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3022",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08757232451940944,
+          "max_penetration_m": 0.0016006142478431752,
+          "peak_force_n": 35.01847169479507,
+          "placement_dwell_s": 2.4980000000001663
+        },
+        "physics_s": 16.500000000001595,
+        "seed": 3022,
+        "wall_s": 2.963825899991207
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 0.8660037290827751,
+          "mass_multiplier": 0.8261902824062186,
+          "seed": 3023,
+          "translation_m": [
+            0.0019665142166890304,
+            0.00018462912281726196,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3023",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08814638831084959,
+          "max_penetration_m": 0.0014521959293464916,
+          "peak_force_n": 39.136982440211305,
+          "placement_dwell_s": 2.4980000000002107
+        },
+        "physics_s": 16.450000000001623,
+        "seed": 3023,
+        "wall_s": 2.9552836999937426
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 1.0646239306649898,
+          "mass_multiplier": 0.8583997214086271,
+          "seed": 3024,
+          "translation_m": [
+            0.012840338103348229,
+            0.004794904604932978,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3024",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.0874772159248085,
+          "max_penetration_m": 0.001338118693913184,
+          "peak_force_n": 30.769681940099954,
+          "placement_dwell_s": 2.4980000000002374
+        },
+        "physics_s": 16.42000000000164,
+        "seed": 3024,
+        "wall_s": 2.934817600005772
+      },
+      {
+        "bundle": {
+          "bundle": "any-robot/results/g12-acquisition/long-heavy-large/holdout/long-heavy-large-holdout-3025/physical",
+          "outcome": "runtime_failure",
+          "replay_agrees": true,
+          "sha256": "87c45323791e566ec9dc9c4e6b0fd559941b68979d4ca7d714b686bfeaa780a6",
+          "simulation_duration_s": 18.25600000000076,
+          "trace_sha256": "e3bcecfc794d466666df836aa90b7b49a6d233e5b042c3fc3b78ae4358c2c72c"
+        },
+        "certified": false,
+        "draw": {
+          "friction_multiplier": 0.8294431129800348,
+          "mass_multiplier": 1.0902769331185111,
+          "seed": 3025,
+          "translation_m": [
+            0.004527330550853654,
+            -0.012251516240210546,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3025",
+        "failed_gate": "object_not_lifted",
+        "frames": 218,
+        "measurements": {
+          "hold_s": 0.0,
+          "lift_height_m": 0.01354911933841274,
+          "max_penetration_m": 0.0035250799732771884,
+          "peak_force_n": 66.74396638236986,
+          "placement_dwell_s": 0.0
+        },
+        "media": "holdout/long-heavy-large-holdout-3025/media",
+        "media_sha256": "f5ada9e2eddb450b29ec8e1d7bb95cfc5810865a71bb4432f66729706b67dc42",
+        "physics_s": 18.00600000000076,
+        "seed": 3025,
+        "wall_s": 3.459738899982767
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 1.03956548349711,
+          "mass_multiplier": 1.1639374994087648,
+          "seed": 3026,
+          "translation_m": [
+            0.014434501639552903,
+            -0.012124356663684877,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3026",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08772045649410032,
+          "max_penetration_m": 0.001123751140851312,
+          "peak_force_n": 38.57958863318001,
+          "placement_dwell_s": 2.498000000000223
+        },
+        "physics_s": 16.43600000000163,
+        "seed": 3026,
+        "wall_s": 2.997747999994317
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 1.013064998666693,
+          "mass_multiplier": 1.0060030180285875,
+          "seed": 3027,
+          "translation_m": [
+            0.0025254140066491085,
+            -0.014669430192427058,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3027",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08772175171962565,
+          "max_penetration_m": 0.0012985911518932807,
+          "peak_force_n": 38.538360068865714,
+          "placement_dwell_s": 2.4980000000001965
+        },
+        "physics_s": 16.466000000001614,
+        "seed": 3027,
+        "wall_s": 3.0408026999793947
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 0.9387223754669112,
+          "mass_multiplier": 0.8751309446541121,
+          "seed": 3028,
+          "translation_m": [
+            -0.010055834001991077,
+            -0.0034063891142583,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3028",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08764831143124496,
+          "max_penetration_m": 0.0015914889219736082,
+          "peak_force_n": 36.08293108201756,
+          "placement_dwell_s": 2.498000000000186
+        },
+        "physics_s": 16.478000000001607,
+        "seed": 3028,
+        "wall_s": 2.925475500000175
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 1.1135761127236905,
+          "mass_multiplier": 1.1443770395866235,
+          "seed": 3029,
+          "translation_m": [
+            0.008204059443775606,
+            0.01516123387847566,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3029",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08747995300576644,
+          "max_penetration_m": 0.0015055751352677459,
+          "peak_force_n": 32.12464155693903,
+          "placement_dwell_s": 2.498000000000241
+        },
+        "physics_s": 16.41600000000164,
+        "seed": 3029,
+        "wall_s": 3.0110064999898896
+      },
+      {
+        "bundle": {
+          "bundle": "any-robot/results/g12-acquisition/long-heavy-large/holdout/long-heavy-large-holdout-3030/physical",
+          "outcome": "runtime_failure",
+          "replay_agrees": true,
+          "sha256": "76a877caa6ad40c3b0c1eb8ffd07834fb0ff9bc6b56c35d15acf924fce1870a3",
+          "simulation_duration_s": 18.968000000000366,
+          "trace_sha256": "7b189aeb31ffabec868357a1eb3e31c5a4241bee3b7f8469d2ad6d01be80a904"
+        },
+        "certified": false,
+        "draw": {
+          "friction_multiplier": 0.8991390907998771,
+          "mass_multiplier": 1.1922287244568088,
+          "seed": 3030,
+          "translation_m": [
+            -0.007989270406284188,
+            0.01155472909141422,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3030",
+        "failed_gate": "hold_not_sustained",
+        "frames": 226,
+        "measurements": {
+          "hold_s": 0.0,
+          "lift_height_m": 0.07444354621877408,
+          "max_penetration_m": 0.004265656053268969,
+          "peak_force_n": 75.05463156911873,
+          "placement_dwell_s": 0.0
+        },
+        "media": "holdout/long-heavy-large-holdout-3030/media",
+        "media_sha256": "05b10cd3cdddbc2a1e383d9bdeb56916af250bbaf529b74c62e78a8389051537",
+        "physics_s": 18.718000000000366,
+        "seed": 3030,
+        "wall_s": 3.0627160999865737
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 1.0015274405683412,
+          "mass_multiplier": 0.9139634668905384,
+          "seed": 3031,
+          "translation_m": [
+            0.004957269497962144,
+            0.006965575774211356,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3031",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08755822181837752,
+          "max_penetration_m": 0.0014759281015841027,
+          "peak_force_n": 33.0275232298718,
+          "placement_dwell_s": 2.498000000000223
+        },
+        "physics_s": 16.43600000000163,
+        "seed": 3031,
+        "wall_s": 2.941958900017198
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 0.9814314572117444,
+          "mass_multiplier": 0.9178091303392484,
+          "seed": 3032,
+          "translation_m": [
+            0.011382693696098557,
+            -0.015411659824208869,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3032",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08773949223843519,
+          "max_penetration_m": 0.0011384102368501734,
+          "peak_force_n": 37.62360625745612,
+          "placement_dwell_s": 2.4980000000002125
+        },
+        "physics_s": 16.448000000001624,
+        "seed": 3032,
+        "wall_s": 2.8384022999962326
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 0.9549652462697037,
+          "mass_multiplier": 1.0190449393938519,
+          "seed": 3033,
+          "translation_m": [
+            -0.014484201974692744,
+            0.016622073369299935,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3033",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.087502536367555,
+          "max_penetration_m": 0.0003210493738520454,
+          "peak_force_n": 22.54315294964062,
+          "placement_dwell_s": 2.4980000000002
+        },
+        "physics_s": 16.462000000001616,
+        "seed": 3033,
+        "wall_s": 2.815964500012342
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 1.050126159229981,
+          "mass_multiplier": 0.9856164057766861,
+          "seed": 3034,
+          "translation_m": [
+            -0.006979394154145066,
+            -0.0018298659889823023,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3034",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08751806272820833,
+          "max_penetration_m": 0.0015622024345510748,
+          "peak_force_n": 32.69706685754244,
+          "placement_dwell_s": 2.498000000000191
+        },
+        "physics_s": 16.47200000000161,
+        "seed": 3034,
+        "wall_s": 2.943273399985628
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 1.1710338475172515,
+          "mass_multiplier": 1.0130456775407093,
+          "seed": 3035,
+          "translation_m": [
+            0.004921940031207023,
+            0.002260564615451939,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3035",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08741605283534354,
+          "max_penetration_m": 0.0014299834147297329,
+          "peak_force_n": 30.512787864097696,
+          "placement_dwell_s": 2.4980000000002196
+        },
+        "physics_s": 16.44000000000163,
+        "seed": 3035,
+        "wall_s": 2.971212000004016
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 1.0885366968417305,
+          "mass_multiplier": 0.9785088712964788,
+          "seed": 3036,
+          "translation_m": [
+            -0.0016954794705161536,
+            0.006778633956314565,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3036",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08747419451289379,
+          "max_penetration_m": 0.0015704804855059499,
+          "peak_force_n": 31.82817972453934,
+          "placement_dwell_s": 2.4980000000002125
+        },
+        "physics_s": 16.448000000001624,
+        "seed": 3036,
+        "wall_s": 2.9447971000045072
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 1.1810868924983118,
+          "mass_multiplier": 0.9658174743690342,
+          "seed": 3037,
+          "translation_m": [
+            0.002728227044798158,
+            0.005790890005259907,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3037",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08741104971933839,
+          "max_penetration_m": 0.001496666005318833,
+          "peak_force_n": 30.51552901046105,
+          "placement_dwell_s": 2.498000000000218
+        },
+        "physics_s": 16.442000000001627,
+        "seed": 3037,
+        "wall_s": 2.9847161000070628
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 0.8791368384013323,
+          "mass_multiplier": 0.9382385173320208,
+          "seed": 3038,
+          "translation_m": [
+            0.01104275079871335,
+            0.002657551235330735,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3038",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08887907123931926,
+          "max_penetration_m": 0.0013437063763601371,
+          "peak_force_n": 40.29578427162286,
+          "placement_dwell_s": 2.4980000000002303
+        },
+        "physics_s": 16.428000000001635,
+        "seed": 3038,
+        "wall_s": 2.997131400014041
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 1.163301345704536,
+          "mass_multiplier": 1.1176357051177175,
+          "seed": 3039,
+          "translation_m": [
+            -0.003588884435905177,
+            0.009219892057197195,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3039",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08742284804471367,
+          "max_penetration_m": 0.0016209015218545538,
+          "peak_force_n": 31.616211238330237,
+          "placement_dwell_s": 2.4980000000002107
+        },
+        "physics_s": 16.450000000001623,
+        "seed": 3039,
+        "wall_s": 2.944783599989023
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 1.014176267741713,
+          "mass_multiplier": 1.0185254378180397,
+          "seed": 3040,
+          "translation_m": [
+            -0.0021378290900362987,
+            0.01811722940965115,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3040",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08757216038728854,
+          "max_penetration_m": 0.0016819195499907513,
+          "peak_force_n": 34.68523551841196,
+          "placement_dwell_s": 2.498000000000225
+        },
+        "physics_s": 16.43400000000163,
+        "seed": 3040,
+        "wall_s": 3.0443634999974165
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 1.0739053921966768,
+          "mass_multiplier": 0.8686569860890753,
+          "seed": 3041,
+          "translation_m": [
+            -0.0006317958185308864,
+            0.01807002924677732,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3041",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.0874658980968373,
+          "max_penetration_m": 0.0016601654026228074,
+          "peak_force_n": 31.888393419287038,
+          "placement_dwell_s": 2.4980000000002267
+        },
+        "physics_s": 16.432000000001633,
+        "seed": 3041,
+        "wall_s": 3.1305519999878015
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 0.8523111113184887,
+          "mass_multiplier": 0.9686169424687898,
+          "seed": 3042,
+          "translation_m": [
+            -0.015398401540320732,
+            -0.010842703821723565,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3042",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08973039200267813,
+          "max_penetration_m": 0.00159490385920658,
+          "peak_force_n": 44.236988383382,
+          "placement_dwell_s": 2.4980000000001663
+        },
+        "physics_s": 16.500000000001595,
+        "seed": 3042,
+        "wall_s": 3.034527000010712
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 1.1161468802673702,
+          "mass_multiplier": 1.0319799362722457,
+          "seed": 3043,
+          "translation_m": [
+            -0.002661005246782172,
+            0.008676708322952836,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3043",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08745244073038794,
+          "max_penetration_m": 0.0016025846624027897,
+          "peak_force_n": 31.805399234479026,
+          "placement_dwell_s": 2.4980000000002107
+        },
+        "physics_s": 16.450000000001623,
+        "seed": 3043,
+        "wall_s": 2.8573995000042487
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 0.8427629311964905,
+          "mass_multiplier": 0.829389014575648,
+          "seed": 3044,
+          "translation_m": [
+            -0.005822994343843098,
+            0.013036445522455416,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3044",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08931145384341449,
+          "max_penetration_m": 0.0016879546530739595,
+          "peak_force_n": 41.95024225949523,
+          "placement_dwell_s": 2.4980000000002107
+        },
+        "physics_s": 16.450000000001623,
+        "seed": 3044,
+        "wall_s": 2.941551800002344
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 0.8648668955441179,
+          "mass_multiplier": 0.9061344026642272,
+          "seed": 3045,
+          "translation_m": [
+            0.0034944588719614082,
+            -0.00232667206618057,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3045",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08936945424523696,
+          "max_penetration_m": 0.0022732320836655042,
+          "peak_force_n": 42.67962582633397,
+          "placement_dwell_s": 2.4980000000002107
+        },
+        "physics_s": 16.450000000001623,
+        "seed": 3045,
+        "wall_s": 2.9609445999958552
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 0.9062826905034541,
+          "mass_multiplier": 0.9819378002817052,
+          "seed": 3046,
+          "translation_m": [
+            0.0018438460126478824,
+            0.004787275054845202,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3046",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.08805341960033847,
+          "max_penetration_m": 0.0014992628609890423,
+          "peak_force_n": 40.04391501391281,
+          "placement_dwell_s": 2.498000000000216
+        },
+        "physics_s": 16.444000000001626,
+        "seed": 3046,
+        "wall_s": 2.9736459999985527
+      },
+      {
+        "bundle": {
+          "bundle": "any-robot/results/g12-acquisition/long-heavy-large/holdout/long-heavy-large-holdout-3047/physical",
+          "outcome": "runtime_failure",
+          "replay_agrees": true,
+          "sha256": "f676f4b9629027507c1c328ac3504cf8564ca33b4160e4bc851281ddb126609d",
+          "simulation_duration_s": 18.99400000000035,
+          "trace_sha256": "11ee07643ac525dd01eebbd5864b762b1beda4a746457b0b65e0ea91ba8df77f"
+        },
+        "certified": false,
+        "draw": {
+          "friction_multiplier": 0.8738163565896749,
+          "mass_multiplier": 1.1783393140003593,
+          "seed": 3047,
+          "translation_m": [
+            -0.008793179957921424,
+            -0.007837335794821905,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3047",
+        "failed_gate": "hold_not_sustained",
+        "frames": 226,
+        "measurements": {
+          "hold_s": 0.0,
+          "lift_height_m": 0.06507679955197443,
+          "max_penetration_m": 0.007731339202157343,
+          "peak_force_n": 112.99352895746308,
+          "placement_dwell_s": 0.0
+        },
+        "media": "holdout/long-heavy-large-holdout-3047/media",
+        "media_sha256": "b6028e73c0ddf28458410781e601f4dd1d6664d3badb099fae0a81b7c9462b92",
+        "physics_s": 18.74400000000035,
+        "seed": 3047,
+        "wall_s": 3.131589600001462
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 1.090368976095032,
+          "mass_multiplier": 0.9179470024044966,
+          "seed": 3048,
+          "translation_m": [
+            0.010412658569176472,
+            -0.002984931231907191,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3048",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.0875725306431605,
+          "max_penetration_m": 0.0012896494253771492,
+          "peak_force_n": 33.73511904943076,
+          "placement_dwell_s": 2.498000000000223
+        },
+        "physics_s": 16.43600000000163,
+        "seed": 3048,
+        "wall_s": 2.959053500002483
+      },
+      {
+        "certified": true,
+        "draw": {
+          "friction_multiplier": 1.0720009978215357,
+          "mass_multiplier": 1.099434918810024,
+          "seed": 3049,
+          "translation_m": [
+            -0.00294753426500444,
+            -0.015280092903080052,
+            0.0
+          ]
+        },
+        "episode_id": "long-heavy-large-holdout-3049",
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.087513803077302,
+          "max_penetration_m": 0.0013765286184222473,
+          "peak_force_n": 32.28598266076163,
+          "placement_dwell_s": 2.498000000000186
+        },
+        "physics_s": 16.478000000001607,
+        "seed": 3049,
+        "wall_s": 2.9914675000181887
+      }
+    ],
+    "rows_sha256": "15f53ca82d4151b6522256c45d45aa97b2bbf870eb28e3dc8d70ca90a517c5f2",
+    "set": {
+      "body": "zoo_long_arm",
+      "draws_sha256": "35cdb9e3958b84e803026e70709ed95bad521854da79123b8667f856ae152dbd",
+      "episodes": [
+        "zoo_long_arm-g12-holdout-long-heavy-large-3000",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3001",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3002",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3003",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3004",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3005",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3006",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3007",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3008",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3009",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3010",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3011",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3012",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3013",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3014",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3015",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3016",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3017",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3018",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3019",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3020",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3021",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3022",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3023",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3024",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3025",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3026",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3027",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3028",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3029",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3030",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3031",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3032",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3033",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3034",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3035",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3036",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3037",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3038",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3039",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3040",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3041",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3042",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3043",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3044",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3045",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3046",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3047",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3048",
+        "zoo_long_arm-g12-holdout-long-heavy-large-3049"
+      ],
+      "independent_of": [
+        "g10-transfer-v1:nominal-seeds-0-99",
+        "g06-transfer-v1:roster-seeds-0-99",
+        "g11-skill-store-v1:validation-seeds-1000-1011",
+        "g12-development-long-heavy-large"
+      ],
+      "set_id": "g12-holdout-long-heavy-large",
+      "threshold": 40
+    },
+    "successes": 47,
+    "taxonomy": {
+      "hold_not_sustained": 2,
+      "object_not_lifted": 1
+    },
+    "threshold": 40,
+    "trials": 50,
+    "wall_s": 148.63969420007197
+  },
+  "outcome": {
+    "attempts": 2,
+    "attempts_sha256": "4b1ac7a7bdd42e0c05f3db3dfa2bc32892a8c9a34e29882c5388988c1c43ec47",
+    "best_attempt": 1,
+    "best_parameters": {
+      "arm.natural_frequency_hz": 17.115242096698864,
+      "closure.actuator_ceiling_fraction": 0.40783960401004116,
+      "closure.closing_force_fraction": 0.12953010668500248,
+      "closure.closure_rate_per_s": 0.5637932052305796,
+      "closure.grip_safety_factor": 108.94763245072079,
+      "closure.hold_duration_s": 0.12839426644158916,
+      "duration_scale": 1.1177474063207324
+    },
+    "ceiling_hit": null,
+    "kind": "discovery",
+    "limiting_capability": "",
+    "parameters_changed": [
+      "closure.grip_safety_factor",
+      "closure.actuator_ceiling_fraction",
+      "closure.hold_duration_s",
+      "arm.natural_frequency_hz"
+    ],
+    "physics_minutes": 1.388666666666792,
+    "problem_id": "long-heavy-large",
+    "provenance": {
+      "algorithm": "one-plus-lambda-es",
+      "bounds_sha256": "25c33a08405dca28bdf451f505726eab345b7facb7c91717bb1959a39741b1db",
+      "contraction": 0.85,
+      "minimum_sigma": 0.02,
+      "note": "deterministic given the seed and the outcomes observed; the whole search replays from the attempts",
+      "offspring": 4,
+      "seed": 20261212,
+      "sigma0": 0.25
+    },
+    "schema_version": "1.0",
+    "status": "acquired",
+    "wall_minutes": 0.21312669166654813
+  },
+  "problem": {
+    "acceptance": {
+      "set_id": "g12-holdout-long-heavy-large",
+      "threshold": 40,
+      "trials": 50
+    },
+    "body": "zoo_long_arm",
+    "body_family": "single-arm long-reach jaw gripper",
+    "ceiling": {
+      "attempts": 200,
+      "worker_minutes": 30.0
+    },
+    "confirmation_seeds": [
+      4002,
+      4003
+    ],
+    "controller_family": "contact.transfer",
+    "development_seeds": [
+      4000,
+      4001
+    ],
+    "effect": {
+      "arguments": {
+        "destination": "platform",
+        "object": "cube"
+      },
+      "skill_id": "transfer_object"
+    },
+    "hypothesis": "instantiation",
+    "notes": "posed as a control: the defaults are expected to pass, and the outcome must then say instantiation, not discovery",
+    "parameters": [
+      {
+        "default": 80.0,
+        "description": "multiplier on the statically required grip force",
+        "high": 400.0,
+        "low": 10.0,
+        "name": "closure.grip_safety_factor",
+        "scale": "log",
+        "units": "ratio"
+      },
+      {
+        "default": 0.12,
+        "description": "of the weakest closure actuator's limit, to move the members through the approach",
+        "high": 0.4,
+        "low": 0.03,
+        "name": "closure.closing_force_fraction",
+        "scale": "linear",
+        "units": "fraction"
+      },
+      {
+        "default": 0.5,
+        "description": "never more than this fraction of what the joint can produce",
+        "high": 0.9,
+        "low": 0.2,
+        "name": "closure.actuator_ceiling_fraction",
+        "scale": "linear",
+        "units": "fraction"
+      },
+      {
+        "default": 0.55,
+        "description": "fraction of the joint's span advanced per second while closing",
+        "high": 1.0,
+        "low": 0.1,
+        "name": "closure.closure_rate_per_s",
+        "scale": "linear",
+        "units": "span/s"
+      },
+      {
+        "default": 0.15,
+        "description": "how long opposition must be held before the grip is called established",
+        "high": 0.5,
+        "low": 0.1,
+        "name": "closure.hold_duration_s",
+        "scale": "linear",
+        "units": "s"
+      },
+      {
+        "default": 14.0,
+        "description": "the computed-torque tracking bandwidth",
+        "high": 25.0,
+        "low": 5.0,
+        "name": "arm.natural_frequency_hz",
+        "scale": "linear",
+        "units": "Hz"
+      },
+      {
+        "default": 1.0,
+        "description": "how much slower than the declared joint speeds the moving phases run",
+        "high": 4.0,
+        "low": 1.0,
+        "name": "duration_scale",
+        "scale": "linear",
+        "units": "ratio"
+      }
+    ],
+    "problem_id": "long-heavy-large",
+    "schema_version": "1.0",
+    "world_change": "the cube grown to 35 mm a side and made half again heavier than its volume would make it (about 20.6 g against 8.6 g)"
+  },
+  "provenance": {
+    "commit": "eeece832d56e757ccf316dfef66609499f99c8dc",
+    "generation_calls": 0,
+    "manual_trajectory_edits": 0,
+    "mujoco": "3.11.0",
+    "numpy": "2.5.1",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.7 (tags/v3.12.7:0b05ead, Oct  1 2024, 03:06:41) [MSC v.1941 64 bit (AMD64)]",
+    "registration_sha256": "6e72ee93825d1cf3f32cc0ad425b224f6189376bdda74d2d86397c519a8d6567",
+    "started_at_utc": "2026-09-13T19:32:45.220254+00:00",
+    "working_tree_dirty": true
+  },
+  "reuse": {
+    "bundle": {
+      "bundle": "any-robot/results/g12-acquisition/long-heavy-large/reuse/physical",
+      "executed": true,
+      "outcome": "success",
+      "replay_agrees": true,
+      "sha256": "274a7b1d77eaff3a9974b126804357812fb553a88806d061f9df7db681bed681",
+      "simulation_duration_s": 17.268000000001308,
+      "trace_sha256": "2500be7d7c4fbd942ed6eeea8c6c342eba13953a5f0111d1fabf401e1e64ca5f"
+    },
+    "certificate_id": "e7329b941d20863fd34faba367b17f7b",
+    "episode": {
+      "attempts": {
+        "acquire_until_held": [
+          1
+        ],
+        "leaf_runs": {},
+        "place_until_placed": 1
+      },
+      "draw": null,
+      "effector": "palm",
+      "episode_id": "long-heavy-large-reuse",
+      "false_completion": false,
+      "interrupt_reason": "",
+      "interrupted": false,
+      "oracle": {
+        "dwell_s": 1.99999999999954,
+        "inside": true,
+        "placed": true,
+        "released": true,
+        "samples": 1001,
+        "still": true
+      },
+      "physics_s": 17.268000000001308,
+      "root_reason": "",
+      "skill_success": true,
+      "subskill_verdicts": {
+        "acquire_until_held": "success",
+        "observe_object": "success"
+      },
+      "verdict": "success",
+      "wall_seconds": 2.596514800010482,
+      "zoo_id": "zoo_long_arm"
+    },
+    "executed": true,
+    "frames": 209,
+    "media": "reuse/media",
+    "media_sha256": "cc834c259f1c01b36d2dc1ae6ff336c6bd795e40f81d929d94eb15764ac3a587",
+    "retrieval": {
+      "chosen": "e7329b941d20863fd34faba367b17f7b",
+      "matches": [
+        {
+          "certificate_id": "e7329b941d20863fd34faba367b17f7b",
+          "skill_id": "transfer_object",
+          "status": "promoted",
+          "verdict": {
+            "differences": [],
+            "similarity": 1.0,
+            "valid": true
+          },
+          "version": 1
+        },
+        {
+          "certificate_id": "ed430c59cb5ff6ef3b85609816666f91",
+          "skill_id": "transfer_object",
+          "status": "invalidated",
+          "verdict": {
+            "differences": [
+              {
+                "certified": "computed-torque 14 Hz zeta 1.2",
+                "dimension": "controller",
+                "kind": "facet",
+                "quantity": null,
+                "queried": "computed-torque 17.1152 Hz zeta 1.2"
+              },
+              {
+                "certified": "cube 30 mm on 4 fixtures",
+                "dimension": "geometry",
+                "kind": "facet",
+                "quantity": null,
+                "queried": "cube 35 mm on 4 fixtures"
+              },
+              {
+                "certified": "[0.004, 0.016] kg",
+                "dimension": null,
+                "kind": "range",
+                "quantity": "object_mass_kg",
+                "queried": "0.02058"
+              }
+            ],
+            "similarity": 0.6666666666666666,
+            "valid": false
+          },
+          "version": 1
+        },
+        {
+          "certificate_id": "cb0e66bfec1944cdbd92355615a06518",
+          "skill_id": "transfer_object",
+          "status": "promoted",
+          "verdict": {
+            "differences": [
+              {
+                "certified": "zoo_jaw_arm",
+                "dimension": "body",
+                "kind": "facet",
+                "quantity": null,
+                "queried": "zoo_long_arm"
+              },
+              {
+                "certified": "computed-torque 14 Hz zeta 1.2",
+                "dimension": "controller",
+                "kind": "facet",
+                "quantity": null,
+                "queried": "computed-torque 17.1152 Hz zeta 1.2"
+              },
+              {
+                "certified": "front_overhead_contact",
+                "dimension": "sensors",
+                "kind": "facet",
+                "quantity": null,
+                "queried": "front_overhead_contact"
+              },
+              {
+                "certified": "[0.004, 0.016] kg",
+                "dimension": null,
+                "kind": "range",
+                "quantity": "object_mass_kg",
+                "queried": "0.02058"
+              }
+            ],
+            "similarity": 0.5,
+            "valid": false
+          },
+          "version": 2
+        },
+        {
+          "certificate_id": "c28c350a044e250984e2251df915db04",
+          "skill_id": "transfer_object",
+          "status": "candidate",
+          "verdict": {
+            "differences": [
+              {
+                "certified": "zoo_dual_arm",
+                "dimension": "body",
+                "kind": "facet",
+                "quantity": null,
+                "queried": "zoo_long_arm"
+              },
+              {
+                "certified": "computed-torque 14 Hz zeta 1.2",
+                "dimension": "controller",
+                "kind": "facet",
+                "quantity": null,
+                "queried": "computed-torque 17.1152 Hz zeta 1.2"
+              },
+              {
+                "certified": "front_overhead_contact",
+                "dimension": "sensors",
+                "kind": "facet",
+                "quantity": null,
+                "queried": "front_overhead_contact"
+              },
+              {
+                "certified": "cube 30 mm on 4 fixtures",
+                "dimension": "geometry",
+                "kind": "facet",
+                "quantity": null,
+                "queried": "cube 35 mm on 4 fixtures"
+              },
+              {
+                "certified": "[0.004, 0.016] kg",
+                "dimension": null,
+                "kind": "range",
+                "quantity": "object_mass_kg",
+                "queried": "0.02058"
+              }
+            ],
+            "similarity": 0.3333333333333333,
+            "valid": false
+          },
+          "version": 1
+        },
+        {
+          "certificate_id": "da718da89b5060d8b4ffb781bae6307b",
+          "skill_id": "transfer_object",
+          "status": "superseded",
+          "verdict": {
+            "differences": [
+              {
+                "certified": "zoo_jaw_arm",
+                "dimension": "body",
+                "kind": "facet",
+                "quantity": null,
+                "queried": "zoo_long_arm"
+              },
+              {
+                "certified": "computed-torque 14 Hz zeta 1.2",
+                "dimension": "controller",
+                "kind": "facet",
+                "quantity": null,
+                "queried": "computed-torque 17.1152 Hz zeta 1.2"
+              },
+              {
+                "certified": "front_overhead_contact",
+                "dimension": "sensors",
+                "kind": "facet",
+                "quantity": null,
+                "queried": "front_overhead_contact"
+              },
+              {
+                "certified": "cube 30 mm on 4 fixtures",
+                "dimension": "geometry",
+                "kind": "facet",
+                "quantity": null,
+                "queried": "cube 35 mm on 4 fixtures"
+              },
+              {
+                "certified": "[0.004, 0.016] kg",
+                "dimension": null,
+                "kind": "range",
+                "quantity": "object_mass_kg",
+                "queried": "0.02058"
+              }
+            ],
+            "similarity": 0.3333333333333333,
+            "valid": false
+          },
+          "version": 1
+        }
+      ],
+      "query": {
+        "facets": [
+          {
+            "detail": {
+              "effector": "palm",
+              "manifest_sha256": "561592565cb3189f7b22a1b87871aec80d2aa378a550f13f503a86d7678c3940",
+              "rig_id": "zoo_long_arm"
+            },
+            "dimension": "body",
+            "name": "zoo_long_arm",
+            "sha256": "736e0067c458567b01f41eb181979c128e29e42790b1dbc15d8e67d101107fb3"
+          },
+          {
+            "detail": {
+              "arm": "rigby_general.gates.control.ComputedTorqueController",
+              "arm_config": {
+                "damping_ratio": 1.2,
+                "natural_frequency_hz": 17.115242096698864
+              },
+              "closure": "rigby_general.contact.closure.ClosureController",
+              "closure_config": {
+                "actuator_ceiling_fraction": 0.40783960401004116,
+                "closing_force_fraction": 0.12953010668500248,
+                "closure_rate_per_s": 0.5637932052305796,
+                "contact_detection_fraction": 0.05,
+                "grip_safety_factor": 108.94763245072079,
+                "hold_duration_s": 0.12839426644158916,
+                "hold_release_s": 0.1,
+                "max_penetration_m": 0.004,
+                "min_contact_force_n": 0.005,
+                "release_force_fraction": 0.25
+              },
+              "duration_scale": 1.1177474063207324
+            },
+            "dimension": "controller",
+            "name": "computed-torque 17.1152 Hz zeta 1.2",
+            "sha256": "e043766df5df8835582c368a5b74e1256efe5e19e5b7bac60d206cccbbbddfe3"
+          },
+          {
+            "detail": {
+              "configuration_id": "front_overhead_contact",
+              "configuration_sha256": "2c11cdb9f158f56c73217baf8bb45ab84089df6423392862e1361434309bacc0",
+              "policy_sha256": "6d2912e8df7d0a098f5d75f59ad37fc5bdf3c5bdd28f7ef940df7973cb4d1ed1"
+            },
+            "dimension": "sensors",
+            "name": "front_overhead_contact",
+            "sha256": "9c0246adc0509fd4089eabfeff5430bcddf1b067dbe26fd1493c8138b98db0fb"
+          },
+          {
+            "detail": {
+              "fixtures": [
+                {
+                  "name": "bench",
+                  "size_m": [
+                    0.05,
+                    0.05,
+                    0.015
+                  ],
+                  "top_m": 0.26
+                },
+                {
+                  "name": "platform",
+                  "size_m": [
+                    0.05,
+                    0.05,
+                    0.015
+                  ],
+                  "top_m": 0.26
+                },
+                {
+                  "name": "table",
+                  "size_m": [
+                    0.4,
+                    0.3,
+                    0.005
+                  ],
+                  "top_m": 0.23
+                },
+                {
+                  "name": "floor",
+                  "size_m": [
+                    1.0,
+                    1.0,
+                    0.01
+                  ],
+                  "top_m": -0.12
+                }
+              ],
+              "object_size_m": [
+                0.0175,
+                0.0175,
+                0.0175
+              ],
+              "robot_mount_m": [
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            "dimension": "geometry",
+            "name": "cube 35 mm on 4 fixtures",
+            "sha256": "9389eca3a867da8bc991f7bbddd4395f5886af7a4bcd740cc5a5adaa935fb6e2"
+          },
+          {
+            "detail": {
+              "basis": "the G06 draw family, 0.8 to 1.2 of a 1.4 coefficient, with margin",
+              "object_friction_range": [
+                1.0,
+                1.8
+              ]
+            },
+            "dimension": "friction",
+            "name": "friction 1-1.8",
+            "sha256": "ae518b4bf15ea523830ebd3dbed99d37f7169804377dbb93cba3da7baf074f67"
+          },
+          {
+            "detail": {
+              "bundle_layout": "rigby.evidence-bundle/G01",
+              "certificate": "1.0",
+              "episode_protocol": "rigby.transfer-object-episode/1",
+              "execution_record": "1.0"
+            },
+            "dimension": "evidence_schema",
+            "name": "rigby.transfer-object-episode/1",
+            "sha256": "a578d5f44b4440e9c003a9df0aa2100b84b99d87cda26cfdcf8d09a1eb175bc2"
+          }
+        ],
+        "ranges": [
+          {
+            "high": 1.8,
+            "low": 1.0,
+            "quantity": "object_friction",
+            "units": "coefficient"
+          },
+          {
+            "high": 0.025725,
+            "low": 0.004,
+            "quantity": "object_mass_kg",
+            "units": "kg"
+          },
+          {
+            "high": 0.8,
+            "low": 0.55,
+            "quantity": "object_distance_m",
+            "units": "m"
+          },
+          {
+            "high": 0.8,
+            "low": 0.55,
+            "quantity": "destination_distance_m",
+            "units": "m"
+          }
+        ],
+        "values": {
+          "destination_distance_m": 0.6670832032063168,
+          "object_distance_m": 0.6500769185258003,
+          "object_friction": 1.4,
+          "object_mass_kg": 0.02058
+        }
+      },
+      "reason": "promoted certificate e7329b941d20863fd34faba367b17f7b v1 matches every facet and range",
+      "skill_id": "transfer_object"
+    }
+  },
+  "schema": "g12.problem.v1",
+  "search": {
+    "best_attempt": 1,
+    "budget": {
+      "attempts": 2,
+      "ceiling": {
+        "attempts": 200,
+        "worker_minutes": 30.0
+      },
+      "ceiling_hit": null,
+      "physics_minutes": 1.388666666666792,
+      "wall_minutes": 0.21312669166654813,
+      "worker_minutes": 0.1898117716666699
+    },
+    "confirmed": true,
+    "provenance": {
+      "algorithm": "one-plus-lambda-es",
+      "bounds_sha256": "25c33a08405dca28bdf451f505726eab345b7facb7c91717bb1959a39741b1db",
+      "contraction": 0.85,
+      "minimum_sigma": 0.02,
+      "note": "deterministic given the seed and the outcomes observed; the whole search replays from the attempts",
+      "offspring": 4,
+      "seed": 20261212,
+      "sigma0": 0.25
+    },
+    "settled_parameters": {
+      "arm.natural_frequency_hz": 17.115242096698864,
+      "closure.actuator_ceiling_fraction": 0.40783960401004116,
+      "closure.closing_force_fraction": 0.12953010668500248,
+      "closure.closure_rate_per_s": 0.5637932052305796,
+      "closure.grip_safety_factor": 108.94763245072079,
+      "closure.hold_duration_s": 0.12839426644158916,
+      "duration_scale": 1.1177474063207324
+    }
+  },
+  "shown_attempts": {
+    "confirming": {
+      "attempt": 1,
+      "bundle": {
+        "bundle": "any-robot/results/g12-acquisition/long-heavy-large/attempts/confirming/physical",
+        "outcome": "success",
+        "replay_agrees": true,
+        "sha256": "626a4b12dd2d0bc792355ce69afe9f4f9ad8029d9b1d8f6b72ac10381a1443bd",
+        "simulation_duration_s": 16.696000000001625,
+        "trace_sha256": "bc5d4277e3eee9f4d263a04a37b4a2c651db78f66a460136d9bd8d092fe66584"
+      },
+      "episode": {
+        "certified": true,
+        "failed_gate": null,
+        "measurements": {
+          "hold_s": 2.0000000000000013,
+          "lift_height_m": 0.09076492539397873,
+          "max_penetration_m": 0.0018696741134624063,
+          "peak_force_n": 49.2689377337024,
+          "placement_dwell_s": 2.4980000000002143
+        },
+        "physics_s": 16.446000000001625,
+        "seed": 0,
+        "wall_s": 3.099762700003339
+      },
+      "frames": 199,
+      "media": "attempts/confirming/media",
+      "media_sha256": "41f4e71fcc3a7b79877dd3ddef69db78f63d3726001363c9bd4ac4363da9f985",
+      "parameters": {
+        "arm.natural_frequency_hz": 17.115242096698864,
+        "closure.actuator_ceiling_fraction": 0.40783960401004116,
+        "closure.closing_force_fraction": 0.12953010668500248,
+        "closure.closure_rate_per_s": 0.5637932052305796,
+        "closure.grip_safety_factor": 108.94763245072079,
+        "closure.hold_duration_s": 0.12839426644158916,
+        "duration_scale": 1.1177474063207324
+      }
+    },
+    "defaults": {
+      "attempt": 0,
+      "bundle": {
+        "bundle": "any-robot/results/g12-acquisition/long-heavy-large/attempts/defaults/physical",
+        "outcome": "runtime_failure",
+        "replay_agrees": true,
+        "sha256": "ede4dbed13cd7a804879f8a9b3ebd6e11bb09774d2d65d8b2f022ea239d1984c",
+        "simulation_duration_s": 17.77200000000103,
+        "trace_sha256": "af2aecd7d8ec9e1908b5f6c7340de623edc6b7889f6252ceca2148aa6a3271c5"
+      },
+      "episode": {
+        "certified": false,
+        "failed_gate": "object_not_lifted",
+        "measurements": {
+          "hold_s": 0.0,
+          "lift_height_m": 0.013744269765857742,
+          "max_penetration_m": 0.001852657013535314,
+          "peak_force_n": 40.10393702137568,
+          "placement_dwell_s": 0.0
+        },
+        "physics_s": 17.52200000000103,
+        "seed": 0,
+        "wall_s": 2.9534981999895535
+      },
+      "frames": 212,
+      "media": "attempts/defaults/media",
+      "media_sha256": "768123c1a7a0121724f5e2fea9bd2b50a05d88915bd3afca653c51158007cdae",
+      "parameters": {
+        "arm.natural_frequency_hz": 14.0,
+        "closure.actuator_ceiling_fraction": 0.5,
+        "closure.closing_force_fraction": 0.12,
+        "closure.closure_rate_per_s": 0.55,
+        "closure.grip_safety_factor": 80.0,
+        "closure.hold_duration_s": 0.15,
+        "duration_scale": 1.0
+      }
+    }
+  },
+  "store": {
+    "certificate_id": "e7329b941d20863fd34faba367b17f7b",
+    "claimed_ranges": [
+      {
+        "high": 1.8,
+        "low": 1.0,
+        "quantity": "object_friction",
+        "units": "coefficient"
+      },
+      {
+        "high": 0.025725,
+        "low": 0.004,
+        "quantity": "object_mass_kg",
+        "units": "kg"
+      },
+      {
+        "high": 0.8,
+        "low": 0.55,
+        "quantity": "object_distance_m",
+        "units": "m"
+      },
+      {
+        "high": 0.8,
+        "low": 0.55,
+        "quantity": "destination_distance_m",
+        "units": "m"
+      }
+    ],
+    "controller_facet": null,
+    "reason": "independent set g12-holdout-long-heavy-large passed 47/50 (threshold 40), no false completion",
+    "status": "promoted",
+    "store_version": 42
+  },
+  "world": {
+    "authored_for_aperture_m": null,
+    "authored_for_reach_m": null,
+    "description": "A 30 mm cube on a low bench to the left of and slightly behind the mount, and an empty platform of the same height beside it, both in absolute metres. Nothing about the world depends on which body enters it. The bench and the platform stand on a table whose top is three centimetres below theirs. The fixtures stand on a floor twelve centimetres below the mount.",
+    "environment_id": "g06_transfer_v1+table+floor+long-heavy-large",
+    "fixtures": [
+      {
+        "name": "bench",
+        "position_m": [
+          -0.15,
+          0.65,
+          0.245
+        ],
+        "rgba": [
+          0.35,
+          0.35,
+          0.4,
+          1.0
+        ],
+        "size_m": [
+          0.05,
+          0.05,
+          0.015
+        ]
+      },
+      {
+        "name": "platform",
+        "position_m": [
+          -0.01,
+          0.65,
+          0.245
+        ],
+        "rgba": [
+          0.3,
+          0.45,
+          0.75,
+          1.0
+        ],
+        "size_m": [
+          0.05,
+          0.05,
+          0.015
+        ]
+      },
+      {
+        "name": "table",
+        "position_m": [
+          -0.05,
+          0.65,
+          0.225
+        ],
+        "rgba": [
+          0.55,
+          0.5,
+          0.42,
+          1.0
+        ],
+        "size_m": [
+          0.4,
+          0.3,
+          0.005
+        ]
+      },
+      {
+        "name": "floor",
+        "position_m": [
+          0.0,
+          0.5,
+          -0.13
+        ],
+        "rgba": [
+          0.42,
+          0.42,
+          0.45,
+          1.0
+        ],
+        "size_m": [
+          1.0,
+          1.0,
+          0.01
+        ]
+      }
+    ],
+    "objects": [
+      {
+        "friction": 1.4,
+        "mass_kg": 0.02058,
+        "name": "cube",
+        "position_m": [
+          -0.15,
+          0.65,
+          0.2775
+        ],
+        "rgba": [
+          0.85,
+          0.45,
+          0.15,
+          1.0
+        ],
+        "size_m": [
+          0.0175,
+          0.0175,
+          0.0175
+        ]
+      }
+    ],
+    "robot_mount_m": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  }
+}
