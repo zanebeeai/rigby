@@ -1,0 +1,35 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-12-reach-out-as-far-as-you-can-and-then-come-back-c96f9d77",
+  "title": "G01 zoo_dual_arm: pre execution refusal",
+  "prompt": "reach out as far as you can and then come back",
+  "tier": "any-robot",
+  "embodiment": "zoo_dual_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-12T03:33:44.263410+00:00",
+  "source": {
+    "commit": "2770b0e5e4",
+    "branch": "codex/replay-evidence",
+    "dirty": false,
+    "how": "cd .. && uv run --package rigby-general python -m rigby_general.evidence suite --out any-robot/results/g01-reproduce --render"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "Pre-execution compilation refusal: joint_limit_violation on left_joint_4; no motion executed."
+  },
+  "notes": "Full actual-state episode; see docs/results/g01-report.md and g01-release/index.json. Physical manifest SHA-256: 9d0cb4b9b0ccf9ada067ef5fa519e2ae2ee060e84c97d13760d28cd9fdc74485. No object-manipulation, locomotion or robustness claim.",
+  "media": [
+    {
+      "path": "docs/results/g01-release/zoo_dual_arm/media/episode.mp4",
+      "bytes": 18688,
+      "sha256": "7f1bf2df6130a6ba0c5284651ebb359a64cd3b869ec892f69cbd0a0f545954b5",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G01",
+    "physical-replay"
+  ]
+}
