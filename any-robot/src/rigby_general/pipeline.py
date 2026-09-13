@@ -121,7 +121,8 @@ def _structural_overlaps(
     return tuple(sorted(set(found)))
 
 
-def ingest_robot(source_path: Path, *, robot_id: str | None = None) -> IngestedRobot:
+def ingest_robot(source_path: Path, *, robot_id: str | None = None,
+                 legacy_name_hints: bool = True) -> IngestedRobot:
     """Accept a URDF or MJCF and return everything measured about it."""
 
     identity = robot_id or source_path.parent.name
@@ -135,14 +136,14 @@ def ingest_robot(source_path: Path, *, robot_id: str | None = None) -> IngestedR
 
     loaded = load_model(source_path, robot_id=robot_id)
     try:
-        return _measure(loaded)
+        return _measure(loaded, legacy_name_hints=legacy_name_hints)
     finally:
         # Only now: the spec is recompiled during finalize, and it resolves mesh
         # paths against the staged directory.
         release_sandbox(loaded)
 
 
-def _measure(loaded) -> IngestedRobot:
+def _measure(loaded, *, legacy_name_hints: bool = True) -> IngestedRobot:
     report = check_integrity(loaded)
     report.raise_for_status(loaded.robot_id)
 
@@ -151,7 +152,7 @@ def _measure(loaded) -> IngestedRobot:
         if loaded.source_format == "urdf"
         else {}
     )
-    morphology = analyze(loaded, velocity_limits=velocity_limits)
+    morphology = analyze(loaded, velocity_limits=velocity_limits, legacy_name_hints=legacy_name_hints)
 
     if not morphology.is_supported:
         raise MorphologyError(

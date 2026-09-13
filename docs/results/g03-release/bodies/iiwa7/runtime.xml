@@ -1,0 +1,69 @@
+<mujoco model="structural_body">
+  <compiler angle="radian"/>
+
+  <asset>
+    <mesh name="link_0" file="meshes/link_0.stl"/>
+    <mesh name="link_1" file="meshes/link_1.stl"/>
+    <mesh name="link_2" file="meshes/link_2.stl"/>
+    <mesh name="link_3" file="meshes/link_3.stl"/>
+    <mesh name="link_4" file="meshes/link_4.stl"/>
+    <mesh name="link_5" file="meshes/link_5.stl"/>
+    <mesh name="link_6" file="meshes/link_6.stl"/>
+    <mesh name="link_7" file="meshes/link_7.stl"/>
+  </asset>
+
+  <worldbody>
+    <body name="body_0000">
+      <inertial pos="-0.1 0 0.07" quat="0.707107 0 0 0.707107" mass="0" diaginertia="0.06 0.05 0.03"/>
+      <geom type="mesh" mesh="link_0"/>
+      <site name="robot_base" pos="0 0 0"/>
+      <body name="body_0001" pos="0 0 0.1575">
+        <inertial pos="0 -0.03 0.12" mass="4" diaginertia="0.1 0.09 0.02"/>
+        <joint name="axis_0000" pos="0 0 0" axis="0 0 1" range="-2.96706 2.96706" actuatorfrcrange="-300 300" damping="0.5"/>
+        <geom type="mesh" mesh="link_1"/>
+        <body name="body_0002" pos="0 0 0.2025" quat="0 0 0.707107 0.707107">
+          <inertial pos="0.0003 0.059 0.042" quat="0.707107 0.707107 0 0" mass="4" diaginertia="0.05 0.044 0.018"/>
+          <joint name="axis_0001" pos="0 0 0" axis="0 0 1" range="-2.0944 2.0944" actuatorfrcrange="-300 300" damping="0.5"/>
+          <geom type="mesh" mesh="link_2"/>
+          <body name="body_0003" pos="0 0.2045 0" quat="0 0 0.707107 0.707107">
+            <inertial pos="0 0.03 0.13" mass="3" diaginertia="0.08 0.075 0.01"/>
+            <joint name="axis_0002" pos="0 0 0" axis="0 0 1" range="-2.96706 2.96706" actuatorfrcrange="-300 300" damping="0.5"/>
+            <geom type="mesh" mesh="link_3"/>
+            <body name="body_0004" pos="0 0 0.2155" quat="0.707107 0.707107 0 0">
+              <inertial pos="0 0.067 0.034" quat="0.707107 0.707107 0 0" mass="2.7" diaginertia="0.03 0.029 0.01"/>
+              <joint name="axis_0003" pos="0 0 0" axis="0 0 1" range="-2.0944 2.0944" actuatorfrcrange="-300 300" damping="0.5"/>
+              <geom type="mesh" mesh="link_4"/>
+              <body name="body_0005" pos="0 0.1845 0" quat="0 0 0.707107 0.707107">
+                <inertial pos="0.0001 0.021 0.076" mass="1.7" diaginertia="0.02 0.018 0.005"/>
+                <joint name="axis_0004" pos="0 0 0" axis="0 0 1" range="-2.96706 2.96706" actuatorfrcrange="-300 300" damping="0.5"/>
+                <geom type="mesh" mesh="link_5"/>
+                <body name="body_0006" pos="0 0 0.2155" quat="0.707107 0.707107 0 0">
+                  <inertial pos="0 0.0006 0.0004" quat="0.707107 0.707107 0 0" mass="1.8" diaginertia="0.005 0.0047 0.0036"/>
+                  <joint name="axis_0005" pos="0 0 0" axis="0 0 1" range="-2.0944 2.0944" actuatorfrcrange="-300 300" damping="0.5"/>
+                  <geom type="mesh" mesh="link_6"/>
+                  <site name="body_0006_tip" pos="7.90278e-06 0.0665226 -0.0123006"/>
+                  <site name="body_0006_wrist" pos="0 0 0"/>
+                  <body name="body_0007" pos="0 0.081 0" quat="0 0 0.707107 0.707107">
+                    <inertial pos="0 0 0.02" mass="0.3" diaginertia="0.001 0.001 0.001"/>
+                    <joint name="axis_0006" pos="0 0 0" axis="0 0 1" range="-3.05433 3.05433" actuatorfrcrange="-300 300" damping="0.5"/>
+                    <geom type="mesh" mesh="link_7"/>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <general name="axis_0000_motor" joint="axis_0000" ctrllimited="true" ctrlrange="-300 300" forcelimited="true" forcerange="-300 300"/>
+    <general name="axis_0001_motor" joint="axis_0001" ctrllimited="true" ctrlrange="-300 300" forcelimited="true" forcerange="-300 300"/>
+    <general name="axis_0002_motor" joint="axis_0002" ctrllimited="true" ctrlrange="-300 300" forcelimited="true" forcerange="-300 300"/>
+    <general name="axis_0003_motor" joint="axis_0003" ctrllimited="true" ctrlrange="-300 300" forcelimited="true" forcerange="-300 300"/>
+    <general name="axis_0004_motor" joint="axis_0004" ctrllimited="true" ctrlrange="-300 300" forcelimited="true" forcerange="-300 300"/>
+    <general name="axis_0005_motor" joint="axis_0005" ctrllimited="true" ctrlrange="-300 300" forcelimited="true" forcerange="-300 300"/>
+    <general name="axis_0006_motor" joint="axis_0006" ctrllimited="true" ctrlrange="-300 300" forcelimited="true" forcerange="-300 300"/>
+  </actuator>
+</mujoco>

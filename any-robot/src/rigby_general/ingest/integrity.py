@@ -29,6 +29,7 @@ class IntegrityRule(StrEnum):
     EXTERNAL_PATH = "asset.path.external.v1"
     NATIVE_PLUGIN = "asset.plugin.native.v1"
     FINITE_POSITIVE_INERTIA = "asset.inertial.finite-positive.v1"
+    VALID_JOINT_LIMIT = "asset.joint.valid-limit.v1"
     CONVEX_DYNAMIC_COLLIDER = "asset.dynamic-collider.convex-only.v1"
     HAS_COLLIDER = "asset.collider.present.v1"
     FIXED_BASE = "asset.base.fixed.v1"
@@ -90,6 +91,7 @@ _RULE_FAILURE: dict[IntegrityRule, GeneralFailureCode] = {
     IntegrityRule.NATIVE_PLUGIN: GeneralFailureCode.UNSAFE_ASSET,
     IntegrityRule.CONVEX_DYNAMIC_COLLIDER: GeneralFailureCode.UNSAFE_ASSET,
     IntegrityRule.FINITE_POSITIVE_INERTIA: GeneralFailureCode.DEGENERATE_INERTIA,
+    IntegrityRule.VALID_JOINT_LIMIT: GeneralFailureCode.INVALID_JOINT_LIMIT,
     IntegrityRule.HAS_COLLIDER: GeneralFailureCode.UNREADABLE_MODEL,
     IntegrityRule.FIXED_BASE: GeneralFailureCode.UNSUPPORTED_MORPHOLOGY,
     IntegrityRule.REST_POSE_PENETRATION: GeneralFailureCode.UNSAFE_ASSET,
@@ -198,6 +200,37 @@ def _urdf_inertia_violations(root: ET.Element) -> list[IntegrityViolation]:
     return violations
 
 
+def _urdf_limit_violations(root: ET.Element) -> list[IntegrityViolation]:
+    """Catch ranges a compiler might otherwise interpret as unlimited.
+
+    Zero effort/velocity retains the existing explicit unknown-limit convention.
+    An inverted/degenerate bounded position interval has no such interpretation.
+    """
+    violations = []
+    for joint in root.findall("joint"):
+        kind, name = joint.get("type"), joint.get("name", "?")
+        if kind not in {"revolute", "prismatic", "continuous"}:
+            continue
+        limit = joint.find("limit")
+        try:
+            if kind != "continuous":
+                if limit is None:
+                    raise ValueError("bounded joint has no limit declaration")
+                low, high = float(limit.get("lower", "nan")), float(limit.get("upper", "nan"))
+                if not (math.isfinite(low) and math.isfinite(high) and low < high):
+                    raise ValueError("bounded joint needs a finite, increasing position range")
+            if limit is not None:
+                for attribute in ("velocity", "effort"):
+                    if attribute in limit.attrib:
+                        value = float(limit.get(attribute))
+                        if not math.isfinite(value) or value < 0:
+                            raise ValueError(f"{attribute} must be finite and nonnegative; zero denotes unknown")
+        except ValueError as error:
+            violations.append(IntegrityViolation(IntegrityRule.VALID_JOINT_LIMIT,
+                f"joint {name!r}: {error}", subject=name))
+    return violations
+
+
 def scan_source_text(source: bytes) -> tuple[IntegrityViolation, ...]:
     """Security scan of the raw upload, before any parser touches it."""
 
@@ -235,6 +268,7 @@ def scan_source_text(source: bytes) -> tuple[IntegrityViolation, ...]:
 
     if root.tag.rsplit("}", 1)[-1] == "robot":
         violations.extend(_urdf_inertia_violations(root))
+        violations.extend(_urdf_limit_violations(root))
     return tuple(violations)
 
 
