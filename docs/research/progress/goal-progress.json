@@ -4,7 +4,7 @@
   "goal_catalog": "docs/research/rigby-verifiable-goals.json",
   "goal_catalog_sha256": "3672ebf5fa10ff4216fa0213499d5988281f2ebbc611500e8526afe6e618b250",
   "started_at_utc": "2026-09-12T02:34:49.841258+00:00",
-  "current_goal": "G06",
+  "current_goal": "G07",
   "overall_status": "active",
   "authorization": {
     "commits_and_pull_requests": true,
@@ -565,39 +565,253 @@
     {
       "id": "G06",
       "title": "Make contact primitives physically useful across grippers",
-      "status": "planned",
+      "status": "complete",
       "criteria": [
         {
           "id": "G06.A01",
           "requirement": "For every one of the five gripper-bearing zoo bodies, attempt approach, opposition/closure, lift, sustained hold, transport and release. Every enabled body must pass the canonical normalized grasp. Record remaining bodies as failed or independently demonstrated mechanically unsupported, with concrete diagnostics.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "docs/results/g06-campaign/<body>/normalized/physical",
+            "docs/results/g06-campaign/<body>/fixed-canonical/physical",
+            "docs/results/g06-campaign/summary.json",
+            "docs/results/g06-validation.json",
+            "docs/results/g06-report.md"
+          ],
+          "note": "All five gripper-bearing bodies attempted through the whole family. Enabled set ['zoo_dual_arm', 'zoo_jaw_arm', 'zoo_long_arm']: each certifies its canonical normalized world. zoo_hand_arm certifies its normalized world and fails every fixed-world seed with the failure typed and measured (fingertip pinch lost at the top of the lift); zoo_compact_arm is infeasible on two named necessary conditions and refused before motion; zoo_tool_arm has no grasping effector."
         },
         {
           "id": "G06.A02",
           "requirement": "On a fixed fixture selected and frozen from the independent feasibility map, achieve at least 90/100 successful trials per enabled body. Completion requires at least three structural/effector configurations, including a bimanual or multifinger configuration, not three length variants of one gripper. An unsuccessful/refused body does not count toward this minimum.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "any-robot/assets/general/research-protocols/g06-transfer-v1/registration.json",
+            "docs/results/g06-campaign/<body>/trials.json",
+            "docs/results/g06-campaign-pilot-1/summary.json",
+            "docs/results/g06-validation.json"
+          ],
+          "note": "Fixed fixture frozen from the independent feasibility map before any scored trial; 100 registered seeds per feasible body, identical across bodies. zoo_compact_arm: 0/1; zoo_dual_arm: 99/100; zoo_hand_arm: 0/100; zoo_jaw_arm: 98/100; zoo_long_arm: 100/100. Enabled set of three structural configurations including the bimanual dual arm: ['zoo_dual_arm', 'zoo_jaw_arm', 'zoo_long_arm']. Failed and refused bodies do not count."
         },
         {
           "id": "G06.A03",
           "requirement": "Measure stable object support for at least 2 s, transport into the target region, and stable released placement for at least 2 s; freeze displacement, load and penetration tolerances before evaluation.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "any-robot/assets/general/research-protocols/g06-transfer-v1/goal.json",
+            "any-robot/assets/general/research-protocols/g06-transfer-v1/roster.json",
+            "docs/results/g06-campaign/<body>/trials.json (hold_s, placement_dwell_s, max_penetration_m per trial)"
+          ],
+          "note": "Hold of at least 2 s with the object raised, transport into the region, and a released, still dwell of at least 2 s measured by the independent evaluator on every physics step; displacement (20 mm), load (0.8 to 1.2 mass) and penetration (4 mm) tolerances frozen in goal.json and roster.json before evaluation."
         },
         {
           "id": "G06.A04",
           "requirement": "No hidden object state writes, welds, object actuators or arm/object collision exclusions may create a successful manipulation result. Invalid source-model collision hulls require documented model treatment.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "docs/results/g06-campaign/<body>/*/physical/world.json (collision_policy)",
+            "any-robot/tests/test_general_transfer.py (welded object refused before motion)",
+            "docs/results/g06-report.md (model treatment)"
+          ],
+          "note": "Every bundle records zero equality constraints, zero object actuators, zero contact exclusions with the object, collidable object geoms, zero object state writes; a violating world is refused before motion. The five bodies carry primitive collision geometry only, so no source-model hull needed treatment."
         }
       ],
       "demo_requirement": "D06: acquisition-to-release on all five attempted bodies, including failures; synchronized fixed-world comparison for the enabled set.",
-      "demo_status": "pending",
-      "assessment_complete": false,
-      "capability_supported": false,
-      "commits": [],
-      "pull_requests": []
+      "demo_status": "verified",
+      "assessment_complete": true,
+      "capability_supported": true,
+      "commits": [
+        "028c106",
+        "193a518",
+        "3835c53",
+        "3dc03dc",
+        "66f1db1",
+        "910324b",
+        "a78ef8f",
+        "c109f68",
+        "d046dbc",
+        "d313256",
+        "d609e55",
+        "f68ab68"
+      ],
+      "pull_requests": [
+        "https://github.com/zanebeeai/rigby/pull/34"
+      ],
+      "discovered_prerequisites": [
+        {
+          "finding": "The grasp probe stopped at the lift and ran on a mislabelled clock; nothing in the tree attempted hold, carry, lowering, release or a released dwell, and nothing independent of the controller judged placement.",
+          "evidence": "any-robot/src/rigby_general/contact/transfer.py, any-robot/src/rigby_general/contact/placement.py (feat/g06-contact-transfer)",
+          "required_action": "Done: one transfer primitive on native physics time with typed, measured gates per phase; an independent placement evaluator applying the G02 predicates that the controller never reads; the scene's collision policy recorded and any violation refused before motion."
+        },
+        {
+          "finding": "Facing spent in the position task's null space left the multifinger hand 116 to 121 degrees from vertical at the grasp point, its palm through the bench; fingers longer than the object is tall were driven through the support; a straight path from a straight-up rest pose folded the long arm through its base.",
+          "evidence": "docs/results/g06-report.md; docs/results/g06-d06 (facing and standoff before/after pairs)",
+          "required_action": "Done: facing carried inside the task for the first 120 iterations of every waypoint solve; grasp point raised by the fingers' reach past it; restart seeds and a fixture re-sited by the guarded witness."
+        },
+        {
+          "finding": "The first scored pass certified the jaw arm on 56 of 100 seeds and refused the long arm's normalized world: the hand reached the hover 35 to 65 degrees off vertical and turned to vertical during the descent, and a finger swinging through that arc knocked a cube displaced toward the platform off the bench.",
+          "evidence": "docs/results/g06-campaign-pilot-1; docs/results/g06-d06 (turn-seeded and turn-normalized pairs)",
+          "required_action": "Done: a turn phase at the hover with the grasp point held, solved progressively; the roster re-run whole at the repaired commit with the pilot retained."
+        }
+      ],
+      "demo_evidence": [
+        "docs/results/g06-d06/index.json",
+        "docs/results/g06-d06/five-body-fixed-world.mp4",
+        "docs/results/g06-d06/enabled-set-synchronized.mp4",
+        "docs/results/g06-d06/facing-before-after.mp4",
+        "docs/results/g06-d06/standoff-before-after.mp4",
+        "docs/results/g06-d06/turn-seeded-before-after.mp4",
+        "docs/results/g06-d06/turn-normalized-before-after.mp4",
+        "demos/registry (G06 and D06 entries)"
+      ],
+      "evidence_worktree": "C:/Users/hocke/GitHub/rigby-g06",
+      "work_basis": "Branch feat/g06-contact-transfer stacked on feat/g05-six-body-composition (PR 33); lands after it.",
+      "integration_status": "open_pr_ci_infrastructure_blocked",
+      "completed_at_utc": "2026-09-13T08:57:05.236049+00:00",
+      "supported_scope": "Whole-family object transfer (approach, turn, descend, close, lift, 2 s hold, carry, lower, release, retreat, 2 s released dwell) on one fixed fixture for three structural configurations including the bimanual dual arm, judged by an independent placement evaluator, with typed refusals for the infeasible body and typed, measured failures for the multifinger hand. No recovery, language, vision or unseen-topology claim.",
+      "local_validation": {
+        "enabled_set": [
+          "zoo_dual_arm",
+          "zoo_jaw_arm",
+          "zoo_long_arm"
+        ],
+        "bodies": {
+          "zoo_compact_arm": {
+            "canonical": false,
+            "class": "infeasible",
+            "count": 1,
+            "normalized": false,
+            "successes": 0,
+            "taxonomy": {
+              "unreachable_path": 1
+            }
+          },
+          "zoo_dual_arm": {
+            "canonical": true,
+            "class": "feasible",
+            "count": 100,
+            "normalized": true,
+            "successes": 99,
+            "taxonomy": {
+              "hold_not_sustained": 1
+            }
+          },
+          "zoo_hand_arm": {
+            "canonical": false,
+            "class": "feasible",
+            "count": 100,
+            "normalized": true,
+            "successes": 0,
+            "taxonomy": {
+              "hold_not_sustained": 94,
+              "object_not_lifted": 6
+            }
+          },
+          "zoo_jaw_arm": {
+            "canonical": true,
+            "class": "feasible",
+            "count": 100,
+            "normalized": true,
+            "successes": 98,
+            "taxonomy": {
+              "object_not_lifted": 2
+            }
+          },
+          "zoo_long_arm": {
+            "canonical": true,
+            "class": "feasible",
+            "count": 100,
+            "normalized": true,
+            "successes": 100,
+            "taxonomy": {}
+          },
+          "zoo_tool_arm": {
+            "class": "unsupported_by_structure"
+          }
+        },
+        "failure_taxonomy": {
+          "hold_not_sustained": 95,
+          "object_not_lifted": 8,
+          "unreachable_path": 1
+        },
+        "pilot_1": {
+          "zoo_compact_arm": {
+            "canonical": false,
+            "count": 1,
+            "normalized": false,
+            "successes": 0,
+            "taxonomy": {
+              "unreachable_path": 1
+            }
+          },
+          "zoo_dual_arm": {
+            "canonical": true,
+            "count": 100,
+            "normalized": true,
+            "successes": 99,
+            "taxonomy": {
+              "hold_not_sustained": 1
+            }
+          },
+          "zoo_hand_arm": {
+            "canonical": false,
+            "count": 100,
+            "normalized": false,
+            "successes": 0,
+            "taxonomy": {
+              "hold_not_sustained": 86,
+              "object_not_lifted": 14
+            }
+          },
+          "zoo_jaw_arm": {
+            "canonical": true,
+            "count": 100,
+            "normalized": true,
+            "successes": 56,
+            "taxonomy": {
+              "grasp_not_achieved": 42,
+              "object_not_lifted": 2
+            }
+          },
+          "zoo_long_arm": {
+            "canonical": true,
+            "count": 100,
+            "normalized": false,
+            "successes": 100,
+            "taxonomy": {}
+          }
+        },
+        "repairs": {
+          "facing": {
+            "after": "hold_not_sustained",
+            "before": "grasp_not_achieved",
+            "body": "zoo_hand_arm"
+          },
+          "standoff": {
+            "after": null,
+            "before": "hold_not_sustained",
+            "body": "zoo_jaw_arm"
+          },
+          "turn-normalized": {
+            "after": null,
+            "before": "grasp_not_achieved",
+            "body": "zoo_long_arm"
+          },
+          "turn-seeded": {
+            "after": null,
+            "before": "grasp_not_achieved",
+            "body": "zoo_jaw_arm"
+          }
+        },
+        "tests": {
+          "anyrobot_failed": 0,
+          "anyrobot_passed": 405,
+          "anyrobot_skipped": 5,
+          "core_failed": 0,
+          "core_passed": 263,
+          "core_skipped": 2
+        },
+        "generation_calls": 0
+      }
     },
     {
       "id": "G07",
@@ -1435,10 +1649,10 @@
   ],
   "milestones": [],
   "next_actions": [
-    "Begin G06 (contact primitives across the five gripper-bearing bodies) on the fixed fixture from the independent feasibility map; the now-active self-collision gate and grasp-scene contact exclusions (only proven-inseparable pairs) apply.",
-    "Restore GitHub Actions billing/allowance and rerun PRs 27-33; merge only after required checks are green, bottom of the stack first.",
+    "Begin G07 in pursuit order on top of the certified transfer primitive; the multifinger hand's fixed-world failure (fingertip pinch lost at the top of the lift) is the first natural failure to collect for G13.",
+    "Restore GitHub Actions billing/allowance and rerun PRs 27-34; merge only after required checks are green, bottom of the stack first.",
     "G04 independent language validation remains pending on U3_independent_review.",
     "Preserve all 30 goals and their frozen criteria."
   ],
-  "updated_at_utc": "2026-09-13T04:36:01.789457+00:00"
+  "updated_at_utc": "2026-09-13T08:57:05.236049+00:00"
 }
