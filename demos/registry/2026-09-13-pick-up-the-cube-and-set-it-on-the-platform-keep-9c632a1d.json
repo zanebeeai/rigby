@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-keep-9c632a1d",
+  "title": "G10: zoo_long_arm-displaced-007 (displaced, unknown)",
+  "prompt": "pick up the cube and set it on the platform; keep going until you can verify it is placed",
+  "tier": "any-robot",
+  "embodiment": "zoo_long_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T16:40:19Z",
+  "source": {
+    "commit": "e50ecb26d4",
+    "branch": "feat/g10-transfer-skill",
+    "dirty": true,
+    "how": "python any-robot/scripts/g10_transfer_campaign.py --out docs/results/g10-campaign --local any-robot/results/g10-campaign"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "UNKNOWN (child_unknown:0.0): the skill did not verify a placement; 1 pass(es), acquisitions [2]; physics 15.2 s."
+  },
+  "notes": "See docs/results/g10-report.md. One episode of the closed-loop transfer_object skill on physics: acquire until a hold is verified from the declared sensors, transport, release, verify the placement from the sensors, within three attempts per subgoal and a 120 s cap; one continuous physics record rendered at real-time playback with the simulation clock and the skill's verdict in the banner; frames.json beside the MP4 maps every frame to its recorded sample. A disturbed episode carries the protocol's push, pull or occluder as recorded user input. Class displaced, seed 7.",
+  "media": [
+    {
+      "path": "docs/results/g10-campaign/zoo_long_arm/displaced/seed-007/media/episode.mp4",
+      "bytes": 116593,
+      "sha256": "90217d8dbc748eca51f663050b36b8591d401cf1e731c695dd9b6ff6d994bea9",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g10-campaign/zoo_long_arm/displaced/seed-007/media/preview.gif",
+      "bytes": 906805,
+      "sha256": "f3233026270ae8991a91b5aa9692f212e2aec897c6acfb295db0f9099d7a13b5",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G10",
+    "transfer_object",
+    "displaced",
+    "zoo_long_arm",
+    "failure"
+  ]
+}

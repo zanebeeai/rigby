@@ -71,8 +71,13 @@ def tile(ffmpeg: str, ffprobe: str, clips: list[Path], destination: Path) -> dic
         inputs += ["-i", str(clip)]
         filters.append(f"[{index}:v]tpad=stop_mode=clone:stop_duration={max(0.0, longest - float(stream['duration'])):.3f}[v{index}]")
     filters.append("".join(f"[v{i}]" for i in range(len(clips))) + f"xstack=inputs={len(clips)}:layout=0_0|w0_0|w0+w1_0[out]")
-    subprocess.check_call([ffmpeg, "-v", "error", "-nostdin", "-y", *inputs, "-filter_complex", ";".join(filters), "-map", "[out]", "-r", str(FPS), "-c:v", "libx264",
-                           "-preset", "fast", "-crf", "24", "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(destination)], timeout=1200)
+    command = [ffmpeg, "-v", "error", "-nostdin", "-y", *inputs, "-filter_complex", ";".join(filters), "-map", "[out]", "-r", str(FPS), "-c:v", "libx264",
+               "-preset", "fast", "-crf", "24", "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(destination)]
+    for attempt in range(3):
+        if subprocess.run(command, timeout=1200).returncode == 0:
+            break
+    else:
+        raise RuntimeError("ffmpeg could not tile the clips")
     result = probe(ffprobe, destination)
     return {"video": destination.name, "frames": int(result["nb_read_frames"]), "duration_s": float(result["duration"]), "inputs": [c.as_posix() for c in clips]}
 
@@ -94,6 +99,31 @@ def gif_summary(ffmpeg: str, video: Path, destination: Path, title: str, real_du
             images.append(canvas)
         images[0].save(destination, save_all=True, append_images=images[1:], duration=100, loop=0, optimize=True)
     return {"gif": destination.name, "frames": len(images), "approximate_speed": round(speed, 2), "summary_of": video.name}
+
+
+def encode_frames(ffmpeg: str, video: Path, frames: list[Image.Image], width: int, height: int, *, attempts: int = 3) -> None:
+    """Encode RGB frames through a pipe; the encoder is restarted on a failed attempt (a process crash mid-pipe, seen under load)."""
+
+    last = None
+    for attempt in range(attempts):
+        process = subprocess.Popen([ffmpeg, "-v", "error", "-nostdin", "-y", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{width}x{height}", "-r", str(FPS), "-i", "pipe:0",
+                                    "-an", "-c:v", "libx264", "-preset", "fast", "-crf", "24", "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(video)], stdin=subprocess.PIPE, stderr=subprocess.PIPE)
+        try:
+            for image in frames:
+                process.stdin.write(image.tobytes())
+            process.stdin.close()
+            code = process.wait(timeout=600)
+            if code == 0:
+                return
+            last = f"exit {code}: {process.stderr.read().decode(errors='replace')[-500:]}"
+        except (BrokenPipeError, OSError) as error:
+            try:
+                process.kill()
+                process.wait(timeout=30)
+                last = f"{error!r}: {process.stderr.read().decode(errors='replace')[-500:]}"
+            except Exception:
+                last = repr(error)
+    raise RuntimeError(f"ffmpeg failed after {attempts} attempts: {last}")
 
 
 def timeline(outcome: dict, execution: dict) -> list[dict]:
@@ -196,16 +226,11 @@ def overlay(case: dict, physical: Path, media: Path, destination: Path, ffmpeg: 
         annotated.append(annotate(frame, preview=None, **args))
         if index in preview_indices:
             previews.append(annotate(frame, preview=f"GIF SUMMARY | approximately {speed:.1f}x speed | full video: episode.mp4", **args))
+    destination.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix=".d10-", dir=destination.parent) as temporary:
         staging = Path(temporary)
         video = staging / "episode.mp4"
-        process = subprocess.Popen([ffmpeg, "-v", "error", "-nostdin", "-y", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{width}x{height + STRIP}", "-r", str(FPS), "-i", "pipe:0",
-                                    "-an", "-c:v", "libx264", "-preset", "fast", "-crf", "24", "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(video)], stdin=subprocess.PIPE)
-        for image in annotated:
-            process.stdin.write(image.tobytes())
-        process.stdin.close()
-        if process.wait(timeout=600) != 0:
-            raise RuntimeError("ffmpeg failed")
+        encode_frames(ffmpeg, video, annotated, width, height + STRIP)
         encoded = probe(ffprobe, video)
         if int(encoded["nb_read_frames"]) != len(annotated) or abs(float(encoded["duration"]) - len(annotated) / FPS) > 0.01:
             raise RuntimeError("the annotated video lost frames or changed its playback duration")

@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-keep-1fc4a28c",
+  "title": "D10: slip recovery, zoo_jaw_arm seed 1",
+  "prompt": "pick up the cube and set it on the platform; keep going until you can verify it is placed",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T16:40:29Z",
+  "source": {
+    "commit": "e50ecb26d4",
+    "branch": "feat/g10-transfer-skill",
+    "dirty": true,
+    "how": "python any-robot/scripts/g10_transfer_campaign.py --out docs/results/g10-campaign --local any-robot/results/g10-campaign"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "RECOVERED: slip applied by the protocol, the skill re-observed and finished; verdict success at 23.1 s."
+  },
+  "notes": "See docs/results/g10-report.md. One episode of the closed-loop transfer_object skill on physics: acquire until a hold is verified from the declared sensors, transport, release, verify the placement from the sensors, within three attempts per subgoal and a 120 s cap; one continuous physics record rendered at real-time playback with the simulation clock and the skill's verdict in the banner; frames.json beside the MP4 maps every frame to its recorded sample. A disturbed episode carries the protocol's push, pull or occluder as recorded user input. The strip on every frame shows the leaf in progress with its attempt count, the monitor's last verdicts with the sensors and their ages, the disturbance as it acts, and the oracle labels the skill never reads.",
+  "media": [
+    {
+      "path": "docs/results/g10-d10/slip-zoo_jaw_arm.mp4",
+      "bytes": 309851,
+      "sha256": "156a0066e4de220279fb35c1fbe65c374a7df9623fbe5f0baab64926fdc24d07",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g10-d10/slip-zoo_jaw_arm-preview.gif",
+      "bytes": 3636601,
+      "sha256": "1876a07106ac2d9437f7893e28290937ae3901b901ed082ee6b6cf2edf62a65c",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G10",
+    "D10",
+    "slip",
+    "zoo_jaw_arm",
+    "recovery"
+  ]
+}

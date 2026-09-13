@@ -1,0 +1,306 @@
+{
+  "episodes": 480,
+  "false_completions": 0,
+  "finished_at_utc": "2026-09-13T16:32:04.292495+00:00",
+  "goal": "G10",
+  "per_body": {
+    "zoo_dual_arm": {
+      "displaced": {
+        "episodes": 20,
+        "false_completions": 0,
+        "max_attempts": {
+          "acquire_until_held": 3,
+          "place_until_placed": 3
+        },
+        "physics_s": {
+          "max": 33.36999999999482,
+          "mean": 21.48839999999865
+        },
+        "reasons": {
+          "child_failed:0.0": 1,
+          "child_unknown:0.0": 4
+        },
+        "successes": 15,
+        "verdicts": {
+          "failure": 1,
+          "interrupted": 0,
+          "success": 15,
+          "unknown": 4
+        },
+        "within_cap": 20
+      },
+      "nominal": {
+        "episodes": 100,
+        "false_completions": 0,
+        "max_attempts": {
+          "acquire_until_held": 3,
+          "place_until_placed": 3
+        },
+        "physics_s": {
+          "max": 21.551999999998934,
+          "mean": 14.9799000000015
+        },
+        "reasons": {
+          "child_failed:0.0": 2,
+          "child_unknown:0.0": 4
+        },
+        "successes": 94,
+        "verdicts": {
+          "failure": 2,
+          "interrupted": 0,
+          "success": 94,
+          "unknown": 4
+        },
+        "within_cap": 100
+      },
+      "occlusion": {
+        "episodes": 20,
+        "false_completions": 0,
+        "max_attempts": {
+          "acquire_until_held": 2,
+          "place_until_placed": 1
+        },
+        "physics_s": {
+          "max": 24.549999999997272,
+          "mean": 17.698200000000927
+        },
+        "reasons": {
+          "child_unknown:0.0": 2
+        },
+        "successes": 18,
+        "verdicts": {
+          "failure": 0,
+          "interrupted": 0,
+          "success": 18,
+          "unknown": 2
+        },
+        "within_cap": 20
+      },
+      "slip": {
+        "episodes": 20,
+        "false_completions": 0,
+        "max_attempts": {
+          "acquire_until_held": 3,
+          "place_until_placed": 3
+        },
+        "physics_s": {
+          "max": 51.180000000016584,
+          "mean": 23.089099999999767
+        },
+        "reasons": {
+          "child_failed:0.0": 2,
+          "child_unknown:0.0": 5
+        },
+        "successes": 13,
+        "verdicts": {
+          "failure": 2,
+          "interrupted": 0,
+          "success": 13,
+          "unknown": 5
+        },
+        "within_cap": 20
+      }
+    },
+    "zoo_jaw_arm": {
+      "displaced": {
+        "episodes": 20,
+        "false_completions": 0,
+        "max_attempts": {
+          "acquire_until_held": 3,
+          "place_until_placed": 3
+        },
+        "physics_s": {
+          "max": 36.69599999999888,
+          "mean": 23.770499999998048
+        },
+        "reasons": {
+          "child_failed:0.0": 4,
+          "child_unknown:0.0": 2
+        },
+        "successes": 14,
+        "verdicts": {
+          "failure": 4,
+          "interrupted": 0,
+          "success": 14,
+          "unknown": 2
+        },
+        "within_cap": 20
+      },
+      "nominal": {
+        "episodes": 100,
+        "false_completions": 0,
+        "max_attempts": {
+          "acquire_until_held": 1,
+          "place_until_placed": 2
+        },
+        "physics_s": {
+          "max": 28.37799999999515,
+          "mean": 15.700060000001802
+        },
+        "reasons": {},
+        "successes": 100,
+        "verdicts": {
+          "failure": 0,
+          "interrupted": 0,
+          "success": 100,
+          "unknown": 0
+        },
+        "within_cap": 100
+      },
+      "occlusion": {
+        "episodes": 20,
+        "false_completions": 0,
+        "max_attempts": {
+          "acquire_until_held": 1,
+          "place_until_placed": 1
+        },
+        "physics_s": {
+          "max": 18.644000000000545,
+          "mean": 18.531800000000608
+        },
+        "reasons": {},
+        "successes": 20,
+        "verdicts": {
+          "failure": 0,
+          "interrupted": 0,
+          "success": 20,
+          "unknown": 0
+        },
+        "within_cap": 20
+      },
+      "slip": {
+        "episodes": 20,
+        "false_completions": 0,
+        "max_attempts": {
+          "acquire_until_held": 3,
+          "place_until_placed": 3
+        },
+        "physics_s": {
+          "max": 35.975999999998,
+          "mean": 24.02929999999804
+        },
+        "reasons": {
+          "child_failed:0.0": 2,
+          "child_unknown:0.0": 2
+        },
+        "successes": 16,
+        "verdicts": {
+          "failure": 2,
+          "interrupted": 0,
+          "success": 16,
+          "unknown": 2
+        },
+        "within_cap": 20
+      }
+    },
+    "zoo_long_arm": {
+      "displaced": {
+        "episodes": 20,
+        "false_completions": 0,
+        "max_attempts": {
+          "acquire_until_held": 3,
+          "place_until_placed": 3
+        },
+        "physics_s": {
+          "max": 33.00999999999438,
+          "mean": 22.513799999998337
+        },
+        "reasons": {
+          "child_failed:0.0": 1,
+          "child_unknown:0.0": 5
+        },
+        "successes": 14,
+        "verdicts": {
+          "failure": 1,
+          "interrupted": 0,
+          "success": 14,
+          "unknown": 5
+        },
+        "within_cap": 20
+      },
+      "nominal": {
+        "episodes": 100,
+        "false_completions": 0,
+        "max_attempts": {
+          "acquire_until_held": 1,
+          "place_until_placed": 2
+        },
+        "physics_s": {
+          "max": 29.17599999999471,
+          "mean": 16.52636000000172
+        },
+        "reasons": {},
+        "successes": 100,
+        "verdicts": {
+          "failure": 0,
+          "interrupted": 0,
+          "success": 100,
+          "unknown": 0
+        },
+        "within_cap": 100
+      },
+      "occlusion": {
+        "episodes": 20,
+        "false_completions": 0,
+        "max_attempts": {
+          "acquire_until_held": 1,
+          "place_until_placed": 1
+        },
+        "physics_s": {
+          "max": 19.454000000000097,
+          "mean": 19.40980000000012
+        },
+        "reasons": {},
+        "successes": 20,
+        "verdicts": {
+          "failure": 0,
+          "interrupted": 0,
+          "success": 20,
+          "unknown": 0
+        },
+        "within_cap": 20
+      },
+      "slip": {
+        "episodes": 20,
+        "false_completions": 0,
+        "max_attempts": {
+          "acquire_until_held": 1,
+          "place_until_placed": 3
+        },
+        "physics_s": {
+          "max": 24.149999999997494,
+          "mean": 23.583199999997735
+        },
+        "reasons": {
+          "child_unknown:0.0": 2
+        },
+        "successes": 18,
+        "verdicts": {
+          "failure": 0,
+          "interrupted": 0,
+          "success": 18,
+          "unknown": 2
+        },
+        "within_cap": 20
+      }
+    }
+  },
+  "provenance": {
+    "commit": "e50ecb26d465ac1f8fb3c778dc82d79d4d18fa12",
+    "episode_cap_s": 120.0,
+    "generation_calls": 0,
+    "library_sha256": "8af1e9cda3a446e7c75f53c0074c92b01ae51fefabfa2fef0c4cb33ae74d9f47",
+    "limit": null,
+    "mujoco": "3.11.0",
+    "numpy": "2.5.1",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "policy_sha256": "6d2912e8df7d0a098f5d75f59ad37fc5bdf3c5bdd28f7ef940df7973cb4d1ed1",
+    "python": "3.12.7 (tags/v3.12.7:0b05ead, Oct  1 2024, 03:06:41) [MSC v.1941 64 bit (AMD64)]",
+    "registration_sha256": "383cca195e67e3a4ad6a70b60f1e274527de895c2254e4376582dfdc5121aadf",
+    "retry_budget": 3,
+    "scored": true,
+    "started_at_utc": "2026-09-13T15:37:33.179212+00:00",
+    "working_tree_dirty": true
+  },
+  "registration_sha256": "383cca195e67e3a4ad6a70b60f1e274527de895c2254e4376582dfdc5121aadf"
+}

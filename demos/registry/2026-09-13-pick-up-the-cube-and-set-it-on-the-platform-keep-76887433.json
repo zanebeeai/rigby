@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-keep-76887433",
+  "title": "G10: zoo_jaw_arm-displaced-005 (displaced, failure)",
+  "prompt": "pick up the cube and set it on the platform; keep going until you can verify it is placed",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T16:40:00Z",
+  "source": {
+    "commit": "e50ecb26d4",
+    "branch": "feat/g10-transfer-skill",
+    "dirty": true,
+    "how": "python any-robot/scripts/g10_transfer_campaign.py --out docs/results/g10-campaign --local any-robot/results/g10-campaign"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "FAILURE (child_failed:0.0): the skill did not verify a placement; 3 pass(es), acquisitions [3, 3, 3]; physics 25.7 s."
+  },
+  "notes": "See docs/results/g10-report.md. One episode of the closed-loop transfer_object skill on physics: acquire until a hold is verified from the declared sensors, transport, release, verify the placement from the sensors, within three attempts per subgoal and a 120 s cap; one continuous physics record rendered at real-time playback with the simulation clock and the skill's verdict in the banner; frames.json beside the MP4 maps every frame to its recorded sample. A disturbed episode carries the protocol's push, pull or occluder as recorded user input. Class displaced, seed 5.",
+  "media": [
+    {
+      "path": "docs/results/g10-campaign/zoo_jaw_arm/displaced/seed-005/media/episode.mp4",
+      "bytes": 161013,
+      "sha256": "a82ea075bcdfba7d7d386705cb3ed4a043e4a75f87783cc18b1cbbfd114ae07a",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g10-campaign/zoo_jaw_arm/displaced/seed-005/media/preview.gif",
+      "bytes": 573492,
+      "sha256": "945e491720b53b8bd30c917a11ae94797e100ce0ec3025f1bffb9e58b207c778",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G10",
+    "transfer_object",
+    "displaced",
+    "zoo_jaw_arm",
+    "failure"
+  ]
+}

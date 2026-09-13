@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-keep-ec11d88c",
+  "title": "G10: zoo_long_arm-occlusion-002 (occlusion, success)",
+  "prompt": "pick up the cube and set it on the platform; keep going until you can verify it is placed",
+  "tier": "any-robot",
+  "embodiment": "zoo_long_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T16:40:26Z",
+  "source": {
+    "commit": "e50ecb26d4",
+    "branch": "feat/g10-transfer-skill",
+    "dirty": true,
+    "how": "python any-robot/scripts/g10_transfer_campaign.py --out docs/results/g10-campaign --local any-robot/results/g10-campaign"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "RECOVERED (occlusion): placement verified from the sensors at 19.4 s; 1 pass(es), acquisitions [1]; the oracle agrees the object is placed."
+  },
+  "notes": "See docs/results/g10-report.md. One episode of the closed-loop transfer_object skill on physics: acquire until a hold is verified from the declared sensors, transport, release, verify the placement from the sensors, within three attempts per subgoal and a 120 s cap; one continuous physics record rendered at real-time playback with the simulation clock and the skill's verdict in the banner; frames.json beside the MP4 maps every frame to its recorded sample. A disturbed episode carries the protocol's push, pull or occluder as recorded user input. Class occlusion, seed 2.",
+  "media": [
+    {
+      "path": "docs/results/g10-campaign/zoo_long_arm/occlusion/seed-002/media/episode.mp4",
+      "bytes": 151269,
+      "sha256": "ee30a52fa6c86d6e319af37a4d44308f91c51c108a9b66772f10951dd118bf05",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g10-campaign/zoo_long_arm/occlusion/seed-002/media/preview.gif",
+      "bytes": 1217679,
+      "sha256": "c493c0e074c5d2d9d65924e66ff793a1e74bd26c0515e76bd4e1b3d914c9ed78",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G10",
+    "transfer_object",
+    "occlusion",
+    "zoo_long_arm",
+    "success"
+  ]
+}

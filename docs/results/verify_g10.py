@@ -107,7 +107,9 @@ def main() -> int:
         assert (row["attempts"]["place_until_placed"] or 0) <= 3 and all(a <= 3 for a in row["attempts"]["acquire_until_held"])
         assert row["recovered"] == (row["class"] != "nominal" and row["skill_success"])
         if row["class"] != "nominal":
-            assert row["disturbance"], "the disturbance was applied"
+            # A disturbance fires at a leaf; an episode that failed before
+            # reaching that leaf never received it and cannot have recovered.
+            assert row["disturbance"] or not row["skill_success"], "a recovered episode received its disturbance"
         if not row["skill_success"]:
             assert "bundle" in row, "every failure is sealed and rendered"
         false_completions += row["false_completion"]

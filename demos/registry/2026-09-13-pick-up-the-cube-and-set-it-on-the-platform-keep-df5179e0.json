@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-keep-df5179e0",
+  "title": "D10: occlusion recovery, zoo_long_arm seed 0",
+  "prompt": "pick up the cube and set it on the platform; keep going until you can verify it is placed",
+  "tier": "any-robot",
+  "embodiment": "zoo_long_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T16:40:31Z",
+  "source": {
+    "commit": "e50ecb26d4",
+    "branch": "feat/g10-transfer-skill",
+    "dirty": true,
+    "how": "python any-robot/scripts/g10_transfer_campaign.py --out docs/results/g10-campaign --local any-robot/results/g10-campaign"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "RECOVERED: occlusion applied by the protocol, the skill re-observed and finished; verdict success at 19.4 s."
+  },
+  "notes": "See docs/results/g10-report.md. One episode of the closed-loop transfer_object skill on physics: acquire until a hold is verified from the declared sensors, transport, release, verify the placement from the sensors, within three attempts per subgoal and a 120 s cap; one continuous physics record rendered at real-time playback with the simulation clock and the skill's verdict in the banner; frames.json beside the MP4 maps every frame to its recorded sample. A disturbed episode carries the protocol's push, pull or occluder as recorded user input. The strip on every frame shows the leaf in progress with its attempt count, the monitor's last verdicts with the sensors and their ages, the disturbance as it acts, and the oracle labels the skill never reads.",
+  "media": [
+    {
+      "path": "docs/results/g10-d10/occlusion-zoo_long_arm.mp4",
+      "bytes": 204272,
+      "sha256": "5f010662ff9be63c815802a15038170fc6d5e810c4e5ca70ee39fc42a72d522c",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g10-d10/occlusion-zoo_long_arm-preview.gif",
+      "bytes": 3460908,
+      "sha256": "587adbfadaf58babe01bb9df060e167c66dff37122d594147e2e855e63283cef",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G10",
+    "D10",
+    "occlusion",
+    "zoo_long_arm",
+    "recovery"
+  ]
+}

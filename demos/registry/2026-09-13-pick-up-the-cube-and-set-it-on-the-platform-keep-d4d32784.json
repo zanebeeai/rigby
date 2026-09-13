@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-keep-d4d32784",
+  "title": "G10: zoo_dual_arm-displaced-004 (displaced, success)",
+  "prompt": "pick up the cube and set it on the platform; keep going until you can verify it is placed",
+  "tier": "any-robot",
+  "embodiment": "zoo_dual_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T16:39:39Z",
+  "source": {
+    "commit": "e50ecb26d4",
+    "branch": "feat/g10-transfer-skill",
+    "dirty": true,
+    "how": "python any-robot/scripts/g10_transfer_campaign.py --out docs/results/g10-campaign --local any-robot/results/g10-campaign"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "RECOVERED (displaced): placement verified from the sensors at 23.1 s; 1 pass(es), acquisitions [2]; the oracle agrees the object is placed."
+  },
+  "notes": "See docs/results/g10-report.md. One episode of the closed-loop transfer_object skill on physics: acquire until a hold is verified from the declared sensors, transport, release, verify the placement from the sensors, within three attempts per subgoal and a 120 s cap; one continuous physics record rendered at real-time playback with the simulation clock and the skill's verdict in the banner; frames.json beside the MP4 maps every frame to its recorded sample. A disturbed episode carries the protocol's push, pull or occluder as recorded user input. Class displaced, seed 4.",
+  "media": [
+    {
+      "path": "docs/results/g10-campaign/zoo_dual_arm/displaced/seed-004/media/episode.mp4",
+      "bytes": 195922,
+      "sha256": "f43ff5c2a2dc4807a67602baa0b964faaddb7b08d13b325abcee53a0042529ee",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g10-campaign/zoo_dual_arm/displaced/seed-004/media/preview.gif",
+      "bytes": 850763,
+      "sha256": "a55a1a831d49dba98143d1d02c574213e3765ecd9f64e59f2b9d4fb93784d641",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G10",
+    "transfer_object",
+    "displaced",
+    "zoo_dual_arm",
+    "success"
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-keep-b57b7da2",
+  "title": "G10: zoo_dual_arm-occlusion-001 (occlusion, success)",
+  "prompt": "pick up the cube and set it on the platform; keep going until you can verify it is placed",
+  "tier": "any-robot",
+  "embodiment": "zoo_dual_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T16:39:51Z",
+  "source": {
+    "commit": "e50ecb26d4",
+    "branch": "feat/g10-transfer-skill",
+    "dirty": true,
+    "how": "python any-robot/scripts/g10_transfer_campaign.py --out docs/results/g10-campaign --local any-robot/results/g10-campaign"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "RECOVERED (occlusion): placement verified from the sensors at 24.5 s; 1 pass(es), acquisitions [2]; the oracle agrees the object is placed."
+  },
+  "notes": "See docs/results/g10-report.md. One episode of the closed-loop transfer_object skill on physics: acquire until a hold is verified from the declared sensors, transport, release, verify the placement from the sensors, within three attempts per subgoal and a 120 s cap; one continuous physics record rendered at real-time playback with the simulation clock and the skill's verdict in the banner; frames.json beside the MP4 maps every frame to its recorded sample. A disturbed episode carries the protocol's push, pull or occluder as recorded user input. Class occlusion, seed 1.",
+  "media": [
+    {
+      "path": "docs/results/g10-campaign/zoo_dual_arm/occlusion/seed-001/media/episode.mp4",
+      "bytes": 227284,
+      "sha256": "74ea9223a2a6c60cb30f24e3aaaceb3888fb065bdafa76d309e5fd326132243e",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g10-campaign/zoo_dual_arm/occlusion/seed-001/media/preview.gif",
+      "bytes": 910818,
+      "sha256": "4d4014fa5181cf70de65e724165e1d014408115443ccfab75ccb463551affde8",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G10",
+    "transfer_object",
+    "occlusion",
+    "zoo_dual_arm",
+    "success"
+  ]
+}

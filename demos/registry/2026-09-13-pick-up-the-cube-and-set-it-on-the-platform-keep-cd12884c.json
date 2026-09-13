@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-keep-cd12884c",
+  "title": "G10: zoo_dual_arm-slip-004 (slip, success)",
+  "prompt": "pick up the cube and set it on the platform; keep going until you can verify it is placed",
+  "tier": "any-robot",
+  "embodiment": "zoo_dual_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T16:39:45Z",
+  "source": {
+    "commit": "e50ecb26d4",
+    "branch": "feat/g10-transfer-skill",
+    "dirty": true,
+    "how": "python any-robot/scripts/g10_transfer_campaign.py --out docs/results/g10-campaign --local any-robot/results/g10-campaign"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "RECOVERED (slip): placement verified from the sensors at 23.3 s; 2 pass(es), acquisitions [1, 1]; the oracle agrees the object is placed."
+  },
+  "notes": "See docs/results/g10-report.md. One episode of the closed-loop transfer_object skill on physics: acquire until a hold is verified from the declared sensors, transport, release, verify the placement from the sensors, within three attempts per subgoal and a 120 s cap; one continuous physics record rendered at real-time playback with the simulation clock and the skill's verdict in the banner; frames.json beside the MP4 maps every frame to its recorded sample. A disturbed episode carries the protocol's push, pull or occluder as recorded user input. Class slip, seed 4.",
+  "media": [
+    {
+      "path": "docs/results/g10-campaign/zoo_dual_arm/slip/seed-004/media/episode.mp4",
+      "bytes": 221891,
+      "sha256": "ba413d386087e563e133abb786748d904f65c159f32d2ac72e84e23d0aed1455",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g10-campaign/zoo_dual_arm/slip/seed-004/media/preview.gif",
+      "bytes": 927613,
+      "sha256": "6a226392ce961a96a48cffc0f844cf3b8d9cd6881d00cb9506f0a57ad179090b",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G10",
+    "transfer_object",
+    "slip",
+    "zoo_dual_arm",
+    "success"
+  ]
+}
