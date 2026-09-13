@@ -193,13 +193,25 @@ If a check shows a billing refusal (jobs with no steps and no logs, an
 annotation about payments or spending limits), the fix is in the account's
 Billing settings, not in the code; verify locally and say so in the PR.
 
-**Known Windows-only differences** (present on `main` before and after the
-September merges, not regressions): `object-throw-far` and
-`knownbad-sequence-throw-then-catch` drift past the corpus tolerance because
-`win32-amd64` is not a blessed platform; `placing object` in
-`test_prompt_family_matrix` reports discontinuities; `test_core_hashing`'s
-subprocess uses a Unix `PATH`. `test_corpus_loads_offline` errors when the
-checkout path is long.
+**Genuinely Windows-only**: `test_core_hashing`'s subprocess uses a Unix
+`PATH`. `test_corpus_loads_offline` errors when the checkout path is long.
+
+**Not Windows-only, and one of them is a regression.** This paragraph used to
+list `object-throw-far`, `knownbad-sequence-throw-then-catch` and `placing
+object` in `test_prompt_family_matrix` as Windows-only and "not regressions".
+All three fail on macOS as well, and `placing object` fails because
+`object-place-gently` really did become discontinuous: PR 24 took it from 0 to
+**4 discontinuities**, with a **76.5°** single-frame step on `rightLowerArm`
+against a 5° median. `main` has been red on the corpus since 2026-09-11 —
+`uv run python -m evals.corpus verify` reports 1 matched, 46 moved. The
+measurement, the attribution, and why a re-bless on an arbitrary machine is the
+wrong fix are in
+[`humanoid/docs/evidence/corpus-red-2026-09-13.md`](humanoid/docs/evidence/corpus-red-2026-09-13.md).
+
+Until that is settled, do not use "`verify` is green" or "`pytest` is green" as
+a regression gate on this tree; neither is true before you start. Snapshot with
+`uv run python -m evals.probes.corpus_snapshot before.json`, make the change,
+snapshot `after.json`, and `--compare` the two.
 
 ## 7. The corpus, blessing, and behaviours behind flags
 
