@@ -38,7 +38,7 @@ from .grasp import TRAVERSE_MARGIN, _hand_facing, _scene_rest_qpos, effector_gra
 from .placement import PlacementEvaluator, PlacementGoal
 
 
-PHASES = ("approach", "descend", "close", "lift", "hold", "carry", "lower", "release", "retreat", "dwell")
+PHASES = ("approach", "turn", "descend", "close", "lift", "hold", "carry", "lower", "release", "retreat", "dwell")
 
 HOVER_HEIGHTS = 1.75
 """Clearance above an object's top face at which the approach hovers, in
@@ -52,7 +52,7 @@ the fingers end when the grasp point is placed. Six millimetres rather than
 two because a hand that arrives a few degrees off vertical -- the five-axis
 arm cannot always do better -- swings a fingertip lower on one side."""
 MIN_PHASE_S = {
-    "approach": 1.0, "descend": 0.8, "close": 0.6, "lift": 1.0, "hold": 2.0,
+    "approach": 1.0, "turn": 0.8, "descend": 0.8, "close": 0.6, "lift": 1.0, "hold": 2.0,
     "carry": 1.2, "lower": 0.8, "release": 0.5, "retreat": 0.8, "dwell": 2.0,
 }
 CLOSE_TIMEOUT_S = 2.5
@@ -220,8 +220,14 @@ def _path(scene: TransferScene, frame: WorkspaceFrame, home: np.ndarray, offset_
     above_destination = clamp(np.array([destination[0], destination[1], max(lifted[2], destination[2] + LIFT_HEIGHTS * height + standoff_m)]))
     at_destination = np.array([destination[0], destination[1], destination[2] + PLACE_STANDOFF_M]) + lift_up
     retreat = above_destination.copy()
-    points = [home, above_source, at_source, lifted, above_destination, at_destination, retreat]
-    spans = {"approach": (0, 1), "descend": (1, 2), "lift": (2, 3), "carry": (3, 4), "lower": (4, 5), "retreat": (5, 6)}
+    # The hover appears twice: the approach reaches it however the straight
+    # line from home leads, and the turn span then brings the hand to face
+    # the object with the position held. Without that stationary turn the
+    # hand rotated from 60 degrees off vertical to vertical while descending,
+    # and a finger swinging through that arc clipped a cube that sat a few
+    # millimetres off the nominal spot and knocked it away.
+    points = [home, above_source, above_source.copy(), at_source, lifted, above_destination, at_destination, retreat]
+    spans = {"approach": (0, 1), "turn": (1, 2), "descend": (2, 3), "lift": (3, 4), "carry": (4, 5), "lower": (5, 6), "retreat": (6, 7)}
     return points, spans
 
 
@@ -275,9 +281,9 @@ def _joint_path(model, site: str, joints: tuple[str, ...], points: list[np.ndarr
     home crosses the workspace wherever the straight line leads, and holding
     the hand vertical along all of it can make an intermediate point
     unreachable -- the jaw arm was refused 53 mm short of a point halfway
-    down from its rest pose. The hand turns to face the object at the hover,
-    where the position is fixed and the wrist is free, and stays vertical
-    through the descent, the lift, the carry and the lowering.
+    down from its rest pose. The hand turns to face the object in the turn
+    span at the hover, where the position is held and the wrist is free, and
+    stays vertical through the descent, the lift, the carry and the lowering.
     """
 
     dense: list[np.ndarray] = [points[0]]
@@ -287,6 +293,7 @@ def _joint_path(model, site: str, joints: tuple[str, ...], points: list[np.ndarr
             dense.append(start + (end - start) * (step / per_span))
         marks.append(len(dense) - 1)
     failure: ik.IkFailure | None = None
+    site_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_SITE, site)
     for label, seed in seeds:
         rows: list[np.ndarray] = []
         current = np.array(seed, dtype=float)
@@ -294,6 +301,25 @@ def _joint_path(model, site: str, joints: tuple[str, ...], points: list[np.ndarr
             for span in range(len(points) - 1):
                 first = 0 if span == 0 else marks[span] + 1
                 targets = np.asarray(dense[first: marks[span + 1] + 1])
+                if facing is not None and span == facing_from_span:
+                    # The turn: the position is held and the requested axis
+                    # is swung from where the hand points now to where it
+                    # must point, one small rotation per dense target, so
+                    # every row is a converged solution a few degrees from
+                    # the last. Asking for the final facing in one go gave a
+                    # joint-space blend between two configurations that
+                    # share only the site position, and the fingers of a two
+                    # metre arm swept fifty millimetres through the cube.
+                    probe = mujoco.MjData(model)
+                    probe.qpos[:] = current
+                    mujoco.mj_kinematics(model, probe)
+                    now = np.array(probe.site_xmat[site_id], dtype=float).reshape(3, 3) @ np.asarray(facing[0], dtype=float)
+                    for step, target in enumerate(targets, start=1):
+                        axis = _slerp(now, np.asarray(facing[1], dtype=float), step / len(targets))
+                        solution = ik.solve_site_path(model, site, joints, target[None, :], seed_qpos=current, guard=guard, facing=(facing[0], axis))
+                        rows.extend(solution.qpos)
+                        current = solution.qpos[-1]
+                    continue
                 solution = ik.solve_site_path(
                     model, site, joints, targets, seed_qpos=current, guard=guard,
                     facing=facing if span >= facing_from_span else None,
@@ -306,6 +332,24 @@ def _joint_path(model, site: str, joints: tuple[str, ...], points: list[np.ndarr
         return np.asarray(rows), marks, label
     assert failure is not None
     raise failure
+
+
+def _slerp(start: np.ndarray, end: np.ndarray, fraction: float) -> np.ndarray:
+    """A unit vector ``fraction`` of the way from ``start`` to ``end`` along
+    the great circle; antiparallel inputs turn through any perpendicular."""
+
+    a = start / max(float(np.linalg.norm(start)), 1e-12)
+    b = end / max(float(np.linalg.norm(end)), 1e-12)
+    cosine = float(np.clip(a @ b, -1.0, 1.0))
+    angle = float(np.arccos(cosine))
+    if angle < 1e-6:
+        return b
+    if angle > np.pi - 1e-3:
+        helper = np.array([1.0, 0.0, 0.0]) if abs(a[0]) < 0.9 else np.array([0.0, 1.0, 0.0])
+        perpendicular = np.cross(a, helper)
+        perpendicular /= float(np.linalg.norm(perpendicular))
+        return np.cos(fraction * angle) * a + np.sin(fraction * angle) * perpendicular
+    return (np.sin((1.0 - fraction) * angle) * a + np.sin(fraction * angle) * b) / np.sin(angle)
 
 
 def attempt_transfer(
@@ -353,7 +397,7 @@ def attempt_transfer(
     points, spans = _path(scene, frame, home, offset, standoff)
     downward = (facing, -np.asarray(frame.up, dtype=float)) if facing is not None else None
 
-    seeds = restart_seeds(model, frame, arm_joints, rest, points[2])
+    seeds = restart_seeds(model, frame, arm_joints, rest, points[spans["descend"][1]])
     try:
         path, marks, seed_used = _joint_path(model, solve_site, arm_joints, points, seeds, guard, per_span, facing=downward)
     except ik.IkFailure as error:
@@ -460,7 +504,7 @@ def attempt_transfer(
         block_position = np.array(data.qpos[block_adr: block_adr + 3], dtype=float)
 
         advance = False
-        if name == "approach":
+        if name in ("approach", "turn"):
             planned = arm_target_for(name, progress)
             advance = progress >= 1.0
         elif name == "descend":

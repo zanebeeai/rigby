@@ -348,6 +348,47 @@ def test_facing_solved_with_the_point_brings_the_hand_vertical(jaw) -> None:
     assert angle_from_vertical(without.qpos[-1]) > 45.0
 
 
+def test_the_turn_holds_the_point_and_brings_the_hand_vertical_before_the_descent(jaw) -> None:
+    """The approach reaches the hover however the straight line from home
+    leads, 60 degrees off vertical on this arm; the turn then swings the
+    hand to vertical with the grasp point held, a few degrees per row, so
+    no finger sweeps through the cube below. Solved in one step, the joint
+    blend between the two configurations carried the fingers of the long
+    arm fifty millimetres through the cube in its normalized world."""
+
+    from rigby_general.contact.transfer import _joint_path, _path, _grasp_offset_m
+
+    robot, effector, frame, scene = jaw
+    model = scene.model
+    site = next(s.name for s in robot.manifest.morphology.sites if s.semantic is SiteSemantic.GRASP_POINT and s.name.startswith(effector.chain_id))
+    joints = ik.chain_joint_names(model, frame.figure_site, exclude=frozenset(effector.grip_joints))
+    rest = _scene_rest_qpos(model, robot.manifest)
+    facing = _hand_facing(robot.manifest, effector)
+    down = -np.asarray(frame.up, dtype=float)
+    data = mujoco.MjData(model)
+    data.qpos[:] = rest
+    mujoco.mj_kinematics(model, data)
+    site_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_SITE, site)
+    home = np.array(data.site_xpos[site_id])
+    points, spans = _path(scene, frame, home, _grasp_offset_m(robot.manifest, effector), grasp_standoff_m(model, robot.manifest, effector, site, scene.scene.block_half_extent_m))
+    assert spans["turn"] == (1, 2) and np.array_equal(points[1], points[2])
+    path, marks, _ = _joint_path(model, site, joints, points, restart_seeds(model, frame, joints, rest, points[3]), _collision_guard(robot.manifest, model), 6, facing=(facing, down))
+
+    def observe(qpos):
+        data.qpos[:] = qpos
+        mujoco.mj_kinematics(model, data)
+        rotation = np.array(data.site_xmat[site_id]).reshape(3, 3)
+        return np.array(data.site_xpos[site_id]), float(np.degrees(np.arccos(np.clip((rotation @ facing) @ down, -1.0, 1.0))))
+
+    start, end = marks[spans["turn"][0]], marks[spans["turn"][1]]
+    positions, angles = zip(*(observe(path[row]) for row in range(start, end + 1)))
+    assert angles[0] > 30.0, "the approach alone leaves the hand well off vertical"
+    assert angles[-1] < 5.0
+    assert all(later <= earlier + 1.0 for earlier, later in zip(angles, angles[1:])), angles
+    assert max(float(np.linalg.norm(p - points[1])) for p in positions) <= ik.DEFAULT_TOLERANCE_M
+    assert max(np.diff(angles) * -1.0) < 25.0, "no single row turns more than a fraction of the whole"
+
+
 def test_a_transfer_is_certified_phase_by_phase_on_the_physics_clock(certified) -> None:
     result, _ = certified
     assert result.certified, [v.code for v in result.violations]

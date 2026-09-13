@@ -162,7 +162,7 @@ def seal(destination: Path, *, label: str, robot, source: Path, scene, env: Envi
         "world.json": json_bytes({"mode": track, "environment_id": env.environment_id, "object_count": len(env.objects), "timestep_s": model.opt.timestep,
                                   "gravity": model.opt.gravity.tolist(), "collision_policy": collision_policy(model), "fault": None}),
         "task.json": json_bytes(task), "outcome.json": json_bytes(outcome),
-        "execution.json": json_bytes({"phases": [asdict(p) for p in result.phases], "active_skill_tree": "Sequence(approach, descend, close, lift, hold, carry, lower, release, retreat, dwell)",
+        "execution.json": json_bytes({"phases": [asdict(p) for p in result.phases], "active_skill_tree": "Sequence(approach, turn, descend, close, lift, hold, carry, lower, release, retreat, dwell)",
                                       "contact_and_sensor_timestamp_semantics": "Initial forward solve, then the previous integration interval; see contact_sample_time_s."}),
         "trace.npz": record.to_bytes(),
         "controller.json": json_bytes({"arm": "rigby_general.gates.control.ComputedTorqueController", "closure": "rigby_general.contact.closure.ClosureController"}),
