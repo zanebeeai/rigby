@@ -4,7 +4,7 @@
   "goal_catalog": "docs/research/rigby-verifiable-goals.json",
   "goal_catalog_sha256": "3672ebf5fa10ff4216fa0213499d5988281f2ebbc611500e8526afe6e618b250",
   "started_at_utc": "2026-09-12T02:34:49.841258+00:00",
-  "current_goal": "G08",
+  "current_goal": "G09",
   "overall_status": "active",
   "authorization": {
     "commits_and_pull_requests": true,
@@ -936,39 +936,196 @@
     {
       "id": "G08",
       "title": "Validate and repair transitions between certified skills",
-      "status": "planned",
+      "status": "complete",
       "criteria": [
         {
           "id": "G08.A01",
           "requirement": "Check terminal/initiation compatibility for pose, velocity, contact mode, object ownership, belief freshness and limb/support resources.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "core/src/rigby_core/skills/boundary.py",
+            "any-robot/src/rigby_general/transitions/boundary.py",
+            "core/tests/test_skills_boundary.py",
+            "any-robot/tests/test_general_transitions.py"
+          ]
         },
         {
           "id": "G08.A02",
           "requirement": "On at least 100 frozen feasible boundary cases spanning every enabled body, achieve at least 95 successful composed executions; record transition cost.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "any-robot/assets/general/research-protocols/g08-transitions-v1/registration.json",
+            "docs/results/g08-campaign/trials.json",
+            "docs/results/g08-campaign-pilot-1/summary.json",
+            "docs/results/g08-validation.json"
+          ],
+          "note": "100 of 100 composed executions succeeded (zoo_dual_arm 34/34, zoo_jaw_arm 33/33, zoo_long_arm 33/33); transition cost per case recorded; pilot 1 retained at 82/100."
         },
         {
           "id": "G08.A03",
           "requirement": "Inject at least 40 incompatible boundaries and require every one to be rejected or repaired and re-verified before execution. Include the reviewed dual-arm failure.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "docs/results/g08-campaign/injected",
+            "docs/results/g08-campaign/trials.json",
+            "docs/results/g08-validation.json"
+          ],
+          "note": "47 of 47 injected boundaries rejected before execution or repaired and verified again before the second skill ran; the reviewed dual-arm failure (the pre-guard program's keyframe with the left elbow at its limit, from the G05 fixture by hash) repaired and verified, the transfer certified after a rerouted transition."
         },
         {
           "id": "G08.A04",
           "requirement": "Apply continuity requirements appropriate to the contact mode; confirm that a smooth path cannot bypass object-hold or support checks.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "any-robot/src/rigby_general/transitions/repair.py",
+            "docs/results/g08-d08/index.json",
+            "core/tests/test_skills_boundary.py (a held object is never given by a path)"
+          ],
+          "note": "Free mode: position- and velocity-continuous references with bounded deceleration (the braked settle). Holding mode: the closure keeps its force, the boundary measured holding before and after. Contact mode and what rests are measured from contact forces; a mismatch is refused with no repair proposed."
         }
       ],
       "demo_requirement": "D08: before/after transition repair, including joint-limit approach, carry-to-place and a contact-mode change.",
-      "demo_status": "pending",
-      "assessment_complete": false,
-      "capability_supported": false,
-      "commits": [],
-      "pull_requests": []
+      "demo_status": "verified",
+      "assessment_complete": true,
+      "capability_supported": true,
+      "commits": [
+        "45100a1",
+        "684bbf4",
+        "a66a0f6",
+        "b978581",
+        "c415075",
+        "cd3448b",
+        "eb53f64",
+        "f156cd7"
+      ],
+      "pull_requests": [
+        "https://github.com/zanebeeai/rigby/pull/36"
+      ],
+      "discovered_prerequisites": [
+        {
+          "finding": "A resumed transfer solved its path from the restart seeds and could be asked to jump to another solution of the same point; the controller slewed the arm through two joint limits in one step.",
+          "evidence": "docs/results/g08-report.md (What was wrong); any-robot/src/rigby_general/contact/transfer.py",
+          "required_action": "Done: a resumed transfer solves from where the arm stands and is refused typed if no path exists from there."
+        },
+        {
+          "finding": "A resumed skill that restored only positions and velocities did not replay across the boundary because the solver warm start was fresh.",
+          "evidence": "any-robot/src/rigby_general/contact/transfer.py (TransferStart.state); any-robot/tests/test_general_transitions.py",
+          "required_action": "Done: the full integration state is restored; every composition's recorded controls replay across every boundary."
+        },
+        {
+          "finding": "The self-collision guard keeps the body out of itself, not out of the world; and a transfer planned from a folded posture can meet its position and miss its facing by forty-five degrees, closing its fingers beside the cube. The first scored pass composed 82 of 100 feasible cases for these two reasons.",
+          "evidence": "docs/results/g08-campaign-pilot-1; any-robot/scripts/g08_corpus.py; any-robot/src/rigby_general/contact/transfer.py (facing_unmet)",
+          "required_action": "Done: the corpus witness checks the world along the straight path and the transfer's approach; the transfer refuses before motion, typed facing_unmet, when its planned facing is off by more than fifteen degrees; a composition reroutes to the reference configuration when the second skill cannot plan; the pilot is retained whole and the corpus re-registered."
+        }
+      ],
+      "demo_evidence": [
+        "docs/results/g08-d08/index.json",
+        "docs/results/g08-d08/joint-limit-approach-before-after.mp4",
+        "docs/results/g08-d08/carry-to-place-before-after.mp4",
+        "docs/results/g08-d08/contact-mode-change-before-after.mp4",
+        "docs/results/g08-d08/contact-mode-change/inserted/media/episode.mp4",
+        "demos/registry (G08 and D08 entries)"
+      ],
+      "evidence_worktree": "C:/Users/hocke/GitHub/rigby-g08",
+      "work_basis": "Branch feat/g08-transitions stacked on feat/g07-skill-contracts (PR 35); lands after it.",
+      "integration_status": "open_pr_ci_infrastructure_blocked",
+      "completed_at_utc": "2026-09-13T10:56:31.508154+00:00",
+      "supported_scope": "Boundary validation between two certified skills on pose, velocity, contact mode, ownership, belief freshness and resources; path repairs (guarded joint move, braked settle, observation) on physics with re-verification; typed refusal of contact-mode, ownership and resource mismatches; a rerouted transition when the second skill cannot plan; on the three G06-enabled bodies in the registered fixed world. No recovery inside a skill, no replanning, no locomotion.",
+      "local_validation": {
+        "feasible_successes": 100,
+        "feasible_per_body": {
+          "zoo_dual_arm": {
+            "failure_taxonomy": {},
+            "feasible": 34,
+            "successes": 34
+          },
+          "zoo_jaw_arm": {
+            "failure_taxonomy": {},
+            "feasible": 33,
+            "successes": 33
+          },
+          "zoo_long_arm": {
+            "failure_taxonomy": {},
+            "feasible": 33,
+            "successes": 33
+          }
+        },
+        "feasible_failure_taxonomy": {},
+        "injected_handled": 47,
+        "injected_per_kind": {
+          "belief_stale": 5,
+          "free_into_holding": 6,
+          "holding_into_free": 6,
+          "joint_beyond_limit": 10,
+          "joint_inside_margin": 7,
+          "resource_conflict": 5,
+          "velocity_too_high": 8
+        },
+        "transition_cost": {
+          "joint_travel_rad_mean": 2.8188102291508867,
+          "physics_s_max": 5.314000000000617,
+          "physics_s_mean": 1.9657419354837988,
+          "repaired_cases": 31
+        },
+        "pilots": [
+          [
+            "g08-campaign-pilot-1",
+            "eb53f6478731a15c62d03502482e5c35380c30e7",
+            {
+              "failed_cases": [
+                "zoo_dual_arm-feasible-009",
+                "zoo_dual_arm-feasible-014",
+                "zoo_dual_arm-feasible-021",
+                "zoo_dual_arm-feasible-023",
+                "zoo_dual_arm-feasible-029",
+                "zoo_dual_arm-feasible-031",
+                "zoo_jaw_arm-feasible-004",
+                "zoo_jaw_arm-feasible-022",
+                "zoo_long_arm-feasible-005",
+                "zoo_long_arm-feasible-009",
+                "zoo_long_arm-feasible-011",
+                "zoo_long_arm-feasible-012",
+                "zoo_long_arm-feasible-022",
+                "zoo_long_arm-feasible-024",
+                "zoo_long_arm-feasible-028",
+                "zoo_long_arm-feasible-029",
+                "zoo_long_arm-feasible-030",
+                "zoo_long_arm-feasible-031"
+              ],
+              "feasible_count": 100,
+              "feasible_successes": 82,
+              "injected_count": 47,
+              "injected_handled": 47
+            }
+          ]
+        ],
+        "d08": {
+          "carry-to-place": {
+            "after": "success",
+            "before": "success"
+          },
+          "contact-mode-change": {
+            "after": "rejected",
+            "before": "success"
+          },
+          "joint-limit-approach": {
+            "after": "success",
+            "before": "runtime_failure"
+          }
+        },
+        "tests": {
+          "anyrobot_failed": 0,
+          "anyrobot_passed": 418,
+          "anyrobot_skipped": 5,
+          "core_failed": 0,
+          "core_passed": 336,
+          "core_skipped": 2,
+          "exotic_failed": 0,
+          "exotic_passed": 10,
+          "exotic_skipped": 0
+        },
+        "generation_calls": 0
+      }
     },
     {
       "id": "G09",
@@ -1732,10 +1889,10 @@
   ],
   "milestones": [],
   "next_actions": [
-    "Begin G08 (validate and repair transitions between certified skills) on the skill contract and the transfer leaves; the executor's per-node records are the transition evidence to build on.",
-    "Restore GitHub Actions billing/allowance and rerun PRs 27-35; merge only after required checks are green, bottom of the stack first.",
+    "Begin G09 (observable conditionals and honest progress monitoring) on the executor's Observe leaves and the boundary measurements; the multifinger hand's lost holds and the ejected cubes of G06 are the first natural failures to detect.",
+    "Restore GitHub Actions billing/allowance and rerun PRs 27-36; merge only after required checks are green, bottom of the stack first.",
     "G04 independent language validation remains pending on U3_independent_review.",
     "Preserve all 30 goals and their frozen criteria."
   ],
-  "updated_at_utc": "2026-09-13T09:36:25.724973+00:00"
+  "updated_at_utc": "2026-09-13T10:56:31.508154+00:00"
 }
