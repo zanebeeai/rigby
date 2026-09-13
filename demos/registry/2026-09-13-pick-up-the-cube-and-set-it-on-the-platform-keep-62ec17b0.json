@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-keep-62ec17b0",
+  "title": "G10: zoo_long_arm-slip-002 (slip, success)",
+  "prompt": "pick up the cube and set it on the platform; keep going until you can verify it is placed",
+  "tier": "any-robot",
+  "embodiment": "zoo_long_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T16:40:22Z",
+  "source": {
+    "commit": "e50ecb26d4",
+    "branch": "feat/g10-transfer-skill",
+    "dirty": true,
+    "how": "python any-robot/scripts/g10_transfer_campaign.py --out docs/results/g10-campaign --local any-robot/results/g10-campaign"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "RECOVERED (slip): placement verified from the sensors at 24.1 s; 2 pass(es), acquisitions [1, 1]; the oracle agrees the object is placed."
+  },
+  "notes": "See docs/results/g10-report.md. One episode of the closed-loop transfer_object skill on physics: acquire until a hold is verified from the declared sensors, transport, release, verify the placement from the sensors, within three attempts per subgoal and a 120 s cap; one continuous physics record rendered at real-time playback with the simulation clock and the skill's verdict in the banner; frames.json beside the MP4 maps every frame to its recorded sample. A disturbed episode carries the protocol's push, pull or occluder as recorded user input. Class slip, seed 2.",
+  "media": [
+    {
+      "path": "docs/results/g10-campaign/zoo_long_arm/slip/seed-002/media/episode.mp4",
+      "bytes": 218721,
+      "sha256": "97427d3069673d98c128e19e925fed9b7b999d3bb9ff860f1adfd04c86c2a17c",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g10-campaign/zoo_long_arm/slip/seed-002/media/preview.gif",
+      "bytes": 1396010,
+      "sha256": "925b05ac17b1caa06b12a9ead8194355a94429fa8711d71a0384173d8afdc828",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G10",
+    "transfer_object",
+    "slip",
+    "zoo_long_arm",
+    "success"
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-keep-578c40e0",
+  "title": "G10: zoo_dual_arm-nominal-023 (nominal, unknown)",
+  "prompt": "pick up the cube and set it on the platform; keep going until you can verify it is placed",
+  "tier": "any-robot",
+  "embodiment": "zoo_dual_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T16:39:34Z",
+  "source": {
+    "commit": "e50ecb26d4",
+    "branch": "feat/g10-transfer-skill",
+    "dirty": true,
+    "how": "python any-robot/scripts/g10_transfer_campaign.py --out docs/results/g10-campaign --local any-robot/results/g10-campaign"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "UNKNOWN (child_unknown:0.0): the skill did not verify a placement; 1 pass(es), acquisitions [2]; physics 14.1 s."
+  },
+  "notes": "See docs/results/g10-report.md. One episode of the closed-loop transfer_object skill on physics: acquire until a hold is verified from the declared sensors, transport, release, verify the placement from the sensors, within three attempts per subgoal and a 120 s cap; one continuous physics record rendered at real-time playback with the simulation clock and the skill's verdict in the banner; frames.json beside the MP4 maps every frame to its recorded sample. A disturbed episode carries the protocol's push, pull or occluder as recorded user input. Class nominal, seed 23.",
+  "media": [
+    {
+      "path": "docs/results/g10-campaign/zoo_dual_arm/nominal/seed-023/media/episode.mp4",
+      "bytes": 99669,
+      "sha256": "09df5e880244929ea3d423d2530c647c5b78e5b5d936a852991c078b83836be1",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g10-campaign/zoo_dual_arm/nominal/seed-023/media/preview.gif",
+      "bytes": 694688,
+      "sha256": "0bf86df33330aebbed51a8513ac1229a01d0ad72ce9fdc7ed0ba5c789981ee02",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G10",
+    "transfer_object",
+    "nominal",
+    "zoo_dual_arm",
+    "failure"
+  ]
+}

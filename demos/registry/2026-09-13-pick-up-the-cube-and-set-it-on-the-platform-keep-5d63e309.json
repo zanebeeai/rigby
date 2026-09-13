@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-keep-5d63e309",
+  "title": "G10: zoo_dual_arm-slip-017 (slip, unknown)",
+  "prompt": "pick up the cube and set it on the platform; keep going until you can verify it is placed",
+  "tier": "any-robot",
+  "embodiment": "zoo_dual_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T16:39:49Z",
+  "source": {
+    "commit": "e50ecb26d4",
+    "branch": "feat/g10-transfer-skill",
+    "dirty": true,
+    "how": "python any-robot/scripts/g10_transfer_campaign.py --out docs/results/g10-campaign --local any-robot/results/g10-campaign"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "UNKNOWN (child_unknown:0.0): the skill did not verify a placement; 1 pass(es), acquisitions [2]; physics 14.4 s."
+  },
+  "notes": "See docs/results/g10-report.md. One episode of the closed-loop transfer_object skill on physics: acquire until a hold is verified from the declared sensors, transport, release, verify the placement from the sensors, within three attempts per subgoal and a 120 s cap; one continuous physics record rendered at real-time playback with the simulation clock and the skill's verdict in the banner; frames.json beside the MP4 maps every frame to its recorded sample. A disturbed episode carries the protocol's push, pull or occluder as recorded user input. Class slip, seed 17.",
+  "media": [
+    {
+      "path": "docs/results/g10-campaign/zoo_dual_arm/slip/seed-017/media/episode.mp4",
+      "bytes": 94159,
+      "sha256": "c2ccc6ef723bfb1b70f58e46faffa37b9dcc0261dffe034c990363b04a9868c2",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g10-campaign/zoo_dual_arm/slip/seed-017/media/preview.gif",
+      "bytes": 675784,
+      "sha256": "16996c57b082c8c928dd6becc33c665b1cc04a620edc01a7444b47b5015bfc2e",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G10",
+    "transfer_object",
+    "slip",
+    "zoo_dual_arm",
+    "failure"
+  ]
+}

@@ -33,6 +33,14 @@ def policy_digest(policy: dict) -> str:
 
 def conditionals_for(episode: Episode, effector: EffectorV1, policy: dict) -> dict[str, ConditionalV1]:
     """The predicate contracts for one manipulator and the task's object and
+    region, bound over a recorded episode."""
+
+    return bind_conditionals(policy, effector.chain_id, support_top_m=float(episode.support_top_m), half_height_m=float(episode.object_half_extent_m[2]),
+                             half_extent_m=float(max(episode.object_half_extent_m)))
+
+
+def bind_conditionals(policy: dict, manipulator: str, *, support_top_m: float, half_height_m: float, half_extent_m: float) -> dict[str, ConditionalV1]:
+    """The predicate contracts for one manipulator and the task's object and
     region. Thresholds come from the policy; the object's size, its
     support's height and the region come from the task, never from the
     robot description."""
@@ -40,9 +48,9 @@ def conditionals_for(episode: Episode, effector: EffectorV1, policy: dict) -> di
     name = policy["policy_id"]
     thresholds = policy["rules"]
     windows = policy["windows"]
-    height = 2.0 * float(episode.object_half_extent_m[2])
-    half_extent = float(max(episode.object_half_extent_m))
-    entities = {"manipulator": effector.chain_id, "object": "cube", "region": "destination"}
+    height = 2.0 * half_height_m
+    half_extent = half_extent_m
+    entities = {"manipulator": manipulator, "object": "cube", "region": "destination"}
 
     def window(rule: str) -> TemporalWindowV1:
         w = windows[rule]
@@ -77,7 +85,7 @@ def conditionals_for(episode: Episode, effector: EffectorV1, policy: dict) -> di
             evidence=(requirement(EvidenceKind.CONTACT_FORCE, "manipulator", rule="held"), requirement(EvidenceKind.OBJECT_POSE, "object", required=False)),
             window=window("held"),
             rule=DecisionRuleV1(rule="held", parameters={"contact_force_n": contact_n, "min_fraction": float(thresholds["held"]["min_fraction"]),
-                                                          "support_top_m": float(episode.support_top_m), "half_height_m": 0.5 * height,
+                                                          "support_top_m": support_top_m, "half_height_m": 0.5 * height,
                                                           "lift_threshold_m": float(thresholds["held"]["lift_fraction_of_height"]) * height}, policy=name),
             abstention=abstention, fallback=FallbackV1(action="re_observe", budget=1),
             description="opposition sustained through the window and, when a camera sees the object, the object off its support"),

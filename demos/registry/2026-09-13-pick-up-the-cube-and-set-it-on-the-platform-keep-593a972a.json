@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-keep-593a972a",
+  "title": "G10: zoo_jaw_arm-slip-003 (slip, success)",
+  "prompt": "pick up the cube and set it on the platform; keep going until you can verify it is placed",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T16:40:05Z",
+  "source": {
+    "commit": "e50ecb26d4",
+    "branch": "feat/g10-transfer-skill",
+    "dirty": true,
+    "how": "python any-robot/scripts/g10_transfer_campaign.py --out docs/results/g10-campaign --local any-robot/results/g10-campaign"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "RECOVERED (slip): placement verified from the sensors at 23.2 s; 2 pass(es), acquisitions [1, 1]; the oracle agrees the object is placed."
+  },
+  "notes": "See docs/results/g10-report.md. One episode of the closed-loop transfer_object skill on physics: acquire until a hold is verified from the declared sensors, transport, release, verify the placement from the sensors, within three attempts per subgoal and a 120 s cap; one continuous physics record rendered at real-time playback with the simulation clock and the skill's verdict in the banner; frames.json beside the MP4 maps every frame to its recorded sample. A disturbed episode carries the protocol's push, pull or occluder as recorded user input. Class slip, seed 3.",
+  "media": [
+    {
+      "path": "docs/results/g10-campaign/zoo_jaw_arm/slip/seed-003/media/episode.mp4",
+      "bytes": 233365,
+      "sha256": "0a19a9c48b5c8445abef80ee47d4a0e65630af30c784a581744355282f2ae584",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g10-campaign/zoo_jaw_arm/slip/seed-003/media/preview.gif",
+      "bytes": 1015576,
+      "sha256": "fabf3c4304d096de9d85c9fa0f811972e961214a67bde34fceb699138a5a5c70",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G10",
+    "transfer_object",
+    "slip",
+    "zoo_jaw_arm",
+    "success"
+  ]
+}

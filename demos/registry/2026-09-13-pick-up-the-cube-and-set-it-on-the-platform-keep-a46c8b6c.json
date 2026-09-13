@@ -1,0 +1,43 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-keep-a46c8b6c",
+  "title": "D10: three-body fixed-world transfer on one clock",
+  "prompt": "pick up the cube and set it on the platform; keep going until you can verify it is placed",
+  "tier": "any-robot",
+  "embodiment": "zoo_dual_arm,zoo_jaw_arm,zoo_long_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T16:40:28Z",
+  "source": {
+    "commit": "e50ecb26d4",
+    "branch": "feat/g10-transfer-skill",
+    "dirty": true,
+    "how": "python any-robot/scripts/g10_d10_media.py --campaign docs/results/g10-campaign --local any-robot/results/g10-campaign --out docs/results/g10-d10"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "Left to right: the dual arm, the jaw arm and the long arm, each running the same transfer_object skill on its first nominal episode; shorter clips hold their final frame."
+  },
+  "notes": "See docs/results/g10-report.md. One episode of the closed-loop transfer_object skill on physics: acquire until a hold is verified from the declared sensors, transport, release, verify the placement from the sensors, within three attempts per subgoal and a 120 s cap; one continuous physics record rendered at real-time playback with the simulation clock and the skill's verdict in the banner; frames.json beside the MP4 maps every frame to its recorded sample. A disturbed episode carries the protocol's push, pull or occluder as recorded user input. Tiled from three sealed episodes.",
+  "media": [
+    {
+      "path": "docs/results/g10-d10/three-body-nominal.mp4",
+      "bytes": 385757,
+      "sha256": "bf1935ee8bff1d69c3a674edbe6e02dbf8f242ab4f2f73c438074fb4dc90aa3f",
+      "role": "comparison"
+    },
+    {
+      "path": "docs/results/g10-d10/three-body-nominal-preview.gif",
+      "bytes": 1306197,
+      "sha256": "d86e2e84c2220dacc39a962faad7aa035ecb766ce7158d9221bdb9598a2d2dfc",
+      "role": "comparison"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G10",
+    "D10",
+    "three-body",
+    "nominal"
+  ]
+}

@@ -233,8 +233,12 @@ def collision_policy(model: mujoco.MjModel, object_body: str = "scene_block") ->
 
 
 def _path(scene: TransferScene, frame: WorkspaceFrame, home: np.ndarray, offset_m: float = 0.0, standoff_m: float = 0.0,
-          phase_range: tuple[str, str] = (PHASES[0], PHASES[-1])) -> tuple[list[np.ndarray], dict[str, tuple[int, int]]]:
+          phase_range: tuple[str, str] = (PHASES[0], PHASES[-1]), object_position_m: np.ndarray | None = None) -> tuple[list[np.ndarray], dict[str, tuple[int, int]]]:
     """Waypoints, and which consecutive pair each moving phase travels.
+
+    ``object_position_m`` is where the object is believed to be -- what a
+    sensor reported -- when that is not where the world was authored to
+    put it; the object is then taken to rest on whatever is under it.
 
     ``phase_range`` names the first and last phase that will run. The
     waypoint list begins at ``home`` -- where the grasp point is now -- and
@@ -262,8 +266,13 @@ def _path(scene: TransferScene, frame: WorkspaceFrame, home: np.ndarray, offset_
     def clamp(point: np.ndarray) -> np.ndarray:
         return frame.clamp_rising(point + up) - up
 
-    source = np.asarray(grasp.block_position_m, dtype=float)
-    above_source = clamp(np.array([source[0], source[1], grasp.support_height_m + height + HOVER_HEIGHTS * height]) + lift_up)
+    if object_position_m is None:
+        source = np.asarray(grasp.block_position_m, dtype=float)
+        support_top = grasp.support_height_m
+    else:
+        source = np.asarray(object_position_m, dtype=float)
+        support_top = float(source[2]) - half
+    above_source = clamp(np.array([source[0], source[1], support_top + height + HOVER_HEIGHTS * height]) + lift_up)
     at_source = source + lift_up
     lifted = clamp(np.array([source[0], source[1], source[2] + LIFT_HEIGHTS * height]) + lift_up)
     destination = np.asarray(scene.destination_m, dtype=float)
@@ -422,8 +431,17 @@ def attempt_transfer(
     resume: TransferStart | None = None,
     should_stop: Callable[[float], bool] | None = None,
     phase_range: tuple[str, str] = (PHASES[0], PHASES[-1]),
+    object_position_m: np.ndarray | None = None,
+    on_step: Callable[[mujoco.MjData], None] | None = None,
 ) -> TransferResult:
     """Run one transfer and gate every phase of it.
+
+    ``object_position_m`` is the believed position of the object the path
+    is planned to, when a sensor rather than the world's authoring says
+    where it is. ``on_step`` is called with the data after every physics
+    step and once before the first: where a monitor samples its sensors,
+    and where a protocol applies the external forces or moves the
+    occluders it declares, all of which the record keeps as user input.
 
     ``phase_range`` runs a contiguous part of the sequence -- approach
     through carry as an acquisition that ends holding the object, lower
@@ -473,7 +491,7 @@ def attempt_transfer(
     if first_phase not in PHASES or last_phase not in PHASES or PHASES.index(first_phase) > PHASES.index(last_phase):
         raise ValueError(f"phase range {phase_range} is not a contiguous part of {PHASES}")
     order = list(PHASES[PHASES.index(first_phase): PHASES.index(last_phase) + 1])
-    points, spans = _path(scene, frame, home, offset, standoff, phase_range=phase_range)
+    points, spans = _path(scene, frame, home, offset, standoff, phase_range=phase_range, object_position_m=object_position_m)
     downward = (facing, -np.asarray(frame.up, dtype=float)) if facing is not None else None
 
     seed_target = points[spans["descend"][1]] if "descend" in spans else points[-1]
@@ -554,6 +572,8 @@ def attempt_transfer(
         data.qvel[:] = np.asarray(resume.qvel, dtype=float)
         data.time = float(resume.time_s)
         mujoco.mj_forward(model, data)
+    if on_step is not None:
+        on_step(data)
     start_position = np.array(data.qpos[block_adr: block_adr + 3], dtype=float)
     start_height = float(start_position[2])
     nudge_limit = 0.25 * grasp.block_half_extent_m
@@ -728,6 +748,8 @@ def attempt_transfer(
                 break
         data.ctrl[:] = command
         mujoco.mj_step(model, data)
+        if on_step is not None:
+            on_step(data)
 
     final_state = np.empty(mujoco.mj_stateSize(model, STATE_SPEC), dtype=np.float64)
     mujoco.mj_getState(model, data, final_state, STATE_SPEC)

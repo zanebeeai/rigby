@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-keep-e0ad11b9",
+  "title": "G10: zoo_long_arm-displaced-008 (displaced, success)",
+  "prompt": "pick up the cube and set it on the platform; keep going until you can verify it is placed",
+  "tier": "any-robot",
+  "embodiment": "zoo_long_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T16:40:19Z",
+  "source": {
+    "commit": "e50ecb26d4",
+    "branch": "feat/g10-transfer-skill",
+    "dirty": true,
+    "how": "python any-robot/scripts/g10_transfer_campaign.py --out docs/results/g10-campaign --local any-robot/results/g10-campaign"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "RECOVERED (displaced): placement verified from the sensors at 24.8 s; 1 pass(es), acquisitions [2]; the oracle agrees the object is placed."
+  },
+  "notes": "See docs/results/g10-report.md. One episode of the closed-loop transfer_object skill on physics: acquire until a hold is verified from the declared sensors, transport, release, verify the placement from the sensors, within three attempts per subgoal and a 120 s cap; one continuous physics record rendered at real-time playback with the simulation clock and the skill's verdict in the banner; frames.json beside the MP4 maps every frame to its recorded sample. A disturbed episode carries the protocol's push, pull or occluder as recorded user input. Class displaced, seed 8.",
+  "media": [
+    {
+      "path": "docs/results/g10-campaign/zoo_long_arm/displaced/seed-008/media/episode.mp4",
+      "bytes": 211751,
+      "sha256": "4f50d3f5a54c10a4111218faf6a937ff3e3b693070942e8818cf5a7091e42fe2",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g10-campaign/zoo_long_arm/displaced/seed-008/media/preview.gif",
+      "bytes": 1095797,
+      "sha256": "269f103303426da57bc5de8e531c97c8713ef19f7a4c13564b2514de26246029",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G10",
+    "transfer_object",
+    "displaced",
+    "zoo_long_arm",
+    "success"
+  ]
+}

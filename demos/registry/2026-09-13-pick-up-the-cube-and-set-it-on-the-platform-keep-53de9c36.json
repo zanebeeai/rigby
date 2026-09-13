@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-keep-53de9c36",
+  "title": "G10: zoo_jaw_arm-displaced-006 (displaced, success)",
+  "prompt": "pick up the cube and set it on the platform; keep going until you can verify it is placed",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T16:40:00Z",
+  "source": {
+    "commit": "e50ecb26d4",
+    "branch": "feat/g10-transfer-skill",
+    "dirty": true,
+    "how": "python any-robot/scripts/g10_transfer_campaign.py --out docs/results/g10-campaign --local any-robot/results/g10-campaign"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "RECOVERED (displaced): placement verified from the sensors at 23.9 s; 1 pass(es), acquisitions [2]; the oracle agrees the object is placed."
+  },
+  "notes": "See docs/results/g10-report.md. One episode of the closed-loop transfer_object skill on physics: acquire until a hold is verified from the declared sensors, transport, release, verify the placement from the sensors, within three attempts per subgoal and a 120 s cap; one continuous physics record rendered at real-time playback with the simulation clock and the skill's verdict in the banner; frames.json beside the MP4 maps every frame to its recorded sample. A disturbed episode carries the protocol's push, pull or occluder as recorded user input. Class displaced, seed 6.",
+  "media": [
+    {
+      "path": "docs/results/g10-campaign/zoo_jaw_arm/displaced/seed-006/media/episode.mp4",
+      "bytes": 208500,
+      "sha256": "b56f4a4be128b62156a98ea06421efa6dd15fc13176b87dc0181b8364a0bd51e",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g10-campaign/zoo_jaw_arm/displaced/seed-006/media/preview.gif",
+      "bytes": 895799,
+      "sha256": "8b75510542c1185ecb9985b6f29e0bc17f85f4cba9dba8ebe5f31a75a94f5b06",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G10",
+    "transfer_object",
+    "displaced",
+    "zoo_jaw_arm",
+    "success"
+  ]
+}

@@ -190,8 +190,9 @@ def predicates_for(session: BodySession):
     }
 
 
-def seal_tree_run(destination: Path, *, session: BodySession, library: SkillLibraryV1, tree: TaskTreeV1, record: ExecutionRecordV1,
-                  label: str, caption: str, runtime_calls: list[dict[str, Any]]) -> dict:
+def seal_tree_run(destination: Path, *, session: Any, library: SkillLibraryV1, tree: TaskTreeV1, record: ExecutionRecordV1,
+                  label: str, caption: str, runtime_calls: list[dict[str, Any]], goal: str = "G07", protocol: str = PROTOCOL,
+                  task_extra: dict | None = None, outcome_extra: dict | None = None, observation: dict | None = None) -> dict:
     """One replayable bundle in the G01 layout for a whole tree run: the
     continuous physics record across every leaf, the library and tree by
     content, and the execution record with every node's verdict."""
@@ -226,13 +227,15 @@ def seal_tree_run(destination: Path, *, session: BodySession, library: SkillLibr
                "physical_steps": (len(physical.arrays["state"]) - 1) if executed else 0,
                "refusal": None if executed else {"stage": "path", "code": next((r.failed_gate for _, r in session.results), record.root.reason),
                                                  "detail": next((r.violations[0].detail for _, r in session.results if r.violations), record.root.reason)}}
-    task = {"goal": "G07", "protocol": PROTOCOL, "label": label, "library_id": library.library_id, "library_sha256": library.content_hash(),
+    task = {"goal": goal, "protocol": protocol, "label": label, "library_id": library.library_id, "library_sha256": library.content_hash(),
             "tree_sha256": tree.content_hash(), "root": tree.root.skill_id, "arguments": dict(tree.root.arguments), "max_depth": tree.max_depth,
             "environment": session.environment.model_dump(mode="json"),
-            "observation_contract": {"policy": "fully_observed_model_based_baseline", "inputs": ["joint encoders", "model parameters", "contact forces on the gripper"], "vlm": False},
+            "observation_contract": observation or {"policy": "fully_observed_model_based_baseline", "inputs": ["joint encoders", "model parameters", "contact forces on the gripper"], "vlm": False},
             "interventions": [], "retry_limit": 0, "attempts": 1,
             "limits": "Manifest joint/actuator limits; closure force bounded; penetration 4 mm; every leaf timeout from the library; no relaxed thresholds.",
             "clock_disclosure": {"physics_timestep_s": float(model.opt.timestep), "executor_clock": "physics time of the session", "phase_timing_on_native_physics_time": True}}
+    task.update(task_extra or {})
+    outcome.update(outcome_extra or {})
     payloads = {
         "model.mjb": buffer.tobytes(), "model.xml": session.scene.scene.xml.encode("utf-8"),
         "robot.urdf": session.source.read_bytes(), "robot.json": json_bytes(session.robot.manifest.model_dump(mode="json")),
@@ -249,7 +252,7 @@ def seal_tree_run(destination: Path, *, session: BodySession, library: SkillLibr
     }
     scale = session.robot.morphology.scale
     centre = [float(v) for v in (np.asarray(session.environment.objects[0].position_m) + np.asarray(session.environment.fixtures[1].position_m)) / 2.0]
-    metadata = {"goal": "G07", "protocol": PROTOCOL, "robot_id": label, "rig_id": session.robot.manifest.rig_id,
+    metadata = {"goal": goal, "protocol": protocol, "robot_id": label, "rig_id": session.robot.manifest.rig_id,
                 "created_at_utc": datetime.now(timezone.utc).isoformat(), "outcome": status, "fault": False,
                 "simulation_duration_s": float(physical.arrays["time_s"][-1]) if executed else 0.0, "reference_duration_s": record.ended_s,
                 "reference_clock_matches_physics": True, "caption": caption, "trace_sha256": physical.content_hash(),

@@ -212,3 +212,20 @@ def test_verdict_records_its_window_and_evidence():
     assert (verdict.window_start_s, verdict.window_end_s) == (0.5, 1.0)
     assert verdict.samples_used == 50 and verdict.kinds_used == (EvidenceKind.CONTACT_FORCE,)
     assert verdict.detail["opposed_fraction"] == 1.0 and verdict.detail["peak_force_n"] == 1.2
+
+
+def test_a_second_sensor_of_the_kind_that_is_blind_does_not_blind_the_first():
+    c = conditional("area_clear", [EvidenceRequirementV1(kind=EvidenceKind.OBJECT_POSE, role="object"), EvidenceRequirementV1(kind=EvidenceKind.REGION, role="region")],
+                    rule="area_clear", parameters={"margin_m": 0.0})
+    front = sensor("camera:front", EvidenceKind.OBJECT_POSE, occludable=True)
+    overhead = sensor("camera:overhead", EvidenceKind.OBJECT_POSE, occludable=True)
+    region = sensor("region", EvidenceKind.REGION, max_age_s=10.0)
+    region_sample = [EvidenceSampleV1(sensor_id="region", kind=EvidenceKind.REGION, time_s=1.0, values={"min_x": 0, "min_y": 0, "min_z": 0, "max_x": 1, "max_y": 1, "max_z": 1})]
+    seen = pose_samples(TIMES, [(2.0, 2.0, 2.0)] * 50)
+    hidden = pose_samples(TIMES, [(2.0, 2.0, 2.0)] * 50, sensor_id="camera:overhead", quality=SampleQuality.OCCLUDED)
+    verdict = evaluate(c, configuration(front, overhead, region), seen + hidden + region_sample, now_s=1.0)
+    assert verdict.decision is Decision.PASS
+    assert "camera:front" in verdict.sensors_used and "camera:overhead" not in verdict.sensors_used
+    both_hidden = pose_samples(TIMES, [(2.0, 2.0, 2.0)] * 50, quality=SampleQuality.OCCLUDED) + hidden
+    verdict = evaluate(c, configuration(front, overhead, region), both_hidden + region_sample, now_s=1.0)
+    assert verdict.decision is Decision.UNKNOWN and verdict.reason == "occluded:camera:front"

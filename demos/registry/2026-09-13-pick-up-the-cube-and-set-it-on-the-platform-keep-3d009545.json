@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-keep-3d009545",
+  "title": "D10: slip recovery, zoo_dual_arm seed 0",
+  "prompt": "pick up the cube and set it on the platform; keep going until you can verify it is placed",
+  "tier": "any-robot",
+  "embodiment": "zoo_dual_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T16:40:29Z",
+  "source": {
+    "commit": "e50ecb26d4",
+    "branch": "feat/g10-transfer-skill",
+    "dirty": true,
+    "how": "python any-robot/scripts/g10_transfer_campaign.py --out docs/results/g10-campaign --local any-robot/results/g10-campaign"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "RECOVERED: slip applied by the protocol, the skill re-observed and finished; verdict success at 22.2 s."
+  },
+  "notes": "See docs/results/g10-report.md. One episode of the closed-loop transfer_object skill on physics: acquire until a hold is verified from the declared sensors, transport, release, verify the placement from the sensors, within three attempts per subgoal and a 120 s cap; one continuous physics record rendered at real-time playback with the simulation clock and the skill's verdict in the banner; frames.json beside the MP4 maps every frame to its recorded sample. A disturbed episode carries the protocol's push, pull or occluder as recorded user input. The strip on every frame shows the leaf in progress with its attempt count, the monitor's last verdicts with the sensors and their ages, the disturbance as it acts, and the oracle labels the skill never reads.",
+  "media": [
+    {
+      "path": "docs/results/g10-d10/slip-zoo_dual_arm.mp4",
+      "bytes": 285337,
+      "sha256": "4e9be6abeaf77151188e33894e7e65d65dbfb236f5769618a56e969c32fdc5ac",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g10-d10/slip-zoo_dual_arm-preview.gif",
+      "bytes": 3292947,
+      "sha256": "61fe543c05d58c41289632cfecd2713f9bb1202f55c116995fa5651cee809d3a",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G10",
+    "D10",
+    "slip",
+    "zoo_dual_arm",
+    "recovery"
+  ]
+}

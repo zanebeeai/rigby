@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-keep-f5112506",
+  "title": "G10: zoo_dual_arm-displaced-005 (displaced, unknown)",
+  "prompt": "pick up the cube and set it on the platform; keep going until you can verify it is placed",
+  "tier": "any-robot",
+  "embodiment": "zoo_dual_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T16:39:40Z",
+  "source": {
+    "commit": "e50ecb26d4",
+    "branch": "feat/g10-transfer-skill",
+    "dirty": true,
+    "how": "python any-robot/scripts/g10_transfer_campaign.py --out docs/results/g10-campaign --local any-robot/results/g10-campaign"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "UNKNOWN (child_unknown:0.0): the skill did not verify a placement; 1 pass(es), acquisitions [2]; physics 13.7 s."
+  },
+  "notes": "See docs/results/g10-report.md. One episode of the closed-loop transfer_object skill on physics: acquire until a hold is verified from the declared sensors, transport, release, verify the placement from the sensors, within three attempts per subgoal and a 120 s cap; one continuous physics record rendered at real-time playback with the simulation clock and the skill's verdict in the banner; frames.json beside the MP4 maps every frame to its recorded sample. A disturbed episode carries the protocol's push, pull or occluder as recorded user input. Class displaced, seed 5.",
+  "media": [
+    {
+      "path": "docs/results/g10-campaign/zoo_dual_arm/displaced/seed-005/media/episode.mp4",
+      "bytes": 92084,
+      "sha256": "df2cc195acf6a547c88c2a3a05bef3dc0da76406aa0a22efe32ff503778ef913",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g10-campaign/zoo_dual_arm/displaced/seed-005/media/preview.gif",
+      "bytes": 682783,
+      "sha256": "b5e3a1532d7d7672611930f3ffb3f66a6fd02373f0af2b286335d418dedfbb94",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G10",
+    "transfer_object",
+    "displaced",
+    "zoo_dual_arm",
+    "failure"
+  ]
+}

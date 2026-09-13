@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-keep-20a7485a",
+  "title": "G10: zoo_jaw_arm-nominal-000 (nominal, success)",
+  "prompt": "pick up the cube and set it on the platform; keep going until you can verify it is placed",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T16:39:54Z",
+  "source": {
+    "commit": "e50ecb26d4",
+    "branch": "feat/g10-transfer-skill",
+    "dirty": true,
+    "how": "python any-robot/scripts/g10_transfer_campaign.py --out docs/results/g10-campaign --local any-robot/results/g10-campaign"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: placement verified from the sensors at 15.5 s; 1 pass(es), acquisitions [1]; the oracle agrees the object is placed."
+  },
+  "notes": "See docs/results/g10-report.md. One episode of the closed-loop transfer_object skill on physics: acquire until a hold is verified from the declared sensors, transport, release, verify the placement from the sensors, within three attempts per subgoal and a 120 s cap; one continuous physics record rendered at real-time playback with the simulation clock and the skill's verdict in the banner; frames.json beside the MP4 maps every frame to its recorded sample. A disturbed episode carries the protocol's push, pull or occluder as recorded user input. Class nominal, seed 0.",
+  "media": [
+    {
+      "path": "docs/results/g10-campaign/zoo_jaw_arm/nominal/seed-000/media/episode.mp4",
+      "bytes": 146555,
+      "sha256": "eaabe3b02685523f5f8a6bf3c42f7d637c56d10a043f92c86743d54f6944ff8b",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g10-campaign/zoo_jaw_arm/nominal/seed-000/media/preview.gif",
+      "bytes": 946070,
+      "sha256": "b8f38018fdbb8d8f004d75bd64ede454d64e0c9795a9a500504f9e7df054a5a7",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G10",
+    "transfer_object",
+    "nominal",
+    "zoo_jaw_arm",
+    "success"
+  ]
+}

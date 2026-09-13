@@ -1,0 +1,500 @@
+{
+  "all_within_cap": true,
+  "campaign_commit": "e50ecb26d465ac1f8fb3c778dc82d79d4d18fa12",
+  "d10": {
+    "cases": [
+      {
+        "body": "zoo_dual_arm",
+        "class": "slip",
+        "episode_id": "zoo_dual_arm-slip-000",
+        "name": "slip-zoo_dual_arm",
+        "recovered": true,
+        "verdict": "success",
+        "video": "slip-zoo_dual_arm.mp4"
+      },
+      {
+        "body": "zoo_jaw_arm",
+        "class": "slip",
+        "episode_id": "zoo_jaw_arm-slip-001",
+        "name": "slip-zoo_jaw_arm",
+        "recovered": true,
+        "verdict": "success",
+        "video": "slip-zoo_jaw_arm.mp4"
+      },
+      {
+        "body": "zoo_long_arm",
+        "class": "slip",
+        "episode_id": "zoo_long_arm-slip-000",
+        "name": "slip-zoo_long_arm",
+        "recovered": true,
+        "verdict": "success",
+        "video": "slip-zoo_long_arm.mp4"
+      },
+      {
+        "body": "zoo_dual_arm",
+        "class": "occlusion",
+        "episode_id": "zoo_dual_arm-occlusion-000",
+        "name": "occlusion-zoo_dual_arm",
+        "recovered": true,
+        "verdict": "success",
+        "video": "occlusion-zoo_dual_arm.mp4"
+      },
+      {
+        "body": "zoo_jaw_arm",
+        "class": "occlusion",
+        "episode_id": "zoo_jaw_arm-occlusion-000",
+        "name": "occlusion-zoo_jaw_arm",
+        "recovered": true,
+        "verdict": "success",
+        "video": "occlusion-zoo_jaw_arm.mp4"
+      },
+      {
+        "body": "zoo_long_arm",
+        "class": "occlusion",
+        "episode_id": "zoo_long_arm-occlusion-000",
+        "name": "occlusion-zoo_long_arm",
+        "recovered": true,
+        "verdict": "success",
+        "video": "occlusion-zoo_long_arm.mp4"
+      }
+    ],
+    "three_body": {
+      "duration_s": 16.583008,
+      "frames": 199,
+      "video": "three-body-nominal.mp4"
+    }
+  },
+  "d10_commit": "e50ecb26d465ac1f8fb3c778dc82d79d4d18fa12",
+  "environment_sha256": "57197e4d6c1b9dbd956d50f301120147f70c31d08e3153a1b8489164c8c66402",
+  "episode_cap_s": 120.0,
+  "episodes": 480,
+  "false_completions": 0,
+  "generation_calls": 0,
+  "goal": "G10",
+  "head": "e50ecb26d465ac1f8fb3c778dc82d79d4d18fa12",
+  "library_sha256": "8af1e9cda3a446e7c75f53c0074c92b01ae51fefabfa2fef0c4cb33ae74d9f47",
+  "max_attempts_any": {
+    "acquire_until_held": 3,
+    "place_until_placed": 3
+  },
+  "per_body": {
+    "zoo_dual_arm": {
+      "displaced": {
+        "episodes": 20,
+        "false_completions": 0,
+        "max_attempts": {
+          "acquire_until_held": 3,
+          "place_until_placed": 3
+        },
+        "met": false,
+        "physics_s": {
+          "max": 33.36999999999482,
+          "mean": 21.48839999999865
+        },
+        "reasons": {
+          "child_failed:0.0": 1,
+          "child_unknown:0.0": 4
+        },
+        "successes": 15,
+        "target": 16,
+        "within_cap": 20
+      },
+      "nominal": {
+        "episodes": 100,
+        "false_completions": 0,
+        "max_attempts": {
+          "acquire_until_held": 3,
+          "place_until_placed": 3
+        },
+        "met": true,
+        "physics_s": {
+          "max": 21.551999999998934,
+          "mean": 14.9799000000015
+        },
+        "reasons": {
+          "child_failed:0.0": 2,
+          "child_unknown:0.0": 4
+        },
+        "successes": 94,
+        "target": 90,
+        "within_cap": 100
+      },
+      "occlusion": {
+        "episodes": 20,
+        "false_completions": 0,
+        "max_attempts": {
+          "acquire_until_held": 2,
+          "place_until_placed": 1
+        },
+        "met": true,
+        "physics_s": {
+          "max": 24.549999999997272,
+          "mean": 17.698200000000927
+        },
+        "reasons": {
+          "child_unknown:0.0": 2
+        },
+        "successes": 18,
+        "target": 16,
+        "within_cap": 20
+      },
+      "slip": {
+        "episodes": 20,
+        "false_completions": 0,
+        "max_attempts": {
+          "acquire_until_held": 3,
+          "place_until_placed": 3
+        },
+        "met": false,
+        "physics_s": {
+          "max": 51.180000000016584,
+          "mean": 23.089099999999767
+        },
+        "reasons": {
+          "child_failed:0.0": 2,
+          "child_unknown:0.0": 5
+        },
+        "successes": 13,
+        "target": 16,
+        "within_cap": 20
+      }
+    },
+    "zoo_jaw_arm": {
+      "displaced": {
+        "episodes": 20,
+        "false_completions": 0,
+        "max_attempts": {
+          "acquire_until_held": 3,
+          "place_until_placed": 3
+        },
+        "met": false,
+        "physics_s": {
+          "max": 36.69599999999888,
+          "mean": 23.770499999998048
+        },
+        "reasons": {
+          "child_failed:0.0": 4,
+          "child_unknown:0.0": 2
+        },
+        "successes": 14,
+        "target": 16,
+        "within_cap": 20
+      },
+      "nominal": {
+        "episodes": 100,
+        "false_completions": 0,
+        "max_attempts": {
+          "acquire_until_held": 1,
+          "place_until_placed": 2
+        },
+        "met": true,
+        "physics_s": {
+          "max": 28.37799999999515,
+          "mean": 15.700060000001802
+        },
+        "reasons": {},
+        "successes": 100,
+        "target": 90,
+        "within_cap": 100
+      },
+      "occlusion": {
+        "episodes": 20,
+        "false_completions": 0,
+        "max_attempts": {
+          "acquire_until_held": 1,
+          "place_until_placed": 1
+        },
+        "met": true,
+        "physics_s": {
+          "max": 18.644000000000545,
+          "mean": 18.531800000000608
+        },
+        "reasons": {},
+        "successes": 20,
+        "target": 16,
+        "within_cap": 20
+      },
+      "slip": {
+        "episodes": 20,
+        "false_completions": 0,
+        "max_attempts": {
+          "acquire_until_held": 3,
+          "place_until_placed": 3
+        },
+        "met": true,
+        "physics_s": {
+          "max": 35.975999999998,
+          "mean": 24.02929999999804
+        },
+        "reasons": {
+          "child_failed:0.0": 2,
+          "child_unknown:0.0": 2
+        },
+        "successes": 16,
+        "target": 16,
+        "within_cap": 20
+      }
+    },
+    "zoo_long_arm": {
+      "displaced": {
+        "episodes": 20,
+        "false_completions": 0,
+        "max_attempts": {
+          "acquire_until_held": 3,
+          "place_until_placed": 3
+        },
+        "met": false,
+        "physics_s": {
+          "max": 33.00999999999438,
+          "mean": 22.513799999998337
+        },
+        "reasons": {
+          "child_failed:0.0": 1,
+          "child_unknown:0.0": 5
+        },
+        "successes": 14,
+        "target": 16,
+        "within_cap": 20
+      },
+      "nominal": {
+        "episodes": 100,
+        "false_completions": 0,
+        "max_attempts": {
+          "acquire_until_held": 1,
+          "place_until_placed": 2
+        },
+        "met": true,
+        "physics_s": {
+          "max": 29.17599999999471,
+          "mean": 16.52636000000172
+        },
+        "reasons": {},
+        "successes": 100,
+        "target": 90,
+        "within_cap": 100
+      },
+      "occlusion": {
+        "episodes": 20,
+        "false_completions": 0,
+        "max_attempts": {
+          "acquire_until_held": 1,
+          "place_until_placed": 1
+        },
+        "met": true,
+        "physics_s": {
+          "max": 19.454000000000097,
+          "mean": 19.40980000000012
+        },
+        "reasons": {},
+        "successes": 20,
+        "target": 16,
+        "within_cap": 20
+      },
+      "slip": {
+        "episodes": 20,
+        "false_completions": 0,
+        "max_attempts": {
+          "acquire_until_held": 1,
+          "place_until_placed": 3
+        },
+        "met": true,
+        "physics_s": {
+          "max": 24.149999999997494,
+          "mean": 23.583199999997735
+        },
+        "reasons": {
+          "child_unknown:0.0": 2
+        },
+        "successes": 18,
+        "target": 16,
+        "within_cap": 20
+      }
+    }
+  },
+  "pilots": [
+    {
+      "commit": "593b9df09552e8165fa32b1eec1590425b29a93d",
+      "false_completions": 0,
+      "name": "g10-campaign-pilot-1",
+      "per_body": {
+        "zoo_dual_arm": {
+          "displaced": {
+            "episodes": 20,
+            "false_completions": 0,
+            "successes": 16
+          },
+          "nominal": {
+            "episodes": 100,
+            "false_completions": 0,
+            "successes": 93
+          },
+          "occlusion": {
+            "episodes": 20,
+            "false_completions": 0,
+            "successes": 20
+          },
+          "slip": {
+            "episodes": 20,
+            "false_completions": 0,
+            "successes": 3
+          }
+        },
+        "zoo_jaw_arm": {
+          "displaced": {
+            "episodes": 20,
+            "false_completions": 0,
+            "successes": 16
+          },
+          "nominal": {
+            "episodes": 100,
+            "false_completions": 0,
+            "successes": 98
+          },
+          "occlusion": {
+            "episodes": 20,
+            "false_completions": 0,
+            "successes": 20
+          },
+          "slip": {
+            "episodes": 20,
+            "false_completions": 0,
+            "successes": 4
+          }
+        },
+        "zoo_long_arm": {
+          "displaced": {
+            "episodes": 20,
+            "false_completions": 0,
+            "successes": 8
+          },
+          "nominal": {
+            "episodes": 100,
+            "false_completions": 0,
+            "successes": 100
+          },
+          "occlusion": {
+            "episodes": 20,
+            "false_completions": 0,
+            "successes": 20
+          },
+          "slip": {
+            "episodes": 20,
+            "false_completions": 0,
+            "successes": 19
+          }
+        }
+      },
+      "registration_sha256": "ac51d5422b134f67223e8cc06db7fc87c0340ccdb9eef1d6d4527a0f909a2346"
+    },
+    {
+      "commit": "aa3c074389488d90be90a7e4b72b1d8676dfdd74",
+      "false_completions": 0,
+      "name": "g10-campaign-pilot-2",
+      "per_body": {
+        "zoo_dual_arm": {
+          "displaced": {
+            "episodes": 20,
+            "false_completions": 0,
+            "successes": 16
+          },
+          "nominal": {
+            "episodes": 100,
+            "false_completions": 0,
+            "successes": 94
+          },
+          "occlusion": {
+            "episodes": 20,
+            "false_completions": 0,
+            "successes": 19
+          },
+          "slip": {
+            "episodes": 20,
+            "false_completions": 0,
+            "successes": 13
+          }
+        },
+        "zoo_jaw_arm": {
+          "displaced": {
+            "episodes": 20,
+            "false_completions": 0,
+            "successes": 12
+          },
+          "nominal": {
+            "episodes": 100,
+            "false_completions": 0,
+            "successes": 99
+          },
+          "occlusion": {
+            "episodes": 20,
+            "false_completions": 0,
+            "successes": 18
+          },
+          "slip": {
+            "episodes": 20,
+            "false_completions": 0,
+            "successes": 14
+          }
+        },
+        "zoo_long_arm": {
+          "displaced": {
+            "episodes": 20,
+            "false_completions": 0,
+            "successes": 13
+          },
+          "nominal": {
+            "episodes": 100,
+            "false_completions": 0,
+            "successes": 100
+          },
+          "occlusion": {
+            "episodes": 20,
+            "false_completions": 0,
+            "successes": 20
+          },
+          "slip": {
+            "episodes": 20,
+            "false_completions": 0,
+            "successes": 19
+          }
+        }
+      },
+      "registration_sha256": "7769d4ecc49f2663013dad2d24d4f0812ed2ef65d873f92664f02fdb5c190b77"
+    }
+  ],
+  "policy_sha256": "6d2912e8df7d0a098f5d75f59ad37fc5bdf3c5bdd28f7ef940df7973cb4d1ed1",
+  "registration_sha256": "383cca195e67e3a4ad6a70b60f1e274527de895c2254e4376582dfdc5121aadf",
+  "retry_budget": 3,
+  "targets": {
+    "false_completions": 0,
+    "nominal_per_body": 90,
+    "recovered_per_class_per_body": 16
+  },
+  "targets_met": {
+    "displaced": false,
+    "false_completions": true,
+    "nominal": true,
+    "occlusion": true,
+    "slip": false
+  },
+  "tests": {
+    "any_robot": {
+      "errors": 0,
+      "failures": 0,
+      "skipped": 5,
+      "tests": 445
+    },
+    "core": {
+      "errors": 0,
+      "failures": 0,
+      "skipped": 2,
+      "tests": 358
+    },
+    "exotic": {
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "tests": 10
+    }
+  },
+  "written_at_utc": "2026-09-13T16:46:20.280434+00:00"
+}

@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-keep-747de9d3",
+  "title": "G10: zoo_long_arm-slip-018 (slip, unknown)",
+  "prompt": "pick up the cube and set it on the platform; keep going until you can verify it is placed",
+  "tier": "any-robot",
+  "embodiment": "zoo_long_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T16:40:24Z",
+  "source": {
+    "commit": "e50ecb26d4",
+    "branch": "feat/g10-transfer-skill",
+    "dirty": true,
+    "how": "python any-robot/scripts/g10_transfer_campaign.py --out docs/results/g10-campaign --local any-robot/results/g10-campaign"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "UNKNOWN (child_unknown:0.0): the skill did not verify a placement; 2 pass(es), acquisitions [1, 1]; physics 14.4 s."
+  },
+  "notes": "See docs/results/g10-report.md. One episode of the closed-loop transfer_object skill on physics: acquire until a hold is verified from the declared sensors, transport, release, verify the placement from the sensors, within three attempts per subgoal and a 120 s cap; one continuous physics record rendered at real-time playback with the simulation clock and the skill's verdict in the banner; frames.json beside the MP4 maps every frame to its recorded sample. A disturbed episode carries the protocol's push, pull or occluder as recorded user input. Class slip, seed 18.",
+  "media": [
+    {
+      "path": "docs/results/g10-campaign/zoo_long_arm/slip/seed-018/media/episode.mp4",
+      "bytes": 133856,
+      "sha256": "3278517de562c0b577a25f84133183876241a39f62552e2e7848068593693102",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g10-campaign/zoo_long_arm/slip/seed-018/media/preview.gif",
+      "bytes": 1218609,
+      "sha256": "6b802393fa0c04f2d71384580091ecb5b2534c5f9e04afb4e24793d2def581bd",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G10",
+    "transfer_object",
+    "slip",
+    "zoo_long_arm",
+    "failure"
+  ]
+}

@@ -1,0 +1,7756 @@
+{
+  "bodies": [
+    "zoo_dual_arm",
+    "zoo_jaw_arm",
+    "zoo_long_arm"
+  ],
+  "classes": [
+    "nominal",
+    "displaced",
+    "slip",
+    "occlusion"
+  ],
+  "commit": "46d1dd3b0d7b46d0952e5aca0497690ccaba741b",
+  "created_at_utc": "2026-09-13T13:25:27.840537+00:00",
+  "disturbances": {
+    "displaced": {
+      "after_s": 0.4,
+      "declared": "a constant force on the object, applied through the step hook while the first acquisition approaches, recorded as user input",
+      "duration_s": 0.03,
+      "force_n": null,
+      "kind": "displaced",
+      "push_n": 0.2,
+      "support": "bench"
+    },
+    "occlusion": {
+      "declared": "a mocap occluder between the front camera and the fixtures from the start of the first placement verification, parked again after",
+      "duration_s": 3.0,
+      "kind": "occlusion",
+      "shutter_half_m": [
+        0.3,
+        0.005,
+        0.3
+      ],
+      "shutter_position_m": [
+        -0.08,
+        1.0,
+        0.41
+      ]
+    },
+    "slip": {
+      "after_s": 0.05,
+      "cap_n": 40.0,
+      "clearance_m": 0.01,
+      "declared": "a downward pull on the held object early in the first carry: gain x 2 x friction x the grip force the contact sensor reports, plus extra, capped",
+      "gain_per_s": 400.0,
+      "high": 1.5,
+      "kind": "slip",
+      "low": 0.5,
+      "slide_speed_mps": 0.25,
+      "timeout_s": 1.5
+    }
+  },
+  "disturbed_per_class": 20,
+  "environment_id": "g06_transfer_v1+floor",
+  "environment_sha256": "049b34932bfbb1346e7d59a0edd0b7464934de1e8bf528235072385ab5b9bc02",
+  "episode_cap_s": 120.0,
+  "episodes": [
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0182962155737896,
+        "mass_multiplier": 0.9191994206519264,
+        "seed": 0,
+        "translation_m": [
+          -0.011422315080391625,
+          -0.005868115488978502,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-000",
+      "seed": 0,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9102974108157971,
+        "mass_multiplier": 1.1721274572016784,
+        "seed": 1,
+        "translation_m": [
+          -0.011969502885963443,
+          0.00377110251865604,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-001",
+      "seed": 1,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8183563578339411,
+        "mass_multiplier": 1.0754225490565081,
+        "seed": 2,
+        "translation_m": [
+          0.001459766047956293,
+          -0.007195659020988888,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-002",
+      "seed": 2,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.066037607225657,
+        "mass_multiplier": 1.0419062320541912,
+        "seed": 3,
+        "translation_m": [
+          0.001933645047144411,
+          0.00857465783001319,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-003",
+      "seed": 3,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0164495848584747,
+        "mass_multiplier": 0.9568405959889257,
+        "seed": 4,
+        "translation_m": [
+          -0.002312279099595617,
+          -0.003468352580955538,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-004",
+      "seed": 4,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8937456525896829,
+        "mass_multiplier": 0.9054871806967629,
+        "seed": 5,
+        "translation_m": [
+          0.01438871776765566,
+          -0.0033106512956770466,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-005",
+      "seed": 5,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1832167336677109,
+        "mass_multiplier": 1.1026258466028631,
+        "seed": 6,
+        "translation_m": [
+          -0.0030231036822346846,
+          -0.007044995621598424,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-006",
+      "seed": 6,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0356559215674135,
+        "mass_multiplier": 0.872834273155337,
+        "seed": 7,
+        "translation_m": [
+          -0.01826433670652878,
+          0.006273503142162799,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-007",
+      "seed": 7,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9698969960984316,
+        "mass_multiplier": 0.8693420574373756,
+        "seed": 8,
+        "translation_m": [
+          0.017909922769922013,
+          -0.005444595874981988,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-008",
+      "seed": 8,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0898509698383207,
+        "mass_multiplier": 0.9629685855397057,
+        "seed": 9,
+        "translation_m": [
+          -0.01608031579481809,
+          -0.017511426668519056,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-009",
+      "seed": 9,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1134376210591257,
+        "mass_multiplier": 0.8392317063724559,
+        "seed": 10,
+        "translation_m": [
+          -0.01648894142856307,
+          -0.00648197295251602,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-010",
+      "seed": 10,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.017135045719346,
+        "mass_multiplier": 1.0324091478641375,
+        "seed": 11,
+        "translation_m": [
+          0.012783365950920247,
+          -0.014649590370164313,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-011",
+      "seed": 11,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8692715661181889,
+        "mass_multiplier": 1.1920416343393876,
+        "seed": 12,
+        "translation_m": [
+          0.003776095338136592,
+          -0.006350536290749035,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-012",
+      "seed": 12,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9850348015098894,
+        "mass_multiplier": 1.1555180186544316,
+        "seed": 13,
+        "translation_m": [
+          -0.007048335644060417,
+          0.015445820342547243,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-013",
+      "seed": 13,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.092506792576294,
+        "mass_multiplier": 0.8980168161851975,
+        "seed": 14,
+        "translation_m": [
+          0.009823801130497366,
+          -0.0036832321867414815,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-014",
+      "seed": 14,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0763661576139614,
+        "mass_multiplier": 1.1529153319732965,
+        "seed": 15,
+        "translation_m": [
+          0.01964664206567557,
+          -0.01691932640144088,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-015",
+      "seed": 15,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.198813708684073,
+        "mass_multiplier": 1.1083977245885874,
+        "seed": 16,
+        "translation_m": [
+          -0.015379638888781143,
+          -0.016406774007580754,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-016",
+      "seed": 16,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8701305397727794,
+        "mass_multiplier": 0.9857493077495296,
+        "seed": 17,
+        "translation_m": [
+          0.017388934893409726,
+          -0.018435143769219193,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-017",
+      "seed": 17,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0515247067452724,
+        "mass_multiplier": 0.9080731868200951,
+        "seed": 18,
+        "translation_m": [
+          -0.01648761639079042,
+          -0.016133772112910925,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-018",
+      "seed": 18,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0294805128326512,
+        "mass_multiplier": 0.8872936975017967,
+        "seed": 19,
+        "translation_m": [
+          0.0005117966029036039,
+          -0.00791462913132606,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-019",
+      "seed": 19,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0268790378708867,
+        "mass_multiplier": 1.1576966898990264,
+        "seed": 20,
+        "translation_m": [
+          -0.0032961238981458647,
+          0.008630884357851806,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-020",
+      "seed": 20,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1776448390548722,
+        "mass_multiplier": 0.9057927770025782,
+        "seed": 21,
+        "translation_m": [
+          0.007668373433850118,
+          -0.019679525607532642,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-021",
+      "seed": 21,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.097417793264605,
+        "mass_multiplier": 1.0666379212887553,
+        "seed": 22,
+        "translation_m": [
+          0.011573815217187925,
+          0.0118864882507736,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-022",
+      "seed": 22,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8991337937943432,
+        "mass_multiplier": 1.1619195321883002,
+        "seed": 23,
+        "translation_m": [
+          -0.011314303711725131,
+          -0.01801219264961096,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-023",
+      "seed": 23,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0465169430930727,
+        "mass_multiplier": 0.9367887654659258,
+        "seed": 24,
+        "translation_m": [
+          -0.012488861501898976,
+          -0.01967313897547643,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-024",
+      "seed": 24,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.980062320881554,
+        "mass_multiplier": 1.1841511810194247,
+        "seed": 25,
+        "translation_m": [
+          0.011135456298862069,
+          0.0033392126432276216,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-025",
+      "seed": 25,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8310425566013734,
+        "mass_multiplier": 1.1003775659327557,
+        "seed": 26,
+        "translation_m": [
+          -0.0032747481493483888,
+          -0.002480816412673427,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-026",
+      "seed": 26,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9147940124579936,
+        "mass_multiplier": 0.9446821434905314,
+        "seed": 27,
+        "translation_m": [
+          0.003898484158928541,
+          0.015021604150564246,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-027",
+      "seed": 27,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9443257664452442,
+        "mass_multiplier": 1.0000232861326652,
+        "seed": 28,
+        "translation_m": [
+          -0.01048617364616276,
+          0.007513146628971606,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-028",
+      "seed": 28,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8278852911860771,
+        "mass_multiplier": 0.8508074911112955,
+        "seed": 29,
+        "translation_m": [
+          -0.014327943718894032,
+          -0.00877130113840494,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-029",
+      "seed": 29,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0814335885930138,
+        "mass_multiplier": 0.9360447732649302,
+        "seed": 30,
+        "translation_m": [
+          0.016273489820296038,
+          -0.019710586768074592,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-030",
+      "seed": 30,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9363306078474896,
+        "mass_multiplier": 0.8402874709177603,
+        "seed": 31,
+        "translation_m": [
+          0.01860680024759367,
+          0.010330667559418746,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-031",
+      "seed": 31,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9528066358664267,
+        "mass_multiplier": 1.0821208641998845,
+        "seed": 32,
+        "translation_m": [
+          0.005176086448683469,
+          0.014514234259054046,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-032",
+      "seed": 32,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.157453893917814,
+        "mass_multiplier": 0.810972948407621,
+        "seed": 33,
+        "translation_m": [
+          0.005592268674276625,
+          0.017812196006707446,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-033",
+      "seed": 33,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0903658090923287,
+        "mass_multiplier": 0.9504324899793996,
+        "seed": 34,
+        "translation_m": [
+          0.011947255102631348,
+          0.004115917242029955,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-034",
+      "seed": 34,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9849744022998771,
+        "mass_multiplier": 0.8125092052092551,
+        "seed": 35,
+        "translation_m": [
+          -0.0030300825122908243,
+          0.017664804349405778,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-035",
+      "seed": 35,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8043321376568082,
+        "mass_multiplier": 0.9390776457393737,
+        "seed": 36,
+        "translation_m": [
+          0.017170516588317173,
+          0.014154847600807183,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-036",
+      "seed": 36,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9522830120458299,
+        "mass_multiplier": 1.190497382028871,
+        "seed": 37,
+        "translation_m": [
+          0.012971035814916387,
+          0.0016892589219972103,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-037",
+      "seed": 37,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9719640102997399,
+        "mass_multiplier": 0.9797151647825834,
+        "seed": 38,
+        "translation_m": [
+          -0.006828322469122825,
+          -0.01901161764313191,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-038",
+      "seed": 38,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9827526682283282,
+        "mass_multiplier": 1.0606050495958301,
+        "seed": 39,
+        "translation_m": [
+          0.016905530375720883,
+          -0.013590464794255276,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-039",
+      "seed": 39,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9897857488186356,
+        "mass_multiplier": 0.9661325878880603,
+        "seed": 40,
+        "translation_m": [
+          0.01665684365904459,
+          -0.010765714677498752,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-040",
+      "seed": 40,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8084022170587243,
+        "mass_multiplier": 0.8289722232013137,
+        "seed": 41,
+        "translation_m": [
+          0.01619774919086583,
+          -0.0021095135361655845,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-041",
+      "seed": 41,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.187609739544385,
+        "mass_multiplier": 1.0738215121391212,
+        "seed": 42,
+        "translation_m": [
+          -0.019431218017792254,
+          -0.0064866782720216995,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-042",
+      "seed": 42,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8359878977702045,
+        "mass_multiplier": 1.082589786811253,
+        "seed": 43,
+        "translation_m": [
+          -0.014467578423103752,
+          0.00818215799339344,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-043",
+      "seed": 43,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9629170139689719,
+        "mass_multiplier": 0.9439163241973274,
+        "seed": 44,
+        "translation_m": [
+          0.006668175294377084,
+          -0.009300561600269344,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-044",
+      "seed": 44,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1859996243706776,
+        "mass_multiplier": 0.8611524892096873,
+        "seed": 45,
+        "translation_m": [
+          0.015393255198683318,
+          0.00871839296333916,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-045",
+      "seed": 45,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9683569224454983,
+        "mass_multiplier": 0.8919084390018597,
+        "seed": 46,
+        "translation_m": [
+          0.016074313205811566,
+          0.019310882300926886,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-046",
+      "seed": 46,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.130575252839988,
+        "mass_multiplier": 1.0648240848429966,
+        "seed": 47,
+        "translation_m": [
+          0.005235149416654993,
+          -0.011155770201319885,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-047",
+      "seed": 47,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0307168816827226,
+        "mass_multiplier": 0.864533961113888,
+        "seed": 48,
+        "translation_m": [
+          0.00918362492859973,
+          0.0043824025165069905,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-048",
+      "seed": 48,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8073806335803158,
+        "mass_multiplier": 1.0392700959682453,
+        "seed": 49,
+        "translation_m": [
+          -0.011197121630151336,
+          -0.005018841946771345,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-049",
+      "seed": 49,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8298604451163205,
+        "mass_multiplier": 0.9408690715773843,
+        "seed": 50,
+        "translation_m": [
+          0.007320923212336475,
+          0.0059771954444055725,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-050",
+      "seed": 50,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0157207814418516,
+        "mass_multiplier": 0.8659755495693744,
+        "seed": 51,
+        "translation_m": [
+          -0.018694025525321595,
+          -0.009195851192235645,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-051",
+      "seed": 51,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8419394705117642,
+        "mass_multiplier": 1.1826899163653743,
+        "seed": 52,
+        "translation_m": [
+          -0.018099847377684313,
+          -0.005680377921932758,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-052",
+      "seed": 52,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8731830051861957,
+        "mass_multiplier": 0.8926778997302224,
+        "seed": 53,
+        "translation_m": [
+          -0.008721394373575228,
+          -0.00977156746365596,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-053",
+      "seed": 53,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8460225244807268,
+        "mass_multiplier": 1.1378511535852147,
+        "seed": 54,
+        "translation_m": [
+          -0.0016067906794580353,
+          0.00041595480643672605,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-054",
+      "seed": 54,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1572107796621567,
+        "mass_multiplier": 0.8941026162332726,
+        "seed": 55,
+        "translation_m": [
+          0.01811658415197458,
+          0.003792623365427593,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-055",
+      "seed": 55,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8005484384459096,
+        "mass_multiplier": 1.1290881858505344,
+        "seed": 56,
+        "translation_m": [
+          -0.004061626257656253,
+          0.01244436253270827,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-056",
+      "seed": 56,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.09866748551826,
+        "mass_multiplier": 1.1902690362389599,
+        "seed": 57,
+        "translation_m": [
+          0.018636534168275817,
+          8.92145991962974e-05,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-057",
+      "seed": 57,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9587230737656562,
+        "mass_multiplier": 1.1152558628801779,
+        "seed": 58,
+        "translation_m": [
+          -0.01873571660232043,
+          0.005861044694619327,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-058",
+      "seed": 58,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9555028855953405,
+        "mass_multiplier": 0.9783064761222017,
+        "seed": 59,
+        "translation_m": [
+          0.00350182657655098,
+          0.01776053164816706,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-059",
+      "seed": 59,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1035200260501556,
+        "mass_multiplier": 0.8644364389035438,
+        "seed": 60,
+        "translation_m": [
+          -0.013106691001861476,
+          0.015107263012276159,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-060",
+      "seed": 60,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8433521587982907,
+        "mass_multiplier": 0.8594785679718359,
+        "seed": 61,
+        "translation_m": [
+          0.0180818849202314,
+          0.004854600137740528,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-061",
+      "seed": 61,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0270935391086216,
+        "mass_multiplier": 1.0662308239016234,
+        "seed": 62,
+        "translation_m": [
+          0.019202767526039572,
+          -0.0074129762271896785,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-062",
+      "seed": 62,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.077046002624154,
+        "mass_multiplier": 0.8163488316118643,
+        "seed": 63,
+        "translation_m": [
+          -0.0021412476576635024,
+          -0.01626786961948487,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-063",
+      "seed": 63,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1791694110981368,
+        "mass_multiplier": 0.9432930390696939,
+        "seed": 64,
+        "translation_m": [
+          -0.01500474991967999,
+          0.014422931227143557,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-064",
+      "seed": 64,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.189931305708793,
+        "mass_multiplier": 0.9574955113430561,
+        "seed": 65,
+        "translation_m": [
+          -0.010311887481389599,
+          0.017142415952053704,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-065",
+      "seed": 65,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9049875565231732,
+        "mass_multiplier": 1.0961877948504397,
+        "seed": 66,
+        "translation_m": [
+          0.0190177423219095,
+          0.018024761981442507,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-066",
+      "seed": 66,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0697549000949953,
+        "mass_multiplier": 0.8336888951221311,
+        "seed": 67,
+        "translation_m": [
+          -0.006304392363867022,
+          0.00738652565383513,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-067",
+      "seed": 67,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8655831218912929,
+        "mass_multiplier": 1.1330657363587127,
+        "seed": 68,
+        "translation_m": [
+          0.007775624500052723,
+          -0.014835100650705741,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-068",
+      "seed": 68,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1434969521815208,
+        "mass_multiplier": 0.9194085097644029,
+        "seed": 69,
+        "translation_m": [
+          0.0012517602679416318,
+          -0.005236356953375631,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-069",
+      "seed": 69,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1347950580965371,
+        "mass_multiplier": 1.1644667888344586,
+        "seed": 70,
+        "translation_m": [
+          0.014269975613582297,
+          -0.013264044294303723,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-070",
+      "seed": 70,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9626516205448774,
+        "mass_multiplier": 0.9243319267896848,
+        "seed": 71,
+        "translation_m": [
+          -0.00028584018591114313,
+          -0.015144204583314993,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-071",
+      "seed": 71,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0366378051270582,
+        "mass_multiplier": 1.0890796493087285,
+        "seed": 72,
+        "translation_m": [
+          -0.009295639118369335,
+          0.010755975276700067,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-072",
+      "seed": 72,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.019050821680053,
+        "mass_multiplier": 1.0231080803902368,
+        "seed": 73,
+        "translation_m": [
+          0.015365314772340714,
+          -0.013820276225571937,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-073",
+      "seed": 73,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1440890639950936,
+        "mass_multiplier": 1.0418589539499932,
+        "seed": 74,
+        "translation_m": [
+          0.01524723028343104,
+          -0.009659672018763433,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-074",
+      "seed": 74,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9798464905958184,
+        "mass_multiplier": 0.8674140676581428,
+        "seed": 75,
+        "translation_m": [
+          0.016826746800305072,
+          0.012598114629269932,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-075",
+      "seed": 75,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1938740222476718,
+        "mass_multiplier": 1.036349868322151,
+        "seed": 76,
+        "translation_m": [
+          -0.01014478936783739,
+          0.001944770682469548,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-076",
+      "seed": 76,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1910527389445176,
+        "mass_multiplier": 0.9213587170273695,
+        "seed": 77,
+        "translation_m": [
+          0.013403037039961967,
+          -0.0056879579531539555,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-077",
+      "seed": 77,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0501831006958326,
+        "mass_multiplier": 1.085943606876891,
+        "seed": 78,
+        "translation_m": [
+          0.004454706310633192,
+          -0.017932584418967338,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-078",
+      "seed": 78,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.000953062497997,
+        "mass_multiplier": 1.1667392499382485,
+        "seed": 79,
+        "translation_m": [
+          -0.017177381904834782,
+          0.019811614993499472,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-079",
+      "seed": 79,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8023993720295476,
+        "mass_multiplier": 0.8855171503273688,
+        "seed": 80,
+        "translation_m": [
+          0.013557561234911409,
+          0.008635519556063117,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-080",
+      "seed": 80,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1219338193134558,
+        "mass_multiplier": 1.024145765918178,
+        "seed": 81,
+        "translation_m": [
+          0.013817378708868584,
+          0.0015308982847004743,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-081",
+      "seed": 81,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0089226690255062,
+        "mass_multiplier": 1.1885154096574313,
+        "seed": 82,
+        "translation_m": [
+          -0.008478122623023837,
+          0.019171807023747423,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-082",
+      "seed": 82,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.15158790895564,
+        "mass_multiplier": 1.1176591102684066,
+        "seed": 83,
+        "translation_m": [
+          0.012881455007603435,
+          -0.015700750464796732,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-083",
+      "seed": 83,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9390325608606113,
+        "mass_multiplier": 0.8108164437487975,
+        "seed": 84,
+        "translation_m": [
+          0.006851491701787449,
+          0.008057718423743553,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-084",
+      "seed": 84,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9142613103474578,
+        "mass_multiplier": 1.180930597844023,
+        "seed": 85,
+        "translation_m": [
+          -0.0014026659990393903,
+          -0.0030517852008574813,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-085",
+      "seed": 85,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8525558218815316,
+        "mass_multiplier": 1.1328976771547405,
+        "seed": 86,
+        "translation_m": [
+          -0.01591944065298534,
+          -0.006820294778195813,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-086",
+      "seed": 86,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1585237909313546,
+        "mass_multiplier": 0.8750016075466005,
+        "seed": 87,
+        "translation_m": [
+          0.004377425463681774,
+          -0.0072864129158483944,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-087",
+      "seed": 87,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9601309710851659,
+        "mass_multiplier": 1.1908721293171443,
+        "seed": 88,
+        "translation_m": [
+          -0.005204053558845812,
+          -0.0190344848715608,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-088",
+      "seed": 88,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.144280440128083,
+        "mass_multiplier": 1.105944024707676,
+        "seed": 89,
+        "translation_m": [
+          0.0018817551125995813,
+          0.010988935189714881,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-089",
+      "seed": 89,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9025059403098923,
+        "mass_multiplier": 1.0244371722052539,
+        "seed": 90,
+        "translation_m": [
+          -0.003713729411845012,
+          0.004992179334088343,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-090",
+      "seed": 90,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9490658554140958,
+        "mass_multiplier": 0.8755147993477896,
+        "seed": 91,
+        "translation_m": [
+          0.010338543104303995,
+          -0.004103036935511915,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-091",
+      "seed": 91,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1160488871736631,
+        "mass_multiplier": 1.115325620763511,
+        "seed": 92,
+        "translation_m": [
+          -0.019940742448056818,
+          -0.01810301298057849,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-092",
+      "seed": 92,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1057475846884757,
+        "mass_multiplier": 0.9759661023730248,
+        "seed": 93,
+        "translation_m": [
+          -0.003251314437272862,
+          -0.0171809334363826,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-093",
+      "seed": 93,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1895402702697682,
+        "mass_multiplier": 1.1027554552918168,
+        "seed": 94,
+        "translation_m": [
+          0.003775047885413975,
+          0.010677991541446958,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-094",
+      "seed": 94,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9914917325594976,
+        "mass_multiplier": 1.0898794668161793,
+        "seed": 95,
+        "translation_m": [
+          0.011282058034761813,
+          0.003403821251106911,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-095",
+      "seed": 95,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8338603363708493,
+        "mass_multiplier": 1.0963647591570904,
+        "seed": 96,
+        "translation_m": [
+          -0.011274732516796879,
+          -0.0039498368922198865,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-096",
+      "seed": 96,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0287240631143644,
+        "mass_multiplier": 1.031433156312998,
+        "seed": 97,
+        "translation_m": [
+          0.018355371390198386,
+          0.014696890715871765,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-097",
+      "seed": 97,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.13532221466333,
+        "mass_multiplier": 1.0532147209445453,
+        "seed": 98,
+        "translation_m": [
+          0.009476551047728963,
+          0.005744298505316235,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-098",
+      "seed": 98,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8636501694062929,
+        "mass_multiplier": 1.1881171745582924,
+        "seed": 99,
+        "translation_m": [
+          0.00048590571588722625,
+          0.016116287389746426,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-nominal-099",
+      "seed": 99,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.0182962155737896,
+        "mass_multiplier": 0.9191994206519264,
+        "seed": 0,
+        "translation_m": [
+          -0.011422315080391625,
+          -0.005868115488978502,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-displaced-000",
+      "seed": 0,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 0.9102974108157971,
+        "mass_multiplier": 1.1721274572016784,
+        "seed": 1,
+        "translation_m": [
+          -0.011969502885963443,
+          0.00377110251865604,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-displaced-001",
+      "seed": 1,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 0.8183563578339411,
+        "mass_multiplier": 1.0754225490565081,
+        "seed": 2,
+        "translation_m": [
+          0.001459766047956293,
+          -0.007195659020988888,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-displaced-002",
+      "seed": 2,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.066037607225657,
+        "mass_multiplier": 1.0419062320541912,
+        "seed": 3,
+        "translation_m": [
+          0.001933645047144411,
+          0.00857465783001319,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-displaced-003",
+      "seed": 3,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.0164495848584747,
+        "mass_multiplier": 0.9568405959889257,
+        "seed": 4,
+        "translation_m": [
+          -0.002312279099595617,
+          -0.003468352580955538,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-displaced-004",
+      "seed": 4,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 0.8937456525896829,
+        "mass_multiplier": 0.9054871806967629,
+        "seed": 5,
+        "translation_m": [
+          0.01438871776765566,
+          -0.0033106512956770466,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-displaced-005",
+      "seed": 5,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.1832167336677109,
+        "mass_multiplier": 1.1026258466028631,
+        "seed": 6,
+        "translation_m": [
+          -0.0030231036822346846,
+          -0.007044995621598424,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-displaced-006",
+      "seed": 6,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.0356559215674135,
+        "mass_multiplier": 0.872834273155337,
+        "seed": 7,
+        "translation_m": [
+          -0.01826433670652878,
+          0.006273503142162799,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-displaced-007",
+      "seed": 7,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 0.9698969960984316,
+        "mass_multiplier": 0.8693420574373756,
+        "seed": 8,
+        "translation_m": [
+          0.017909922769922013,
+          -0.005444595874981988,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-displaced-008",
+      "seed": 8,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.0898509698383207,
+        "mass_multiplier": 0.9629685855397057,
+        "seed": 9,
+        "translation_m": [
+          -0.01608031579481809,
+          -0.017511426668519056,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-displaced-009",
+      "seed": 9,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.1134376210591257,
+        "mass_multiplier": 0.8392317063724559,
+        "seed": 10,
+        "translation_m": [
+          -0.01648894142856307,
+          -0.00648197295251602,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-displaced-010",
+      "seed": 10,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.017135045719346,
+        "mass_multiplier": 1.0324091478641375,
+        "seed": 11,
+        "translation_m": [
+          0.012783365950920247,
+          -0.014649590370164313,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-displaced-011",
+      "seed": 11,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 0.8692715661181889,
+        "mass_multiplier": 1.1920416343393876,
+        "seed": 12,
+        "translation_m": [
+          0.003776095338136592,
+          -0.006350536290749035,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-displaced-012",
+      "seed": 12,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 0.9850348015098894,
+        "mass_multiplier": 1.1555180186544316,
+        "seed": 13,
+        "translation_m": [
+          -0.007048335644060417,
+          0.015445820342547243,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-displaced-013",
+      "seed": 13,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.092506792576294,
+        "mass_multiplier": 0.8980168161851975,
+        "seed": 14,
+        "translation_m": [
+          0.009823801130497366,
+          -0.0036832321867414815,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-displaced-014",
+      "seed": 14,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.0763661576139614,
+        "mass_multiplier": 1.1529153319732965,
+        "seed": 15,
+        "translation_m": [
+          0.01964664206567557,
+          -0.01691932640144088,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-displaced-015",
+      "seed": 15,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.198813708684073,
+        "mass_multiplier": 1.1083977245885874,
+        "seed": 16,
+        "translation_m": [
+          -0.015379638888781143,
+          -0.016406774007580754,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-displaced-016",
+      "seed": 16,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 0.8701305397727794,
+        "mass_multiplier": 0.9857493077495296,
+        "seed": 17,
+        "translation_m": [
+          0.017388934893409726,
+          -0.018435143769219193,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-displaced-017",
+      "seed": 17,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.0515247067452724,
+        "mass_multiplier": 0.9080731868200951,
+        "seed": 18,
+        "translation_m": [
+          -0.01648761639079042,
+          -0.016133772112910925,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-displaced-018",
+      "seed": 18,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.0294805128326512,
+        "mass_multiplier": 0.8872936975017967,
+        "seed": 19,
+        "translation_m": [
+          0.0005117966029036039,
+          -0.00791462913132606,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-displaced-019",
+      "seed": 19,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.0182962155737896,
+        "mass_multiplier": 0.9191994206519264,
+        "seed": 0,
+        "translation_m": [
+          -0.011422315080391625,
+          -0.005868115488978502,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-slip-000",
+      "seed": 0,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 0.9102974108157971,
+        "mass_multiplier": 1.1721274572016784,
+        "seed": 1,
+        "translation_m": [
+          -0.011969502885963443,
+          0.00377110251865604,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-slip-001",
+      "seed": 1,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 0.8183563578339411,
+        "mass_multiplier": 1.0754225490565081,
+        "seed": 2,
+        "translation_m": [
+          0.001459766047956293,
+          -0.007195659020988888,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-slip-002",
+      "seed": 2,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.066037607225657,
+        "mass_multiplier": 1.0419062320541912,
+        "seed": 3,
+        "translation_m": [
+          0.001933645047144411,
+          0.00857465783001319,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-slip-003",
+      "seed": 3,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.0164495848584747,
+        "mass_multiplier": 0.9568405959889257,
+        "seed": 4,
+        "translation_m": [
+          -0.002312279099595617,
+          -0.003468352580955538,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-slip-004",
+      "seed": 4,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 0.8937456525896829,
+        "mass_multiplier": 0.9054871806967629,
+        "seed": 5,
+        "translation_m": [
+          0.01438871776765566,
+          -0.0033106512956770466,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-slip-005",
+      "seed": 5,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.1832167336677109,
+        "mass_multiplier": 1.1026258466028631,
+        "seed": 6,
+        "translation_m": [
+          -0.0030231036822346846,
+          -0.007044995621598424,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-slip-006",
+      "seed": 6,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.0356559215674135,
+        "mass_multiplier": 0.872834273155337,
+        "seed": 7,
+        "translation_m": [
+          -0.01826433670652878,
+          0.006273503142162799,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-slip-007",
+      "seed": 7,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 0.9698969960984316,
+        "mass_multiplier": 0.8693420574373756,
+        "seed": 8,
+        "translation_m": [
+          0.017909922769922013,
+          -0.005444595874981988,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-slip-008",
+      "seed": 8,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.0898509698383207,
+        "mass_multiplier": 0.9629685855397057,
+        "seed": 9,
+        "translation_m": [
+          -0.01608031579481809,
+          -0.017511426668519056,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-slip-009",
+      "seed": 9,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.1134376210591257,
+        "mass_multiplier": 0.8392317063724559,
+        "seed": 10,
+        "translation_m": [
+          -0.01648894142856307,
+          -0.00648197295251602,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-slip-010",
+      "seed": 10,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.017135045719346,
+        "mass_multiplier": 1.0324091478641375,
+        "seed": 11,
+        "translation_m": [
+          0.012783365950920247,
+          -0.014649590370164313,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-slip-011",
+      "seed": 11,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 0.8692715661181889,
+        "mass_multiplier": 1.1920416343393876,
+        "seed": 12,
+        "translation_m": [
+          0.003776095338136592,
+          -0.006350536290749035,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-slip-012",
+      "seed": 12,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 0.9850348015098894,
+        "mass_multiplier": 1.1555180186544316,
+        "seed": 13,
+        "translation_m": [
+          -0.007048335644060417,
+          0.015445820342547243,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-slip-013",
+      "seed": 13,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.092506792576294,
+        "mass_multiplier": 0.8980168161851975,
+        "seed": 14,
+        "translation_m": [
+          0.009823801130497366,
+          -0.0036832321867414815,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-slip-014",
+      "seed": 14,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.0763661576139614,
+        "mass_multiplier": 1.1529153319732965,
+        "seed": 15,
+        "translation_m": [
+          0.01964664206567557,
+          -0.01691932640144088,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-slip-015",
+      "seed": 15,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.198813708684073,
+        "mass_multiplier": 1.1083977245885874,
+        "seed": 16,
+        "translation_m": [
+          -0.015379638888781143,
+          -0.016406774007580754,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-slip-016",
+      "seed": 16,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 0.8701305397727794,
+        "mass_multiplier": 0.9857493077495296,
+        "seed": 17,
+        "translation_m": [
+          0.017388934893409726,
+          -0.018435143769219193,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-slip-017",
+      "seed": 17,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.0515247067452724,
+        "mass_multiplier": 0.9080731868200951,
+        "seed": 18,
+        "translation_m": [
+          -0.01648761639079042,
+          -0.016133772112910925,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-slip-018",
+      "seed": 18,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.0294805128326512,
+        "mass_multiplier": 0.8872936975017967,
+        "seed": 19,
+        "translation_m": [
+          0.0005117966029036039,
+          -0.00791462913132606,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-slip-019",
+      "seed": 19,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.0182962155737896,
+        "mass_multiplier": 0.9191994206519264,
+        "seed": 0,
+        "translation_m": [
+          -0.011422315080391625,
+          -0.005868115488978502,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-occlusion-000",
+      "seed": 0,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 0.9102974108157971,
+        "mass_multiplier": 1.1721274572016784,
+        "seed": 1,
+        "translation_m": [
+          -0.011969502885963443,
+          0.00377110251865604,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-occlusion-001",
+      "seed": 1,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 0.8183563578339411,
+        "mass_multiplier": 1.0754225490565081,
+        "seed": 2,
+        "translation_m": [
+          0.001459766047956293,
+          -0.007195659020988888,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-occlusion-002",
+      "seed": 2,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.066037607225657,
+        "mass_multiplier": 1.0419062320541912,
+        "seed": 3,
+        "translation_m": [
+          0.001933645047144411,
+          0.00857465783001319,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-occlusion-003",
+      "seed": 3,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.0164495848584747,
+        "mass_multiplier": 0.9568405959889257,
+        "seed": 4,
+        "translation_m": [
+          -0.002312279099595617,
+          -0.003468352580955538,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-occlusion-004",
+      "seed": 4,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 0.8937456525896829,
+        "mass_multiplier": 0.9054871806967629,
+        "seed": 5,
+        "translation_m": [
+          0.01438871776765566,
+          -0.0033106512956770466,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-occlusion-005",
+      "seed": 5,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.1832167336677109,
+        "mass_multiplier": 1.1026258466028631,
+        "seed": 6,
+        "translation_m": [
+          -0.0030231036822346846,
+          -0.007044995621598424,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-occlusion-006",
+      "seed": 6,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.0356559215674135,
+        "mass_multiplier": 0.872834273155337,
+        "seed": 7,
+        "translation_m": [
+          -0.01826433670652878,
+          0.006273503142162799,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-occlusion-007",
+      "seed": 7,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 0.9698969960984316,
+        "mass_multiplier": 0.8693420574373756,
+        "seed": 8,
+        "translation_m": [
+          0.017909922769922013,
+          -0.005444595874981988,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-occlusion-008",
+      "seed": 8,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.0898509698383207,
+        "mass_multiplier": 0.9629685855397057,
+        "seed": 9,
+        "translation_m": [
+          -0.01608031579481809,
+          -0.017511426668519056,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-occlusion-009",
+      "seed": 9,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.1134376210591257,
+        "mass_multiplier": 0.8392317063724559,
+        "seed": 10,
+        "translation_m": [
+          -0.01648894142856307,
+          -0.00648197295251602,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-occlusion-010",
+      "seed": 10,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.017135045719346,
+        "mass_multiplier": 1.0324091478641375,
+        "seed": 11,
+        "translation_m": [
+          0.012783365950920247,
+          -0.014649590370164313,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-occlusion-011",
+      "seed": 11,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 0.8692715661181889,
+        "mass_multiplier": 1.1920416343393876,
+        "seed": 12,
+        "translation_m": [
+          0.003776095338136592,
+          -0.006350536290749035,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-occlusion-012",
+      "seed": 12,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 0.9850348015098894,
+        "mass_multiplier": 1.1555180186544316,
+        "seed": 13,
+        "translation_m": [
+          -0.007048335644060417,
+          0.015445820342547243,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-occlusion-013",
+      "seed": 13,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.092506792576294,
+        "mass_multiplier": 0.8980168161851975,
+        "seed": 14,
+        "translation_m": [
+          0.009823801130497366,
+          -0.0036832321867414815,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-occlusion-014",
+      "seed": 14,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.0763661576139614,
+        "mass_multiplier": 1.1529153319732965,
+        "seed": 15,
+        "translation_m": [
+          0.01964664206567557,
+          -0.01691932640144088,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-occlusion-015",
+      "seed": 15,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.198813708684073,
+        "mass_multiplier": 1.1083977245885874,
+        "seed": 16,
+        "translation_m": [
+          -0.015379638888781143,
+          -0.016406774007580754,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-occlusion-016",
+      "seed": 16,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 0.8701305397727794,
+        "mass_multiplier": 0.9857493077495296,
+        "seed": 17,
+        "translation_m": [
+          0.017388934893409726,
+          -0.018435143769219193,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-occlusion-017",
+      "seed": 17,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.0515247067452724,
+        "mass_multiplier": 0.9080731868200951,
+        "seed": 18,
+        "translation_m": [
+          -0.01648761639079042,
+          -0.016133772112910925,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-occlusion-018",
+      "seed": 18,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.0294805128326512,
+        "mass_multiplier": 0.8872936975017967,
+        "seed": 19,
+        "translation_m": [
+          0.0005117966029036039,
+          -0.00791462913132606,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_dual_arm-occlusion-019",
+      "seed": 19,
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0182962155737896,
+        "mass_multiplier": 0.9191994206519264,
+        "seed": 0,
+        "translation_m": [
+          -0.011422315080391625,
+          -0.005868115488978502,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-000",
+      "seed": 0,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9102974108157971,
+        "mass_multiplier": 1.1721274572016784,
+        "seed": 1,
+        "translation_m": [
+          -0.011969502885963443,
+          0.00377110251865604,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-001",
+      "seed": 1,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8183563578339411,
+        "mass_multiplier": 1.0754225490565081,
+        "seed": 2,
+        "translation_m": [
+          0.001459766047956293,
+          -0.007195659020988888,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-002",
+      "seed": 2,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.066037607225657,
+        "mass_multiplier": 1.0419062320541912,
+        "seed": 3,
+        "translation_m": [
+          0.001933645047144411,
+          0.00857465783001319,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-003",
+      "seed": 3,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0164495848584747,
+        "mass_multiplier": 0.9568405959889257,
+        "seed": 4,
+        "translation_m": [
+          -0.002312279099595617,
+          -0.003468352580955538,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-004",
+      "seed": 4,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8937456525896829,
+        "mass_multiplier": 0.9054871806967629,
+        "seed": 5,
+        "translation_m": [
+          0.01438871776765566,
+          -0.0033106512956770466,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-005",
+      "seed": 5,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1832167336677109,
+        "mass_multiplier": 1.1026258466028631,
+        "seed": 6,
+        "translation_m": [
+          -0.0030231036822346846,
+          -0.007044995621598424,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-006",
+      "seed": 6,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0356559215674135,
+        "mass_multiplier": 0.872834273155337,
+        "seed": 7,
+        "translation_m": [
+          -0.01826433670652878,
+          0.006273503142162799,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-007",
+      "seed": 7,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9698969960984316,
+        "mass_multiplier": 0.8693420574373756,
+        "seed": 8,
+        "translation_m": [
+          0.017909922769922013,
+          -0.005444595874981988,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-008",
+      "seed": 8,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0898509698383207,
+        "mass_multiplier": 0.9629685855397057,
+        "seed": 9,
+        "translation_m": [
+          -0.01608031579481809,
+          -0.017511426668519056,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-009",
+      "seed": 9,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1134376210591257,
+        "mass_multiplier": 0.8392317063724559,
+        "seed": 10,
+        "translation_m": [
+          -0.01648894142856307,
+          -0.00648197295251602,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-010",
+      "seed": 10,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.017135045719346,
+        "mass_multiplier": 1.0324091478641375,
+        "seed": 11,
+        "translation_m": [
+          0.012783365950920247,
+          -0.014649590370164313,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-011",
+      "seed": 11,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8692715661181889,
+        "mass_multiplier": 1.1920416343393876,
+        "seed": 12,
+        "translation_m": [
+          0.003776095338136592,
+          -0.006350536290749035,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-012",
+      "seed": 12,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9850348015098894,
+        "mass_multiplier": 1.1555180186544316,
+        "seed": 13,
+        "translation_m": [
+          -0.007048335644060417,
+          0.015445820342547243,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-013",
+      "seed": 13,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.092506792576294,
+        "mass_multiplier": 0.8980168161851975,
+        "seed": 14,
+        "translation_m": [
+          0.009823801130497366,
+          -0.0036832321867414815,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-014",
+      "seed": 14,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0763661576139614,
+        "mass_multiplier": 1.1529153319732965,
+        "seed": 15,
+        "translation_m": [
+          0.01964664206567557,
+          -0.01691932640144088,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-015",
+      "seed": 15,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.198813708684073,
+        "mass_multiplier": 1.1083977245885874,
+        "seed": 16,
+        "translation_m": [
+          -0.015379638888781143,
+          -0.016406774007580754,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-016",
+      "seed": 16,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8701305397727794,
+        "mass_multiplier": 0.9857493077495296,
+        "seed": 17,
+        "translation_m": [
+          0.017388934893409726,
+          -0.018435143769219193,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-017",
+      "seed": 17,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0515247067452724,
+        "mass_multiplier": 0.9080731868200951,
+        "seed": 18,
+        "translation_m": [
+          -0.01648761639079042,
+          -0.016133772112910925,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-018",
+      "seed": 18,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0294805128326512,
+        "mass_multiplier": 0.8872936975017967,
+        "seed": 19,
+        "translation_m": [
+          0.0005117966029036039,
+          -0.00791462913132606,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-019",
+      "seed": 19,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0268790378708867,
+        "mass_multiplier": 1.1576966898990264,
+        "seed": 20,
+        "translation_m": [
+          -0.0032961238981458647,
+          0.008630884357851806,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-020",
+      "seed": 20,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1776448390548722,
+        "mass_multiplier": 0.9057927770025782,
+        "seed": 21,
+        "translation_m": [
+          0.007668373433850118,
+          -0.019679525607532642,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-021",
+      "seed": 21,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.097417793264605,
+        "mass_multiplier": 1.0666379212887553,
+        "seed": 22,
+        "translation_m": [
+          0.011573815217187925,
+          0.0118864882507736,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-022",
+      "seed": 22,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8991337937943432,
+        "mass_multiplier": 1.1619195321883002,
+        "seed": 23,
+        "translation_m": [
+          -0.011314303711725131,
+          -0.01801219264961096,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-023",
+      "seed": 23,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0465169430930727,
+        "mass_multiplier": 0.9367887654659258,
+        "seed": 24,
+        "translation_m": [
+          -0.012488861501898976,
+          -0.01967313897547643,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-024",
+      "seed": 24,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.980062320881554,
+        "mass_multiplier": 1.1841511810194247,
+        "seed": 25,
+        "translation_m": [
+          0.011135456298862069,
+          0.0033392126432276216,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-025",
+      "seed": 25,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8310425566013734,
+        "mass_multiplier": 1.1003775659327557,
+        "seed": 26,
+        "translation_m": [
+          -0.0032747481493483888,
+          -0.002480816412673427,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-026",
+      "seed": 26,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9147940124579936,
+        "mass_multiplier": 0.9446821434905314,
+        "seed": 27,
+        "translation_m": [
+          0.003898484158928541,
+          0.015021604150564246,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-027",
+      "seed": 27,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9443257664452442,
+        "mass_multiplier": 1.0000232861326652,
+        "seed": 28,
+        "translation_m": [
+          -0.01048617364616276,
+          0.007513146628971606,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-028",
+      "seed": 28,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8278852911860771,
+        "mass_multiplier": 0.8508074911112955,
+        "seed": 29,
+        "translation_m": [
+          -0.014327943718894032,
+          -0.00877130113840494,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-029",
+      "seed": 29,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0814335885930138,
+        "mass_multiplier": 0.9360447732649302,
+        "seed": 30,
+        "translation_m": [
+          0.016273489820296038,
+          -0.019710586768074592,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-030",
+      "seed": 30,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9363306078474896,
+        "mass_multiplier": 0.8402874709177603,
+        "seed": 31,
+        "translation_m": [
+          0.01860680024759367,
+          0.010330667559418746,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-031",
+      "seed": 31,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9528066358664267,
+        "mass_multiplier": 1.0821208641998845,
+        "seed": 32,
+        "translation_m": [
+          0.005176086448683469,
+          0.014514234259054046,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-032",
+      "seed": 32,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.157453893917814,
+        "mass_multiplier": 0.810972948407621,
+        "seed": 33,
+        "translation_m": [
+          0.005592268674276625,
+          0.017812196006707446,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-033",
+      "seed": 33,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0903658090923287,
+        "mass_multiplier": 0.9504324899793996,
+        "seed": 34,
+        "translation_m": [
+          0.011947255102631348,
+          0.004115917242029955,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-034",
+      "seed": 34,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9849744022998771,
+        "mass_multiplier": 0.8125092052092551,
+        "seed": 35,
+        "translation_m": [
+          -0.0030300825122908243,
+          0.017664804349405778,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-035",
+      "seed": 35,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8043321376568082,
+        "mass_multiplier": 0.9390776457393737,
+        "seed": 36,
+        "translation_m": [
+          0.017170516588317173,
+          0.014154847600807183,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-036",
+      "seed": 36,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9522830120458299,
+        "mass_multiplier": 1.190497382028871,
+        "seed": 37,
+        "translation_m": [
+          0.012971035814916387,
+          0.0016892589219972103,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-037",
+      "seed": 37,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9719640102997399,
+        "mass_multiplier": 0.9797151647825834,
+        "seed": 38,
+        "translation_m": [
+          -0.006828322469122825,
+          -0.01901161764313191,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-038",
+      "seed": 38,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9827526682283282,
+        "mass_multiplier": 1.0606050495958301,
+        "seed": 39,
+        "translation_m": [
+          0.016905530375720883,
+          -0.013590464794255276,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-039",
+      "seed": 39,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9897857488186356,
+        "mass_multiplier": 0.9661325878880603,
+        "seed": 40,
+        "translation_m": [
+          0.01665684365904459,
+          -0.010765714677498752,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-040",
+      "seed": 40,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8084022170587243,
+        "mass_multiplier": 0.8289722232013137,
+        "seed": 41,
+        "translation_m": [
+          0.01619774919086583,
+          -0.0021095135361655845,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-041",
+      "seed": 41,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.187609739544385,
+        "mass_multiplier": 1.0738215121391212,
+        "seed": 42,
+        "translation_m": [
+          -0.019431218017792254,
+          -0.0064866782720216995,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-042",
+      "seed": 42,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8359878977702045,
+        "mass_multiplier": 1.082589786811253,
+        "seed": 43,
+        "translation_m": [
+          -0.014467578423103752,
+          0.00818215799339344,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-043",
+      "seed": 43,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9629170139689719,
+        "mass_multiplier": 0.9439163241973274,
+        "seed": 44,
+        "translation_m": [
+          0.006668175294377084,
+          -0.009300561600269344,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-044",
+      "seed": 44,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1859996243706776,
+        "mass_multiplier": 0.8611524892096873,
+        "seed": 45,
+        "translation_m": [
+          0.015393255198683318,
+          0.00871839296333916,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-045",
+      "seed": 45,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9683569224454983,
+        "mass_multiplier": 0.8919084390018597,
+        "seed": 46,
+        "translation_m": [
+          0.016074313205811566,
+          0.019310882300926886,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-046",
+      "seed": 46,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.130575252839988,
+        "mass_multiplier": 1.0648240848429966,
+        "seed": 47,
+        "translation_m": [
+          0.005235149416654993,
+          -0.011155770201319885,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-047",
+      "seed": 47,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0307168816827226,
+        "mass_multiplier": 0.864533961113888,
+        "seed": 48,
+        "translation_m": [
+          0.00918362492859973,
+          0.0043824025165069905,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-048",
+      "seed": 48,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8073806335803158,
+        "mass_multiplier": 1.0392700959682453,
+        "seed": 49,
+        "translation_m": [
+          -0.011197121630151336,
+          -0.005018841946771345,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-049",
+      "seed": 49,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8298604451163205,
+        "mass_multiplier": 0.9408690715773843,
+        "seed": 50,
+        "translation_m": [
+          0.007320923212336475,
+          0.0059771954444055725,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-050",
+      "seed": 50,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0157207814418516,
+        "mass_multiplier": 0.8659755495693744,
+        "seed": 51,
+        "translation_m": [
+          -0.018694025525321595,
+          -0.009195851192235645,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-051",
+      "seed": 51,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8419394705117642,
+        "mass_multiplier": 1.1826899163653743,
+        "seed": 52,
+        "translation_m": [
+          -0.018099847377684313,
+          -0.005680377921932758,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-052",
+      "seed": 52,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8731830051861957,
+        "mass_multiplier": 0.8926778997302224,
+        "seed": 53,
+        "translation_m": [
+          -0.008721394373575228,
+          -0.00977156746365596,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-053",
+      "seed": 53,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8460225244807268,
+        "mass_multiplier": 1.1378511535852147,
+        "seed": 54,
+        "translation_m": [
+          -0.0016067906794580353,
+          0.00041595480643672605,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-054",
+      "seed": 54,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1572107796621567,
+        "mass_multiplier": 0.8941026162332726,
+        "seed": 55,
+        "translation_m": [
+          0.01811658415197458,
+          0.003792623365427593,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-055",
+      "seed": 55,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8005484384459096,
+        "mass_multiplier": 1.1290881858505344,
+        "seed": 56,
+        "translation_m": [
+          -0.004061626257656253,
+          0.01244436253270827,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-056",
+      "seed": 56,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.09866748551826,
+        "mass_multiplier": 1.1902690362389599,
+        "seed": 57,
+        "translation_m": [
+          0.018636534168275817,
+          8.92145991962974e-05,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-057",
+      "seed": 57,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9587230737656562,
+        "mass_multiplier": 1.1152558628801779,
+        "seed": 58,
+        "translation_m": [
+          -0.01873571660232043,
+          0.005861044694619327,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-058",
+      "seed": 58,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9555028855953405,
+        "mass_multiplier": 0.9783064761222017,
+        "seed": 59,
+        "translation_m": [
+          0.00350182657655098,
+          0.01776053164816706,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-059",
+      "seed": 59,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1035200260501556,
+        "mass_multiplier": 0.8644364389035438,
+        "seed": 60,
+        "translation_m": [
+          -0.013106691001861476,
+          0.015107263012276159,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-060",
+      "seed": 60,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8433521587982907,
+        "mass_multiplier": 0.8594785679718359,
+        "seed": 61,
+        "translation_m": [
+          0.0180818849202314,
+          0.004854600137740528,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-061",
+      "seed": 61,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0270935391086216,
+        "mass_multiplier": 1.0662308239016234,
+        "seed": 62,
+        "translation_m": [
+          0.019202767526039572,
+          -0.0074129762271896785,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-062",
+      "seed": 62,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.077046002624154,
+        "mass_multiplier": 0.8163488316118643,
+        "seed": 63,
+        "translation_m": [
+          -0.0021412476576635024,
+          -0.01626786961948487,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-063",
+      "seed": 63,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1791694110981368,
+        "mass_multiplier": 0.9432930390696939,
+        "seed": 64,
+        "translation_m": [
+          -0.01500474991967999,
+          0.014422931227143557,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-064",
+      "seed": 64,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.189931305708793,
+        "mass_multiplier": 0.9574955113430561,
+        "seed": 65,
+        "translation_m": [
+          -0.010311887481389599,
+          0.017142415952053704,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-065",
+      "seed": 65,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9049875565231732,
+        "mass_multiplier": 1.0961877948504397,
+        "seed": 66,
+        "translation_m": [
+          0.0190177423219095,
+          0.018024761981442507,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-066",
+      "seed": 66,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0697549000949953,
+        "mass_multiplier": 0.8336888951221311,
+        "seed": 67,
+        "translation_m": [
+          -0.006304392363867022,
+          0.00738652565383513,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-067",
+      "seed": 67,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8655831218912929,
+        "mass_multiplier": 1.1330657363587127,
+        "seed": 68,
+        "translation_m": [
+          0.007775624500052723,
+          -0.014835100650705741,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-068",
+      "seed": 68,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1434969521815208,
+        "mass_multiplier": 0.9194085097644029,
+        "seed": 69,
+        "translation_m": [
+          0.0012517602679416318,
+          -0.005236356953375631,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-069",
+      "seed": 69,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1347950580965371,
+        "mass_multiplier": 1.1644667888344586,
+        "seed": 70,
+        "translation_m": [
+          0.014269975613582297,
+          -0.013264044294303723,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-070",
+      "seed": 70,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9626516205448774,
+        "mass_multiplier": 0.9243319267896848,
+        "seed": 71,
+        "translation_m": [
+          -0.00028584018591114313,
+          -0.015144204583314993,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-071",
+      "seed": 71,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0366378051270582,
+        "mass_multiplier": 1.0890796493087285,
+        "seed": 72,
+        "translation_m": [
+          -0.009295639118369335,
+          0.010755975276700067,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-072",
+      "seed": 72,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.019050821680053,
+        "mass_multiplier": 1.0231080803902368,
+        "seed": 73,
+        "translation_m": [
+          0.015365314772340714,
+          -0.013820276225571937,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-073",
+      "seed": 73,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1440890639950936,
+        "mass_multiplier": 1.0418589539499932,
+        "seed": 74,
+        "translation_m": [
+          0.01524723028343104,
+          -0.009659672018763433,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-074",
+      "seed": 74,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9798464905958184,
+        "mass_multiplier": 0.8674140676581428,
+        "seed": 75,
+        "translation_m": [
+          0.016826746800305072,
+          0.012598114629269932,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-075",
+      "seed": 75,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1938740222476718,
+        "mass_multiplier": 1.036349868322151,
+        "seed": 76,
+        "translation_m": [
+          -0.01014478936783739,
+          0.001944770682469548,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-076",
+      "seed": 76,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1910527389445176,
+        "mass_multiplier": 0.9213587170273695,
+        "seed": 77,
+        "translation_m": [
+          0.013403037039961967,
+          -0.0056879579531539555,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-077",
+      "seed": 77,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0501831006958326,
+        "mass_multiplier": 1.085943606876891,
+        "seed": 78,
+        "translation_m": [
+          0.004454706310633192,
+          -0.017932584418967338,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-078",
+      "seed": 78,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.000953062497997,
+        "mass_multiplier": 1.1667392499382485,
+        "seed": 79,
+        "translation_m": [
+          -0.017177381904834782,
+          0.019811614993499472,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-079",
+      "seed": 79,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8023993720295476,
+        "mass_multiplier": 0.8855171503273688,
+        "seed": 80,
+        "translation_m": [
+          0.013557561234911409,
+          0.008635519556063117,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-080",
+      "seed": 80,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1219338193134558,
+        "mass_multiplier": 1.024145765918178,
+        "seed": 81,
+        "translation_m": [
+          0.013817378708868584,
+          0.0015308982847004743,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-081",
+      "seed": 81,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0089226690255062,
+        "mass_multiplier": 1.1885154096574313,
+        "seed": 82,
+        "translation_m": [
+          -0.008478122623023837,
+          0.019171807023747423,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-082",
+      "seed": 82,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.15158790895564,
+        "mass_multiplier": 1.1176591102684066,
+        "seed": 83,
+        "translation_m": [
+          0.012881455007603435,
+          -0.015700750464796732,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-083",
+      "seed": 83,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9390325608606113,
+        "mass_multiplier": 0.8108164437487975,
+        "seed": 84,
+        "translation_m": [
+          0.006851491701787449,
+          0.008057718423743553,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-084",
+      "seed": 84,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9142613103474578,
+        "mass_multiplier": 1.180930597844023,
+        "seed": 85,
+        "translation_m": [
+          -0.0014026659990393903,
+          -0.0030517852008574813,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-085",
+      "seed": 85,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8525558218815316,
+        "mass_multiplier": 1.1328976771547405,
+        "seed": 86,
+        "translation_m": [
+          -0.01591944065298534,
+          -0.006820294778195813,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-086",
+      "seed": 86,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1585237909313546,
+        "mass_multiplier": 0.8750016075466005,
+        "seed": 87,
+        "translation_m": [
+          0.004377425463681774,
+          -0.0072864129158483944,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-087",
+      "seed": 87,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9601309710851659,
+        "mass_multiplier": 1.1908721293171443,
+        "seed": 88,
+        "translation_m": [
+          -0.005204053558845812,
+          -0.0190344848715608,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-088",
+      "seed": 88,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.144280440128083,
+        "mass_multiplier": 1.105944024707676,
+        "seed": 89,
+        "translation_m": [
+          0.0018817551125995813,
+          0.010988935189714881,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-089",
+      "seed": 89,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9025059403098923,
+        "mass_multiplier": 1.0244371722052539,
+        "seed": 90,
+        "translation_m": [
+          -0.003713729411845012,
+          0.004992179334088343,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-090",
+      "seed": 90,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9490658554140958,
+        "mass_multiplier": 0.8755147993477896,
+        "seed": 91,
+        "translation_m": [
+          0.010338543104303995,
+          -0.004103036935511915,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-091",
+      "seed": 91,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1160488871736631,
+        "mass_multiplier": 1.115325620763511,
+        "seed": 92,
+        "translation_m": [
+          -0.019940742448056818,
+          -0.01810301298057849,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-092",
+      "seed": 92,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1057475846884757,
+        "mass_multiplier": 0.9759661023730248,
+        "seed": 93,
+        "translation_m": [
+          -0.003251314437272862,
+          -0.0171809334363826,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-093",
+      "seed": 93,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1895402702697682,
+        "mass_multiplier": 1.1027554552918168,
+        "seed": 94,
+        "translation_m": [
+          0.003775047885413975,
+          0.010677991541446958,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-094",
+      "seed": 94,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9914917325594976,
+        "mass_multiplier": 1.0898794668161793,
+        "seed": 95,
+        "translation_m": [
+          0.011282058034761813,
+          0.003403821251106911,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-095",
+      "seed": 95,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8338603363708493,
+        "mass_multiplier": 1.0963647591570904,
+        "seed": 96,
+        "translation_m": [
+          -0.011274732516796879,
+          -0.0039498368922198865,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-096",
+      "seed": 96,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0287240631143644,
+        "mass_multiplier": 1.031433156312998,
+        "seed": 97,
+        "translation_m": [
+          0.018355371390198386,
+          0.014696890715871765,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-097",
+      "seed": 97,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.13532221466333,
+        "mass_multiplier": 1.0532147209445453,
+        "seed": 98,
+        "translation_m": [
+          0.009476551047728963,
+          0.005744298505316235,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-098",
+      "seed": 98,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8636501694062929,
+        "mass_multiplier": 1.1881171745582924,
+        "seed": 99,
+        "translation_m": [
+          0.00048590571588722625,
+          0.016116287389746426,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-nominal-099",
+      "seed": 99,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.0182962155737896,
+        "mass_multiplier": 0.9191994206519264,
+        "seed": 0,
+        "translation_m": [
+          -0.011422315080391625,
+          -0.005868115488978502,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-displaced-000",
+      "seed": 0,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 0.9102974108157971,
+        "mass_multiplier": 1.1721274572016784,
+        "seed": 1,
+        "translation_m": [
+          -0.011969502885963443,
+          0.00377110251865604,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-displaced-001",
+      "seed": 1,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 0.8183563578339411,
+        "mass_multiplier": 1.0754225490565081,
+        "seed": 2,
+        "translation_m": [
+          0.001459766047956293,
+          -0.007195659020988888,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-displaced-002",
+      "seed": 2,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.066037607225657,
+        "mass_multiplier": 1.0419062320541912,
+        "seed": 3,
+        "translation_m": [
+          0.001933645047144411,
+          0.00857465783001319,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-displaced-003",
+      "seed": 3,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.0164495848584747,
+        "mass_multiplier": 0.9568405959889257,
+        "seed": 4,
+        "translation_m": [
+          -0.002312279099595617,
+          -0.003468352580955538,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-displaced-004",
+      "seed": 4,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 0.8937456525896829,
+        "mass_multiplier": 0.9054871806967629,
+        "seed": 5,
+        "translation_m": [
+          0.01438871776765566,
+          -0.0033106512956770466,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-displaced-005",
+      "seed": 5,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.1832167336677109,
+        "mass_multiplier": 1.1026258466028631,
+        "seed": 6,
+        "translation_m": [
+          -0.0030231036822346846,
+          -0.007044995621598424,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-displaced-006",
+      "seed": 6,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.0356559215674135,
+        "mass_multiplier": 0.872834273155337,
+        "seed": 7,
+        "translation_m": [
+          -0.01826433670652878,
+          0.006273503142162799,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-displaced-007",
+      "seed": 7,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 0.9698969960984316,
+        "mass_multiplier": 0.8693420574373756,
+        "seed": 8,
+        "translation_m": [
+          0.017909922769922013,
+          -0.005444595874981988,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-displaced-008",
+      "seed": 8,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.0898509698383207,
+        "mass_multiplier": 0.9629685855397057,
+        "seed": 9,
+        "translation_m": [
+          -0.01608031579481809,
+          -0.017511426668519056,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-displaced-009",
+      "seed": 9,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.1134376210591257,
+        "mass_multiplier": 0.8392317063724559,
+        "seed": 10,
+        "translation_m": [
+          -0.01648894142856307,
+          -0.00648197295251602,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-displaced-010",
+      "seed": 10,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.017135045719346,
+        "mass_multiplier": 1.0324091478641375,
+        "seed": 11,
+        "translation_m": [
+          0.012783365950920247,
+          -0.014649590370164313,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-displaced-011",
+      "seed": 11,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 0.8692715661181889,
+        "mass_multiplier": 1.1920416343393876,
+        "seed": 12,
+        "translation_m": [
+          0.003776095338136592,
+          -0.006350536290749035,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-displaced-012",
+      "seed": 12,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 0.9850348015098894,
+        "mass_multiplier": 1.1555180186544316,
+        "seed": 13,
+        "translation_m": [
+          -0.007048335644060417,
+          0.015445820342547243,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-displaced-013",
+      "seed": 13,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.092506792576294,
+        "mass_multiplier": 0.8980168161851975,
+        "seed": 14,
+        "translation_m": [
+          0.009823801130497366,
+          -0.0036832321867414815,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-displaced-014",
+      "seed": 14,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.0763661576139614,
+        "mass_multiplier": 1.1529153319732965,
+        "seed": 15,
+        "translation_m": [
+          0.01964664206567557,
+          -0.01691932640144088,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-displaced-015",
+      "seed": 15,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.198813708684073,
+        "mass_multiplier": 1.1083977245885874,
+        "seed": 16,
+        "translation_m": [
+          -0.015379638888781143,
+          -0.016406774007580754,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-displaced-016",
+      "seed": 16,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 0.8701305397727794,
+        "mass_multiplier": 0.9857493077495296,
+        "seed": 17,
+        "translation_m": [
+          0.017388934893409726,
+          -0.018435143769219193,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-displaced-017",
+      "seed": 17,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.0515247067452724,
+        "mass_multiplier": 0.9080731868200951,
+        "seed": 18,
+        "translation_m": [
+          -0.01648761639079042,
+          -0.016133772112910925,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-displaced-018",
+      "seed": 18,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.0294805128326512,
+        "mass_multiplier": 0.8872936975017967,
+        "seed": 19,
+        "translation_m": [
+          0.0005117966029036039,
+          -0.00791462913132606,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-displaced-019",
+      "seed": 19,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.0182962155737896,
+        "mass_multiplier": 0.9191994206519264,
+        "seed": 0,
+        "translation_m": [
+          -0.011422315080391625,
+          -0.005868115488978502,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-slip-000",
+      "seed": 0,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 0.9102974108157971,
+        "mass_multiplier": 1.1721274572016784,
+        "seed": 1,
+        "translation_m": [
+          -0.011969502885963443,
+          0.00377110251865604,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-slip-001",
+      "seed": 1,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 0.8183563578339411,
+        "mass_multiplier": 1.0754225490565081,
+        "seed": 2,
+        "translation_m": [
+          0.001459766047956293,
+          -0.007195659020988888,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-slip-002",
+      "seed": 2,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.066037607225657,
+        "mass_multiplier": 1.0419062320541912,
+        "seed": 3,
+        "translation_m": [
+          0.001933645047144411,
+          0.00857465783001319,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-slip-003",
+      "seed": 3,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.0164495848584747,
+        "mass_multiplier": 0.9568405959889257,
+        "seed": 4,
+        "translation_m": [
+          -0.002312279099595617,
+          -0.003468352580955538,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-slip-004",
+      "seed": 4,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 0.8937456525896829,
+        "mass_multiplier": 0.9054871806967629,
+        "seed": 5,
+        "translation_m": [
+          0.01438871776765566,
+          -0.0033106512956770466,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-slip-005",
+      "seed": 5,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.1832167336677109,
+        "mass_multiplier": 1.1026258466028631,
+        "seed": 6,
+        "translation_m": [
+          -0.0030231036822346846,
+          -0.007044995621598424,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-slip-006",
+      "seed": 6,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.0356559215674135,
+        "mass_multiplier": 0.872834273155337,
+        "seed": 7,
+        "translation_m": [
+          -0.01826433670652878,
+          0.006273503142162799,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-slip-007",
+      "seed": 7,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 0.9698969960984316,
+        "mass_multiplier": 0.8693420574373756,
+        "seed": 8,
+        "translation_m": [
+          0.017909922769922013,
+          -0.005444595874981988,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-slip-008",
+      "seed": 8,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.0898509698383207,
+        "mass_multiplier": 0.9629685855397057,
+        "seed": 9,
+        "translation_m": [
+          -0.01608031579481809,
+          -0.017511426668519056,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-slip-009",
+      "seed": 9,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.1134376210591257,
+        "mass_multiplier": 0.8392317063724559,
+        "seed": 10,
+        "translation_m": [
+          -0.01648894142856307,
+          -0.00648197295251602,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-slip-010",
+      "seed": 10,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.017135045719346,
+        "mass_multiplier": 1.0324091478641375,
+        "seed": 11,
+        "translation_m": [
+          0.012783365950920247,
+          -0.014649590370164313,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-slip-011",
+      "seed": 11,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 0.8692715661181889,
+        "mass_multiplier": 1.1920416343393876,
+        "seed": 12,
+        "translation_m": [
+          0.003776095338136592,
+          -0.006350536290749035,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-slip-012",
+      "seed": 12,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 0.9850348015098894,
+        "mass_multiplier": 1.1555180186544316,
+        "seed": 13,
+        "translation_m": [
+          -0.007048335644060417,
+          0.015445820342547243,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-slip-013",
+      "seed": 13,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.092506792576294,
+        "mass_multiplier": 0.8980168161851975,
+        "seed": 14,
+        "translation_m": [
+          0.009823801130497366,
+          -0.0036832321867414815,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-slip-014",
+      "seed": 14,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.0763661576139614,
+        "mass_multiplier": 1.1529153319732965,
+        "seed": 15,
+        "translation_m": [
+          0.01964664206567557,
+          -0.01691932640144088,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-slip-015",
+      "seed": 15,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.198813708684073,
+        "mass_multiplier": 1.1083977245885874,
+        "seed": 16,
+        "translation_m": [
+          -0.015379638888781143,
+          -0.016406774007580754,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-slip-016",
+      "seed": 16,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 0.8701305397727794,
+        "mass_multiplier": 0.9857493077495296,
+        "seed": 17,
+        "translation_m": [
+          0.017388934893409726,
+          -0.018435143769219193,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-slip-017",
+      "seed": 17,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.0515247067452724,
+        "mass_multiplier": 0.9080731868200951,
+        "seed": 18,
+        "translation_m": [
+          -0.01648761639079042,
+          -0.016133772112910925,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-slip-018",
+      "seed": 18,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.0294805128326512,
+        "mass_multiplier": 0.8872936975017967,
+        "seed": 19,
+        "translation_m": [
+          0.0005117966029036039,
+          -0.00791462913132606,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-slip-019",
+      "seed": 19,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.0182962155737896,
+        "mass_multiplier": 0.9191994206519264,
+        "seed": 0,
+        "translation_m": [
+          -0.011422315080391625,
+          -0.005868115488978502,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-occlusion-000",
+      "seed": 0,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 0.9102974108157971,
+        "mass_multiplier": 1.1721274572016784,
+        "seed": 1,
+        "translation_m": [
+          -0.011969502885963443,
+          0.00377110251865604,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-occlusion-001",
+      "seed": 1,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 0.8183563578339411,
+        "mass_multiplier": 1.0754225490565081,
+        "seed": 2,
+        "translation_m": [
+          0.001459766047956293,
+          -0.007195659020988888,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-occlusion-002",
+      "seed": 2,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.066037607225657,
+        "mass_multiplier": 1.0419062320541912,
+        "seed": 3,
+        "translation_m": [
+          0.001933645047144411,
+          0.00857465783001319,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-occlusion-003",
+      "seed": 3,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.0164495848584747,
+        "mass_multiplier": 0.9568405959889257,
+        "seed": 4,
+        "translation_m": [
+          -0.002312279099595617,
+          -0.003468352580955538,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-occlusion-004",
+      "seed": 4,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 0.8937456525896829,
+        "mass_multiplier": 0.9054871806967629,
+        "seed": 5,
+        "translation_m": [
+          0.01438871776765566,
+          -0.0033106512956770466,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-occlusion-005",
+      "seed": 5,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.1832167336677109,
+        "mass_multiplier": 1.1026258466028631,
+        "seed": 6,
+        "translation_m": [
+          -0.0030231036822346846,
+          -0.007044995621598424,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-occlusion-006",
+      "seed": 6,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.0356559215674135,
+        "mass_multiplier": 0.872834273155337,
+        "seed": 7,
+        "translation_m": [
+          -0.01826433670652878,
+          0.006273503142162799,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-occlusion-007",
+      "seed": 7,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 0.9698969960984316,
+        "mass_multiplier": 0.8693420574373756,
+        "seed": 8,
+        "translation_m": [
+          0.017909922769922013,
+          -0.005444595874981988,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-occlusion-008",
+      "seed": 8,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.0898509698383207,
+        "mass_multiplier": 0.9629685855397057,
+        "seed": 9,
+        "translation_m": [
+          -0.01608031579481809,
+          -0.017511426668519056,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-occlusion-009",
+      "seed": 9,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.1134376210591257,
+        "mass_multiplier": 0.8392317063724559,
+        "seed": 10,
+        "translation_m": [
+          -0.01648894142856307,
+          -0.00648197295251602,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-occlusion-010",
+      "seed": 10,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.017135045719346,
+        "mass_multiplier": 1.0324091478641375,
+        "seed": 11,
+        "translation_m": [
+          0.012783365950920247,
+          -0.014649590370164313,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-occlusion-011",
+      "seed": 11,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 0.8692715661181889,
+        "mass_multiplier": 1.1920416343393876,
+        "seed": 12,
+        "translation_m": [
+          0.003776095338136592,
+          -0.006350536290749035,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-occlusion-012",
+      "seed": 12,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 0.9850348015098894,
+        "mass_multiplier": 1.1555180186544316,
+        "seed": 13,
+        "translation_m": [
+          -0.007048335644060417,
+          0.015445820342547243,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-occlusion-013",
+      "seed": 13,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.092506792576294,
+        "mass_multiplier": 0.8980168161851975,
+        "seed": 14,
+        "translation_m": [
+          0.009823801130497366,
+          -0.0036832321867414815,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-occlusion-014",
+      "seed": 14,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.0763661576139614,
+        "mass_multiplier": 1.1529153319732965,
+        "seed": 15,
+        "translation_m": [
+          0.01964664206567557,
+          -0.01691932640144088,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-occlusion-015",
+      "seed": 15,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.198813708684073,
+        "mass_multiplier": 1.1083977245885874,
+        "seed": 16,
+        "translation_m": [
+          -0.015379638888781143,
+          -0.016406774007580754,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-occlusion-016",
+      "seed": 16,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 0.8701305397727794,
+        "mass_multiplier": 0.9857493077495296,
+        "seed": 17,
+        "translation_m": [
+          0.017388934893409726,
+          -0.018435143769219193,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-occlusion-017",
+      "seed": 17,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.0515247067452724,
+        "mass_multiplier": 0.9080731868200951,
+        "seed": 18,
+        "translation_m": [
+          -0.01648761639079042,
+          -0.016133772112910925,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-occlusion-018",
+      "seed": 18,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.0294805128326512,
+        "mass_multiplier": 0.8872936975017967,
+        "seed": 19,
+        "translation_m": [
+          0.0005117966029036039,
+          -0.00791462913132606,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_jaw_arm-occlusion-019",
+      "seed": 19,
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0182962155737896,
+        "mass_multiplier": 0.9191994206519264,
+        "seed": 0,
+        "translation_m": [
+          -0.011422315080391625,
+          -0.005868115488978502,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-000",
+      "seed": 0,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9102974108157971,
+        "mass_multiplier": 1.1721274572016784,
+        "seed": 1,
+        "translation_m": [
+          -0.011969502885963443,
+          0.00377110251865604,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-001",
+      "seed": 1,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8183563578339411,
+        "mass_multiplier": 1.0754225490565081,
+        "seed": 2,
+        "translation_m": [
+          0.001459766047956293,
+          -0.007195659020988888,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-002",
+      "seed": 2,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.066037607225657,
+        "mass_multiplier": 1.0419062320541912,
+        "seed": 3,
+        "translation_m": [
+          0.001933645047144411,
+          0.00857465783001319,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-003",
+      "seed": 3,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0164495848584747,
+        "mass_multiplier": 0.9568405959889257,
+        "seed": 4,
+        "translation_m": [
+          -0.002312279099595617,
+          -0.003468352580955538,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-004",
+      "seed": 4,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8937456525896829,
+        "mass_multiplier": 0.9054871806967629,
+        "seed": 5,
+        "translation_m": [
+          0.01438871776765566,
+          -0.0033106512956770466,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-005",
+      "seed": 5,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1832167336677109,
+        "mass_multiplier": 1.1026258466028631,
+        "seed": 6,
+        "translation_m": [
+          -0.0030231036822346846,
+          -0.007044995621598424,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-006",
+      "seed": 6,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0356559215674135,
+        "mass_multiplier": 0.872834273155337,
+        "seed": 7,
+        "translation_m": [
+          -0.01826433670652878,
+          0.006273503142162799,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-007",
+      "seed": 7,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9698969960984316,
+        "mass_multiplier": 0.8693420574373756,
+        "seed": 8,
+        "translation_m": [
+          0.017909922769922013,
+          -0.005444595874981988,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-008",
+      "seed": 8,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0898509698383207,
+        "mass_multiplier": 0.9629685855397057,
+        "seed": 9,
+        "translation_m": [
+          -0.01608031579481809,
+          -0.017511426668519056,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-009",
+      "seed": 9,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1134376210591257,
+        "mass_multiplier": 0.8392317063724559,
+        "seed": 10,
+        "translation_m": [
+          -0.01648894142856307,
+          -0.00648197295251602,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-010",
+      "seed": 10,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.017135045719346,
+        "mass_multiplier": 1.0324091478641375,
+        "seed": 11,
+        "translation_m": [
+          0.012783365950920247,
+          -0.014649590370164313,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-011",
+      "seed": 11,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8692715661181889,
+        "mass_multiplier": 1.1920416343393876,
+        "seed": 12,
+        "translation_m": [
+          0.003776095338136592,
+          -0.006350536290749035,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-012",
+      "seed": 12,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9850348015098894,
+        "mass_multiplier": 1.1555180186544316,
+        "seed": 13,
+        "translation_m": [
+          -0.007048335644060417,
+          0.015445820342547243,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-013",
+      "seed": 13,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.092506792576294,
+        "mass_multiplier": 0.8980168161851975,
+        "seed": 14,
+        "translation_m": [
+          0.009823801130497366,
+          -0.0036832321867414815,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-014",
+      "seed": 14,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0763661576139614,
+        "mass_multiplier": 1.1529153319732965,
+        "seed": 15,
+        "translation_m": [
+          0.01964664206567557,
+          -0.01691932640144088,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-015",
+      "seed": 15,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.198813708684073,
+        "mass_multiplier": 1.1083977245885874,
+        "seed": 16,
+        "translation_m": [
+          -0.015379638888781143,
+          -0.016406774007580754,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-016",
+      "seed": 16,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8701305397727794,
+        "mass_multiplier": 0.9857493077495296,
+        "seed": 17,
+        "translation_m": [
+          0.017388934893409726,
+          -0.018435143769219193,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-017",
+      "seed": 17,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0515247067452724,
+        "mass_multiplier": 0.9080731868200951,
+        "seed": 18,
+        "translation_m": [
+          -0.01648761639079042,
+          -0.016133772112910925,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-018",
+      "seed": 18,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0294805128326512,
+        "mass_multiplier": 0.8872936975017967,
+        "seed": 19,
+        "translation_m": [
+          0.0005117966029036039,
+          -0.00791462913132606,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-019",
+      "seed": 19,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0268790378708867,
+        "mass_multiplier": 1.1576966898990264,
+        "seed": 20,
+        "translation_m": [
+          -0.0032961238981458647,
+          0.008630884357851806,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-020",
+      "seed": 20,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1776448390548722,
+        "mass_multiplier": 0.9057927770025782,
+        "seed": 21,
+        "translation_m": [
+          0.007668373433850118,
+          -0.019679525607532642,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-021",
+      "seed": 21,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.097417793264605,
+        "mass_multiplier": 1.0666379212887553,
+        "seed": 22,
+        "translation_m": [
+          0.011573815217187925,
+          0.0118864882507736,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-022",
+      "seed": 22,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8991337937943432,
+        "mass_multiplier": 1.1619195321883002,
+        "seed": 23,
+        "translation_m": [
+          -0.011314303711725131,
+          -0.01801219264961096,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-023",
+      "seed": 23,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0465169430930727,
+        "mass_multiplier": 0.9367887654659258,
+        "seed": 24,
+        "translation_m": [
+          -0.012488861501898976,
+          -0.01967313897547643,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-024",
+      "seed": 24,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.980062320881554,
+        "mass_multiplier": 1.1841511810194247,
+        "seed": 25,
+        "translation_m": [
+          0.011135456298862069,
+          0.0033392126432276216,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-025",
+      "seed": 25,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8310425566013734,
+        "mass_multiplier": 1.1003775659327557,
+        "seed": 26,
+        "translation_m": [
+          -0.0032747481493483888,
+          -0.002480816412673427,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-026",
+      "seed": 26,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9147940124579936,
+        "mass_multiplier": 0.9446821434905314,
+        "seed": 27,
+        "translation_m": [
+          0.003898484158928541,
+          0.015021604150564246,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-027",
+      "seed": 27,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9443257664452442,
+        "mass_multiplier": 1.0000232861326652,
+        "seed": 28,
+        "translation_m": [
+          -0.01048617364616276,
+          0.007513146628971606,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-028",
+      "seed": 28,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8278852911860771,
+        "mass_multiplier": 0.8508074911112955,
+        "seed": 29,
+        "translation_m": [
+          -0.014327943718894032,
+          -0.00877130113840494,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-029",
+      "seed": 29,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0814335885930138,
+        "mass_multiplier": 0.9360447732649302,
+        "seed": 30,
+        "translation_m": [
+          0.016273489820296038,
+          -0.019710586768074592,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-030",
+      "seed": 30,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9363306078474896,
+        "mass_multiplier": 0.8402874709177603,
+        "seed": 31,
+        "translation_m": [
+          0.01860680024759367,
+          0.010330667559418746,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-031",
+      "seed": 31,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9528066358664267,
+        "mass_multiplier": 1.0821208641998845,
+        "seed": 32,
+        "translation_m": [
+          0.005176086448683469,
+          0.014514234259054046,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-032",
+      "seed": 32,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.157453893917814,
+        "mass_multiplier": 0.810972948407621,
+        "seed": 33,
+        "translation_m": [
+          0.005592268674276625,
+          0.017812196006707446,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-033",
+      "seed": 33,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0903658090923287,
+        "mass_multiplier": 0.9504324899793996,
+        "seed": 34,
+        "translation_m": [
+          0.011947255102631348,
+          0.004115917242029955,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-034",
+      "seed": 34,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9849744022998771,
+        "mass_multiplier": 0.8125092052092551,
+        "seed": 35,
+        "translation_m": [
+          -0.0030300825122908243,
+          0.017664804349405778,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-035",
+      "seed": 35,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8043321376568082,
+        "mass_multiplier": 0.9390776457393737,
+        "seed": 36,
+        "translation_m": [
+          0.017170516588317173,
+          0.014154847600807183,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-036",
+      "seed": 36,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9522830120458299,
+        "mass_multiplier": 1.190497382028871,
+        "seed": 37,
+        "translation_m": [
+          0.012971035814916387,
+          0.0016892589219972103,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-037",
+      "seed": 37,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9719640102997399,
+        "mass_multiplier": 0.9797151647825834,
+        "seed": 38,
+        "translation_m": [
+          -0.006828322469122825,
+          -0.01901161764313191,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-038",
+      "seed": 38,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9827526682283282,
+        "mass_multiplier": 1.0606050495958301,
+        "seed": 39,
+        "translation_m": [
+          0.016905530375720883,
+          -0.013590464794255276,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-039",
+      "seed": 39,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9897857488186356,
+        "mass_multiplier": 0.9661325878880603,
+        "seed": 40,
+        "translation_m": [
+          0.01665684365904459,
+          -0.010765714677498752,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-040",
+      "seed": 40,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8084022170587243,
+        "mass_multiplier": 0.8289722232013137,
+        "seed": 41,
+        "translation_m": [
+          0.01619774919086583,
+          -0.0021095135361655845,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-041",
+      "seed": 41,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.187609739544385,
+        "mass_multiplier": 1.0738215121391212,
+        "seed": 42,
+        "translation_m": [
+          -0.019431218017792254,
+          -0.0064866782720216995,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-042",
+      "seed": 42,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8359878977702045,
+        "mass_multiplier": 1.082589786811253,
+        "seed": 43,
+        "translation_m": [
+          -0.014467578423103752,
+          0.00818215799339344,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-043",
+      "seed": 43,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9629170139689719,
+        "mass_multiplier": 0.9439163241973274,
+        "seed": 44,
+        "translation_m": [
+          0.006668175294377084,
+          -0.009300561600269344,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-044",
+      "seed": 44,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1859996243706776,
+        "mass_multiplier": 0.8611524892096873,
+        "seed": 45,
+        "translation_m": [
+          0.015393255198683318,
+          0.00871839296333916,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-045",
+      "seed": 45,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9683569224454983,
+        "mass_multiplier": 0.8919084390018597,
+        "seed": 46,
+        "translation_m": [
+          0.016074313205811566,
+          0.019310882300926886,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-046",
+      "seed": 46,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.130575252839988,
+        "mass_multiplier": 1.0648240848429966,
+        "seed": 47,
+        "translation_m": [
+          0.005235149416654993,
+          -0.011155770201319885,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-047",
+      "seed": 47,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0307168816827226,
+        "mass_multiplier": 0.864533961113888,
+        "seed": 48,
+        "translation_m": [
+          0.00918362492859973,
+          0.0043824025165069905,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-048",
+      "seed": 48,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8073806335803158,
+        "mass_multiplier": 1.0392700959682453,
+        "seed": 49,
+        "translation_m": [
+          -0.011197121630151336,
+          -0.005018841946771345,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-049",
+      "seed": 49,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8298604451163205,
+        "mass_multiplier": 0.9408690715773843,
+        "seed": 50,
+        "translation_m": [
+          0.007320923212336475,
+          0.0059771954444055725,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-050",
+      "seed": 50,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0157207814418516,
+        "mass_multiplier": 0.8659755495693744,
+        "seed": 51,
+        "translation_m": [
+          -0.018694025525321595,
+          -0.009195851192235645,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-051",
+      "seed": 51,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8419394705117642,
+        "mass_multiplier": 1.1826899163653743,
+        "seed": 52,
+        "translation_m": [
+          -0.018099847377684313,
+          -0.005680377921932758,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-052",
+      "seed": 52,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8731830051861957,
+        "mass_multiplier": 0.8926778997302224,
+        "seed": 53,
+        "translation_m": [
+          -0.008721394373575228,
+          -0.00977156746365596,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-053",
+      "seed": 53,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8460225244807268,
+        "mass_multiplier": 1.1378511535852147,
+        "seed": 54,
+        "translation_m": [
+          -0.0016067906794580353,
+          0.00041595480643672605,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-054",
+      "seed": 54,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1572107796621567,
+        "mass_multiplier": 0.8941026162332726,
+        "seed": 55,
+        "translation_m": [
+          0.01811658415197458,
+          0.003792623365427593,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-055",
+      "seed": 55,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8005484384459096,
+        "mass_multiplier": 1.1290881858505344,
+        "seed": 56,
+        "translation_m": [
+          -0.004061626257656253,
+          0.01244436253270827,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-056",
+      "seed": 56,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.09866748551826,
+        "mass_multiplier": 1.1902690362389599,
+        "seed": 57,
+        "translation_m": [
+          0.018636534168275817,
+          8.92145991962974e-05,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-057",
+      "seed": 57,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9587230737656562,
+        "mass_multiplier": 1.1152558628801779,
+        "seed": 58,
+        "translation_m": [
+          -0.01873571660232043,
+          0.005861044694619327,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-058",
+      "seed": 58,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9555028855953405,
+        "mass_multiplier": 0.9783064761222017,
+        "seed": 59,
+        "translation_m": [
+          0.00350182657655098,
+          0.01776053164816706,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-059",
+      "seed": 59,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1035200260501556,
+        "mass_multiplier": 0.8644364389035438,
+        "seed": 60,
+        "translation_m": [
+          -0.013106691001861476,
+          0.015107263012276159,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-060",
+      "seed": 60,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8433521587982907,
+        "mass_multiplier": 0.8594785679718359,
+        "seed": 61,
+        "translation_m": [
+          0.0180818849202314,
+          0.004854600137740528,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-061",
+      "seed": 61,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0270935391086216,
+        "mass_multiplier": 1.0662308239016234,
+        "seed": 62,
+        "translation_m": [
+          0.019202767526039572,
+          -0.0074129762271896785,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-062",
+      "seed": 62,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.077046002624154,
+        "mass_multiplier": 0.8163488316118643,
+        "seed": 63,
+        "translation_m": [
+          -0.0021412476576635024,
+          -0.01626786961948487,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-063",
+      "seed": 63,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1791694110981368,
+        "mass_multiplier": 0.9432930390696939,
+        "seed": 64,
+        "translation_m": [
+          -0.01500474991967999,
+          0.014422931227143557,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-064",
+      "seed": 64,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.189931305708793,
+        "mass_multiplier": 0.9574955113430561,
+        "seed": 65,
+        "translation_m": [
+          -0.010311887481389599,
+          0.017142415952053704,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-065",
+      "seed": 65,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9049875565231732,
+        "mass_multiplier": 1.0961877948504397,
+        "seed": 66,
+        "translation_m": [
+          0.0190177423219095,
+          0.018024761981442507,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-066",
+      "seed": 66,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0697549000949953,
+        "mass_multiplier": 0.8336888951221311,
+        "seed": 67,
+        "translation_m": [
+          -0.006304392363867022,
+          0.00738652565383513,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-067",
+      "seed": 67,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8655831218912929,
+        "mass_multiplier": 1.1330657363587127,
+        "seed": 68,
+        "translation_m": [
+          0.007775624500052723,
+          -0.014835100650705741,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-068",
+      "seed": 68,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1434969521815208,
+        "mass_multiplier": 0.9194085097644029,
+        "seed": 69,
+        "translation_m": [
+          0.0012517602679416318,
+          -0.005236356953375631,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-069",
+      "seed": 69,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1347950580965371,
+        "mass_multiplier": 1.1644667888344586,
+        "seed": 70,
+        "translation_m": [
+          0.014269975613582297,
+          -0.013264044294303723,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-070",
+      "seed": 70,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9626516205448774,
+        "mass_multiplier": 0.9243319267896848,
+        "seed": 71,
+        "translation_m": [
+          -0.00028584018591114313,
+          -0.015144204583314993,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-071",
+      "seed": 71,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0366378051270582,
+        "mass_multiplier": 1.0890796493087285,
+        "seed": 72,
+        "translation_m": [
+          -0.009295639118369335,
+          0.010755975276700067,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-072",
+      "seed": 72,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.019050821680053,
+        "mass_multiplier": 1.0231080803902368,
+        "seed": 73,
+        "translation_m": [
+          0.015365314772340714,
+          -0.013820276225571937,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-073",
+      "seed": 73,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1440890639950936,
+        "mass_multiplier": 1.0418589539499932,
+        "seed": 74,
+        "translation_m": [
+          0.01524723028343104,
+          -0.009659672018763433,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-074",
+      "seed": 74,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9798464905958184,
+        "mass_multiplier": 0.8674140676581428,
+        "seed": 75,
+        "translation_m": [
+          0.016826746800305072,
+          0.012598114629269932,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-075",
+      "seed": 75,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1938740222476718,
+        "mass_multiplier": 1.036349868322151,
+        "seed": 76,
+        "translation_m": [
+          -0.01014478936783739,
+          0.001944770682469548,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-076",
+      "seed": 76,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1910527389445176,
+        "mass_multiplier": 0.9213587170273695,
+        "seed": 77,
+        "translation_m": [
+          0.013403037039961967,
+          -0.0056879579531539555,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-077",
+      "seed": 77,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0501831006958326,
+        "mass_multiplier": 1.085943606876891,
+        "seed": 78,
+        "translation_m": [
+          0.004454706310633192,
+          -0.017932584418967338,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-078",
+      "seed": 78,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.000953062497997,
+        "mass_multiplier": 1.1667392499382485,
+        "seed": 79,
+        "translation_m": [
+          -0.017177381904834782,
+          0.019811614993499472,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-079",
+      "seed": 79,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8023993720295476,
+        "mass_multiplier": 0.8855171503273688,
+        "seed": 80,
+        "translation_m": [
+          0.013557561234911409,
+          0.008635519556063117,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-080",
+      "seed": 80,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1219338193134558,
+        "mass_multiplier": 1.024145765918178,
+        "seed": 81,
+        "translation_m": [
+          0.013817378708868584,
+          0.0015308982847004743,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-081",
+      "seed": 81,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0089226690255062,
+        "mass_multiplier": 1.1885154096574313,
+        "seed": 82,
+        "translation_m": [
+          -0.008478122623023837,
+          0.019171807023747423,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-082",
+      "seed": 82,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.15158790895564,
+        "mass_multiplier": 1.1176591102684066,
+        "seed": 83,
+        "translation_m": [
+          0.012881455007603435,
+          -0.015700750464796732,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-083",
+      "seed": 83,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9390325608606113,
+        "mass_multiplier": 0.8108164437487975,
+        "seed": 84,
+        "translation_m": [
+          0.006851491701787449,
+          0.008057718423743553,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-084",
+      "seed": 84,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9142613103474578,
+        "mass_multiplier": 1.180930597844023,
+        "seed": 85,
+        "translation_m": [
+          -0.0014026659990393903,
+          -0.0030517852008574813,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-085",
+      "seed": 85,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8525558218815316,
+        "mass_multiplier": 1.1328976771547405,
+        "seed": 86,
+        "translation_m": [
+          -0.01591944065298534,
+          -0.006820294778195813,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-086",
+      "seed": 86,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1585237909313546,
+        "mass_multiplier": 0.8750016075466005,
+        "seed": 87,
+        "translation_m": [
+          0.004377425463681774,
+          -0.0072864129158483944,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-087",
+      "seed": 87,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9601309710851659,
+        "mass_multiplier": 1.1908721293171443,
+        "seed": 88,
+        "translation_m": [
+          -0.005204053558845812,
+          -0.0190344848715608,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-088",
+      "seed": 88,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.144280440128083,
+        "mass_multiplier": 1.105944024707676,
+        "seed": 89,
+        "translation_m": [
+          0.0018817551125995813,
+          0.010988935189714881,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-089",
+      "seed": 89,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9025059403098923,
+        "mass_multiplier": 1.0244371722052539,
+        "seed": 90,
+        "translation_m": [
+          -0.003713729411845012,
+          0.004992179334088343,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-090",
+      "seed": 90,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9490658554140958,
+        "mass_multiplier": 0.8755147993477896,
+        "seed": 91,
+        "translation_m": [
+          0.010338543104303995,
+          -0.004103036935511915,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-091",
+      "seed": 91,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1160488871736631,
+        "mass_multiplier": 1.115325620763511,
+        "seed": 92,
+        "translation_m": [
+          -0.019940742448056818,
+          -0.01810301298057849,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-092",
+      "seed": 92,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1057475846884757,
+        "mass_multiplier": 0.9759661023730248,
+        "seed": 93,
+        "translation_m": [
+          -0.003251314437272862,
+          -0.0171809334363826,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-093",
+      "seed": 93,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.1895402702697682,
+        "mass_multiplier": 1.1027554552918168,
+        "seed": 94,
+        "translation_m": [
+          0.003775047885413975,
+          0.010677991541446958,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-094",
+      "seed": 94,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.9914917325594976,
+        "mass_multiplier": 1.0898794668161793,
+        "seed": 95,
+        "translation_m": [
+          0.011282058034761813,
+          0.003403821251106911,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-095",
+      "seed": 95,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8338603363708493,
+        "mass_multiplier": 1.0963647591570904,
+        "seed": 96,
+        "translation_m": [
+          -0.011274732516796879,
+          -0.0039498368922198865,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-096",
+      "seed": 96,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.0287240631143644,
+        "mass_multiplier": 1.031433156312998,
+        "seed": 97,
+        "translation_m": [
+          0.018355371390198386,
+          0.014696890715871765,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-097",
+      "seed": 97,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 1.13532221466333,
+        "mass_multiplier": 1.0532147209445453,
+        "seed": 98,
+        "translation_m": [
+          0.009476551047728963,
+          0.005744298505316235,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-098",
+      "seed": 98,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "nominal",
+      "draw": {
+        "friction_multiplier": 0.8636501694062929,
+        "mass_multiplier": 1.1881171745582924,
+        "seed": 99,
+        "translation_m": [
+          0.00048590571588722625,
+          0.016116287389746426,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-nominal-099",
+      "seed": 99,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.0182962155737896,
+        "mass_multiplier": 0.9191994206519264,
+        "seed": 0,
+        "translation_m": [
+          -0.011422315080391625,
+          -0.005868115488978502,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-displaced-000",
+      "seed": 0,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 0.9102974108157971,
+        "mass_multiplier": 1.1721274572016784,
+        "seed": 1,
+        "translation_m": [
+          -0.011969502885963443,
+          0.00377110251865604,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-displaced-001",
+      "seed": 1,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 0.8183563578339411,
+        "mass_multiplier": 1.0754225490565081,
+        "seed": 2,
+        "translation_m": [
+          0.001459766047956293,
+          -0.007195659020988888,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-displaced-002",
+      "seed": 2,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.066037607225657,
+        "mass_multiplier": 1.0419062320541912,
+        "seed": 3,
+        "translation_m": [
+          0.001933645047144411,
+          0.00857465783001319,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-displaced-003",
+      "seed": 3,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.0164495848584747,
+        "mass_multiplier": 0.9568405959889257,
+        "seed": 4,
+        "translation_m": [
+          -0.002312279099595617,
+          -0.003468352580955538,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-displaced-004",
+      "seed": 4,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 0.8937456525896829,
+        "mass_multiplier": 0.9054871806967629,
+        "seed": 5,
+        "translation_m": [
+          0.01438871776765566,
+          -0.0033106512956770466,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-displaced-005",
+      "seed": 5,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.1832167336677109,
+        "mass_multiplier": 1.1026258466028631,
+        "seed": 6,
+        "translation_m": [
+          -0.0030231036822346846,
+          -0.007044995621598424,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-displaced-006",
+      "seed": 6,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.0356559215674135,
+        "mass_multiplier": 0.872834273155337,
+        "seed": 7,
+        "translation_m": [
+          -0.01826433670652878,
+          0.006273503142162799,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-displaced-007",
+      "seed": 7,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 0.9698969960984316,
+        "mass_multiplier": 0.8693420574373756,
+        "seed": 8,
+        "translation_m": [
+          0.017909922769922013,
+          -0.005444595874981988,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-displaced-008",
+      "seed": 8,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.0898509698383207,
+        "mass_multiplier": 0.9629685855397057,
+        "seed": 9,
+        "translation_m": [
+          -0.01608031579481809,
+          -0.017511426668519056,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-displaced-009",
+      "seed": 9,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.1134376210591257,
+        "mass_multiplier": 0.8392317063724559,
+        "seed": 10,
+        "translation_m": [
+          -0.01648894142856307,
+          -0.00648197295251602,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-displaced-010",
+      "seed": 10,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.017135045719346,
+        "mass_multiplier": 1.0324091478641375,
+        "seed": 11,
+        "translation_m": [
+          0.012783365950920247,
+          -0.014649590370164313,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-displaced-011",
+      "seed": 11,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 0.8692715661181889,
+        "mass_multiplier": 1.1920416343393876,
+        "seed": 12,
+        "translation_m": [
+          0.003776095338136592,
+          -0.006350536290749035,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-displaced-012",
+      "seed": 12,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 0.9850348015098894,
+        "mass_multiplier": 1.1555180186544316,
+        "seed": 13,
+        "translation_m": [
+          -0.007048335644060417,
+          0.015445820342547243,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-displaced-013",
+      "seed": 13,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.092506792576294,
+        "mass_multiplier": 0.8980168161851975,
+        "seed": 14,
+        "translation_m": [
+          0.009823801130497366,
+          -0.0036832321867414815,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-displaced-014",
+      "seed": 14,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.0763661576139614,
+        "mass_multiplier": 1.1529153319732965,
+        "seed": 15,
+        "translation_m": [
+          0.01964664206567557,
+          -0.01691932640144088,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-displaced-015",
+      "seed": 15,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.198813708684073,
+        "mass_multiplier": 1.1083977245885874,
+        "seed": 16,
+        "translation_m": [
+          -0.015379638888781143,
+          -0.016406774007580754,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-displaced-016",
+      "seed": 16,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 0.8701305397727794,
+        "mass_multiplier": 0.9857493077495296,
+        "seed": 17,
+        "translation_m": [
+          0.017388934893409726,
+          -0.018435143769219193,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-displaced-017",
+      "seed": 17,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.0515247067452724,
+        "mass_multiplier": 0.9080731868200951,
+        "seed": 18,
+        "translation_m": [
+          -0.01648761639079042,
+          -0.016133772112910925,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-displaced-018",
+      "seed": 18,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "displaced",
+      "draw": {
+        "friction_multiplier": 1.0294805128326512,
+        "mass_multiplier": 0.8872936975017967,
+        "seed": 19,
+        "translation_m": [
+          0.0005117966029036039,
+          -0.00791462913132606,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-displaced-019",
+      "seed": 19,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.0182962155737896,
+        "mass_multiplier": 0.9191994206519264,
+        "seed": 0,
+        "translation_m": [
+          -0.011422315080391625,
+          -0.005868115488978502,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-slip-000",
+      "seed": 0,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 0.9102974108157971,
+        "mass_multiplier": 1.1721274572016784,
+        "seed": 1,
+        "translation_m": [
+          -0.011969502885963443,
+          0.00377110251865604,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-slip-001",
+      "seed": 1,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 0.8183563578339411,
+        "mass_multiplier": 1.0754225490565081,
+        "seed": 2,
+        "translation_m": [
+          0.001459766047956293,
+          -0.007195659020988888,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-slip-002",
+      "seed": 2,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.066037607225657,
+        "mass_multiplier": 1.0419062320541912,
+        "seed": 3,
+        "translation_m": [
+          0.001933645047144411,
+          0.00857465783001319,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-slip-003",
+      "seed": 3,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.0164495848584747,
+        "mass_multiplier": 0.9568405959889257,
+        "seed": 4,
+        "translation_m": [
+          -0.002312279099595617,
+          -0.003468352580955538,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-slip-004",
+      "seed": 4,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 0.8937456525896829,
+        "mass_multiplier": 0.9054871806967629,
+        "seed": 5,
+        "translation_m": [
+          0.01438871776765566,
+          -0.0033106512956770466,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-slip-005",
+      "seed": 5,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.1832167336677109,
+        "mass_multiplier": 1.1026258466028631,
+        "seed": 6,
+        "translation_m": [
+          -0.0030231036822346846,
+          -0.007044995621598424,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-slip-006",
+      "seed": 6,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.0356559215674135,
+        "mass_multiplier": 0.872834273155337,
+        "seed": 7,
+        "translation_m": [
+          -0.01826433670652878,
+          0.006273503142162799,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-slip-007",
+      "seed": 7,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 0.9698969960984316,
+        "mass_multiplier": 0.8693420574373756,
+        "seed": 8,
+        "translation_m": [
+          0.017909922769922013,
+          -0.005444595874981988,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-slip-008",
+      "seed": 8,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.0898509698383207,
+        "mass_multiplier": 0.9629685855397057,
+        "seed": 9,
+        "translation_m": [
+          -0.01608031579481809,
+          -0.017511426668519056,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-slip-009",
+      "seed": 9,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.1134376210591257,
+        "mass_multiplier": 0.8392317063724559,
+        "seed": 10,
+        "translation_m": [
+          -0.01648894142856307,
+          -0.00648197295251602,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-slip-010",
+      "seed": 10,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.017135045719346,
+        "mass_multiplier": 1.0324091478641375,
+        "seed": 11,
+        "translation_m": [
+          0.012783365950920247,
+          -0.014649590370164313,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-slip-011",
+      "seed": 11,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 0.8692715661181889,
+        "mass_multiplier": 1.1920416343393876,
+        "seed": 12,
+        "translation_m": [
+          0.003776095338136592,
+          -0.006350536290749035,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-slip-012",
+      "seed": 12,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 0.9850348015098894,
+        "mass_multiplier": 1.1555180186544316,
+        "seed": 13,
+        "translation_m": [
+          -0.007048335644060417,
+          0.015445820342547243,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-slip-013",
+      "seed": 13,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.092506792576294,
+        "mass_multiplier": 0.8980168161851975,
+        "seed": 14,
+        "translation_m": [
+          0.009823801130497366,
+          -0.0036832321867414815,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-slip-014",
+      "seed": 14,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.0763661576139614,
+        "mass_multiplier": 1.1529153319732965,
+        "seed": 15,
+        "translation_m": [
+          0.01964664206567557,
+          -0.01691932640144088,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-slip-015",
+      "seed": 15,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.198813708684073,
+        "mass_multiplier": 1.1083977245885874,
+        "seed": 16,
+        "translation_m": [
+          -0.015379638888781143,
+          -0.016406774007580754,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-slip-016",
+      "seed": 16,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 0.8701305397727794,
+        "mass_multiplier": 0.9857493077495296,
+        "seed": 17,
+        "translation_m": [
+          0.017388934893409726,
+          -0.018435143769219193,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-slip-017",
+      "seed": 17,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.0515247067452724,
+        "mass_multiplier": 0.9080731868200951,
+        "seed": 18,
+        "translation_m": [
+          -0.01648761639079042,
+          -0.016133772112910925,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-slip-018",
+      "seed": 18,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "slip",
+      "draw": {
+        "friction_multiplier": 1.0294805128326512,
+        "mass_multiplier": 0.8872936975017967,
+        "seed": 19,
+        "translation_m": [
+          0.0005117966029036039,
+          -0.00791462913132606,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-slip-019",
+      "seed": 19,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.0182962155737896,
+        "mass_multiplier": 0.9191994206519264,
+        "seed": 0,
+        "translation_m": [
+          -0.011422315080391625,
+          -0.005868115488978502,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-occlusion-000",
+      "seed": 0,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 0.9102974108157971,
+        "mass_multiplier": 1.1721274572016784,
+        "seed": 1,
+        "translation_m": [
+          -0.011969502885963443,
+          0.00377110251865604,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-occlusion-001",
+      "seed": 1,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 0.8183563578339411,
+        "mass_multiplier": 1.0754225490565081,
+        "seed": 2,
+        "translation_m": [
+          0.001459766047956293,
+          -0.007195659020988888,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-occlusion-002",
+      "seed": 2,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.066037607225657,
+        "mass_multiplier": 1.0419062320541912,
+        "seed": 3,
+        "translation_m": [
+          0.001933645047144411,
+          0.00857465783001319,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-occlusion-003",
+      "seed": 3,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.0164495848584747,
+        "mass_multiplier": 0.9568405959889257,
+        "seed": 4,
+        "translation_m": [
+          -0.002312279099595617,
+          -0.003468352580955538,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-occlusion-004",
+      "seed": 4,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 0.8937456525896829,
+        "mass_multiplier": 0.9054871806967629,
+        "seed": 5,
+        "translation_m": [
+          0.01438871776765566,
+          -0.0033106512956770466,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-occlusion-005",
+      "seed": 5,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.1832167336677109,
+        "mass_multiplier": 1.1026258466028631,
+        "seed": 6,
+        "translation_m": [
+          -0.0030231036822346846,
+          -0.007044995621598424,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-occlusion-006",
+      "seed": 6,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.0356559215674135,
+        "mass_multiplier": 0.872834273155337,
+        "seed": 7,
+        "translation_m": [
+          -0.01826433670652878,
+          0.006273503142162799,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-occlusion-007",
+      "seed": 7,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 0.9698969960984316,
+        "mass_multiplier": 0.8693420574373756,
+        "seed": 8,
+        "translation_m": [
+          0.017909922769922013,
+          -0.005444595874981988,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-occlusion-008",
+      "seed": 8,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.0898509698383207,
+        "mass_multiplier": 0.9629685855397057,
+        "seed": 9,
+        "translation_m": [
+          -0.01608031579481809,
+          -0.017511426668519056,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-occlusion-009",
+      "seed": 9,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.1134376210591257,
+        "mass_multiplier": 0.8392317063724559,
+        "seed": 10,
+        "translation_m": [
+          -0.01648894142856307,
+          -0.00648197295251602,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-occlusion-010",
+      "seed": 10,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.017135045719346,
+        "mass_multiplier": 1.0324091478641375,
+        "seed": 11,
+        "translation_m": [
+          0.012783365950920247,
+          -0.014649590370164313,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-occlusion-011",
+      "seed": 11,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 0.8692715661181889,
+        "mass_multiplier": 1.1920416343393876,
+        "seed": 12,
+        "translation_m": [
+          0.003776095338136592,
+          -0.006350536290749035,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-occlusion-012",
+      "seed": 12,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 0.9850348015098894,
+        "mass_multiplier": 1.1555180186544316,
+        "seed": 13,
+        "translation_m": [
+          -0.007048335644060417,
+          0.015445820342547243,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-occlusion-013",
+      "seed": 13,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.092506792576294,
+        "mass_multiplier": 0.8980168161851975,
+        "seed": 14,
+        "translation_m": [
+          0.009823801130497366,
+          -0.0036832321867414815,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-occlusion-014",
+      "seed": 14,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.0763661576139614,
+        "mass_multiplier": 1.1529153319732965,
+        "seed": 15,
+        "translation_m": [
+          0.01964664206567557,
+          -0.01691932640144088,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-occlusion-015",
+      "seed": 15,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.198813708684073,
+        "mass_multiplier": 1.1083977245885874,
+        "seed": 16,
+        "translation_m": [
+          -0.015379638888781143,
+          -0.016406774007580754,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-occlusion-016",
+      "seed": 16,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 0.8701305397727794,
+        "mass_multiplier": 0.9857493077495296,
+        "seed": 17,
+        "translation_m": [
+          0.017388934893409726,
+          -0.018435143769219193,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-occlusion-017",
+      "seed": 17,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.0515247067452724,
+        "mass_multiplier": 0.9080731868200951,
+        "seed": 18,
+        "translation_m": [
+          -0.01648761639079042,
+          -0.016133772112910925,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-occlusion-018",
+      "seed": 18,
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "class": "occlusion",
+      "draw": {
+        "friction_multiplier": 1.0294805128326512,
+        "mass_multiplier": 0.8872936975017967,
+        "seed": 19,
+        "translation_m": [
+          0.0005117966029036039,
+          -0.00791462913132606,
+          0.0
+        ]
+      },
+      "episode_id": "zoo_long_arm-occlusion-019",
+      "seed": 19,
+      "zoo_id": "zoo_long_arm"
+    }
+  ],
+  "floor_top_m": -0.12,
+  "generation_calls": 0,
+  "library_id": "transfer_object_v1",
+  "library_sha256": "8af1e9cda3a446e7c75f53c0074c92b01ae51fefabfa2fef0c4cb33ae74d9f47",
+  "nominal_per_body": 100,
+  "policy_sha256": "6d2912e8df7d0a098f5d75f59ad37fc5bdf3c5bdd28f7ef940df7973cb4d1ed1",
+  "retry_budget": 3,
+  "root_skill": "transfer_object",
+  "schema": "g10.transfer-corpus.v1",
+  "scored_runs_started": false,
+  "sensor_configuration": "front_contact",
+  "sensor_configuration_description": "encoders, gripper contact, a camera beyond the fixtures looking back",
+  "success_targets": {
+    "false_completions": 0,
+    "nominal_per_body": 90,
+    "recovered_per_class_per_body": 16
+  }
+}
