@@ -1,0 +1,420 @@
+{
+  "base_environment_id": "g06_transfer_v1+table+floor",
+  "base_environment_sha256": "57197e4d6c1b9dbd956d50f301120147f70c31d08e3153a1b8489164c8c66402",
+  "claimed_ranges": [
+    {
+      "high": 1.8,
+      "low": 1.0,
+      "quantity": "object_friction",
+      "units": "coefficient"
+    },
+    {
+      "high": 0.016,
+      "low": 0.004,
+      "quantity": "object_mass_kg",
+      "units": "kg"
+    },
+    {
+      "high": 0.8,
+      "low": 0.55,
+      "quantity": "object_distance_m",
+      "units": "m"
+    },
+    {
+      "high": 0.8,
+      "low": 0.55,
+      "quantity": "destination_distance_m",
+      "units": "m"
+    }
+  ],
+  "layouts": {
+    "mirrored": {
+      "environment": {
+        "authored_for_aperture_m": null,
+        "authored_for_reach_m": null,
+        "description": "A 30 mm cube on a low bench to the left of and slightly behind the mount, and an empty platform of the same height beside it, both in absolute metres. Nothing about the world depends on which body enters it. The bench and the platform stand on a table whose top is three centimetres below theirs. The fixtures stand on a floor twelve centimetres below the mount. The bench and the platform have swapped sides.",
+        "environment_id": "g06_transfer_v1+table+floor+mirrored",
+        "fixtures": [
+          {
+            "name": "bench",
+            "position_m": [
+              -0.010000000000000009,
+              0.65,
+              0.245
+            ],
+            "rgba": [
+              0.35,
+              0.35,
+              0.4,
+              1.0
+            ],
+            "size_m": [
+              0.05,
+              0.05,
+              0.015
+            ]
+          },
+          {
+            "name": "platform",
+            "position_m": [
+              -0.15000000000000002,
+              0.65,
+              0.245
+            ],
+            "rgba": [
+              0.3,
+              0.45,
+              0.75,
+              1.0
+            ],
+            "size_m": [
+              0.05,
+              0.05,
+              0.015
+            ]
+          },
+          {
+            "name": "table",
+            "position_m": [
+              -0.05,
+              0.65,
+              0.225
+            ],
+            "rgba": [
+              0.55,
+              0.5,
+              0.42,
+              1.0
+            ],
+            "size_m": [
+              0.4,
+              0.3,
+              0.005
+            ]
+          },
+          {
+            "name": "floor",
+            "position_m": [
+              0.0,
+              0.5,
+              -0.13
+            ],
+            "rgba": [
+              0.42,
+              0.42,
+              0.45,
+              1.0
+            ],
+            "size_m": [
+              1.0,
+              1.0,
+              0.01
+            ]
+          }
+        ],
+        "objects": [
+          {
+            "friction": 1.4,
+            "mass_kg": 0.00864,
+            "name": "cube",
+            "position_m": [
+              -0.010000000000000009,
+              0.65,
+              0.275
+            ],
+            "rgba": [
+              0.85,
+              0.45,
+              0.15,
+              1.0
+            ],
+            "size_m": [
+              0.015,
+              0.015,
+              0.015
+            ]
+          }
+        ],
+        "robot_mount_m": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "goal": {
+        "dwell_s": 2.0,
+        "maximum_angular_speed_radps": 0.1,
+        "maximum_linear_speed_mps": 0.01,
+        "region_maximum_m": [
+          -0.09000000000000002,
+          0.71,
+          0.35
+        ],
+        "region_minimum_m": [
+          -0.21000000000000002,
+          0.5900000000000001,
+          0.259
+        ]
+      }
+    },
+    "near_heavy": {
+      "environment": {
+        "authored_for_aperture_m": null,
+        "authored_for_reach_m": null,
+        "description": "A 30 mm cube on a low bench to the left of and slightly behind the mount, and an empty platform of the same height beside it, both in absolute metres. Nothing about the world depends on which body enters it. The bench and the platform stand on a table whose top is three centimetres below theirs. The fixtures stand on a floor twelve centimetres below the mount. The bench is five centimetres nearer, the platform four to the right; the cube is a third heavier and a tenth slicker.",
+        "environment_id": "g06_transfer_v1+table+floor+near_heavy",
+        "fixtures": [
+          {
+            "name": "bench",
+            "position_m": [
+              -0.15,
+              0.6,
+              0.245
+            ],
+            "rgba": [
+              0.35,
+              0.35,
+              0.4,
+              1.0
+            ],
+            "size_m": [
+              0.05,
+              0.05,
+              0.015
+            ]
+          },
+          {
+            "name": "platform",
+            "position_m": [
+              0.03,
+              0.65,
+              0.245
+            ],
+            "rgba": [
+              0.3,
+              0.45,
+              0.75,
+              1.0
+            ],
+            "size_m": [
+              0.05,
+              0.05,
+              0.015
+            ]
+          },
+          {
+            "name": "table",
+            "position_m": [
+              -0.05,
+              0.65,
+              0.225
+            ],
+            "rgba": [
+              0.55,
+              0.5,
+              0.42,
+              1.0
+            ],
+            "size_m": [
+              0.4,
+              0.3,
+              0.005
+            ]
+          },
+          {
+            "name": "floor",
+            "position_m": [
+              0.0,
+              0.5,
+              -0.13
+            ],
+            "rgba": [
+              0.42,
+              0.42,
+              0.45,
+              1.0
+            ],
+            "size_m": [
+              1.0,
+              1.0,
+              0.01
+            ]
+          }
+        ],
+        "objects": [
+          {
+            "friction": 1.26,
+            "mass_kg": 0.011232,
+            "name": "cube",
+            "position_m": [
+              -0.15,
+              0.6,
+              0.275
+            ],
+            "rgba": [
+              0.85,
+              0.45,
+              0.15,
+              1.0
+            ],
+            "size_m": [
+              0.015,
+              0.015,
+              0.015
+            ]
+          }
+        ],
+        "robot_mount_m": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "goal": {
+        "dwell_s": 2.0,
+        "maximum_angular_speed_radps": 0.1,
+        "maximum_linear_speed_mps": 0.01,
+        "region_maximum_m": [
+          0.09,
+          0.71,
+          0.35
+        ],
+        "region_minimum_m": [
+          -0.03,
+          0.5900000000000001,
+          0.259
+        ]
+      }
+    },
+    "platform_far": {
+      "environment": {
+        "authored_for_aperture_m": null,
+        "authored_for_reach_m": null,
+        "description": "A 30 mm cube on a low bench to the left of and slightly behind the mount, and an empty platform of the same height beside it, both in absolute metres. Nothing about the world depends on which body enters it. The bench and the platform stand on a table whose top is three centimetres below theirs. The fixtures stand on a floor twelve centimetres below the mount. The platform stands six centimetres further from the mount.",
+        "environment_id": "g06_transfer_v1+table+floor+platform_far",
+        "fixtures": [
+          {
+            "name": "bench",
+            "position_m": [
+              -0.15,
+              0.65,
+              0.245
+            ],
+            "rgba": [
+              0.35,
+              0.35,
+              0.4,
+              1.0
+            ],
+            "size_m": [
+              0.05,
+              0.05,
+              0.015
+            ]
+          },
+          {
+            "name": "platform",
+            "position_m": [
+              -0.01,
+              0.71,
+              0.245
+            ],
+            "rgba": [
+              0.3,
+              0.45,
+              0.75,
+              1.0
+            ],
+            "size_m": [
+              0.05,
+              0.05,
+              0.015
+            ]
+          },
+          {
+            "name": "table",
+            "position_m": [
+              -0.05,
+              0.65,
+              0.225
+            ],
+            "rgba": [
+              0.55,
+              0.5,
+              0.42,
+              1.0
+            ],
+            "size_m": [
+              0.4,
+              0.3,
+              0.005
+            ]
+          },
+          {
+            "name": "floor",
+            "position_m": [
+              0.0,
+              0.5,
+              -0.13
+            ],
+            "rgba": [
+              0.42,
+              0.42,
+              0.45,
+              1.0
+            ],
+            "size_m": [
+              1.0,
+              1.0,
+              0.01
+            ]
+          }
+        ],
+        "objects": [
+          {
+            "friction": 1.4,
+            "mass_kg": 0.00864,
+            "name": "cube",
+            "position_m": [
+              -0.15,
+              0.65,
+              0.275
+            ],
+            "rgba": [
+              0.85,
+              0.45,
+              0.15,
+              1.0
+            ],
+            "size_m": [
+              0.015,
+              0.015,
+              0.015
+            ]
+          }
+        ],
+        "robot_mount_m": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "goal": {
+        "dwell_s": 2.0,
+        "maximum_angular_speed_radps": 0.1,
+        "maximum_linear_speed_mps": 0.01,
+        "region_maximum_m": [
+          0.049999999999999996,
+          0.77,
+          0.35
+        ],
+        "region_minimum_m": [
+          -0.06999999999999999,
+          0.6499999999999999,
+          0.259
+        ]
+      }
+    }
+  },
+  "schema": "g11.layouts.v1"
+}

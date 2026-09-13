@@ -1,0 +1,901 @@
+{
+  "development_sets": [
+    "g10-transfer-v1:nominal-seeds-0-99",
+    "g06-transfer-v1:roster-seeds-0-99"
+  ],
+  "revalidation": {
+    "controller": {
+      "draws": [
+        {
+          "friction_multiplier": 1.193941501604517,
+          "mass_multiplier": 1.0005201490854743,
+          "seed": 2000,
+          "translation_m": [
+            -0.014140519036644665,
+            0.004706848035488136,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 1.1803873621937075,
+          "mass_multiplier": 1.0368657918216657,
+          "seed": 2001,
+          "translation_m": [
+            0.013583815673453351,
+            0.018785655310450126,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 1.1328707164913923,
+          "mass_multiplier": 1.1094681994062245,
+          "seed": 2002,
+          "translation_m": [
+            -0.00017732799521287534,
+            0.01938385028195227,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 1.1555044245825994,
+          "mass_multiplier": 0.9008758273583463,
+          "seed": 2003,
+          "translation_m": [
+            0.010545802192420642,
+            -0.01651814269048104,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 0.9166615399225416,
+          "mass_multiplier": 0.9898876630124576,
+          "seed": 2004,
+          "translation_m": [
+            0.006198951266999805,
+            0.018032419075553235,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 1.060618255165988,
+          "mass_multiplier": 1.1973280539755085,
+          "seed": 2005,
+          "translation_m": [
+            -0.005173602783716218,
+            -0.015833477146710316,
+            0.0
+          ]
+        }
+      ],
+      "friction_assumption": {
+        "basis": "the arm's computed-torque tracking runs at half its natural frequency (7 Hz instead of 14 Hz), damping ratio unchanged",
+        "object_friction_range": [
+          1.0,
+          1.8
+        ]
+      },
+      "set": {
+        "body": "zoo_jaw_arm",
+        "draws_sha256": "fc2975e9e48b82c9bd1002c29fdd778054c8fe50d03ceec74bf0769c1229fb19",
+        "episodes": [
+          "zoo_jaw_arm-g11-revalidation-controller-2000",
+          "zoo_jaw_arm-g11-revalidation-controller-2001",
+          "zoo_jaw_arm-g11-revalidation-controller-2002",
+          "zoo_jaw_arm-g11-revalidation-controller-2003",
+          "zoo_jaw_arm-g11-revalidation-controller-2004",
+          "zoo_jaw_arm-g11-revalidation-controller-2005"
+        ],
+        "independent_of": [
+          "g10-transfer-v1:nominal-seeds-0-99",
+          "g06-transfer-v1:roster-seeds-0-99"
+        ],
+        "set_id": "g11-revalidation-controller",
+        "threshold": 5
+      }
+    },
+    "evidence_schema": {
+      "draws": [
+        {
+          "friction_multiplier": 0.8958024618462387,
+          "mass_multiplier": 1.046450849823184,
+          "seed": 2000,
+          "translation_m": [
+            -0.01727544792103402,
+            0.018354915365654475,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 1.012570500407354,
+          "mass_multiplier": 1.1520314597792525,
+          "seed": 2001,
+          "translation_m": [
+            0.019766719886966235,
+            -0.018925725136831453,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 1.1636692344843178,
+          "mass_multiplier": 0.8639371302486742,
+          "seed": 2002,
+          "translation_m": [
+            -0.005005871169455198,
+            0.008277321733260349,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 1.1406475287472666,
+          "mass_multiplier": 1.0692728710603114,
+          "seed": 2003,
+          "translation_m": [
+            -0.010569448553730832,
+            0.01650202081115627,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 1.1036096968415257,
+          "mass_multiplier": 1.1821394021273657,
+          "seed": 2004,
+          "translation_m": [
+            0.007131093796658664,
+            0.006600476725968803,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 1.054423529738186,
+          "mass_multiplier": 1.0213826490193578,
+          "seed": 2005,
+          "translation_m": [
+            -0.013978640770429896,
+            -0.015273415683911678,
+            0.0
+          ]
+        }
+      ],
+      "friction_assumption": {
+        "basis": "the episode protocol is bumped to /2; nothing physical changes",
+        "object_friction_range": [
+          1.0,
+          1.8
+        ]
+      },
+      "set": {
+        "body": "zoo_jaw_arm",
+        "draws_sha256": "6e8807cd2f9b62f63e8accbfaa1073ec950dbac48ee3b1a654acb6be1cc27fd9",
+        "episodes": [
+          "zoo_jaw_arm-g11-revalidation-evidence_schema-2000",
+          "zoo_jaw_arm-g11-revalidation-evidence_schema-2001",
+          "zoo_jaw_arm-g11-revalidation-evidence_schema-2002",
+          "zoo_jaw_arm-g11-revalidation-evidence_schema-2003",
+          "zoo_jaw_arm-g11-revalidation-evidence_schema-2004",
+          "zoo_jaw_arm-g11-revalidation-evidence_schema-2005"
+        ],
+        "independent_of": [
+          "g10-transfer-v1:nominal-seeds-0-99",
+          "g06-transfer-v1:roster-seeds-0-99"
+        ],
+        "set_id": "g11-revalidation-evidence_schema",
+        "threshold": 5
+      }
+    },
+    "friction": {
+      "draws": [
+        {
+          "friction_multiplier": 0.5326872641664059,
+          "mass_multiplier": 1.1547672445161314,
+          "seed": 2000,
+          "translation_m": [
+            -0.004325829132023153,
+            0.016406057832352893,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 0.5589018299528611,
+          "mass_multiplier": 1.1632943671103808,
+          "seed": 2001,
+          "translation_m": [
+            0.009535246209929328,
+            0.017973745030476922,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 0.4092501002339854,
+          "mass_multiplier": 1.1229096498987747,
+          "seed": 2002,
+          "translation_m": [
+            0.0031601207143040037,
+            0.008182682369048004,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 0.48092451147150433,
+          "mass_multiplier": 0.9773920689475031,
+          "seed": 2003,
+          "translation_m": [
+            -0.00961762112321837,
+            0.008121293477218985,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 0.46904937550376136,
+          "mass_multiplier": 1.0466002682080182,
+          "seed": 2004,
+          "translation_m": [
+            0.0015877664327035614,
+            -0.002940032864893513,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 0.5445879375963046,
+          "mass_multiplier": 1.100658158172696,
+          "seed": 2005,
+          "translation_m": [
+            0.010822474315559646,
+            0.007710822745512016,
+            0.0
+          ]
+        }
+      ],
+      "friction_assumption": {
+        "basis": "the friction assumption drops to 0.5-0.9 and the revalidation cubes are drawn at half the registered friction",
+        "object_friction_range": [
+          0.5,
+          0.9
+        ]
+      },
+      "set": {
+        "body": "zoo_jaw_arm",
+        "draws_sha256": "11cbfd2ebd38dc58364ae241a644332fe1d7d3845f5f8f32adef969a5f3160da",
+        "episodes": [
+          "zoo_jaw_arm-g11-revalidation-friction-2000",
+          "zoo_jaw_arm-g11-revalidation-friction-2001",
+          "zoo_jaw_arm-g11-revalidation-friction-2002",
+          "zoo_jaw_arm-g11-revalidation-friction-2003",
+          "zoo_jaw_arm-g11-revalidation-friction-2004",
+          "zoo_jaw_arm-g11-revalidation-friction-2005"
+        ],
+        "independent_of": [
+          "g10-transfer-v1:nominal-seeds-0-99",
+          "g06-transfer-v1:roster-seeds-0-99"
+        ],
+        "set_id": "g11-revalidation-friction",
+        "threshold": 5
+      }
+    },
+    "geometry": {
+      "draws": [
+        {
+          "friction_multiplier": 1.000836542335803,
+          "mass_multiplier": 0.9009376179365092,
+          "seed": 2000,
+          "translation_m": [
+            0.008897840017351392,
+            -0.014713395438110021,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 1.0057044448495451,
+          "mass_multiplier": 1.1008314961511063,
+          "seed": 2001,
+          "translation_m": [
+            0.0025805676891559326,
+            0.019086455182741043,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 1.1267097705814533,
+          "mass_multiplier": 1.1610011762592771,
+          "seed": 2002,
+          "translation_m": [
+            0.019538894498918744,
+            -0.0028866291950143674,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 1.1589332836906154,
+          "mass_multiplier": 0.9838331445034878,
+          "seed": 2003,
+          "translation_m": [
+            -0.014008366625762237,
+            0.006455853465902307,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 0.8477817656336637,
+          "mass_multiplier": 0.8067334337497218,
+          "seed": 2004,
+          "translation_m": [
+            0.012922476144728124,
+            0.005970234336838423,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 1.0750184932071583,
+          "mass_multiplier": 0.9443814339087215,
+          "seed": 2005,
+          "translation_m": [
+            -0.00029313595636899087,
+            -0.011606731501475688,
+            0.0
+          ]
+        }
+      ],
+      "friction_assumption": {
+        "basis": "the cube grows from 30 mm to 35 mm a side, its mass with its volume; every fixture as it was",
+        "object_friction_range": [
+          1.0,
+          1.8
+        ]
+      },
+      "set": {
+        "body": "zoo_jaw_arm",
+        "draws_sha256": "9be0f4ed1f905a0414b26e38e22c54719fd1e0b152758804da151dcbb669662c",
+        "episodes": [
+          "zoo_jaw_arm-g11-revalidation-geometry-2000",
+          "zoo_jaw_arm-g11-revalidation-geometry-2001",
+          "zoo_jaw_arm-g11-revalidation-geometry-2002",
+          "zoo_jaw_arm-g11-revalidation-geometry-2003",
+          "zoo_jaw_arm-g11-revalidation-geometry-2004",
+          "zoo_jaw_arm-g11-revalidation-geometry-2005"
+        ],
+        "independent_of": [
+          "g10-transfer-v1:nominal-seeds-0-99",
+          "g06-transfer-v1:roster-seeds-0-99"
+        ],
+        "set_id": "g11-revalidation-geometry",
+        "threshold": 5
+      }
+    },
+    "sensors": {
+      "draws": [
+        {
+          "friction_multiplier": 1.1568468625589872,
+          "mass_multiplier": 0.8217745331719548,
+          "seed": 2000,
+          "translation_m": [
+            -0.019968702941329988,
+            -0.004107425828085046,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 0.8492315759821827,
+          "mass_multiplier": 0.9590269636360745,
+          "seed": 2001,
+          "translation_m": [
+            0.013342909868879187,
+            0.01911473200251854,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 1.116065939282,
+          "mass_multiplier": 0.9566921085552281,
+          "seed": 2002,
+          "translation_m": [
+            -0.016395635886322344,
+            0.01734599978606496,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 1.150332880599274,
+          "mass_multiplier": 0.8204190784885146,
+          "seed": 2003,
+          "translation_m": [
+            -0.012181980899369838,
+            -0.01657074920386009,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 0.8831753778349144,
+          "mass_multiplier": 0.8503894419696469,
+          "seed": 2004,
+          "translation_m": [
+            0.008688062668011427,
+            -0.00483184698259477,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 0.9685226133174223,
+          "mass_multiplier": 1.120621273416225,
+          "seed": 2005,
+          "translation_m": [
+            -0.012634752019139049,
+            0.003454530142816648,
+            0.0
+          ]
+        }
+      ],
+      "friction_assumption": {
+        "basis": "the overhead camera is removed: the front camera and the gripper's contact sensor alone",
+        "object_friction_range": [
+          1.0,
+          1.8
+        ]
+      },
+      "set": {
+        "body": "zoo_jaw_arm",
+        "draws_sha256": "adb6a66f496810269167db97af71d2f244f66445d0a8ba41b1acdbfc78affc45",
+        "episodes": [
+          "zoo_jaw_arm-g11-revalidation-sensors-2000",
+          "zoo_jaw_arm-g11-revalidation-sensors-2001",
+          "zoo_jaw_arm-g11-revalidation-sensors-2002",
+          "zoo_jaw_arm-g11-revalidation-sensors-2003",
+          "zoo_jaw_arm-g11-revalidation-sensors-2004",
+          "zoo_jaw_arm-g11-revalidation-sensors-2005"
+        ],
+        "independent_of": [
+          "g10-transfer-v1:nominal-seeds-0-99",
+          "g06-transfer-v1:roster-seeds-0-99"
+        ],
+        "set_id": "g11-revalidation-sensors",
+        "threshold": 5
+      }
+    }
+  },
+  "rule": "the G06 draw rule (translation +-2 cm, mass and friction 0.8-1.2 of the registered cube) from numpy.random.default_rng seeded apart from every development set, one stream per set, seeds no development set used",
+  "schema": "g11.validation-sets.v1",
+  "validation": {
+    "zoo_dual_arm": {
+      "draws": [
+        {
+          "friction_multiplier": 1.0761539891434908,
+          "mass_multiplier": 1.1370639160157152,
+          "seed": 1000,
+          "translation_m": [
+            -0.00031403604907931024,
+            0.019481460612444487,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 0.8578288920702445,
+          "mass_multiplier": 0.9526463460743113,
+          "seed": 1001,
+          "translation_m": [
+            -0.017483957167143814,
+            0.01606596961420841,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 1.0981281050891978,
+          "mass_multiplier": 0.8177353017208657,
+          "seed": 1002,
+          "translation_m": [
+            -0.009249224399210339,
+            -0.00921546373206728,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 0.8218905792398776,
+          "mass_multiplier": 1.1026397653798563,
+          "seed": 1003,
+          "translation_m": [
+            0.007409347856258904,
+            0.015652259699833204,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 1.0261818293340488,
+          "mass_multiplier": 0.974228993458693,
+          "seed": 1004,
+          "translation_m": [
+            0.012796471418803555,
+            0.018399146565242896,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 0.8059938919244061,
+          "mass_multiplier": 0.9364728705437244,
+          "seed": 1005,
+          "translation_m": [
+            -0.0024914602988014393,
+            0.013233043797105905,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 1.1161948324798554,
+          "mass_multiplier": 0.8615296933279178,
+          "seed": 1006,
+          "translation_m": [
+            0.004051606609565616,
+            -0.005468100866400207,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 1.106374544804892,
+          "mass_multiplier": 0.8427105277400901,
+          "seed": 1007,
+          "translation_m": [
+            0.011993994565460821,
+            0.0011833853516437336,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 0.8585635792003562,
+          "mass_multiplier": 1.1299899488747869,
+          "seed": 1008,
+          "translation_m": [
+            0.008411504214291848,
+            0.008318630970252715,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 0.8634945421349214,
+          "mass_multiplier": 1.0094065199728308,
+          "seed": 1009,
+          "translation_m": [
+            -0.014085563776196804,
+            -0.0007154251694610446,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 0.961206450557836,
+          "mass_multiplier": 1.111434014267496,
+          "seed": 1010,
+          "translation_m": [
+            0.0022246542473245423,
+            0.010381299543918074,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 0.8850242242456277,
+          "mass_multiplier": 1.0337958592639642,
+          "seed": 1011,
+          "translation_m": [
+            0.006840842678190438,
+            -0.013886293129005925,
+            0.0
+          ]
+        }
+      ],
+      "set": {
+        "body": "zoo_dual_arm",
+        "draws_sha256": "536e950f93f6ecdb55cfbcf551446c43077f1dc89d45a1a6187de8d910ce60f1",
+        "episodes": [
+          "zoo_dual_arm-g11-validation-zoo_dual_arm-1000",
+          "zoo_dual_arm-g11-validation-zoo_dual_arm-1001",
+          "zoo_dual_arm-g11-validation-zoo_dual_arm-1002",
+          "zoo_dual_arm-g11-validation-zoo_dual_arm-1003",
+          "zoo_dual_arm-g11-validation-zoo_dual_arm-1004",
+          "zoo_dual_arm-g11-validation-zoo_dual_arm-1005",
+          "zoo_dual_arm-g11-validation-zoo_dual_arm-1006",
+          "zoo_dual_arm-g11-validation-zoo_dual_arm-1007",
+          "zoo_dual_arm-g11-validation-zoo_dual_arm-1008",
+          "zoo_dual_arm-g11-validation-zoo_dual_arm-1009",
+          "zoo_dual_arm-g11-validation-zoo_dual_arm-1010",
+          "zoo_dual_arm-g11-validation-zoo_dual_arm-1011"
+        ],
+        "independent_of": [
+          "g10-transfer-v1:nominal-seeds-0-99",
+          "g06-transfer-v1:roster-seeds-0-99"
+        ],
+        "set_id": "g11-validation-zoo_dual_arm",
+        "threshold": 11
+      }
+    },
+    "zoo_jaw_arm": {
+      "draws": [
+        {
+          "friction_multiplier": 1.0761539891434908,
+          "mass_multiplier": 1.1370639160157152,
+          "seed": 1000,
+          "translation_m": [
+            -0.00031403604907931024,
+            0.019481460612444487,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 0.8578288920702445,
+          "mass_multiplier": 0.9526463460743113,
+          "seed": 1001,
+          "translation_m": [
+            -0.017483957167143814,
+            0.01606596961420841,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 1.0981281050891978,
+          "mass_multiplier": 0.8177353017208657,
+          "seed": 1002,
+          "translation_m": [
+            -0.009249224399210339,
+            -0.00921546373206728,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 0.8218905792398776,
+          "mass_multiplier": 1.1026397653798563,
+          "seed": 1003,
+          "translation_m": [
+            0.007409347856258904,
+            0.015652259699833204,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 1.0261818293340488,
+          "mass_multiplier": 0.974228993458693,
+          "seed": 1004,
+          "translation_m": [
+            0.012796471418803555,
+            0.018399146565242896,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 0.8059938919244061,
+          "mass_multiplier": 0.9364728705437244,
+          "seed": 1005,
+          "translation_m": [
+            -0.0024914602988014393,
+            0.013233043797105905,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 1.1161948324798554,
+          "mass_multiplier": 0.8615296933279178,
+          "seed": 1006,
+          "translation_m": [
+            0.004051606609565616,
+            -0.005468100866400207,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 1.106374544804892,
+          "mass_multiplier": 0.8427105277400901,
+          "seed": 1007,
+          "translation_m": [
+            0.011993994565460821,
+            0.0011833853516437336,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 0.8585635792003562,
+          "mass_multiplier": 1.1299899488747869,
+          "seed": 1008,
+          "translation_m": [
+            0.008411504214291848,
+            0.008318630970252715,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 0.8634945421349214,
+          "mass_multiplier": 1.0094065199728308,
+          "seed": 1009,
+          "translation_m": [
+            -0.014085563776196804,
+            -0.0007154251694610446,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 0.961206450557836,
+          "mass_multiplier": 1.111434014267496,
+          "seed": 1010,
+          "translation_m": [
+            0.0022246542473245423,
+            0.010381299543918074,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 0.8850242242456277,
+          "mass_multiplier": 1.0337958592639642,
+          "seed": 1011,
+          "translation_m": [
+            0.006840842678190438,
+            -0.013886293129005925,
+            0.0
+          ]
+        }
+      ],
+      "set": {
+        "body": "zoo_jaw_arm",
+        "draws_sha256": "536e950f93f6ecdb55cfbcf551446c43077f1dc89d45a1a6187de8d910ce60f1",
+        "episodes": [
+          "zoo_jaw_arm-g11-validation-zoo_jaw_arm-1000",
+          "zoo_jaw_arm-g11-validation-zoo_jaw_arm-1001",
+          "zoo_jaw_arm-g11-validation-zoo_jaw_arm-1002",
+          "zoo_jaw_arm-g11-validation-zoo_jaw_arm-1003",
+          "zoo_jaw_arm-g11-validation-zoo_jaw_arm-1004",
+          "zoo_jaw_arm-g11-validation-zoo_jaw_arm-1005",
+          "zoo_jaw_arm-g11-validation-zoo_jaw_arm-1006",
+          "zoo_jaw_arm-g11-validation-zoo_jaw_arm-1007",
+          "zoo_jaw_arm-g11-validation-zoo_jaw_arm-1008",
+          "zoo_jaw_arm-g11-validation-zoo_jaw_arm-1009",
+          "zoo_jaw_arm-g11-validation-zoo_jaw_arm-1010",
+          "zoo_jaw_arm-g11-validation-zoo_jaw_arm-1011"
+        ],
+        "independent_of": [
+          "g10-transfer-v1:nominal-seeds-0-99",
+          "g06-transfer-v1:roster-seeds-0-99"
+        ],
+        "set_id": "g11-validation-zoo_jaw_arm",
+        "threshold": 11
+      }
+    },
+    "zoo_long_arm": {
+      "draws": [
+        {
+          "friction_multiplier": 1.0761539891434908,
+          "mass_multiplier": 1.1370639160157152,
+          "seed": 1000,
+          "translation_m": [
+            -0.00031403604907931024,
+            0.019481460612444487,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 0.8578288920702445,
+          "mass_multiplier": 0.9526463460743113,
+          "seed": 1001,
+          "translation_m": [
+            -0.017483957167143814,
+            0.01606596961420841,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 1.0981281050891978,
+          "mass_multiplier": 0.8177353017208657,
+          "seed": 1002,
+          "translation_m": [
+            -0.009249224399210339,
+            -0.00921546373206728,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 0.8218905792398776,
+          "mass_multiplier": 1.1026397653798563,
+          "seed": 1003,
+          "translation_m": [
+            0.007409347856258904,
+            0.015652259699833204,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 1.0261818293340488,
+          "mass_multiplier": 0.974228993458693,
+          "seed": 1004,
+          "translation_m": [
+            0.012796471418803555,
+            0.018399146565242896,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 0.8059938919244061,
+          "mass_multiplier": 0.9364728705437244,
+          "seed": 1005,
+          "translation_m": [
+            -0.0024914602988014393,
+            0.013233043797105905,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 1.1161948324798554,
+          "mass_multiplier": 0.8615296933279178,
+          "seed": 1006,
+          "translation_m": [
+            0.004051606609565616,
+            -0.005468100866400207,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 1.106374544804892,
+          "mass_multiplier": 0.8427105277400901,
+          "seed": 1007,
+          "translation_m": [
+            0.011993994565460821,
+            0.0011833853516437336,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 0.8585635792003562,
+          "mass_multiplier": 1.1299899488747869,
+          "seed": 1008,
+          "translation_m": [
+            0.008411504214291848,
+            0.008318630970252715,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 0.8634945421349214,
+          "mass_multiplier": 1.0094065199728308,
+          "seed": 1009,
+          "translation_m": [
+            -0.014085563776196804,
+            -0.0007154251694610446,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 0.961206450557836,
+          "mass_multiplier": 1.111434014267496,
+          "seed": 1010,
+          "translation_m": [
+            0.0022246542473245423,
+            0.010381299543918074,
+            0.0
+          ]
+        },
+        {
+          "friction_multiplier": 0.8850242242456277,
+          "mass_multiplier": 1.0337958592639642,
+          "seed": 1011,
+          "translation_m": [
+            0.006840842678190438,
+            -0.013886293129005925,
+            0.0
+          ]
+        }
+      ],
+      "set": {
+        "body": "zoo_long_arm",
+        "draws_sha256": "536e950f93f6ecdb55cfbcf551446c43077f1dc89d45a1a6187de8d910ce60f1",
+        "episodes": [
+          "zoo_long_arm-g11-validation-zoo_long_arm-1000",
+          "zoo_long_arm-g11-validation-zoo_long_arm-1001",
+          "zoo_long_arm-g11-validation-zoo_long_arm-1002",
+          "zoo_long_arm-g11-validation-zoo_long_arm-1003",
+          "zoo_long_arm-g11-validation-zoo_long_arm-1004",
+          "zoo_long_arm-g11-validation-zoo_long_arm-1005",
+          "zoo_long_arm-g11-validation-zoo_long_arm-1006",
+          "zoo_long_arm-g11-validation-zoo_long_arm-1007",
+          "zoo_long_arm-g11-validation-zoo_long_arm-1008",
+          "zoo_long_arm-g11-validation-zoo_long_arm-1009",
+          "zoo_long_arm-g11-validation-zoo_long_arm-1010",
+          "zoo_long_arm-g11-validation-zoo_long_arm-1011"
+        ],
+        "independent_of": [
+          "g10-transfer-v1:nominal-seeds-0-99",
+          "g06-transfer-v1:roster-seeds-0-99"
+        ],
+        "set_id": "g11-validation-zoo_long_arm",
+        "threshold": 11
+      }
+    }
+  }
+}
