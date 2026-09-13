@@ -1,0 +1,39 @@
+{
+  "phase_end_states": [
+    {
+      "phase": "phase_0",
+      "end_s": 12.739785,
+      "end_home_distance_m": 0.7978443010269617,
+      "max_joint_difference_from_rest": 1.673491063421467
+    },
+    {
+      "phase": "phase_1",
+      "end_s": 32.958493,
+      "end_home_distance_m": 0.0029141884800617636,
+      "max_joint_difference_from_rest": 2.85
+    },
+    {
+      "phase": "phase_recovery",
+      "end_s": 60.591332,
+      "end_home_distance_m": 0.0,
+      "max_joint_difference_from_rest": 0.0
+    }
+  ],
+  "joint_key_ranges": {
+    "current_legacy-reach_to_edge": {
+      "joint_key_min": 0.0,
+      "joint_key_max": 2.0911731420890076,
+      "key_count": 12
+    },
+    "current_legacy-retract_from_point": {
+      "joint_key_min": -0.014995804649845686,
+      "joint_key_max": 2.1818420393109696,
+      "key_count": 22
+    },
+    "current_legacy-composed": {
+      "joint_key_min": 0.0,
+      "joint_key_max": 2.8492995289416974,
+      "key_count": 32
+    }
+  }
+}
