@@ -1,0 +1,42 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-clear-the-bench-pick-up-the-cube-with-whichever-d5269c2c",
+  "title": "G07 skill tree: zoo_dual_arm, dual-selector",
+  "prompt": "clear the bench: pick up the cube with whichever manipulator can and set it on the platform",
+  "tier": "any-robot",
+  "embodiment": "zoo_dual_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T09:26:51Z",
+  "source": {
+    "commit": "5c477d9917",
+    "branch": "feat/g07-skill-contracts",
+    "dirty": false,
+    "how": "python any-robot/scripts/g07_tree_evidence.py --out docs/results/g07-trees"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: the guard refused the first manipulator before motion (self_collision_path); the selector fell through and the second manipulator completed the transfer; the placement observation read the evaluator's dwell."
+  },
+  "notes": "See docs/results/g07-report.md. One tree run of the five-deep clear_bench library through the neutral skill executor, one continuous physics record across every leaf, rendered at real-time playback with the simulation clock and the tree's verdict in the banner; frames.json beside the MP4 maps every frame to its recorded sample. Tree sha256 974749dda604; verdict success.",
+  "media": [
+    {
+      "path": "docs/results/g07-trees/physical/dual-selector/media/episode.mp4",
+      "bytes": 110572,
+      "sha256": "b67105cf8b1385c01f02f7ad6c4573982a37e12bc17e246eae1531684abedf64",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g07-trees/physical/dual-selector/media/preview.gif",
+      "bytes": 874085,
+      "sha256": "67706eca034d28522a2b3f180ece4faddc6c20d6d34bc100678db0f871353ebc",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G07",
+    "skill-tree",
+    "success"
+  ]
+}

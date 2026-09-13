@@ -1,0 +1,42 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-clear-the-bench-pick-up-the-cube-with-whichever-922bd44a",
+  "title": "G07 skill tree: zoo_jaw_arm, jaw-interrupt",
+  "prompt": "clear the bench: pick up the cube with whichever manipulator can and set it on the platform",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T09:26:52Z",
+  "source": {
+    "commit": "5c477d9917",
+    "branch": "feat/g07-skill-contracts",
+    "dirty": false,
+    "how": "python any-robot/scripts/g07_tree_evidence.py --out docs/results/g07-trees"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "INTERRUPTED: an interruption requested at 6 s of physics stopped the transfer during the lift; the leaf and every node above it recorded it."
+  },
+  "notes": "See docs/results/g07-report.md. One tree run of the five-deep clear_bench library through the neutral skill executor, one continuous physics record across every leaf, rendered at real-time playback with the simulation clock and the tree's verdict in the banner; frames.json beside the MP4 maps every frame to its recorded sample. Tree sha256 c16b5aeb0c08; verdict interrupted.",
+  "media": [
+    {
+      "path": "docs/results/g07-trees/physical/jaw-interrupt/media/episode.mp4",
+      "bytes": 67426,
+      "sha256": "77b6d6fba97c4d6c2afa8facf483b7ac904ae88afd1619362c68f04d6ccc4156",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g07-trees/physical/jaw-interrupt/media/preview.gif",
+      "bytes": 1008659,
+      "sha256": "45b021dbb9217ebfb5cf55041520f80bdadf369b6fbe84cf130e315d298e41e1",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G07",
+    "skill-tree",
+    "interrupted"
+  ]
+}
