@@ -9,8 +9,10 @@ classed feasible, over the registered seeds: one attempt per seed, the cube
 displaced, its mass and friction scaled by the registered perturbation draws.
 Infeasible bodies are attempted once anyway, so their typed refusal is on
 record beside the map's reason. Every trial keeps its full physical trace
-locally; the canonical trials and every failure are sealed as replayable
-bundles and rendered to full-duration video. No API or model calls.
+locally; the canonical trials, the first five successes and the first five
+failures of each kind per body are sealed as replayable bundles and rendered
+to full-duration video, so no failure class is ever represented by its
+numbers alone. No API or model calls.
 
     python any-robot/scripts/g06_transfer_campaign.py --out docs/results/g06-campaign \
         --local any-robot/results/g06-campaign [--bodies a,b] [--seeds N]
@@ -199,6 +201,8 @@ def main() -> int:
     parser.add_argument("--bodies")
     parser.add_argument("--seeds", type=int, help="run only the first N registered seeds (engineering smoke; never a scored run)")
     parser.add_argument("--render-successes", type=int, default=5, help="how many successful fixed-world trials per body to render in full")
+    parser.add_argument("--render-failures-per-gate", type=int, default=5,
+                        help="how many failed fixed-world trials per body and failed gate to seal and render in full; every failure keeps its full trace locally and its row in trials.json")
     args = parser.parse_args()
     env, goal, feasibility, roster, registration = load_registration()
     if args.out.exists():
@@ -256,12 +260,17 @@ def main() -> int:
         if args.seeds is not None:
             seeds = seeds[: args.seeds]
         rendered_successes = 0
+        rendered_failures: dict[str, int] = {}
         for draw in seeds:
             trial_env = perturbed(env, draw)
             result, recorder, scene, wall = run_one(robot, source, trial_env, goal, record=True)
             row = {"seed": draw["seed"], "draw": draw, **summarize(result), "wall_seconds": wall}
             row["trace_file_sha256"] = save_trace(args.local / zoo_id / f"seed-{draw['seed']:03d}.npz", result)
-            keep = (not result.certified) or rendered_successes < args.render_successes
+            if result.certified:
+                keep = rendered_successes < args.render_successes
+            else:
+                keep = rendered_failures.get(result.failed_gate, 0) < args.render_failures_per_gate
+                rendered_failures[result.failed_gate] = rendered_failures.get(result.failed_gate, 0) + int(keep)
             if keep:
                 sealed = seal(out / "fixed" / f"seed-{draw['seed']:03d}" / "physical", label=f"{zoo_id}-seed{draw['seed']:03d}", robot=robot, source=source, scene=scene,
                               env=trial_env, goal=goal, result=result, recorder=recorder, track="strict_fixed_world", trial={"kind": "seeded_fixed", "seed": draw["seed"], "draw": draw},
