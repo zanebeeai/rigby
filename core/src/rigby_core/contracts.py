@@ -190,6 +190,7 @@ class MotionPhaseV2(Contract):
 
 class InterpolationKind(StrEnum):
     QUINTIC = "quintic"
+    BOUNDED_QUINTIC = "bounded_quintic"
     SLERP = "slerp"
     SQUAD = "squad"
     STEP = "step"

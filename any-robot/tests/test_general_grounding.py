@@ -13,6 +13,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 from rigby_core.motion.compiler import compile_motion_program
+from rigby_core.contracts import InterpolationKind
 
 from rigby_general.contracts import DirectionV1
 from rigby_general.errors import GeneralFailureCode, GroundingError, RigbyGeneralError
@@ -186,6 +187,24 @@ def test_grounding_is_deterministic(robots, inventory) -> None:
     first = ground(program, robot.manifest, robot.finalized.model, inventory)
     second = ground(program, robot.manifest, robot.finalized.model, inventory)
     assert first.program.content_hash() == second.program.content_hash()
+
+
+def test_exact_reviewed_composition_uses_bounded_curves_on_every_body(robots, inventory):
+    from rigby_general.planner import OfflineSchemaPlanner
+
+    prompt = "reach out as far as you can and then come back"
+    for robot in robots.values():
+        schema = OfflineSchemaPlanner(inventory).plan(
+            prompt, afforded=afforded_entries(inventory, robot.morphology)
+        )
+        grounded = ground(schema, robot.manifest, robot.finalized.model, inventory)
+        assert all(tr.interpolation is InterpolationKind.BOUNDED_QUINTIC
+                   for tr in grounded.program.tracks)
+        trajectory = compile_motion_program(
+            grounded.program, robot.finalized.model, robot.manifest
+        )
+        assert trajectory.times_s[-1] == grounded.program.duration_s
+        assert np.all(np.isfinite(trajectory.qpos))
 
 
 # --------------------------------------------------------------------------

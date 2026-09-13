@@ -855,16 +855,15 @@ def ground(
         keyframes_by_chain[chain_id].extend(extra)
         cursor = phase.end_s
 
-    # Monotonicity is enforced once over the whole assembled series rather than
-    # inside each piece. Segments and the recovery are timed independently, so a
-    # collision can only appear where two of them meet -- exactly the seam that a
-    # per-piece check cannot see.
+    # Enforce increasing keyframe times over the assembled segments and recovery.
+    # Bounded interpolation also keeps each joint between its legal IK keys;
+    # unconstrained tangents can overshoot inside a segment as well as at seams.
     tracks = [
         MotionTrackV2(
             track_id=f"chain_{chain_id}",
             target=site_by_chain[chain_id],
             owner=owner_by_chain[chain_id],
-            interpolation=InterpolationKind.QUINTIC,
+            interpolation=InterpolationKind.BOUNDED_QUINTIC,
             keyframes=tuple(_strictly_increasing(frames)),
         )
         for chain_id, frames in sorted(keyframes_by_chain.items())
