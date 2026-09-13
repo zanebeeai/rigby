@@ -1,0 +1,45 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-move-to-a-pose-then-pick-up-the-cube-and-set-it-c3a5b1c6",
+  "title": "G08 scored: zoo_dual_arm-free_into_holding-00 (free_into_holding, rejected)",
+  "prompt": "move to a pose, then pick up the cube and set it on the platform, checking the boundary between",
+  "tier": "any-robot",
+  "embodiment": "zoo_dual_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T10:51:10Z",
+  "source": {
+    "commit": "cd3448b539",
+    "branch": "feat/g08-transitions",
+    "dirty": true,
+    "how": "python any-robot/scripts/g08_transition_campaign.py --out docs/results/g08-campaign --local any-robot/results/g08-campaign"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "REJECTED before the second skill moved: contact_mode_mismatch; no path was proposed to bridge it."
+  },
+  "notes": "See docs/results/g08-report.md. One composition of two certified skills through the boundary check, one continuous physics record across the first skill, the transitions and the second, rendered at real-time playback with the simulation clock and the composition's outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. Case kind free_into_holding; handling rejected:contact_mode_mismatch.",
+  "media": [
+    {
+      "path": "docs/results/g08-campaign/injected/zoo_dual_arm-free_into_holding-00/media/episode.mp4",
+      "bytes": 30624,
+      "sha256": "ffbbc2ff76be3037acb16067430d1a7ce461f08f3405199dca0caa4b44679f0c",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g08-campaign/injected/zoo_dual_arm-free_into_holding-00/media/preview.gif",
+      "bytes": 263368,
+      "sha256": "d60fdb94aa3db2e33542dcd35ca04100bbad2c81f94bbe8a44c8c38f87843299",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G08",
+    "transition",
+    "injected",
+    "free_into_holding",
+    "scored",
+    "failure"
+  ]
+}

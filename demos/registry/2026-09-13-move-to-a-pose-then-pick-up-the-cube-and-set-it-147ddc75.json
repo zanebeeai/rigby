@@ -1,0 +1,45 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-move-to-a-pose-then-pick-up-the-cube-and-set-it-147ddc75",
+  "title": "G08 pilot 1: zoo_jaw_arm-feasible-005 (feasible, composed_success)",
+  "prompt": "move to a pose, then pick up the cube and set it on the platform, checking the boundary between",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T10:51:29Z",
+  "source": {
+    "commit": "cd3448b539",
+    "branch": "feat/g08-transitions",
+    "dirty": true,
+    "how": "python any-robot/scripts/g08_transition_campaign.py --out docs/results/g08-campaign --local any-robot/results/g08-campaign"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: joint_move then transfer; boundary compatible; both skills certified, no joint gate fired."
+  },
+  "notes": "See docs/results/g08-report.md. One composition of two certified skills through the boundary check, one continuous physics record across the first skill, the transitions and the second, rendered at real-time playback with the simulation clock and the composition's outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. Pilot 1: the first scored pass on the corpus as first registered, retained whole. Case kind feasible; handling composed_success.",
+  "media": [
+    {
+      "path": "docs/results/g08-campaign-pilot-1/feasible/zoo_jaw_arm-feasible-005/media/episode.mp4",
+      "bytes": 122820,
+      "sha256": "3c18650af23ce9e3b51eb6a9d976537dde3d4d5bdee5fd6d610af9726703db6f",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g08-campaign-pilot-1/feasible/zoo_jaw_arm-feasible-005/media/preview.gif",
+      "bytes": 963590,
+      "sha256": "d4f96e73767655a56e705ffd9dfd1f9a7737fb78cfc38304a3bb38a8f5131568",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G08",
+    "transition",
+    "feasible",
+    "feasible",
+    "pilot-1",
+    "success"
+  ]
+}

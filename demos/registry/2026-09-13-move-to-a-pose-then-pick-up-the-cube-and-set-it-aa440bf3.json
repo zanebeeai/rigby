@@ -1,0 +1,43 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-move-to-a-pose-then-pick-up-the-cube-and-set-it-aa440bf3",
+  "title": "D08: zoo_jaw_arm contact-mode-change, before and after the boundary check",
+  "prompt": "move to a pose, then pick up the cube and set it on the platform, checking the boundary between",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T10:52:10Z",
+  "source": {
+    "commit": "cd3448b539",
+    "branch": "feat/g08-transitions",
+    "dirty": true,
+    "how": "python any-robot/scripts/g08_d08_media.py --out docs/results/g08-d08"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "Left, without the check: success. Right, through it: rejected (contact_mode_mismatch). Identical physics, same body, same world."
+  },
+  "notes": "See docs/results/g08-report.md. One composition of two certified skills through the boundary check, one continuous physics record across the first skill, the transitions and the second, rendered at real-time playback with the simulation clock and the composition's outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. Pair: contact-mode-change.",
+  "media": [
+    {
+      "path": "docs/results/g08-d08/contact-mode-change-before-after.mp4",
+      "bytes": 195847,
+      "sha256": "f205e92efb6b3e7aecaecfa8e6e0d2a40f8e9adcf317b2db96789295c3bff9b3",
+      "role": "comparison"
+    },
+    {
+      "path": "docs/results/g08-d08/contact-mode-change-before-after-preview.gif",
+      "bytes": 1679866,
+      "sha256": "df8f9d615915a19a91232cb7afcd24651c0369219e9935ea0e51f10ed590257d",
+      "role": "comparison"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G08",
+    "D08",
+    "before-after",
+    "contact-mode-change"
+  ]
+}

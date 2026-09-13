@@ -1,0 +1,45 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-move-to-a-pose-then-pick-up-the-cube-and-set-it-3780f269",
+  "title": "G08 pilot 1: zoo_dual_arm-holding_into_free-03 (holding_into_free, rejected)",
+  "prompt": "move to a pose, then pick up the cube and set it on the platform, checking the boundary between",
+  "tier": "any-robot",
+  "embodiment": "zoo_dual_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T10:51:55Z",
+  "source": {
+    "commit": "cd3448b539",
+    "branch": "feat/g08-transitions",
+    "dirty": true,
+    "how": "python any-robot/scripts/g08_transition_campaign.py --out docs/results/g08-campaign --local any-robot/results/g08-campaign"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "REJECTED before the second skill moved: contact_mode_mismatch; no path was proposed to bridge it."
+  },
+  "notes": "See docs/results/g08-report.md. One composition of two certified skills through the boundary check, one continuous physics record across the first skill, the transitions and the second, rendered at real-time playback with the simulation clock and the composition's outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. Pilot 1: the first scored pass on the corpus as first registered, retained whole. Case kind holding_into_free; handling rejected:contact_mode_mismatch.",
+  "media": [
+    {
+      "path": "docs/results/g08-campaign-pilot-1/injected/zoo_dual_arm-holding_into_free-03/media/episode.mp4",
+      "bytes": 86925,
+      "sha256": "c4ee2972e01bae148520adaf1cde4caa20cb2b65f15a99c3595c5b2fdc69896c",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g08-campaign-pilot-1/injected/zoo_dual_arm-holding_into_free-03/media/preview.gif",
+      "bytes": 976403,
+      "sha256": "a8e2e1ff74fe1214cce8c9dd2c43e5a008a2e6d8fe82535f9f2a312618a2f147",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G08",
+    "transition",
+    "injected",
+    "holding_into_free",
+    "pilot-1",
+    "failure"
+  ]
+}

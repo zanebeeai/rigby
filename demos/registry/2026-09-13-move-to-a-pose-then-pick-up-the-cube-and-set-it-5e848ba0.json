@@ -1,0 +1,45 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-move-to-a-pose-then-pick-up-the-cube-and-set-it-5e848ba0",
+  "title": "G08 scored: zoo_jaw_arm-belief_stale-01 (belief_stale, repaired_then_reverified)",
+  "prompt": "move to a pose, then pick up the cube and set it on the platform, checking the boundary between",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T10:51:14Z",
+  "source": {
+    "commit": "cd3448b539",
+    "branch": "feat/g08-transitions",
+    "dirty": true,
+    "how": "python any-robot/scripts/g08_transition_campaign.py --out docs/results/g08-campaign --local any-robot/results/g08-campaign"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: joint_move then transfer; boundary repaired (observe) and verified again; both skills certified, no joint gate fired."
+  },
+  "notes": "See docs/results/g08-report.md. One composition of two certified skills through the boundary check, one continuous physics record across the first skill, the transitions and the second, rendered at real-time playback with the simulation clock and the composition's outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. Case kind belief_stale; handling repaired_then_reverified:observe.",
+  "media": [
+    {
+      "path": "docs/results/g08-campaign/injected/zoo_jaw_arm-belief_stale-01/media/episode.mp4",
+      "bytes": 113506,
+      "sha256": "df3d8d1d2d38c73d8193eeee51875e223f42435adc51516f7ea8425effaf6ff5",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g08-campaign/injected/zoo_jaw_arm-belief_stale-01/media/preview.gif",
+      "bytes": 893003,
+      "sha256": "c4652143c6eb9bc170e6aa765b6b186fa7ff476a8865c1714ae5b30994012f01",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G08",
+    "transition",
+    "injected",
+    "belief_stale",
+    "scored",
+    "success"
+  ]
+}

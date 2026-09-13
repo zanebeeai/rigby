@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-move-to-a-pose-then-pick-up-the-cube-and-set-it-e5f0b7fa",
+  "title": "D08: zoo_jaw_arm, carry-to-place BEFORE",
+  "prompt": "move to a pose, then pick up the cube and set it on the platform, checking the boundary between",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T10:52:09Z",
+  "source": {
+    "commit": "cd3448b539",
+    "branch": "feat/g08-transitions",
+    "dirty": true,
+    "how": "python any-robot/scripts/g08_d08_media.py --out docs/results/g08-d08"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: the before side of the carry-to-place pair."
+  },
+  "notes": "See docs/results/g08-report.md. One composition of two certified skills through the boundary check, one continuous physics record across the first skill, the transitions and the second, rendered at real-time playback with the simulation clock and the composition's outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. The before side of the carry-to-place pair.",
+  "media": [
+    {
+      "path": "docs/results/g08-d08/carry-to-place/before/media/episode.mp4",
+      "bytes": 116259,
+      "sha256": "0dbb69517f17dba58eb8361148aea0c3ae363b10b6e8bf64856033e0a7387dae",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g08-d08/carry-to-place/before/media/preview.gif",
+      "bytes": 929033,
+      "sha256": "69df34df565e8b3a63a129a65904da00f90db1879c5eb559884bd648b8af439f",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G08",
+    "D08",
+    "before-after",
+    "carry-to-place",
+    "before"
+  ]
+}

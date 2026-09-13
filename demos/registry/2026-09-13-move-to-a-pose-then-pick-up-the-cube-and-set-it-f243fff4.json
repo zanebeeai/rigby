@@ -1,0 +1,45 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-move-to-a-pose-then-pick-up-the-cube-and-set-it-f243fff4",
+  "title": "G08 scored: zoo_jaw_arm-joint_beyond_limit-01 (joint_beyond_limit, repaired_then_reverified)",
+  "prompt": "move to a pose, then pick up the cube and set it on the platform, checking the boundary between",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T10:50:54Z",
+  "source": {
+    "commit": "cd3448b539",
+    "branch": "feat/g08-transitions",
+    "dirty": true,
+    "how": "python any-robot/scripts/g08_transition_campaign.py --out docs/results/g08-campaign --local any-robot/results/g08-campaign"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "RUNTIME FAILURE: repairs joint_move, joint_move; second skill certified; gates ['joint_position_limit']."
+  },
+  "notes": "See docs/results/g08-report.md. One composition of two certified skills through the boundary check, one continuous physics record across the first skill, the transitions and the second, rendered at real-time playback with the simulation clock and the composition's outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. Case kind joint_beyond_limit; handling repaired_then_reverified:joint_move,joint_move.",
+  "media": [
+    {
+      "path": "docs/results/g08-campaign/injected/zoo_jaw_arm-joint_beyond_limit-01/media/episode.mp4",
+      "bytes": 191469,
+      "sha256": "90c1282b0aa2a28ef69a877dde51fb3e5a2ba876d05d97b95fff7ebedffd8e12",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g08-campaign/injected/zoo_jaw_arm-joint_beyond_limit-01/media/preview.gif",
+      "bytes": 994850,
+      "sha256": "f48a47e38a66c1e3a51f5e1cd1648224009360d3d372827e27f35ef5b6e38bac",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G08",
+    "transition",
+    "injected",
+    "joint_beyond_limit",
+    "scored",
+    "failure"
+  ]
+}

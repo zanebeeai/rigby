@@ -1,0 +1,43 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-move-to-a-pose-then-pick-up-the-cube-and-set-it-e9d55518",
+  "title": "D08: zoo_dual_arm joint-limit-approach, before and after the boundary check",
+  "prompt": "move to a pose, then pick up the cube and set it on the platform, checking the boundary between",
+  "tier": "any-robot",
+  "embodiment": "zoo_dual_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T10:52:07Z",
+  "source": {
+    "commit": "cd3448b539",
+    "branch": "feat/g08-transitions",
+    "dirty": true,
+    "how": "python any-robot/scripts/g08_d08_media.py --out docs/results/g08-d08"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "Left, without the check: runtime_failure. Right, through it: success. Identical physics, same body, same world."
+  },
+  "notes": "See docs/results/g08-report.md. One composition of two certified skills through the boundary check, one continuous physics record across the first skill, the transitions and the second, rendered at real-time playback with the simulation clock and the composition's outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. Pair: joint-limit-approach.",
+  "media": [
+    {
+      "path": "docs/results/g08-d08/joint-limit-approach-before-after.mp4",
+      "bytes": 152088,
+      "sha256": "8035bb144a5ff8b401783af199bba3c50da6edb57b4949588fe3d07e3934ee5d",
+      "role": "comparison"
+    },
+    {
+      "path": "docs/results/g08-d08/joint-limit-approach-before-after-preview.gif",
+      "bytes": 1200374,
+      "sha256": "272fbbd8c4f267387c9c80d2411284a6ebdd4fd8c419dc2325694dc28d9d697e",
+      "role": "comparison"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G08",
+    "D08",
+    "before-after",
+    "joint-limit-approach"
+  ]
+}
