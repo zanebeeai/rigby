@@ -1,10 +1,16 @@
-"""A nested example library shared by the skill tests and the G07 evidence.
+"""Example libraries shared by the skill tests and the G07 and G10 evidence.
 
 Clearing a bench: observe what is there, then, within a bounded number of
 attempts, transfer the object with whichever of two manipulators can, and
 verify the placement with an observation the transfer cannot fake. Five
 levels deep from the root to the transfer leaf. Nothing in it names a limb:
 ``primary`` and ``secondary`` are whatever the body binds them to.
+
+Transferring an object, closed loop: acquire until a hold is verified from
+sensors, transport, release, verify the placement from sensors, and repeat
+the whole of it until the placement is verified, each loop within a budget
+of three. Every verification is an observation the primitives cannot fake:
+what it establishes is what the declared sensors decided.
 """
 
 from __future__ import annotations
@@ -115,3 +121,98 @@ def with_recovery(library: SkillLibraryV1) -> SkillLibraryV1:
         if definition["skill_id"] == "transfer":
             definition["recovery"] = RecoveryV1(skill="observe_inventory", max_attempts=2).model_dump(mode="json")
     return SkillLibraryV1.model_validate(payload)
+
+
+THREE = (A("object"), A("destination"), A("effector"))
+OWN_THREE = (
+    ResourceClaimV1(resource="effector:$effector"),
+    ResourceClaimV1(resource="object:$object"),
+    ResourceClaimV1(resource="perception", mode=ResourceMode.SHARED),
+)
+BIND_THREE = {"object": "$object", "destination": "$destination", "effector": "$effector"}
+PERCEPTION = (ResourceClaimV1(resource="perception", mode=ResourceMode.SHARED),)
+RETRY_BUDGET = 3
+"""The most attempts either loop of the transfer may make: at most three per subgoal."""
+EPISODE_CAP_S = 120.0
+"""The root's timeout: the frozen default episode cap."""
+
+
+def transfer_object_library() -> SkillLibraryV1:
+    """The first closed-loop TransferObject skill: Acquire, VerifyHold,
+    Transport, Release, VerifyPlacement, with bounded retries at two levels
+    and every verification decided from declared sensors."""
+
+    return SkillLibraryV1(
+        library_id="transfer_object_v1",
+        description="Acquire until a hold is verified, transport, release, verify the placement; repeat the whole within a budget until the placement is verified.",
+        predicates=(
+            PredicateSpecV1(name="object_known", parameters=("object",), description="a sensor has reported the object's position recently enough to plan from"),
+            PredicateSpecV1(name="object_held", parameters=("object",), description="the held conditional decided pass from the declared sensors"),
+            PredicateSpecV1(name="object_placed", parameters=("object", "destination"), description="the stably-placed conditional decided pass from the declared sensors"),
+            PredicateSpecV1(name="object_in_reach", parameters=("object",), description="the reachable conditional decided pass from the declared sensors"),
+        ),
+        skills=(
+            SkillDefinitionV1(
+                skill_id="transfer_object", kind=NodeKind.SEQUENCE, arguments=THREE,
+                description="Transfer the object to the destination and verify it, within the episode cap.",
+                effects=(P("object_placed", "$object", "$destination"),), timeout_s=EPISODE_CAP_S, resources=OWN_THREE,
+                validity=ValidityContextV1(environments=("g06_transfer_v1",), operating_range=(RangeV1(quantity="object_span", low=0.019, high=0.046, units="m"),)),
+                children=(ChildRefV1(skill="place_until_placed", bindings=BIND_THREE),),
+            ),
+            SkillDefinitionV1(
+                skill_id="place_until_placed", kind=NodeKind.REPEAT_UNTIL, arguments=THREE, timeout_s=EPISODE_CAP_S, resources=OWN_THREE,
+                loop=LoopSpecV1(until=P("object_placed", "$object", "$destination"), max_attempts=RETRY_BUDGET),
+                children=(ChildRefV1(skill="attempt_transfer", bindings=BIND_THREE),),
+            ),
+            SkillDefinitionV1(
+                skill_id="attempt_transfer", kind=NodeKind.SEQUENCE, arguments=THREE, timeout_s=EPISODE_CAP_S, resources=OWN_THREE,
+                termination=TerminationRuleV1(require_effects=False),
+                children=(ChildRefV1(skill="acquire_until_held", bindings=BIND_THREE), ChildRefV1(skill="transport", bindings=BIND_THREE),
+                          ChildRefV1(skill="release", bindings=BIND_THREE), ChildRefV1(skill="verify_placement", bindings={"object": "$object", "destination": "$destination", "effector": "$effector"})),
+            ),
+            SkillDefinitionV1(
+                skill_id="acquire_until_held", kind=NodeKind.REPEAT_UNTIL, arguments=THREE, timeout_s=EPISODE_CAP_S, resources=OWN_THREE,
+                loop=LoopSpecV1(until=P("object_held", "$object"), max_attempts=RETRY_BUDGET),
+                children=(ChildRefV1(skill="acquire_and_verify", bindings=BIND_THREE),),
+            ),
+            SkillDefinitionV1(
+                skill_id="acquire_and_verify", kind=NodeKind.SEQUENCE, arguments=THREE, timeout_s=60.0, resources=OWN_THREE,
+                termination=TerminationRuleV1(require_effects=False),
+                children=(ChildRefV1(skill="observe_object", bindings={"object": "$object"}), ChildRefV1(skill="acquire", bindings=BIND_THREE),
+                          ChildRefV1(skill="verify_hold", bindings={"object": "$object", "effector": "$effector"})),
+            ),
+            SkillDefinitionV1(
+                skill_id="observe_object", kind=NodeKind.OBSERVE, arguments=(A("object"),), timeout_s=10.0, resources=PERCEPTION,
+                effects=(P("object_known", "$object"),),
+                observation=ObservationSpecV1(evidence=("object_pose", "reachable"), source="camera"),
+            ),
+            SkillDefinitionV1(
+                skill_id="acquire", kind=NodeKind.PRIMITIVE, arguments=THREE, requirements=("grasping_effector",),
+                initiation=(P("object_known", "$object"), P("object_in_reach", "$object")), timeout_s=30.0, controller="contact.transfer.acquire",
+                termination=TerminationRuleV1(require_effects=False),
+                resources=(ResourceClaimV1(resource="effector:$effector"), ResourceClaimV1(resource="object:$object")),
+            ),
+            SkillDefinitionV1(
+                skill_id="verify_hold", kind=NodeKind.OBSERVE, arguments=(A("object"), A("effector")), timeout_s=10.0,
+                resources=(ResourceClaimV1(resource="effector:$effector"), ResourceClaimV1(resource="object:$object"), *PERCEPTION),
+                observation=ObservationSpecV1(evidence=("held",), source="contact_and_camera"),
+            ),
+            SkillDefinitionV1(
+                skill_id="transport", kind=NodeKind.PRIMITIVE, arguments=THREE, requirements=("grasping_effector",),
+                initiation=(P("object_held", "$object"),), timeout_s=30.0, controller="contact.transfer.carry",
+                termination=TerminationRuleV1(require_effects=False),
+                resources=(ResourceClaimV1(resource="effector:$effector"), ResourceClaimV1(resource="object:$object"), *PERCEPTION),
+            ),
+            SkillDefinitionV1(
+                skill_id="release", kind=NodeKind.PRIMITIVE, arguments=THREE, requirements=("grasping_effector",),
+                timeout_s=30.0, controller="contact.transfer.place",
+                termination=TerminationRuleV1(require_effects=False),
+                resources=(ResourceClaimV1(resource="effector:$effector"), ResourceClaimV1(resource="object:$object")),
+            ),
+            SkillDefinitionV1(
+                skill_id="verify_placement", kind=NodeKind.OBSERVE, arguments=THREE, timeout_s=15.0,
+                resources=(ResourceClaimV1(resource="effector:$effector"), ResourceClaimV1(resource="object:$object"), *PERCEPTION),
+                observation=ObservationSpecV1(evidence=("object_placed",), source="camera_and_contact"),
+            ),
+        ),
+    )
