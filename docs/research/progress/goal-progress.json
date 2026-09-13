@@ -4,7 +4,7 @@
   "goal_catalog": "docs/research/rigby-verifiable-goals.json",
   "goal_catalog_sha256": "3672ebf5fa10ff4216fa0213499d5988281f2ebbc611500e8526afe6e618b250",
   "started_at_utc": "2026-09-12T02:34:49.841258+00:00",
-  "current_goal": "G12",
+  "current_goal": "G15",
   "overall_status": "active",
   "authorization": {
     "commits_and_pull_requests": true,
@@ -1796,39 +1796,135 @@
     {
       "id": "G12",
       "title": "Acquire missing motor skills within a bounded search budget",
-      "status": "planned",
+      "status": "partial",
       "criteria": [
         {
           "id": "G12.A01",
           "requirement": "Freeze three acquisition problems in at least two body families before search; at least one requires new contact timing/trajectory/controller parameters rather than only a new sequence or rename.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "docs/results/g12-report.md",
+            "docs/results/g12-validation.json",
+            "docs/results/verify_g12.py",
+            "any-robot/assets/general/research-protocols/g12-acquisition-v1/",
+            "docs/results/g12-acquisition/"
+          ],
+          "note": "three problems frozen and registered by hash before any search in three body families (single-arm jaw, multifinger hand, long-reach jaw): jaw-slick and hand-fixed-world need new contact and timing parameters, long-heavy-large is posed as an instantiation control; the admissible family is the contact transfer's closure, tracking and duration parameters with bounds and defaults",
+          "verified_at_utc": "2026-09-13T20:13:58.900500+00:00"
         },
         {
           "id": "G12.A02",
           "requirement": "Starting without a validated implementation, synthesize one through simulation/optimization and store its contract. Default ceiling: 200 attempts or 30 simulator-worker minutes per problem, whichever comes first.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "docs/results/g12-report.md",
+            "docs/results/g12-validation.json",
+            "docs/results/verify_g12.py",
+            "any-robot/assets/general/research-protocols/g12-acquisition-v1/",
+            "docs/results/g12-acquisition/"
+          ],
+          "note": "each problem searched from the defaults by a seeded (1+lambda) evolution strategy inside the registered ceiling of 200 attempts or 30 simulator-worker minutes, every attempt logged with its parameters, gates and seconds; jaw-slick 200 attempts, 7.51 worker minutes, budget_exhausted; hand-fixed-world 200 attempts, 6.23 worker minutes, budget_exhausted; long-heavy-large 2 attempts, 0.19 worker minutes, acquired; an acquired or instantiated vector is stored as a certificate in the persisted skill store with its controller facet carrying the vector",
+          "verified_at_utc": "2026-09-13T20:13:58.900500+00:00"
         },
         {
           "id": "G12.A03",
           "requirement": "Evaluate on 50 unseen perturbation trials per body/problem; success target is at least 40/50 with all hard gates satisfied and zero manual trajectory edits during acquisition.",
-          "status": "pending",
-          "evidence": []
+          "status": "partial",
+          "evidence": [
+            "docs/results/g12-report.md",
+            "docs/results/g12-validation.json",
+            "docs/results/verify_g12.py",
+            "any-robot/assets/general/research-protocols/g12-acquisition-v1/",
+            "docs/results/g12-acquisition/"
+          ],
+          "note": "fifty unseen perturbation trials per problem under every hard gate with zero manual trajectory edits: jaw-slick 0/50; hand-fixed-world 0/50; long-heavy-large 47/50; target 40/50 met on long-heavy-large and not on jaw-slick, hand-fixed-world, reported as an unsupported hypothesis",
+          "verified_at_utc": "2026-09-13T20:13:58.900500+00:00"
         },
         {
           "id": "G12.A04",
           "requirement": "Separate instantiation, composition and motor-skill discovery in the ledger. An unsupported discovery hypothesis is a valid reported research result, but does not meet the capability target.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "docs/results/g12-report.md",
+            "docs/results/g12-validation.json",
+            "docs/results/verify_g12.py",
+            "any-robot/assets/general/research-protocols/g12-acquisition-v1/",
+            "docs/results/g12-acquisition/"
+          ],
+          "note": "separated in this ledger: discovery ['long-heavy-large'], instantiation [], unsupported hypothesis ['jaw-slick', 'hand-fixed-world'], composition none posed (G11's reuse is the composition evidence); the classifier derives the kind from the attempts and the acceptance and verify_g12.py recomputes it",
+          "verified_at_utc": "2026-09-13T20:13:58.900500+00:00"
         }
       ],
       "demo_requirement": "D12: missing skill \u2192 failed attempts \u2192 acquired execution \u2192 reuse, with search budget and an uninterrupted final trial.",
-      "demo_status": "pending",
-      "assessment_complete": false,
+      "demo_status": "delivered",
+      "assessment_complete": true,
       "capability_supported": false,
-      "commits": [],
-      "pull_requests": []
+      "commits": [
+        "e6fb9d69",
+        "8c54516c",
+        "0b270f72"
+      ],
+      "pull_requests": [
+        "https://github.com/zanebeeai/rigby/pull/43"
+      ],
+      "demo_evidence": [
+        "docs/results/g12-d12/index.json",
+        "demos/registry",
+        "docs/results/g12-d12/jaw-slick/jaw-slick-five-way.mp4",
+        "docs/results/g12-d12/hand-fixed-world/hand-fixed-world-five-way.mp4",
+        "docs/results/g12-d12/long-heavy-large/long-heavy-large-five-way.mp4"
+      ],
+      "closed_at_utc": "2026-09-13T20:13:58.900500+00:00",
+      "acquisition": {
+        "problems": {
+          "jaw-slick": {
+            "status": "budget_exhausted",
+            "kind": null,
+            "attempts": 200,
+            "worker_minutes": 7.51,
+            "holdout": "0/50",
+            "changed": []
+          },
+          "hand-fixed-world": {
+            "status": "budget_exhausted",
+            "kind": null,
+            "attempts": 200,
+            "worker_minutes": 6.23,
+            "holdout": "0/50",
+            "changed": []
+          },
+          "long-heavy-large": {
+            "status": "acquired",
+            "kind": "discovery",
+            "attempts": 2,
+            "worker_minutes": 0.19,
+            "holdout": "47/50",
+            "changed": [
+              "closure.grip_safety_factor",
+              "closure.actuator_ceiling_fraction",
+              "closure.hold_duration_s",
+              "arm.natural_frequency_hz"
+            ]
+          }
+        },
+        "separation": {
+          "instantiation": [],
+          "composition": {
+            "posed": [],
+            "evidence": "G11 reuse of transfer_object and its subskills from persisted leaves (docs/results/g11-store/reuse.json)"
+          },
+          "discovery": [
+            "long-heavy-large"
+          ],
+          "unsupported_hypothesis": [
+            "jaw-slick",
+            "hand-fixed-world"
+          ]
+        },
+        "generation_calls": 0,
+        "manual_trajectory_edits": 0
+      },
+      "note": "Research goal. The capability target was not met on every problem; the failing problem is reported as an unsupported discovery hypothesis with its limiting capability named, and its skill stays unpromoted. Instantiation, composition and discovery are separated above and in docs/results/g12-validation.json."
     },
     {
       "id": "G13",
@@ -2450,5 +2546,5 @@
     "Restore GitHub Actions billing/allowance and rerun PRs 27-39; merge only after required checks are green, bottom of the stack first.",
     "Preserve all 30 goals and their frozen criteria."
   ],
-  "updated_at_utc": "2026-09-13T19:11:11.572467+00:00"
+  "updated_at_utc": "2026-09-13T20:13:58.900500+00:00"
 }
