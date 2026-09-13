@@ -12,7 +12,8 @@ one dropped on the table stays there, and the arm begins where it stood.
 The clock is one clock across the chain, and every segment is a
 replayable record.
 
-The work area itself is observed, not believed: after every pass the
+The work area itself is observed, not believed: after every pass the arm
+stands clear (its reference configuration, on a guarded path) and the
 declared cameras cast rays at every object as it stands; the area is clear
 only when every object is seen and none of them lies in it, and an
 object's placement stands only while a camera sees it in its cell. A cube
@@ -61,9 +62,11 @@ class Layout:
     work_area_min_m: tuple[float, float]
     work_area_max_m: tuple[float, float]
     note: str
+    table_half_m: tuple[float, float, float] | None = None
+    """The table's half extents when the layout needs more than the G10 table gives it (None: the G10 table as it is)."""
 
     def as_json(self) -> dict:
-        return {"name": self.name, "pitch_m": self.pitch_m, "platform_half_m": list(self.platform_half_m), "platform_centre_m": list(self.platform_centre_m),
+        return {"name": self.name, "pitch_m": self.pitch_m, "platform_half_m": list(self.platform_half_m), "platform_centre_m": list(self.platform_centre_m), "table_half_m": None if self.table_half_m is None else list(self.table_half_m),
                 "slots_m": [list(v) for v in self.slots_m], "cell_offsets_m": [list(v) for v in self.cell_offsets_m],
                 "cells_m": [[round(self.platform_centre_m[0] + dx, 4), round(self.platform_centre_m[1] + dy, 4)] for dx, dy in self.cell_offsets_m],
                 "work_area_m": {"min": list(self.work_area_min_m), "max": list(self.work_area_max_m)}, "note": self.note}
@@ -83,9 +86,16 @@ LAYOUT_V2 = Layout(name="v2", pitch_m=0.12, platform_half_m=(0.18, 0.24, 0.015),
                    cell_offsets_m=((-0.12, -0.18), (0.0, -0.18), (0.0, -0.06), (-0.12, -0.06), (0.12, -0.18), (0.12, -0.06), (0.0, 0.06), (-0.12, 0.06), (0.12, 0.06), (0.0, 0.18), (-0.12, 0.18), (0.12, 0.18)),
                    work_area_min_m=(-0.36, 0.34), work_area_max_m=(0.0, 0.82),
                    note="twelve centimetres between neighbours, the widest enabled jaw opening to 17.2 cm across the outer finger faces, so a finger beside its target clears the next cube by two "
-                        "centimetres before the draws' jitter; eleven slots and twelve cells, every one within 95% of every enabled body's directional reach, nearest the robot first")
-LAYOUT = LAYOUT_V2
-"""Twelve cells on an enlarged platform to the robot's right, eleven slots on the table to its left, every one within every enabled body's reach."""
+                        "centimetres before the draws' jitter; eleven slots and twelve cells, every one within 95% of every enabled body's directional reach, nearest the robot first; the run "
+                        "found the envelope is not the solver (the dual arm's IK missed two of them by four millimetres) and the arm parked over the platform hid cubes from the cameras; kept as registered")
+LAYOUT_V3 = Layout(name="v3", pitch_m=0.10, platform_half_m=(0.21, 0.21, 0.015), platform_centre_m=(0.19, 0.55),
+                   slots_m=((-0.16, 0.5), (-0.26, 0.4), (-0.26, 0.5), (-0.16, 0.6), (-0.36, 0.4), (-0.26, 0.6), (-0.36, 0.5), (-0.36, 0.6), (-0.46, 0.4), (-0.26, 0.7), (-0.46, 0.5)),
+                   cell_offsets_m=((-0.05, -0.15), (-0.15, -0.05), (-0.05, -0.05), (-0.15, 0.05), (0.05, -0.05), (-0.05, 0.05), (0.05, 0.05), (0.15, -0.05), (-0.15, 0.15), (-0.05, 0.15), (0.15, 0.05), (0.05, 0.15), (0.15, 0.15)),
+                   work_area_min_m=(-0.51, 0.35), work_area_max_m=(-0.11, 0.75), table_half_m=(0.45, 0.30, 0.005),
+                   note="ten centimetres between neighbours with the jaw opened to the object's width (the long arm's outer finger faces then 11.6 cm apart); every slot and cell a position every enabled body "
+                        "transferred a cube from and to alone (the registered qualification table), nearest the robot first; the table widened to the left for the far slot column")
+LAYOUT = LAYOUT_V3
+"""Thirteen cells on an enlarged platform to the robot's right, eleven slots on the table to its left, every one qualified on every enabled body."""
 CELL_HALF_M = 0.035
 GOAL_HEIGHT_M = 0.09
 CUBE_HALF_M = 0.015
@@ -124,6 +134,8 @@ def build_clearance_world(base: EnvironmentV1, count: int, *, draw: dict | None 
     if not 1 <= count <= min(len(layout.slots_m), len(layout.cell_offsets_m)):
         raise ValueError(f"count must be 1..{min(len(layout.slots_m), len(layout.cell_offsets_m))}")
     table = next(f for f in base.fixtures if f.name == "table")
+    if layout.table_half_m is not None:
+        table = table.model_copy(update={"size_m": tuple(float(v) for v in layout.table_half_m)})
     floor = next(f for f in base.fixtures if f.name == "floor")
     top = float(table.position_m[2] + table.size_m[2])
     platform = FixtureV1(name="platform", size_m=layout.platform_half_m, position_m=(layout.platform_centre_m[0], layout.platform_centre_m[1], top + layout.platform_half_m[2]), rgba=(0.3, 0.45, 0.75, 1.0))
@@ -290,6 +302,10 @@ class ClearWorkAreaRuntime:
     def run_primitive(self, context: LeafContext) -> LeafOutcome:
         node = context.node
         name = node.arguments.get("object")
+        if name is None:
+            # stand_clear is bound to the effector alone: it acts in the
+            # session that is open, or the last object's.
+            name = self.current_object if self.current is not None else (self.segments[-1].object_name if self.segments else self.world.objects[-1])
         session = self.session_for(name)
         self.segments[-1].leaves.append(node.skill_id)
         if node.skill_id == "stand_by":
@@ -299,6 +315,13 @@ class ClearWorkAreaRuntime:
             spent = session.hold_still(STAND_BY_S, holding=holding, should_stop=lambda now: context.should_stop())
             self.calls.append({"node": node.node_id, "leaf": "stand_by", "object": name, "segment": self.segments[-1].index, "physics_s": spent})
             return LeafOutcome(Verdict.SUCCESS, evidence={"leaf": "stand_by", "object": name, "physics_s": spent})
+        if node.skill_id == "stand_clear":
+            # Out of the cameras' way before the look: the reference
+            # configuration on a guarded path; where no path is found the
+            # arm stays and the look does what it can.
+            moved = session.reroute(holding=False)
+            self.calls.append({"node": node.node_id, "leaf": "stand_clear", "object": name, "segment": self.segments[-1].index, **{k: moved.get(k) for k in ("executed", "refusal", "physics_s", "joint_travel_rad", "detail")}})
+            return LeafOutcome(Verdict.SUCCESS, evidence={"leaf": "stand_clear", "executed": bool(moved.get("executed")), "refusal": moved.get("refusal"), "physics_s": moved.get("physics_s", 0.0)})
         return self.inner.run_primitive(context)
 
     def observe(self, context: LeafContext) -> dict[str, Any] | None:
@@ -409,5 +432,5 @@ def oracle_clear(world: ClearanceWorld, poses: dict[str, np.ndarray]) -> dict:
             "root_success": placed == len(world.objects) and not any(v["in_work_area"] for v in per_object.values())}
 
 
-__all__ = ["CELL_HALF_M", "ChainClock", "ClearWorkAreaRuntime", "ClearanceWorld", "LAYOUT", "LAYOUT_V1", "LAYOUT_V2", "Layout", "Segment", "build_clearance_world", "final_object_poses", "in_work_area", "oracle_clear",
+__all__ = ["CELL_HALF_M", "ChainClock", "ClearWorkAreaRuntime", "ClearanceWorld", "LAYOUT", "LAYOUT_V1", "LAYOUT_V2", "LAYOUT_V3", "Layout", "Segment", "build_clearance_world", "final_object_poses", "in_work_area", "oracle_clear",
            "predicates_for_clearance"]

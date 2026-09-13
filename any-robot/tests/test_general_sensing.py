@@ -115,7 +115,13 @@ def test_degraded_evidence_never_passes_where_full_evidence_did(episode: Episode
     contact = sensors_of(streams, EvidenceKind.CONTACT_FORCE)
     assert decide(held, stale(streams, contact, hold - 0.3), hold).reason.startswith("stale:contact:palm")
     assert decide(opposition, absent(streams, EvidenceKind.CONTACT_FORCE), hold).reason == "missing_source:contact_force"
-    assert decide(held, sparse(streams, contact, 6.0), hold).reason == "insufficient_samples:contact_force"
+    # Thinned to six hertz the window holds too few samples, or its newest one
+    # is already older than the sensor's max age -- which of the two fires
+    # first depends on where the hold instant falls between samples (the
+    # closure's timing moved with the jaw opened to the object's width); either
+    # way the degraded stream never passes where the full one did.
+    thinned = decide(held, sparse(streams, contact, 6.0), hold)
+    assert thinned.decision is not Decision.PASS and (thinned.reason == "insufficient_samples:contact_force" or thinned.reason.startswith("stale:contact:")), thinned.reason
     screened = occluded_by_screen(streams, "camera:front", (-0.08, 1.0, 0.41), (0.3, 0.005, 0.3))
     verdict = decide(reachable, screened, hold)
     assert verdict.decision is Decision.UNKNOWN and verdict.reason == "occluded:camera:front" and verdict.fallback == "re_observe"

@@ -32,11 +32,11 @@ def test_library_expands_deep_with_one_transfer_per_object(count):
     transfers = [node for node in tree.root.walk() if node.skill_id == "transfer_object"]
     assert [node.arguments["object"] for node in transfers] == list(objects)
     assert [node.arguments["destination"] for node in transfers] == list(cells)
-    assert len({node.skill_id for node in tree.root.walk() if node.kind in (NodeKind.PRIMITIVE, NodeKind.OBSERVE)}) == len(LEAVES) + 2
+    assert len({node.skill_id for node in tree.root.walk() if node.kind in (NodeKind.PRIMITIVE, NodeKind.OBSERVE)}) == len(LEAVES) + 3
     definitions = {s.skill_id for s in library.skills}
-    assert len(definitions) == 11 + 7, "eleven shared transfer definitions and seven clearance definitions, whatever the count"
+    assert len(definitions) == 11 + 8, "eleven shared transfer definitions and eight clearance definitions, whatever the count"
     assert library.skill("clear_work_area").timeout_s == episode_cap_s(count)
-    assert [c.skill for c in library.skill("clear_pass_and_check").children] == ["clear_pass", "observe_work_area"], "every pass ends with a look"
+    assert [c.skill for c in library.skill("clear_pass_and_check").children] == ["clear_pass", "stand_clear", "observe_work_area"], "every pass ends with the arm standing clear and a look"
     assert library.skill("clear_until_clear").loop.until.name == "area_cleared"
 
 
@@ -47,7 +47,7 @@ def test_legacy_structure_is_kept_for_the_baseline():
     assert library.library_id.startswith("clear_work_area_v1_") and tree.max_depth == 10 and len(library.skills) == 11 + 6
     assert [c.skill for c in library.skill("clear_work_area").children] == ["clear_until_clear", "observe_work_area"], "one look after the loop, the loop closed on the transfers' verdicts"
     assert library.skill("clear_until_clear").loop.until.name == "all_objects_placed"
-    assert clear_work_area_library(objects, cells).library_id.startswith("clear_work_area_v2_")
+    assert clear_work_area_library(objects, cells).library_id.startswith("clear_work_area_v3_")
 
 
 def test_flat_variant_keeps_the_leaves_and_the_retry_budget_without_loops():
@@ -56,7 +56,7 @@ def test_flat_variant_keeps_the_leaves_and_the_retry_budget_without_loops():
     flat_library = clear_work_area_library(objects, cells, flat=True)
     tree = tree_library.expand("clear_work_area", {"effector": "palm"})
     flat = flat_library.expand("clear_work_area", {"effector": "palm"})
-    leaves = lambda t: [n.skill_id for n in t.root.walk() if n.kind in (NodeKind.PRIMITIVE, NodeKind.OBSERVE) and n.skill_id != "stand_by"]
+    leaves = lambda t: [n.skill_id for n in t.root.walk() if n.kind in (NodeKind.PRIMITIVE, NodeKind.OBSERVE) and n.skill_id not in ("stand_by", "stand_clear")]
     assert leaves(tree) == leaves(flat)
     for definition in flat_library.skills:
         if definition.kind is NodeKind.REPEAT_UNTIL:
@@ -106,6 +106,8 @@ class ScriptedArea:
         if node.skill_id == "release":
             self.placed.add(obj)
             return LeafOutcome(Verdict.SUCCESS, facts={f"held:{obj}": False})
+        if node.skill_id == "stand_clear":
+            self.stood_clear = getattr(self, "stood_clear", 0) + 1
         return LeafOutcome(Verdict.SUCCESS)
 
     def observe(self, context: LeafContext) -> dict[str, Any] | None:
@@ -190,7 +192,7 @@ def test_a_placement_the_cameras_see_undone_is_transferred_again_on_the_next_pas
     record = execute(tree, library, area, predicates(objects, cells), clock=MonotonicClock(), interrupt=Interrupt(), belief=Belief())
     assert record.verdict is Verdict.SUCCESS
     assert [obj for leaf, obj in area.leaves if leaf == "release"] == ["cube_01", "cube_02", "cube_03", "cube_01"], "the knocked-out cube is transferred again, the others are not touched"
-    assert area.looks == 2 and next(n for n in record.root.walk() if n.skill_id == "clear_until_clear").evidence["attempts"] == 2
+    assert area.looks == 2 and area.stood_clear == 2 and next(n for n in record.root.walk() if n.skill_id == "clear_until_clear").evidence["attempts"] == 2
     # the flat twin looks once, sees the cube out of its cell, and has no second pass
     flat_library = clear_work_area_library(objects, cells, flat=True)
     flat_area = ScriptedArea(objects, fails_first=None, knocked_out_after_first_look="cube_01")

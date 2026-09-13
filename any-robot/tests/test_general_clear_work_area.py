@@ -23,7 +23,7 @@ from rigby_core.skills.clearance import clear_work_area_library
 from rigby_general.pipeline import ingest_robot
 from rigby_general.sensing import load_policy
 from rigby_general.skills.transfer_object import TransferObjectSession
-from rigby_general.skills.clear_work_area import CELL_HALF_M, LAYOUT, LAYOUT_V1, LAYOUT_V2, ChainClock, ClearWorkAreaRuntime, build_clearance_world, final_object_poses, in_work_area, oracle_clear, predicates_for_clearance
+from rigby_general.skills.clear_work_area import CELL_HALF_M, LAYOUT, LAYOUT_V1, LAYOUT_V2, LAYOUT_V3, ChainClock, ClearWorkAreaRuntime, build_clearance_world, final_object_poses, in_work_area, oracle_clear, predicates_for_clearance
 from rigby_general.skills.transfer_object import support_fixture
 
 
@@ -85,31 +85,34 @@ def test_two_object_clearance_runs_as_a_chain_on_one_clock(base):
     assert record.belief.get("placed:cube_01:cell_01") is True and record.belief.get("placed:cube_02:cell_02") is True
 
 
-def test_layout_v2_clears_the_widest_jaw_and_lies_within_every_body_reach(base):
-    """Twelve centimetres between neighbours against the long arm's 17.2 cm
-    open jaw; every slot and cell within 95% of each enabled body's
-    directional reach; nothing the robot stands on at rest."""
+def test_the_registered_layout_is_qualified_on_every_body_and_a_pitch_apart(base):
+    """Every slot and cell of the registered layout was earned by a
+    single-object transfer on every enabled body (the qualification table
+    registered with the protocol); neighbours stand at least a pitch apart;
+    nothing of any robot touches a cube at rest."""
 
-    assert LAYOUT is LAYOUT_V2 and LAYOUT_V2.pitch_m >= 0.12 > LAYOUT_V1.pitch_m
-    positions = list(LAYOUT_V2.slots_m) + [(LAYOUT_V2.platform_centre_m[0] + dx, LAYOUT_V2.platform_centre_m[1] + dy) for dx, dy in LAYOUT_V2.cell_offsets_m]
+    import json
+
+    assert LAYOUT is LAYOUT_V3 and LAYOUT_V3.pitch_m >= 0.10 > LAYOUT_V1.pitch_m
+    qualification = json.loads((ROOT / "assets/general/research-protocols/g15-clearance-v3/qualification.json").read_bytes())["positions"]
+    bodies = ("zoo_dual_arm", "zoo_jaw_arm", "zoo_long_arm")
+    positions = list(LAYOUT_V3.slots_m) + [(LAYOUT_V3.platform_centre_m[0] + dx, LAYOUT_V3.platform_centre_m[1] + dy) for dx, dy in LAYOUT_V3.cell_offsets_m]
     for i, a in enumerate(positions):
         for b in positions[i + 1:]:
-            assert np.hypot(a[0] - b[0], a[1] - b[1]) >= LAYOUT_V2.pitch_m - 1e-9, (a, b)
+            assert np.hypot(a[0] - b[0], a[1] - b[1]) >= LAYOUT_V3.pitch_m - 1e-9, (a, b)
+    for x, y in LAYOUT_V3.slots_m:
+        assert all(qualification[f"slot:{x:.2f},{y:.2f}"][body]["verdict"] == "success" for body in bodies), (x, y)
+    for dx, dy in LAYOUT_V3.cell_offsets_m:
+        x, y = LAYOUT_V3.platform_centre_m[0] + dx, LAYOUT_V3.platform_centre_m[1] + dy
+        assert all(qualification[f"cell:{x:.2f},{y:.2f}"][body]["verdict"] == "success" for body in bodies), (x, y)
+    assert len(LAYOUT_V3.slots_m) >= 10 and len(LAYOUT_V3.cell_offsets_m) >= 10
     policy = load_policy(g10.G09 / "policy.json")
     world = build_clearance_world(base, 10)
-    for body in ("zoo_dual_arm", "zoo_jaw_arm", "zoo_long_arm"):
+    for body in bodies:
         source = ROOT / "assets/general/zoo" / body / "robot.urdf"
         robot = ingest_robot(source, robot_id=body)
         session = TransferObjectSession.open(body, source, world.environment, world.goal_for("cell_01"), policy, object_name="cube_01", destination_fixture="platform",
                                              destination_offset_m=world.offsets["cell_01"], robot=robot)
-        frame = session.sensing.frames[robot.morphology.grasping_effectors[0].chain_id]
-        top = float(next(f for f in world.environment.fixtures if f.name == "platform").position_m[2] + LAYOUT_V2.platform_half_m[2])
-        points = [np.array(o.position_m) for o in world.environment.objects] + [np.array([world.goal_for(c).region_minimum_m[0] + CELL_HALF_M, world.goal_for(c).region_minimum_m[1] + CELL_HALF_M, top + 0.015]) for c in world.cells.values()]
-        for point in points:
-            azimuth, elevation = frame.bearing_of(point)
-            distance = float(np.linalg.norm(point - np.asarray(frame.origin)))
-            assert distance <= 0.95 * float(frame.directional_reach(azimuth, elevation)) and distance >= float(frame.inner_reach(azimuth, elevation)) + 0.03, (body, point)
-        # at rest nothing of the robot touches a cube
         data = mujoco.MjData(session.model)
         data.qpos[:] = session.current_qpos()
         mujoco.mj_forward(session.model, data)
@@ -120,6 +123,7 @@ def test_layout_v2_clears_the_widest_jaw_and_lies_within_every_body_reach(base):
             if contact.geom1 in cubes or contact.geom2 in cubes:
                 other = contact.geom2 if contact.geom1 in cubes else contact.geom1
                 assert other in fixtures or other in cubes, (body, mujoco.mj_id2name(session.model, mujoco.mjtObj.mjOBJ_GEOM, other))
+
 
 
 def test_the_arm_guard_leaves_the_closure_own_fingers_to_the_closure(base):
@@ -181,3 +185,32 @@ def test_the_closure_joints_hold_their_limits_in_every_compiled_scene(base):
     finally:
         closure_module.CLOSURE_LIMITS_HOLD = True
     assert all(soft.model.jnt_solref[mujoco.mj_name2id(soft.model, mujoco.mjtObj.mjOBJ_JOINT, n)][0] == pytest.approx(0.02) for n in grip), "the toggle reproduces the soft limits"
+
+
+def test_the_jaw_opens_as_wide_as_the_cube_needs(base):
+    """Sized from the cube's width, the measured aperture at closed and a
+    clearance per side, and never past the joint's own limit; the toggle
+    reproduces the full opening."""
+
+    from rigby_general.contact import closure as closure_module
+    from rigby_general.contact.closure import ClosureController
+
+    for body in ("zoo_long_arm", "zoo_jaw_arm", "zoo_dual_arm"):
+        source = ROOT / "assets/general/zoo" / body / "robot.urdf"
+        robot = ingest_robot(source, robot_id=body)
+        world = build_clearance_world(base, 1)
+        session = TransferObjectSession.open(body, source, world.environment, world.goal_for("cell_01"), load_policy(g10.G09 / "policy.json"), object_name="cube_01", destination_fixture="platform",
+                                             destination_offset_m=world.offsets["cell_01"], robot=robot)
+        effector = robot.manifest.morphology.grasping_effectors[0]
+        closure = ClosureController(session.model, robot.manifest, effector, object_geoms=frozenset({"scene_block_geom"}))
+        assert closure.opening_sized and closure.opening_aperture_m is not None
+        expected = 0.03 + 2 * closure.config.opening_clearance_m  # the cube plus a clearance a side; every enabled jaw opens at least that far
+        assert closure.opening_aperture_m == pytest.approx(expected, abs=1e-3), (body, closure.opening_aperture_m, expected)
+        assert all(abs(o - c) < abs(hi - lo) - 1e-6 for o, c, (lo, hi) in zip(closure._open_end, closure._closed_end, closure._ranges)), "well inside the joint's own range"
+        assert all(abs(o - c) <= abs(hi - lo) + 1e-9 for o, c, (lo, hi) in zip(closure._open_end, closure._closed_end, closure._ranges))
+        closure_module.OPENING_SIZED = False
+        try:
+            full = ClosureController(session.model, robot.manifest, effector, object_geoms=frozenset({"scene_block_geom"}))
+        finally:
+            closure_module.OPENING_SIZED = True
+        assert not full.opening_sized and all(o in (lo, hi) for o, (lo, hi) in zip(full._open_end, full._ranges)), "the toggle opens to the limit"

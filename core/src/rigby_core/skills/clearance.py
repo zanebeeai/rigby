@@ -13,10 +13,12 @@ buys: one definition per level, reused across objects.
 Recovery lives at three levels. A leaf's verification may be re-observed
 within its budget (G09); a subgoal may be retried within its loop (G10); and
 an object whose transfer fails is passed over and returned to on the next
-pass, until the pass budget is spent. Every pass ends with a look at the
-work area and the cells from the declared cameras, and what they see
-decides which placements stand: a cube knocked out of its cell by a later
-placement loses its ``placed`` fact and the next pass transfers it again.
+pass, until the pass budget is spent. Every pass ends with the arm
+standing clear (its reference configuration, so it is not between the
+cameras and the cubes) and a look at the work area and the cells from the
+declared cameras, and what they see decides which placements stand: a
+cube knocked out of its cell by a later placement loses its ``placed``
+fact and the next pass transfers it again.
 The root succeeds only when every object is observed in its cell and the
 area is observed clear: no child's success counts toward an unfinished
 root, and no stale belief does either.
@@ -104,14 +106,19 @@ def clear_work_area_library(objects: tuple[str, ...], cells: tuple[str, ...], *,
     ))
     if observe_each_pass:
         skills.append(SkillDefinitionV1(
+            skill_id="stand_clear", kind=NodeKind.PRIMITIVE, arguments=effector_only, timeout_s=30.0, controller="contact.transfer.stand_clear",
+            description="Move the arm to its reference configuration on a guarded path, so it does not stand between the cameras and the cubes; succeeds where it stands if no path is found.",
+            termination=TerminationRuleV1(require_effects=False), resources=(ResourceClaimV1(resource="effector:$effector"),),
+        ))
+        skills.append(SkillDefinitionV1(
             skill_id="observe_work_area", kind=NodeKind.OBSERVE, arguments=(), timeout_s=15.0, resources=PERCEPTION,
             description="Look at the work area and the cells from the declared cameras: is any object still in the area, and does every object seen stand in its cell?",
             observation=ObservationSpecV1(evidence=("work_area_clear", "objects_in_cells"), source="camera"),
         ))
         skills.append(SkillDefinitionV1(
             skill_id="clear_pass_and_check", kind=NodeKind.SEQUENCE, arguments=effector_only, timeout_s=cap, termination=TerminationRuleV1(require_effects=False), resources=own,
-            description="One pass over every object, then a look at the work area and the cells: what the cameras see decides which placements stand.",
-            children=(ChildRefV1(skill="clear_pass", bindings={"effector": "$effector"}), ChildRefV1(skill="observe_work_area", bindings={})),
+            description="One pass over every object, the arm standing clear, then a look at the work area and the cells: what the cameras see decides which placements stand.",
+            children=(ChildRefV1(skill="clear_pass", bindings={"effector": "$effector"}), ChildRefV1(skill="stand_clear", bindings={"effector": "$effector"}), ChildRefV1(skill="observe_work_area", bindings={})),
         ))
         skills.append(SkillDefinitionV1(
             skill_id="clear_until_clear", kind=NodeKind.REPEAT_UNTIL, arguments=effector_only, timeout_s=cap, resources=own,
@@ -147,10 +154,10 @@ def clear_work_area_library(objects: tuple[str, ...], cells: tuple[str, ...], *,
                   PredicateSpecV1(name="all_objects_placed", parameters=(), description="every designated object's placement in its own cell stands: decided pass from the declared sensors and not since seen elsewhere"),
                   PredicateSpecV1(name="work_area_clear", parameters=(), description="the declared cameras saw no object left in the work area"),
                   PredicateSpecV1(name="area_cleared", parameters=(), description="every designated object's placement stands and the area was seen clear: the clearing loop's exit"))
-    version = "v2" if observe_each_pass else "v1"
+    version = "v3" if observe_each_pass else "v1"
     return SkillLibraryV1(library_id=f"clear_work_area_{version}_{'flat' if flat else 'tree'}_{len(objects)}",
                           description=f"ClearWorkArea over {len(objects)} objects: {'the same leaves with no recovery structure' if flat else 'the generated tree with recovery at three levels'}"
-                                      + ("; every pass ends with a look at the area and the cells." if observe_each_pass else "; one look at the area after the clearing loop."),
+                                      + ("; every pass ends with the arm standing clear and a look at the area and the cells." if observe_each_pass else "; one look at the area after the clearing loop."),
                           predicates=predicates, skills=tuple(skills))
 
 
