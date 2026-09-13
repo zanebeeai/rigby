@@ -1,0 +1,21 @@
+{
+  "cost_usd": 0.00092975,
+  "created_at_utc": "2026-09-13T17:31:54.696711+00:00",
+  "key": "1480e2aba709b7a24d7421d15b6fdc1a4b57a6c887cfeea4890e944edf8fa786",
+  "model": "gpt-5-mini-2025-08-07",
+  "prompt": "open your hand",
+  "purpose": "select:gpt-5-mini",
+  "reply": {
+    "segments": [],
+    "unsupported_reason": "The request names a hand posture change (open your hand) which maps to configure_effector, but posture instructions require specifying selected_count and finger details; the plain phrase 'open your hand' does not match an inventory motion entry with required posture encoding under the reading rules."
+  },
+  "requested_model": "gpt-5-mini",
+  "schema_sha256": "9d83406652cf48179ff407f9ffe7f29d943d29109ee800c7036f9fb62ca4c5fd",
+  "system_sha256": "32cb644ff94921917cbb30d7260c0c2d07d81329ff07d2afa7a1aac64f3c1af8",
+  "transport": "openai",
+  "usage": {
+    "completion_tokens": 76,
+    "estimated": false,
+    "prompt_tokens": 3111
+  }
+}

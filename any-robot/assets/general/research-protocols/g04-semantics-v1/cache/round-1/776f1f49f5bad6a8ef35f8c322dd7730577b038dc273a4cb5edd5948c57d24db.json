@@ -1,0 +1,62 @@
+{
+  "cost_usd": 0.0002046,
+  "created_at_utc": "2026-09-13T17:17:02.166991+00:00",
+  "key": "776f1f49f5bad6a8ef35f8c322dd7730577b038dc273a4cb5edd5948c57d24db",
+  "model": "gpt-5-nano-2025-08-07",
+  "prompt": "reach out as far as you can and then come back",
+  "purpose": "select:gpt-5-nano",
+  "reply": {
+    "segments": [
+      {
+        "clause": "reach out as far as you can",
+        "entry_id": "reach_to_edge",
+        "manner": {
+          "amplitude": 2,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 2
+        },
+        "posture": null,
+        "quantities": [
+          {
+            "text": "as far as you can",
+            "unit": "cm",
+            "value": 0
+          }
+        ],
+        "remove": "distal"
+      },
+      {
+        "clause": "and then come back",
+        "entry_id": "retract_from_point",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": null,
+        "quantities": [],
+        "remove": "coincident"
+      }
+    ],
+    "unsupported_reason": null
+  },
+  "requested_model": "gpt-5-nano",
+  "schema_sha256": "5901b440dee4f3fc08a28479a2692d25f65af7930a1198721ec0af934a451473",
+  "system_sha256": "3d079750c0b00547748e68e38d2ddff75914b6583ee60fd9d49c2f82cb880153",
+  "transport": "openai",
+  "usage": {
+    "completion_tokens": 193,
+    "estimated": false,
+    "prompt_tokens": 2548
+  }
+}

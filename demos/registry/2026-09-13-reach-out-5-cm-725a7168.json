@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-reach-out-5-cm-725a7168",
+  "title": "D04: 'reach out 5 cm' on zoo_jaw_arm",
+  "prompt": "reach out 5 cm",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T18:04:06Z",
+  "source": {
+    "commit": "3038d06a56",
+    "branch": "feat/g04-semantics",
+    "dirty": true,
+    "how": "python any-robot/scripts/g04_d04_media.py --out docs/results/g04-d04 --local any-robot/results/g04-d04 --model <selected model>"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: read as reach_to_point remove=medial, stated '5 cm'; effector travelled 5.0 cm (4% of a 1.32 m reach) in 2.85 s of physics."
+  },
+  "notes": "See docs/results/g04-report.md. One prompt read once, body-neutrally, by the model planner (the reply served from the committed cache), grounded by this body's own measured reach, executed on native physics with the recorder and rendered from recorded states at real-time playback; the banner carries the reading's entry and remove, the stated quantity or its absence, the effector's measured travel from its start on every frame, the reach fraction and the reading's hash; frames.json beside the MP4 maps every frame to its recorded sample.",
+  "media": [
+    {
+      "path": "docs/results/g04-d04/zoo_jaw_arm/five_cm/media/episode.mp4",
+      "bytes": 37897,
+      "sha256": "2100218cd988e88aa101ecbf5614764acedf2da16e3559425f7bcac786b760e3",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g04-d04/zoo_jaw_arm/five_cm/media/preview.gif",
+      "bytes": 401007,
+      "sha256": "03f5688ce2afc02bff3ab2ade3c3fb51f27caf7d97a5c8d94ff845b2b41b6d7f",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G04",
+    "D04",
+    "five_cm",
+    "zoo_jaw_arm",
+    "success"
+  ]
+}

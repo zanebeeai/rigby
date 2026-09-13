@@ -1,0 +1,126 @@
+{
+  "schema": "g04.unsupported.v1",
+  "note": "language the label reads as a motion and the planner refused, plus stated quantities grounding refuses typed; counted apart from errors",
+  "offline": [
+    {
+      "case_id": "C019",
+      "family": "entry",
+      "prompt": "pass through the waypoint on the way over",
+      "refusal": "unafforded_schema",
+      "detail": "nothing in that request names a motion this system knows"
+    },
+    {
+      "case_id": "C022",
+      "family": "entry",
+      "prompt": "close in until you touch it",
+      "refusal": "unafforded_schema",
+      "detail": "nothing in that request names a motion this system knows"
+    },
+    {
+      "case_id": "C028",
+      "family": "entry",
+      "prompt": "press down on it",
+      "refusal": "unafforded_schema",
+      "detail": "nothing in that request names a motion this system knows"
+    },
+    {
+      "case_id": "L007",
+      "family": "paraphrase",
+      "prompt": "bring it back",
+      "refusal": "unafforded_schema",
+      "detail": "nothing in that request names a motion this system knows"
+    },
+    {
+      "case_id": "L027",
+      "family": "paraphrase",
+      "prompt": "aim the camera at it",
+      "refusal": "unafforded_schema",
+      "detail": "nothing in that request names a motion this system knows"
+    },
+    {
+      "case_id": "L049",
+      "family": "minimal_contrast",
+      "prompt": "close your hand",
+      "refusal": "unafforded_schema",
+      "detail": "nothing in that request names a motion this system knows"
+    },
+    {
+      "case_id": "L064",
+      "family": "ambiguous_deixis",
+      "prompt": "bring it in toward you",
+      "refusal": "unafforded_schema",
+      "detail": "nothing in that request names a motion this system knows"
+    },
+    {
+      "case_id": "L069",
+      "family": "ambiguous_deixis",
+      "prompt": "closer",
+      "refusal": "unafforded_schema",
+      "detail": "nothing in that request names a motion this system knows"
+    },
+    {
+      "case_id": "L101",
+      "family": "manner",
+      "prompt": "press hard on it",
+      "refusal": "unafforded_schema",
+      "detail": "nothing in that request names a motion this system knows"
+    }
+  ],
+  "model": [],
+  "grounding": [
+    {
+      "case_id": "L087",
+      "prompt": "lift 5 cm",
+      "body": "zoo_jaw_arm",
+      "planner": "offline",
+      "failure_stage": "binding",
+      "failure_code": "ungroundable",
+      "detail": "s0: a stated distance applies to a straight motion to, from, toward or away from a point; path:from.surface.neutral.straight would have to read it as an amplitude or a span, which nobody asked for"
+    },
+    {
+      "case_id": "L088",
+      "prompt": "wave 5 cm",
+      "body": "zoo_jaw_arm",
+      "planner": "offline",
+      "failure_stage": "binding",
+      "failure_code": "ungroundable",
+      "detail": "s0: a stated distance applies to a straight motion to, from, toward or away from a point; path:via.point.neutral.oscillating would have to read it as an amplitude or a span, which nobody asked for"
+    },
+    {
+      "case_id": "L091",
+      "prompt": "reach out 2 m",
+      "body": "zoo_jaw_arm",
+      "planner": "offline",
+      "failure_stage": "binding",
+      "failure_code": "ungroundable",
+      "detail": "s0: the stated 200.0 cm ends 1.101 m from the chain root, outside what this body was measured to reach along that bearing"
+    },
+    {
+      "case_id": "L087",
+      "prompt": "lift 5 cm",
+      "body": "zoo_jaw_arm",
+      "planner": "model",
+      "failure_stage": "binding",
+      "failure_code": "ungroundable",
+      "detail": "s0: a stated distance applies to a straight motion to, from, toward or away from a point; path:from.surface.neutral.straight would have to read it as an amplitude or a span, which nobody asked for"
+    },
+    {
+      "case_id": "L088",
+      "prompt": "wave 5 cm",
+      "body": "zoo_jaw_arm",
+      "planner": "model",
+      "failure_stage": "binding",
+      "failure_code": "ungroundable",
+      "detail": "s0: a stated distance applies to a straight motion to, from, toward or away from a point; path:via.point.neutral.oscillating would have to read it as an amplitude or a span, which nobody asked for"
+    },
+    {
+      "case_id": "L091",
+      "prompt": "reach out 2 m",
+      "body": "zoo_jaw_arm",
+      "planner": "model",
+      "failure_stage": "binding",
+      "failure_code": "ungroundable",
+      "detail": "s0: the stated 200.0 cm ends 1.101 m from the chain root, outside what this body was measured to reach along that bearing"
+    }
+  ]
+}

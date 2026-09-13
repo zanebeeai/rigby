@@ -1,0 +1,45 @@
+{
+  "cost_usd": 0.0003539,
+  "created_at_utc": "2026-09-13T17:29:06.027723+00:00",
+  "key": "21fd05fde6abb247bf25eb106302ab522e1ce540a6ec98122e10cd81a8da361c",
+  "model": "gpt-4.1-nano-2025-04-14",
+  "prompt": "point with one finger",
+  "purpose": "select:gpt-4.1-nano",
+  "reply": {
+    "segments": [
+      {
+        "clause": "point with one finger",
+        "entry_id": "reach_to_point",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": {
+          "group": "opposed",
+          "opposing": "flexed",
+          "remainder": "flexed",
+          "selected": "extended",
+          "selected_count": 1
+        },
+        "quantities": [],
+        "remove": "distal"
+      }
+    ],
+    "unsupported_reason": null
+  },
+  "requested_model": "gpt-4.1-nano",
+  "schema_sha256": "9d83406652cf48179ff407f9ffe7f29d943d29109ee800c7036f9fb62ca4c5fd",
+  "system_sha256": "32cb644ff94921917cbb30d7260c0c2d07d81329ff07d2afa7a1aac64f3c1af8",
+  "transport": "openai",
+  "usage": {
+    "completion_tokens": 106,
+    "estimated": false,
+    "prompt_tokens": 3115
+  }
+}

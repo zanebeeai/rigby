@@ -1,0 +1,62 @@
+{
+  "cost_usd": 0.00023214999999999998,
+  "created_at_utc": "2026-09-13T17:28:24.037248+00:00",
+  "key": "3fcf5d352f2c017249afca490541827417bbf47b647223d47be39acf9f76a16f",
+  "model": "gpt-5-nano-2025-08-07",
+  "prompt": "pick it up then hand it over",
+  "purpose": "select:gpt-5-nano",
+  "reply": {
+    "segments": [
+      {
+        "clause": "pick it up",
+        "entry_id": "transport_object",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": null,
+        "quantities": [],
+        "remove": "proximal"
+      },
+      {
+        "clause": "then hand it over",
+        "entry_id": "hand_across",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": {
+          "group": "opposing",
+          "opposing": "free",
+          "remainder": "free",
+          "selected": "free",
+          "selected_count": null
+        },
+        "quantities": [],
+        "remove": "proximal"
+      }
+    ],
+    "unsupported_reason": null
+  },
+  "requested_model": "gpt-5-nano",
+  "schema_sha256": "9d83406652cf48179ff407f9ffe7f29d943d29109ee800c7036f9fb62ca4c5fd",
+  "system_sha256": "32cb644ff94921917cbb30d7260c0c2d07d81329ff07d2afa7a1aac64f3c1af8",
+  "transport": "openai",
+  "usage": {
+    "completion_tokens": 191,
+    "estimated": false,
+    "prompt_tokens": 3115
+  }
+}

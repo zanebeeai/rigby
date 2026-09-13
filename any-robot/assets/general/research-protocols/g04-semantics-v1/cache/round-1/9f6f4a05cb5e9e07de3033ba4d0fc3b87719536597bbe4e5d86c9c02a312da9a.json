@@ -1,0 +1,45 @@
+{
+  "cost_usd": 0.0001738,
+  "created_at_utc": "2026-09-13T17:16:40.229294+00:00",
+  "key": "9f6f4a05cb5e9e07de3033ba4d0fc3b87719536597bbe4e5d86c9c02a312da9a",
+  "model": "gpt-5-nano-2025-08-07",
+  "prompt": "three fingers up",
+  "purpose": "select:gpt-5-nano",
+  "reply": {
+    "segments": [
+      {
+        "clause": "three fingers up",
+        "entry_id": "configure_effector",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": {
+          "group": "opposed",
+          "opposing": "extended",
+          "remainder": "extended",
+          "selected": "extended",
+          "selected_count": 3
+        },
+        "quantities": [],
+        "remove": "proximal"
+      }
+    ],
+    "unsupported_reason": null
+  },
+  "requested_model": "gpt-5-nano",
+  "schema_sha256": "5901b440dee4f3fc08a28479a2692d25f65af7930a1198721ec0af934a451473",
+  "system_sha256": "3d079750c0b00547748e68e38d2ddff75914b6583ee60fd9d49c2f82cb880153",
+  "transport": "openai",
+  "usage": {
+    "completion_tokens": 117,
+    "estimated": false,
+    "prompt_tokens": 2540
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "cost_usd": 0.00827,
+  "created_at_utc": "2026-09-13T17:45:43.772310+00:00",
+  "key": "16927df093fb277b51b16145478de076dc94b7bac4d8f2332f9a37fc4372c8ea",
+  "model": "gpt-4.1-2025-04-14",
+  "prompt": "make a fist then open your hand",
+  "purpose": "select:gpt-4.1",
+  "reply": {
+    "segments": [
+      {
+        "clause": "make a fist",
+        "entry_id": "configure_effector",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": {
+          "group": "opposed",
+          "opposing": "flexed",
+          "remainder": "flexed",
+          "selected": "extended",
+          "selected_count": 0
+        },
+        "quantities": [],
+        "remove": "adjacent"
+      },
+      {
+        "clause": "open your hand",
+        "entry_id": "configure_effector",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": {
+          "group": "opposed",
+          "opposing": "extended",
+          "remainder": "extended",
+          "selected": "extended",
+          "selected_count": 0
+        },
+        "quantities": [],
+        "remove": "adjacent"
+      }
+    ],
+    "unsupported_reason": null
+  },
+  "requested_model": "gpt-4.1",
+  "schema_sha256": "9d83406652cf48179ff407f9ffe7f29d943d29109ee800c7036f9fb62ca4c5fd",
+  "system_sha256": "5e8011d65a799d4783416edd6ea4e9a4a1acd0b9177228ef032b31ac2682083d",
+  "transport": "openai",
+  "usage": {
+    "completion_tokens": 198,
+    "estimated": false,
+    "prompt_tokens": 3343
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "cost_usd": 0.00020435,
+  "created_at_utc": "2026-09-13T17:17:11.101908+00:00",
+  "key": "40d763a323656ab995307dda8e008efde6dac3f0ea236efeddeb5df0893c41a3",
+  "model": "gpt-5-nano-2025-08-07",
+  "prompt": "turn the wrist then hold still",
+  "purpose": "select:gpt-5-nano",
+  "reply": {
+    "segments": [
+      {
+        "clause": "turn the wrist",
+        "entry_id": "orient_effector",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": null,
+        "quantities": [],
+        "remove": "coincident"
+      },
+      {
+        "clause": "hold still",
+        "entry_id": "hold_still",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": {
+          "group": "opposed",
+          "opposing": "free",
+          "remainder": "free",
+          "selected": "free",
+          "selected_count": null
+        },
+        "quantities": [],
+        "remove": "coincident"
+      }
+    ],
+    "unsupported_reason": null
+  },
+  "requested_model": "gpt-5-nano",
+  "schema_sha256": "5901b440dee4f3fc08a28479a2692d25f65af7930a1198721ec0af934a451473",
+  "system_sha256": "3d079750c0b00547748e68e38d2ddff75914b6583ee60fd9d49c2f82cb880153",
+  "transport": "openai",
+  "usage": {
+    "completion_tokens": 193,
+    "estimated": false,
+    "prompt_tokens": 2543
+  }
+}

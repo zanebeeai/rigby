@@ -1,0 +1,45 @@
+{
+  "cost_usd": 0.007448,
+  "created_at_utc": "2026-09-13T17:47:57.508370+00:00",
+  "key": "29a6dd8cdfd1bf31d197d64c25864e11c4a3d05f7a84f7cc6899778e217a4d74",
+  "model": "gpt-4.1-2025-04-14",
+  "prompt": "reach out twenty centimeters",
+  "purpose": "score:gpt-4.1",
+  "reply": {
+    "segments": [
+      {
+        "clause": "reach out twenty centimeters",
+        "entry_id": "reach_to_point",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": null,
+        "quantities": [
+          {
+            "text": "twenty centimeters",
+            "unit": "cm",
+            "value": 20
+          }
+        ],
+        "remove": "medial"
+      }
+    ],
+    "unsupported_reason": null
+  },
+  "requested_model": "gpt-4.1",
+  "schema_sha256": "9d83406652cf48179ff407f9ffe7f29d943d29109ee800c7036f9fb62ca4c5fd",
+  "system_sha256": "5e8011d65a799d4783416edd6ea4e9a4a1acd0b9177228ef032b31ac2682083d",
+  "transport": "openai",
+  "usage": {
+    "completion_tokens": 96,
+    "estimated": false,
+    "prompt_tokens": 3340
+  }
+}

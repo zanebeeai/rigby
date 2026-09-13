@@ -1,0 +1,39 @@
+{
+  "cost_usd": 0.00029790000000000003,
+  "created_at_utc": "2026-09-13T17:18:14.209185+00:00",
+  "key": "9f57e5fb87a3870fc8ffb97609e4c7137badbf191c32bdd7170606417a98ea90",
+  "model": "gpt-4.1-nano-2025-04-14",
+  "prompt": "pick it up then hand it over",
+  "purpose": "select:gpt-4.1-nano",
+  "reply": {
+    "segments": [
+      {
+        "clause": "pick it up",
+        "entry_id": "transport_object",
+        "manner": {
+          "amplitude": 0,
+          "effort": 1,
+          "precision": 1,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 1,
+          "speed": 1
+        },
+        "posture": null,
+        "quantities": [],
+        "remove": "coincident"
+      }
+    ],
+    "unsupported_reason": "The request contains 'pick it up' and 'hand it over', but 'hand it over' is not a motion this system knows."
+  },
+  "requested_model": "gpt-4.1-nano",
+  "schema_sha256": "5901b440dee4f3fc08a28479a2692d25f65af7930a1198721ec0af934a451473",
+  "system_sha256": "3d079750c0b00547748e68e38d2ddff75914b6583ee60fd9d49c2f82cb880153",
+  "transport": "openai",
+  "usage": {
+    "completion_tokens": 108,
+    "estimated": false,
+    "prompt_tokens": 2547
+  }
+}

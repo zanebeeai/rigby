@@ -1,0 +1,56 @@
+{
+  "cost_usd": 0.00047175,
+  "created_at_utc": "2026-09-13T17:19:34.110713+00:00",
+  "key": "9df79d836dd5d1982099855c894565231d818062c90a29d76df7dd10c2a2e782",
+  "model": "gpt-4o-mini-2024-07-18",
+  "prompt": "wave twice then hold still",
+  "purpose": "select:gpt-4o-mini",
+  "reply": {
+    "segments": [
+      {
+        "clause": "wave twice",
+        "entry_id": "oscillate_about_point",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": 2,
+          "rhythm": 0,
+          "smoothness": 1,
+          "speed": 0
+        },
+        "posture": null,
+        "quantities": [],
+        "remove": "adjacent"
+      },
+      {
+        "clause": "hold still",
+        "entry_id": "hold_still",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": null,
+        "quantities": [],
+        "remove": "adjacent"
+      }
+    ],
+    "unsupported_reason": null
+  },
+  "requested_model": "gpt-4o-mini",
+  "schema_sha256": "5901b440dee4f3fc08a28479a2692d25f65af7930a1198721ec0af934a451473",
+  "system_sha256": "3d079750c0b00547748e68e38d2ddff75914b6583ee60fd9d49c2f82cb880153",
+  "transport": "openai",
+  "usage": {
+    "completion_tokens": 150,
+    "estimated": false,
+    "prompt_tokens": 2545
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "cost_usd": 0.00035690000000000006,
+  "created_at_utc": "2026-09-13T17:29:38.528237+00:00",
+  "key": "aa166a59e9b92ba1570a63e844ed65c904b1003c645ebc1201fb36ec9db496f1",
+  "model": "gpt-4.1-nano-2025-04-14",
+  "prompt": "turn the wrist then hold still",
+  "purpose": "select:gpt-4.1-nano",
+  "reply": {
+    "segments": [
+      {
+        "clause": "turn the wrist",
+        "entry_id": "orient_effector",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": null,
+        "quantities": [],
+        "remove": "medial"
+      }
+    ],
+    "unsupported_reason": "The request includes 'turn the wrist' which is an orient_effector command, and 'hold still' which is a hold_still command. Both are supported motions."
+  },
+  "requested_model": "gpt-4.1-nano",
+  "schema_sha256": "9d83406652cf48179ff407f9ffe7f29d943d29109ee800c7036f9fb62ca4c5fd",
+  "system_sha256": "32cb644ff94921917cbb30d7260c0c2d07d81329ff07d2afa7a1aac64f3c1af8",
+  "transport": "openai",
+  "usage": {
+    "completion_tokens": 113,
+    "estimated": false,
+    "prompt_tokens": 3117
+  }
+}

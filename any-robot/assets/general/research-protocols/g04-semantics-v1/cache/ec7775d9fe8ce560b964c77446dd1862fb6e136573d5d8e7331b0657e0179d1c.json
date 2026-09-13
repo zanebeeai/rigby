@@ -1,0 +1,56 @@
+{
+  "cost_usd": 0.001172,
+  "created_at_utc": "2026-09-13T17:41:48.488366+00:00",
+  "key": "ec7775d9fe8ce560b964c77446dd1862fb6e136573d5d8e7331b0657e0179d1c",
+  "model": "gpt-5-mini-2025-08-07",
+  "prompt": "reach out as far as you can and then come back",
+  "purpose": "select:gpt-5-mini",
+  "reply": {
+    "segments": [
+      {
+        "clause": "reach out as far as you can",
+        "entry_id": "reach_to_edge",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": null,
+        "quantities": [],
+        "remove": "distal"
+      },
+      {
+        "clause": "come back",
+        "entry_id": "retract_from_point",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": null,
+        "quantities": [],
+        "remove": "medial"
+      }
+    ],
+    "unsupported_reason": null
+  },
+  "requested_model": "gpt-5-mini",
+  "schema_sha256": "9d83406652cf48179ff407f9ffe7f29d943d29109ee800c7036f9fb62ca4c5fd",
+  "system_sha256": "5e8011d65a799d4783416edd6ea4e9a4a1acd0b9177228ef032b31ac2682083d",
+  "transport": "openai",
+  "usage": {
+    "completion_tokens": 168,
+    "estimated": false,
+    "prompt_tokens": 3344
+  }
+}

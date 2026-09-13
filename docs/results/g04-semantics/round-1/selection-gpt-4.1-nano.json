@@ -1,0 +1,2588 @@
+[
+  {
+    "case_id": "C001",
+    "kind": "canonical",
+    "family": "entry",
+    "prompt": "reach out in front of you",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "reach_to_point",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "99a9949611be4138c23c28513073b0fe6bd6a3fbc6b7baaee8dbe1b40ed75246",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "reach_to_point",
+          "remove": "proximal",
+          "manner": {},
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.4033500999794342
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "remove:medial->proximal",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C002",
+    "kind": "canonical",
+    "family": "extent",
+    "prompt": "reach out a little",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "reach_to_point",
+        "remove": "proximal",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "7e441c5cae76c23e9715049314ee06bdb70b5452f1c0ff8b12f141c2d9c6ee0c",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "reach_to_point",
+          "remove": "proximal",
+          "manner": {
+            "amplitude": -1
+          },
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.0136953000037465
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "manner:{}->{'amplitude': -1}",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C003",
+    "kind": "canonical",
+    "family": "extent",
+    "prompt": "reach far out",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "reach_to_point",
+        "remove": "distal",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "0b8432d2104a92d16821431d3140c1867d94b74faa9ea4102cfe1fe0f0644a67",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "reach_to_edge",
+          "remove": "distal",
+          "manner": {
+            "amplitude": 2
+          },
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.1072954999981448
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "entry:reach_to_point->reach_to_edge",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C004",
+    "kind": "canonical",
+    "family": "extent",
+    "prompt": "reach right there",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "reach_to_point",
+        "remove": "adjacent",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "d1966341e949dc775b43a88f4bf5a768ea30ddc41c6ef4ebe5dd0ccb418c3084",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "reach_to_point",
+          "remove": "coincident",
+          "manner": {},
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 0.9369554000149947
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "remove:adjacent->coincident",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C005",
+    "kind": "canonical",
+    "family": "entry",
+    "prompt": "reach out as far as you can",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "reach_to_edge",
+        "remove": "distal",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "a5197a967719c97003092f93b759159585cdaf6637522e49f478c785725197dd",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "reach_to_edge",
+          "remove": "distal",
+          "manner": {
+            "speed": 2,
+            "effort": 1,
+            "smoothness": 1,
+            "amplitude": 2,
+            "precision": 1
+          },
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.5486115999810863
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "manner:{}->{'speed': 2, 'effort': 1, 'smoothness': 1, 'amplitude': 2, 'precision': 1}",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C006",
+    "kind": "canonical",
+    "family": "entry",
+    "prompt": "swing over to it",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "swing_to_point",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "ea61e36fdb403f1875390eff18a1db2f8dfe36293a04e7c426ba15dcb5abec36",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "swing_to_point",
+          "remove": "coincident",
+          "manner": {},
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.106857399980072
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "remove:medial->coincident",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C007",
+    "kind": "canonical",
+    "family": "entry",
+    "prompt": "lower down onto the table",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "descend_to_surface",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "030d976d1b15eba4c1c8af4f45e1a01543c561cd4c03cf19245766f0e5d3a726",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "descend_to_surface",
+          "remove": "coincident",
+          "manner": {},
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.2628629000100773
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "remove:medial->coincident",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C008",
+    "kind": "canonical",
+    "family": "entry",
+    "prompt": "come down onto the table over an arc",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "arc_to_surface",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "654746ae4c72bf12d419827a7fc42003d6cd6287061a6ed8900d0ebb9bfed821",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "arc_to_surface",
+          "remove": "coincident",
+          "manner": {},
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.0903850000177044
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "remove:medial->coincident",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C009",
+    "kind": "canonical",
+    "family": "entry",
+    "prompt": "reach into the box",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "enter_volume",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "69d6e44b78ea9e703cb2cde863fd376d63709e4e72766d3db65b309ee886ae7b",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "enter_volume",
+          "remove": "coincident",
+          "manner": {},
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.0791090999846347
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "remove:medial->coincident",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C010",
+    "kind": "canonical",
+    "family": "entry",
+    "prompt": "come back",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "retract_from_point",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "refusal": "unafforded_schema",
+      "detail": "nothing in that request names a motion this system knows",
+      "details": {
+        "model_reason": "no segments read; 'come back' is a motion that is not in the inventory"
+      },
+      "seconds": 0.6127842999994755
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "refusal_instead_of_reading:unafforded_schema",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C011",
+    "kind": "canonical",
+    "family": "entry",
+    "prompt": "lift off the table",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "retract_from_surface",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "9681f31bae17bea5166dc44b7df4e7f117554b02a235a993f1dcb0d001531ccc",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "descend_to_surface",
+          "remove": "adjacent",
+          "manner": {},
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.2635319999826606
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "entry:retract_from_surface->descend_to_surface",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C012",
+    "kind": "canonical",
+    "family": "entry",
+    "prompt": "move away",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "move_away",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "38060862acc45a80b313dee3a2fb80557100157492321bd2d9f6380d8cd511ef",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "move_away",
+          "remove": "coincident",
+          "manner": {},
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.0967306999955326
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "remove:medial->coincident",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C013",
+    "kind": "canonical",
+    "family": "entry",
+    "prompt": "move toward it",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "move_toward",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "37b6ca32c988427a72f768bd7beb33c97841d1ca1a1b763303e60afb4888f2ad",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "move_toward",
+          "remove": "coincident",
+          "manner": {},
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.0591514999978244
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "remove:medial->coincident",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C014",
+    "kind": "canonical",
+    "family": "entry",
+    "prompt": "sweep across the workspace",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "traverse_line",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "5d3ff3e749e743b1c72af34004fd6804884b75017d9813645cf26995f0f740ed",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "traverse_line",
+          "remove": "coincident",
+          "manner": {},
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.023598799976753
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "remove:medial->coincident",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C015",
+    "kind": "canonical",
+    "family": "entry",
+    "prompt": "arc across the workspace",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "traverse_line_arced",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "1f63b65a6f2aa8d9bc9bf357ade793f0b2688122b7f259389cd8ed7a6750692a",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "traverse_line_arced",
+          "remove": "coincident",
+          "manner": {},
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.0568255999824032
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "remove:medial->coincident",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C016",
+    "kind": "canonical",
+    "family": "entry",
+    "prompt": "trace a circle",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "circle_axis",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "e018c6e0fadaffa9d23a070784392925ce440afe99a88ecdfde14853413e1e16",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "circle_axis",
+          "remove": "coincident",
+          "manner": {},
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 0.9331321000063326
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "remove:medial->coincident",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C017",
+    "kind": "canonical",
+    "family": "entry",
+    "prompt": "wave",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "oscillate_about_point",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "817886c42f4a166a5d90cee4eaaca1ffcbae0719b843f1f3d6afacf96ebd10f7",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "oscillate_about_point",
+          "remove": "coincident",
+          "manner": {},
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.1929698000021745
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "remove:medial->coincident",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C018",
+    "kind": "canonical",
+    "family": "entry",
+    "prompt": "go back and forth",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "oscillate_along_line",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "refusal": "invalid_contract",
+      "detail": "the model's reading of segment 0 is outside the contract: 1 validation error for MannerV1\nrepetition_count\n  Input should be greater than or equal to 1 [type=greater_than_equal, input_value=0, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.13/v/greater_than_equal",
+      "details": {
+        "reason": "reply_invalid",
+        "segment": 0
+      },
+      "seconds": 1.3723885999934282
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "refusal_instead_of_reading:invalid_contract",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C019",
+    "kind": "canonical",
+    "family": "entry",
+    "prompt": "pass through the waypoint on the way over",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "pass_through_point",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "2af0eb66daf84053257eaabfb4d4b9eb4feff95529a48a63929d63be5ba0ecb2",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "pass_through_point",
+          "remove": "coincident",
+          "manner": {},
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.2983423999976367
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "remove:medial->coincident",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C020",
+    "kind": "canonical",
+    "family": "frame",
+    "prompt": "beckon",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "draw_hither",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "dfe0f11a43aeb06d69e810ed014278e1d3599404b580268ad9aef06302a9f659",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "draw_hither",
+          "remove": "proximal",
+          "manner": {},
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.4656936000101268
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "remove:medial->proximal",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C021",
+    "kind": "canonical",
+    "family": "frame",
+    "prompt": "shoo it away",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "push_thither",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "91986fc7d5ca98870d7235a5fee15ea4a0e13fe63a36f8cee87e989dac08b6f4",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "push_thither",
+          "remove": "coincident",
+          "manner": {
+            "effort": 1,
+            "amplitude": 1
+          },
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.258953400014434
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "remove:medial->coincident",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C022",
+    "kind": "canonical",
+    "family": "entry",
+    "prompt": "close in until you touch it",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "approach_to_contact",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "906358551e547d1d67a7bfec1319cda2f61569ae727f6f9aa9b5355ccb7aeed6",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "approach_to_contact",
+          "remove": "coincident",
+          "manner": {},
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.2155190000194125
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "remove:medial->coincident",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C023",
+    "kind": "canonical",
+    "family": "entry",
+    "prompt": "pick it up",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "transport_object",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "b80b63b68bc97bd2656675c26ce018247b1d073209f47127e67d7ace942f7192",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "transport_object",
+          "remove": "coincident",
+          "manner": {},
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.5639853999891784
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "remove:medial->coincident",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C024",
+    "kind": "canonical",
+    "family": "entry",
+    "prompt": "hand it over",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "hand_across",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "d2af1ab051a08d54acc6c07ad0a363b5719b9ac45abe0860ff8814a088ed3ba4",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "hand_across",
+          "remove": "coincident",
+          "manner": {},
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.0670034000067972
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "remove:medial->coincident",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C025",
+    "kind": "canonical",
+    "family": "entry",
+    "prompt": "look at it",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "track_with_gaze",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "refusal": "unafforded_schema",
+      "detail": "nothing in that request names a motion this system knows",
+      "details": {
+        "model_reason": "no motion in the inventory matches 'look at it'"
+      },
+      "seconds": 0.5677121999906376
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "refusal_instead_of_reading:unafforded_schema",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C026",
+    "kind": "canonical",
+    "family": "entry",
+    "prompt": "turn the wrist",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "orient_effector",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "refusal": "unafforded_schema",
+      "detail": "nothing in that request names a motion this system knows",
+      "details": {
+        "model_reason": "no segments read; the request 'turn the wrist' is a stative action that corresponds to orient_effector, but no explicit segment was provided."
+      },
+      "seconds": 0.6806122999987565
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "refusal_instead_of_reading:unafforded_schema",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C027",
+    "kind": "canonical",
+    "family": "entry",
+    "prompt": "hold still",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "hold_still",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "dcfa021963deb0bcd5d34e1ee5ab76e6e1a9a7f44d255b1efd5b018b3a7e01e1",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "hold_still",
+          "remove": "coincident",
+          "manner": {},
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.007520699989982
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "remove:medial->coincident",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C028",
+    "kind": "canonical",
+    "family": "entry",
+    "prompt": "press down on it",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "press",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "4a3a07140e18c7879d0fd32827ff74597044cf8c700ed6cfa394d5ddd5be8f06",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "press",
+          "remove": "coincident",
+          "manner": {
+            "effort": 1
+          },
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.0847910000011325
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "remove:medial->coincident",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C029",
+    "kind": "canonical",
+    "family": "posture",
+    "prompt": "make a peace sign",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "configure_effector",
+        "remove": "adjacent",
+        "manner": {},
+        "repetition_count": null,
+        "posture": "opposed:2.extended.flexed.flexed",
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "61cd15334faf5f6437470f1da0352929c8da94ae1224f407cd3b035d11ecc3fd",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "configure_effector",
+          "remove": "adjacent",
+          "manner": {},
+          "repetition_count": null,
+          "posture": "opposed:2.extended.flexed.flexed",
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.1689042999933008
+    },
+    "exact": true,
+    "prohibited_rejected": true,
+    "error": null,
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C030",
+    "kind": "canonical",
+    "family": "posture",
+    "prompt": "make a fist",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "configure_effector",
+        "remove": "adjacent",
+        "manner": {},
+        "repetition_count": null,
+        "posture": "opposed:0.extended.flexed.flexed",
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "5b54d4240aecdf01cb21697d036cc00c65ebbefcf51f6f4f00c7bd932da8c3f1",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "configure_effector",
+          "remove": "adjacent",
+          "manner": {
+            "effort": 1
+          },
+          "repetition_count": null,
+          "posture": "opposed:0.flexed.flexed.flexed",
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.230111900018528
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "manner:{}->{'effort': 1}",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C031",
+    "kind": "canonical",
+    "family": "posture",
+    "prompt": "give a thumbs up",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "configure_effector",
+        "remove": "adjacent",
+        "manner": {},
+        "repetition_count": null,
+        "posture": "opposed:0.extended.flexed.extended",
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "023f7d16b1bd6c4a42daec896323626746ab2edaab2e4a6247d7ab49d26be2f1",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "configure_effector",
+          "remove": "adjacent",
+          "manner": {},
+          "repetition_count": null,
+          "posture": "opposed:0.flexed.flexed.extended",
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.3529965999769047
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "posture:opposed:0.extended.flexed.extended->opposed:0.flexed.flexed.extended",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C032",
+    "kind": "canonical",
+    "family": "posture",
+    "prompt": "open your hand",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "configure_effector",
+        "remove": "adjacent",
+        "manner": {},
+        "repetition_count": null,
+        "posture": "opposed:0.extended.extended.extended",
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "69d27ecacb28a0e8336bc95fce693c7074396a3597fa68b52897966b2c97f61f",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "configure_effector",
+          "remove": "adjacent",
+          "manner": {},
+          "repetition_count": null,
+          "posture": "opposed:0.extended.extended.extended",
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.2674445000011474
+    },
+    "exact": true,
+    "prohibited_rejected": true,
+    "error": null,
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C033",
+    "kind": "canonical",
+    "family": "posture",
+    "prompt": "point with one finger",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "configure_effector",
+        "remove": "adjacent",
+        "manner": {},
+        "repetition_count": null,
+        "posture": "opposed:1.extended.flexed.flexed",
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "d1966341e949dc775b43a88f4bf5a768ea30ddc41c6ef4ebe5dd0ccb418c3084",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "reach_to_point",
+          "remove": "coincident",
+          "manner": {},
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.20387669999036
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "entry:configure_effector->reach_to_point",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C034",
+    "kind": "canonical",
+    "family": "posture",
+    "prompt": "three fingers up",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "configure_effector",
+        "remove": "adjacent",
+        "manner": {},
+        "repetition_count": null,
+        "posture": "opposed:3.extended.flexed.flexed",
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "refusal": "unafforded_schema",
+      "detail": "nothing in that request names a motion this system knows",
+      "details": {
+        "model_reason": "The request 'three fingers up' is a posture configuration, but the inventory only includes configure_effector, which requires more detailed parameters. Therefore, no segments are read and the request "
+      },
+      "seconds": 0.8297552999865729
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "refusal_instead_of_reading:unafforded_schema",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C035",
+    "kind": "canonical",
+    "family": "speed",
+    "prompt": "reach out quickly",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "reach_to_point",
+        "remove": "medial",
+        "manner": {
+          "speed": 1
+        },
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "2c6e97fc9275ce872a450d047631329a111d945c48e73eb67f3afdc85531f6de",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "reach_to_point",
+          "remove": "proximal",
+          "manner": {
+            "speed": 1
+          },
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.050457599980291
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "remove:medial->proximal",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C036",
+    "kind": "canonical",
+    "family": "speed",
+    "prompt": "reach out slowly",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "reach_to_point",
+        "remove": "medial",
+        "manner": {
+          "speed": -1
+        },
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "bab357054146bfabb36731d5d2733d108d167ce777c900173fa9c4f935b55849",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "reach_to_point",
+          "remove": "proximal",
+          "manner": {
+            "speed": -1,
+            "smoothness": 1
+          },
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.1641339999914635
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "remove:medial->proximal",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C037",
+    "kind": "canonical",
+    "family": "speed",
+    "prompt": "reach out as fast as you can",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "reach_to_point",
+        "remove": "medial",
+        "manner": {
+          "speed": 2
+        },
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "9b4e029ccb58341f40e141ebcb18a89864ad64b151aea11ebb5f56bb372cddf8",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "reach_to_point",
+          "remove": "coincident",
+          "manner": {
+            "speed": 2
+          },
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 0.9933065999939572
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "remove:medial->coincident",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C038",
+    "kind": "canonical",
+    "family": "speed",
+    "prompt": "reach out very slowly",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "reach_to_point",
+        "remove": "medial",
+        "manner": {
+          "speed": -2
+        },
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "d709999677d3780f8ff66cd605719477b99120e6a45b90839a14466f38ba5af5",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "reach_to_point",
+          "remove": "coincident",
+          "manner": {
+            "speed": -2,
+            "effort": -1,
+            "smoothness": 1,
+            "rhythm": -2,
+            "amplitude": -1,
+            "precision": 1
+          },
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 0.9720030000025872
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "remove:medial->coincident",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C039",
+    "kind": "canonical",
+    "family": "amplitude",
+    "prompt": "give a wide wave",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "oscillate_about_point",
+        "remove": "medial",
+        "manner": {
+          "amplitude": 1
+        },
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "b0702d579b069fbfa95e48ebdde1c613990b689498822a8a6b407bfa296e089f",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "oscillate_about_point",
+          "remove": "adjacent",
+          "manner": {
+            "amplitude": 1
+          },
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.0066532000200823
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "remove:medial->adjacent",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C040",
+    "kind": "canonical",
+    "family": "amplitude",
+    "prompt": "give a small wave",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "oscillate_about_point",
+        "remove": "medial",
+        "manner": {
+          "amplitude": -1
+        },
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "ccdb7e728d284589800648849d504be167a7160be41cd22d69b1757129aa4be8",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "oscillate_about_point",
+          "remove": "proximal",
+          "manner": {
+            "amplitude": -1
+          },
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.1675088999909349
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "remove:medial->proximal",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C041",
+    "kind": "canonical",
+    "family": "amplitude",
+    "prompt": "give a huge wave",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "oscillate_about_point",
+        "remove": "medial",
+        "manner": {
+          "amplitude": 2
+        },
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "d36f5c26101f94661f0ab728b8fc8aec57fe0b865e8fc29d88e379c5bd1fec80",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "oscillate_about_point",
+          "remove": "coincident",
+          "manner": {
+            "speed": 2,
+            "effort": 1,
+            "smoothness": 1,
+            "amplitude": 2,
+            "repetition": -2,
+            "precision": 1
+          },
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.02843030000804
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "remove:medial->coincident",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C042",
+    "kind": "canonical",
+    "family": "effort",
+    "prompt": "lift it firmly",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "retract_from_surface",
+        "remove": "medial",
+        "manner": {
+          "effort": 1
+        },
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "2c478f12d38f1133765acf264271275827393d33c934f8dce3f14a079195bc83",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "retract_from_surface",
+          "remove": "coincident",
+          "manner": {
+            "speed": 1,
+            "effort": 1,
+            "smoothness": 1
+          },
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.0260814999928698
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "remove:medial->coincident",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C043",
+    "kind": "canonical",
+    "family": "effort",
+    "prompt": "lower it gently",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "descend_to_surface",
+        "remove": "medial",
+        "manner": {
+          "speed": -1,
+          "effort": -1
+        },
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "eee36367252e89d83288ecfd911e72fb562aa886af1f1bc325d11b82ac91b576",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "descend_to_surface",
+          "remove": "coincident",
+          "manner": {
+            "speed": -1,
+            "effort": -1,
+            "smoothness": 1
+          },
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.073449800023809
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "remove:medial->coincident",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C044",
+    "kind": "canonical",
+    "family": "smoothness",
+    "prompt": "sweep across smoothly",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "traverse_line",
+        "remove": "medial",
+        "manner": {
+          "smoothness": 1
+        },
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "8168636a7118596b4c58e9133210398de492dbfaa0179136481d1b6618d5edfb",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "traverse_line_arced",
+          "remove": "adjacent",
+          "manner": {
+            "speed": 1,
+            "smoothness": 1
+          },
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.023519500013208
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "entry:traverse_line->traverse_line_arced",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C045",
+    "kind": "canonical",
+    "family": "smoothness",
+    "prompt": "wave jerkily",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "oscillate_about_point",
+        "remove": "medial",
+        "manner": {
+          "smoothness": -1
+        },
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "77932213190d2b088d568ede7afef68dca2955ee220ec46f4074658f9480bb8e",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "oscillate_about_point",
+          "remove": "coincident",
+          "manner": {
+            "speed": 1,
+            "effort": 1,
+            "smoothness": -1,
+            "rhythm": -1
+          },
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.0369159000110812
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "remove:medial->coincident",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C046",
+    "kind": "canonical",
+    "family": "precision",
+    "prompt": "reach out precisely",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "reach_to_point",
+        "remove": "medial",
+        "manner": {
+          "precision": 1
+        },
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "071759757a7a315047a6c4437c819a30cb03b21b5c0c02f1222e7a08afd0d7dc",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "reach_to_point",
+          "remove": "coincident",
+          "manner": {
+            "precision": 1
+          },
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 0.9723066000151448
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "remove:medial->coincident",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C047",
+    "kind": "canonical",
+    "family": "precision",
+    "prompt": "reach out roughly",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "reach_to_point",
+        "remove": "medial",
+        "manner": {
+          "precision": -1
+        },
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "eaed52dbfbd67f8b78007326478a10e887c36edacfc551ac5fbd7c2b2fac084c",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "reach_to_point",
+          "remove": "proximal",
+          "manner": {
+            "speed": -1,
+            "effort": -1
+          },
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 0.9303025999979582
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "remove:medial->proximal",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C048",
+    "kind": "canonical",
+    "family": "repetition",
+    "prompt": "wave twice",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "oscillate_about_point",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": 2,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "616bfb92e90cca63a26c8178e75e73d5171d76ac4559fbbb46a6d0e0cd028dd5",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "oscillate_about_point",
+          "remove": "coincident",
+          "manner": {
+            "repetition": 2
+          },
+          "repetition_count": 2,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 0.915802999981679
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "remove:medial->coincident",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C049",
+    "kind": "canonical",
+    "family": "repetition",
+    "prompt": "wave three times",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "oscillate_about_point",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": 3,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "refusal": "invalid_contract",
+      "detail": "the model's reading of segment 0 is outside the contract: 1 validation error for MannerV1\nrepetition\n  Input should be less than or equal to 2 [type=less_than_equal, input_value=3, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.13/v/less_than_equal",
+      "details": {
+        "reason": "reply_invalid",
+        "segment": 0
+      },
+      "seconds": 1.1555494000203907
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "refusal_instead_of_reading:invalid_contract",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C050",
+    "kind": "canonical",
+    "family": "repetition",
+    "prompt": "circle around 4 times",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "circle_axis",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": 4,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "501c1ca5561747e1242a8b0b1bcab02a4991ba833f7eb8c5f4c4dec248ebb4ad",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "circle_axis",
+          "remove": "coincident",
+          "manner": {
+            "repetition": 2
+          },
+          "repetition_count": 4,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 0.9564659000025131
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "remove:medial->coincident",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C051",
+    "kind": "canonical",
+    "family": "repetition",
+    "prompt": "go back and forth a couple of times",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "oscillate_along_line",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": 2,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "d799b19ea52d77916f8a812f61549ddfce6b6568eb53169407e08845e1daabd7",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "oscillate_along_line",
+          "remove": "proximal",
+          "manner": {
+            "repetition": 2
+          },
+          "repetition_count": 3,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.181745799985947
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "remove:medial->proximal",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C052",
+    "kind": "canonical",
+    "family": "sequence",
+    "prompt": "reach out then come back",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "reach_to_point",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      },
+      {
+        "segment_id": "s1",
+        "entry_id": "retract_from_point",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "d1966341e949dc775b43a88f4bf5a768ea30ddc41c6ef4ebe5dd0ccb418c3084",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "reach_to_point",
+          "remove": "coincident",
+          "manner": {},
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.2543550000118557
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "segment_count:2->1",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C053",
+    "kind": "canonical",
+    "family": "sequence",
+    "prompt": "reach out as far as you can and then come back",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "reach_to_edge",
+        "remove": "distal",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      },
+      {
+        "segment_id": "s1",
+        "entry_id": "retract_from_point",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "a5197a967719c97003092f93b759159585cdaf6637522e49f478c785725197dd",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "reach_to_edge",
+          "remove": "distal",
+          "manner": {
+            "speed": 2,
+            "effort": 1,
+            "smoothness": 1,
+            "amplitude": 2,
+            "precision": 1
+          },
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.4791420999972615
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "segment_count:2->1",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C054",
+    "kind": "canonical",
+    "family": "sequence",
+    "prompt": "lower onto the table, then lift off",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "descend_to_surface",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      },
+      {
+        "segment_id": "s1",
+        "entry_id": "retract_from_surface",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "9681f31bae17bea5166dc44b7df4e7f117554b02a235a993f1dcb0d001531ccc",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "descend_to_surface",
+          "remove": "adjacent",
+          "manner": {},
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.4742075999965891
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "segment_count:2->1",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C055",
+    "kind": "canonical",
+    "family": "sequence",
+    "prompt": "wave twice then hold still",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "oscillate_about_point",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": 2,
+        "posture": null,
+        "quantities": []
+      },
+      {
+        "segment_id": "s1",
+        "entry_id": "hold_still",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "616bfb92e90cca63a26c8178e75e73d5171d76ac4559fbbb46a6d0e0cd028dd5",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "oscillate_about_point",
+          "remove": "coincident",
+          "manner": {
+            "repetition": 2
+          },
+          "repetition_count": 2,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.357757199992193
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "segment_count:2->1",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C056",
+    "kind": "canonical",
+    "family": "sequence",
+    "prompt": "pick it up then hand it over",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "transport_object",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      },
+      {
+        "segment_id": "s1",
+        "entry_id": "hand_across",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "e8a7b701f9f167e47b91e4491fcf7a80c11d9d7e6d695fff034eb2ea9622a623",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "transport_object",
+          "remove": "coincident",
+          "manner": {
+            "speed": 1,
+            "effort": 1,
+            "smoothness": 1,
+            "precision": 1
+          },
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.1341003999987151
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "segment_count:2->1",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C057",
+    "kind": "canonical",
+    "family": "sequence",
+    "prompt": "look at it then move toward it",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "track_with_gaze",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      },
+      {
+        "segment_id": "s1",
+        "entry_id": "move_toward",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "3dc46bd86f942a05043b1edd7fd6ec05b74ef44ff14b88c9d35618c69ad84c61",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "track_with_gaze",
+          "remove": "coincident",
+          "manner": {},
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.2880433999816887
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "segment_count:2->1",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C058",
+    "kind": "canonical",
+    "family": "sequence",
+    "prompt": "reach far out, then come back halfway",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "reach_to_point",
+        "remove": "distal",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      },
+      {
+        "segment_id": "s1",
+        "entry_id": "retract_from_point",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "42bdc39f205059c4d463949f1587ca264c0f07da176efe23ca1aa814296fde75",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "reach_to_edge",
+          "remove": "distal",
+          "manner": {},
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.1392477999906987
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "segment_count:2->1",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C059",
+    "kind": "canonical",
+    "family": "sequence",
+    "prompt": "make a fist then open your hand",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "configure_effector",
+        "remove": "adjacent",
+        "manner": {},
+        "repetition_count": null,
+        "posture": "opposed:0.extended.flexed.flexed",
+        "quantities": []
+      },
+      {
+        "segment_id": "s1",
+        "entry_id": "configure_effector",
+        "remove": "adjacent",
+        "manner": {},
+        "repetition_count": null,
+        "posture": "opposed:0.extended.extended.extended",
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "023f7d16b1bd6c4a42daec896323626746ab2edaab2e4a6247d7ab49d26be2f1",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "configure_effector",
+          "remove": "adjacent",
+          "manner": {},
+          "repetition_count": null,
+          "posture": "opposed:0.flexed.flexed.extended",
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.4082700999861117
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "segment_count:2->1",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  },
+  {
+    "case_id": "C060",
+    "kind": "canonical",
+    "family": "sequence",
+    "prompt": "turn the wrist then hold still",
+    "expected": [
+      {
+        "segment_id": "s0",
+        "entry_id": "orient_effector",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      },
+      {
+        "segment_id": "s1",
+        "entry_id": "hold_still",
+        "remove": "medial",
+        "manner": {},
+        "repetition_count": null,
+        "posture": null,
+        "quantities": []
+      }
+    ],
+    "actual": {
+      "hash": "01eb4465c4474c08da755142aec60e1fe9aee9c2d75f75e22b5642bc12c5d7a3",
+      "program": [
+        {
+          "segment_id": "s0",
+          "entry_id": "orient_effector",
+          "remove": "coincident",
+          "manner": {},
+          "repetition_count": null,
+          "posture": null,
+          "quantities": []
+        }
+      ],
+      "quantities": [],
+      "model": "gpt-4.1-nano-2025-04-14",
+      "cached": false,
+      "planner_id": "model-schema-planner-v1",
+      "seconds": 1.0400073000055272
+    },
+    "exact": false,
+    "prohibited_rejected": true,
+    "error": "segment_count:2->1",
+    "planner": "model:gpt-4.1-nano",
+    "has_prohibited": false
+  }
+]

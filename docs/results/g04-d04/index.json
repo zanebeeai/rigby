@@ -1,0 +1,612 @@
+{
+  "bodies": [
+    "zoo_compact_arm",
+    "zoo_jaw_arm",
+    "zoo_long_arm"
+  ],
+  "calls": {
+    "cached_hits": 36,
+    "calls_logged": 36,
+    "completion_tokens_paid": 0,
+    "dollars": 0,
+    "mock_calls": 0,
+    "paid_calls": 0,
+    "prompt_tokens_paid": 0
+  },
+  "clips": [
+    {
+      "body": "zoo_compact_arm",
+      "frames": "zoo_compact_arm/little/media/frames.json",
+      "measurements": {
+        "action_end_s": 8.062595,
+        "body": "zoo_compact_arm",
+        "farthest_travel_m": 0.350143,
+        "final_position_m": [
+          0.0,
+          -0.0,
+          0.385
+        ],
+        "final_travel_fraction_of_reach": 0.909461,
+        "final_travel_m": 0.350143,
+        "outcome": "success",
+        "prompt": "reach out a little",
+        "reach_radius_m": 0.385,
+        "simulation_duration_s": 14.668000000001568,
+        "start_position_m": [
+          0.0,
+          0.0,
+          0.385
+        ],
+        "task_site": "palm_grasp_center",
+        "terminus_time_s": 8.061999999999362,
+        "travel_at_end_of_recording_m": 0.0
+      },
+      "media": "zoo_compact_arm/little/media",
+      "media_sha256": "1b7d4f071aa897d5bcba6071c6fc14abbf5d489a9c0310cc1c08f0ede0019a3c",
+      "outcome": "success",
+      "physical_bundle": "any-robot/results/g04-d04/zoo_compact_arm/little/physical",
+      "physical_sha256": "384c7f2bdc823f926163e9e0f68c2d3af7e60bd1b2fff11f44f9bbadc6a18504",
+      "preview": "zoo_compact_arm/little/media/preview.gif",
+      "prompt": "reach out a little",
+      "reading": {
+        "hash": "99a9949611be4138c23c28513073b0fe6bd6a3fbc6b7baaee8dbe1b40ed75246",
+        "planner": {
+          "cached": true,
+          "model": "gpt-4.1-2025-04-14",
+          "planner_id": "model-schema-planner-v1"
+        },
+        "prompt": "reach out a little",
+        "quantities": [],
+        "refusal": null,
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "manner": {},
+            "remove": "proximal",
+            "segment_id": "s0"
+          }
+        ]
+      },
+      "slug": "little",
+      "video": "zoo_compact_arm/little/media/episode.mp4"
+    },
+    {
+      "body": "zoo_compact_arm",
+      "frames": "zoo_compact_arm/edge/media/frames.json",
+      "measurements": {
+        "action_end_s": 8.310081,
+        "body": "zoo_compact_arm",
+        "farthest_travel_m": 0.407908,
+        "final_position_m": [
+          -0.0,
+          0.0,
+          0.385
+        ],
+        "final_travel_fraction_of_reach": 1.059502,
+        "final_travel_m": 0.407908,
+        "outcome": "success",
+        "prompt": "reach out as far as you can",
+        "reach_radius_m": 0.385,
+        "simulation_duration_s": 14.996000000001677,
+        "start_position_m": [
+          0.0,
+          0.0,
+          0.385
+        ],
+        "task_site": "palm_grasp_center",
+        "terminus_time_s": 8.309999999999444,
+        "travel_at_end_of_recording_m": 0.0
+      },
+      "media": "zoo_compact_arm/edge/media",
+      "media_sha256": "7d50dfa6a83b49e128a414d401a60f14abdd85d3d5fbc2ad036df4cf90dbd352",
+      "outcome": "success",
+      "physical_bundle": "any-robot/results/g04-d04/zoo_compact_arm/edge/physical",
+      "physical_sha256": "dcca0d38b96e2c7eed8a2cc4bc11ff7b60c95a01d4c5fd746cd6e3f66507a3fd",
+      "preview": "zoo_compact_arm/edge/media/preview.gif",
+      "prompt": "reach out as far as you can",
+      "reading": {
+        "hash": "42bdc39f205059c4d463949f1587ca264c0f07da176efe23ca1aa814296fde75",
+        "planner": {
+          "cached": true,
+          "model": "gpt-4.1-2025-04-14",
+          "planner_id": "model-schema-planner-v1"
+        },
+        "prompt": "reach out as far as you can",
+        "quantities": [],
+        "refusal": null,
+        "segments": [
+          {
+            "entry_id": "reach_to_edge",
+            "manner": {},
+            "remove": "distal",
+            "segment_id": "s0"
+          }
+        ]
+      },
+      "slug": "edge",
+      "video": "zoo_compact_arm/edge/media/episode.mp4"
+    },
+    {
+      "body": "zoo_compact_arm",
+      "frames": "zoo_compact_arm/five_cm/media/frames.json",
+      "measurements": {
+        "action_end_s": 1.859283,
+        "body": "zoo_compact_arm",
+        "farthest_travel_m": 0.049597,
+        "final_position_m": [
+          0.0,
+          -0.0,
+          0.385
+        ],
+        "final_travel_fraction_of_reach": 0.128822,
+        "final_travel_m": 0.049597,
+        "outcome": "success",
+        "prompt": "reach out 5 cm",
+        "reach_radius_m": 0.385,
+        "simulation_duration_s": 3.6699999999998174,
+        "start_position_m": [
+          0.0,
+          0.0,
+          0.385
+        ],
+        "task_site": "palm_grasp_center",
+        "terminus_time_s": 1.8580000000000014,
+        "travel_at_end_of_recording_m": 0.0
+      },
+      "media": "zoo_compact_arm/five_cm/media",
+      "media_sha256": "c0f2a81e91975fb31c7889b1a0d0c41d8d060b37e98216f0f36533dc9481031a",
+      "outcome": "success",
+      "physical_bundle": "any-robot/results/g04-d04/zoo_compact_arm/five_cm/physical",
+      "physical_sha256": "babd2e47a626cc7709b9e27608327ca2ba392b91e1b8a258dba4cc3c0f486162",
+      "preview": "zoo_compact_arm/five_cm/media/preview.gif",
+      "prompt": "reach out 5 cm",
+      "reading": {
+        "hash": "428eaf09aec2071b389469331a22c95e70cb1a182b538fc537046d353f8590e3",
+        "planner": {
+          "cached": true,
+          "model": "gpt-4.1-2025-04-14",
+          "planner_id": "model-schema-planner-v1"
+        },
+        "prompt": "reach out 5 cm",
+        "quantities": [
+          {
+            "kind": "distance",
+            "provenance": "user_stated",
+            "segment_id": "s0",
+            "text": "5 cm",
+            "unit": "m",
+            "value": 0.05
+          }
+        ],
+        "refusal": null,
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "manner": {},
+            "remove": "medial",
+            "segment_id": "s0"
+          }
+        ]
+      },
+      "slug": "five_cm",
+      "video": "zoo_compact_arm/five_cm/media/episode.mp4"
+    },
+    {
+      "body": "zoo_jaw_arm",
+      "frames": "zoo_jaw_arm/little/media/frames.json",
+      "measurements": {
+        "action_end_s": 11.909023,
+        "body": "zoo_jaw_arm",
+        "farthest_travel_m": 1.216819,
+        "final_position_m": [
+          0.0,
+          0.0,
+          1.32
+        ],
+        "final_travel_fraction_of_reach": 0.921833,
+        "final_travel_m": 1.216819,
+        "outcome": "success",
+        "prompt": "reach out a little",
+        "reach_radius_m": 1.32,
+        "simulation_duration_s": 22.091999999998635,
+        "start_position_m": [
+          0.0,
+          0.0,
+          1.32
+        ],
+        "task_site": "palm_grasp_center",
+        "terminus_time_s": 11.908000000000646,
+        "travel_at_end_of_recording_m": 0.0
+      },
+      "media": "zoo_jaw_arm/little/media",
+      "media_sha256": "46e582016e89cf2bb0474dd5c8addad5dffd5b3c7e296d6c617fd96940c5f3a4",
+      "outcome": "success",
+      "physical_bundle": "any-robot/results/g04-d04/zoo_jaw_arm/little/physical",
+      "physical_sha256": "ddf20e184b677f0991dfb574953391b7d94be72688ecedcd2ba5a0d369e7b472",
+      "preview": "zoo_jaw_arm/little/media/preview.gif",
+      "prompt": "reach out a little",
+      "reading": {
+        "hash": "99a9949611be4138c23c28513073b0fe6bd6a3fbc6b7baaee8dbe1b40ed75246",
+        "planner": {
+          "cached": true,
+          "model": "gpt-4.1-2025-04-14",
+          "planner_id": "model-schema-planner-v1"
+        },
+        "prompt": "reach out a little",
+        "quantities": [],
+        "refusal": null,
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "manner": {},
+            "remove": "proximal",
+            "segment_id": "s0"
+          }
+        ]
+      },
+      "slug": "little",
+      "video": "zoo_jaw_arm/little/media/episode.mp4"
+    },
+    {
+      "body": "zoo_jaw_arm",
+      "frames": "zoo_jaw_arm/edge/media/frames.json",
+      "measurements": {
+        "action_end_s": 12.655043,
+        "body": "zoo_jaw_arm",
+        "farthest_travel_m": 1.438393,
+        "final_position_m": [
+          -0.0,
+          0.0,
+          1.32
+        ],
+        "final_travel_fraction_of_reach": 1.089691,
+        "final_travel_m": 1.438393,
+        "outcome": "success",
+        "prompt": "reach out as far as you can",
+        "reach_radius_m": 1.32,
+        "simulation_duration_s": 22.901999999998186,
+        "start_position_m": [
+          0.0,
+          0.0,
+          1.32
+        ],
+        "task_site": "palm_grasp_center",
+        "terminus_time_s": 12.654000000000895,
+        "travel_at_end_of_recording_m": 0.0
+      },
+      "media": "zoo_jaw_arm/edge/media",
+      "media_sha256": "abb9cd3cf6743e08aa23da6518295bffc1e43b9c7650430368a973ecbc0b9574",
+      "outcome": "success",
+      "physical_bundle": "any-robot/results/g04-d04/zoo_jaw_arm/edge/physical",
+      "physical_sha256": "df2f1111ec84265ba13504dcc25a8607ba286cdfe0ac95efbe2ec8cc175f5f81",
+      "preview": "zoo_jaw_arm/edge/media/preview.gif",
+      "prompt": "reach out as far as you can",
+      "reading": {
+        "hash": "42bdc39f205059c4d463949f1587ca264c0f07da176efe23ca1aa814296fde75",
+        "planner": {
+          "cached": true,
+          "model": "gpt-4.1-2025-04-14",
+          "planner_id": "model-schema-planner-v1"
+        },
+        "prompt": "reach out as far as you can",
+        "quantities": [],
+        "refusal": null,
+        "segments": [
+          {
+            "entry_id": "reach_to_edge",
+            "manner": {},
+            "remove": "distal",
+            "segment_id": "s0"
+          }
+        ]
+      },
+      "slug": "edge",
+      "video": "zoo_jaw_arm/edge/media/episode.mp4"
+    },
+    {
+      "body": "zoo_jaw_arm",
+      "frames": "zoo_jaw_arm/five_cm/media/frames.json",
+      "measurements": {
+        "action_end_s": 1.409464,
+        "body": "zoo_jaw_arm",
+        "farthest_travel_m": 0.050172,
+        "final_position_m": [
+          0.0,
+          0.0,
+          1.32
+        ],
+        "final_travel_fraction_of_reach": 0.038009,
+        "final_travel_m": 0.050172,
+        "outcome": "success",
+        "prompt": "reach out 5 cm",
+        "reach_radius_m": 1.32,
+        "simulation_duration_s": 2.847999999999908,
+        "start_position_m": [
+          0.0,
+          0.0,
+          1.32
+        ],
+        "task_site": "palm_grasp_center",
+        "terminus_time_s": 1.408000000000001,
+        "travel_at_end_of_recording_m": 0.0
+      },
+      "media": "zoo_jaw_arm/five_cm/media",
+      "media_sha256": "4611d92e2eee24dfdb03b49d7ce49a50337226fbbaeeeea7c88b1dfada7cdfb5",
+      "outcome": "success",
+      "physical_bundle": "any-robot/results/g04-d04/zoo_jaw_arm/five_cm/physical",
+      "physical_sha256": "4aea09d0c40137ff04d50f59e6ff6d56a4d561235813fb2c4cd6ebd449236632",
+      "preview": "zoo_jaw_arm/five_cm/media/preview.gif",
+      "prompt": "reach out 5 cm",
+      "reading": {
+        "hash": "428eaf09aec2071b389469331a22c95e70cb1a182b538fc537046d353f8590e3",
+        "planner": {
+          "cached": true,
+          "model": "gpt-4.1-2025-04-14",
+          "planner_id": "model-schema-planner-v1"
+        },
+        "prompt": "reach out 5 cm",
+        "quantities": [
+          {
+            "kind": "distance",
+            "provenance": "user_stated",
+            "segment_id": "s0",
+            "text": "5 cm",
+            "unit": "m",
+            "value": 0.05
+          }
+        ],
+        "refusal": null,
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "manner": {},
+            "remove": "medial",
+            "segment_id": "s0"
+          }
+        ]
+      },
+      "slug": "five_cm",
+      "video": "zoo_jaw_arm/five_cm/media/episode.mp4"
+    },
+    {
+      "body": "zoo_long_arm",
+      "frames": "zoo_long_arm/little/media/frames.json",
+      "measurements": {
+        "action_end_s": 17.090868,
+        "body": "zoo_long_arm",
+        "farthest_travel_m": 1.890821,
+        "final_position_m": [
+          0.0,
+          0.0,
+          2.05
+        ],
+        "final_travel_fraction_of_reach": 0.922352,
+        "final_travel_m": 1.890821,
+        "outcome": "success",
+        "prompt": "reach out a little",
+        "reach_radius_m": 2.05,
+        "simulation_duration_s": 32.0439999999932,
+        "start_position_m": [
+          0.0,
+          0.0,
+          2.05
+        ],
+        "task_site": "palm_grasp_center",
+        "terminus_time_s": 17.090000000001407,
+        "travel_at_end_of_recording_m": 0.0
+      },
+      "media": "zoo_long_arm/little/media",
+      "media_sha256": "8d067e05d38129b4e5ff81461bc171a5300583c93bb8fa6bcc891c3b806154fc",
+      "outcome": "success",
+      "physical_bundle": "any-robot/results/g04-d04/zoo_long_arm/little/physical",
+      "physical_sha256": "13f236c93b04fd9791b794a1f01d56c385c0abc4097d5acfbcab56a7d3a2d526",
+      "preview": "zoo_long_arm/little/media/preview.gif",
+      "prompt": "reach out a little",
+      "reading": {
+        "hash": "99a9949611be4138c23c28513073b0fe6bd6a3fbc6b7baaee8dbe1b40ed75246",
+        "planner": {
+          "cached": true,
+          "model": "gpt-4.1-2025-04-14",
+          "planner_id": "model-schema-planner-v1"
+        },
+        "prompt": "reach out a little",
+        "quantities": [],
+        "refusal": null,
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "manner": {},
+            "remove": "proximal",
+            "segment_id": "s0"
+          }
+        ]
+      },
+      "slug": "little",
+      "video": "zoo_long_arm/little/media/episode.mp4"
+    },
+    {
+      "body": "zoo_long_arm",
+      "frames": "zoo_long_arm/edge/media/frames.json",
+      "measurements": {
+        "action_end_s": 17.413549,
+        "body": "zoo_long_arm",
+        "farthest_travel_m": 2.229947,
+        "final_position_m": [
+          -0.0,
+          -0.0,
+          2.05
+        ],
+        "final_travel_fraction_of_reach": 1.087779,
+        "final_travel_m": 2.229947,
+        "outcome": "success",
+        "prompt": "reach out as far as you can",
+        "reach_radius_m": 2.05,
+        "simulation_duration_s": 31.46199999999344,
+        "start_position_m": [
+          0.0,
+          0.0,
+          2.05
+        ],
+        "task_site": "palm_grasp_center",
+        "terminus_time_s": 17.41200000000123,
+        "travel_at_end_of_recording_m": 0.0
+      },
+      "media": "zoo_long_arm/edge/media",
+      "media_sha256": "ccae51ee5e8e058b7dd4d0dd13a558ad2783eb938ce80f136699a03f60095cfb",
+      "outcome": "success",
+      "physical_bundle": "any-robot/results/g04-d04/zoo_long_arm/edge/physical",
+      "physical_sha256": "293a5073454d137424f32eeb6802e0755c58236b2ca1f58d4cb07c7b6beb95cb",
+      "preview": "zoo_long_arm/edge/media/preview.gif",
+      "prompt": "reach out as far as you can",
+      "reading": {
+        "hash": "42bdc39f205059c4d463949f1587ca264c0f07da176efe23ca1aa814296fde75",
+        "planner": {
+          "cached": true,
+          "model": "gpt-4.1-2025-04-14",
+          "planner_id": "model-schema-planner-v1"
+        },
+        "prompt": "reach out as far as you can",
+        "quantities": [],
+        "refusal": null,
+        "segments": [
+          {
+            "entry_id": "reach_to_edge",
+            "manner": {},
+            "remove": "distal",
+            "segment_id": "s0"
+          }
+        ]
+      },
+      "slug": "edge",
+      "video": "zoo_long_arm/edge/media/episode.mp4"
+    },
+    {
+      "body": "zoo_long_arm",
+      "frames": "zoo_long_arm/five_cm/media/frames.json",
+      "measurements": {
+        "action_end_s": 1.795264,
+        "body": "zoo_long_arm",
+        "farthest_travel_m": 0.050277,
+        "final_position_m": [
+          0.0,
+          0.0,
+          2.05
+        ],
+        "final_travel_fraction_of_reach": 0.024525,
+        "final_travel_m": 0.050277,
+        "outcome": "success",
+        "prompt": "reach out 5 cm",
+        "reach_radius_m": 2.05,
+        "simulation_duration_s": 3.637999999999821,
+        "start_position_m": [
+          0.0,
+          0.0,
+          2.05
+        ],
+        "task_site": "palm_grasp_center",
+        "terminus_time_s": 1.7940000000000014,
+        "travel_at_end_of_recording_m": 0.0
+      },
+      "media": "zoo_long_arm/five_cm/media",
+      "media_sha256": "d59351112ac07cd63116c3234441d17f3f16d1bd9d689c66fc34b8dc569a8698",
+      "outcome": "success",
+      "physical_bundle": "any-robot/results/g04-d04/zoo_long_arm/five_cm/physical",
+      "physical_sha256": "3f326ba3aa5e3e97c34d6c24ef861193582ce55f26c6b175f29c8e4884080f84",
+      "preview": "zoo_long_arm/five_cm/media/preview.gif",
+      "prompt": "reach out 5 cm",
+      "reading": {
+        "hash": "428eaf09aec2071b389469331a22c95e70cb1a182b538fc537046d353f8590e3",
+        "planner": {
+          "cached": true,
+          "model": "gpt-4.1-2025-04-14",
+          "planner_id": "model-schema-planner-v1"
+        },
+        "prompt": "reach out 5 cm",
+        "quantities": [
+          {
+            "kind": "distance",
+            "provenance": "user_stated",
+            "segment_id": "s0",
+            "text": "5 cm",
+            "unit": "m",
+            "value": 0.05
+          }
+        ],
+        "refusal": null,
+        "segments": [
+          {
+            "entry_id": "reach_to_point",
+            "manner": {},
+            "remove": "medial",
+            "segment_id": "s0"
+          }
+        ]
+      },
+      "slug": "five_cm",
+      "video": "zoo_long_arm/five_cm/media/episode.mp4"
+    }
+  ],
+  "commit": "3038d06a565136b84976a7ab5891c615dbb5f665",
+  "comparison": {
+    "edge": {
+      "final_travel_m": {
+        "zoo_compact_arm": 0.407908,
+        "zoo_jaw_arm": 1.438393,
+        "zoo_long_arm": 2.229947
+      },
+      "one_reading_on_every_body": true,
+      "prompt": "reach out as far as you can",
+      "reading_hash": [
+        "42bdc39f205059c4d463949f1587ca264c0f07da176efe23ca1aa814296fde75"
+      ]
+    },
+    "five_cm": {
+      "final_travel_m": {
+        "zoo_compact_arm": 0.049597,
+        "zoo_jaw_arm": 0.050172,
+        "zoo_long_arm": 0.050277
+      },
+      "one_reading_on_every_body": true,
+      "prompt": "reach out 5 cm",
+      "reading_hash": [
+        "428eaf09aec2071b389469331a22c95e70cb1a182b538fc537046d353f8590e3"
+      ]
+    },
+    "little": {
+      "final_travel_m": {
+        "zoo_compact_arm": 0.350143,
+        "zoo_jaw_arm": 1.216819,
+        "zoo_long_arm": 1.890821
+      },
+      "one_reading_on_every_body": true,
+      "prompt": "reach out a little",
+      "reading_hash": [
+        "99a9949611be4138c23c28513073b0fe6bd6a3fbc6b7baaee8dbe1b40ed75246"
+      ]
+    }
+  },
+  "created_at_utc": "2026-09-13T18:03:59.265989+00:00",
+  "demo": "D04",
+  "fixture_registration": "c517454cd8f8c5cd96cdc70ee7ffc2b90c9b64dd5fae9ac72528f046edd5a32b",
+  "goal": "G04",
+  "planner": "model:gpt-4.1",
+  "prompts": [
+    "reach out a little",
+    "reach out as far as you can",
+    "reach out 5 cm"
+  ],
+  "tile": {
+    "duration_s": 32.166667,
+    "frames": "nine-way-frames.json",
+    "height": 648,
+    "layout": "rows: compact arm, jaw arm, long arm; columns: a little, as far as you can, 5 cm; each clip at half size; a shorter clip holds its final state",
+    "preview": {
+      "approximate_speed": 5.36,
+      "frames": 60,
+      "gif": "nine-way-preview.gif",
+      "summary_of": "nine-way-synchronized.mp4"
+    },
+    "video": "nine-way-synchronized.mp4",
+    "width": 1440
+  }
+}

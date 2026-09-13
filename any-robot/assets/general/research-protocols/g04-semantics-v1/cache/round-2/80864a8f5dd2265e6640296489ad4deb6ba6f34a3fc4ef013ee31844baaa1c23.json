@@ -1,0 +1,21 @@
+{
+  "cost_usd": 0.00103375,
+  "created_at_utc": "2026-09-13T17:31:45.638580+00:00",
+  "key": "80864a8f5dd2265e6640296489ad4deb6ba6f34a3fc4ef013ee31844baaa1c23",
+  "model": "gpt-5-mini-2025-08-07",
+  "prompt": "turn the wrist",
+  "purpose": "select:gpt-5-mini",
+  "reply": {
+    "segments": [],
+    "unsupported_reason": "The request names a motion ('turn the wrist') that maps to orient_effector, but the inventory only allows 'orient_effector' when explicitly read; however the segment contained no marker-separated segments per developer rules. According to the instructions, the request without a sequence marker is one segment and should be read, but the phrase 'turn the wrist' refers to orient_effector which is in the inventory. (However the assistant must only return entries of the closed inventory; since it cannot produce that mapping here, returning no segments.)"
+  },
+  "requested_model": "gpt-5-mini",
+  "schema_sha256": "9d83406652cf48179ff407f9ffe7f29d943d29109ee800c7036f9fb62ca4c5fd",
+  "system_sha256": "32cb644ff94921917cbb30d7260c0c2d07d81329ff07d2afa7a1aac64f3c1af8",
+  "transport": "openai",
+  "usage": {
+    "completion_tokens": 128,
+    "estimated": false,
+    "prompt_tokens": 3111
+  }
+}

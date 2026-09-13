@@ -1,0 +1,39 @@
+{
+  "cost_usd": 0.0001658,
+  "created_at_utc": "2026-09-13T17:16:27.067528+00:00",
+  "key": "b5e4310bb9bc4ec3ec5b0e793d26a2bfd0be890791a77df67caa574b58d0df02",
+  "model": "gpt-5-nano-2025-08-07",
+  "prompt": "pick it up",
+  "purpose": "select:gpt-5-nano",
+  "reply": {
+    "segments": [
+      {
+        "clause": "Request: pick it up",
+        "entry_id": "transport_object",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": null,
+        "quantities": [],
+        "remove": "coincident"
+      }
+    ],
+    "unsupported_reason": null
+  },
+  "requested_model": "gpt-5-nano",
+  "schema_sha256": "5901b440dee4f3fc08a28479a2692d25f65af7930a1198721ec0af934a451473",
+  "system_sha256": "3d079750c0b00547748e68e38d2ddff75914b6583ee60fd9d49c2f82cb880153",
+  "transport": "openai",
+  "usage": {
+    "completion_tokens": 97,
+    "estimated": false,
+    "prompt_tokens": 2540
+  }
+}

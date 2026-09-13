@@ -1,0 +1,45 @@
+{
+  "cost_usd": 0.009559999999999999,
+  "created_at_utc": "2026-09-13T17:38:13.098387+00:00",
+  "key": "7319c6b5a7b4141df079201ce1871e959f84e47249934bddd5a34d19521e587c",
+  "model": "gpt-5-2025-08-07",
+  "prompt": "give a thumbs up",
+  "purpose": "select:gpt-5@low",
+  "reply": {
+    "segments": [
+      {
+        "clause": "give a thumbs up",
+        "entry_id": "configure_effector",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": {
+          "group": "opposed",
+          "opposing": "extended",
+          "remainder": "flexed",
+          "selected": "extended",
+          "selected_count": 0
+        },
+        "quantities": [],
+        "remove": "adjacent"
+      }
+    ],
+    "unsupported_reason": null
+  },
+  "requested_model": "gpt-5@low",
+  "schema_sha256": "9d83406652cf48179ff407f9ffe7f29d943d29109ee800c7036f9fb62ca4c5fd",
+  "system_sha256": "32cb644ff94921917cbb30d7260c0c2d07d81329ff07d2afa7a1aac64f3c1af8",
+  "transport": "openai",
+  "usage": {
+    "completion_tokens": 567,
+    "estimated": false,
+    "prompt_tokens": 3112
+  }
+}

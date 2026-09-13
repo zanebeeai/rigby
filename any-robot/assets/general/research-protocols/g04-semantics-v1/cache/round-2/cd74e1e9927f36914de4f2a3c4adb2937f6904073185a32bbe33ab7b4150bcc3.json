@@ -1,0 +1,45 @@
+{
+  "cost_usd": 0.00020395000000000002,
+  "created_at_utc": "2026-09-13T17:28:07.422898+00:00",
+  "key": "cd74e1e9927f36914de4f2a3c4adb2937f6904073185a32bbe33ab7b4150bcc3",
+  "model": "gpt-5-nano-2025-08-07",
+  "prompt": "lift it firmly",
+  "purpose": "select:gpt-5-nano",
+  "reply": {
+    "segments": [
+      {
+        "clause": "Request: lift it firmly",
+        "entry_id": "configure_effector",
+        "manner": {
+          "amplitude": 0,
+          "effort": 1,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 2
+        },
+        "posture": {
+          "group": "opposed",
+          "opposing": "flexed",
+          "remainder": "flexed",
+          "selected": "extended",
+          "selected_count": 0
+        },
+        "quantities": [],
+        "remove": "medial"
+      }
+    ],
+    "unsupported_reason": null
+  },
+  "requested_model": "gpt-5-nano",
+  "schema_sha256": "9d83406652cf48179ff407f9ffe7f29d943d29109ee800c7036f9fb62ca4c5fd",
+  "system_sha256": "32cb644ff94921917cbb30d7260c0c2d07d81329ff07d2afa7a1aac64f3c1af8",
+  "transport": "openai",
+  "usage": {
+    "completion_tokens": 121,
+    "estimated": false,
+    "prompt_tokens": 3111
+  }
+}

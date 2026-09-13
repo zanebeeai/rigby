@@ -1,0 +1,482 @@
+{
+  "goal": "G04",
+  "generated_at_utc": "2026-09-13T18:04:09.491196+00:00",
+  "commit": "3038d06a565136b84976a7ab5891c615dbb5f665",
+  "campaign_commit": "3038d06a565136b84976a7ab5891c615dbb5f665",
+  "fixture_registration": "c517454cd8f8c5cd96cdc70ee7ffc2b90c9b64dd5fae9ac72528f046edd5a32b",
+  "fixture": {
+    "canonical": 60,
+    "language": 120,
+    "families": {
+      "canonical": {
+        "entry": 23,
+        "extent": 3,
+        "frame": 2,
+        "posture": 6,
+        "speed": 4,
+        "amplitude": 3,
+        "effort": 2,
+        "smoothness": 2,
+        "precision": 2,
+        "repetition": 4,
+        "sequence": 9
+      },
+      "language": {
+        "paraphrase": 30,
+        "minimal_contrast": 20,
+        "negation": 12,
+        "ambiguous_deixis": 10,
+        "explicit_quantity": 20,
+        "manner": 12,
+        "sequence": 8,
+        "unsupported": 8
+      }
+    },
+    "label_provenance": "internal",
+    "independent_review": "pending U3_independent_review"
+  },
+  "model": "gpt-4.1",
+  "model_planner": {
+    "canonical_exact": 60,
+    "canonical_cases": 60,
+    "language_exact": 114,
+    "language_cases": 120,
+    "language_exact_fraction": 0.95,
+    "prohibited_cases": 27,
+    "prohibited_rejected": 27,
+    "by_family": {
+      "ambiguous_deixis": {
+        "exact": 8,
+        "cases": 10
+      },
+      "amplitude": {
+        "exact": 3,
+        "cases": 3
+      },
+      "effort": {
+        "exact": 2,
+        "cases": 2
+      },
+      "entry": {
+        "exact": 23,
+        "cases": 23
+      },
+      "explicit_quantity": {
+        "exact": 19,
+        "cases": 20
+      },
+      "extent": {
+        "exact": 3,
+        "cases": 3
+      },
+      "frame": {
+        "exact": 2,
+        "cases": 2
+      },
+      "manner": {
+        "exact": 11,
+        "cases": 12
+      },
+      "minimal_contrast": {
+        "exact": 20,
+        "cases": 20
+      },
+      "negation": {
+        "exact": 11,
+        "cases": 12
+      },
+      "paraphrase": {
+        "exact": 29,
+        "cases": 30
+      },
+      "posture": {
+        "exact": 6,
+        "cases": 6
+      },
+      "precision": {
+        "exact": 2,
+        "cases": 2
+      },
+      "repetition": {
+        "exact": 4,
+        "cases": 4
+      },
+      "sequence": {
+        "exact": 17,
+        "cases": 17
+      },
+      "smoothness": {
+        "exact": 2,
+        "cases": 2
+      },
+      "speed": {
+        "exact": 4,
+        "cases": 4
+      },
+      "unsupported": {
+        "exact": 8,
+        "cases": 8
+      }
+    }
+  },
+  "offline": {
+    "canonical_exact": 53,
+    "language_exact": 90,
+    "prohibited_cases": 27,
+    "prohibited_rejected": 17
+  },
+  "agreement": {
+    "model_all_agree": 60,
+    "offline_all_agree": 53,
+    "applicable_body_cases": 302
+  },
+  "grounding": {
+    "offline": {
+      "cases": 20,
+      "accepted": 17
+    },
+    "model": {
+      "cases": 20,
+      "accepted": 17
+    }
+  },
+  "projection": {
+    "protocol_worst_case_usd": 7.2042,
+    "with_margin_usd": 10.8062,
+    "fits_under_soft_cap": true
+  },
+  "selection_rounds": {
+    "round-1": {
+      "registration_sha256": "8f2291508c7686298a6d290e3b623e342c3c13d451a85444ab3ba2ca09a48aa2",
+      "candidates": [
+        {
+          "model": "gpt-5-nano",
+          "canonical_exact": 0,
+          "of": 60,
+          "dollars": 0.010296,
+          "paid_calls": 60
+        },
+        {
+          "model": "gpt-4.1-nano",
+          "canonical_exact": 2,
+          "of": 60,
+          "dollars": 0.017372,
+          "paid_calls": 60
+        },
+        {
+          "model": "gpt-4o-mini",
+          "canonical_exact": 1,
+          "of": 60,
+          "dollars": 0.026997,
+          "paid_calls": 60
+        },
+        {
+          "model": "gpt-5-mini",
+          "canonical_exact": 32,
+          "of": 60,
+          "dollars": 0.051424,
+          "paid_calls": 60
+        }
+      ],
+      "selected": null,
+      "paid_calls": 240,
+      "prompt_tokens": 610276,
+      "completion_tokens": 25427,
+      "dollars": 0.106088,
+      "by_model": {
+        "gpt-4.1-nano-2025-04-14": {
+          "paid_calls": 60,
+          "prompt_tokens": 152659,
+          "completion_tokens": 5264,
+          "dollars": 0.017372
+        },
+        "gpt-4o-mini-2024-07-18": {
+          "paid_calls": 60,
+          "prompt_tokens": 152659,
+          "completion_tokens": 6830,
+          "dollars": 0.026997
+        },
+        "gpt-5-mini-2025-08-07": {
+          "paid_calls": 60,
+          "prompt_tokens": 152479,
+          "completion_tokens": 6652,
+          "dollars": 0.051424
+        },
+        "gpt-5-nano-2025-08-07": {
+          "paid_calls": 60,
+          "prompt_tokens": 152479,
+          "completion_tokens": 6681,
+          "dollars": 0.010296
+        }
+      }
+    },
+    "round-2": {
+      "registration_sha256": "82fc3a39ccf2f43f7b044c6dc38ea565047e44bd8fe154d07a4d78ed36adf0ca",
+      "candidates": [
+        {
+          "model": "gpt-5-nano",
+          "canonical_exact": 23,
+          "of": 60,
+          "dollars": 0.012089,
+          "paid_calls": 60
+        },
+        {
+          "model": "gpt-4.1-nano",
+          "canonical_exact": 17,
+          "of": 60,
+          "dollars": 0.020769,
+          "paid_calls": 60
+        },
+        {
+          "model": "gpt-4o-mini",
+          "canonical_exact": 3,
+          "of": 60,
+          "dollars": 0.033644,
+          "paid_calls": 60
+        },
+        {
+          "model": "gpt-5-mini",
+          "canonical_exact": 54,
+          "of": 60,
+          "dollars": 0.060083,
+          "paid_calls": 60
+        },
+        {
+          "model": "gpt-5-mini@low",
+          "canonical_exact": 57,
+          "of": 60,
+          "dollars": 0.075435,
+          "paid_calls": 60
+        },
+        {
+          "model": "gpt-4.1",
+          "canonical_exact": 56,
+          "of": 60,
+          "dollars": 0.41951,
+          "paid_calls": 60
+        },
+        {
+          "model": "gpt-5@low",
+          "canonical_exact": 59,
+          "of": 60,
+          "dollars": 0.382754,
+          "paid_calls": 60
+        }
+      ],
+      "selected": null,
+      "paid_calls": 420,
+      "prompt_tokens": 1307713,
+      "completion_tokens": 63132,
+      "dollars": 1.004283,
+      "by_model": {
+        "gpt-4.1-2025-04-14": {
+          "paid_calls": 60,
+          "prompt_tokens": 186919,
+          "completion_tokens": 5709,
+          "dollars": 0.41951
+        },
+        "gpt-4.1-nano-2025-04-14": {
+          "paid_calls": 60,
+          "prompt_tokens": 186919,
+          "completion_tokens": 5192,
+          "dollars": 0.020769
+        },
+        "gpt-4o-mini-2024-07-18": {
+          "paid_calls": 60,
+          "prompt_tokens": 186919,
+          "completion_tokens": 9344,
+          "dollars": 0.033644
+        },
+        "gpt-5-2025-08-07": {
+          "paid_calls": 60,
+          "prompt_tokens": 186739,
+          "completion_tokens": 14933,
+          "dollars": 0.382754
+        },
+        "gpt-5-mini-2025-08-07": {
+          "paid_calls": 120,
+          "prompt_tokens": 373478,
+          "completion_tokens": 21074,
+          "dollars": 0.135518
+        },
+        "gpt-5-nano-2025-08-07": {
+          "paid_calls": 60,
+          "prompt_tokens": 186739,
+          "completion_tokens": 6880,
+          "dollars": 0.012089
+        }
+      }
+    },
+    "round-3": {
+      "registration_sha256": "c517454cd8f8c5cd96cdc70ee7ffc2b90c9b64dd5fae9ac72528f046edd5a32b",
+      "candidates": [
+        {
+          "model": "gpt-5-mini",
+          "canonical_exact": 57,
+          "of": 60,
+          "dollars": 0.063164,
+          "paid_calls": 60
+        },
+        {
+          "model": "gpt-5-mini@low",
+          "canonical_exact": 59,
+          "of": 60,
+          "dollars": 0.075788,
+          "paid_calls": 60
+        },
+        {
+          "model": "gpt-4.1",
+          "canonical_exact": 60,
+          "of": 60,
+          "dollars": 0.446518,
+          "paid_calls": 60
+        }
+      ],
+      "selected": "gpt-4.1",
+      "paid_calls": 180,
+      "prompt_tokens": 600897,
+      "completion_tokens": 25126,
+      "dollars": 0.585469,
+      "by_model": {
+        "gpt-4.1-2025-04-14": {
+          "paid_calls": 60,
+          "prompt_tokens": 200419,
+          "completion_tokens": 5710,
+          "dollars": 0.446518
+        },
+        "gpt-5-mini-2025-08-07": {
+          "paid_calls": 120,
+          "prompt_tokens": 400478,
+          "completion_tokens": 19416,
+          "dollars": 0.138952
+        }
+      }
+    },
+    "scoring": {
+      "registration_sha256": "c517454cd8f8c5cd96cdc70ee7ffc2b90c9b64dd5fae9ac72528f046edd5a32b",
+      "candidates": [],
+      "selected": null,
+      "paid_calls": 117,
+      "prompt_tokens": 390873,
+      "completion_tokens": 10752,
+      "dollars": 0.867762,
+      "by_model": {
+        "gpt-4.1-2025-04-14": {
+          "paid_calls": 117,
+          "prompt_tokens": 390873,
+          "completion_tokens": 10752,
+          "dollars": 0.867762
+        }
+      }
+    }
+  },
+  "spend": {
+    "paid_calls": 957,
+    "dollars": 2.563602,
+    "soft_cap_usd": 18.0,
+    "hard_ceiling_usd": 20.0,
+    "gemini_fallback_used": false,
+    "tokens_reported_by_provider": true,
+    "rates_recorded_on": "2026-09-13",
+    "rates_usd_per_mtok": {
+      "gpt-5-nano": [
+        0.05,
+        0.4
+      ],
+      "gpt-4.1-nano": [
+        0.1,
+        0.4
+      ],
+      "gpt-4o-mini": [
+        0.15,
+        0.6
+      ],
+      "gpt-5-mini": [
+        0.25,
+        2.0
+      ],
+      "gpt-5-mini@low": [
+        0.25,
+        2.0
+      ],
+      "gpt-4.1": [
+        2.0,
+        8.0
+      ],
+      "gpt-5@low": [
+        1.25,
+        10.0
+      ]
+    }
+  },
+  "d04": {
+    "clips": 9,
+    "paid_calls": 0,
+    "planner": "model:gpt-4.1",
+    "comparison": {
+      "edge": {
+        "final_travel_m": {
+          "zoo_compact_arm": 0.407908,
+          "zoo_jaw_arm": 1.438393,
+          "zoo_long_arm": 2.229947
+        },
+        "one_reading_on_every_body": true,
+        "prompt": "reach out as far as you can",
+        "reading_hash": [
+          "42bdc39f205059c4d463949f1587ca264c0f07da176efe23ca1aa814296fde75"
+        ]
+      },
+      "five_cm": {
+        "final_travel_m": {
+          "zoo_compact_arm": 0.049597,
+          "zoo_jaw_arm": 0.050172,
+          "zoo_long_arm": 0.050277
+        },
+        "one_reading_on_every_body": true,
+        "prompt": "reach out 5 cm",
+        "reading_hash": [
+          "428eaf09aec2071b389469331a22c95e70cb1a182b538fc537046d353f8590e3"
+        ]
+      },
+      "little": {
+        "final_travel_m": {
+          "zoo_compact_arm": 0.350143,
+          "zoo_jaw_arm": 1.216819,
+          "zoo_long_arm": 1.890821
+        },
+        "one_reading_on_every_body": true,
+        "prompt": "reach out a little",
+        "reading_hash": [
+          "99a9949611be4138c23c28513073b0fe6bd6a3fbc6b7baaee8dbe1b40ed75246"
+        ]
+      }
+    },
+    "travel_m": {
+      "little/zoo_compact_arm": 0.350143,
+      "edge/zoo_compact_arm": 0.407908,
+      "five_cm/zoo_compact_arm": 0.049597,
+      "little/zoo_jaw_arm": 1.216819,
+      "edge/zoo_jaw_arm": 1.438393,
+      "five_cm/zoo_jaw_arm": 0.050172,
+      "little/zoo_long_arm": 1.890821,
+      "edge/zoo_long_arm": 2.229947,
+      "five_cm/zoo_long_arm": 0.050277
+    },
+    "outcomes": {
+      "little/zoo_compact_arm": "success",
+      "edge/zoo_compact_arm": "success",
+      "five_cm/zoo_compact_arm": "success",
+      "little/zoo_jaw_arm": "success",
+      "edge/zoo_jaw_arm": "success",
+      "five_cm/zoo_jaw_arm": "success",
+      "little/zoo_long_arm": "success",
+      "edge/zoo_long_arm": "success",
+      "five_cm/zoo_long_arm": "success"
+    }
+  },
+  "language_gate": {
+    "status": "pending",
+    "reason": "labels are internal; the catalog's independently authored/reviewed claim waits on U3_independent_review",
+    "engineering_result_at_internal_labels": "114/120 exact, 27/27 prohibited substitutions rejected"
+  }
+}

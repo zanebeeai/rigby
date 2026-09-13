@@ -1,0 +1,56 @@
+{
+  "schema": "g04.registration.v1",
+  "fixture_id": "g04-semantics-v1",
+  "files": {
+    "semantic-cases.json": "fbc5bea697c7e09a70775c3d6d2a005eeba1dafd75f891b709061639aa1bc1a7",
+    "labels.json": "36b4e036dc42af7cc2d990063929e8a0bdd6c2d32315e474f61d6f59c3701304",
+    "schema_inventory.v1.json": "b445d7b0455ea1c8b2b3c02423fcb5eb3d1e67c1100c054a1f316bff414175cd"
+  },
+  "system_prompt_sha256": "32cb644ff94921917cbb30d7260c0c2d07d81329ff07d2afa7a1aac64f3c1af8",
+  "reply_schema_sha256": "9d83406652cf48179ff407f9ffe7f29d943d29109ee800c7036f9fb62ca4c5fd",
+  "candidate_models": [
+    "gpt-5-nano",
+    "gpt-4.1-nano",
+    "gpt-4o-mini",
+    "gpt-5-mini",
+    "gpt-5-mini@low",
+    "gpt-4.1",
+    "gpt-5@low"
+  ],
+  "rates_recorded_on": "2026-09-13",
+  "rates_usd_per_mtok": {
+    "gpt-5-nano": [
+      0.05,
+      0.4
+    ],
+    "gpt-4.1-nano": [
+      0.1,
+      0.4
+    ],
+    "gpt-4o-mini": [
+      0.15,
+      0.6
+    ],
+    "gpt-5-mini": [
+      0.25,
+      2.0
+    ],
+    "gpt-5-mini@low": [
+      0.25,
+      2.0
+    ],
+    "gpt-4.1": [
+      2.0,
+      8.0
+    ],
+    "gpt-5@low": [
+      1.25,
+      10.0
+    ]
+  },
+  "selected_model": null,
+  "label_provenance": "internal",
+  "note": "registered before any scored run; the campaign refuses a fixture, inventory, system prompt or reply schema that does not hash to this",
+  "registered_at_utc": "2026-09-13T17:25:07.217316+00:00",
+  "registration_sha256": "82fc3a39ccf2f43f7b044c6dc38ea565047e44bd8fe154d07a4d78ed36adf0ca"
+}

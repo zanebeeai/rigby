@@ -1,0 +1,39 @@
+{
+  "cost_usd": 0.00034920000000000003,
+  "created_at_utc": "2026-09-13T17:29:27.349636+00:00",
+  "key": "337d6931ee99187c62842d407d82555acea7cf3cf668c8021f73b7f4e5aca0d7",
+  "model": "gpt-4.1-nano-2025-04-14",
+  "prompt": "reach out then come back",
+  "purpose": "select:gpt-4.1-nano",
+  "reply": {
+    "segments": [
+      {
+        "clause": "reach out",
+        "entry_id": "reach_to_point",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": null,
+        "quantities": [],
+        "remove": "proximal"
+      }
+    ],
+    "unsupported_reason": "the second segment 'come back' does not match any known motion in the inventory"
+  },
+  "requested_model": "gpt-4.1-nano",
+  "schema_sha256": "9d83406652cf48179ff407f9ffe7f29d943d29109ee800c7036f9fb62ca4c5fd",
+  "system_sha256": "32cb644ff94921917cbb30d7260c0c2d07d81329ff07d2afa7a1aac64f3c1af8",
+  "transport": "openai",
+  "usage": {
+    "completion_tokens": 94,
+    "estimated": false,
+    "prompt_tokens": 3116
+  }
+}

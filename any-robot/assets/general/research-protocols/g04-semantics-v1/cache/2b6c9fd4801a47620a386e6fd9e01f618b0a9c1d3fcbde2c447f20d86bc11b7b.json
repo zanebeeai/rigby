@@ -1,0 +1,90 @@
+{
+  "cost_usd": 0.009038000000000001,
+  "created_at_utc": "2026-09-13T17:48:16.278215+00:00",
+  "key": "2b6c9fd4801a47620a386e6fd9e01f618b0a9c1d3fcbde2c447f20d86bc11b7b",
+  "model": "gpt-4.1-2025-04-14",
+  "prompt": "look at it, then move toward it, then pick it up, and finally hand it over",
+  "purpose": "score:gpt-4.1",
+  "reply": {
+    "segments": [
+      {
+        "clause": "look at it",
+        "entry_id": "track_with_gaze",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": null,
+        "quantities": [],
+        "remove": "medial"
+      },
+      {
+        "clause": "move toward it",
+        "entry_id": "move_toward",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": null,
+        "quantities": [],
+        "remove": "medial"
+      },
+      {
+        "clause": "pick it up",
+        "entry_id": "transport_object",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": null,
+        "quantities": [],
+        "remove": "medial"
+      },
+      {
+        "clause": "hand it over",
+        "entry_id": "hand_across",
+        "manner": {
+          "amplitude": 0,
+          "effort": 0,
+          "precision": 0,
+          "repetition": 0,
+          "repetition_count": null,
+          "rhythm": 0,
+          "smoothness": 0,
+          "speed": 0
+        },
+        "posture": null,
+        "quantities": [],
+        "remove": "medial"
+      }
+    ],
+    "unsupported_reason": null
+  },
+  "requested_model": "gpt-4.1",
+  "schema_sha256": "9d83406652cf48179ff407f9ffe7f29d943d29109ee800c7036f9fb62ca4c5fd",
+  "system_sha256": "5e8011d65a799d4783416edd6ea4e9a4a1acd0b9177228ef032b31ac2682083d",
+  "transport": "openai",
+  "usage": {
+    "completion_tokens": 291,
+    "estimated": false,
+    "prompt_tokens": 3355
+  }
+}

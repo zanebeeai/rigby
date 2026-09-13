@@ -1,0 +1,43 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-reach-out-a-little-reach-out-as-far-as-you-can-r-266f61bf",
+  "title": "D04: a little, as far as you can, 5 cm on three bodies, one clock",
+  "prompt": "reach out a little | reach out as far as you can | reach out 5 cm",
+  "tier": "any-robot",
+  "embodiment": "zoo_compact_arm,zoo_jaw_arm,zoo_long_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T18:04:08Z",
+  "source": {
+    "commit": "3038d06a56",
+    "branch": "feat/g04-semantics",
+    "dirty": true,
+    "how": "python any-robot/scripts/g04_d04_media.py --out docs/results/g04-d04 --local any-robot/results/g04-d04 --model <selected model>"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "Rows: compact arm, jaw arm, long arm; columns: a little, as far as you can, 5 cm. One reading per prompt on every body; measured travel 'reach out as far as you can': compact_arm 40.8 cm, jaw_arm 143.8 cm, long_arm 223.0 cm; 'reach out 5 cm': compact_arm 5.0 cm, jaw_arm 5.0 cm, long_arm 5.0 cm; 'reach out a little': compact_arm 35.0 cm, jaw_arm 121.7 cm, long_arm 189.1 cm."
+  },
+  "notes": "See docs/results/g04-report.md. One prompt read once, body-neutrally, by the model planner (the reply served from the committed cache), grounded by this body's own measured reach, executed on native physics with the recorder and rendered from recorded states at real-time playback; the banner carries the reading's entry and remove, the stated quantity or its absence, the effector's measured travel from its start on every frame, the reach fraction and the reading's hash; frames.json beside the MP4 maps every frame to its recorded sample.",
+  "media": [
+    {
+      "path": "docs/results/g04-d04/nine-way-synchronized.mp4",
+      "bytes": 487225,
+      "sha256": "3127c435b5514b8924b839bce114989da91b6d9c6c44162ef2ad86446aa25cee",
+      "role": "comparison"
+    },
+    {
+      "path": "docs/results/g04-d04/nine-way-preview.gif",
+      "bytes": 2049277,
+      "sha256": "3c61007e59b2023c0505e93ed9af5ce38ae48f51e7c9218d9c4f536bf8102429",
+      "role": "comparison"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G04",
+    "D04",
+    "three-body",
+    "comparison"
+  ]
+}
