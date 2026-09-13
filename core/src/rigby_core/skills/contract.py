@@ -463,8 +463,11 @@ class SkillLibraryV1(Contract):
             target = self.skill(definition.recovery.skill)
             recovery_arguments = _bind_arguments(target, {a.name: arguments[a.name] for a in target.arguments if a.name in arguments}, f"{definition.skill_id} recovery")
             recovery = self._expand(target, recovery_arguments, f"{node_id}.r", depth + 1, trail)
-        exclusive = tuple(substitute(c.resource, arguments) for c in definition.resources if c.mode is ResourceMode.EXCLUSIVE)
-        shared = tuple(substitute(c.resource, arguments) for c in definition.resources if c.mode is ResourceMode.SHARED)
+        # Two claims can name the same resource once the arguments are
+        # bound -- a body with one manipulator bound as both alternatives --
+        # and a node owns a resource once.
+        exclusive = tuple(dict.fromkeys(substitute(c.resource, arguments) for c in definition.resources if c.mode is ResourceMode.EXCLUSIVE))
+        shared = tuple(dict.fromkeys(substitute(c.resource, arguments) for c in definition.resources if c.mode is ResourceMode.SHARED))
         return TaskNodeV1(node_id=node_id, skill_id=definition.skill_id, kind=definition.kind, depth=depth, arguments=arguments,
                           resources=exclusive, shared_resources=shared, children=tuple(children), recovery=recovery)
 

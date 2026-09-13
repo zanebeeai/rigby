@@ -248,7 +248,7 @@ class _Runner:
             return NodeRecordV1(node_id=node.node_id, skill_id=node.skill_id, kind=node.kind, verdict=Verdict.FAILURE,
                                 reason=f"resource_conflict:{conflict[0]}", started_s=started, ended_s=self.clock.now(), attempts=1,
                                 initiation=initiation, resources=node.resources)
-        newly_owned = [r for r in node.resources if r not in self.holders]
+        newly_owned = list(dict.fromkeys(r for r in node.resources if r not in self.holders))
         for resource in newly_owned:
             self.holders[resource] = node.node_id
         self.stack.append(node.node_id)

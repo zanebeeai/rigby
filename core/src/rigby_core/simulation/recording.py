@@ -119,6 +119,26 @@ class PhysicsRecorder:
             rows["contact_wrench"].append(wrench)
         rows["contact_offsets"].append(len(rows["contact_geom"]))
 
+    def amend_last_action(self, action: np.ndarray, *, demand: np.ndarray | None = None) -> None:
+        """Replace the command on the final sample.
+
+        The final sample of a run carries a computed command that no step
+        applied. When a second run continues from exactly that state and
+        time, the command actually applied from it is the second run's
+        first, and the record must say so for the recorded controls to
+        replay to the recorded states across the boundary.
+        """
+
+        if not self.rows["time_s"]:
+            raise ValueError("Nothing recorded to amend")
+        model = self.model
+        action = np.asarray(action, dtype=np.float64)
+        demand = action if demand is None else np.asarray(demand, dtype=np.float64)
+        if action.shape != (model.nu,) or demand.shape != (model.nu,):
+            raise ValueError("Action/demand dimensions must match the model")
+        self.rows["action"][-1] = np.array(action, dtype=np.float64, copy=True)
+        self.rows["demand"][-1] = np.array(demand, dtype=np.float64, copy=True)
+
     def finish(self) -> PhysicsRecord:
         if not self.rows["time_s"]:
             raise ValueError("An evidence record needs at least the initial state")

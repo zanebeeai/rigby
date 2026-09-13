@@ -19,6 +19,7 @@ the object, a contact exclusion involving it -- and any of them is a refusal.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import Callable
 
 import mujoco
 import numpy as np
@@ -104,6 +105,17 @@ class PhaseRecord:
 
 
 @dataclass(frozen=True, slots=True)
+class TransferStart:
+    """Where a transfer begins when it continues a world another leaf left:
+    the full physical state and the clock, so the recorded trace stays one
+    continuous physics run and nothing is reset between attempts."""
+
+    qpos: np.ndarray
+    qvel: np.ndarray
+    time_s: float
+
+
+@dataclass(frozen=True, slots=True)
 class TransferResult:
     certified: bool
     violations: tuple[TransferViolation, ...]
@@ -130,10 +142,26 @@ class TransferResult:
     demand: np.ndarray = field(repr=False, default_factory=lambda: np.zeros((0, 0)))
     object_position_m: np.ndarray = field(repr=False, default_factory=lambda: np.zeros((0, 3)))
     grip_force_n: np.ndarray = field(repr=False, default_factory=lambda: np.zeros(0))
+    interrupted: bool = False
+    """Stopped from outside before the sequence ended; the phases that ran
+    are recorded and the object was never written."""
+    final_qvel: np.ndarray = field(repr=False, default_factory=lambda: np.zeros(0))
+    final_time_s: float = 0.0
 
     @property
     def failed_gate(self) -> str | None:
         return self.violations[0].code if self.violations else None
+
+    @property
+    def executed(self) -> bool:
+        return len(self.times_s) > 0
+
+    def continuation(self) -> "TransferStart | None":
+        """The state a following leaf starts from, or ``None`` if nothing moved."""
+
+        if not self.executed:
+            return None
+        return TransferStart(qpos=np.array(self.qpos[-1], dtype=float), qvel=np.array(self.final_qvel, dtype=float), time_s=self.final_time_s)
 
 
 def transfer_scene_from_environment(
@@ -360,8 +388,17 @@ def attempt_transfer(
     *,
     recorder: PhysicsRecorder | None = None,
     per_span: int = 6,
+    resume: TransferStart | None = None,
+    should_stop: Callable[[float], bool] | None = None,
 ) -> TransferResult:
-    """Run one transfer and gate every phase of it."""
+    """Run one transfer and gate every phase of it.
+
+    With ``resume`` the transfer continues the world another leaf left: the
+    arm begins where it is, the object where it lies, the clock where it
+    stood, and nothing settles or resets. ``should_stop`` is asked on every
+    physics step with the simulation time; answering true ends the
+    transfer where it is, typed ``interrupted``, with the phases that ran.
+    """
 
     model = scene.model
     grasp = scene.scene
@@ -381,7 +418,7 @@ def attempt_transfer(
         return _refused(violations, None, policy)
 
     arm_joints = ik.chain_joint_names(model, frame.figure_site, exclude=frozenset(effector.grip_joints))
-    rest = _scene_rest_qpos(model, manifest)
+    rest = _scene_rest_qpos(model, manifest) if resume is None else np.array(resume.qpos, dtype=float)
     guard = _collision_guard(manifest, model)
     solve_site = next(
         (s.name for s in manifest.morphology.sites if s.semantic is SiteSemantic.GRASP_POINT and s.name.startswith(effector.chain_id)),
@@ -445,10 +482,14 @@ def attempt_transfer(
     data.qpos[arm_adr] = path[0][arm_adr]
     mujoco.mj_forward(model, data)
     dt = float(model.opt.timestep)
-    for _ in range(int(round(SETTLE_S / dt))):
-        data.ctrl[:] = 0.0
-        mujoco.mj_step(model, data)
-    data.qvel[:] = 0.0
+    if resume is None:
+        for _ in range(int(round(SETTLE_S / dt))):
+            data.ctrl[:] = 0.0
+            mujoco.mj_step(model, data)
+        data.qvel[:] = 0.0
+    else:
+        data.qvel[:] = np.asarray(resume.qvel, dtype=float)
+        data.time = float(resume.time_s)
     mujoco.mj_forward(model, data)
     start_position = np.array(data.qpos[block_adr: block_adr + 3], dtype=float)
     start_height = float(start_position[2])
@@ -479,6 +520,7 @@ def attempt_transfer(
     lower_hold: np.ndarray | None = None
     release_started: float | None = None
     outcome_note = ""
+    interrupted = False
 
     def arm_target_for(name: str, progress: float) -> np.ndarray:
         start, end = spans[name]
@@ -492,6 +534,10 @@ def attempt_transfer(
     while phase_index < len(order):
         name = order[phase_index]
         now = float(data.time)
+        if should_stop is not None and should_stop(now):
+            phases.append(PhaseRecord(name, phase_start, now, "interrupted"))
+            interrupted = True
+            break
         elapsed = now - phase_start
         duration = durations[name]
         progress = float(np.clip(elapsed / duration, 0.0, 1.0)) if duration > 0 else 1.0
@@ -590,7 +636,15 @@ def attempt_transfer(
                 continue
             unexpected.add(names)
         if recorder is not None:
-            recorder.capture(data, command, control_time_s=now, demand=controller.last_demand)
+            recorded = recorder.rows["time_s"]
+            if resume is not None and recorded and now <= recorded[-1] + 1e-12:
+                # Continuing from the state and instant another leaf recorded
+                # last: that sample's command was never applied, this one is.
+                if now < recorded[-1] - 1e-12:
+                    raise ValueError("a transfer cannot resume before the last recorded sample")
+                recorder.amend_last_action(command, demand=controller.last_demand)
+            else:
+                recorder.capture(data, command, control_time_s=now, demand=controller.last_demand)
 
         if advance:
             phases.append(PhaseRecord(name, phase_start, now, outcome_note if name == "close" else ""))
@@ -615,6 +669,8 @@ def attempt_transfer(
 
     final = evaluator.last
     lift = peak_height - start_height
+    if interrupted:
+        violations.append(TransferViolation("interrupted", f"stopped from outside during {phases[-1].name} at {phases[-1].end_s:.3f} s", float(phases[-1].end_s), 0.0))
     if not opposition:
         violations.append(TransferViolation("grasp_not_achieved", "opposing members never both made contact with the object", 0.0, 1.0))
     if lift < required_lift:
@@ -645,6 +701,7 @@ def attempt_transfer(
         unexpected_contacts=tuple(sorted(unexpected)), robot_fixture_contacts=tuple(sorted(fixture_contacts)),
         collision_policy=policy, path_seed=seed_used, times_s=np.asarray(times), qpos=np.asarray(qpos_log), ctrl=np.asarray(ctrl_log),
         demand=np.asarray(demand_log), object_position_m=np.asarray(object_log), grip_force_n=np.asarray(force_log),
+        interrupted=interrupted, final_qvel=np.array(data.qvel, dtype=float), final_time_s=float(data.time),
     )
 
 

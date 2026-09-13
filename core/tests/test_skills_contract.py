@@ -32,7 +32,7 @@ from rigby_core.skills import (
     TaskTreeV1,
     parse_argument,
 )
-from skills_example import ARGUMENTS, A, P, clear_bench_library, with_recovery
+from rigby_core.skills.examples import ARGUMENTS, A, P, clear_bench_library, with_recovery
 
 
 def leaf(skill_id: str, **overrides) -> SkillDefinitionV1:
