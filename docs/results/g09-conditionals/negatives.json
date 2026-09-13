@@ -1,0 +1,3829 @@
+[
+  {
+    "configuration": "front_contact",
+    "description": "a screen 0.6 m square between the front camera and the fixtures",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-seed001",
+    "false_success": false,
+    "kind": "occlusion",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "reachable",
+    "time_s": 0.7500000000000002,
+    "trace_sha256": "71c5bde6e25c091e92be1bd0b72e9f1eaf2180a5d868891c28526523e09f2c61",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "['camera:front'] frozen at 0.300 s, 0.45 s before the decision",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-seed001",
+    "false_success": false,
+    "kind": "stale",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "distance_m": 0.685574,
+        "inner_m": 0.091337,
+        "outer_m": 0.955198
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "camera:front",
+        "reach:palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "reachable",
+    "time_s": 0.7500000000000002,
+    "trace_sha256": "71c5bde6e25c091e92be1bd0b72e9f1eaf2180a5d868891c28526523e09f2c61",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.467
+      },
+      "fallback": "re_observe",
+      "reason": "stale:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-without-object_pose",
+    "description": "no sensor of kind object_pose",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-seed001",
+    "false_success": false,
+    "kind": "absent",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "reachable",
+    "time_s": 0.7500000000000002,
+    "trace_sha256": "71c5bde6e25c091e92be1bd0b72e9f1eaf2180a5d868891c28526523e09f2c61",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "a screen 0.6 m square between the front camera and the fixtures",
+    "effector": "left_palm",
+    "episode_id": "zoo_dual_arm-feasible-001",
+    "false_success": false,
+    "kind": "occlusion",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "reachable",
+    "time_s": 7.5,
+    "trace_sha256": "9e3f1a7f08fe3f8c7d51d4ec7726fe44f79ff5a877d07a1cc011ceb70c9b13da",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "['camera:front'] frozen at 7.050 s, 0.45 s before the decision",
+    "effector": "left_palm",
+    "episode_id": "zoo_dual_arm-feasible-001",
+    "false_success": false,
+    "kind": "stale",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "distance_m": 0.394382,
+        "inner_m": 0.112823,
+        "outer_m": 0.605576
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "camera:front",
+        "reach:left_palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "reachable",
+    "time_s": 7.5,
+    "trace_sha256": "9e3f1a7f08fe3f8c7d51d4ec7726fe44f79ff5a877d07a1cc011ceb70c9b13da",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.467
+      },
+      "fallback": "re_observe",
+      "reason": "stale:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-without-object_pose",
+    "description": "no sensor of kind object_pose",
+    "effector": "left_palm",
+    "episode_id": "zoo_dual_arm-feasible-001",
+    "false_success": false,
+    "kind": "absent",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "reachable",
+    "time_s": 7.5,
+    "trace_sha256": "9e3f1a7f08fe3f8c7d51d4ec7726fe44f79ff5a877d07a1cc011ceb70c9b13da",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "a screen 0.6 m square between the front camera and the fixtures",
+    "effector": "palm",
+    "episode_id": "zoo_long_arm-feasible-004",
+    "false_success": false,
+    "kind": "occlusion",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "reachable",
+    "time_s": 18.5,
+    "trace_sha256": "5a718a7145021c7690742d0a710c9c7286d13afc3a13d3e1ec4559ed4520513d",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "['camera:front'] frozen at 18.050 s, 0.45 s before the decision",
+    "effector": "palm",
+    "episode_id": "zoo_long_arm-feasible-004",
+    "false_success": false,
+    "kind": "stale",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "distance_m": 0.65468,
+        "inner_m": 0.305033,
+        "outer_m": 1.256375
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "camera:front",
+        "reach:palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "reachable",
+    "time_s": 18.5,
+    "trace_sha256": "5a718a7145021c7690742d0a710c9c7286d13afc3a13d3e1ec4559ed4520513d",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.467
+      },
+      "fallback": "re_observe",
+      "reason": "stale:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-without-object_pose",
+    "description": "no sensor of kind object_pose",
+    "effector": "palm",
+    "episode_id": "zoo_long_arm-feasible-004",
+    "false_success": false,
+    "kind": "absent",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "reachable",
+    "time_s": 18.5,
+    "trace_sha256": "5a718a7145021c7690742d0a710c9c7286d13afc3a13d3e1ec4559ed4520513d",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "a screen 0.6 m square between the front camera and the fixtures",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-feasible-001",
+    "false_success": false,
+    "kind": "occlusion",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "reachable",
+    "time_s": 13.5,
+    "trace_sha256": "42038ff0ec092d443c723533879e0a83785d1e0cae2f038874f3a8a36a5a6243",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "['camera:front'] frozen at 13.050 s, 0.45 s before the decision",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-feasible-001",
+    "false_success": false,
+    "kind": "stale",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "distance_m": 0.657812,
+        "inner_m": 0.101897,
+        "outer_m": 0.890796
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "camera:front",
+        "reach:palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "reachable",
+    "time_s": 13.5,
+    "trace_sha256": "42038ff0ec092d443c723533879e0a83785d1e0cae2f038874f3a8a36a5a6243",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.467
+      },
+      "fallback": "re_observe",
+      "reason": "stale:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-without-object_pose",
+    "description": "no sensor of kind object_pose",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-feasible-001",
+    "false_success": false,
+    "kind": "absent",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "reachable",
+    "time_s": 13.5,
+    "trace_sha256": "42038ff0ec092d443c723533879e0a83785d1e0cae2f038874f3a8a36a5a6243",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "a screen 0.6 m square between the front camera and the fixtures",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-carry-to-place-after",
+    "false_success": false,
+    "kind": "occlusion",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "reachable",
+    "time_s": 13.75,
+    "trace_sha256": "faba317b85a9cd8a1bf341201f5798697647dd80e57c97bd8e05b9feb57c49e3",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "['camera:front'] frozen at 13.300 s, 0.45 s before the decision",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-carry-to-place-after",
+    "false_success": false,
+    "kind": "stale",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "distance_m": 0.656533,
+        "inner_m": 0.101897,
+        "outer_m": 0.890796
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "camera:front",
+        "reach:palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "reachable",
+    "time_s": 13.75,
+    "trace_sha256": "faba317b85a9cd8a1bf341201f5798697647dd80e57c97bd8e05b9feb57c49e3",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.467
+      },
+      "fallback": "re_observe",
+      "reason": "stale:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-without-object_pose",
+    "description": "no sensor of kind object_pose",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-carry-to-place-after",
+    "false_success": false,
+    "kind": "absent",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "reachable",
+    "time_s": 13.75,
+    "trace_sha256": "faba317b85a9cd8a1bf341201f5798697647dd80e57c97bd8e05b9feb57c49e3",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "['contact:palm'] frozen at 6.200 s, 0.30 s before the decision",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-velocity_too_high-07",
+    "false_success": false,
+    "kind": "stale",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "opposed_fraction": 1.0,
+        "peak_force_n": 2.761402
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "contact:palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "opposition_established",
+    "time_s": 6.5,
+    "trace_sha256": "59cae050a305ccd082886c20e4c869dfd336db06b14dd20b0cfbd5b045b9cf11",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.3
+      },
+      "fallback": "fail",
+      "reason": "stale:contact:palm",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-without-contact_force",
+    "description": "no sensor of kind contact_force",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-velocity_too_high-07",
+    "false_success": false,
+    "kind": "absent",
+    "label": true,
+    "naive": null,
+    "naive_would_pass": false,
+    "predicate": "opposition_established",
+    "time_s": 6.5,
+    "trace_sha256": "59cae050a305ccd082886c20e4c869dfd336db06b14dd20b0cfbd5b045b9cf11",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "fail",
+      "reason": "missing_source:contact_force",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-sparse",
+    "description": "['contact:palm'] thinned to 7 Hz, at most 4 samples in 0.5 s",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-velocity_too_high-07",
+    "false_success": false,
+    "kind": "sparse",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "opposed_fraction": 1.0,
+        "peak_force_n": 2.421721
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "contact:palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "opposition_established",
+    "time_s": 6.5,
+    "trace_sha256": "59cae050a305ccd082886c20e4c869dfd336db06b14dd20b0cfbd5b045b9cf11",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.12
+      },
+      "fallback": "fail",
+      "reason": "stale:contact:palm",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "['contact:palm'] frozen at 8.200 s, 0.30 s before the decision",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-feasible-002",
+    "false_success": false,
+    "kind": "stale",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "opposed_fraction": 1.0,
+        "peak_force_n": 2.486736
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "contact:palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "opposition_established",
+    "time_s": 8.5,
+    "trace_sha256": "13f8085ada94a4c6487b0926774b4fa9e97dd38dcdfd0ca5ac761dd95a1c6c1f",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.3
+      },
+      "fallback": "fail",
+      "reason": "stale:contact:palm",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-without-contact_force",
+    "description": "no sensor of kind contact_force",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-feasible-002",
+    "false_success": false,
+    "kind": "absent",
+    "label": true,
+    "naive": null,
+    "naive_would_pass": false,
+    "predicate": "opposition_established",
+    "time_s": 8.5,
+    "trace_sha256": "13f8085ada94a4c6487b0926774b4fa9e97dd38dcdfd0ca5ac761dd95a1c6c1f",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "fail",
+      "reason": "missing_source:contact_force",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-sparse",
+    "description": "['contact:palm'] thinned to 7 Hz, at most 4 samples in 0.5 s",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-feasible-002",
+    "false_success": false,
+    "kind": "sparse",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "opposed_fraction": 1.0,
+        "peak_force_n": 2.421676
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "contact:palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "opposition_established",
+    "time_s": 8.5,
+    "trace_sha256": "13f8085ada94a4c6487b0926774b4fa9e97dd38dcdfd0ca5ac761dd95a1c6c1f",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.09
+      },
+      "fallback": "fail",
+      "reason": "stale:contact:palm",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "['contact:palm'] frozen at 7.200 s, 0.30 s before the decision",
+    "effector": "palm",
+    "episode_id": "zoo_long_arm-feasible-001",
+    "false_success": false,
+    "kind": "stale",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "opposed_fraction": 1.0,
+        "peak_force_n": 2.75229
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "contact:palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "opposition_established",
+    "time_s": 7.5,
+    "trace_sha256": "92ce344896c75f9ce26e6cf405848013def68bbdd5a9182b2c2ccd4d1a2a9536",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.3
+      },
+      "fallback": "fail",
+      "reason": "stale:contact:palm",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-without-contact_force",
+    "description": "no sensor of kind contact_force",
+    "effector": "palm",
+    "episode_id": "zoo_long_arm-feasible-001",
+    "false_success": false,
+    "kind": "absent",
+    "label": true,
+    "naive": null,
+    "naive_would_pass": false,
+    "predicate": "opposition_established",
+    "time_s": 7.5,
+    "trace_sha256": "92ce344896c75f9ce26e6cf405848013def68bbdd5a9182b2c2ccd4d1a2a9536",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "fail",
+      "reason": "missing_source:contact_force",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-sparse",
+    "description": "['contact:palm'] thinned to 7 Hz, at most 4 samples in 0.5 s",
+    "effector": "palm",
+    "episode_id": "zoo_long_arm-feasible-001",
+    "false_success": false,
+    "kind": "sparse",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "opposed_fraction": 1.0,
+        "peak_force_n": 2.42167
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "contact:palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "opposition_established",
+    "time_s": 7.5,
+    "trace_sha256": "92ce344896c75f9ce26e6cf405848013def68bbdd5a9182b2c2ccd4d1a2a9536",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.105
+      },
+      "fallback": "fail",
+      "reason": "stale:contact:palm",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "['contact:palm'] frozen at 8.200 s, 0.30 s before the decision",
+    "effector": "palm",
+    "episode_id": "zoo_long_arm-feasible-001",
+    "false_success": false,
+    "kind": "stale",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "opposed_fraction": 1.0,
+        "peak_force_n": 2.45867
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "contact:palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "opposition_established",
+    "time_s": 8.5,
+    "trace_sha256": "92ce344896c75f9ce26e6cf405848013def68bbdd5a9182b2c2ccd4d1a2a9536",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.3
+      },
+      "fallback": "fail",
+      "reason": "stale:contact:palm",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-without-contact_force",
+    "description": "no sensor of kind contact_force",
+    "effector": "palm",
+    "episode_id": "zoo_long_arm-feasible-001",
+    "false_success": false,
+    "kind": "absent",
+    "label": true,
+    "naive": null,
+    "naive_would_pass": false,
+    "predicate": "opposition_established",
+    "time_s": 8.5,
+    "trace_sha256": "92ce344896c75f9ce26e6cf405848013def68bbdd5a9182b2c2ccd4d1a2a9536",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "fail",
+      "reason": "missing_source:contact_force",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-sparse",
+    "description": "['contact:palm'] thinned to 7 Hz, at most 4 samples in 0.5 s",
+    "effector": "palm",
+    "episode_id": "zoo_long_arm-feasible-001",
+    "false_success": false,
+    "kind": "sparse",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "opposed_fraction": 1.0,
+        "peak_force_n": 2.423018
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "contact:palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "opposition_established",
+    "time_s": 8.5,
+    "trace_sha256": "92ce344896c75f9ce26e6cf405848013def68bbdd5a9182b2c2ccd4d1a2a9536",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.09
+      },
+      "fallback": "fail",
+      "reason": "stale:contact:palm",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "['contact:palm'] frozen at 10.200 s, 0.30 s before the decision",
+    "effector": "palm",
+    "episode_id": "zoo_long_arm-feasible-002",
+    "false_success": false,
+    "kind": "stale",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "opposed_fraction": 1.0,
+        "peak_force_n": 2.458697
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "contact:palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "opposition_established",
+    "time_s": 10.5,
+    "trace_sha256": "86648d705dda79d5bbeca01377296f910d891c66d1bc148c7359b161c94c387a",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.3
+      },
+      "fallback": "fail",
+      "reason": "stale:contact:palm",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-without-contact_force",
+    "description": "no sensor of kind contact_force",
+    "effector": "palm",
+    "episode_id": "zoo_long_arm-feasible-002",
+    "false_success": false,
+    "kind": "absent",
+    "label": true,
+    "naive": null,
+    "naive_would_pass": false,
+    "predicate": "opposition_established",
+    "time_s": 10.5,
+    "trace_sha256": "86648d705dda79d5bbeca01377296f910d891c66d1bc148c7359b161c94c387a",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "fail",
+      "reason": "missing_source:contact_force",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-sparse",
+    "description": "['contact:palm'] thinned to 7 Hz, at most 4 samples in 0.5 s",
+    "effector": "palm",
+    "episode_id": "zoo_long_arm-feasible-002",
+    "false_success": false,
+    "kind": "sparse",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "opposed_fraction": 1.0,
+        "peak_force_n": 2.421672
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "contact:palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "opposition_established",
+    "time_s": 10.5,
+    "trace_sha256": "86648d705dda79d5bbeca01377296f910d891c66d1bc148c7359b161c94c387a",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.06
+      },
+      "fallback": "fail",
+      "reason": "stale:contact:palm",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "['contact:left_palm'] frozen at 6.200 s, 0.30 s before the decision",
+    "effector": "left_palm",
+    "episode_id": "zoo_dual_arm-belief_stale-00",
+    "false_success": false,
+    "kind": "stale",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "newest_z_m": 0.318013,
+        "opposed_fraction": 1.0,
+        "peak_force_n": 2.421782
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "contact:left_palm",
+        "camera:front"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "held",
+    "time_s": 6.5,
+    "trace_sha256": "3c7a3be21b9d44ac37471547e97c8880ea52e438f32f8ce0f55e042d343050f7",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.3
+      },
+      "fallback": "re_observe",
+      "reason": "stale:contact:left_palm",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-without-contact_force",
+    "description": "no sensor of kind contact_force",
+    "effector": "left_palm",
+    "episode_id": "zoo_dual_arm-belief_stale-00",
+    "false_success": false,
+    "kind": "absent",
+    "label": true,
+    "naive": null,
+    "naive_would_pass": false,
+    "predicate": "held",
+    "time_s": 6.5,
+    "trace_sha256": "3c7a3be21b9d44ac37471547e97c8880ea52e438f32f8ce0f55e042d343050f7",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:contact_force",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-sparse",
+    "description": "['contact:left_palm'] thinned to 7 Hz, at most 4 samples in 0.5 s",
+    "effector": "left_palm",
+    "episode_id": "zoo_dual_arm-belief_stale-00",
+    "false_success": false,
+    "kind": "sparse",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "newest_z_m": 0.329954,
+        "opposed_fraction": 1.0,
+        "peak_force_n": 2.421705
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "contact:left_palm",
+        "camera:front"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "held",
+    "time_s": 6.5,
+    "trace_sha256": "3c7a3be21b9d44ac37471547e97c8880ea52e438f32f8ce0f55e042d343050f7",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.12
+      },
+      "fallback": "re_observe",
+      "reason": "stale:contact:left_palm",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "['contact:left_palm'] frozen at 10.200 s, 0.30 s before the decision",
+    "effector": "left_palm",
+    "episode_id": "zoo_dual_arm-joint_beyond_limit-03",
+    "false_success": false,
+    "kind": "stale",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "newest_z_m": 0.349196,
+        "opposed_fraction": 1.0,
+        "peak_force_n": 2.421604
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "contact:left_palm",
+        "camera:front"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "held",
+    "time_s": 10.5,
+    "trace_sha256": "b81e8090e3fed8b522db33794f784aea776d081d0666664b82c2fae2e13966c6",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.3
+      },
+      "fallback": "re_observe",
+      "reason": "stale:contact:left_palm",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-without-contact_force",
+    "description": "no sensor of kind contact_force",
+    "effector": "left_palm",
+    "episode_id": "zoo_dual_arm-joint_beyond_limit-03",
+    "false_success": false,
+    "kind": "absent",
+    "label": true,
+    "naive": null,
+    "naive_would_pass": false,
+    "predicate": "held",
+    "time_s": 10.5,
+    "trace_sha256": "b81e8090e3fed8b522db33794f784aea776d081d0666664b82c2fae2e13966c6",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:contact_force",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-sparse",
+    "description": "['contact:left_palm'] thinned to 7 Hz, at most 4 samples in 0.5 s",
+    "effector": "left_palm",
+    "episode_id": "zoo_dual_arm-joint_beyond_limit-03",
+    "false_success": false,
+    "kind": "sparse",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "newest_z_m": 0.352389,
+        "opposed_fraction": 1.0,
+        "peak_force_n": 2.421374
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "contact:left_palm",
+        "camera:front"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "held",
+    "time_s": 10.5,
+    "trace_sha256": "b81e8090e3fed8b522db33794f784aea776d081d0666664b82c2fae2e13966c6",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.06
+      },
+      "fallback": "re_observe",
+      "reason": "stale:contact:left_palm",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "['contact:palm'] frozen at 9.450 s, 0.30 s before the decision",
+    "effector": "palm",
+    "episode_id": "zoo_long_arm-holding_into_free-02",
+    "false_success": false,
+    "kind": "stale",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "opposed_fraction": 1.0,
+        "peak_force_n": 2.423345
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "contact:palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "held",
+    "time_s": 9.75,
+    "trace_sha256": "c52daa0f21543984e5c4efb51fe5879d063482a71006ec9f5cea429a724cf9fd",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.3
+      },
+      "fallback": "re_observe",
+      "reason": "stale:contact:palm",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-without-contact_force",
+    "description": "no sensor of kind contact_force",
+    "effector": "palm",
+    "episode_id": "zoo_long_arm-holding_into_free-02",
+    "false_success": false,
+    "kind": "absent",
+    "label": true,
+    "naive": null,
+    "naive_would_pass": false,
+    "predicate": "held",
+    "time_s": 9.75,
+    "trace_sha256": "c52daa0f21543984e5c4efb51fe5879d063482a71006ec9f5cea429a724cf9fd",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:contact_force",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-sparse",
+    "description": "['contact:palm'] thinned to 7 Hz, at most 4 samples in 0.5 s",
+    "effector": "palm",
+    "episode_id": "zoo_long_arm-holding_into_free-02",
+    "false_success": false,
+    "kind": "sparse",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "opposed_fraction": 1.0,
+        "peak_force_n": 2.421678
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "contact:palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "held",
+    "time_s": 9.75,
+    "trace_sha256": "c52daa0f21543984e5c4efb51fe5879d063482a71006ec9f5cea429a724cf9fd",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.075
+      },
+      "fallback": "re_observe",
+      "reason": "stale:contact:palm",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "['contact:palm'] frozen at 19.200 s, 0.30 s before the decision",
+    "effector": "palm",
+    "episode_id": "zoo_long_arm-joint_inside_margin-02",
+    "false_success": false,
+    "kind": "stale",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "opposed_fraction": 1.0,
+        "peak_force_n": 2.459417
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "contact:palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "held",
+    "time_s": 19.5,
+    "trace_sha256": "43a884a733af5d8331aa3a45981cc6aee2a5c78b3b8e084264373820b57b0396",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.3
+      },
+      "fallback": "re_observe",
+      "reason": "stale:contact:palm",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-without-contact_force",
+    "description": "no sensor of kind contact_force",
+    "effector": "palm",
+    "episode_id": "zoo_long_arm-joint_inside_margin-02",
+    "false_success": false,
+    "kind": "absent",
+    "label": true,
+    "naive": null,
+    "naive_would_pass": false,
+    "predicate": "held",
+    "time_s": 19.5,
+    "trace_sha256": "43a884a733af5d8331aa3a45981cc6aee2a5c78b3b8e084264373820b57b0396",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:contact_force",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-sparse",
+    "description": "['contact:palm'] thinned to 7 Hz, at most 4 samples in 0.5 s",
+    "effector": "palm",
+    "episode_id": "zoo_long_arm-joint_inside_margin-02",
+    "false_success": false,
+    "kind": "sparse",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "opposed_fraction": 1.0,
+        "peak_force_n": 2.422065
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "contact:palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "held",
+    "time_s": 19.5,
+    "trace_sha256": "43a884a733af5d8331aa3a45981cc6aee2a5c78b3b8e084264373820b57b0396",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.07
+      },
+      "fallback": "re_observe",
+      "reason": "stale:contact:palm",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "['contact:palm'] frozen at 11.200 s, 0.30 s before the decision",
+    "effector": "palm",
+    "episode_id": "zoo_long_arm-feasible-000",
+    "false_success": false,
+    "kind": "stale",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "newest_z_m": 0.347312,
+        "opposed_fraction": 1.0,
+        "peak_force_n": 2.336419
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "contact:palm",
+        "camera:front"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "held",
+    "time_s": 11.5,
+    "trace_sha256": "9ffa678b83d1ad34007b02429719f1122bc90c80e36c90be588dcc81c5a4c01c",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.3
+      },
+      "fallback": "re_observe",
+      "reason": "stale:contact:palm",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-without-contact_force",
+    "description": "no sensor of kind contact_force",
+    "effector": "palm",
+    "episode_id": "zoo_long_arm-feasible-000",
+    "false_success": false,
+    "kind": "absent",
+    "label": true,
+    "naive": null,
+    "naive_would_pass": false,
+    "predicate": "held",
+    "time_s": 11.5,
+    "trace_sha256": "9ffa678b83d1ad34007b02429719f1122bc90c80e36c90be588dcc81c5a4c01c",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:contact_force",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-sparse",
+    "description": "['contact:palm'] thinned to 7 Hz, at most 4 samples in 0.5 s",
+    "effector": "palm",
+    "episode_id": "zoo_long_arm-feasible-000",
+    "false_success": false,
+    "kind": "sparse",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "newest_z_m": 0.343477,
+        "opposed_fraction": 1.0,
+        "peak_force_n": 2.341903
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "contact:palm",
+        "camera:front"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "held",
+    "time_s": 11.5,
+    "trace_sha256": "9ffa678b83d1ad34007b02429719f1122bc90c80e36c90be588dcc81c5a4c01c",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "samples": 4.0
+      },
+      "fallback": "re_observe",
+      "reason": "insufficient_samples:contact_force",
+      "sensors": [
+        "contact:palm"
+      ]
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "a screen 0.6 m square between the front camera and the fixtures",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-feasible-004",
+    "false_success": false,
+    "kind": "occlusion",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "moving_with_robot",
+    "time_s": 11.5,
+    "trace_sha256": "0ec516422b838a2f8d7122f7b4d536379532e5537ca05d8ec20a5d0b614f5138",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "['camera:front'] frozen at 11.050 s, 0.45 s before the decision",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-feasible-004",
+    "false_success": false,
+    "kind": "stale",
+    "label": true,
+    "naive": {
+      "decision": "fail",
+      "detail": {
+        "allowed_mismatch_m": 0.025037,
+        "effector_speed_mps": 0.077704,
+        "effector_travel_m": 0.038075,
+        "mismatch_m": 0.031953,
+        "paired": 1.0
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "camera:front",
+        "effector_pose:palm"
+      ]
+    },
+    "naive_would_pass": false,
+    "predicate": "moving_with_robot",
+    "time_s": 11.5,
+    "trace_sha256": "0ec516422b838a2f8d7122f7b4d536379532e5537ca05d8ec20a5d0b614f5138",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.467
+      },
+      "fallback": "re_observe",
+      "reason": "stale:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-without-object_pose",
+    "description": "no sensor of kind object_pose",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-feasible-004",
+    "false_success": false,
+    "kind": "absent",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "moving_with_robot",
+    "time_s": 11.5,
+    "trace_sha256": "0ec516422b838a2f8d7122f7b4d536379532e5537ca05d8ec20a5d0b614f5138",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-sparse",
+    "description": "['camera:front'] thinned to 7 Hz, at most 4 samples in 0.5 s",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-feasible-004",
+    "false_success": false,
+    "kind": "sparse",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "allowed_mismatch_m": 0.027132,
+        "effector_speed_mps": 0.086251,
+        "effector_travel_m": 0.042263,
+        "mismatch_m": 0.004032,
+        "paired": 1.0
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "camera:front",
+        "effector_pose:palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "moving_with_robot",
+    "time_s": 11.5,
+    "trace_sha256": "0ec516422b838a2f8d7122f7b4d536379532e5537ca05d8ec20a5d0b614f5138",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "samples": 3.0
+      },
+      "fallback": "re_observe",
+      "reason": "insufficient_samples:object_pose",
+      "sensors": [
+        "camera:front"
+      ]
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "a screen 0.6 m square between the front camera and the fixtures",
+    "effector": "left_palm",
+    "episode_id": "zoo_dual_arm-belief_stale-00",
+    "false_success": false,
+    "kind": "occlusion",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "moving_with_robot",
+    "time_s": 6.5,
+    "trace_sha256": "3c7a3be21b9d44ac37471547e97c8880ea52e438f32f8ce0f55e042d343050f7",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "['camera:front'] frozen at 6.050 s, 0.45 s before the decision",
+    "effector": "left_palm",
+    "episode_id": "zoo_dual_arm-belief_stale-00",
+    "false_success": false,
+    "kind": "stale",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "allowed_mismatch_m": 0.021935,
+        "effector_speed_mps": 0.065042,
+        "effector_travel_m": 0.031871,
+        "mismatch_m": 0.003926,
+        "paired": 1.0
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "camera:front",
+        "effector_pose:left_palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "moving_with_robot",
+    "time_s": 6.5,
+    "trace_sha256": "3c7a3be21b9d44ac37471547e97c8880ea52e438f32f8ce0f55e042d343050f7",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.467
+      },
+      "fallback": "re_observe",
+      "reason": "stale:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-without-object_pose",
+    "description": "no sensor of kind object_pose",
+    "effector": "left_palm",
+    "episode_id": "zoo_dual_arm-belief_stale-00",
+    "false_success": false,
+    "kind": "absent",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "moving_with_robot",
+    "time_s": 6.5,
+    "trace_sha256": "3c7a3be21b9d44ac37471547e97c8880ea52e438f32f8ce0f55e042d343050f7",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-sparse",
+    "description": "['camera:front'] thinned to 7 Hz, at most 4 samples in 0.5 s",
+    "effector": "left_palm",
+    "episode_id": "zoo_dual_arm-belief_stale-00",
+    "false_success": false,
+    "kind": "sparse",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "allowed_mismatch_m": 0.024374,
+        "effector_speed_mps": 0.074996,
+        "effector_travel_m": 0.036748,
+        "mismatch_m": 0.00451,
+        "paired": 1.0
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "camera:front",
+        "effector_pose:left_palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "moving_with_robot",
+    "time_s": 6.5,
+    "trace_sha256": "3c7a3be21b9d44ac37471547e97c8880ea52e438f32f8ce0f55e042d343050f7",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "samples": 3.0
+      },
+      "fallback": "re_observe",
+      "reason": "insufficient_samples:object_pose",
+      "sensors": [
+        "camera:front"
+      ]
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "a screen 0.6 m square between the front camera and the fixtures",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-feasible-003",
+    "false_success": false,
+    "kind": "occlusion",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "moving_with_robot",
+    "time_s": 10.5,
+    "trace_sha256": "54e7f599eb1930f0c0bd0fbef2c630e68a9a485ae486fca168f3a5c9604b921e",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "['camera:front'] frozen at 10.050 s, 0.45 s before the decision",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-feasible-003",
+    "false_success": false,
+    "kind": "stale",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "allowed_mismatch_m": 0.034586,
+        "effector_speed_mps": 0.116679,
+        "effector_travel_m": 0.057173,
+        "mismatch_m": 0.004881,
+        "paired": 1.0
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "camera:front",
+        "effector_pose:palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "moving_with_robot",
+    "time_s": 10.5,
+    "trace_sha256": "54e7f599eb1930f0c0bd0fbef2c630e68a9a485ae486fca168f3a5c9604b921e",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.467
+      },
+      "fallback": "re_observe",
+      "reason": "stale:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-without-object_pose",
+    "description": "no sensor of kind object_pose",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-feasible-003",
+    "false_success": false,
+    "kind": "absent",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "moving_with_robot",
+    "time_s": 10.5,
+    "trace_sha256": "54e7f599eb1930f0c0bd0fbef2c630e68a9a485ae486fca168f3a5c9604b921e",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-sparse",
+    "description": "['camera:front'] thinned to 7 Hz, at most 4 samples in 0.5 s",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-feasible-003",
+    "false_success": false,
+    "kind": "sparse",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "allowed_mismatch_m": 0.032946,
+        "effector_speed_mps": 0.109984,
+        "effector_travel_m": 0.053892,
+        "mismatch_m": 0.008584,
+        "paired": 1.0
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "camera:front",
+        "effector_pose:palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "moving_with_robot",
+    "time_s": 10.5,
+    "trace_sha256": "54e7f599eb1930f0c0bd0fbef2c630e68a9a485ae486fca168f3a5c9604b921e",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "samples": 3.0
+      },
+      "fallback": "re_observe",
+      "reason": "insufficient_samples:object_pose",
+      "sensors": [
+        "camera:front"
+      ]
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "a screen 0.6 m square between the front camera and the fixtures",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-feasible-005",
+    "false_success": false,
+    "kind": "occlusion",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "moving_with_robot",
+    "time_s": 6.5,
+    "trace_sha256": "767b6d2ed36b65b009ae683570cd71d5741c3783da54efa62038684da78d3edf",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "['camera:front'] frozen at 6.050 s, 0.45 s before the decision",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-feasible-005",
+    "false_success": false,
+    "kind": "stale",
+    "label": true,
+    "naive": {
+      "decision": "fail",
+      "detail": {
+        "allowed_mismatch_m": 0.006955,
+        "effector_speed_mps": 0.003897,
+        "effector_travel_m": 0.001909,
+        "mismatch_m": 0.011855,
+        "paired": 1.0
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "camera:front",
+        "effector_pose:palm"
+      ]
+    },
+    "naive_would_pass": false,
+    "predicate": "moving_with_robot",
+    "time_s": 6.5,
+    "trace_sha256": "767b6d2ed36b65b009ae683570cd71d5741c3783da54efa62038684da78d3edf",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.467
+      },
+      "fallback": "re_observe",
+      "reason": "stale:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-without-object_pose",
+    "description": "no sensor of kind object_pose",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-feasible-005",
+    "false_success": false,
+    "kind": "absent",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "moving_with_robot",
+    "time_s": 6.5,
+    "trace_sha256": "767b6d2ed36b65b009ae683570cd71d5741c3783da54efa62038684da78d3edf",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-sparse",
+    "description": "['camera:front'] thinned to 7 Hz, at most 4 samples in 0.5 s",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-feasible-005",
+    "false_success": false,
+    "kind": "sparse",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "allowed_mismatch_m": 0.023125,
+        "effector_speed_mps": 0.069899,
+        "effector_travel_m": 0.034251,
+        "mismatch_m": 0.003628,
+        "paired": 1.0
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "camera:front",
+        "effector_pose:palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "moving_with_robot",
+    "time_s": 6.5,
+    "trace_sha256": "767b6d2ed36b65b009ae683570cd71d5741c3783da54efa62038684da78d3edf",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "samples": 3.0
+      },
+      "fallback": "re_observe",
+      "reason": "insufficient_samples:object_pose",
+      "sensors": [
+        "camera:front"
+      ]
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "a screen 0.6 m square between the front camera and the fixtures",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-contact-mode-change-before",
+    "false_success": false,
+    "kind": "occlusion",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "moving_with_robot",
+    "time_s": 6.75,
+    "trace_sha256": "458d3403e20f0da69ebe190ee602663803c0fe6a5dc1ce5c324b23aa09cff305",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "['camera:front'] frozen at 6.300 s, 0.45 s before the decision",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-contact-mode-change-before",
+    "false_success": false,
+    "kind": "stale",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "allowed_mismatch_m": 0.018601,
+        "effector_speed_mps": 0.051433,
+        "effector_travel_m": 0.025202,
+        "mismatch_m": 0.003591,
+        "paired": 1.0
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "camera:front",
+        "effector_pose:palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "moving_with_robot",
+    "time_s": 6.75,
+    "trace_sha256": "458d3403e20f0da69ebe190ee602663803c0fe6a5dc1ce5c324b23aa09cff305",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.467
+      },
+      "fallback": "re_observe",
+      "reason": "stale:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-without-object_pose",
+    "description": "no sensor of kind object_pose",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-contact-mode-change-before",
+    "false_success": false,
+    "kind": "absent",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "moving_with_robot",
+    "time_s": 6.75,
+    "trace_sha256": "458d3403e20f0da69ebe190ee602663803c0fe6a5dc1ce5c324b23aa09cff305",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-sparse",
+    "description": "['camera:front'] thinned to 7 Hz, at most 4 samples in 0.5 s",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-contact-mode-change-before",
+    "false_success": false,
+    "kind": "sparse",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "allowed_mismatch_m": 0.024376,
+        "effector_speed_mps": 0.075002,
+        "effector_travel_m": 0.036751,
+        "mismatch_m": 0.008369,
+        "paired": 1.0
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "camera:front",
+        "effector_pose:palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "moving_with_robot",
+    "time_s": 6.75,
+    "trace_sha256": "458d3403e20f0da69ebe190ee602663803c0fe6a5dc1ce5c324b23aa09cff305",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "samples": 3.0
+      },
+      "fallback": "re_observe",
+      "reason": "insufficient_samples:object_pose",
+      "sensors": [
+        "camera:front"
+      ]
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "a screen 0.6 m square between the front camera and the fixtures",
+    "effector": "right_palm",
+    "episode_id": "zoo_dual_arm-feasible-002",
+    "false_success": false,
+    "kind": "occlusion",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "stably_placed",
+    "time_s": 14.5,
+    "trace_sha256": "55173529a03adb73ecebbf74ddcc2e4abe08e72a2825562b2e665a87a6ac551b",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "['camera:front'] frozen at 14.050 s, 0.45 s before the decision",
+    "effector": "right_palm",
+    "episode_id": "zoo_dual_arm-feasible-002",
+    "false_success": false,
+    "kind": "stale",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "drift_speed_mps": 0.002588,
+        "inside": 1.0,
+        "released": 1.0,
+        "samples": 54.0,
+        "spread_m": 0.006604
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "camera:front",
+        "region",
+        "contact:right_palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "stably_placed",
+    "time_s": 14.5,
+    "trace_sha256": "55173529a03adb73ecebbf74ddcc2e4abe08e72a2825562b2e665a87a6ac551b",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.467
+      },
+      "fallback": "re_observe",
+      "reason": "stale:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-without-object_pose",
+    "description": "no sensor of kind object_pose",
+    "effector": "right_palm",
+    "episode_id": "zoo_dual_arm-feasible-002",
+    "false_success": false,
+    "kind": "absent",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "stably_placed",
+    "time_s": 14.5,
+    "trace_sha256": "55173529a03adb73ecebbf74ddcc2e4abe08e72a2825562b2e665a87a6ac551b",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-sparse",
+    "description": "['camera:front'] thinned to 4.25 Hz, at most 9 samples in 2 s",
+    "effector": "right_palm",
+    "episode_id": "zoo_dual_arm-feasible-002",
+    "false_success": false,
+    "kind": "sparse",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "drift_speed_mps": 0.00189,
+        "inside": 1.0,
+        "released": 1.0,
+        "samples": 8.0,
+        "spread_m": 0.004463
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "camera:front",
+        "region",
+        "contact:right_palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "stably_placed",
+    "time_s": 14.5,
+    "trace_sha256": "55173529a03adb73ecebbf74ddcc2e4abe08e72a2825562b2e665a87a6ac551b",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "samples": 8.0
+      },
+      "fallback": "re_observe",
+      "reason": "insufficient_samples:object_pose",
+      "sensors": [
+        "camera:front"
+      ]
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "a screen 0.6 m square between the front camera and the fixtures",
+    "effector": "left_palm",
+    "episode_id": "zoo_dual_arm-joint_beyond_limit-06",
+    "false_success": false,
+    "kind": "occlusion",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "stably_placed",
+    "time_s": 19.5,
+    "trace_sha256": "5a7efd408069e5b6917e4119d5f10ff1f25f44cbe9d4f83328f7251b14a5dc46",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "['camera:front'] frozen at 19.050 s, 0.45 s before the decision",
+    "effector": "left_palm",
+    "episode_id": "zoo_dual_arm-joint_beyond_limit-06",
+    "false_success": false,
+    "kind": "stale",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.57377
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "stably_placed",
+    "time_s": 19.5,
+    "trace_sha256": "5a7efd408069e5b6917e4119d5f10ff1f25f44cbe9d4f83328f7251b14a5dc46",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.467
+      },
+      "fallback": "re_observe",
+      "reason": "stale:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-without-object_pose",
+    "description": "no sensor of kind object_pose",
+    "effector": "left_palm",
+    "episode_id": "zoo_dual_arm-joint_beyond_limit-06",
+    "false_success": false,
+    "kind": "absent",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "stably_placed",
+    "time_s": 19.5,
+    "trace_sha256": "5a7efd408069e5b6917e4119d5f10ff1f25f44cbe9d4f83328f7251b14a5dc46",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-sparse",
+    "description": "['camera:front'] thinned to 4.25 Hz, at most 9 samples in 2 s",
+    "effector": "left_palm",
+    "episode_id": "zoo_dual_arm-joint_beyond_limit-06",
+    "false_success": false,
+    "kind": "sparse",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "drift_speed_mps": 0.002578,
+        "inside": 1.0,
+        "released": 1.0,
+        "samples": 7.0,
+        "spread_m": 0.003976
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "camera:front",
+        "region",
+        "contact:left_palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "stably_placed",
+    "time_s": 19.5,
+    "trace_sha256": "5a7efd408069e5b6917e4119d5f10ff1f25f44cbe9d4f83328f7251b14a5dc46",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "samples": 7.0
+      },
+      "fallback": "re_observe",
+      "reason": "insufficient_samples:object_pose",
+      "sensors": [
+        "camera:front"
+      ]
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "a screen 0.6 m square between the front camera and the fixtures",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-joint_inside_margin-04",
+    "false_success": false,
+    "kind": "occlusion",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "stably_placed",
+    "time_s": 16.5,
+    "trace_sha256": "2dd293450bc8e6459216cdd000890248bbadc5a22a7578e31960c380d8dd797a",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "['camera:front'] frozen at 16.050 s, 0.45 s before the decision",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-joint_inside_margin-04",
+    "false_success": false,
+    "kind": "stale",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "drift_speed_mps": 0.002536,
+        "inside": 1.0,
+        "released": 1.0,
+        "samples": 53.0,
+        "spread_m": 0.007274
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "camera:front",
+        "region",
+        "contact:palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "stably_placed",
+    "time_s": 16.5,
+    "trace_sha256": "2dd293450bc8e6459216cdd000890248bbadc5a22a7578e31960c380d8dd797a",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.467
+      },
+      "fallback": "re_observe",
+      "reason": "stale:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-without-object_pose",
+    "description": "no sensor of kind object_pose",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-joint_inside_margin-04",
+    "false_success": false,
+    "kind": "absent",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "stably_placed",
+    "time_s": 16.5,
+    "trace_sha256": "2dd293450bc8e6459216cdd000890248bbadc5a22a7578e31960c380d8dd797a",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-sparse",
+    "description": "['camera:front'] thinned to 4.25 Hz, at most 9 samples in 2 s",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-joint_inside_margin-04",
+    "false_success": false,
+    "kind": "sparse",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "drift_speed_mps": 0.001795,
+        "inside": 1.0,
+        "released": 1.0,
+        "samples": 8.0,
+        "spread_m": 0.005694
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "camera:front",
+        "region",
+        "contact:palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "stably_placed",
+    "time_s": 16.5,
+    "trace_sha256": "2dd293450bc8e6459216cdd000890248bbadc5a22a7578e31960c380d8dd797a",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.200333
+      },
+      "fallback": "re_observe",
+      "reason": "stale:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "a screen 0.6 m square between the front camera and the fixtures",
+    "effector": "palm",
+    "episode_id": "zoo_long_arm-feasible-004",
+    "false_success": false,
+    "kind": "occlusion",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "stably_placed",
+    "time_s": 17.5,
+    "trace_sha256": "92966184b5761f111bc85f1e766b7458c589a77d8ec1c31f7ddbed5d245dddf4",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "['camera:front'] frozen at 17.050 s, 0.45 s before the decision",
+    "effector": "palm",
+    "episode_id": "zoo_long_arm-feasible-004",
+    "false_success": false,
+    "kind": "stale",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "drift_speed_mps": 0.001121,
+        "inside": 1.0,
+        "released": 1.0,
+        "samples": 61.0,
+        "spread_m": 0.006481
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "camera:front",
+        "region",
+        "contact:palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "stably_placed",
+    "time_s": 17.5,
+    "trace_sha256": "92966184b5761f111bc85f1e766b7458c589a77d8ec1c31f7ddbed5d245dddf4",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.467
+      },
+      "fallback": "re_observe",
+      "reason": "stale:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-without-object_pose",
+    "description": "no sensor of kind object_pose",
+    "effector": "palm",
+    "episode_id": "zoo_long_arm-feasible-004",
+    "false_success": false,
+    "kind": "absent",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "stably_placed",
+    "time_s": 17.5,
+    "trace_sha256": "92966184b5761f111bc85f1e766b7458c589a77d8ec1c31f7ddbed5d245dddf4",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-sparse",
+    "description": "['camera:front'] thinned to 4.25 Hz, at most 9 samples in 2 s",
+    "effector": "palm",
+    "episode_id": "zoo_long_arm-feasible-004",
+    "false_success": false,
+    "kind": "sparse",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "drift_speed_mps": 0.002561,
+        "inside": 1.0,
+        "released": 1.0,
+        "samples": 8.0,
+        "spread_m": 0.004571
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "camera:front",
+        "region",
+        "contact:palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "stably_placed",
+    "time_s": 17.5,
+    "trace_sha256": "92966184b5761f111bc85f1e766b7458c589a77d8ec1c31f7ddbed5d245dddf4",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "samples": 7.0
+      },
+      "fallback": "re_observe",
+      "reason": "insufficient_samples:object_pose",
+      "sensors": [
+        "camera:front"
+      ]
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "a screen 0.6 m square between the front camera and the fixtures",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-carry-to-place-before",
+    "false_success": false,
+    "kind": "occlusion",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "stably_placed",
+    "time_s": 12.75,
+    "trace_sha256": "fcd5a6c17aa18163774e1edd33e5a7c64b842d8f8fa1e6e9681d297a8c364285",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "['camera:front'] frozen at 12.300 s, 0.45 s before the decision",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-carry-to-place-before",
+    "false_success": false,
+    "kind": "stale",
+    "label": true,
+    "naive": {
+      "decision": "fail",
+      "detail": {
+        "drift_speed_mps": 0.006135,
+        "inside": 1.0,
+        "released": 0.0,
+        "samples": 61.0,
+        "spread_m": 0.014465
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "camera:front",
+        "region",
+        "contact:palm"
+      ]
+    },
+    "naive_would_pass": false,
+    "predicate": "stably_placed",
+    "time_s": 12.75,
+    "trace_sha256": "fcd5a6c17aa18163774e1edd33e5a7c64b842d8f8fa1e6e9681d297a8c364285",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.467
+      },
+      "fallback": "re_observe",
+      "reason": "stale:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-without-object_pose",
+    "description": "no sensor of kind object_pose",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-carry-to-place-before",
+    "false_success": false,
+    "kind": "absent",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "stably_placed",
+    "time_s": 12.75,
+    "trace_sha256": "fcd5a6c17aa18163774e1edd33e5a7c64b842d8f8fa1e6e9681d297a8c364285",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-sparse",
+    "description": "['camera:front'] thinned to 4.25 Hz, at most 9 samples in 2 s",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-carry-to-place-before",
+    "false_success": false,
+    "kind": "sparse",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "drift_speed_mps": 0.002096,
+        "inside": 1.0,
+        "released": 1.0,
+        "samples": 8.0,
+        "spread_m": 0.004492
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "camera:front",
+        "region",
+        "contact:palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "stably_placed",
+    "time_s": 12.75,
+    "trace_sha256": "fcd5a6c17aa18163774e1edd33e5a7c64b842d8f8fa1e6e9681d297a8c364285",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.200333
+      },
+      "fallback": "re_observe",
+      "reason": "stale:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "a screen 0.6 m square between the front camera and the fixtures",
+    "effector": "palm",
+    "episode_id": "zoo_hand_arm-seed003",
+    "false_success": false,
+    "kind": "occlusion",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "area_clear",
+    "time_s": 8.75,
+    "trace_sha256": "f46eecbc0211f3d80da5ec4ac05f4519ce96859ddea2cfd29df3bbe8a8ce0165",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "['camera:front'] frozen at 8.300 s, 0.45 s before the decision",
+    "effector": "palm",
+    "episode_id": "zoo_hand_arm-seed003",
+    "false_success": false,
+    "kind": "stale",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "samples": 16.0,
+        "samples_inside": 0.0
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "camera:front",
+        "region"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "area_clear",
+    "time_s": 8.75,
+    "trace_sha256": "f46eecbc0211f3d80da5ec4ac05f4519ce96859ddea2cfd29df3bbe8a8ce0165",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.467
+      },
+      "fallback": "re_observe",
+      "reason": "stale:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-without-object_pose",
+    "description": "no sensor of kind object_pose",
+    "effector": "palm",
+    "episode_id": "zoo_hand_arm-seed003",
+    "false_success": false,
+    "kind": "absent",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "area_clear",
+    "time_s": 8.75,
+    "trace_sha256": "f46eecbc0211f3d80da5ec4ac05f4519ce96859ddea2cfd29df3bbe8a8ce0165",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-sparse",
+    "description": "['camera:front'] thinned to 3 Hz, at most 2 samples in 0.5 s",
+    "effector": "palm",
+    "episode_id": "zoo_hand_arm-seed003",
+    "false_success": false,
+    "kind": "sparse",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "samples": 2.0,
+        "samples_inside": 0.0
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "camera:front",
+        "region"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "area_clear",
+    "time_s": 8.75,
+    "trace_sha256": "f46eecbc0211f3d80da5ec4ac05f4519ce96859ddea2cfd29df3bbe8a8ce0165",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "samples": 2.0
+      },
+      "fallback": "re_observe",
+      "reason": "insufficient_samples:object_pose",
+      "sensors": [
+        "camera:front"
+      ]
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "a screen 0.6 m square between the front camera and the fixtures",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-seed052",
+    "false_success": false,
+    "kind": "occlusion",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "area_clear",
+    "time_s": 0.7500000000000002,
+    "trace_sha256": "0c7e44fcbf6538b308da6888c273cc1bbb99527a8e1a5ba204bcf0b962bf1a83",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "['camera:front'] frozen at 0.300 s, 0.45 s before the decision",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-seed052",
+    "false_success": false,
+    "kind": "stale",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "samples": 1.0,
+        "samples_inside": 0.0
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "camera:front",
+        "region"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "area_clear",
+    "time_s": 0.7500000000000002,
+    "trace_sha256": "0c7e44fcbf6538b308da6888c273cc1bbb99527a8e1a5ba204bcf0b962bf1a83",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.467
+      },
+      "fallback": "re_observe",
+      "reason": "stale:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-without-object_pose",
+    "description": "no sensor of kind object_pose",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-seed052",
+    "false_success": false,
+    "kind": "absent",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "area_clear",
+    "time_s": 0.7500000000000002,
+    "trace_sha256": "0c7e44fcbf6538b308da6888c273cc1bbb99527a8e1a5ba204bcf0b962bf1a83",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-sparse",
+    "description": "['camera:front'] thinned to 3 Hz, at most 2 samples in 0.5 s",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-seed052",
+    "false_success": false,
+    "kind": "sparse",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "samples": 2.0,
+        "samples_inside": 0.0
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "camera:front",
+        "region"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "area_clear",
+    "time_s": 0.7500000000000002,
+    "trace_sha256": "0c7e44fcbf6538b308da6888c273cc1bbb99527a8e1a5ba204bcf0b962bf1a83",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "samples": 2.0
+      },
+      "fallback": "re_observe",
+      "reason": "insufficient_samples:object_pose",
+      "sensors": [
+        "camera:front"
+      ]
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "a screen 0.6 m square between the front camera and the fixtures",
+    "effector": "palm",
+    "episode_id": "zoo_long_arm-joint_inside_margin-05",
+    "false_success": false,
+    "kind": "occlusion",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "area_clear",
+    "time_s": 12.5,
+    "trace_sha256": "820b96d595c7f90dc5662cc995e9461922bf909fc3552aab8b8219aa8516e188",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "['camera:front'] frozen at 12.050 s, 0.45 s before the decision",
+    "effector": "palm",
+    "episode_id": "zoo_long_arm-joint_inside_margin-05",
+    "false_success": false,
+    "kind": "stale",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "samples": 16.0,
+        "samples_inside": 0.0
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "camera:front",
+        "region"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "area_clear",
+    "time_s": 12.5,
+    "trace_sha256": "820b96d595c7f90dc5662cc995e9461922bf909fc3552aab8b8219aa8516e188",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.467
+      },
+      "fallback": "re_observe",
+      "reason": "stale:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-without-object_pose",
+    "description": "no sensor of kind object_pose",
+    "effector": "palm",
+    "episode_id": "zoo_long_arm-joint_inside_margin-05",
+    "false_success": false,
+    "kind": "absent",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "area_clear",
+    "time_s": 12.5,
+    "trace_sha256": "820b96d595c7f90dc5662cc995e9461922bf909fc3552aab8b8219aa8516e188",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-sparse",
+    "description": "['camera:front'] thinned to 3 Hz, at most 2 samples in 0.5 s",
+    "effector": "palm",
+    "episode_id": "zoo_long_arm-joint_inside_margin-05",
+    "false_success": false,
+    "kind": "sparse",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "samples": 2.0,
+        "samples_inside": 0.0
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "camera:front",
+        "region"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "area_clear",
+    "time_s": 12.5,
+    "trace_sha256": "820b96d595c7f90dc5662cc995e9461922bf909fc3552aab8b8219aa8516e188",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "samples": 2.0
+      },
+      "fallback": "re_observe",
+      "reason": "insufficient_samples:object_pose",
+      "sensors": [
+        "camera:front"
+      ]
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "a screen 0.6 m square between the front camera and the fixtures",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-contact-mode-change-before",
+    "false_success": false,
+    "kind": "occlusion",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "area_clear",
+    "time_s": 2.75,
+    "trace_sha256": "458d3403e20f0da69ebe190ee602663803c0fe6a5dc1ce5c324b23aa09cff305",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "['camera:front'] frozen at 2.300 s, 0.45 s before the decision",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-contact-mode-change-before",
+    "false_success": false,
+    "kind": "stale",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "samples": 16.0,
+        "samples_inside": 0.0
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "camera:front",
+        "region"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "area_clear",
+    "time_s": 2.75,
+    "trace_sha256": "458d3403e20f0da69ebe190ee602663803c0fe6a5dc1ce5c324b23aa09cff305",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.467
+      },
+      "fallback": "re_observe",
+      "reason": "stale:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-without-object_pose",
+    "description": "no sensor of kind object_pose",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-contact-mode-change-before",
+    "false_success": false,
+    "kind": "absent",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "area_clear",
+    "time_s": 2.75,
+    "trace_sha256": "458d3403e20f0da69ebe190ee602663803c0fe6a5dc1ce5c324b23aa09cff305",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-sparse",
+    "description": "['camera:front'] thinned to 3 Hz, at most 2 samples in 0.5 s",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-contact-mode-change-before",
+    "false_success": false,
+    "kind": "sparse",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "samples": 2.0,
+        "samples_inside": 0.0
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "camera:front",
+        "region"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "area_clear",
+    "time_s": 2.75,
+    "trace_sha256": "458d3403e20f0da69ebe190ee602663803c0fe6a5dc1ce5c324b23aa09cff305",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "samples": 2.0
+      },
+      "fallback": "re_observe",
+      "reason": "insufficient_samples:object_pose",
+      "sensors": [
+        "camera:front"
+      ]
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "a screen 0.6 m square between the front camera and the fixtures",
+    "effector": "right_palm",
+    "episode_id": "zoo_dual_arm-joint-limit-approach-before",
+    "false_success": false,
+    "kind": "occlusion",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "area_clear",
+    "time_s": 0.5,
+    "trace_sha256": "c4ed42cf0bf2dc90426a4bbae803b3a495a899171fd5fedc8cf571539d145320",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "valid_fraction": 0.0
+      },
+      "fallback": "re_observe",
+      "reason": "occluded:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "['camera:front'] frozen at 0.050 s, 0.45 s before the decision",
+    "effector": "right_palm",
+    "episode_id": "zoo_dual_arm-joint-limit-approach-before",
+    "false_success": false,
+    "kind": "stale",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "samples": 1.0,
+        "samples_inside": 0.0
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "camera:front",
+        "region"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "area_clear",
+    "time_s": 0.5,
+    "trace_sha256": "c4ed42cf0bf2dc90426a4bbae803b3a495a899171fd5fedc8cf571539d145320",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "age_s": 0.467
+      },
+      "fallback": "re_observe",
+      "reason": "stale:camera:front",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-without-object_pose",
+    "description": "no sensor of kind object_pose",
+    "effector": "right_palm",
+    "episode_id": "zoo_dual_arm-joint-limit-approach-before",
+    "false_success": false,
+    "kind": "absent",
+    "label": true,
+    "naive": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    },
+    "naive_would_pass": false,
+    "predicate": "area_clear",
+    "time_s": 0.5,
+    "trace_sha256": "c4ed42cf0bf2dc90426a4bbae803b3a495a899171fd5fedc8cf571539d145320",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "missing_source:object_pose",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact-sparse",
+    "description": "['camera:front'] thinned to 3 Hz, at most 2 samples in 0.5 s",
+    "effector": "right_palm",
+    "episode_id": "zoo_dual_arm-joint-limit-approach-before",
+    "false_success": false,
+    "kind": "sparse",
+    "label": true,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "samples": 2.0,
+        "samples_inside": 0.0
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "camera:front",
+        "region"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "area_clear",
+    "time_s": 0.5,
+    "trace_sha256": "c4ed42cf0bf2dc90426a4bbae803b3a495a899171fd5fedc8cf571539d145320",
+    "uncorrupted": "pass",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {
+        "samples": 2.0
+      },
+      "fallback": "re_observe",
+      "reason": "insufficient_samples:object_pose",
+      "sensors": [
+        "camera:front"
+      ]
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "the contact sensor frozen at 9.75 s while the hold was real; by 10.75 s the hold had ended (released or lost)",
+    "effector": "left_palm",
+    "episode_id": "zoo_dual_arm-seed000",
+    "false_success": false,
+    "kind": "stale_after_lost_hold",
+    "label": false,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "opposed_fraction": 1.0,
+        "peak_force_n": 2.18566
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "contact:left_palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "held",
+    "time_s": 10.75,
+    "trace_sha256": "12099c5c8e1a3dcd8dc11a6d552e306ef40001db65becfc359bc3760212299be",
+    "uncorrupted": "fail",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "stale:contact:left_palm:no_sample_in_window",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "the contact sensor frozen at 9.75 s while the hold was real; by 10.75 s the hold had ended (released or lost)",
+    "effector": "left_palm",
+    "episode_id": "zoo_dual_arm-seed001",
+    "false_success": false,
+    "kind": "stale_after_lost_hold",
+    "label": false,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "opposed_fraction": 1.0,
+        "peak_force_n": 3.119531
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "contact:left_palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "held",
+    "time_s": 10.75,
+    "trace_sha256": "15579736825e98c75e5b46e51757fa71a0018440e14c4994c25303fac89ebe64",
+    "uncorrupted": "fail",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "stale:contact:left_palm:no_sample_in_window",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "the contact sensor frozen at 9.75 s while the hold was real; by 10.75 s the hold had ended (released or lost)",
+    "effector": "left_palm",
+    "episode_id": "zoo_dual_arm-seed002",
+    "false_success": false,
+    "kind": "stale_after_lost_hold",
+    "label": false,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "opposed_fraction": 1.0,
+        "peak_force_n": 3.18198
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "contact:left_palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "held",
+    "time_s": 10.75,
+    "trace_sha256": "939c6236c1a7a6f33d9ed005e2c116f8b8c12184c96af0759f18f5fa39f76ac6",
+    "uncorrupted": "fail",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "stale:contact:left_palm:no_sample_in_window",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "the contact sensor frozen at 9.75 s while the hold was real; by 10.75 s the hold had ended (released or lost)",
+    "effector": "left_palm",
+    "episode_id": "zoo_dual_arm-seed003",
+    "false_success": false,
+    "kind": "stale_after_lost_hold",
+    "label": false,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "opposed_fraction": 1.0,
+        "peak_force_n": 2.368156
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "contact:left_palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "held",
+    "time_s": 10.75,
+    "trace_sha256": "72b366f243c14b384c5934493c545921644dad0c0ecdfbc934e83f34ebf067b3",
+    "uncorrupted": "fail",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "stale:contact:left_palm:no_sample_in_window",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "the contact sensor frozen at 9.75 s while the hold was real; by 10.75 s the hold had ended (released or lost)",
+    "effector": "left_palm",
+    "episode_id": "zoo_dual_arm-seed004",
+    "false_success": false,
+    "kind": "stale_after_lost_hold",
+    "label": false,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "opposed_fraction": 1.0,
+        "peak_force_n": 2.279893
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "contact:left_palm"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "held",
+    "time_s": 10.75,
+    "trace_sha256": "ce67b0d5b47fb9ab576b60339a66d3a03d9871572755af58ad442dd0b02e4d1e",
+    "uncorrupted": "fail",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "stale:contact:left_palm:no_sample_in_window",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "the contact sensor frozen at 10.75 s while the hold was real; by 11.75 s the hold had ended (released or lost)",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-seed000",
+    "false_success": false,
+    "kind": "stale_after_lost_hold",
+    "label": false,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "newest_z_m": 0.288956,
+        "opposed_fraction": 1.0,
+        "peak_force_n": 2.185622
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "contact:palm",
+        "camera:front"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "held",
+    "time_s": 11.75,
+    "trace_sha256": "349f94539024c9d2ab752f4698bfadaac28e12cbf35ac133f020b9b591cada83",
+    "uncorrupted": "fail",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "stale:contact:palm:no_sample_in_window",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "the contact sensor frozen at 10.75 s while the hold was real; by 11.75 s the hold had ended (released or lost)",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-seed001",
+    "false_success": false,
+    "kind": "stale_after_lost_hold",
+    "label": false,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "newest_z_m": 0.294173,
+        "opposed_fraction": 1.0,
+        "peak_force_n": 3.119279
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "contact:palm",
+        "camera:front"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "held",
+    "time_s": 11.75,
+    "trace_sha256": "71c5bde6e25c091e92be1bd0b72e9f1eaf2180a5d868891c28526523e09f2c61",
+    "uncorrupted": "fail",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "stale:contact:palm:no_sample_in_window",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "the contact sensor frozen at 10.75 s while the hold was real; by 11.75 s the hold had ended (released or lost)",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-seed002",
+    "false_success": false,
+    "kind": "stale_after_lost_hold",
+    "label": false,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "newest_z_m": 0.312885,
+        "opposed_fraction": 1.0,
+        "peak_force_n": 3.181727
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "contact:palm",
+        "camera:front"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "held",
+    "time_s": 11.75,
+    "trace_sha256": "a49e3888047aa7c7981e970aebc6d75c8cc7971ba5c5162521966bc117574020",
+    "uncorrupted": "fail",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "stale:contact:palm:no_sample_in_window",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "the contact sensor frozen at 10.75 s while the hold was real; by 11.75 s the hold had ended (released or lost)",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-seed003",
+    "false_success": false,
+    "kind": "stale_after_lost_hold",
+    "label": false,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "newest_z_m": 0.303606,
+        "opposed_fraction": 1.0,
+        "peak_force_n": 2.367704
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "contact:palm",
+        "camera:front"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "held",
+    "time_s": 11.75,
+    "trace_sha256": "ed1d5dc7a853d74924958605644a81fcbab48b1f8deb2aa7a22d979317ed020c",
+    "uncorrupted": "fail",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "stale:contact:palm:no_sample_in_window",
+      "sensors": []
+    }
+  },
+  {
+    "configuration": "front_contact",
+    "description": "the contact sensor frozen at 10.75 s while the hold was real; by 11.75 s the hold had ended (released or lost)",
+    "effector": "palm",
+    "episode_id": "zoo_jaw_arm-seed004",
+    "false_success": false,
+    "kind": "stale_after_lost_hold",
+    "label": false,
+    "naive": {
+      "decision": "pass",
+      "detail": {
+        "newest_z_m": 0.296042,
+        "opposed_fraction": 1.0,
+        "peak_force_n": 2.279821
+      },
+      "fallback": null,
+      "reason": "",
+      "sensors": [
+        "contact:palm",
+        "camera:front"
+      ]
+    },
+    "naive_would_pass": true,
+    "predicate": "held",
+    "time_s": 11.75,
+    "trace_sha256": "e3a7b990e7b591fec2919d7c7d7b16dc23e9a605e0d1d4146f82c9a3a66b1c79",
+    "uncorrupted": "fail",
+    "verdict": {
+      "decision": "unknown",
+      "detail": {},
+      "fallback": "re_observe",
+      "reason": "stale:contact:palm:no_sample_in_window",
+      "sensors": []
+    }
+  }
+]

@@ -1,0 +1,497 @@
+{
+  "calibration_episodes": 33,
+  "campaign_commit": "1c675397febbc666dc84232ab9faec44aac295e9",
+  "configurations": [
+    "contact_only",
+    "front_contact",
+    "front_contact_with_oracle",
+    "front_vision_only",
+    "overhead_contact",
+    "side_contact",
+    "side_vision_only"
+  ],
+  "d09": {
+    "hidden-slip": [
+      [
+        "overhead_contact",
+        "held",
+        "pass"
+      ],
+      [
+        "overhead_contact",
+        "held",
+        "fail"
+      ],
+      [
+        "side_vision_only",
+        "held",
+        "unknown"
+      ],
+      [
+        "side_vision_only",
+        "stably_placed",
+        "unknown"
+      ],
+      [
+        "side_vision_only",
+        "stably_placed",
+        "fail"
+      ]
+    ],
+    "occluded-placement": [
+      [
+        "overhead_contact",
+        "stably_placed",
+        "unknown"
+      ],
+      [
+        "front_contact",
+        "stably_placed",
+        "pass"
+      ],
+      [
+        "front_contact",
+        "held",
+        "pass"
+      ]
+    ],
+    "visible-grasp": [
+      [
+        "front_contact",
+        "held",
+        "pass"
+      ],
+      [
+        "front_contact",
+        "opposition_established",
+        "pass"
+      ],
+      [
+        "front_contact",
+        "moving_with_robot",
+        "pass"
+      ],
+      [
+        "overhead_contact",
+        "reachable",
+        "unknown"
+      ],
+      [
+        "overhead_contact",
+        "held",
+        "pass"
+      ]
+    ]
+  },
+  "d09_cases": [
+    {
+      "frames": 174,
+      "name": "visible-grasp",
+      "outcome": "success",
+      "trace_sha256": "349f94539024c9d2ab752f4698bfadaac28e12cbf35ac133f020b9b591cada83",
+      "video": "visible-grasp.mp4"
+    },
+    {
+      "frames": 145,
+      "name": "hidden-slip",
+      "outcome": "success",
+      "trace_sha256": "458d3403e20f0da69ebe190ee602663803c0fe6a5dc1ce5c324b23aa09cff305",
+      "video": "hidden-slip.mp4"
+    },
+    {
+      "frames": 185,
+      "name": "occluded-placement",
+      "outcome": "success",
+      "trace_sha256": "95afc7d9778b406b6debdb2351f85122ab51359da3edb9526ecbc05229f6d828",
+      "video": "occluded-placement.mp4"
+    }
+  ],
+  "d09_commit": "1c675397febbc666dc84232ab9faec44aac295e9",
+  "evaluation_episodes": 114,
+  "generation_calls": 0,
+  "goal": "G09",
+  "head": "1c675397febbc666dc84232ab9faec44aac295e9",
+  "leakage_mismatches": 0,
+  "negatives": {
+    "count": 115,
+    "false_success": 0,
+    "naive_would_pass": 61,
+    "per_kind": {
+      "absent": 30,
+      "occlusion": 20,
+      "sparse": 25,
+      "stale": 30,
+      "stale_after_lost_hold": 10
+    },
+    "verdicts": {
+      "fail": 0,
+      "pass": 0,
+      "unknown": 115
+    }
+  },
+  "per_predicate_all": {
+    "area_clear": {
+      "contact_only": {
+        "abstained_fraction": 1.0,
+        "agreement": null,
+        "decided": 0,
+        "decided_episodes": 0,
+        "false_success": 0
+      },
+      "front_contact": {
+        "abstained_fraction": 0.14410480349344978,
+        "agreement": 0.9988662131519275,
+        "decided": 1764,
+        "decided_episodes": 111,
+        "false_success": 2
+      },
+      "front_contact_with_oracle": {
+        "abstained_fraction": 0.14410480349344978,
+        "agreement": 0.9988662131519275,
+        "decided": 1764,
+        "decided_episodes": 111,
+        "false_success": 2
+      },
+      "front_vision_only": {
+        "abstained_fraction": 0.14410480349344978,
+        "agreement": 0.9988662131519275,
+        "decided": 1764,
+        "decided_episodes": 111,
+        "false_success": 2
+      },
+      "overhead_contact": {
+        "abstained_fraction": 0.6327025715672003,
+        "agreement": 1.0,
+        "decided": 757,
+        "decided_episodes": 111,
+        "false_success": 0
+      },
+      "side_contact": {
+        "abstained_fraction": 0.10722950024260068,
+        "agreement": 0.9983695652173913,
+        "decided": 1840,
+        "decided_episodes": 111,
+        "false_success": 2
+      },
+      "side_vision_only": {
+        "abstained_fraction": 0.10722950024260068,
+        "agreement": 0.9983695652173913,
+        "decided": 1840,
+        "decided_episodes": 111,
+        "false_success": 2
+      }
+    },
+    "held": {
+      "contact_only": {
+        "abstained_fraction": 0.001455604075691412,
+        "agreement": 0.9980563654033042,
+        "decided": 2058,
+        "decided_episodes": 111,
+        "false_success": 4
+      },
+      "front_contact": {
+        "abstained_fraction": 0.001455604075691412,
+        "agreement": 0.9980563654033042,
+        "decided": 2058,
+        "decided_episodes": 111,
+        "false_success": 4
+      },
+      "front_contact_with_oracle": {
+        "abstained_fraction": 0.001455604075691412,
+        "agreement": 0.9980563654033042,
+        "decided": 2058,
+        "decided_episodes": 111,
+        "false_success": 4
+      },
+      "front_vision_only": {
+        "abstained_fraction": 1.0,
+        "agreement": null,
+        "decided": 0,
+        "decided_episodes": 0,
+        "false_success": 0
+      },
+      "overhead_contact": {
+        "abstained_fraction": 0.001455604075691412,
+        "agreement": 0.9980563654033042,
+        "decided": 2058,
+        "decided_episodes": 111,
+        "false_success": 4
+      },
+      "side_contact": {
+        "abstained_fraction": 0.001455604075691412,
+        "agreement": 0.9980563654033042,
+        "decided": 2058,
+        "decided_episodes": 111,
+        "false_success": 4
+      },
+      "side_vision_only": {
+        "abstained_fraction": 1.0,
+        "agreement": null,
+        "decided": 0,
+        "decided_episodes": 0,
+        "false_success": 0
+      }
+    },
+    "moving_with_robot": {
+      "contact_only": {
+        "abstained_fraction": 1.0,
+        "agreement": null,
+        "decided": 0,
+        "decided_episodes": 0,
+        "false_success": 0
+      },
+      "front_contact": {
+        "abstained_fraction": 0.14410480349344978,
+        "agreement": 0.9886621315192744,
+        "decided": 1764,
+        "decided_episodes": 111,
+        "false_success": 17
+      },
+      "front_contact_with_oracle": {
+        "abstained_fraction": 0.14410480349344978,
+        "agreement": 0.9886621315192744,
+        "decided": 1764,
+        "decided_episodes": 111,
+        "false_success": 17
+      },
+      "front_vision_only": {
+        "abstained_fraction": 0.14410480349344978,
+        "agreement": 0.9886621315192744,
+        "decided": 1764,
+        "decided_episodes": 111,
+        "false_success": 17
+      },
+      "overhead_contact": {
+        "abstained_fraction": 0.6327025715672003,
+        "agreement": 0.9920739762219286,
+        "decided": 757,
+        "decided_episodes": 111,
+        "false_success": 6
+      },
+      "side_contact": {
+        "abstained_fraction": 0.10722950024260068,
+        "agreement": 0.9869565217391304,
+        "decided": 1840,
+        "decided_episodes": 111,
+        "false_success": 24
+      },
+      "side_vision_only": {
+        "abstained_fraction": 0.10722950024260068,
+        "agreement": 0.9869565217391304,
+        "decided": 1840,
+        "decided_episodes": 111,
+        "false_success": 24
+      }
+    },
+    "opposition_established": {
+      "contact_only": {
+        "abstained_fraction": 0.001455604075691412,
+        "agreement": 1.0,
+        "decided": 2058,
+        "decided_episodes": 111,
+        "false_success": 0
+      },
+      "front_contact": {
+        "abstained_fraction": 0.001455604075691412,
+        "agreement": 1.0,
+        "decided": 2058,
+        "decided_episodes": 111,
+        "false_success": 0
+      },
+      "front_contact_with_oracle": {
+        "abstained_fraction": 0.001455604075691412,
+        "agreement": 1.0,
+        "decided": 2058,
+        "decided_episodes": 111,
+        "false_success": 0
+      },
+      "front_vision_only": {
+        "abstained_fraction": 1.0,
+        "agreement": null,
+        "decided": 0,
+        "decided_episodes": 0,
+        "false_success": 0
+      },
+      "overhead_contact": {
+        "abstained_fraction": 0.001455604075691412,
+        "agreement": 1.0,
+        "decided": 2058,
+        "decided_episodes": 111,
+        "false_success": 0
+      },
+      "side_contact": {
+        "abstained_fraction": 0.001455604075691412,
+        "agreement": 1.0,
+        "decided": 2058,
+        "decided_episodes": 111,
+        "false_success": 0
+      },
+      "side_vision_only": {
+        "abstained_fraction": 1.0,
+        "agreement": null,
+        "decided": 0,
+        "decided_episodes": 0,
+        "false_success": 0
+      }
+    },
+    "reachable": {
+      "contact_only": {
+        "abstained_fraction": 1.0,
+        "agreement": null,
+        "decided": 0,
+        "decided_episodes": 0,
+        "false_success": 0
+      },
+      "front_contact": {
+        "abstained_fraction": 0.056372549019607844,
+        "agreement": 1.0,
+        "decided": 385,
+        "decided_episodes": 114,
+        "false_success": 0
+      },
+      "front_contact_with_oracle": {
+        "abstained_fraction": 0.056372549019607844,
+        "agreement": 1.0,
+        "decided": 385,
+        "decided_episodes": 114,
+        "false_success": 0
+      },
+      "front_vision_only": {
+        "abstained_fraction": 0.056372549019607844,
+        "agreement": 1.0,
+        "decided": 385,
+        "decided_episodes": 114,
+        "false_success": 0
+      },
+      "overhead_contact": {
+        "abstained_fraction": 0.5122549019607843,
+        "agreement": 1.0,
+        "decided": 199,
+        "decided_episodes": 114,
+        "false_success": 0
+      },
+      "side_contact": {
+        "abstained_fraction": 0.07107843137254902,
+        "agreement": 1.0,
+        "decided": 379,
+        "decided_episodes": 114,
+        "false_success": 0
+      },
+      "side_vision_only": {
+        "abstained_fraction": 0.07107843137254902,
+        "agreement": 1.0,
+        "decided": 379,
+        "decided_episodes": 114,
+        "false_success": 0
+      }
+    },
+    "stably_placed": {
+      "contact_only": {
+        "abstained_fraction": 1.0,
+        "agreement": null,
+        "decided": 0,
+        "decided_episodes": 0,
+        "false_success": 0
+      },
+      "front_contact": {
+        "abstained_fraction": 0.1717612809315866,
+        "agreement": 0.9982425307557118,
+        "decided": 1707,
+        "decided_episodes": 111,
+        "false_success": 2
+      },
+      "front_contact_with_oracle": {
+        "abstained_fraction": 0.1717612809315866,
+        "agreement": 0.9982425307557118,
+        "decided": 1707,
+        "decided_episodes": 111,
+        "false_success": 2
+      },
+      "front_vision_only": {
+        "abstained_fraction": 0.1717612809315866,
+        "agreement": 0.9917984768599882,
+        "decided": 1707,
+        "decided_episodes": 111,
+        "false_success": 13
+      },
+      "overhead_contact": {
+        "abstained_fraction": 0.6327025715672003,
+        "agreement": 1.0,
+        "decided": 757,
+        "decided_episodes": 111,
+        "false_success": 0
+      },
+      "side_contact": {
+        "abstained_fraction": 0.1096555070354197,
+        "agreement": 0.9978201634877384,
+        "decided": 1835,
+        "decided_episodes": 111,
+        "false_success": 3
+      },
+      "side_vision_only": {
+        "abstained_fraction": 0.1096555070354197,
+        "agreement": 0.9918256130790191,
+        "decided": 1835,
+        "decided_episodes": 111,
+        "false_success": 14
+      }
+    }
+  },
+  "per_predicate_primary": {
+    "area_clear": {
+      "agreement": 0.9988662131519275,
+      "decided_episodes": 111,
+      "false_success": 2
+    },
+    "held": {
+      "agreement": 0.9980563654033042,
+      "decided_episodes": 111,
+      "false_success": 4
+    },
+    "moving_with_robot": {
+      "agreement": 0.9886621315192744,
+      "decided_episodes": 111,
+      "false_success": 17
+    },
+    "opposition_established": {
+      "agreement": 1.0,
+      "decided_episodes": 111,
+      "false_success": 0
+    },
+    "reachable": {
+      "agreement": 1.0,
+      "decided_episodes": 114,
+      "false_success": 0
+    },
+    "stably_placed": {
+      "agreement": 0.9982425307557118,
+      "decided_episodes": 111,
+      "false_success": 2
+    }
+  },
+  "policy_sha256": "6d2912e8df7d0a098f5d75f59ad37fc5bdf3c5bdd28f7ef940df7973cb4d1ed1",
+  "primary_configuration": "front_contact",
+  "queries": 10713,
+  "registration_sha256": "0e4d5406274a2f29a36fd262db01f836aef94ad2af6ec5049d7ca337747338f2",
+  "tests": {
+    "any_robot": {
+      "errors": 0,
+      "failures": 0,
+      "skipped": 5,
+      "tests": 439
+    },
+    "core": {
+      "errors": 0,
+      "failures": 0,
+      "skipped": 2,
+      "tests": 355
+    },
+    "exotic": {
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "tests": 10
+    }
+  },
+  "written_at_utc": "2026-09-13T12:43:39.704667+00:00"
+}

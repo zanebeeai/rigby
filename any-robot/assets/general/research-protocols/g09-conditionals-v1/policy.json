@@ -1,0 +1,732 @@
+{
+  "abstention": {
+    "min_valid_fraction": 0.8
+  },
+  "calibration": {
+    "balanced_accuracy_on_calibration": {
+      "area_clear": {
+        "balanced_accuracy": 0.9895104895104896,
+        "decided": 966,
+        "positives": 823
+      },
+      "held": {
+        "balanced_accuracy": 0.9994753410283316,
+        "decided": 1090,
+        "positives": 137
+      },
+      "moving_with_robot": {
+        "balanced_accuracy": 0.9951298701298701,
+        "decided": 966,
+        "positives": 42
+      },
+      "opposition_established": {
+        "balanced_accuracy": 1.0,
+        "decided": 1090,
+        "positives": 140
+      },
+      "reachable": {
+        "balanced_accuracy": 1.0,
+        "decided": 110,
+        "positives": 61
+      },
+      "stably_placed": {
+        "balanced_accuracy": 0.9776119402985075,
+        "decided": 945,
+        "positives": 67
+      }
+    },
+    "camera_noise_m": 0.002,
+    "commit": "1c675397febbc666dc84232ab9faec44aac295e9",
+    "configuration": "front_contact",
+    "created_at_utc": "2026-09-13T12:19:12.652143+00:00",
+    "declared": {
+      "abstention": {
+        "min_valid_fraction": 0.8,
+        "why": "a window in which a fifth of a sensor's samples are occluded or missing is not a window that sensor observed"
+      },
+      "task_policy": {
+        "held.min_fraction": {
+          "value": 0.95,
+          "why": "a hold tolerates less than a grasp being formed"
+        },
+        "moving_with_robot.pairing_tolerance_s": {
+          "value": 0.05,
+          "why": "the camera's frame period plus its latency: the nearest effector sample to a frame"
+        },
+        "opposition_established.min_fraction": {
+          "value": 0.9,
+          "why": "opposition on nine tenths of the window's contact samples; the closure controller tolerates a tenth of a second of lost contact and so does the predicate"
+        },
+        "position_tolerance_m": {
+          "value": 0.006,
+          "why": "three standard deviations of the declared camera noise; containment and clearance are asked to that tolerance"
+        },
+        "stably_placed.max_speed_mps": {
+          "value": 0.01,
+          "why": "the registered placement goal's maximum linear speed; the predicate holds the object to the goal's own stillness"
+        }
+      },
+      "windows": {
+        "area_clear": {
+          "duration_s": 0.5,
+          "max_age_s": 0.2,
+          "min_samples": 3,
+          "why": "the region is clear when nothing was seen in it for half a second of frames"
+        },
+        "held": {
+          "duration_s": 0.5,
+          "max_age_s": 0.05,
+          "min_samples": 5,
+          "why": "as opposition; a hold is opposition that lasts"
+        },
+        "moving_with_robot": {
+          "duration_s": 0.5,
+          "max_age_s": 0.2,
+          "min_samples": 5,
+          "why": "half a second of travel at the carry's speed is centimetres, well above the camera's noise"
+        },
+        "opposition_established": {
+          "duration_s": 0.5,
+          "max_age_s": 0.05,
+          "min_samples": 5,
+          "why": "the closure's own hysteresis is a tenth of a second; half a second of contact at 200 Hz is a hundred samples, five the least that can show a fraction"
+        },
+        "reachable": {
+          "duration_s": 0.5,
+          "max_age_s": 0.2,
+          "min_samples": 1,
+          "why": "one fresh position and the calibrated shell decide reach; a fifth of a second is six camera frames"
+        },
+        "stably_placed": {
+          "duration_s": 2.0,
+          "max_age_s": 0.2,
+          "min_samples": 10,
+          "why": "the registered placement dwell is two seconds; the predicate asks for the same stillness the goal does"
+        }
+      }
+    },
+    "episodes": [
+      {
+        "episode_id": "zoo_dual_arm-seed000",
+        "failed_gate": null,
+        "outcome": "success",
+        "root": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1/zoo_dual_arm/seed-000/physical",
+        "trace_sha256": "1149437771e5d03be82ed3e2503de95b693fb0d9e44da2b6b774d98b4c331f95"
+      },
+      {
+        "episode_id": "zoo_dual_arm-seed001",
+        "failed_gate": null,
+        "outcome": "success",
+        "root": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1/zoo_dual_arm/seed-001/physical",
+        "trace_sha256": "45261d275ead18aa739f4f1e24f686d40d9c530d4456e3c4d36a8672fcb8b0b8"
+      },
+      {
+        "episode_id": "zoo_dual_arm-seed002",
+        "failed_gate": null,
+        "outcome": "success",
+        "root": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1/zoo_dual_arm/seed-002/physical",
+        "trace_sha256": "025245408795fee1f1af49f0231009f25b3a728e002e52979a1589d06cbc7b0c"
+      },
+      {
+        "episode_id": "zoo_dual_arm-seed003",
+        "failed_gate": null,
+        "outcome": "success",
+        "root": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1/zoo_dual_arm/seed-003/physical",
+        "trace_sha256": "b9c7b4679900422b0e8a8651dacd4b466af68d6954d578c43ba498b45fc1a7bb"
+      },
+      {
+        "episode_id": "zoo_dual_arm-seed004",
+        "failed_gate": null,
+        "outcome": "success",
+        "root": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1/zoo_dual_arm/seed-004/physical",
+        "trace_sha256": "72559e906ed666951803020686e752bbda02dca7176c994fa090e23461a3862f"
+      },
+      {
+        "episode_id": "zoo_dual_arm-seed061",
+        "failed_gate": "hold_not_sustained",
+        "outcome": "runtime_failure",
+        "root": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1/zoo_dual_arm/seed-061/physical",
+        "trace_sha256": "c25c58a9355e6036459ca08d99c8f8d24a9763df2c6973be1de3620f30c0751b"
+      },
+      {
+        "episode_id": "zoo_hand_arm-seed000",
+        "failed_gate": "hold_not_sustained",
+        "outcome": "runtime_failure",
+        "root": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1/zoo_hand_arm/seed-000/physical",
+        "trace_sha256": "278cfe28fee3bb0a9151b662a4040bfd47baf6182a6a38024e0b3725cd5a471b"
+      },
+      {
+        "episode_id": "zoo_hand_arm-seed001",
+        "failed_gate": "hold_not_sustained",
+        "outcome": "runtime_failure",
+        "root": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1/zoo_hand_arm/seed-001/physical",
+        "trace_sha256": "389ded7e2504bccf4941a52e4469e7734f0b25f7e9823f6a865641491567cf83"
+      },
+      {
+        "episode_id": "zoo_hand_arm-seed002",
+        "failed_gate": "hold_not_sustained",
+        "outcome": "runtime_failure",
+        "root": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1/zoo_hand_arm/seed-002/physical",
+        "trace_sha256": "0c1c75a3678aa17629728ed732ac94b5067088e915b71ed45cd385606c393b0e"
+      },
+      {
+        "episode_id": "zoo_hand_arm-seed003",
+        "failed_gate": "hold_not_sustained",
+        "outcome": "runtime_failure",
+        "root": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1/zoo_hand_arm/seed-003/physical",
+        "trace_sha256": "e1132c21b7660b74dd0f1c7a7df19708e933d472157950e3e0f8835aafce8a93"
+      },
+      {
+        "episode_id": "zoo_hand_arm-seed004",
+        "failed_gate": "hold_not_sustained",
+        "outcome": "runtime_failure",
+        "root": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1/zoo_hand_arm/seed-004/physical",
+        "trace_sha256": "2e682c65b992256094d55a59adce7c3668a4aa6794a9aff5523d11c5d7509d6a"
+      },
+      {
+        "episode_id": "zoo_hand_arm-seed019",
+        "failed_gate": "object_not_lifted",
+        "outcome": "runtime_failure",
+        "root": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1/zoo_hand_arm/seed-019/physical",
+        "trace_sha256": "788fc3a45324a733a9b6da50c5e6d7c51b242d8a9ff8db0919ef681c87e04412"
+      },
+      {
+        "episode_id": "zoo_hand_arm-seed023",
+        "failed_gate": "object_not_lifted",
+        "outcome": "runtime_failure",
+        "root": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1/zoo_hand_arm/seed-023/physical",
+        "trace_sha256": "5f8b9574d7068ff7bcfb7cb6389f9f2aad7618259eb98e461724f59f621e9fc2"
+      },
+      {
+        "episode_id": "zoo_hand_arm-seed040",
+        "failed_gate": "object_not_lifted",
+        "outcome": "runtime_failure",
+        "root": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1/zoo_hand_arm/seed-040/physical",
+        "trace_sha256": "af657c2f38d8c5d40713a39c5507cd363f5a96632b9787708b357a21867c9240"
+      },
+      {
+        "episode_id": "zoo_hand_arm-seed047",
+        "failed_gate": "object_not_lifted",
+        "outcome": "runtime_failure",
+        "root": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1/zoo_hand_arm/seed-047/physical",
+        "trace_sha256": "1307379e9288951802b0059c597d658ab719f45f18b97246cb7f7b8ba5037218"
+      },
+      {
+        "episode_id": "zoo_hand_arm-seed049",
+        "failed_gate": "object_not_lifted",
+        "outcome": "runtime_failure",
+        "root": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1/zoo_hand_arm/seed-049/physical",
+        "trace_sha256": "16233b46dfc62373efe3bfde6e3970f06593dcaf7bf6b0c5475a31d0cfb8da60"
+      },
+      {
+        "episode_id": "zoo_jaw_arm-seed000",
+        "failed_gate": null,
+        "outcome": "success",
+        "root": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1/zoo_jaw_arm/seed-000/physical",
+        "trace_sha256": "ae3890cf76002474686fa79d23b1746394749ca23995b4788ba8941baaef6c8e"
+      },
+      {
+        "episode_id": "zoo_jaw_arm-seed001",
+        "failed_gate": null,
+        "outcome": "success",
+        "root": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1/zoo_jaw_arm/seed-001/physical",
+        "trace_sha256": "80fded3b0cdcdd5922554e53c40842aa85541fcb77ea6216c6a8268cb07f6f52"
+      },
+      {
+        "episode_id": "zoo_jaw_arm-seed002",
+        "failed_gate": null,
+        "outcome": "success",
+        "root": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1/zoo_jaw_arm/seed-002/physical",
+        "trace_sha256": "6929a927b1b41b0666d587e583ac92c2f6c421a87a687b38ad2e9fa9facc2e7e"
+      },
+      {
+        "episode_id": "zoo_jaw_arm-seed003",
+        "failed_gate": null,
+        "outcome": "success",
+        "root": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1/zoo_jaw_arm/seed-003/physical",
+        "trace_sha256": "9397beff78cf387f2e5010a05c454d36ea6b9fff0e9da266fc0c85199752e8cb"
+      },
+      {
+        "episode_id": "zoo_jaw_arm-seed004",
+        "failed_gate": null,
+        "outcome": "success",
+        "root": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1/zoo_jaw_arm/seed-004/physical",
+        "trace_sha256": "164118c6acbf17543ec307549d7c0fe5aed973c64727498a80bce662d4431d3a"
+      },
+      {
+        "episode_id": "zoo_jaw_arm-seed005",
+        "failed_gate": "grasp_not_achieved",
+        "outcome": "runtime_failure",
+        "root": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1/zoo_jaw_arm/seed-005/physical",
+        "trace_sha256": "a06127222ec5ed8b48d01e4091696de4c28d8329522489c229c3134eb0c74224"
+      },
+      {
+        "episode_id": "zoo_jaw_arm-seed008",
+        "failed_gate": "grasp_not_achieved",
+        "outcome": "runtime_failure",
+        "root": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1/zoo_jaw_arm/seed-008/physical",
+        "trace_sha256": "4d05492c3d32c36fd51e4061fade130cb10c50b5e11caa58be40c10b8bc21cc6"
+      },
+      {
+        "episode_id": "zoo_jaw_arm-seed011",
+        "failed_gate": "grasp_not_achieved",
+        "outcome": "runtime_failure",
+        "root": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1/zoo_jaw_arm/seed-011/physical",
+        "trace_sha256": "91b5892a32b5797839068aa25dbafe14383c24d5ea90982240581f916aa31d17"
+      },
+      {
+        "episode_id": "zoo_jaw_arm-seed012",
+        "failed_gate": "grasp_not_achieved",
+        "outcome": "runtime_failure",
+        "root": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1/zoo_jaw_arm/seed-012/physical",
+        "trace_sha256": "070bd72b60e65357f5ad03b443e20195b2d9073452dc302ca1afafb3fde5316f"
+      },
+      {
+        "episode_id": "zoo_jaw_arm-seed014",
+        "failed_gate": "grasp_not_achieved",
+        "outcome": "runtime_failure",
+        "root": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1/zoo_jaw_arm/seed-014/physical",
+        "trace_sha256": "8f15b43a949fb71b8fd552f7f32b3a3e5c1dacf72f393d04cdaf7ec248d6a722"
+      },
+      {
+        "episode_id": "zoo_jaw_arm-seed071",
+        "failed_gate": "object_not_lifted",
+        "outcome": "runtime_failure",
+        "root": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1/zoo_jaw_arm/seed-071/physical",
+        "trace_sha256": "f4dc21aec8d030ee81299ee17a6b87c19b6c638049cdf006cc92e9548943254c"
+      },
+      {
+        "episode_id": "zoo_jaw_arm-seed087",
+        "failed_gate": "object_not_lifted",
+        "outcome": "runtime_failure",
+        "root": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1/zoo_jaw_arm/seed-087/physical",
+        "trace_sha256": "3da9b5b35d79823d8897dee3033d55bfb859b07be4662845a8ab13000da7d76e"
+      },
+      {
+        "episode_id": "zoo_long_arm-seed000",
+        "failed_gate": null,
+        "outcome": "success",
+        "root": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1/zoo_long_arm/seed-000/physical",
+        "trace_sha256": "c8abed3661f9a6896818441ff2b0c3c74acf9e81d4d0b1ea9baa4373ab8be156"
+      },
+      {
+        "episode_id": "zoo_long_arm-seed001",
+        "failed_gate": null,
+        "outcome": "success",
+        "root": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1/zoo_long_arm/seed-001/physical",
+        "trace_sha256": "868bcc57f9a4f6ba5c7fed9a19f4ca5436c91c645fe62ec01a28a1d0b83bd7d4"
+      },
+      {
+        "episode_id": "zoo_long_arm-seed002",
+        "failed_gate": null,
+        "outcome": "success",
+        "root": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1/zoo_long_arm/seed-002/physical",
+        "trace_sha256": "c5ef14a047333c614c37b4f85480d4a84c31c0c1efcd74655af4e8b217ce0e0b"
+      },
+      {
+        "episode_id": "zoo_long_arm-seed003",
+        "failed_gate": null,
+        "outcome": "success",
+        "root": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1/zoo_long_arm/seed-003/physical",
+        "trace_sha256": "abdd0d17162a4b34fcf5827984d36a4b862f3f74a0777617d06a9f60f394fbf5"
+      },
+      {
+        "episode_id": "zoo_long_arm-seed004",
+        "failed_gate": null,
+        "outcome": "success",
+        "root": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1/zoo_long_arm/seed-004/physical",
+        "trace_sha256": "9a3214516d198fd76a91ca72b5c85dafa72438ab543c60c2f43582bbd585726d"
+      }
+    ],
+    "generation_calls": 0,
+    "query_step_s": 0.5,
+    "results": {
+      "held.held": {
+        "balanced_accuracy": 0.9994753410283316,
+        "chosen": {
+          "lift_fraction_of_height": 0.2
+        },
+        "grid": [
+          {
+            "balanced_accuracy": 0.9994753410283316,
+            "decided": 1090,
+            "point": {
+              "lift_fraction_of_height": 0.05
+            },
+            "positives": 137
+          },
+          {
+            "balanced_accuracy": 0.9994753410283316,
+            "decided": 1090,
+            "point": {
+              "lift_fraction_of_height": 0.1
+            },
+            "positives": 137
+          },
+          {
+            "balanced_accuracy": 0.9994753410283316,
+            "decided": 1090,
+            "point": {
+              "lift_fraction_of_height": 0.2
+            },
+            "positives": 137
+          },
+          {
+            "balanced_accuracy": 0.9994753410283316,
+            "decided": 1090,
+            "point": {
+              "lift_fraction_of_height": 0.3
+            },
+            "positives": 137
+          },
+          {
+            "balanced_accuracy": 0.9994753410283316,
+            "decided": 1090,
+            "point": {
+              "lift_fraction_of_height": 0.5
+            },
+            "positives": 137
+          }
+        ],
+        "tied": 5
+      },
+      "moving_with_robot.moving_with_robot": {
+        "balanced_accuracy": 0.9951298701298701,
+        "chosen": {
+          "max_mismatch_fraction": 0.5,
+          "min_speed_mps": 0.02
+        },
+        "grid": [
+          {
+            "balanced_accuracy": 0.9599567099567099,
+            "decided": 966,
+            "point": {
+              "max_mismatch_fraction": 0.25,
+              "min_speed_mps": 0.005
+            },
+            "positives": 42
+          },
+          {
+            "balanced_accuracy": 0.9902597402597403,
+            "decided": 966,
+            "point": {
+              "max_mismatch_fraction": 0.5,
+              "min_speed_mps": 0.005
+            },
+            "positives": 42
+          },
+          {
+            "balanced_accuracy": 0.9615800865800865,
+            "decided": 966,
+            "point": {
+              "max_mismatch_fraction": 0.75,
+              "min_speed_mps": 0.005
+            },
+            "positives": 42
+          },
+          {
+            "balanced_accuracy": 0.9610389610389611,
+            "decided": 966,
+            "point": {
+              "max_mismatch_fraction": 0.25,
+              "min_speed_mps": 0.01
+            },
+            "positives": 42
+          },
+          {
+            "balanced_accuracy": 0.9913419913419914,
+            "decided": 966,
+            "point": {
+              "max_mismatch_fraction": 0.5,
+              "min_speed_mps": 0.01
+            },
+            "positives": 42
+          },
+          {
+            "balanced_accuracy": 0.9626623376623377,
+            "decided": 966,
+            "point": {
+              "max_mismatch_fraction": 0.75,
+              "min_speed_mps": 0.01
+            },
+            "positives": 42
+          },
+          {
+            "balanced_accuracy": 0.9632034632034632,
+            "decided": 966,
+            "point": {
+              "max_mismatch_fraction": 0.25,
+              "min_speed_mps": 0.02
+            },
+            "positives": 42
+          },
+          {
+            "balanced_accuracy": 0.9951298701298701,
+            "decided": 966,
+            "point": {
+              "max_mismatch_fraction": 0.5,
+              "min_speed_mps": 0.02
+            },
+            "positives": 42
+          },
+          {
+            "balanced_accuracy": 0.9675324675324675,
+            "decided": 966,
+            "point": {
+              "max_mismatch_fraction": 0.75,
+              "min_speed_mps": 0.02
+            },
+            "positives": 42
+          },
+          {
+            "balanced_accuracy": 0.9404761904761905,
+            "decided": 966,
+            "point": {
+              "max_mismatch_fraction": 0.25,
+              "min_speed_mps": 0.04
+            },
+            "positives": 42
+          },
+          {
+            "balanced_accuracy": 0.9621212121212122,
+            "decided": 966,
+            "point": {
+              "max_mismatch_fraction": 0.5,
+              "min_speed_mps": 0.04
+            },
+            "positives": 42
+          },
+          {
+            "balanced_accuracy": 0.9426406926406927,
+            "decided": 966,
+            "point": {
+              "max_mismatch_fraction": 0.75,
+              "min_speed_mps": 0.04
+            },
+            "positives": 42
+          }
+        ],
+        "tied": 1
+      },
+      "opposition_established.contact_force_n": {
+        "balanced_accuracy": 1.0,
+        "chosen": {
+          "value": 0.1
+        },
+        "grid": [
+          {
+            "balanced_accuracy": 1.0,
+            "decided": 1090,
+            "point": {
+              "value": 0.005
+            },
+            "positives": 140
+          },
+          {
+            "balanced_accuracy": 1.0,
+            "decided": 1090,
+            "point": {
+              "value": 0.01
+            },
+            "positives": 140
+          },
+          {
+            "balanced_accuracy": 1.0,
+            "decided": 1090,
+            "point": {
+              "value": 0.02
+            },
+            "positives": 140
+          },
+          {
+            "balanced_accuracy": 1.0,
+            "decided": 1090,
+            "point": {
+              "value": 0.05
+            },
+            "positives": 140
+          },
+          {
+            "balanced_accuracy": 1.0,
+            "decided": 1090,
+            "point": {
+              "value": 0.1
+            },
+            "positives": 140
+          },
+          {
+            "balanced_accuracy": 1.0,
+            "decided": 1090,
+            "point": {
+              "value": 0.2
+            },
+            "positives": 140
+          },
+          {
+            "balanced_accuracy": 1.0,
+            "decided": 1090,
+            "point": {
+              "value": 0.5
+            },
+            "positives": 140
+          },
+          {
+            "balanced_accuracy": 1.0,
+            "decided": 1090,
+            "point": {
+              "value": 1.0
+            },
+            "positives": 140
+          }
+        ],
+        "tied": 8
+      },
+      "reachable.reachable": {
+        "balanced_accuracy": 1.0,
+        "chosen": {
+          "margin_fraction": 0.05
+        },
+        "grid": [
+          {
+            "balanced_accuracy": 1.0,
+            "decided": 110,
+            "point": {
+              "margin_fraction": 0.0
+            },
+            "positives": 61
+          },
+          {
+            "balanced_accuracy": 1.0,
+            "decided": 110,
+            "point": {
+              "margin_fraction": 0.02
+            },
+            "positives": 61
+          },
+          {
+            "balanced_accuracy": 1.0,
+            "decided": 110,
+            "point": {
+              "margin_fraction": 0.05
+            },
+            "positives": 61
+          },
+          {
+            "balanced_accuracy": 1.0,
+            "decided": 110,
+            "point": {
+              "margin_fraction": 0.1
+            },
+            "positives": 61
+          }
+        ],
+        "tied": 4
+      },
+      "stably_placed.stably_placed": {
+        "balanced_accuracy": 0.9776119402985075,
+        "chosen": {
+          "max_spread_m": 0.015
+        },
+        "grid": [
+          {
+            "balanced_accuracy": 0.5,
+            "decided": 945,
+            "point": {
+              "max_spread_m": 0.004
+            },
+            "positives": 67
+          },
+          {
+            "balanced_accuracy": 0.6268656716417911,
+            "decided": 945,
+            "point": {
+              "max_spread_m": 0.006
+            },
+            "positives": 67
+          },
+          {
+            "balanced_accuracy": 0.9328358208955223,
+            "decided": 945,
+            "point": {
+              "max_spread_m": 0.008
+            },
+            "positives": 67
+          },
+          {
+            "balanced_accuracy": 0.9776119402985075,
+            "decided": 945,
+            "point": {
+              "max_spread_m": 0.01
+            },
+            "positives": 67
+          },
+          {
+            "balanced_accuracy": 0.9776119402985075,
+            "decided": 945,
+            "point": {
+              "max_spread_m": 0.015
+            },
+            "positives": 67
+          }
+        ],
+        "tied": 2
+      }
+    }
+  },
+  "policy_id": "g09-conditionals-v1",
+  "rules": {
+    "contact_force_n": 0.1,
+    "held": {
+      "lift_fraction_of_height": 0.2,
+      "min_fraction": 0.95
+    },
+    "moving_with_robot": {
+      "max_mismatch_fraction": 0.5,
+      "min_speed_mps": 0.02,
+      "pairing_tolerance_s": 0.05
+    },
+    "opposition_established": {
+      "min_fraction": 0.9
+    },
+    "position_tolerance_m": 0.006,
+    "reachable": {
+      "margin_fraction": 0.05
+    },
+    "stably_placed": {
+      "max_speed_mps": 0.01,
+      "max_spread_m": 0.015
+    }
+  },
+  "windows": {
+    "area_clear": {
+      "duration_s": 0.5,
+      "max_age_s": 0.2,
+      "min_samples": 3
+    },
+    "held": {
+      "duration_s": 0.5,
+      "max_age_s": 0.05,
+      "min_samples": 5
+    },
+    "moving_with_robot": {
+      "duration_s": 0.5,
+      "max_age_s": 0.2,
+      "min_samples": 5
+    },
+    "opposition_established": {
+      "duration_s": 0.5,
+      "max_age_s": 0.05,
+      "min_samples": 5
+    },
+    "reachable": {
+      "duration_s": 0.5,
+      "max_age_s": 0.2,
+      "min_samples": 1
+    },
+    "stably_placed": {
+      "duration_s": 2.0,
+      "max_age_s": 0.2,
+      "min_samples": 10
+    }
+  }
+}

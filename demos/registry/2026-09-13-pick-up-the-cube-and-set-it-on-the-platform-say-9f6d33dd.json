@@ -1,0 +1,45 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-say-9f6d33dd",
+  "title": "D09: visible grasp (zoo_jaw_arm), verdict overlays under two sensor configurations",
+  "prompt": "pick up the cube and set it on the platform; say what you can see of the grasp",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T12:38:33Z",
+  "source": {
+    "commit": "1c675397fe",
+    "branch": "feat/g09-conditionals",
+    "dirty": false,
+    "how": "python any-robot/scripts/g09_d09_media.py --out docs/results/g09-d09"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS (jaw arm, G06 scored seed 0). Front camera with contact decides opposition, held and moving-with-robot as they happen; the overhead camera under the hand reports occlusion and its pose predicates stay unknown."
+  },
+  "notes": "See docs/results/g09-report.md. A recorded episode rendered in full from its sealed physical record at real-time playback with the simulation clock and outcome in the banner, with a strip beneath every frame: the verdicts of the six observable conditionals under two declared sensor configurations, the sensors each used with the age of their newest sample, and the oracle labels from the full state that the monitor never reads. frames.json beside the MP4 maps every frame to its recorded sample; verdicts.json in the overlay bundle records every verdict.",
+  "media": [
+    {
+      "path": "docs/results/g09-d09/visible-grasp.mp4",
+      "bytes": 213680,
+      "sha256": "12974af64a96b7cfba2610cfb0922a712af070f336b314a22102af54bc25e3fa",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g09-d09/visible-grasp-preview.gif",
+      "bytes": 2841883,
+      "sha256": "3cb2fd31d4b14dacb1dd907d46e99a4dfbfcff8034c6cc19f14248a7d0915063",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G09",
+    "D09",
+    "visible-grasp",
+    "conditionals",
+    "sensor-provenance",
+    "success"
+  ]
+}
