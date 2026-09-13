@@ -4,7 +4,7 @@
   "goal_catalog": "docs/research/rigby-verifiable-goals.json",
   "goal_catalog_sha256": "3672ebf5fa10ff4216fa0213499d5988281f2ebbc611500e8526afe6e618b250",
   "started_at_utc": "2026-09-12T02:34:49.841258+00:00",
-  "current_goal": "G09",
+  "current_goal": "G10",
   "overall_status": "active",
   "authorization": {
     "commits_and_pull_requests": true,
@@ -1130,39 +1130,193 @@
     {
       "id": "G09",
       "title": "Generate observable conditionals and monitor progress honestly",
-      "status": "planned",
+      "status": "complete",
       "criteria": [
         {
           "id": "G09.A01",
           "requirement": "Represent each conditional with entities, evidence sources, temporal window, decision rule, uncertainty/abstention and fallback.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "core/src/rigby_core/skills/conditionals.py",
+            "core/tests/test_skills_conditionals.py",
+            "docs/results/g09-report.md (The contract)"
+          ]
         },
         {
           "id": "G09.A02",
           "requirement": "Cover at least six predicates: reachable, opposition established, held, moving with robot, stably placed, area clear. Evaluate at least 20 independently labeled episodes per predicate using declared sensors.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "any-robot/assets/general/research-protocols/g09-conditionals-v1/corpus.json",
+            "docs/results/g09-conditionals/summary.json",
+            "docs/results/g09-conditionals/queries.jsonl.gz",
+            "docs/results/g09-validation.json"
+          ],
+          "note": "114 registered episodes, 10713 labeled queries; under the primary configuration: area_clear 111 episodes at 99.9% (2 false pass), held 111 episodes at 99.8% (4 false pass), moving_with_robot 111 episodes at 98.9% (17 false pass), opposition_established 111 episodes at 100.0% (0 false pass), reachable 114 episodes at 100.0% (0 false pass), stably_placed 111 episodes at 99.8% (2 false pass)."
         },
         {
           "id": "G09.A03",
           "requirement": "On at least 60 cases with occlusion, stale frames or absent sensors, produce unknown/re-observe/failure rather than an unsupported success; no false success in this engineered negative set.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "docs/results/g09-conditionals/negatives.json",
+            "docs/results/g09-validation.json"
+          ],
+          "note": "115 engineered cases (absent 30, occlusion 20, sparse 25, stale 30, stale_after_lost_hold 10); 115 unknown, 0 fail, 0 pass; 61 would have passed a monitor that trusted its newest frame."
         },
         {
           "id": "G09.A04",
           "requirement": "The same predicate contract binds to different sensor configurations without privileged evaluator leakage. Thresholds are set by task policy/calibration, not guessed from URDF text.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "any-robot/src/rigby_general/sensing/sensors.py",
+            "any-robot/src/rigby_general/sensing/bind.py",
+            "any-robot/assets/general/research-protocols/g09-conditionals-v1/policy.json",
+            "docs/results/g09-conditionals/leakage.json",
+            "any-robot/tests/test_general_sensing.py"
+          ],
+          "note": "The same six contracts bound to 7 configurations; 0 verdicts changed with a privileged oracle sensor present over 10713 queries; every threshold calibrated on the excluded pilot episodes or declared as task policy with its reason, none read from a robot description."
         }
       ],
       "demo_requirement": "D09: visible grasp, hidden slip and occluded placement, with sensor provenance and pass/fail/unknown overlays.",
-      "demo_status": "pending",
-      "assessment_complete": false,
-      "capability_supported": false,
-      "commits": [],
-      "pull_requests": []
+      "demo_status": "verified",
+      "assessment_complete": true,
+      "capability_supported": true,
+      "commits": [
+        "1c67539",
+        "74ee1fd",
+        "b744ca2"
+      ],
+      "pull_requests": [
+        "https://github.com/zanebeeai/rigby/pull/37"
+      ],
+      "discovered_prerequisites": [
+        {
+          "finding": "A camera placed above the fixtures is behind the hand from the descent to the end of the dwell on every top-down transfer; every pose predicate is undecidable from it through the grasp, the carry and the placement.",
+          "evidence": "docs/results/g09-conditionals/summary.json (overhead_contact abstention); docs/results/g09-d09/occluded-placement.mp4",
+          "required_action": "Done: the monitor reports occluded with a re-observe fallback rather than deciding; a second camera or contact decides. G10's occlusion recoveries should act on that fallback."
+        },
+        {
+          "finding": "A hold ends by release as well as by loss; a contact sensor frozen while it showed a hold passes a naive monitor after either, and the one natural drop in the evidence is the G08 pair's unchecked return.",
+          "evidence": "docs/results/g09-conditionals/negatives.json (stale_after_lost_hold); docs/results/g09-d09/hidden-slip.mp4",
+          "required_action": "Done: sample age is part of every verdict; a stale sensor is unknown. G10's induced slips will give the monitor more drops to be scored on."
+        },
+        {
+          "finding": "Release is a contact fact: the camera alone passes placements the fingers were still loading.",
+          "evidence": "docs/results/g09-conditionals/summary.json (stably_placed under front_vision_only against front_contact)",
+          "required_action": "Done in the contract (stably placed takes contact as optional evidence and uses it when present); noted for any body without contact sensing."
+        }
+      ],
+      "demo_evidence": [
+        "docs/results/g09-d09/index.json",
+        "docs/results/g09-d09/visible-grasp.mp4",
+        "docs/results/g09-d09/hidden-slip.mp4",
+        "docs/results/g09-d09/occluded-placement.mp4",
+        "demos/registry (D09 entries)"
+      ],
+      "evidence_worktree": "C:/Users/hocke/GitHub/rigby-g09",
+      "work_basis": "Branch feat/g09-conditionals stacked on feat/g08-transitions (PR 36); lands after it.",
+      "integration_status": "open_pr_ci_infrastructure_blocked",
+      "completed_at_utc": "2026-09-13T12:45:15.054021+00:00",
+      "supported_scope": "Six observable conditionals decided from declared sensors simulated over sealed physical records (encoders, contact per opposition group, ray-visibility cameras with declared noise, task geometry, calibrated reach), with abstention on missing, stale, occluded or sparse evidence and a recorded fallback; scored on the G06 fixed world over the G06 enabled bodies. No learned perception, no recovery acted on, no other worlds.",
+      "local_validation": {
+        "evaluation_episodes": 114,
+        "queries": 10713,
+        "per_predicate_primary": {
+          "area_clear": {
+            "agreement": 0.9988662131519275,
+            "decided_episodes": 111,
+            "false_success": 2
+          },
+          "held": {
+            "agreement": 0.9980563654033042,
+            "decided_episodes": 111,
+            "false_success": 4
+          },
+          "moving_with_robot": {
+            "agreement": 0.9886621315192744,
+            "decided_episodes": 111,
+            "false_success": 17
+          },
+          "opposition_established": {
+            "agreement": 1.0,
+            "decided_episodes": 111,
+            "false_success": 0
+          },
+          "reachable": {
+            "agreement": 1.0,
+            "decided_episodes": 114,
+            "false_success": 0
+          },
+          "stably_placed": {
+            "agreement": 0.9982425307557118,
+            "decided_episodes": 111,
+            "false_success": 2
+          }
+        },
+        "negatives": {
+          "count": 115,
+          "false_success": 0,
+          "naive_would_pass": 61,
+          "per_kind": {
+            "absent": 30,
+            "occlusion": 20,
+            "sparse": 25,
+            "stale": 30,
+            "stale_after_lost_hold": 10
+          },
+          "verdicts": {
+            "fail": 0,
+            "pass": 0,
+            "unknown": 115
+          }
+        },
+        "leakage_mismatches": 0,
+        "d09": [
+          {
+            "frames": 174,
+            "name": "visible-grasp",
+            "outcome": "success",
+            "trace_sha256": "349f94539024c9d2ab752f4698bfadaac28e12cbf35ac133f020b9b591cada83",
+            "video": "visible-grasp.mp4"
+          },
+          {
+            "frames": 145,
+            "name": "hidden-slip",
+            "outcome": "success",
+            "trace_sha256": "458d3403e20f0da69ebe190ee602663803c0fe6a5dc1ce5c324b23aa09cff305",
+            "video": "hidden-slip.mp4"
+          },
+          {
+            "frames": 185,
+            "name": "occluded-placement",
+            "outcome": "success",
+            "trace_sha256": "95afc7d9778b406b6debdb2351f85122ab51359da3edb9526ecbc05229f6d828",
+            "video": "occluded-placement.mp4"
+          }
+        ],
+        "tests": {
+          "any_robot": {
+            "errors": 0,
+            "failures": 0,
+            "skipped": 5,
+            "tests": 439
+          },
+          "core": {
+            "errors": 0,
+            "failures": 0,
+            "skipped": 2,
+            "tests": 355
+          },
+          "exotic": {
+            "errors": 0,
+            "failures": 0,
+            "skipped": 0,
+            "tests": 10
+          }
+        },
+        "generation_calls": 0
+      }
     },
     {
       "id": "G10",
@@ -1889,10 +2043,10 @@
   ],
   "milestones": [],
   "next_actions": [
-    "Begin G09 (observable conditionals and honest progress monitoring) on the executor's Observe leaves and the boundary measurements; the multifinger hand's lost holds and the ejected cubes of G06 are the first natural failures to detect.",
-    "Restore GitHub Actions billing/allowance and rerun PRs 27-36; merge only after required checks are green, bottom of the stack first.",
+    "Begin G10 (the first reusable closed-loop TransferObject skill): Acquire, VerifyHold, Transport, Release and VerifyPlacement over the G06 primitive, the G08 transitions and the G09 conditionals, with the 120 s episode cap frozen before evaluation.",
+    "Restore GitHub Actions billing/allowance and rerun PRs 27-37; merge only after required checks are green, bottom of the stack first.",
     "G04 independent language validation remains pending on U3_independent_review.",
     "Preserve all 30 goals and their frozen criteria."
   ],
-  "updated_at_utc": "2026-09-13T10:56:31.508154+00:00"
+  "updated_at_utc": "2026-09-13T12:45:15.054021+00:00"
 }
