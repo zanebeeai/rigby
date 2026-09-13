@@ -1,0 +1,294 @@
+{
+  "schema_version": "1.0",
+  "tree_sha256": "83682d0cfaf460fcc1764fbe124268e89b70522bafc00bfafe3c8d8c1cd53708",
+  "library_id": "clear_bench_v1",
+  "verdict": "success",
+  "interrupted": false,
+  "interrupt_reason": "",
+  "started_s": 0.0,
+  "ended_s": 25.0,
+  "root": {
+    "node_id": "0",
+    "skill_id": "clear_bench",
+    "kind": "sequence",
+    "verdict": "success",
+    "reason": "",
+    "started_s": 0.0,
+    "ended_s": 25.0,
+    "attempts": 1,
+    "initiation": [],
+    "invariants": [],
+    "effects": [
+      {
+        "predicate": "object_placed",
+        "arguments": [
+          "cube",
+          "platform"
+        ],
+        "negate": false,
+        "answer": true
+      }
+    ],
+    "loop_checks": [],
+    "resources": [
+      "effector:primary",
+      "effector:secondary",
+      "object:cube"
+    ],
+    "evidence": {},
+    "children": [
+      {
+        "node_id": "0.0",
+        "skill_id": "observe_inventory",
+        "kind": "observe",
+        "verdict": "success",
+        "reason": "",
+        "started_s": 0.0,
+        "ended_s": 0.5,
+        "attempts": 1,
+        "initiation": [],
+        "invariants": [],
+        "effects": [
+          {
+            "predicate": "object_known",
+            "arguments": [
+              "cube"
+            ],
+            "negate": false,
+            "answer": true
+          }
+        ],
+        "loop_checks": [],
+        "resources": [],
+        "evidence": {
+          "observed": [
+            "known:cube",
+            "placed:cube:platform",
+            "reach:cube"
+          ]
+        },
+        "children": [],
+        "recoveries": []
+      },
+      {
+        "node_id": "0.1",
+        "skill_id": "place_until_done",
+        "kind": "repeat_until",
+        "verdict": "success",
+        "reason": "until_after_1",
+        "started_s": 0.5,
+        "ended_s": 25.0,
+        "attempts": 1,
+        "initiation": [
+          {
+            "predicate": "object_known",
+            "arguments": [
+              "cube"
+            ],
+            "negate": false,
+            "answer": true
+          }
+        ],
+        "invariants": [],
+        "effects": [
+          {
+            "predicate": "object_placed",
+            "arguments": [
+              "cube",
+              "platform"
+            ],
+            "negate": false,
+            "answer": true
+          }
+        ],
+        "loop_checks": [
+          {
+            "predicate": "object_placed",
+            "arguments": [
+              "cube",
+              "platform"
+            ],
+            "negate": false,
+            "answer": false
+          },
+          {
+            "predicate": "object_in_reach",
+            "arguments": [
+              "cube"
+            ],
+            "negate": false,
+            "answer": true
+          },
+          {
+            "predicate": "object_placed",
+            "arguments": [
+              "cube",
+              "platform"
+            ],
+            "negate": false,
+            "answer": true
+          }
+        ],
+        "resources": [
+          "effector:primary",
+          "effector:secondary",
+          "object:cube"
+        ],
+        "evidence": {
+          "attempts": 1
+        },
+        "children": [
+          {
+            "node_id": "0.1.0",
+            "skill_id": "transfer_and_verify",
+            "kind": "sequence",
+            "verdict": "success",
+            "reason": "",
+            "started_s": 0.5,
+            "ended_s": 25.0,
+            "attempts": 1,
+            "initiation": [],
+            "invariants": [],
+            "effects": [],
+            "loop_checks": [],
+            "resources": [
+              "effector:primary",
+              "effector:secondary",
+              "object:cube"
+            ],
+            "evidence": {},
+            "children": [
+              {
+                "node_id": "0.1.0.0",
+                "skill_id": "transfer_with_any_effector",
+                "kind": "selector",
+                "verdict": "success",
+                "reason": "alternative:0.1.0.0.1",
+                "started_s": 0.5,
+                "ended_s": 24.5,
+                "attempts": 1,
+                "initiation": [],
+                "invariants": [],
+                "effects": [],
+                "loop_checks": [],
+                "resources": [
+                  "effector:primary",
+                  "effector:secondary",
+                  "object:cube"
+                ],
+                "evidence": {},
+                "children": [
+                  {
+                    "node_id": "0.1.0.0.0",
+                    "skill_id": "transfer",
+                    "kind": "primitive",
+                    "verdict": "failure",
+                    "reason": "grasp_not_achieved",
+                    "started_s": 0.5,
+                    "ended_s": 12.5,
+                    "attempts": 1,
+                    "initiation": [
+                      {
+                        "predicate": "object_known",
+                        "arguments": [
+                          "cube"
+                        ],
+                        "negate": false,
+                        "answer": true
+                      }
+                    ],
+                    "invariants": [],
+                    "effects": [],
+                    "loop_checks": [],
+                    "resources": [
+                      "effector:primary",
+                      "object:cube"
+                    ],
+                    "evidence": {
+                      "effector": "primary"
+                    },
+                    "children": [],
+                    "recoveries": []
+                  },
+                  {
+                    "node_id": "0.1.0.0.1",
+                    "skill_id": "transfer",
+                    "kind": "primitive",
+                    "verdict": "success",
+                    "reason": "",
+                    "started_s": 12.5,
+                    "ended_s": 24.5,
+                    "attempts": 1,
+                    "initiation": [
+                      {
+                        "predicate": "object_known",
+                        "arguments": [
+                          "cube"
+                        ],
+                        "negate": false,
+                        "answer": true
+                      }
+                    ],
+                    "invariants": [],
+                    "effects": [
+                      {
+                        "predicate": "object_placed",
+                        "arguments": [
+                          "cube",
+                          "platform"
+                        ],
+                        "negate": false,
+                        "answer": true
+                      }
+                    ],
+                    "loop_checks": [],
+                    "resources": [
+                      "effector:secondary",
+                      "object:cube"
+                    ],
+                    "evidence": {
+                      "effector": "secondary"
+                    },
+                    "children": [],
+                    "recoveries": []
+                  }
+                ],
+                "recoveries": []
+              },
+              {
+                "node_id": "0.1.0.1",
+                "skill_id": "observe_placement",
+                "kind": "observe",
+                "verdict": "success",
+                "reason": "",
+                "started_s": 24.5,
+                "ended_s": 25.0,
+                "attempts": 1,
+                "initiation": [],
+                "invariants": [],
+                "effects": [],
+                "loop_checks": [],
+                "resources": [],
+                "evidence": {
+                  "observed": [
+                    "placed:cube:platform"
+                  ]
+                },
+                "children": [],
+                "recoveries": []
+              }
+            ],
+            "recoveries": []
+          }
+        ],
+        "recoveries": []
+      }
+    ],
+    "recoveries": []
+  },
+  "belief": {
+    "known:cube": true,
+    "reach:cube": true,
+    "placed:cube:platform": true
+  }
+}

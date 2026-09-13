@@ -1,0 +1,290 @@
+{
+  "active_skill_tree": "the expanded tree in tree.json; verdicts per node in record",
+  "record": {
+    "belief": {
+      "known:cube": true,
+      "placed:cube:platform": false,
+      "pose:cube": [
+        -0.15,
+        0.65,
+        0.275
+      ],
+      "reach:cube": false
+    },
+    "ended_s": 0.0,
+    "interrupt_reason": "",
+    "interrupted": false,
+    "library_id": "clear_bench_v1",
+    "root": {
+      "attempts": 1,
+      "children": [
+        {
+          "attempts": 1,
+          "children": [],
+          "effects": [
+            {
+              "answer": true,
+              "arguments": [
+                "cube"
+              ],
+              "negate": false,
+              "predicate": "object_known"
+            }
+          ],
+          "ended_s": 0.0,
+          "evidence": {
+            "observed": [
+              "known:cube",
+              "placed:cube:platform",
+              "pose:cube",
+              "reach:cube"
+            ]
+          },
+          "initiation": [],
+          "invariants": [],
+          "kind": "observe",
+          "loop_checks": [],
+          "node_id": "0.0",
+          "reason": "",
+          "recoveries": [],
+          "resources": [],
+          "skill_id": "observe_inventory",
+          "started_s": 0.0,
+          "verdict": "success"
+        },
+        {
+          "attempts": 1,
+          "children": [
+            {
+              "attempts": 1,
+              "children": [
+                {
+                  "attempts": 1,
+                  "children": [
+                    {
+                      "attempts": 1,
+                      "children": [],
+                      "effects": [],
+                      "ended_s": 0.0,
+                      "evidence": {
+                        "effector": "palm",
+                        "executed": false,
+                        "failed_gate": "unreachable_path",
+                        "hold_s": 0.0,
+                        "lift_height_m": 0.0,
+                        "max_penetration_m": 0.0,
+                        "path_seed": "",
+                        "peak_force_n": 0.0,
+                        "phases": [],
+                        "physics_time_s": null,
+                        "placement_dwell_s": 0.0
+                      },
+                      "initiation": [
+                        {
+                          "answer": true,
+                          "arguments": [
+                            "cube"
+                          ],
+                          "negate": false,
+                          "predicate": "object_known"
+                        }
+                      ],
+                      "invariants": [],
+                      "kind": "primitive",
+                      "loop_checks": [],
+                      "node_id": "0.1.0.0.0",
+                      "reason": "unreachable_path",
+                      "recoveries": [],
+                      "resources": [
+                        "effector:palm",
+                        "object:cube"
+                      ],
+                      "skill_id": "transfer",
+                      "started_s": 0.0,
+                      "verdict": "failure"
+                    },
+                    {
+                      "attempts": 1,
+                      "children": [],
+                      "effects": [],
+                      "ended_s": 0.0,
+                      "evidence": {
+                        "effector": "palm",
+                        "executed": false,
+                        "failed_gate": "unreachable_path",
+                        "hold_s": 0.0,
+                        "lift_height_m": 0.0,
+                        "max_penetration_m": 0.0,
+                        "path_seed": "",
+                        "peak_force_n": 0.0,
+                        "phases": [],
+                        "physics_time_s": null,
+                        "placement_dwell_s": 0.0
+                      },
+                      "initiation": [
+                        {
+                          "answer": true,
+                          "arguments": [
+                            "cube"
+                          ],
+                          "negate": false,
+                          "predicate": "object_known"
+                        }
+                      ],
+                      "invariants": [],
+                      "kind": "primitive",
+                      "loop_checks": [],
+                      "node_id": "0.1.0.0.1",
+                      "reason": "unreachable_path",
+                      "recoveries": [],
+                      "resources": [
+                        "effector:palm",
+                        "object:cube"
+                      ],
+                      "skill_id": "transfer",
+                      "started_s": 0.0,
+                      "verdict": "failure"
+                    }
+                  ],
+                  "effects": [],
+                  "ended_s": 0.0,
+                  "evidence": {},
+                  "initiation": [],
+                  "invariants": [],
+                  "kind": "selector",
+                  "loop_checks": [],
+                  "node_id": "0.1.0.0",
+                  "reason": "no_alternative_succeeded",
+                  "recoveries": [],
+                  "resources": [
+                    "effector:palm",
+                    "object:cube"
+                  ],
+                  "skill_id": "transfer_with_any_effector",
+                  "started_s": 0.0,
+                  "verdict": "failure"
+                }
+              ],
+              "effects": [],
+              "ended_s": 0.0,
+              "evidence": {},
+              "initiation": [],
+              "invariants": [],
+              "kind": "sequence",
+              "loop_checks": [],
+              "node_id": "0.1.0",
+              "reason": "child_failed:0.1.0.0",
+              "recoveries": [],
+              "resources": [
+                "effector:palm",
+                "object:cube"
+              ],
+              "skill_id": "transfer_and_verify",
+              "started_s": 0.0,
+              "verdict": "failure"
+            }
+          ],
+          "effects": [],
+          "ended_s": 0.0,
+          "evidence": {
+            "attempts": 1
+          },
+          "initiation": [
+            {
+              "answer": true,
+              "arguments": [
+                "cube"
+              ],
+              "negate": false,
+              "predicate": "object_known"
+            }
+          ],
+          "invariants": [],
+          "kind": "repeat_until",
+          "loop_checks": [
+            {
+              "answer": false,
+              "arguments": [
+                "cube",
+                "platform"
+              ],
+              "negate": false,
+              "predicate": "object_placed"
+            },
+            {
+              "answer": false,
+              "arguments": [
+                "cube"
+              ],
+              "negate": false,
+              "predicate": "object_in_reach"
+            }
+          ],
+          "node_id": "0.1",
+          "reason": "no_progress",
+          "recoveries": [],
+          "resources": [
+            "effector:palm",
+            "object:cube"
+          ],
+          "skill_id": "place_until_done",
+          "started_s": 0.0,
+          "verdict": "failure"
+        }
+      ],
+      "effects": [],
+      "ended_s": 0.0,
+      "evidence": {},
+      "initiation": [],
+      "invariants": [],
+      "kind": "sequence",
+      "loop_checks": [],
+      "node_id": "0",
+      "reason": "child_failed:0.1",
+      "recoveries": [],
+      "resources": [
+        "effector:palm",
+        "object:cube"
+      ],
+      "skill_id": "clear_bench",
+      "started_s": 0.0,
+      "verdict": "failure"
+    },
+    "schema_version": "1.0",
+    "started_s": 0.0,
+    "tree_sha256": "c16b5aeb0c08927c2d263bfdabada92a2364d8fbd447f8135cb41c0bcaf03c1b",
+    "verdict": "failure"
+  },
+  "runtime_calls": [
+    {
+      "in_reach": false,
+      "node": "0.0",
+      "object_position_m": [
+        -0.15,
+        0.65,
+        0.275
+      ],
+      "observed": "inventory"
+    },
+    {
+      "certified": false,
+      "duration_s": 0.0,
+      "effector": "palm",
+      "executed": false,
+      "gate": "unreachable_path",
+      "interrupted": false,
+      "node": "0.1.0.0.0",
+      "phases": []
+    },
+    {
+      "certified": false,
+      "duration_s": 0.0,
+      "effector": "palm",
+      "executed": false,
+      "gate": "unreachable_path",
+      "interrupted": false,
+      "node": "0.1.0.0.1",
+      "phases": []
+    }
+  ]
+}

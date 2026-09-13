@@ -1,0 +1,549 @@
+{
+  "$defs": {
+    "ArgumentSpecV1": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "default": "",
+          "title": "Description",
+          "type": "string"
+        },
+        "name": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Name",
+          "type": "string"
+        },
+        "required": {
+          "default": true,
+          "title": "Required",
+          "type": "boolean"
+        },
+        "type": {
+          "$ref": "#/$defs/ArgumentType"
+        }
+      },
+      "required": [
+        "name",
+        "type"
+      ],
+      "title": "ArgumentSpecV1",
+      "type": "object"
+    },
+    "ArgumentType": {
+      "enum": [
+        "string",
+        "identifier",
+        "integer",
+        "number",
+        "boolean"
+      ],
+      "title": "ArgumentType",
+      "type": "string"
+    },
+    "ChildRefV1": {
+      "additionalProperties": false,
+      "description": "A child definition and how the parent's arguments reach it.",
+      "properties": {
+        "bindings": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "default": {},
+          "title": "Bindings",
+          "type": "object"
+        },
+        "rank": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Rank",
+          "type": "integer"
+        },
+        "skill": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Skill",
+          "type": "string"
+        }
+      },
+      "required": [
+        "skill"
+      ],
+      "title": "ChildRefV1",
+      "type": "object"
+    },
+    "LoopSpecV1": {
+      "additionalProperties": false,
+      "description": "A bounded loop: stop when ``until`` holds, fail when the budget is\nspent or when ``progress`` stops holding after an attempt.",
+      "properties": {
+        "max_attempts": {
+          "maximum": 64,
+          "minimum": 1,
+          "title": "Max Attempts",
+          "type": "integer"
+        },
+        "progress": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PredicateRefV1"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "until": {
+          "$ref": "#/$defs/PredicateRefV1"
+        }
+      },
+      "required": [
+        "until",
+        "max_attempts"
+      ],
+      "title": "LoopSpecV1",
+      "type": "object"
+    },
+    "NodeKind": {
+      "enum": [
+        "primitive",
+        "sequence",
+        "selector",
+        "parallel",
+        "repeat_until",
+        "observe"
+      ],
+      "title": "NodeKind",
+      "type": "string"
+    },
+    "ObservationSpecV1": {
+      "additionalProperties": false,
+      "description": "What an Observe node establishes, and from what.",
+      "properties": {
+        "evidence": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "source": {
+          "minLength": 1,
+          "title": "Source",
+          "type": "string"
+        }
+      },
+      "required": [
+        "evidence",
+        "source"
+      ],
+      "title": "ObservationSpecV1",
+      "type": "object"
+    },
+    "OnUnknown": {
+      "enum": [
+        "propagate",
+        "fail"
+      ],
+      "title": "OnUnknown",
+      "type": "string"
+    },
+    "PredicateRefV1": {
+      "additionalProperties": false,
+      "description": "A declared predicate applied to arguments: ``$name`` binds a skill\nargument at expansion, anything else is a literal.",
+      "properties": {
+        "arguments": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Arguments",
+          "type": "array"
+        },
+        "name": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Name",
+          "type": "string"
+        },
+        "negate": {
+          "default": false,
+          "title": "Negate",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "PredicateRefV1",
+      "type": "object"
+    },
+    "PredicateSpecV1": {
+      "additionalProperties": false,
+      "description": "A predicate the library declares. A reference to any other is refused.",
+      "properties": {
+        "description": {
+          "default": "",
+          "title": "Description",
+          "type": "string"
+        },
+        "name": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Name",
+          "type": "string"
+        },
+        "parameters": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Parameters",
+          "type": "array"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "PredicateSpecV1",
+      "type": "object"
+    },
+    "RangeV1": {
+      "additionalProperties": false,
+      "properties": {
+        "high": {
+          "title": "High",
+          "type": "number"
+        },
+        "low": {
+          "title": "Low",
+          "type": "number"
+        },
+        "quantity": {
+          "minLength": 1,
+          "title": "Quantity",
+          "type": "string"
+        },
+        "units": {
+          "minLength": 1,
+          "title": "Units",
+          "type": "string"
+        }
+      },
+      "required": [
+        "quantity",
+        "low",
+        "high",
+        "units"
+      ],
+      "title": "RangeV1",
+      "type": "object"
+    },
+    "RecoveryV1": {
+      "additionalProperties": false,
+      "description": "What happens after an attempt fails: an optional recovery skill, then\nanother attempt, within a bound that includes the first attempt.",
+      "properties": {
+        "max_attempts": {
+          "default": 1,
+          "maximum": 16,
+          "minimum": 1,
+          "title": "Max Attempts",
+          "type": "integer"
+        },
+        "skill": {
+          "anyOf": [
+            {
+              "pattern": "^[a-z][a-z0-9_]*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Skill"
+        }
+      },
+      "title": "RecoveryV1",
+      "type": "object"
+    },
+    "ResourceClaimV1": {
+      "additionalProperties": false,
+      "description": "Something a running skill owns: a manipulator, a carried object, a\nsupport contact, a perception channel. ``$name`` binds an argument.",
+      "properties": {
+        "mode": {
+          "$ref": "#/$defs/ResourceMode",
+          "default": "exclusive"
+        },
+        "resource": {
+          "minLength": 1,
+          "title": "Resource",
+          "type": "string"
+        }
+      },
+      "required": [
+        "resource"
+      ],
+      "title": "ResourceClaimV1",
+      "type": "object"
+    },
+    "ResourceMode": {
+      "enum": [
+        "exclusive",
+        "shared"
+      ],
+      "title": "ResourceMode",
+      "type": "string"
+    },
+    "SkillDefinitionV1": {
+      "additionalProperties": false,
+      "properties": {
+        "arguments": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ArgumentSpecV1"
+          },
+          "title": "Arguments",
+          "type": "array"
+        },
+        "children": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ChildRefV1"
+          },
+          "title": "Children",
+          "type": "array"
+        },
+        "controller": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Controller"
+        },
+        "description": {
+          "default": "",
+          "title": "Description",
+          "type": "string"
+        },
+        "effects": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/PredicateRefV1"
+          },
+          "title": "Effects",
+          "type": "array"
+        },
+        "initiation": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/PredicateRefV1"
+          },
+          "title": "Initiation",
+          "type": "array"
+        },
+        "invariants": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/PredicateRefV1"
+          },
+          "title": "Invariants",
+          "type": "array"
+        },
+        "kind": {
+          "$ref": "#/$defs/NodeKind"
+        },
+        "loop": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LoopSpecV1"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "observation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ObservationSpecV1"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "recovery": {
+          "$ref": "#/$defs/RecoveryV1",
+          "default": {
+            "max_attempts": 1,
+            "skill": null
+          }
+        },
+        "requirements": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Requirements",
+          "type": "array"
+        },
+        "resources": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ResourceClaimV1"
+          },
+          "title": "Resources",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "skill_id": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Skill Id",
+          "type": "string"
+        },
+        "termination": {
+          "$ref": "#/$defs/TerminationRuleV1",
+          "default": {
+            "on_unknown": "propagate",
+            "require_effects": true
+          }
+        },
+        "timeout_s": {
+          "exclusiveMinimum": 0.0,
+          "title": "Timeout S",
+          "type": "number"
+        },
+        "validity": {
+          "$ref": "#/$defs/ValidityContextV1",
+          "default": {
+            "bodies": [],
+            "environments": [],
+            "evidence": [],
+            "notes": "",
+            "operating_range": []
+          }
+        }
+      },
+      "required": [
+        "skill_id",
+        "kind",
+        "timeout_s"
+      ],
+      "title": "SkillDefinitionV1",
+      "type": "object"
+    },
+    "TerminationRuleV1": {
+      "additionalProperties": false,
+      "description": "How a node's verdict is settled once its controller or children have\nreported. Success additionally requires the effects to hold, unless the\ndefinition says otherwise; an undecidable predicate is handled as\n``on_unknown`` says.",
+      "properties": {
+        "on_unknown": {
+          "$ref": "#/$defs/OnUnknown",
+          "default": "propagate"
+        },
+        "require_effects": {
+          "default": true,
+          "title": "Require Effects",
+          "type": "boolean"
+        }
+      },
+      "title": "TerminationRuleV1",
+      "type": "object"
+    },
+    "ValidityContextV1": {
+      "additionalProperties": false,
+      "description": "Where the evidence for a skill was gathered, and so where its\ncertificate means anything.",
+      "properties": {
+        "bodies": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Bodies",
+          "type": "array"
+        },
+        "environments": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Environments",
+          "type": "array"
+        },
+        "evidence": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence",
+          "type": "array"
+        },
+        "notes": {
+          "default": "",
+          "title": "Notes",
+          "type": "string"
+        },
+        "operating_range": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/RangeV1"
+          },
+          "title": "Operating Range",
+          "type": "array"
+        }
+      },
+      "title": "ValidityContextV1",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "description": {
+      "default": "",
+      "title": "Description",
+      "type": "string"
+    },
+    "library_id": {
+      "minLength": 1,
+      "title": "Library Id",
+      "type": "string"
+    },
+    "predicates": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/PredicateSpecV1"
+      },
+      "title": "Predicates",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "skills": {
+      "items": {
+        "$ref": "#/$defs/SkillDefinitionV1"
+      },
+      "minItems": 1,
+      "title": "Skills",
+      "type": "array"
+    }
+  },
+  "required": [
+    "library_id",
+    "skills"
+  ],
+  "title": "SkillLibraryV1",
+  "type": "object"
+}

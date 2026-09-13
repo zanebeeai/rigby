@@ -1,0 +1,233 @@
+{
+  "$defs": {
+    "CheckRecordV1": {
+      "additionalProperties": false,
+      "properties": {
+        "answer": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Answer"
+        },
+        "arguments": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Arguments",
+          "type": "array"
+        },
+        "negate": {
+          "default": false,
+          "title": "Negate",
+          "type": "boolean"
+        },
+        "predicate": {
+          "title": "Predicate",
+          "type": "string"
+        }
+      },
+      "required": [
+        "predicate"
+      ],
+      "title": "CheckRecordV1",
+      "type": "object"
+    },
+    "NodeKind": {
+      "enum": [
+        "primitive",
+        "sequence",
+        "selector",
+        "parallel",
+        "repeat_until",
+        "observe"
+      ],
+      "title": "NodeKind",
+      "type": "string"
+    },
+    "NodeRecordV1": {
+      "additionalProperties": false,
+      "properties": {
+        "attempts": {
+          "minimum": 1,
+          "title": "Attempts",
+          "type": "integer"
+        },
+        "children": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/NodeRecordV1"
+          },
+          "title": "Children",
+          "type": "array"
+        },
+        "effects": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/CheckRecordV1"
+          },
+          "title": "Effects",
+          "type": "array"
+        },
+        "ended_s": {
+          "title": "Ended S",
+          "type": "number"
+        },
+        "evidence": {
+          "additionalProperties": true,
+          "default": {},
+          "title": "Evidence",
+          "type": "object"
+        },
+        "initiation": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/CheckRecordV1"
+          },
+          "title": "Initiation",
+          "type": "array"
+        },
+        "invariants": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/CheckRecordV1"
+          },
+          "title": "Invariants",
+          "type": "array"
+        },
+        "kind": {
+          "$ref": "#/$defs/NodeKind"
+        },
+        "loop_checks": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/CheckRecordV1"
+          },
+          "title": "Loop Checks",
+          "type": "array"
+        },
+        "node_id": {
+          "title": "Node Id",
+          "type": "string"
+        },
+        "reason": {
+          "default": "",
+          "title": "Reason",
+          "type": "string"
+        },
+        "recoveries": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/NodeRecordV1"
+          },
+          "title": "Recoveries",
+          "type": "array"
+        },
+        "resources": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Resources",
+          "type": "array"
+        },
+        "skill_id": {
+          "title": "Skill Id",
+          "type": "string"
+        },
+        "started_s": {
+          "title": "Started S",
+          "type": "number"
+        },
+        "verdict": {
+          "$ref": "#/$defs/Verdict"
+        }
+      },
+      "required": [
+        "node_id",
+        "skill_id",
+        "kind",
+        "verdict",
+        "started_s",
+        "ended_s",
+        "attempts"
+      ],
+      "title": "NodeRecordV1",
+      "type": "object"
+    },
+    "Verdict": {
+      "enum": [
+        "success",
+        "failure",
+        "unknown",
+        "interrupted"
+      ],
+      "title": "Verdict",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "belief": {
+      "additionalProperties": true,
+      "default": {},
+      "title": "Belief",
+      "type": "object"
+    },
+    "ended_s": {
+      "title": "Ended S",
+      "type": "number"
+    },
+    "interrupt_reason": {
+      "default": "",
+      "title": "Interrupt Reason",
+      "type": "string"
+    },
+    "interrupted": {
+      "default": false,
+      "title": "Interrupted",
+      "type": "boolean"
+    },
+    "library_id": {
+      "title": "Library Id",
+      "type": "string"
+    },
+    "root": {
+      "$ref": "#/$defs/NodeRecordV1"
+    },
+    "schema_version": {
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "started_s": {
+      "title": "Started S",
+      "type": "number"
+    },
+    "tree_sha256": {
+      "maxLength": 64,
+      "minLength": 64,
+      "title": "Tree Sha256",
+      "type": "string"
+    },
+    "verdict": {
+      "$ref": "#/$defs/Verdict"
+    }
+  },
+  "required": [
+    "tree_sha256",
+    "library_id",
+    "verdict",
+    "started_s",
+    "ended_s",
+    "root"
+  ],
+  "title": "ExecutionRecordV1",
+  "type": "object"
+}

@@ -1,0 +1,126 @@
+{
+  "actual_physics_duration_s": 13.890000000001308,
+  "interrupt_reason": "",
+  "interrupted": false,
+  "leaves": [
+    {
+      "certified": false,
+      "collision_policy": {
+        "contact_exclusions_total": 0,
+        "contact_exclusions_with_object": [],
+        "equality_constraints": 0,
+        "object_actuators": 0,
+        "object_geoms_collidable": true,
+        "object_state_writes": 0
+      },
+      "executed": false,
+      "failed_gate": "self_collision_path",
+      "hold_s": 0.0,
+      "interrupted": false,
+      "lift_height_m": 0.0,
+      "max_penetration_m": 0.0,
+      "node": "0.1.0.0.0",
+      "path_seed": "",
+      "peak_force_n": 0.0,
+      "phases": [],
+      "placement_dwell_s": 0.0,
+      "placement_success": false
+    },
+    {
+      "certified": true,
+      "collision_policy": {
+        "contact_exclusions_total": 0,
+        "contact_exclusions_with_object": [],
+        "equality_constraints": 0,
+        "object_actuators": 0,
+        "object_geoms_collidable": true,
+        "object_state_writes": 0
+      },
+      "executed": true,
+      "failed_gate": null,
+      "hold_s": 2.002000000000001,
+      "interrupted": false,
+      "lift_height_m": 0.07417363327572835,
+      "max_penetration_m": 0.00038056078382202416,
+      "node": "0.1.0.0.1",
+      "path_seed": "rest",
+      "peak_force_n": 11.343771276195639,
+      "phases": [
+        {
+          "end_s": 3.039999999999887,
+          "name": "approach",
+          "note": "",
+          "start_s": 0.25000000000000017
+        },
+        {
+          "end_s": 4.071999999999774,
+          "name": "turn",
+          "note": "",
+          "start_s": 3.039999999999887
+        },
+        {
+          "end_s": 4.873999999999685,
+          "name": "descend",
+          "note": "",
+          "start_s": 4.071999999999774
+        },
+        {
+          "end_s": 5.085999999999662,
+          "name": "close",
+          "note": "",
+          "start_s": 4.873999999999685
+        },
+        {
+          "end_s": 6.0879999999995515,
+          "name": "lift",
+          "note": "",
+          "start_s": 5.085999999999662
+        },
+        {
+          "end_s": 8.089999999999371,
+          "name": "hold",
+          "note": "",
+          "start_s": 6.0879999999995515
+        },
+        {
+          "end_s": 9.289999999999772,
+          "name": "carry",
+          "note": "",
+          "start_s": 8.089999999999371
+        },
+        {
+          "end_s": 10.090000000000039,
+          "name": "lower",
+          "note": "",
+          "start_s": 9.289999999999772
+        },
+        {
+          "end_s": 10.590000000000206,
+          "name": "release",
+          "note": "",
+          "start_s": 10.090000000000039
+        },
+        {
+          "end_s": 11.390000000000473,
+          "name": "retreat",
+          "note": "",
+          "start_s": 10.590000000000206
+        },
+        {
+          "end_s": 13.890000000001308,
+          "name": "dwell",
+          "note": "",
+          "start_s": 11.390000000000473
+        }
+      ],
+      "placement_dwell_s": 2.498000000000834,
+      "placement_success": true
+    }
+  ],
+  "physical_steps": 6820,
+  "refusal": null,
+  "root_reason": "",
+  "scope": "a recursive skill tree executed on physics; verdicts by the neutral executor, placement by the independent evaluator",
+  "status": "success",
+  "verdict": "success"
+}

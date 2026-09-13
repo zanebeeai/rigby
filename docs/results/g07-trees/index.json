@@ -1,0 +1,1121 @@
+{
+  "commit": "5c477d991780d9c78b2db63e1c636abea8d008cd",
+  "created_at_utc": "2026-09-13T09:25:07.438964+00:00",
+  "environment": {
+    "environment_id": "g06_transfer_v1",
+    "registration_sha256": "0846972af045f04cd46006fae1d280691c8c9ec03fba30cf361ade7b8de1109e"
+  },
+  "files": {
+    "example/clear_bench.tree.json": "44b3cf4b5889617e143cb02ed82821c9d381799b134397096162e088c739adbb",
+    "example/clear_bench_v1.library.json": "a115ce7db3f2f38efd4944b4f3547300ac33bfe458eb4fddfb889a50faae7dad",
+    "physical/compact-refused/media/encoding.json": "5db046e1a11fe6961997c4ba68ca230992a9a863cff8946d4145e77a6466156e",
+    "physical/compact-refused/media/episode.mp4": "f22c314b792d3ed057e37347c73e7e0a242cdd066cb78824e21109fcd10c983c",
+    "physical/compact-refused/media/final.png": "7e35dcacf1487123455b0331e746394f20684586d3ab4d9ef03752e0cbb34419",
+    "physical/compact-refused/media/frames.json": "9799ddd4f5463761fa4f353f89e26914ec7bd3ab841e0ae1ad4672799d639130",
+    "physical/compact-refused/media/initial.png": "7e35dcacf1487123455b0331e746394f20684586d3ab4d9ef03752e0cbb34419",
+    "physical/compact-refused/media/manifest.json": "79514af07036d7985022a728e264d80558198381046ef51017b113a0710bdac4",
+    "physical/compact-refused/media/preview.gif": "90367f6cb897013e1264a88574aaffd683bce58c709d719406591a3dad7508b0",
+    "physical/compact-refused/media/seal.json": "3690477e04b00823b2eec8e8d84605a8dd3cbb096068ebd49c2ff3700c961f17",
+    "physical/compact-refused/physical/controller.json": "2df41f381fd1a80a99dc8e2eecd2693a5ca58414f40a6ca3842a9250245b3ebf",
+    "physical/compact-refused/physical/execution.json": "98f34bf11bc87484cc54a3e60b99d220657e1caa052bf670f5b60b73b2235a95",
+    "physical/compact-refused/physical/library.json": "a115ce7db3f2f38efd4944b4f3547300ac33bfe458eb4fddfb889a50faae7dad",
+    "physical/compact-refused/physical/manifest.json": "fe267fca521bdd8aa4705a93630b82177af29f29db965bec6914646cd4b23819",
+    "physical/compact-refused/physical/model.mjb": "df9f481008bbe09fb351bac5823548723f3c46fd3934b54181d8f50ca037aad5",
+    "physical/compact-refused/physical/model.xml": "6eff6a4ef42d64cd33b82d326dfa2eb01d2fac9973502d70dcd95a59c3a630ff",
+    "physical/compact-refused/physical/outcome.json": "79cc64308bdc0f0123bb244653cc7b4d16e12e452396183216a3b6a5b63179b6",
+    "physical/compact-refused/physical/repeats.json": "d22a1e3c9325dccb85aea21f6e7d2a345007637e958bffa63e734a3631fbc4e9",
+    "physical/compact-refused/physical/robot.json": "8d805ed098772117600a1cfc293afab8b5307433605b77f7251852ddd2144d9f",
+    "physical/compact-refused/physical/robot.urdf": "67461be18b9f49b7af8547ddb7599a7b0815d1f1bef7aeff8ef6056f3db153bd",
+    "physical/compact-refused/physical/seal.json": "96a1501abb46d1da79cf33f1caf3312aa264c5d8f135f4640d571408addacdf6",
+    "physical/compact-refused/physical/source.json": "459bf37c995be4bd26aaba9f6f8dac4035edc42a68f9a4d52948c537cd8d7898",
+    "physical/compact-refused/physical/source.zip": "a5c78d2b361a07929f5d7e7997965b8c5a3a3eee60f1949b1db11beca6f1df4c",
+    "physical/compact-refused/physical/task.json": "349559c35867f6a5529237a5a1443308966cff0730318f7fb3a84c7d2a0e149f",
+    "physical/compact-refused/physical/trace.npz": "7893b098a54fe7cca5152aca29b451e417fab1a3c0844774542d7f32b54f4686",
+    "physical/compact-refused/physical/tree.json": "fd3a96d62ebc456fa82ff83b03d3365a0ad71040918b6d7d06c620005156f583",
+    "physical/compact-refused/physical/world.json": "bfd8e0781ffcbe5668b4c78162ff9831c0a2dad8418251807fe5e9499eed7778",
+    "physical/compact-refused/record.json": "13736314328b4d630dec7f74ff9b516f6da988e4d4e2f525239e99adb46181f9",
+    "physical/dual-selector/media/encoding.json": "5ca9269ccf1986149a37d043a309eecab87ee194582760daea3ae60716c77263",
+    "physical/dual-selector/media/episode.mp4": "b67105cf8b1385c01f02f7ad6c4573982a37e12bc17e246eae1531684abedf64",
+    "physical/dual-selector/media/final.png": "cb2f3211288ea6fbc6f9484f0153c8c4710ea3c4a80f052f4fe187aac585599e",
+    "physical/dual-selector/media/frames.json": "18d9bf13cdbcd08095f2c5e5efc09ac4220deefbf8bd96c2a5c3c016aaeb8dc9",
+    "physical/dual-selector/media/initial.png": "592c89f6a8118e18b4d6b41ce5c19fd56398edeb91c1ddd0f5cd8c56db53ea35",
+    "physical/dual-selector/media/manifest.json": "49c8e18b881dfc29d2c27ebd5dc2ffe79c0083e0d04abfce0b1211aa10ef9c6c",
+    "physical/dual-selector/media/preview.gif": "67706eca034d28522a2b3f180ece4faddc6c20d6d34bc100678db0f871353ebc",
+    "physical/dual-selector/media/seal.json": "f903c07b0f6178ce4bbe8a82eb52d32fe0d40baa7dca99e0aab0f3e4b61d6548",
+    "physical/dual-selector/physical/controller.json": "2df41f381fd1a80a99dc8e2eecd2693a5ca58414f40a6ca3842a9250245b3ebf",
+    "physical/dual-selector/physical/execution.json": "58845d824d18d68495350222ceb9e0291d08aa71ec194f6c9ebfcdd9d192b3f1",
+    "physical/dual-selector/physical/library.json": "a115ce7db3f2f38efd4944b4f3547300ac33bfe458eb4fddfb889a50faae7dad",
+    "physical/dual-selector/physical/manifest.json": "20e60ae8a01d6ef263536234cc86e20b1b5745fc574f68c2165afcd7151c5dd8",
+    "physical/dual-selector/physical/model.mjb": "470c992e35fd7e5749c308cb0b0a2acb01ac54633176466e5dc8af6e52d01b0e",
+    "physical/dual-selector/physical/model.xml": "e129a4044ac8ddd4489ce067d1dd9f5c8ca03f96021033a40b40f5045313a363",
+    "physical/dual-selector/physical/outcome.json": "035d7faefc7854194554238b607ed7d59ea9e20fb585ce80f85ca1644a9315af",
+    "physical/dual-selector/physical/repeats.json": "464a90b31cd97b5fea3c39ce8c8049073b49162b53f8c455d70c04ef91295491",
+    "physical/dual-selector/physical/robot.json": "ef7928388e751f9a0250ad57581b1812b6e69c2d8a154e901a639063ed395fd9",
+    "physical/dual-selector/physical/robot.urdf": "628edbed60eb5732d38f1542a1411ea76518bc8c0f78c43f5910f6e9a0868d71",
+    "physical/dual-selector/physical/seal.json": "89b9fb58c27a3fed08025836cc7c7d0dc53eb85c66fe636136912d2752ea9cc5",
+    "physical/dual-selector/physical/source.json": "459bf37c995be4bd26aaba9f6f8dac4035edc42a68f9a4d52948c537cd8d7898",
+    "physical/dual-selector/physical/source.zip": "a5c78d2b361a07929f5d7e7997965b8c5a3a3eee60f1949b1db11beca6f1df4c",
+    "physical/dual-selector/physical/task.json": "12a6e1c9e4a06e0997fb406667455ea79aee967678dda8931b1e390798610aec",
+    "physical/dual-selector/physical/trace.npz": "8873c6fe861caa9ad752be2d8fcda6ba079f9e1ab8684e93ff90dda162e4fc52",
+    "physical/dual-selector/physical/tree.json": "d7b28010d3e759323179500227a4f0f22a984e93b49e0d9c806b7a56209deb29",
+    "physical/dual-selector/physical/world.json": "bfd8e0781ffcbe5668b4c78162ff9831c0a2dad8418251807fe5e9499eed7778",
+    "physical/dual-selector/record.json": "8ec0b9632f781846ff0321e40b1a4460c11604bbb252daac160796c359a11abb",
+    "physical/hand-budget/media/encoding.json": "830495c631c0418aea790da84d655b793b9256d270bde1d0a14e14915597f4cc",
+    "physical/hand-budget/media/episode.mp4": "eb2f57b03572b5d4d4d20602d07e4f508cceceed4bf15898cedae562f0e8f696",
+    "physical/hand-budget/media/final.png": "1f678b16ed3a2dd93fba6fd15b601eb8f35313583d76bfe5dc03cf3066964936",
+    "physical/hand-budget/media/frames.json": "dd536efe5e1fc8bb3146b7118a71471b0ae9efeaa4f27217baea6bab2078fc09",
+    "physical/hand-budget/media/initial.png": "37ac43ef17e7edca1563546fff3228729f4b08e0effe96ef0acc6e70b3a21fa4",
+    "physical/hand-budget/media/manifest.json": "c68dca1fa089ca5a9ecdb9107349beedc585421965fb7820b1590237b395fa41",
+    "physical/hand-budget/media/preview.gif": "c4fdc68b0d18c112fa22cade7cf6ae48ffbd250442b29f3ffc92603ba6653967",
+    "physical/hand-budget/media/seal.json": "94eb169d39e5781662eef2c11ecbf6cabc0da148929d571aa7f9bb3bf157e54d",
+    "physical/hand-budget/physical/controller.json": "2df41f381fd1a80a99dc8e2eecd2693a5ca58414f40a6ca3842a9250245b3ebf",
+    "physical/hand-budget/physical/execution.json": "622bd8c8908f06e615e88a1b2f04282cfe55501b51327f8d93d4e4ccc5bdae53",
+    "physical/hand-budget/physical/library.json": "a115ce7db3f2f38efd4944b4f3547300ac33bfe458eb4fddfb889a50faae7dad",
+    "physical/hand-budget/physical/manifest.json": "c7620464eb05ab340ae26d30ac8d81ad854eaebd5f0fdb7d0251c0970edc45d5",
+    "physical/hand-budget/physical/model.mjb": "94ea3dc4970e9976ed42e43eb0cdfb1e847580ca3154f8a77195eb37ffb3a135",
+    "physical/hand-budget/physical/model.xml": "9ca2c36002d285cdbd9eedcc7864b3e8f68d3e65e74d42e5367bcb889c09706b",
+    "physical/hand-budget/physical/outcome.json": "de810fc674307fd117de94ee96f780081859ff76ed80fedd73615c8c1ed56390",
+    "physical/hand-budget/physical/repeats.json": "6c72570588bdac2b1b64a83a2b03354f3726bd9be595ee9d5054143d4f7bce8c",
+    "physical/hand-budget/physical/robot.json": "666a46446d508fa2a4e37ea06408ab8beea53b15cd3937c37fbf2f5654599daa",
+    "physical/hand-budget/physical/robot.urdf": "44222086fe981a572136e3d0508ab1c5e08ab3de730c615ed37362d3258945d6",
+    "physical/hand-budget/physical/seal.json": "e3eb8a7a1c1623508bd8e03bfbc23e2f73a0a56c806ec96ca186af326f400312",
+    "physical/hand-budget/physical/source.json": "459bf37c995be4bd26aaba9f6f8dac4035edc42a68f9a4d52948c537cd8d7898",
+    "physical/hand-budget/physical/source.zip": "a5c78d2b361a07929f5d7e7997965b8c5a3a3eee60f1949b1db11beca6f1df4c",
+    "physical/hand-budget/physical/task.json": "c11c605a257af10f1b0025380631d6f6a3c6182ed5427327c8496046fa0ec50d",
+    "physical/hand-budget/physical/trace.npz": "db6c13d56af8c32586980c5f3a589562ed875bea2e2e9df412ba28c97b7198e5",
+    "physical/hand-budget/physical/tree.json": "fd3a96d62ebc456fa82ff83b03d3365a0ad71040918b6d7d06c620005156f583",
+    "physical/hand-budget/physical/world.json": "bfd8e0781ffcbe5668b4c78162ff9831c0a2dad8418251807fe5e9499eed7778",
+    "physical/hand-budget/record.json": "a715a8e5063fd05af88030c49c93c37e393723efdff54098f7f40396cd664bb6",
+    "physical/jaw-interrupt/media/encoding.json": "35d8e8312f8880ad0b1ec1e0cee05adb87bef668cefab5716c477e680eaf111a",
+    "physical/jaw-interrupt/media/episode.mp4": "77b6d6fba97c4d6c2afa8facf483b7ac904ae88afd1619362c68f04d6ccc4156",
+    "physical/jaw-interrupt/media/final.png": "e56c8308198af9d3a1d1ccb98b163e16fa891b818c59b4c2fdf581b35447b096",
+    "physical/jaw-interrupt/media/frames.json": "86c09aeb6e193a119d8afe35e15ea626e15bd64932ad7abd2e5a1c766c1feeb9",
+    "physical/jaw-interrupt/media/initial.png": "3ede478c36801e2ed8145f7b20c2f6e2e7ff384f3f78735c4be708eafebddc57",
+    "physical/jaw-interrupt/media/manifest.json": "9f9773ec913e9b16e7445482e65a1f31d21d595d4a18d8628f9f2ddf78623a98",
+    "physical/jaw-interrupt/media/preview.gif": "45b021dbb9217ebfb5cf55041520f80bdadf369b6fbe84cf130e315d298e41e1",
+    "physical/jaw-interrupt/media/seal.json": "1ecf240b387fc3c282210f4d1408190deb8f0426c5fc1b379c984c5f5562cb02",
+    "physical/jaw-interrupt/physical/controller.json": "2df41f381fd1a80a99dc8e2eecd2693a5ca58414f40a6ca3842a9250245b3ebf",
+    "physical/jaw-interrupt/physical/execution.json": "8c6045b20155e3354fe3b7b2925ea5e7c0b2d0923692ee2c6fbb6a99d7bd1c5b",
+    "physical/jaw-interrupt/physical/library.json": "a115ce7db3f2f38efd4944b4f3547300ac33bfe458eb4fddfb889a50faae7dad",
+    "physical/jaw-interrupt/physical/manifest.json": "c23bd28981b33ee22ccbe3d5351257eb60773f9615224d6721b761b4127c0a93",
+    "physical/jaw-interrupt/physical/model.mjb": "632f8f56704cc7bb96da37e0c0de72adb0c9f26482d6971abfcfd37c56d134c0",
+    "physical/jaw-interrupt/physical/model.xml": "1c356842d1b97550e7c2ea2a6a4fb4c0e1ed67aca53556a99055db9db1d160ee",
+    "physical/jaw-interrupt/physical/outcome.json": "8f81adb25e7a91e61cb099ab52f38a2969977e1627085f058b26eeea35a2772a",
+    "physical/jaw-interrupt/physical/repeats.json": "68dbae50c0e5999414077fff854f0cd1c1975d93700b9fe7e16a308ba4d13d11",
+    "physical/jaw-interrupt/physical/robot.json": "512e1760ba1634acc8508410e49012749a7b8dd461647e97d585a2d5e9315451",
+    "physical/jaw-interrupt/physical/robot.urdf": "e471721a99f33a062ff4f96fef38d7523b1e8196bd7c95406ddb2ebe4778cd3d",
+    "physical/jaw-interrupt/physical/seal.json": "38c7e01ca9a398454435bb362fd253e8bfc906fa05b7523a08ddd5fc5779b518",
+    "physical/jaw-interrupt/physical/source.json": "459bf37c995be4bd26aaba9f6f8dac4035edc42a68f9a4d52948c537cd8d7898",
+    "physical/jaw-interrupt/physical/source.zip": "a5c78d2b361a07929f5d7e7997965b8c5a3a3eee60f1949b1db11beca6f1df4c",
+    "physical/jaw-interrupt/physical/task.json": "7286386e543dfa4dbca208739123b316dbf1a70681d59e43d356c04935daab8b",
+    "physical/jaw-interrupt/physical/trace.npz": "5b268adf262d041bd08bfb5bb49ab939c99b6947fb98f819a4814dfdde03a3fe",
+    "physical/jaw-interrupt/physical/tree.json": "fd3a96d62ebc456fa82ff83b03d3365a0ad71040918b6d7d06c620005156f583",
+    "physical/jaw-interrupt/physical/world.json": "bfd8e0781ffcbe5668b4c78162ff9831c0a2dad8418251807fe5e9499eed7778",
+    "physical/jaw-interrupt/record.json": "d8b34de92b90bf1eeedc73bc0014633ec39b688792c09d67b2f3a3bb202296aa",
+    "schema/ExecutionRecordV1.schema.json": "42086bed5c45d75be14a0a0bc7364d625f3bd662f25b01ae42a22c3d253d4a93",
+    "schema/SkillLibraryV1.schema.json": "13f1f59999df0c2f4d52ed8143dbdbb8d2c3974ae5bd41a06b768f0d90603574",
+    "schema/TaskTreeV1.schema.json": "775540d6a1ac7ad38cb99e713bc4953c1c3b1ea2f9974ea325d70c399521b40e",
+    "scripted/failure-budget-exhausted.record.json": "c2b6b556de66b85074d31904575dfd7e836de4d5de745be3d309a65b3bfea389",
+    "scripted/failure-no-progress.record.json": "549a7f0c85ede7633f342e3410da93dd20a29712ea5bac6dbf6f21d3e64f56a7",
+    "scripted/interrupted-mid-leaf.record.json": "b572213bc72f7929f741c1c571521f509e904b7c25ba925cb796571e0d6f745c",
+    "scripted/success-first-alternative.record.json": "bf8f0671a2b598c6424629e98af096e6f31ba050a21df81016a4dfe1e6286b2b",
+    "scripted/success-second-alternative.record.json": "df5a841dab16c307e131f807429223134045fd140131aef0cebbf4843180c314",
+    "scripted/unknown-nothing-observed.record.json": "d574094ed2c34efc05a030115e885e4aefc898b92660de8904c48b8c2a281486"
+  },
+  "generation_calls": 0,
+  "goal": "G07",
+  "library": {
+    "definition_depth": 5,
+    "library_id": "clear_bench_v1",
+    "sha256": "3accc16dbf04b9c496cc3bc83e588a6b930014fa99e5d38d181090dcc4d73569",
+    "skills": [
+      {
+        "children": [
+          "observe_inventory",
+          "place_until_done"
+        ],
+        "kind": "sequence",
+        "skill_id": "clear_bench"
+      },
+      {
+        "children": [],
+        "kind": "observe",
+        "skill_id": "observe_inventory"
+      },
+      {
+        "children": [
+          "transfer_and_verify"
+        ],
+        "kind": "repeat_until",
+        "skill_id": "place_until_done"
+      },
+      {
+        "children": [
+          "transfer_with_any_effector",
+          "observe_placement"
+        ],
+        "kind": "sequence",
+        "skill_id": "transfer_and_verify"
+      },
+      {
+        "children": [
+          "transfer",
+          "transfer"
+        ],
+        "kind": "selector",
+        "skill_id": "transfer_with_any_effector"
+      },
+      {
+        "children": [],
+        "kind": "primitive",
+        "skill_id": "transfer"
+      },
+      {
+        "children": [],
+        "kind": "observe",
+        "skill_id": "observe_placement"
+      }
+    ]
+  },
+  "physical": [
+    {
+      "arguments": {
+        "alternate": "left_palm",
+        "destination": "platform",
+        "effector": "right_palm",
+        "object": "cube"
+      },
+      "bundle": {
+        "bundle": "C:/Users/hocke/GitHub/rigby-g07/docs/results/g07-trees/physical/dual-selector/physical",
+        "executed": true,
+        "outcome": "success",
+        "replay_agrees": true,
+        "sha256": "20e60ae8a01d6ef263536234cc86e20b1b5745fc574f68c2165afcd7151c5dd8",
+        "simulation_duration_s": 13.890000000001308,
+        "trace_sha256": "4185ea0f0655b2e51e699bb21b018c904933ff4c618e32f901b125c4c675694e"
+      },
+      "frames": 165,
+      "interrupt_reason": "",
+      "interrupted": false,
+      "leaves": [
+        {
+          "in_reach": true,
+          "node": "0.0",
+          "object_position_m": [
+            -0.15,
+            0.65,
+            0.275
+          ],
+          "observed": "inventory"
+        },
+        {
+          "certified": false,
+          "duration_s": 0.0,
+          "effector": "right_palm",
+          "executed": false,
+          "gate": "self_collision_path",
+          "interrupted": false,
+          "node": "0.1.0.0.0",
+          "phases": []
+        },
+        {
+          "certified": true,
+          "duration_s": 13.890000000001308,
+          "effector": "left_palm",
+          "executed": true,
+          "gate": null,
+          "interrupted": false,
+          "node": "0.1.0.0.1",
+          "phases": [
+            "approach",
+            "turn",
+            "descend",
+            "close",
+            "lift",
+            "hold",
+            "carry",
+            "lower",
+            "release",
+            "retreat",
+            "dwell"
+          ]
+        },
+        {
+          "answer": true,
+          "node": "0.1.0.1",
+          "observed": "placement"
+        }
+      ],
+      "max_depth": 5,
+      "media_sha256": "49c8e18b881dfc29d2c27ebd5dc2ffe79c0083e0d04abfce0b1211aa10ef9c6c",
+      "name": "dual-selector",
+      "nodes": [
+        {
+          "attempts": 1,
+          "kind": "sequence",
+          "node": "0",
+          "reason": "",
+          "skill": "clear_bench",
+          "verdict": "success"
+        },
+        {
+          "attempts": 1,
+          "kind": "observe",
+          "node": "0.0",
+          "reason": "",
+          "skill": "observe_inventory",
+          "verdict": "success"
+        },
+        {
+          "attempts": 1,
+          "kind": "repeat_until",
+          "node": "0.1",
+          "reason": "until_after_1",
+          "skill": "place_until_done",
+          "verdict": "success"
+        },
+        {
+          "attempts": 1,
+          "kind": "sequence",
+          "node": "0.1.0",
+          "reason": "",
+          "skill": "transfer_and_verify",
+          "verdict": "success"
+        },
+        {
+          "attempts": 1,
+          "kind": "selector",
+          "node": "0.1.0.0",
+          "reason": "alternative:0.1.0.0.1",
+          "skill": "transfer_with_any_effector",
+          "verdict": "success"
+        },
+        {
+          "attempts": 1,
+          "kind": "primitive",
+          "node": "0.1.0.0.0",
+          "reason": "self_collision_path",
+          "skill": "transfer",
+          "verdict": "failure"
+        },
+        {
+          "attempts": 1,
+          "kind": "primitive",
+          "node": "0.1.0.0.1",
+          "reason": "",
+          "skill": "transfer",
+          "verdict": "success"
+        },
+        {
+          "attempts": 1,
+          "kind": "observe",
+          "node": "0.1.0.1",
+          "reason": "",
+          "skill": "observe_placement",
+          "verdict": "success"
+        }
+      ],
+      "physics_end_s": 13.890000000001308,
+      "root_reason": "",
+      "simulation_duration_s": 13.640000000001308,
+      "tree_sha256": "974749dda6043cb6af37e018a265fc538e1e59f8542dbce14f89f0e5f55c5ee2",
+      "verdict": "success",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "arguments": {
+        "alternate": "palm",
+        "destination": "platform",
+        "effector": "palm",
+        "object": "cube"
+      },
+      "bundle": {
+        "bundle": "C:/Users/hocke/GitHub/rigby-g07/docs/results/g07-trees/physical/hand-budget/physical",
+        "executed": true,
+        "outcome": "runtime_failure",
+        "replay_agrees": true,
+        "sha256": "c7620464eb05ab340ae26d30ac8d81ad854eaebd5f0fdb7d0251c0970edc45d5",
+        "simulation_duration_s": 56.16800000002268,
+        "trace_sha256": "bdde0e4794cf375fc76c3cbbc183f36f9f53f8883415f6083eccbc066e75d8be"
+      },
+      "frames": 673,
+      "interrupt_reason": "",
+      "interrupted": false,
+      "leaves": [
+        {
+          "in_reach": true,
+          "node": "0.0",
+          "object_position_m": [
+            -0.15,
+            0.65,
+            0.275
+          ],
+          "observed": "inventory"
+        },
+        {
+          "certified": false,
+          "duration_s": 16.838000000001546,
+          "effector": "palm",
+          "executed": true,
+          "gate": "hold_not_sustained",
+          "interrupted": false,
+          "node": "0.1.0.0.0",
+          "phases": [
+            "approach",
+            "turn",
+            "descend",
+            "close",
+            "lift",
+            "hold",
+            "carry",
+            "lower",
+            "release",
+            "retreat",
+            "dwell"
+          ]
+        },
+        {
+          "certified": false,
+          "duration_s": 29.959999999994274,
+          "effector": "palm",
+          "executed": true,
+          "gate": "grasp_not_achieved",
+          "interrupted": false,
+          "node": "0.1.0.0.1",
+          "phases": [
+            "approach",
+            "turn",
+            "descend",
+            "close",
+            "lift",
+            "hold",
+            "carry",
+            "lower",
+            "release",
+            "retreat",
+            "dwell"
+          ]
+        },
+        {
+          "certified": false,
+          "duration_s": 43.06600000000667,
+          "effector": "palm",
+          "executed": true,
+          "gate": "grasp_not_achieved",
+          "interrupted": false,
+          "node": "0.1.0.0.0",
+          "phases": [
+            "approach",
+            "turn",
+            "descend",
+            "close",
+            "lift",
+            "hold",
+            "carry",
+            "lower",
+            "release",
+            "retreat",
+            "dwell"
+          ]
+        },
+        {
+          "certified": false,
+          "duration_s": 56.16800000002268,
+          "effector": "palm",
+          "executed": true,
+          "gate": "grasp_not_achieved",
+          "interrupted": false,
+          "node": "0.1.0.0.1",
+          "phases": [
+            "approach",
+            "turn",
+            "descend",
+            "close",
+            "lift",
+            "hold",
+            "carry",
+            "lower",
+            "release",
+            "retreat",
+            "dwell"
+          ]
+        }
+      ],
+      "max_depth": 5,
+      "media_sha256": "c68dca1fa089ca5a9ecdb9107349beedc585421965fb7820b1590237b395fa41",
+      "name": "hand-budget",
+      "nodes": [
+        {
+          "attempts": 1,
+          "kind": "sequence",
+          "node": "0",
+          "reason": "child_failed:0.1",
+          "skill": "clear_bench",
+          "verdict": "failure"
+        },
+        {
+          "attempts": 1,
+          "kind": "observe",
+          "node": "0.0",
+          "reason": "",
+          "skill": "observe_inventory",
+          "verdict": "success"
+        },
+        {
+          "attempts": 1,
+          "kind": "repeat_until",
+          "node": "0.1",
+          "reason": "budget_exhausted",
+          "skill": "place_until_done",
+          "verdict": "failure"
+        },
+        {
+          "attempts": 1,
+          "kind": "sequence",
+          "node": "0.1.0",
+          "reason": "child_failed:0.1.0.0",
+          "skill": "transfer_and_verify",
+          "verdict": "failure"
+        },
+        {
+          "attempts": 1,
+          "kind": "selector",
+          "node": "0.1.0.0",
+          "reason": "no_alternative_succeeded",
+          "skill": "transfer_with_any_effector",
+          "verdict": "failure"
+        },
+        {
+          "attempts": 1,
+          "kind": "primitive",
+          "node": "0.1.0.0.0",
+          "reason": "hold_not_sustained",
+          "skill": "transfer",
+          "verdict": "failure"
+        },
+        {
+          "attempts": 1,
+          "kind": "primitive",
+          "node": "0.1.0.0.1",
+          "reason": "grasp_not_achieved",
+          "skill": "transfer",
+          "verdict": "failure"
+        },
+        {
+          "attempts": 1,
+          "kind": "sequence",
+          "node": "0.1.0",
+          "reason": "child_failed:0.1.0.0",
+          "skill": "transfer_and_verify",
+          "verdict": "failure"
+        },
+        {
+          "attempts": 1,
+          "kind": "selector",
+          "node": "0.1.0.0",
+          "reason": "no_alternative_succeeded",
+          "skill": "transfer_with_any_effector",
+          "verdict": "failure"
+        },
+        {
+          "attempts": 1,
+          "kind": "primitive",
+          "node": "0.1.0.0.0",
+          "reason": "grasp_not_achieved",
+          "skill": "transfer",
+          "verdict": "failure"
+        },
+        {
+          "attempts": 1,
+          "kind": "primitive",
+          "node": "0.1.0.0.1",
+          "reason": "grasp_not_achieved",
+          "skill": "transfer",
+          "verdict": "failure"
+        }
+      ],
+      "physics_end_s": 56.16800000002268,
+      "root_reason": "child_failed:0.1",
+      "simulation_duration_s": 55.91800000002268,
+      "tree_sha256": "c16b5aeb0c08927c2d263bfdabada92a2364d8fbd447f8135cb41c0bcaf03c1b",
+      "verdict": "failure",
+      "zoo_id": "zoo_hand_arm"
+    },
+    {
+      "arguments": {
+        "alternate": "palm",
+        "destination": "platform",
+        "effector": "palm",
+        "object": "cube"
+      },
+      "bundle": {
+        "bundle": "C:/Users/hocke/GitHub/rigby-g07/docs/results/g07-trees/physical/jaw-interrupt/physical",
+        "executed": true,
+        "outcome": "interrupted",
+        "replay_agrees": true,
+        "sha256": "c23bd28981b33ee22ccbe3d5351257eb60773f9615224d6721b761b4127c0a93",
+        "simulation_duration_s": 5.999999999999561,
+        "trace_sha256": "fe4a10872c7035e446bdb55f30f8e4382fc464d6b164247602bed1ed897945e3"
+      },
+      "frames": 70,
+      "interrupt_reason": "stopped from outside at 6.002 s of physics",
+      "interrupted": true,
+      "leaves": [
+        {
+          "in_reach": true,
+          "node": "0.0",
+          "object_position_m": [
+            -0.15,
+            0.65,
+            0.275
+          ],
+          "observed": "inventory"
+        },
+        {
+          "certified": false,
+          "duration_s": 5.999999999999561,
+          "effector": "palm",
+          "executed": true,
+          "gate": "interrupted",
+          "interrupted": true,
+          "node": "0.1.0.0.0",
+          "phases": [
+            "approach",
+            "turn",
+            "descend",
+            "close",
+            "lift"
+          ]
+        }
+      ],
+      "max_depth": 5,
+      "media_sha256": "9f9773ec913e9b16e7445482e65a1f31d21d595d4a18d8628f9f2ddf78623a98",
+      "name": "jaw-interrupt",
+      "nodes": [
+        {
+          "attempts": 1,
+          "kind": "sequence",
+          "node": "0",
+          "reason": "interrupted",
+          "skill": "clear_bench",
+          "verdict": "interrupted"
+        },
+        {
+          "attempts": 1,
+          "kind": "observe",
+          "node": "0.0",
+          "reason": "",
+          "skill": "observe_inventory",
+          "verdict": "success"
+        },
+        {
+          "attempts": 1,
+          "kind": "repeat_until",
+          "node": "0.1",
+          "reason": "interrupted",
+          "skill": "place_until_done",
+          "verdict": "interrupted"
+        },
+        {
+          "attempts": 1,
+          "kind": "sequence",
+          "node": "0.1.0",
+          "reason": "interrupted",
+          "skill": "transfer_and_verify",
+          "verdict": "interrupted"
+        },
+        {
+          "attempts": 1,
+          "kind": "selector",
+          "node": "0.1.0.0",
+          "reason": "interrupted",
+          "skill": "transfer_with_any_effector",
+          "verdict": "interrupted"
+        },
+        {
+          "attempts": 1,
+          "kind": "primitive",
+          "node": "0.1.0.0.0",
+          "reason": "interrupted",
+          "skill": "transfer",
+          "verdict": "interrupted"
+        }
+      ],
+      "physics_end_s": 6.001999999999561,
+      "root_reason": "interrupted",
+      "simulation_duration_s": 5.749999999999561,
+      "tree_sha256": "c16b5aeb0c08927c2d263bfdabada92a2364d8fbd447f8135cb41c0bcaf03c1b",
+      "verdict": "interrupted",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "arguments": {
+        "alternate": "palm",
+        "destination": "platform",
+        "effector": "palm",
+        "object": "cube"
+      },
+      "bundle": {
+        "bundle": "C:/Users/hocke/GitHub/rigby-g07/docs/results/g07-trees/physical/compact-refused/physical",
+        "executed": false,
+        "outcome": "pre_execution_refusal",
+        "replay_agrees": true,
+        "sha256": "fe267fca521bdd8aa4705a93630b82177af29f29db965bec6914646cd4b23819",
+        "simulation_duration_s": 0.0,
+        "trace_sha256": "1453efea41d7181204d528b524e77d6c7a0496315a57ebe450de77403026d1f3"
+      },
+      "frames": 24,
+      "interrupt_reason": "",
+      "interrupted": false,
+      "leaves": [
+        {
+          "in_reach": false,
+          "node": "0.0",
+          "object_position_m": [
+            -0.15,
+            0.65,
+            0.275
+          ],
+          "observed": "inventory"
+        },
+        {
+          "certified": false,
+          "duration_s": 0.0,
+          "effector": "palm",
+          "executed": false,
+          "gate": "unreachable_path",
+          "interrupted": false,
+          "node": "0.1.0.0.0",
+          "phases": []
+        },
+        {
+          "certified": false,
+          "duration_s": 0.0,
+          "effector": "palm",
+          "executed": false,
+          "gate": "unreachable_path",
+          "interrupted": false,
+          "node": "0.1.0.0.1",
+          "phases": []
+        }
+      ],
+      "max_depth": 5,
+      "media_sha256": "79514af07036d7985022a728e264d80558198381046ef51017b113a0710bdac4",
+      "name": "compact-refused",
+      "nodes": [
+        {
+          "attempts": 1,
+          "kind": "sequence",
+          "node": "0",
+          "reason": "child_failed:0.1",
+          "skill": "clear_bench",
+          "verdict": "failure"
+        },
+        {
+          "attempts": 1,
+          "kind": "observe",
+          "node": "0.0",
+          "reason": "",
+          "skill": "observe_inventory",
+          "verdict": "success"
+        },
+        {
+          "attempts": 1,
+          "kind": "repeat_until",
+          "node": "0.1",
+          "reason": "no_progress",
+          "skill": "place_until_done",
+          "verdict": "failure"
+        },
+        {
+          "attempts": 1,
+          "kind": "sequence",
+          "node": "0.1.0",
+          "reason": "child_failed:0.1.0.0",
+          "skill": "transfer_and_verify",
+          "verdict": "failure"
+        },
+        {
+          "attempts": 1,
+          "kind": "selector",
+          "node": "0.1.0.0",
+          "reason": "no_alternative_succeeded",
+          "skill": "transfer_with_any_effector",
+          "verdict": "failure"
+        },
+        {
+          "attempts": 1,
+          "kind": "primitive",
+          "node": "0.1.0.0.0",
+          "reason": "unreachable_path",
+          "skill": "transfer",
+          "verdict": "failure"
+        },
+        {
+          "attempts": 1,
+          "kind": "primitive",
+          "node": "0.1.0.0.1",
+          "reason": "unreachable_path",
+          "skill": "transfer",
+          "verdict": "failure"
+        }
+      ],
+      "physics_end_s": 0.0,
+      "root_reason": "child_failed:0.1",
+      "simulation_duration_s": 0.0,
+      "tree_sha256": "c16b5aeb0c08927c2d263bfdabada92a2364d8fbd447f8135cb41c0bcaf03c1b",
+      "verdict": "failure",
+      "zoo_id": "zoo_compact_arm"
+    }
+  ],
+  "round_trip": {
+    "library_equal": true,
+    "library_sha256_equal": true,
+    "tree_sha256_equal": true
+  },
+  "scripted": [
+    {
+      "name": "success-first-alternative",
+      "nodes": [
+        {
+          "node": "0",
+          "reason": "",
+          "skill": "clear_bench",
+          "verdict": "success"
+        },
+        {
+          "node": "0.0",
+          "reason": "",
+          "skill": "observe_inventory",
+          "verdict": "success"
+        },
+        {
+          "node": "0.1",
+          "reason": "until_after_1",
+          "skill": "place_until_done",
+          "verdict": "success"
+        },
+        {
+          "node": "0.1.0",
+          "reason": "",
+          "skill": "transfer_and_verify",
+          "verdict": "success"
+        },
+        {
+          "node": "0.1.0.0",
+          "reason": "alternative:0.1.0.0.0",
+          "skill": "transfer_with_any_effector",
+          "verdict": "success"
+        },
+        {
+          "node": "0.1.0.0.0",
+          "reason": "",
+          "skill": "transfer",
+          "verdict": "success"
+        },
+        {
+          "node": "0.1.0.1",
+          "reason": "",
+          "skill": "observe_placement",
+          "verdict": "success"
+        }
+      ],
+      "note": "the first alternative places the object; the loop stops after one attempt",
+      "record_sha256": "7707d2aaf78c6dd4c34e2ea8532aa1d3043e897c0ddcaa9ea2fe9a9e5ea1b8b7",
+      "root_reason": "",
+      "verdict": "success"
+    },
+    {
+      "name": "success-second-alternative",
+      "nodes": [
+        {
+          "node": "0",
+          "reason": "",
+          "skill": "clear_bench",
+          "verdict": "success"
+        },
+        {
+          "node": "0.0",
+          "reason": "",
+          "skill": "observe_inventory",
+          "verdict": "success"
+        },
+        {
+          "node": "0.1",
+          "reason": "until_after_1",
+          "skill": "place_until_done",
+          "verdict": "success"
+        },
+        {
+          "node": "0.1.0",
+          "reason": "",
+          "skill": "transfer_and_verify",
+          "verdict": "success"
+        },
+        {
+          "node": "0.1.0.0",
+          "reason": "alternative:0.1.0.0.1",
+          "skill": "transfer_with_any_effector",
+          "verdict": "success"
+        },
+        {
+          "node": "0.1.0.0.0",
+          "reason": "grasp_not_achieved",
+          "skill": "transfer",
+          "verdict": "failure"
+        },
+        {
+          "node": "0.1.0.0.1",
+          "reason": "",
+          "skill": "transfer",
+          "verdict": "success"
+        },
+        {
+          "node": "0.1.0.1",
+          "reason": "",
+          "skill": "observe_placement",
+          "verdict": "success"
+        }
+      ],
+      "note": "the first alternative fails typed; the selector falls through and the second places it",
+      "record_sha256": "8040e691c248efe5f5f9745e690256f656c80fff95e84d27dbecf6522239050e",
+      "root_reason": "",
+      "verdict": "success"
+    },
+    {
+      "name": "failure-budget-exhausted",
+      "nodes": [
+        {
+          "node": "0",
+          "reason": "child_failed:0.1",
+          "skill": "clear_bench",
+          "verdict": "failure"
+        },
+        {
+          "node": "0.0",
+          "reason": "",
+          "skill": "observe_inventory",
+          "verdict": "success"
+        },
+        {
+          "node": "0.1",
+          "reason": "budget_exhausted",
+          "skill": "place_until_done",
+          "verdict": "failure"
+        },
+        {
+          "node": "0.1.0",
+          "reason": "child_failed:0.1.0.0",
+          "skill": "transfer_and_verify",
+          "verdict": "failure"
+        },
+        {
+          "node": "0.1.0.0",
+          "reason": "no_alternative_succeeded",
+          "skill": "transfer_with_any_effector",
+          "verdict": "failure"
+        },
+        {
+          "node": "0.1.0.0.0",
+          "reason": "grasp_not_achieved",
+          "skill": "transfer",
+          "verdict": "failure"
+        },
+        {
+          "node": "0.1.0.0.1",
+          "reason": "grasp_not_achieved",
+          "skill": "transfer",
+          "verdict": "failure"
+        },
+        {
+          "node": "0.1.0",
+          "reason": "child_failed:0.1.0.0",
+          "skill": "transfer_and_verify",
+          "verdict": "failure"
+        },
+        {
+          "node": "0.1.0.0",
+          "reason": "no_alternative_succeeded",
+          "skill": "transfer_with_any_effector",
+          "verdict": "failure"
+        },
+        {
+          "node": "0.1.0.0.0",
+          "reason": "grasp_not_achieved",
+          "skill": "transfer",
+          "verdict": "failure"
+        },
+        {
+          "node": "0.1.0.0.1",
+          "reason": "grasp_not_achieved",
+          "skill": "transfer",
+          "verdict": "failure"
+        }
+      ],
+      "note": "both alternatives fail on both attempts; the loop spends its budget of two",
+      "record_sha256": "2b2cea6430662a8f262d22bd0cf25e1841eaac934c6d1e168345303d262125f2",
+      "root_reason": "child_failed:0.1",
+      "verdict": "failure"
+    },
+    {
+      "name": "failure-no-progress",
+      "nodes": [
+        {
+          "node": "0",
+          "reason": "child_failed:0.1",
+          "skill": "clear_bench",
+          "verdict": "failure"
+        },
+        {
+          "node": "0.0",
+          "reason": "",
+          "skill": "observe_inventory",
+          "verdict": "success"
+        },
+        {
+          "node": "0.1",
+          "reason": "no_progress",
+          "skill": "place_until_done",
+          "verdict": "failure"
+        },
+        {
+          "node": "0.1.0",
+          "reason": "child_failed:0.1.0.0",
+          "skill": "transfer_and_verify",
+          "verdict": "failure"
+        },
+        {
+          "node": "0.1.0.0",
+          "reason": "no_alternative_succeeded",
+          "skill": "transfer_with_any_effector",
+          "verdict": "failure"
+        },
+        {
+          "node": "0.1.0.0.0",
+          "reason": "grasp_not_achieved",
+          "skill": "transfer",
+          "verdict": "failure"
+        },
+        {
+          "node": "0.1.0.0.1",
+          "reason": "grasp_not_achieved",
+          "skill": "transfer",
+          "verdict": "failure"
+        }
+      ],
+      "note": "the progress predicate fails after the first attempt; the loop stops before its budget",
+      "record_sha256": "fb31cba81b7d1e0a5ff3610c14ef08953bfe5d8e0a14aa639482d2cf5840c72b",
+      "root_reason": "child_failed:0.1",
+      "verdict": "failure"
+    },
+    {
+      "name": "unknown-nothing-observed",
+      "nodes": [
+        {
+          "node": "0",
+          "reason": "child_unknown:0.1",
+          "skill": "clear_bench",
+          "verdict": "unknown"
+        },
+        {
+          "node": "0.0",
+          "reason": "",
+          "skill": "observe_inventory",
+          "verdict": "success"
+        },
+        {
+          "node": "0.1",
+          "reason": "child_undecided:0.1.0",
+          "skill": "place_until_done",
+          "verdict": "unknown"
+        },
+        {
+          "node": "0.1.0",
+          "reason": "child_unknown:0.1.0.1",
+          "skill": "transfer_and_verify",
+          "verdict": "unknown"
+        },
+        {
+          "node": "0.1.0.0",
+          "reason": "alternative:0.1.0.0.0",
+          "skill": "transfer_with_any_effector",
+          "verdict": "success"
+        },
+        {
+          "node": "0.1.0.0.0",
+          "reason": "",
+          "skill": "transfer",
+          "verdict": "success"
+        },
+        {
+          "node": "0.1.0.1",
+          "reason": "nothing_observed",
+          "skill": "observe_placement",
+          "verdict": "unknown"
+        }
+      ],
+      "note": "the transfer claims no effect of its own and the verifying observation sees nothing; undecided propagates and the attempt is not repeated",
+      "record_sha256": "6b44a9203f6dc2bd5bb7f8ca5c425115862651a7d25cb683e4e76d7a012d6c43",
+      "root_reason": "child_unknown:0.1",
+      "verdict": "unknown"
+    },
+    {
+      "name": "interrupted-mid-leaf",
+      "nodes": [
+        {
+          "node": "0",
+          "reason": "stopped mid-motion",
+          "skill": "clear_bench",
+          "verdict": "interrupted"
+        },
+        {
+          "node": "0.0",
+          "reason": "",
+          "skill": "observe_inventory",
+          "verdict": "success"
+        },
+        {
+          "node": "0.1",
+          "reason": "stopped mid-motion",
+          "skill": "place_until_done",
+          "verdict": "interrupted"
+        },
+        {
+          "node": "0.1.0",
+          "reason": "stopped mid-motion",
+          "skill": "transfer_and_verify",
+          "verdict": "interrupted"
+        },
+        {
+          "node": "0.1.0.0",
+          "reason": "stopped mid-motion",
+          "skill": "transfer_with_any_effector",
+          "verdict": "interrupted"
+        },
+        {
+          "node": "0.1.0.0.0",
+          "reason": "stopped mid-motion",
+          "skill": "transfer",
+          "verdict": "interrupted"
+        }
+      ],
+      "note": "an interruption arrives while the first transfer runs; the leaf, the selector, the sequence, the loop and the root all record it",
+      "record_sha256": "69c99b6abf3de216102a2b7583aeb9b3a905f0e2b7b75ffb4fdcdbfbda7f1dde",
+      "root_reason": "stopped mid-motion",
+      "verdict": "interrupted"
+    }
+  ],
+  "tree": {
+    "kinds": [
+      "observe",
+      "primitive",
+      "repeat_until",
+      "selector",
+      "sequence"
+    ],
+    "max_depth": 5,
+    "nodes": 8,
+    "sha256": "83682d0cfaf460fcc1764fbe124268e89b70522bafc00bfafe3c8d8c1cd53708"
+  },
+  "working_tree_dirty": false
+}

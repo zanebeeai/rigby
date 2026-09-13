@@ -1,0 +1,63 @@
+{
+  "actual_physics_duration_s": 0.0,
+  "interrupt_reason": "",
+  "interrupted": false,
+  "leaves": [
+    {
+      "certified": false,
+      "collision_policy": {
+        "contact_exclusions_total": 0,
+        "contact_exclusions_with_object": [],
+        "equality_constraints": 0,
+        "object_actuators": 0,
+        "object_geoms_collidable": true,
+        "object_state_writes": 0
+      },
+      "executed": false,
+      "failed_gate": "unreachable_path",
+      "hold_s": 0.0,
+      "interrupted": false,
+      "lift_height_m": 0.0,
+      "max_penetration_m": 0.0,
+      "node": "0.1.0.0.0",
+      "path_seed": "",
+      "peak_force_n": 0.0,
+      "phases": [],
+      "placement_dwell_s": 0.0,
+      "placement_success": false
+    },
+    {
+      "certified": false,
+      "collision_policy": {
+        "contact_exclusions_total": 0,
+        "contact_exclusions_with_object": [],
+        "equality_constraints": 0,
+        "object_actuators": 0,
+        "object_geoms_collidable": true,
+        "object_state_writes": 0
+      },
+      "executed": false,
+      "failed_gate": "unreachable_path",
+      "hold_s": 0.0,
+      "interrupted": false,
+      "lift_height_m": 0.0,
+      "max_penetration_m": 0.0,
+      "node": "0.1.0.0.1",
+      "path_seed": "",
+      "peak_force_n": 0.0,
+      "phases": [],
+      "placement_dwell_s": 0.0,
+      "placement_success": false
+    }
+  ],
+  "physical_steps": 0,
+  "refusal": {
+    "code": "unreachable_path",
+    "detail": "waypoint 1 is 0.0363 m from where it was asked to be, past a tolerance of 0.0040 m",
+    "stage": "path"
+  },
+  "root_reason": "child_failed:0.1",
+  "scope": "a recursive skill tree executed on physics; verdicts by the neutral executor, placement by the independent evaluator",
+  "status": "pre_execution_refusal",
+  "verdict": "failure"
+}

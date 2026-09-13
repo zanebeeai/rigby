@@ -1,0 +1,67 @@
+{
+  "actual_physics_duration_s": 5.999999999999561,
+  "interrupt_reason": "stopped from outside at 6.002 s of physics",
+  "interrupted": true,
+  "leaves": [
+    {
+      "certified": false,
+      "collision_policy": {
+        "contact_exclusions_total": 0,
+        "contact_exclusions_with_object": [],
+        "equality_constraints": 0,
+        "object_actuators": 0,
+        "object_geoms_collidable": true,
+        "object_state_writes": 0
+      },
+      "executed": true,
+      "failed_gate": "interrupted",
+      "hold_s": 0.0,
+      "interrupted": true,
+      "lift_height_m": 0.004284010818000006,
+      "max_penetration_m": 0.0008933038888627767,
+      "node": "0.1.0.0.0",
+      "path_seed": "rest",
+      "peak_force_n": 21.929849911132276,
+      "phases": [
+        {
+          "end_s": 3.1259999999998773,
+          "name": "approach",
+          "note": "",
+          "start_s": 0.25000000000000017
+        },
+        {
+          "end_s": 4.881999999999684,
+          "name": "turn",
+          "note": "",
+          "start_s": 3.1259999999998773
+        },
+        {
+          "end_s": 5.683999999999596,
+          "name": "descend",
+          "note": "",
+          "start_s": 4.881999999999684
+        },
+        {
+          "end_s": 5.9159999999995705,
+          "name": "close",
+          "note": "",
+          "start_s": 5.683999999999596
+        },
+        {
+          "end_s": 6.001999999999561,
+          "name": "lift",
+          "note": "interrupted",
+          "start_s": 5.9159999999995705
+        }
+      ],
+      "placement_dwell_s": 0.0,
+      "placement_success": false
+    }
+  ],
+  "physical_steps": 2875,
+  "refusal": null,
+  "root_reason": "interrupted",
+  "scope": "a recursive skill tree executed on physics; verdicts by the neutral executor, placement by the independent evaluator",
+  "status": "interrupted",
+  "verdict": "interrupted"
+}
