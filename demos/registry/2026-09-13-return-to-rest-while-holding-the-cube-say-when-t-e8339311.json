@@ -1,0 +1,45 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-return-to-rest-while-holding-the-cube-say-when-t-e8339311",
+  "title": "D09: hidden slip (zoo_jaw_arm), verdict overlays under two sensor configurations",
+  "prompt": "return to rest while holding the cube; say when the hold is lost",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T12:38:34Z",
+  "source": {
+    "commit": "1c675397fe",
+    "branch": "feat/g09-conditionals",
+    "dirty": false,
+    "how": "python any-robot/scripts/g09_d09_media.py --out docs/results/g09-d09"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "FAILURE shown as such (jaw arm, the G08 D08 unchecked return, whose own certificate said success). The cube drops out during the return; contact fails held at once under a blind overhead camera; the side camera alone is unknown while the hand hides the cube and fails once it sees the cube on the platform."
+  },
+  "notes": "See docs/results/g09-report.md. A recorded episode rendered in full from its sealed physical record at real-time playback with the simulation clock and outcome in the banner, with a strip beneath every frame: the verdicts of the six observable conditionals under two declared sensor configurations, the sensors each used with the age of their newest sample, and the oracle labels from the full state that the monitor never reads. frames.json beside the MP4 maps every frame to its recorded sample; verdicts.json in the overlay bundle records every verdict.",
+  "media": [
+    {
+      "path": "docs/results/g09-d09/hidden-slip.mp4",
+      "bytes": 214812,
+      "sha256": "48c4ca3c9becc1f1f022c2c57758541538d7a6260337613907a9756ab66198c8",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g09-d09/hidden-slip-preview.gif",
+      "bytes": 2803721,
+      "sha256": "bb15b3c4c5cc925bbb2dfd88eb31f8e4b41b2134851ab07bd67f6848a30d2a24",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G09",
+    "D09",
+    "hidden-slip",
+    "conditionals",
+    "sensor-provenance",
+    "failure"
+  ]
+}

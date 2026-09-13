@@ -62,3 +62,24 @@ from .boundary import (  # noqa: E402
 )
 
 __all__ += ["BoundaryStateV1", "BoundaryVerdictV1", "BoundaryViolationV1", "ContactMode", "InitiationSetV1", "JointStateV1", "Repair", "TransitionCostV1", "check_boundary"]
+from .conditionals import (  # noqa: E402
+    PREDICATES,
+    RULES,
+    AbstentionV1,
+    ConditionalV1,
+    ConditionalVerdictV1,
+    Decision,
+    DecisionRuleV1,
+    EvidenceKind,
+    EvidenceRequirementV1,
+    EvidenceSampleV1,
+    FallbackV1,
+    SampleQuality,
+    SensorConfigurationV1,
+    SensorSpecV1,
+    TemporalWindowV1,
+    evaluate,
+)
+
+__all__ += ["PREDICATES", "RULES", "AbstentionV1", "ConditionalV1", "ConditionalVerdictV1", "Decision", "DecisionRuleV1", "EvidenceKind", "EvidenceRequirementV1",
+            "EvidenceSampleV1", "FallbackV1", "SampleQuality", "SensorConfigurationV1", "SensorSpecV1", "TemporalWindowV1", "evaluate"]

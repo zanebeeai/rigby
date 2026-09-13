@@ -1,0 +1,3217 @@
+{
+  "cameras": {
+    "front": {
+      "latency_s": 0.033,
+      "max_age_s": 0.2,
+      "noise_m": 0.002,
+      "position_m": [
+        -0.08,
+        1.35,
+        0.55
+      ],
+      "rate_hz": 30.0,
+      "visible_fraction": 0.5
+    },
+    "overhead": {
+      "latency_s": 0.033,
+      "max_age_s": 0.2,
+      "noise_m": 0.002,
+      "position_m": [
+        -0.08,
+        0.65,
+        1.2
+      ],
+      "rate_hz": 30.0,
+      "visible_fraction": 0.5
+    },
+    "side_low": {
+      "latency_s": 0.033,
+      "max_age_s": 0.2,
+      "noise_m": 0.002,
+      "position_m": [
+        0.45,
+        0.65,
+        0.35
+      ],
+      "rate_hz": 30.0,
+      "visible_fraction": 0.5
+    }
+  },
+  "commit": "1c675397febbc666dc84232ab9faec44aac295e9",
+  "configuration_reference_body": "zoo_jaw_arm",
+  "configurations": {
+    "contact_only": {
+      "configuration_id": "contact_only",
+      "description": "encoders and gripper contact; no camera",
+      "sensors": [
+        {
+          "description": "joint positions and velocities of every declared dof",
+          "entity": "",
+          "kind": "joint_encoders",
+          "latency_s": 0.0,
+          "max_age_s": 0.02,
+          "occludable": false,
+          "oracle": false,
+          "rate_hz": 500.0,
+          "sensor_id": "encoders"
+        },
+        {
+          "description": "the grasp point through the calibrated model from the encoders",
+          "entity": "palm",
+          "kind": "effector_pose",
+          "latency_s": 0.0,
+          "max_age_s": 0.05,
+          "occludable": false,
+          "oracle": false,
+          "rate_hz": 100.0,
+          "sensor_id": "effector_pose:palm"
+        },
+        {
+          "description": "normal force on each opposition group of palm from the object: finger_left; finger_right",
+          "entity": "palm",
+          "kind": "contact_force",
+          "latency_s": 0.0,
+          "max_age_s": 0.05,
+          "occludable": false,
+          "oracle": false,
+          "rate_hz": 200.0,
+          "sensor_id": "contact:palm"
+        },
+        {
+          "description": "the task's destination region",
+          "entity": "",
+          "kind": "region",
+          "latency_s": 0.0,
+          "max_age_s": 1.0,
+          "occludable": false,
+          "oracle": false,
+          "rate_hz": 10.0,
+          "sensor_id": "region"
+        },
+        {
+          "description": "the manipulator's calibrated reach shell along the bearing of the last sensed object position",
+          "entity": "palm",
+          "kind": "reach_envelope",
+          "latency_s": 0.0,
+          "max_age_s": 1.0,
+          "occludable": false,
+          "oracle": false,
+          "rate_hz": 10.0,
+          "sensor_id": "reach:palm"
+        }
+      ]
+    },
+    "front_contact": {
+      "configuration_id": "front_contact",
+      "description": "encoders, gripper contact, a camera beyond the fixtures looking back",
+      "sensors": [
+        {
+          "description": "joint positions and velocities of every declared dof",
+          "entity": "",
+          "kind": "joint_encoders",
+          "latency_s": 0.0,
+          "max_age_s": 0.02,
+          "occludable": false,
+          "oracle": false,
+          "rate_hz": 500.0,
+          "sensor_id": "encoders"
+        },
+        {
+          "description": "the grasp point through the calibrated model from the encoders",
+          "entity": "palm",
+          "kind": "effector_pose",
+          "latency_s": 0.0,
+          "max_age_s": 0.05,
+          "occludable": false,
+          "oracle": false,
+          "rate_hz": 100.0,
+          "sensor_id": "effector_pose:palm"
+        },
+        {
+          "description": "normal force on each opposition group of palm from the object: finger_left; finger_right",
+          "entity": "palm",
+          "kind": "contact_force",
+          "latency_s": 0.0,
+          "max_age_s": 0.05,
+          "occludable": false,
+          "oracle": false,
+          "rate_hz": 200.0,
+          "sensor_id": "contact:palm"
+        },
+        {
+          "description": "object position by ray visibility from (-0.08, 1.35, 0.55); occluded below 50% of rays; noise 2 mm",
+          "entity": "",
+          "kind": "object_pose",
+          "latency_s": 0.033,
+          "max_age_s": 0.2,
+          "occludable": true,
+          "oracle": false,
+          "rate_hz": 30.0,
+          "sensor_id": "camera:front"
+        },
+        {
+          "description": "the task's destination region",
+          "entity": "",
+          "kind": "region",
+          "latency_s": 0.0,
+          "max_age_s": 1.0,
+          "occludable": false,
+          "oracle": false,
+          "rate_hz": 10.0,
+          "sensor_id": "region"
+        },
+        {
+          "description": "the manipulator's calibrated reach shell along the bearing of the last sensed object position",
+          "entity": "palm",
+          "kind": "reach_envelope",
+          "latency_s": 0.0,
+          "max_age_s": 1.0,
+          "occludable": false,
+          "oracle": false,
+          "rate_hz": 10.0,
+          "sensor_id": "reach:palm"
+        }
+      ]
+    },
+    "front_contact_with_oracle": {
+      "configuration_id": "front_contact_with_oracle",
+      "description": "front_contact plus a privileged oracle sensor, present to show it is never read",
+      "sensors": [
+        {
+          "description": "joint positions and velocities of every declared dof",
+          "entity": "",
+          "kind": "joint_encoders",
+          "latency_s": 0.0,
+          "max_age_s": 0.02,
+          "occludable": false,
+          "oracle": false,
+          "rate_hz": 500.0,
+          "sensor_id": "encoders"
+        },
+        {
+          "description": "the grasp point through the calibrated model from the encoders",
+          "entity": "palm",
+          "kind": "effector_pose",
+          "latency_s": 0.0,
+          "max_age_s": 0.05,
+          "occludable": false,
+          "oracle": false,
+          "rate_hz": 100.0,
+          "sensor_id": "effector_pose:palm"
+        },
+        {
+          "description": "normal force on each opposition group of palm from the object: finger_left; finger_right",
+          "entity": "palm",
+          "kind": "contact_force",
+          "latency_s": 0.0,
+          "max_age_s": 0.05,
+          "occludable": false,
+          "oracle": false,
+          "rate_hz": 200.0,
+          "sensor_id": "contact:palm"
+        },
+        {
+          "description": "object position by ray visibility from (-0.08, 1.35, 0.55); occluded below 50% of rays; noise 2 mm",
+          "entity": "",
+          "kind": "object_pose",
+          "latency_s": 0.033,
+          "max_age_s": 0.2,
+          "occludable": true,
+          "oracle": false,
+          "rate_hz": 30.0,
+          "sensor_id": "camera:front"
+        },
+        {
+          "description": "the task's destination region",
+          "entity": "",
+          "kind": "region",
+          "latency_s": 0.0,
+          "max_age_s": 1.0,
+          "occludable": false,
+          "oracle": false,
+          "rate_hz": 10.0,
+          "sensor_id": "region"
+        },
+        {
+          "description": "the manipulator's calibrated reach shell along the bearing of the last sensed object position",
+          "entity": "palm",
+          "kind": "reach_envelope",
+          "latency_s": 0.0,
+          "max_age_s": 1.0,
+          "occludable": false,
+          "oracle": false,
+          "rate_hz": 10.0,
+          "sensor_id": "reach:palm"
+        },
+        {
+          "description": "privileged full state; labels only",
+          "entity": "",
+          "kind": "oracle_state",
+          "latency_s": 0.0,
+          "max_age_s": 0.02,
+          "occludable": false,
+          "oracle": true,
+          "rate_hz": 100.0,
+          "sensor_id": "oracle"
+        }
+      ]
+    },
+    "front_vision_only": {
+      "configuration_id": "front_vision_only",
+      "description": "encoders and the front camera; no contact sensing",
+      "sensors": [
+        {
+          "description": "joint positions and velocities of every declared dof",
+          "entity": "",
+          "kind": "joint_encoders",
+          "latency_s": 0.0,
+          "max_age_s": 0.02,
+          "occludable": false,
+          "oracle": false,
+          "rate_hz": 500.0,
+          "sensor_id": "encoders"
+        },
+        {
+          "description": "the grasp point through the calibrated model from the encoders",
+          "entity": "palm",
+          "kind": "effector_pose",
+          "latency_s": 0.0,
+          "max_age_s": 0.05,
+          "occludable": false,
+          "oracle": false,
+          "rate_hz": 100.0,
+          "sensor_id": "effector_pose:palm"
+        },
+        {
+          "description": "object position by ray visibility from (-0.08, 1.35, 0.55); occluded below 50% of rays; noise 2 mm",
+          "entity": "",
+          "kind": "object_pose",
+          "latency_s": 0.033,
+          "max_age_s": 0.2,
+          "occludable": true,
+          "oracle": false,
+          "rate_hz": 30.0,
+          "sensor_id": "camera:front"
+        },
+        {
+          "description": "the task's destination region",
+          "entity": "",
+          "kind": "region",
+          "latency_s": 0.0,
+          "max_age_s": 1.0,
+          "occludable": false,
+          "oracle": false,
+          "rate_hz": 10.0,
+          "sensor_id": "region"
+        },
+        {
+          "description": "the manipulator's calibrated reach shell along the bearing of the last sensed object position",
+          "entity": "palm",
+          "kind": "reach_envelope",
+          "latency_s": 0.0,
+          "max_age_s": 1.0,
+          "occludable": false,
+          "oracle": false,
+          "rate_hz": 10.0,
+          "sensor_id": "reach:palm"
+        }
+      ]
+    },
+    "overhead_contact": {
+      "configuration_id": "overhead_contact",
+      "description": "encoders, gripper contact, a camera above the fixtures",
+      "sensors": [
+        {
+          "description": "joint positions and velocities of every declared dof",
+          "entity": "",
+          "kind": "joint_encoders",
+          "latency_s": 0.0,
+          "max_age_s": 0.02,
+          "occludable": false,
+          "oracle": false,
+          "rate_hz": 500.0,
+          "sensor_id": "encoders"
+        },
+        {
+          "description": "the grasp point through the calibrated model from the encoders",
+          "entity": "palm",
+          "kind": "effector_pose",
+          "latency_s": 0.0,
+          "max_age_s": 0.05,
+          "occludable": false,
+          "oracle": false,
+          "rate_hz": 100.0,
+          "sensor_id": "effector_pose:palm"
+        },
+        {
+          "description": "normal force on each opposition group of palm from the object: finger_left; finger_right",
+          "entity": "palm",
+          "kind": "contact_force",
+          "latency_s": 0.0,
+          "max_age_s": 0.05,
+          "occludable": false,
+          "oracle": false,
+          "rate_hz": 200.0,
+          "sensor_id": "contact:palm"
+        },
+        {
+          "description": "object position by ray visibility from (-0.08, 0.65, 1.2); occluded below 50% of rays; noise 2 mm",
+          "entity": "",
+          "kind": "object_pose",
+          "latency_s": 0.033,
+          "max_age_s": 0.2,
+          "occludable": true,
+          "oracle": false,
+          "rate_hz": 30.0,
+          "sensor_id": "camera:overhead"
+        },
+        {
+          "description": "the task's destination region",
+          "entity": "",
+          "kind": "region",
+          "latency_s": 0.0,
+          "max_age_s": 1.0,
+          "occludable": false,
+          "oracle": false,
+          "rate_hz": 10.0,
+          "sensor_id": "region"
+        },
+        {
+          "description": "the manipulator's calibrated reach shell along the bearing of the last sensed object position",
+          "entity": "palm",
+          "kind": "reach_envelope",
+          "latency_s": 0.0,
+          "max_age_s": 1.0,
+          "occludable": false,
+          "oracle": false,
+          "rate_hz": 10.0,
+          "sensor_id": "reach:palm"
+        }
+      ]
+    },
+    "side_contact": {
+      "configuration_id": "side_contact",
+      "description": "encoders, gripper contact, a low camera to the side that a closing hand stands in front of",
+      "sensors": [
+        {
+          "description": "joint positions and velocities of every declared dof",
+          "entity": "",
+          "kind": "joint_encoders",
+          "latency_s": 0.0,
+          "max_age_s": 0.02,
+          "occludable": false,
+          "oracle": false,
+          "rate_hz": 500.0,
+          "sensor_id": "encoders"
+        },
+        {
+          "description": "the grasp point through the calibrated model from the encoders",
+          "entity": "palm",
+          "kind": "effector_pose",
+          "latency_s": 0.0,
+          "max_age_s": 0.05,
+          "occludable": false,
+          "oracle": false,
+          "rate_hz": 100.0,
+          "sensor_id": "effector_pose:palm"
+        },
+        {
+          "description": "normal force on each opposition group of palm from the object: finger_left; finger_right",
+          "entity": "palm",
+          "kind": "contact_force",
+          "latency_s": 0.0,
+          "max_age_s": 0.05,
+          "occludable": false,
+          "oracle": false,
+          "rate_hz": 200.0,
+          "sensor_id": "contact:palm"
+        },
+        {
+          "description": "object position by ray visibility from (0.45, 0.65, 0.35); occluded below 50% of rays; noise 2 mm",
+          "entity": "",
+          "kind": "object_pose",
+          "latency_s": 0.033,
+          "max_age_s": 0.2,
+          "occludable": true,
+          "oracle": false,
+          "rate_hz": 30.0,
+          "sensor_id": "camera:side_low"
+        },
+        {
+          "description": "the task's destination region",
+          "entity": "",
+          "kind": "region",
+          "latency_s": 0.0,
+          "max_age_s": 1.0,
+          "occludable": false,
+          "oracle": false,
+          "rate_hz": 10.0,
+          "sensor_id": "region"
+        },
+        {
+          "description": "the manipulator's calibrated reach shell along the bearing of the last sensed object position",
+          "entity": "palm",
+          "kind": "reach_envelope",
+          "latency_s": 0.0,
+          "max_age_s": 1.0,
+          "occludable": false,
+          "oracle": false,
+          "rate_hz": 10.0,
+          "sensor_id": "reach:palm"
+        }
+      ]
+    },
+    "side_vision_only": {
+      "configuration_id": "side_vision_only",
+      "description": "encoders and the low side camera; no contact sensing: a hand closing on the cube hides it",
+      "sensors": [
+        {
+          "description": "joint positions and velocities of every declared dof",
+          "entity": "",
+          "kind": "joint_encoders",
+          "latency_s": 0.0,
+          "max_age_s": 0.02,
+          "occludable": false,
+          "oracle": false,
+          "rate_hz": 500.0,
+          "sensor_id": "encoders"
+        },
+        {
+          "description": "the grasp point through the calibrated model from the encoders",
+          "entity": "palm",
+          "kind": "effector_pose",
+          "latency_s": 0.0,
+          "max_age_s": 0.05,
+          "occludable": false,
+          "oracle": false,
+          "rate_hz": 100.0,
+          "sensor_id": "effector_pose:palm"
+        },
+        {
+          "description": "object position by ray visibility from (0.45, 0.65, 0.35); occluded below 50% of rays; noise 2 mm",
+          "entity": "",
+          "kind": "object_pose",
+          "latency_s": 0.033,
+          "max_age_s": 0.2,
+          "occludable": true,
+          "oracle": false,
+          "rate_hz": 30.0,
+          "sensor_id": "camera:side_low"
+        },
+        {
+          "description": "the task's destination region",
+          "entity": "",
+          "kind": "region",
+          "latency_s": 0.0,
+          "max_age_s": 1.0,
+          "occludable": false,
+          "oracle": false,
+          "rate_hz": 10.0,
+          "sensor_id": "region"
+        },
+        {
+          "description": "the manipulator's calibrated reach shell along the bearing of the last sensed object position",
+          "entity": "palm",
+          "kind": "reach_envelope",
+          "latency_s": 0.0,
+          "max_age_s": 1.0,
+          "occludable": false,
+          "oracle": false,
+          "rate_hz": 10.0,
+          "sensor_id": "reach:palm"
+        }
+      ]
+    }
+  },
+  "created_at_utc": "2026-09-13T12:19:35.618879+00:00",
+  "episodes": [
+    {
+      "bundle_sha256": "9857cf10a57e56c88dd2ea5ba50cdb3c00e076893dac56ea576d023b67738ab9",
+      "duration_s": 0.0,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_compact_arm-seed000",
+      "failed_gate": "unreachable_path",
+      "goal": "G06",
+      "kind": "evaluation",
+      "outcome": "pre_execution_refusal",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": true,
+      "relative": "zoo_compact_arm/seed-000/physical",
+      "trace_sha256": "94cc37fae2dcc62c0f22c3111ef6ad4bcb5035dc79edd9e6ddab0225c1424b6b",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign",
+      "zoo_id": "zoo_compact_arm"
+    },
+    {
+      "bundle_sha256": "780690fb85276c5d783db8edbab53519731ceabff271ee270b9aa5e0ecd4fc6c",
+      "duration_s": 13.472000000001252,
+      "effectors": [
+        "left_palm",
+        "right_palm"
+      ],
+      "episode_id": "zoo_dual_arm-seed000",
+      "failed_gate": null,
+      "goal": "G06",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_dual_arm/seed-000/physical",
+      "trace_sha256": "12099c5c8e1a3dcd8dc11a6d552e306ef40001db65becfc359bc3760212299be",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "bundle_sha256": "33c416d186ffb5780f2cbf92597aa347e68b5b9ee71b875857748c5a951a90b9",
+      "duration_s": 13.518000000001267,
+      "effectors": [
+        "left_palm",
+        "right_palm"
+      ],
+      "episode_id": "zoo_dual_arm-seed001",
+      "failed_gate": null,
+      "goal": "G06",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_dual_arm/seed-001/physical",
+      "trace_sha256": "15579736825e98c75e5b46e51757fa71a0018440e14c4994c25303fac89ebe64",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "bundle_sha256": "4e75b4ff61ce36c36a2fba67ce4625a2ba18ceea4c560a7ff310bb89cdfd0bb0",
+      "duration_s": 13.6180000000013,
+      "effectors": [
+        "left_palm",
+        "right_palm"
+      ],
+      "episode_id": "zoo_dual_arm-seed002",
+      "failed_gate": null,
+      "goal": "G06",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_dual_arm/seed-002/physical",
+      "trace_sha256": "939c6236c1a7a6f33d9ed005e2c116f8b8c12184c96af0759f18f5fa39f76ac6",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "bundle_sha256": "a83c73e5994bf132c4ebb474123566b79bd841c86f8c27d6b295d70211361c46",
+      "duration_s": 13.70600000000133,
+      "effectors": [
+        "left_palm",
+        "right_palm"
+      ],
+      "episode_id": "zoo_dual_arm-seed003",
+      "failed_gate": null,
+      "goal": "G06",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_dual_arm/seed-003/physical",
+      "trace_sha256": "72b366f243c14b384c5934493c545921644dad0c0ecdfbc934e83f34ebf067b3",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "bundle_sha256": "efe2cec90906819c16c583d0d4eb8594d0fe5d7cb805d7d8f9f755bf27de1ddb",
+      "duration_s": 13.594000000001293,
+      "effectors": [
+        "left_palm",
+        "right_palm"
+      ],
+      "episode_id": "zoo_dual_arm-seed004",
+      "failed_gate": null,
+      "goal": "G06",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_dual_arm/seed-004/physical",
+      "trace_sha256": "ce67b0d5b47fb9ab576b60339a66d3a03d9871572755af58ad442dd0b02e4d1e",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "bundle_sha256": "4f144adccc88d951a6ea380cbb1ce3fc042a23526a40fb968072aa68032ef567",
+      "duration_s": 16.11400000000181,
+      "effectors": [
+        "left_palm",
+        "right_palm"
+      ],
+      "episode_id": "zoo_dual_arm-seed080",
+      "failed_gate": "hold_not_sustained",
+      "goal": "G06",
+      "kind": "evaluation",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_dual_arm/seed-080/physical",
+      "trace_sha256": "ac05d4becebbdd9f1b39af43ac3f6a767926910a06520b3593c56a20ca5f6cfe",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "bundle_sha256": "bda14d86aea70210e30a2858f0794dd8ed6ae99fa5631657a0189158991627ea",
+      "duration_s": 14.278000000001521,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_hand_arm-seed000",
+      "failed_gate": "hold_not_sustained",
+      "goal": "G06",
+      "kind": "evaluation",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_hand_arm/seed-000/physical",
+      "trace_sha256": "1625e71e04dd7e9bd5147497ccac2b1bc240cd95fea387295b844b4684c97c36",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign",
+      "zoo_id": "zoo_hand_arm"
+    },
+    {
+      "bundle_sha256": "7b49d97078cd4ad4d166fd62349c0da6acd3cfca73cfa89be26907b50a8d8e41",
+      "duration_s": 16.58200000000155,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_hand_arm-seed001",
+      "failed_gate": "hold_not_sustained",
+      "goal": "G06",
+      "kind": "evaluation",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_hand_arm/seed-001/physical",
+      "trace_sha256": "e989a67475d4ab23ea010c1c7e715c28707d1160a9c1438902e0fbaf48894e9d",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign",
+      "zoo_id": "zoo_hand_arm"
+    },
+    {
+      "bundle_sha256": "8a10c1ed296ce2ae6c317dd0849bd59ff8712d43ef5538c42dc3690d7cbabb45",
+      "duration_s": 14.30400000000153,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_hand_arm-seed002",
+      "failed_gate": "hold_not_sustained",
+      "goal": "G06",
+      "kind": "evaluation",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_hand_arm/seed-002/physical",
+      "trace_sha256": "ff3654383868a122b884691dacf215b81e82f2b109f031eb6ab771ddcdb136c6",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign",
+      "zoo_id": "zoo_hand_arm"
+    },
+    {
+      "bundle_sha256": "cc1a9c3bad89d6dc01a282139218af71a798db9fa3b7f903b55052e8f6d66270",
+      "duration_s": 16.660000000001506,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_hand_arm-seed003",
+      "failed_gate": "hold_not_sustained",
+      "goal": "G06",
+      "kind": "evaluation",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_hand_arm/seed-003/physical",
+      "trace_sha256": "f46eecbc0211f3d80da5ec4ac05f4519ce96859ddea2cfd29df3bbe8a8ce0165",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign",
+      "zoo_id": "zoo_hand_arm"
+    },
+    {
+      "bundle_sha256": "33c1e26ec25cc149801b0c90d53862e3ea2f0fce9b4e48e6987b339a0eddfbcb",
+      "duration_s": 16.556000000001564,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_hand_arm-seed004",
+      "failed_gate": "hold_not_sustained",
+      "goal": "G06",
+      "kind": "evaluation",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_hand_arm/seed-004/physical",
+      "trace_sha256": "0a2aab2c343e74c6e7ea53ae9d81dd540175852234b0d09c3a0751caf6858de1",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign",
+      "zoo_id": "zoo_hand_arm"
+    },
+    {
+      "bundle_sha256": "44617aae06a1241713409b1ad41b214378b999a0ae30a0737f640a75e3a26834",
+      "duration_s": 14.282000000001522,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_hand_arm-seed049",
+      "failed_gate": "object_not_lifted",
+      "goal": "G06",
+      "kind": "evaluation",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_hand_arm/seed-049/physical",
+      "trace_sha256": "f24f039496ec96f8c06643fc6adfa028ead17c53cd0a9dff18606b2a6e2b6f58",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign",
+      "zoo_id": "zoo_hand_arm"
+    },
+    {
+      "bundle_sha256": "9cec9fe51d9f2fa1fe114bd1182011d9a2eccb6f21dfb19ee64489bb8f57a658",
+      "duration_s": 14.258000000001514,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_hand_arm-seed052",
+      "failed_gate": "object_not_lifted",
+      "goal": "G06",
+      "kind": "evaluation",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_hand_arm/seed-052/physical",
+      "trace_sha256": "71b121766db61ac14cc70a37746050b1901414e5321d982dc6590cf003add43d",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign",
+      "zoo_id": "zoo_hand_arm"
+    },
+    {
+      "bundle_sha256": "e6ff258db8d870c7f5fe39d5d09e2e31583cef6801ba586a2471d414abfc2b8a",
+      "duration_s": 14.272000000001519,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_hand_arm-seed068",
+      "failed_gate": "object_not_lifted",
+      "goal": "G06",
+      "kind": "evaluation",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_hand_arm/seed-068/physical",
+      "trace_sha256": "1f5b783992d90933011e11f5ee2bce6c0a49b46012c544dee0e0756ec6b98020",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign",
+      "zoo_id": "zoo_hand_arm"
+    },
+    {
+      "bundle_sha256": "f8c9100f3622c8badded37e238f049f81dce940baa3da9cf8afaded4f558f4b4",
+      "duration_s": 13.774000000001353,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_hand_arm-seed072",
+      "failed_gate": "object_not_lifted",
+      "goal": "G06",
+      "kind": "evaluation",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_hand_arm/seed-072/physical",
+      "trace_sha256": "31a6fa1be54f2e5717b1187006eb93cc448ade3e9a81b9b80351bdbc37df0edf",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign",
+      "zoo_id": "zoo_hand_arm"
+    },
+    {
+      "bundle_sha256": "19901cdb9579e25be2101d3489ce4477d8ac17a524d91cb3abc602efd45b8e41",
+      "duration_s": 14.462000000001582,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_hand_arm-seed080",
+      "failed_gate": "object_not_lifted",
+      "goal": "G06",
+      "kind": "evaluation",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_hand_arm/seed-080/physical",
+      "trace_sha256": "c2bc68708fe830f66f4a3a1de69a592d01a7945c582061e311847877fff9354d",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign",
+      "zoo_id": "zoo_hand_arm"
+    },
+    {
+      "bundle_sha256": "1f14be9b1f64d0e3b9f276b4f08f1e39ced1a3bfe28ed41b51e01010672f2a8b",
+      "duration_s": 14.368000000001551,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-seed000",
+      "failed_gate": null,
+      "goal": "G06",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_jaw_arm/seed-000/physical",
+      "trace_sha256": "349f94539024c9d2ab752f4698bfadaac28e12cbf35ac133f020b9b591cada83",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "39996475c99ae99f4882b67f4c1118a8e9d265061739be1d5ec071380a6ce7b2",
+      "duration_s": 14.406000000001564,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-seed001",
+      "failed_gate": null,
+      "goal": "G06",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_jaw_arm/seed-001/physical",
+      "trace_sha256": "71c5bde6e25c091e92be1bd0b72e9f1eaf2180a5d868891c28526523e09f2c61",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "e72b6dd2b34137d0f65a896f733e02a5687ac0f0599e5ea1d59f1bb580eacbb4",
+      "duration_s": 14.444000000001576,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-seed002",
+      "failed_gate": null,
+      "goal": "G06",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_jaw_arm/seed-002/physical",
+      "trace_sha256": "a49e3888047aa7c7981e970aebc6d75c8cc7971ba5c5162521966bc117574020",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "b4045c6d70b4fda191a09c0c20520b520743f6e868ea7965a069ff34fb48c543",
+      "duration_s": 14.520000000001602,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-seed003",
+      "failed_gate": null,
+      "goal": "G06",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_jaw_arm/seed-003/physical",
+      "trace_sha256": "ed1d5dc7a853d74924958605644a81fcbab48b1f8deb2aa7a22d979317ed020c",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "13fedc010faf180908f54d4a561abad25fa420c654317dc2b630f5d05a505da2",
+      "duration_s": 14.438000000001574,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-seed004",
+      "failed_gate": null,
+      "goal": "G06",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_jaw_arm/seed-004/physical",
+      "trace_sha256": "e3a7b990e7b591fec2919d7c7d7b16dc23e9a605e0d1d4146f82c9a3a66b1c79",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "c2467158f58abd67b84db2844c7133b4fd41c390e38336803a8c1bcdb4aaa332",
+      "duration_s": 16.592000000001544,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-seed052",
+      "failed_gate": "object_not_lifted",
+      "goal": "G06",
+      "kind": "evaluation",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_jaw_arm/seed-052/physical",
+      "trace_sha256": "0c7e44fcbf6538b308da6888c273cc1bbb99527a8e1a5ba204bcf0b962bf1a83",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "fe8b49ed4b48ccab3edf1ab09fbba5cfefe1411071a3efc4563cd1f5e7ebdbed",
+      "duration_s": 16.646000000001514,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-seed096",
+      "failed_gate": "object_not_lifted",
+      "goal": "G06",
+      "kind": "evaluation",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_jaw_arm/seed-096/physical",
+      "trace_sha256": "020cee9a2d0a26f6a12c0942b40309ff573102a5cb81fd50b644ba46b7ac01b5",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "7f45b2f193abf7ebd35f80fab6954ad43490c8d4018abe6ca1a38b117e276004",
+      "duration_s": 15.330000000001872,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_long_arm-seed000",
+      "failed_gate": null,
+      "goal": "G06",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_long_arm/seed-000/physical",
+      "trace_sha256": "95afc7d9778b406b6debdb2351f85122ab51359da3edb9526ecbc05229f6d828",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "bundle_sha256": "c91c0e5d295969764dc3d381604e28c07cf9a34bd454e9bdb1b5325a0db3edb3",
+      "duration_s": 15.32200000000187,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_long_arm-seed001",
+      "failed_gate": null,
+      "goal": "G06",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_long_arm/seed-001/physical",
+      "trace_sha256": "d4a8eab133ece9c38b9ece07a6c9e8f69add5135f881cf41684be37e42572697",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "bundle_sha256": "f4aa2ba5130667a004dd685796a066817a41c99deb1a095478bd1e973fd33e31",
+      "duration_s": 15.308000000001865,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_long_arm-seed002",
+      "failed_gate": null,
+      "goal": "G06",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_long_arm/seed-002/physical",
+      "trace_sha256": "e23005801ec2e2ab04b960efa167af6818aca32e1e3694b2426ed25d5e2d546a",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "bundle_sha256": "54dc1f92fac0903ffb9825796be90b04ef91a45aa6f2a0de96d1408418272f81",
+      "duration_s": 15.290000000001859,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_long_arm-seed003",
+      "failed_gate": null,
+      "goal": "G06",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_long_arm/seed-003/physical",
+      "trace_sha256": "1eed087e30a34ebc4f9b233b6ff84a309b1c853c708905fd3979255d571a8807",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "bundle_sha256": "b02edb8dd56517c07489e48502cd64a86e4f80631b5c540f68336428195498c2",
+      "duration_s": 15.310000000001866,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_long_arm-seed004",
+      "failed_gate": null,
+      "goal": "G06",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_long_arm/seed-004/physical",
+      "trace_sha256": "28aac6c153f1a7834ea66608d0eaacdd8b3381bc20cd3fc3ffaf4e3905312c47",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "bundle_sha256": "ea6e4fec0cf504353a66d8db9f4f45ef2efd0fb4f30a2fcafb9b0403ef36b906",
+      "duration_s": 0.0,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_compact_arm-fixed",
+      "failed_gate": "unreachable_path",
+      "goal": "G06",
+      "kind": "evaluation",
+      "outcome": "pre_execution_refusal",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": true,
+      "relative": "zoo_compact_arm/fixed-canonical/physical",
+      "trace_sha256": "3d58c8f2a63f3089b28067090eb25e87dd65bf4ea1b519e78465e9059a08e708",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/docs/results/g06-campaign",
+      "zoo_id": "zoo_compact_arm"
+    },
+    {
+      "bundle_sha256": "67a20df70a43bd90de50f101691edfa84fc63a558ae0ffcbc405dc19d20f9bef",
+      "duration_s": 13.640000000001308,
+      "effectors": [
+        "left_palm",
+        "right_palm"
+      ],
+      "episode_id": "zoo_dual_arm-fixed",
+      "failed_gate": null,
+      "goal": "G06",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_dual_arm/fixed-canonical/physical",
+      "trace_sha256": "4185ea0f0655b2e51e699bb21b018c904933ff4c618e32f901b125c4c675694e",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/docs/results/g06-campaign",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "bundle_sha256": "8b23da5ce6e14fb815e72c9cc14eb2c8d9a85a777d34d50dad48697aed66b5ca",
+      "duration_s": 16.588000000001546,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_hand_arm-fixed",
+      "failed_gate": "hold_not_sustained",
+      "goal": "G06",
+      "kind": "evaluation",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_hand_arm/fixed-canonical/physical",
+      "trace_sha256": "96ee604710354df22d80334b65fc084f6a8df719a2c7e19e93c2a84606267327",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/docs/results/g06-campaign",
+      "zoo_id": "zoo_hand_arm"
+    },
+    {
+      "bundle_sha256": "c1c25b9ad8c0271c3833c4c55177390b8f6c67ccc27414711e522a8a8bb49cd7",
+      "duration_s": 14.468000000001584,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-fixed",
+      "failed_gate": null,
+      "goal": "G06",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_jaw_arm/fixed-canonical/physical",
+      "trace_sha256": "d0de20e7881e8de254fa4c2d4ead90e84b03fae57936cc80acfe73f31d778be6",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/docs/results/g06-campaign",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "75647f433930f95036f9233df25a38760aa3c2b00557aa886430674ece3a8b0a",
+      "duration_s": 15.302000000001863,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_long_arm-fixed",
+      "failed_gate": null,
+      "goal": "G06",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_long_arm/fixed-canonical/physical",
+      "trace_sha256": "b09e263e90d6c72b4e5a4cabedc889329ed930d20e86836573619983f1f2ce25",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/docs/results/g06-campaign",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "bundle_sha256": "5b697fe3f0f0eb72d74f25f1ad919941557cd02cbcbf2dac6f8dd0588678bbe9",
+      "duration_s": 15.576000000001955,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_hand_arm-facing-before",
+      "failed_gate": "grasp_not_achieved",
+      "goal": "G06",
+      "kind": "evaluation",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "facing/before/physical",
+      "trace_sha256": "e307473b49d07d4f309d390435b8ab2985a2cb9e265c7f62574903fc8510916c",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/docs/results/g06-d06",
+      "zoo_id": "zoo_hand_arm"
+    },
+    {
+      "bundle_sha256": "2c1baa732b41e2c0f2917fb971425c78bad20f3d62b4b5f016931a79036c54b4",
+      "duration_s": 16.804000000001427,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-standoff-before",
+      "failed_gate": "hold_not_sustained",
+      "goal": "G06",
+      "kind": "evaluation",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "standoff/before/physical",
+      "trace_sha256": "dfeaa28907f672c1ae08eea3c0b2060fc4fab3ce0696e30b3eb17e205abfa863",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/docs/results/g06-d06",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "1b14f84372f50d2afcc359953c75b35d41715fcc8545c374b1c9da20133f4aa2",
+      "duration_s": 14.538000000001608,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-turn-seeded-after",
+      "failed_gate": null,
+      "goal": "G06",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "turn-seeded/after/physical",
+      "trace_sha256": "390f50a4de92c6bdab78189aadfc9a8c890994f980a873f3226d38fc21858a37",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/docs/results/g06-d06",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "fe267fca521bdd8aa4705a93630b82177af29f29db965bec6914646cd4b23819",
+      "duration_s": 0.0,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_compact_arm-compact-refused",
+      "failed_gate": null,
+      "goal": "G07",
+      "kind": "evaluation",
+      "outcome": "pre_execution_refusal",
+      "protocol": "rigby.skill-tree-run/1",
+      "refusal": true,
+      "relative": "compact-refused/physical",
+      "trace_sha256": "1453efea41d7181204d528b524e77d6c7a0496315a57ebe450de77403026d1f3",
+      "tree": "C:/Users/hocke/GitHub/rigby-g07/docs/results/g07-trees/physical",
+      "zoo_id": "zoo_compact_arm"
+    },
+    {
+      "bundle_sha256": "c7620464eb05ab340ae26d30ac8d81ad854eaebd5f0fdb7d0251c0970edc45d5",
+      "duration_s": 55.91800000002268,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_hand_arm-hand-budget",
+      "failed_gate": null,
+      "goal": "G07",
+      "kind": "evaluation",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.skill-tree-run/1",
+      "refusal": false,
+      "relative": "hand-budget/physical",
+      "trace_sha256": "bdde0e4794cf375fc76c3cbbc183f36f9f53f8883415f6083eccbc066e75d8be",
+      "tree": "C:/Users/hocke/GitHub/rigby-g07/docs/results/g07-trees/physical",
+      "zoo_id": "zoo_hand_arm"
+    },
+    {
+      "bundle_sha256": "c23bd28981b33ee22ccbe3d5351257eb60773f9615224d6721b761b4127c0a93",
+      "duration_s": 5.749999999999561,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-jaw-interrupt",
+      "failed_gate": null,
+      "goal": "G07",
+      "kind": "evaluation",
+      "outcome": "interrupted",
+      "protocol": "rigby.skill-tree-run/1",
+      "refusal": false,
+      "relative": "jaw-interrupt/physical",
+      "trace_sha256": "fe4a10872c7035e446bdb55f30f8e4382fc464d6b164247602bed1ed897945e3",
+      "tree": "C:/Users/hocke/GitHub/rigby-g07/docs/results/g07-trees/physical",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "586bbc3b1655a9191dd05e43773d4c29e689e096dd37e6f69a3e15686bd4b9c3",
+      "duration_s": 14.508000000001514,
+      "effectors": [
+        "left_palm",
+        "right_palm"
+      ],
+      "episode_id": "zoo_dual_arm-feasible-000",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "feasible/zoo_dual_arm-feasible-000/physical",
+      "trace_sha256": "f4e14c17aa46a415acf7d088c1f782a5a6f2c328413c214582d00b3b3b5c0f48",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "bundle_sha256": "92846f7115fe9fe0bc7d8f60d99d620bda595d3e70da97028ad9ffd41195117c",
+      "duration_s": 14.558000000001531,
+      "effectors": [
+        "left_palm",
+        "right_palm"
+      ],
+      "episode_id": "zoo_dual_arm-feasible-001",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "feasible/zoo_dual_arm-feasible-001/physical",
+      "trace_sha256": "9e3f1a7f08fe3f8c7d51d4ec7726fe44f79ff5a877d07a1cc011ceb70c9b13da",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "bundle_sha256": "d33c1fbc61f0fcbdcb2f66619e1b683f27e8ca078830047293f0471b782785ec",
+      "duration_s": 15.218000000001751,
+      "effectors": [
+        "left_palm",
+        "right_palm"
+      ],
+      "episode_id": "zoo_dual_arm-feasible-002",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "feasible/zoo_dual_arm-feasible-002/physical",
+      "trace_sha256": "55173529a03adb73ecebbf74ddcc2e4abe08e72a2825562b2e665a87a6ac551b",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "bundle_sha256": "64d55e073c8ac861947d623141a11393fa6de539da5d8383ef439547dfbd4e3d",
+      "duration_s": 14.582000000001539,
+      "effectors": [
+        "left_palm",
+        "right_palm"
+      ],
+      "episode_id": "zoo_dual_arm-feasible-003",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "feasible/zoo_dual_arm-feasible-003/physical",
+      "trace_sha256": "496ad9c1c57a77a0d6ed89c2cbb8426a53bac7d55c6d0393cc9a25f929bf6af7",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "bundle_sha256": "09fa41d751e959a92db70841eb81cc525aa192e72892bab29c0ef53872187510",
+      "duration_s": 15.072000000001703,
+      "effectors": [
+        "left_palm",
+        "right_palm"
+      ],
+      "episode_id": "zoo_dual_arm-feasible-004",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "feasible/zoo_dual_arm-feasible-004/physical",
+      "trace_sha256": "c16c3bbfd92c2fea6cc62742685bf7d3c8700142e654397f71c3e6f103fba1fd",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "bundle_sha256": "3b32218e51198583c2b69ae48832a9798539272bf01f3973a06c0f5b0c5d1623",
+      "duration_s": 15.09400000000171,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-feasible-000",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "feasible/zoo_jaw_arm-feasible-000/physical",
+      "trace_sha256": "ce845ee77abd11c8ce357a7ead781abc9b5f826512efa6b42b0d2e631e234254",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "61aa6d3b294148850027b2d83a4cb4d8e29d103a16a091d1138a36576ed2f523",
+      "duration_s": 15.420000000001819,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-feasible-001",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "feasible/zoo_jaw_arm-feasible-001/physical",
+      "trace_sha256": "81f8b3a87c40966a481aa172aa8194f4807d72cbffef684dd0c4a4889cb8a978",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "bbe4c567c8bd5eb1426dd953e96d31995de34a6779e75fce425256965635f8e3",
+      "duration_s": 14.518000000001518,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-feasible-002",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "feasible/zoo_jaw_arm-feasible-002/physical",
+      "trace_sha256": "e8e2e86201df8f73dd665e3be76e46c03b72c95225dc0ea4363130a54ce98795",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "6b80690d02ac5905d9b948ed85263ba3f446fe7302387b3acaf01df258f86761",
+      "duration_s": 15.536000000001858,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-feasible-003",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "feasible/zoo_jaw_arm-feasible-003/physical",
+      "trace_sha256": "d7228ad7bf5ac9ac393a667a52cf00844509d59e6749d5e917b87573a59ce9f8",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "b54cee744811df1984a9905c594f6ec6820cbbfa5cf6057adbc70ff59245a146",
+      "duration_s": 15.168000000001735,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-feasible-004",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "feasible/zoo_jaw_arm-feasible-004/physical",
+      "trace_sha256": "0ec516422b838a2f8d7122f7b4d536379532e5537ca05d8ec20a5d0b614f5138",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "7ec4bcd5512f4390a92f2b25defbe00b04dcb943027640bcf4246bfe3d50f362",
+      "duration_s": 18.102000000000846,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_long_arm-feasible-000",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "feasible/zoo_long_arm-feasible-000/physical",
+      "trace_sha256": "dfa997526739a4fde6bc3e0bf29b4f9737a1bdb11bd91715ef4537a443ec67d7",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "bundle_sha256": "417c632cb169799b2e572235df7dfc2fee30efb9787f6b3931955de11c1cb070",
+      "duration_s": 17.996000000000905,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_long_arm-feasible-001",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "feasible/zoo_long_arm-feasible-001/physical",
+      "trace_sha256": "bd0e84d77efb553dc4f3b1892afdfcf4ef5405957e3b299a4f1281780ea8e316",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "bundle_sha256": "95159eae36e0c8c4f241fbc19dacb156f6f91627082ed08b66cbd91ed47d3d43",
+      "duration_s": 18.338000000000715,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_long_arm-feasible-002",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "feasible/zoo_long_arm-feasible-002/physical",
+      "trace_sha256": "0888c4c03e44b311295ab6e8ddb2c3b303c745816a273896308c41a658486483",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "bundle_sha256": "ca9db3d291b11616f195f8e80953b70bfbaed56b411558545e0e25d4b5888a88",
+      "duration_s": 19.651999999999987,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_long_arm-feasible-003",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "feasible/zoo_long_arm-feasible-003/physical",
+      "trace_sha256": "b495b451f32dc5910b2a1e1f6ebe9f52e331274fe64728ab98674f4ee705d35b",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "bundle_sha256": "60e6c565f3a3431c60e3776ea1d1cd1de2f03dc916e360ae34596479b7093e46",
+      "duration_s": 18.740000000000492,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_long_arm-feasible-004",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "feasible/zoo_long_arm-feasible-004/physical",
+      "trace_sha256": "5a718a7145021c7690742d0a710c9c7286d13afc3a13d3e1ec4559ed4520513d",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "bundle_sha256": "250336c2e5dfb58c74b318c94e73eb095a492edad76e49b08efa8c0c2397d258",
+      "duration_s": 14.380000000001472,
+      "effectors": [
+        "left_palm",
+        "right_palm"
+      ],
+      "episode_id": "zoo_dual_arm-belief_stale-00",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_dual_arm-belief_stale-00/physical",
+      "trace_sha256": "3c7a3be21b9d44ac37471547e97c8880ea52e438f32f8ce0f55e042d343050f7",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "bundle_sha256": "813206e9f5b60d7a51500ae24e4424e5f4932a259956010afb95d38569ecf6c0",
+      "duration_s": 14.964000000001667,
+      "effectors": [
+        "left_palm",
+        "right_palm"
+      ],
+      "episode_id": "zoo_dual_arm-belief_stale-03",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_dual_arm-belief_stale-03/physical",
+      "trace_sha256": "3b36b3d027d97992fbe35a7b8a3682f0b586d6503a5ec13e9d9fe559c2eeab7a",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "bundle_sha256": "dfde0b330d849475d2f070d66821d499a6335a75308c2a5938128b7c4e4c1af9",
+      "duration_s": 1.9840000000000015,
+      "effectors": [
+        "left_palm",
+        "right_palm"
+      ],
+      "episode_id": "zoo_dual_arm-free_into_holding-00",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "rejected",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_dual_arm-free_into_holding-00/physical",
+      "trace_sha256": "7017d932c0279536e858332b5abcc3e623b0f8268bd91e1281577d70f268d6e5",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "bundle_sha256": "525e9e2c919e41a7b84813e64b0cc9e7c1aebba23a899191c6b2283aa709c12d",
+      "duration_s": 1.9220000000000015,
+      "effectors": [
+        "left_palm",
+        "right_palm"
+      ],
+      "episode_id": "zoo_dual_arm-free_into_holding-03",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "rejected",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_dual_arm-free_into_holding-03/physical",
+      "trace_sha256": "2afd21aea38be7868f8205af5bcc7c2de883091cb78ef98c429b4dd2ca129435",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "bundle_sha256": "b38080996d030e30f074ffbf9ba12fa7a96491a5e1cacda451afbb08a19773fd",
+      "duration_s": 9.039999999999772,
+      "effectors": [
+        "left_palm",
+        "right_palm"
+      ],
+      "episode_id": "zoo_dual_arm-holding_into_free-00",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "rejected",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_dual_arm-holding_into_free-00/physical",
+      "trace_sha256": "ba2e1f09d0868af3a6bd981cf25d90397e4338a552847f17730a70dcfdf1a88e",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "bundle_sha256": "1f542223bf055027c9d3bdb133ded063068ff457038d517d51a8b804c0c699d3",
+      "duration_s": 20.859999999999317,
+      "effectors": [
+        "left_palm",
+        "right_palm"
+      ],
+      "episode_id": "zoo_dual_arm-joint_beyond_limit-00",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_dual_arm-joint_beyond_limit-00/physical",
+      "trace_sha256": "5013a6e85a2868b6373075d038255da9a2d9d999aa6150ace675539e0c9d1e47",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "bundle_sha256": "95bfccd46711ab7e8633d295cdad4e826c624038a58ab0d6638723994e16b5a0",
+      "duration_s": 17.48000000000119,
+      "effectors": [
+        "left_palm",
+        "right_palm"
+      ],
+      "episode_id": "zoo_dual_arm-joint_beyond_limit-03",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_dual_arm-joint_beyond_limit-03/physical",
+      "trace_sha256": "b81e8090e3fed8b522db33794f784aea776d081d0666664b82c2fae2e13966c6",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "bundle_sha256": "ef04a7b00ca64f8f7c0e0a7c30f8b57708f66022c75e79c5ea1aebaf27719d1d",
+      "duration_s": 20.859999999999317,
+      "effectors": [
+        "left_palm",
+        "right_palm"
+      ],
+      "episode_id": "zoo_dual_arm-joint_beyond_limit-06",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_dual_arm-joint_beyond_limit-06/physical",
+      "trace_sha256": "5a7efd408069e5b6917e4119d5f10ff1f25f44cbe9d4f83328f7251b14a5dc46",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "bundle_sha256": "980f57364f52b112a1ac263166eaa2cfcd0398c396ae971920a5ca61ab66aa7d",
+      "duration_s": 17.48200000000119,
+      "effectors": [
+        "left_palm",
+        "right_palm"
+      ],
+      "episode_id": "zoo_dual_arm-joint_beyond_limit-09",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_dual_arm-joint_beyond_limit-09/physical",
+      "trace_sha256": "2c3086b002eb090bf6b46ab319ae87afa8e7752bdbf69de5a3aeb43c05be04be",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "bundle_sha256": "08ae3f427cc88466cc65f66097febf9c09b20f18454dd0f5c38bb446d117ce3d",
+      "duration_s": 20.587999999999468,
+      "effectors": [
+        "left_palm",
+        "right_palm"
+      ],
+      "episode_id": "zoo_dual_arm-joint_inside_margin-00",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_dual_arm-joint_inside_margin-00/physical",
+      "trace_sha256": "e7bf7afd2c96c82e760612bea4274d4182180926ec889c709b16951787088e98",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "bundle_sha256": "6570400eb75eb179f48d9d2995dd4a6a498b49a8eab8b243cc4b9d660759cdd5",
+      "duration_s": 20.587999999999468,
+      "effectors": [
+        "left_palm",
+        "right_palm"
+      ],
+      "episode_id": "zoo_dual_arm-joint_inside_margin-03",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_dual_arm-joint_inside_margin-03/physical",
+      "trace_sha256": "ce3404221ddd51bfd40fb65a23cedec407778e4daa1e8b87bd2aaff0ffcb34b8",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "bundle_sha256": "b9c8b9154829c0c6ed6c5a653df850bef0cf59650b2b6c1fefa95b96654241f3",
+      "duration_s": 1.292000000000001,
+      "effectors": [
+        "left_palm",
+        "right_palm"
+      ],
+      "episode_id": "zoo_dual_arm-resource_conflict-00",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "rejected",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_dual_arm-resource_conflict-00/physical",
+      "trace_sha256": "b0a8fc4fc8ddbfd52777fec35e9a135d8ec0aec650dd86d98bd9f1deaa87483f",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "bundle_sha256": "93ac9edf5e85a33f053a682f01deece668370a21a1379ae7ef7786479b5f8fb3",
+      "duration_s": 1.264000000000001,
+      "effectors": [
+        "left_palm",
+        "right_palm"
+      ],
+      "episode_id": "zoo_dual_arm-resource_conflict-03",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "rejected",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_dual_arm-resource_conflict-03/physical",
+      "trace_sha256": "658d2c89bdc59757c11740a27ea0d8fbd97bc26c88e8c30fb5e7beadb0b5f79f",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "bundle_sha256": "5b5750e5934cffe74fceb83163b119d4b5e16d7a2815e35e47fc1fad2c486807",
+      "duration_s": 20.65599999999943,
+      "effectors": [
+        "left_palm",
+        "right_palm"
+      ],
+      "episode_id": "zoo_dual_arm-reviewed_dual_arm_failure-00",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_dual_arm-reviewed_dual_arm_failure-00/physical",
+      "trace_sha256": "39f423d89780bab198ecd688730bf52e08596abc77ad777b1f73e0b9ee506e3e",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "bundle_sha256": "e60f5aed93ccb211e6107994641cf113651fbda3f4b37cb8522652aea44d55fd",
+      "duration_s": 15.18400000000174,
+      "effectors": [
+        "left_palm",
+        "right_palm"
+      ],
+      "episode_id": "zoo_dual_arm-velocity_too_high-00",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_dual_arm-velocity_too_high-00/physical",
+      "trace_sha256": "7ae4ecaa18b958a007e0f7a1f6c054a93e69d7ef3f18f42268eebc8b735b8aa9",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "bundle_sha256": "d912931b999e3f30c17cbd8b90046a2c9826b7eeecf1e55c2f57d42682e05f8d",
+      "duration_s": 13.556000000001196,
+      "effectors": [
+        "left_palm",
+        "right_palm"
+      ],
+      "episode_id": "zoo_dual_arm-velocity_too_high-03",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_dual_arm-velocity_too_high-03/physical",
+      "trace_sha256": "76fce7176da90f882f3d7a6f87bd493b6a21ee9f362afcc6025713fe415b7b5d",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "bundle_sha256": "b8671c0cf0835d993a6ad218ae152bdd3ce67d47ea2ee7e2f49ad9059671d13b",
+      "duration_s": 13.71400000000125,
+      "effectors": [
+        "left_palm",
+        "right_palm"
+      ],
+      "episode_id": "zoo_dual_arm-velocity_too_high-06",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_dual_arm-velocity_too_high-06/physical",
+      "trace_sha256": "983aa59cec67e5000310b3dbeb368ce3ff84fa50df27c4e2cb2d89a2b424a85d",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "bundle_sha256": "525f7fbfbc215d71afd48cd17abde84249a47401a05983bec2c7fc91007a86b6",
+      "duration_s": 14.296000000001444,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-belief_stale-01",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_jaw_arm-belief_stale-01/physical",
+      "trace_sha256": "d2fe0e0399ae7fb38c7ef0045c98d75f2253f692b5bc4fa6bce4edded13835b3",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "86dfdbf3256ca5fb856b855fe44f0b8583ebb3d0bd55cdf57c2183322b72f95d",
+      "duration_s": 14.758000000001598,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-belief_stale-04",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_jaw_arm-belief_stale-04/physical",
+      "trace_sha256": "0ded7a9d72f0cbebc6ce34cda2245c8b9806163ff1a8175e4031a178c9ebc3e5",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "d823f10da8bd7cbc6adacd9daaf2e78c5985003b12eded270a65f0d792bda951",
+      "duration_s": 1.9600000000000015,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-free_into_holding-01",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "rejected",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_jaw_arm-free_into_holding-01/physical",
+      "trace_sha256": "e554c86fed54f6b2306df354af2c282b6171f05404e404c29cd119ce65e3adb1",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "64cbdc0912eee3cb4d4c5802e14a4dde703d5ac06e73516675177ffeef19a8a2",
+      "duration_s": 2.0459999999999963,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-free_into_holding-04",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "rejected",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_jaw_arm-free_into_holding-04/physical",
+      "trace_sha256": "edc985d1ef39bc43dcbfd8637415270c5aad131d3c9d979422d10317c1ce71c5",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "ee17ba39550a1ec1f909ab90d50969944d99f79099e47cfdb6782d3e57e25f55",
+      "duration_s": 9.868000000000048,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-holding_into_free-01",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "rejected",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_jaw_arm-holding_into_free-01/physical",
+      "trace_sha256": "50eafc6c368898aa13c35ce674e99ad6b245d958ec265490eb4609f02c7436fd",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "7d855b2c358c127f1f9dc877ff1ce3966ae05ceb344811f0f94154b0c4531fa3",
+      "duration_s": 22.321999999998507,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-joint_beyond_limit-01",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_jaw_arm-joint_beyond_limit-01/physical",
+      "trace_sha256": "18571e64fe3aa030b91a4ae4ea9c69ec505027821f5bfda3c7675bad9b4bd6c0",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "8f92514a44ea223d5e71a79c9f2ffcc0893559d29071e469d275c0c38706487c",
+      "duration_s": 22.319999999998508,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-joint_beyond_limit-04",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_jaw_arm-joint_beyond_limit-04/physical",
+      "trace_sha256": "abe8959737702f6d325a537f644c1e1d3abf149a7e85d8297bb588dca4decd3a",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "fc000f0ebe55fdac08d9d383a5919a02f7d5a8bd1b3941c022f9eec938ddaccf",
+      "duration_s": 22.321999999998507,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-joint_beyond_limit-07",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_jaw_arm-joint_beyond_limit-07/physical",
+      "trace_sha256": "b1c5421565958381c8ebb5a6ff6e767853d104241835508bde09f74a11c1d69c",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "94a07f61d1bbed57bc9b7ccd382124c9be885375fefee92038e9147b7f9c079b",
+      "duration_s": 22.00799999999868,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-joint_inside_margin-01",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_jaw_arm-joint_inside_margin-01/physical",
+      "trace_sha256": "a476eb71ccb0271e05d21a0651da1ed8791b1f7c35e502a0df79634f91e30561",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "10a8f5297e1d0ac7a408e52e13c288beca8f60fcb84181c06fc894188aaa3939",
+      "duration_s": 17.17400000000136,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-joint_inside_margin-04",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_jaw_arm-joint_inside_margin-04/physical",
+      "trace_sha256": "2dd293450bc8e6459216cdd000890248bbadc5a22a7578e31960c380d8dd797a",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "102aa7729cebbd7b5501897adb4af502f434d2162c4b1c50ca1fd910793c2933",
+      "duration_s": 1.9300000000000015,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-resource_conflict-01",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "rejected",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_jaw_arm-resource_conflict-01/physical",
+      "trace_sha256": "96a224c599915f6bde0c004e75c64c8eac5ef85431c7d44f4bd586e89d953191",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "0baab67f9c11ac86f1db6790d81f332dec1759f51c33da22bab9710ce481e777",
+      "duration_s": 2.1179999999999883,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-resource_conflict-04",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "rejected",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_jaw_arm-resource_conflict-04/physical",
+      "trace_sha256": "de12179b32857b4050a3d221542aad293982926cec631aff173ca36f44f7172e",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "dc63ab67d4b366be21a16073dd72a26eba108442d16840874b9c6368417f2ba0",
+      "duration_s": 15.162000000001733,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-velocity_too_high-01",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_jaw_arm-velocity_too_high-01/physical",
+      "trace_sha256": "3f1b93d1bbfd7478a726d72c32a957894c8bab4b07a580c961689e8caacbcfa3",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "c308a7fe1292a4dd9d69e72e123158c0b603976a399b4d677f13d4e2c0e6dca8",
+      "duration_s": 14.232000000001422,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-velocity_too_high-04",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_jaw_arm-velocity_too_high-04/physical",
+      "trace_sha256": "d18d10a6f3189034938dc1b3062941f629775600724472c0efd469a4afb64367",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "b3b43fb128120be333444132dce201f113eb14bb844d632d67d8df31a0c2ea86",
+      "duration_s": 14.552000000001529,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-velocity_too_high-07",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_jaw_arm-velocity_too_high-07/physical",
+      "trace_sha256": "59cae050a305ccd082886c20e4c869dfd336db06b14dd20b0cfbd5b045b9cf11",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "baa54a62dba59bb98799a8c1a62224dfee1c118184726d9a26d9e2f042001e81",
+      "duration_s": 15.774000000001937,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_long_arm-belief_stale-02",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_long_arm-belief_stale-02/physical",
+      "trace_sha256": "0b3db5e27a10b5257542c2ac46cb258218b3c09b9727ce1e4911ccc071e19cd1",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "bundle_sha256": "b43d14657b659d68631512eea163d21c534127f110ab50d62ef23c99650153ab",
+      "duration_s": 1.9220000000000015,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_long_arm-free_into_holding-02",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "rejected",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_long_arm-free_into_holding-02/physical",
+      "trace_sha256": "cebc25df96785a3ba25165a07f3c0f1372b7aed63531f0b67838f2e68d97aee1",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "bundle_sha256": "7d9069bc3a3ef3349865ec01f2004aab210ea85b919501aa45a0ce7a57f5e621",
+      "duration_s": 1.9100000000000015,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_long_arm-free_into_holding-05",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "rejected",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_long_arm-free_into_holding-05/physical",
+      "trace_sha256": "de2967c6bc54d6fdcff49a819afcd5a9a8bebf8ddbad6a792562f2acb2ee373c",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "bundle_sha256": "a970610c78b56cb1def687f7a310f1751f49b31a031ff48b93a871a583cbbf22",
+      "duration_s": 10.702000000000327,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_long_arm-holding_into_free-02",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "rejected",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_long_arm-holding_into_free-02/physical",
+      "trace_sha256": "c52daa0f21543984e5c4efb51fe5879d063482a71006ec9f5cea429a724cf9fd",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "bundle_sha256": "6841659e3f166eefa59e539e692316401ac543427a5645a4fd0acb76eb471bc2",
+      "duration_s": 26.021999999996456,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_long_arm-joint_beyond_limit-02",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_long_arm-joint_beyond_limit-02/physical",
+      "trace_sha256": "dd1c6b5c3484825706f8c6f867c7706ab40d321b1e8dd3cbb3c05a42e36adecb",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "bundle_sha256": "e207a0cbb21772ebad24eff124b016f7057c73860fd2bdac6cdc086e5cba5770",
+      "duration_s": 26.021999999996456,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_long_arm-joint_beyond_limit-05",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_long_arm-joint_beyond_limit-05/physical",
+      "trace_sha256": "5ec82af4a00f27176b3aa68b2ccf99c7205617fad947b92eb4e2b981a1f95a6b",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "bundle_sha256": "121d255399a348a61df6435be798ebc0efd4ab66faa91f33473b51eb4d190159",
+      "duration_s": 19.37400000000014,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_long_arm-joint_beyond_limit-08",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_long_arm-joint_beyond_limit-08/physical",
+      "trace_sha256": "aa52d91582e1f4dfe75c50366af8a0200ca61f03c0ed57ee6f95c4b4b39a48fa",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "bundle_sha256": "c275fa079af48e9b3c8d60e54576649d6dc1bc4b024de7fdf6569390e4adc5ea",
+      "duration_s": 25.483999999996755,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_long_arm-joint_inside_margin-02",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_long_arm-joint_inside_margin-02/physical",
+      "trace_sha256": "43a884a733af5d8331aa3a45981cc6aee2a5c78b3b8e084264373820b57b0396",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "bundle_sha256": "fcda74571a4adcee5472e188a99022dcb545398a4146f2680cd32332213965c3",
+      "duration_s": 25.483999999996755,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_long_arm-joint_inside_margin-05",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_long_arm-joint_inside_margin-05/physical",
+      "trace_sha256": "820b96d595c7f90dc5662cc995e9461922bf909fc3552aab8b8219aa8516e188",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "bundle_sha256": "0e1db025c6be5795ef7b5ead43b2379cb93b054d2aa6637ea919370cdd098b79",
+      "duration_s": 2.9599999999998956,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_long_arm-resource_conflict-02",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "rejected",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_long_arm-resource_conflict-02/physical",
+      "trace_sha256": "34a28bc0bea2f986974ea71f5987973fa513a3200c2ad7853e49192e3c6c0cdf",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "bundle_sha256": "75a31979e491ee59e7e3a74146d8f068fb01a8aa23b71a9d7093fa605b3bc95b",
+      "duration_s": 14.992000000001676,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_long_arm-velocity_too_high-02",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_long_arm-velocity_too_high-02/physical",
+      "trace_sha256": "2b243ab039e5d1940cbac357f01b4c05153e5ee9cdc34df294b053cac8ce49cf",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "bundle_sha256": "744845e3233c39bc58ef8149830e037d56a4e67359b0ad5ed7ad234c7bb2fb1d",
+      "duration_s": 15.962000000002,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_long_arm-velocity_too_high-05",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "injected/zoo_long_arm-velocity_too_high-05/physical",
+      "trace_sha256": "28ec652d55809fdeaa8dc6e743c86e96831ea0bba8f79406e3982e5a3dc3ca3a",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "bundle_sha256": "35320b7aa85c3e35732ce334a69391ce296c39fcc6c4aca568aa61a591bc3f4c",
+      "duration_s": 15.554000000001864,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-feasible-000",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "feasible/zoo_jaw_arm-feasible-000/physical",
+      "trace_sha256": "5db43eb8930854dce0cc732ec27d1eefa251e2a5cc20e263a1fff92f7055559a",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign-pilot-1",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "26ddbd9e7af6eb5d6241cff6efcdafd4fd391dec1abdb06ab843fb0b4e793286",
+      "duration_s": 14.402000000001479,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-feasible-001",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "feasible/zoo_jaw_arm-feasible-001/physical",
+      "trace_sha256": "42038ff0ec092d443c723533879e0a83785d1e0cae2f038874f3a8a36a5a6243",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign-pilot-1",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "64c997868a6046b47f0b836ab8aa5e9f0a984f493c145fb1127b873eec147d9b",
+      "duration_s": 15.260000000001765,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-feasible-002",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "feasible/zoo_jaw_arm-feasible-002/physical",
+      "trace_sha256": "13f8085ada94a4c6487b0926774b4fa9e97dd38dcdfd0ca5ac761dd95a1c6c1f",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign-pilot-1",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "09d6c85bc06014b5d5d823421d231cf10c7fe84adb91884f4933452e641754ee",
+      "duration_s": 14.920000000001652,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-feasible-003",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "feasible/zoo_jaw_arm-feasible-003/physical",
+      "trace_sha256": "54e7f599eb1930f0c0bd0fbef2c630e68a9a485ae486fca168f3a5c9604b921e",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign-pilot-1",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "4144262d43447e3ca1331bb6eae6a5dcd5f22e59338336501ef1069bc4fdc7b4",
+      "duration_s": 14.678000000001571,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-feasible-005",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "feasible/zoo_jaw_arm-feasible-005/physical",
+      "trace_sha256": "767b6d2ed36b65b009ae683570cd71d5741c3783da54efa62038684da78d3edf",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign-pilot-1",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "7f0ba16db96a799734494a78bd38cf168699e2bebbe1467b6adb67fab00ae38b",
+      "duration_s": 16.998000000001458,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_long_arm-feasible-000",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "feasible/zoo_long_arm-feasible-000/physical",
+      "trace_sha256": "9ffa678b83d1ad34007b02429719f1122bc90c80e36c90be588dcc81c5a4c01c",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign-pilot-1",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "bundle_sha256": "3b6d4797ee98d2f03451ff4c586ccf54e87596b61ea1dd9054ea7c68c7aad566",
+      "duration_s": 15.54400000000186,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_long_arm-feasible-001",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "feasible/zoo_long_arm-feasible-001/physical",
+      "trace_sha256": "92ce344896c75f9ce26e6cf405848013def68bbdd5a9182b2c2ccd4d1a2a9536",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign-pilot-1",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "bundle_sha256": "a366c73ce03363cec287f4a49deb99f6816913461917ee10287aaab8d7bd3ba2",
+      "duration_s": 17.166000000001365,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_long_arm-feasible-002",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "feasible/zoo_long_arm-feasible-002/physical",
+      "trace_sha256": "86648d705dda79d5bbeca01377296f910d891c66d1bc148c7359b161c94c387a",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign-pilot-1",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "bundle_sha256": "b277067c929ec1576c8cef0832f85cd4c9b463a9384043bb62f2b27e6c2505ad",
+      "duration_s": 16.426000000001775,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_long_arm-feasible-003",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "feasible/zoo_long_arm-feasible-003/physical",
+      "trace_sha256": "24a43dca027ef966bda2872272d8b0af38e3341298df1379d0b6d8823d780f50",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign-pilot-1",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "bundle_sha256": "30010d1000c168ca360cf5a8c92308c0d281d72657367622e03a57a51023b501",
+      "duration_s": 17.73200000000105,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_long_arm-feasible-004",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "feasible/zoo_long_arm-feasible-004/physical",
+      "trace_sha256": "92966184b5761f111bc85f1e766b7458c589a77d8ec1c31f7ddbed5d245dddf4",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/any-robot/results/g08-campaign-pilot-1",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "bundle_sha256": "85048ebc4a33bd03c4565049d35cf1c695e9348f271d21ee072d62ae20eddb1a",
+      "duration_s": 13.968000000001418,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-carry-to-place-after",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "carry-to-place/after/physical",
+      "trace_sha256": "faba317b85a9cd8a1bf341201f5798697647dd80e57c97bd8e05b9feb57c49e3",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/docs/results/g08-d08",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "6f3905b52cb8423a0f66956e20dbcb49ec77f245ca4e9272b3e18db15bce5deb",
+      "duration_s": 13.868000000001384,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-carry-to-place-before",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "carry-to-place/before/physical",
+      "trace_sha256": "fcd5a6c17aa18163774e1edd33e5a7c64b842d8f8fa1e6e9681d297a8c364285",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/docs/results/g08-d08",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "27ef5a4c340e90e2b307950570ecadb60cece34dc45e079a4774ab3f9a5cc906",
+      "duration_s": 11.926000000000736,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-contact-mode-change-before",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "contact-mode-change/before/physical",
+      "trace_sha256": "458d3403e20f0da69ebe190ee602663803c0fe6a5dc1ce5c324b23aa09cff305",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/docs/results/g08-d08",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "aa8b9d7ca103a7ebe52c755eab7301149ae3ae5d1f247fabeeb28b4300889a3a",
+      "duration_s": 16.626000000001525,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-contact-mode-change-inserted",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "success",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "contact-mode-change/inserted/physical",
+      "trace_sha256": "e580e054eba8b7ecee964a2ac6ff12584d3bad8cfb0347759327d8a5cdcce88d",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/docs/results/g08-d08",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "b5376183d40b1e819deff95e331933caa26832cea06aebeb1a874c753c6d0015",
+      "duration_s": 3.391999999999848,
+      "effectors": [
+        "left_palm",
+        "right_palm"
+      ],
+      "episode_id": "zoo_dual_arm-joint-limit-approach-before",
+      "failed_gate": null,
+      "goal": "G08",
+      "kind": "evaluation",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transition-composition/1",
+      "refusal": false,
+      "relative": "joint-limit-approach/before/physical",
+      "trace_sha256": "c4ed42cf0bf2dc90426a4bbae803b3a495a899171fd5fedc8cf571539d145320",
+      "tree": "C:/Users/hocke/GitHub/rigby-g08/docs/results/g08-d08",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "bundle_sha256": "586aab65a46f8f785aade31e33a6e70a9fcdc0d50e8553d7a2db470317d0abe7",
+      "duration_s": 12.734000000001005,
+      "effectors": [
+        "left_palm",
+        "right_palm"
+      ],
+      "episode_id": "zoo_dual_arm-seed000",
+      "failed_gate": null,
+      "goal": "G06",
+      "kind": "calibration_excluded",
+      "outcome": "success",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_dual_arm/seed-000/physical",
+      "trace_sha256": "1149437771e5d03be82ed3e2503de95b693fb0d9e44da2b6b774d98b4c331f95",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "bundle_sha256": "89e7996e15c75bc8f0e978c398721c29b1553384d28d16f4dedc6d8505a3bcbd",
+      "duration_s": 12.770000000001017,
+      "effectors": [
+        "left_palm",
+        "right_palm"
+      ],
+      "episode_id": "zoo_dual_arm-seed001",
+      "failed_gate": null,
+      "goal": "G06",
+      "kind": "calibration_excluded",
+      "outcome": "success",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_dual_arm/seed-001/physical",
+      "trace_sha256": "45261d275ead18aa739f4f1e24f686d40d9c530d4456e3c4d36a8672fcb8b0b8",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "bundle_sha256": "23e5ab4b291aaff3e04143ab048c811e4bc26af5c8a4a392c37bf88d9326c53a",
+      "duration_s": 12.886000000001056,
+      "effectors": [
+        "left_palm",
+        "right_palm"
+      ],
+      "episode_id": "zoo_dual_arm-seed002",
+      "failed_gate": null,
+      "goal": "G06",
+      "kind": "calibration_excluded",
+      "outcome": "success",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_dual_arm/seed-002/physical",
+      "trace_sha256": "025245408795fee1f1af49f0231009f25b3a728e002e52979a1589d06cbc7b0c",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "bundle_sha256": "fb2e6f400ffebef4a0f5f2fb4fc09ea54eef68a3e6fc00c19d272ff296e20361",
+      "duration_s": 12.95600000000108,
+      "effectors": [
+        "left_palm",
+        "right_palm"
+      ],
+      "episode_id": "zoo_dual_arm-seed003",
+      "failed_gate": null,
+      "goal": "G06",
+      "kind": "calibration_excluded",
+      "outcome": "success",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_dual_arm/seed-003/physical",
+      "trace_sha256": "b9c7b4679900422b0e8a8651dacd4b466af68d6954d578c43ba498b45fc1a7bb",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "bundle_sha256": "833d8a5900837ef02145d5e54c737a1f2aa44e59cb7afa4536d3ef8a98bf5b22",
+      "duration_s": 12.856000000001046,
+      "effectors": [
+        "left_palm",
+        "right_palm"
+      ],
+      "episode_id": "zoo_dual_arm-seed004",
+      "failed_gate": null,
+      "goal": "G06",
+      "kind": "calibration_excluded",
+      "outcome": "success",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_dual_arm/seed-004/physical",
+      "trace_sha256": "72559e906ed666951803020686e752bbda02dca7176c994fa090e23461a3862f",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "bundle_sha256": "54b58d8b07ff05fd0dc59c63c6481a66f80a706c511b87f4897b15ad6a5770c9",
+      "duration_s": 15.400000000001896,
+      "effectors": [
+        "left_palm",
+        "right_palm"
+      ],
+      "episode_id": "zoo_dual_arm-seed061",
+      "failed_gate": "hold_not_sustained",
+      "goal": "G06",
+      "kind": "calibration_excluded",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_dual_arm/seed-061/physical",
+      "trace_sha256": "c25c58a9355e6036459ca08d99c8f8d24a9763df2c6973be1de3620f30c0751b",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "bundle_sha256": "97baa5c7f26e101c47dd4aefcd81f3d892cd9b54a419dfd0fff05780ad580658",
+      "duration_s": 15.862000000001949,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_hand_arm-seed000",
+      "failed_gate": "hold_not_sustained",
+      "goal": "G06",
+      "kind": "calibration_excluded",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_hand_arm/seed-000/physical",
+      "trace_sha256": "278cfe28fee3bb0a9151b662a4040bfd47baf6182a6a38024e0b3725cd5a471b",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1",
+      "zoo_id": "zoo_hand_arm"
+    },
+    {
+      "bundle_sha256": "53da121b8f3395776e95d472ef9b6e778db7feffef59b16c9500e0c9228e08f4",
+      "duration_s": 15.930000000001911,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_hand_arm-seed001",
+      "failed_gate": "hold_not_sustained",
+      "goal": "G06",
+      "kind": "calibration_excluded",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_hand_arm/seed-001/physical",
+      "trace_sha256": "389ded7e2504bccf4941a52e4469e7734f0b25f7e9823f6a865641491567cf83",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1",
+      "zoo_id": "zoo_hand_arm"
+    },
+    {
+      "bundle_sha256": "22f8d10f004f45d3d0d919a68bd033caa80ed8ad31437aed1cedb891e35c1403",
+      "duration_s": 15.892000000001932,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_hand_arm-seed002",
+      "failed_gate": "hold_not_sustained",
+      "goal": "G06",
+      "kind": "calibration_excluded",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_hand_arm/seed-002/physical",
+      "trace_sha256": "0c1c75a3678aa17629728ed732ac94b5067088e915b71ed45cd385606c393b0e",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1",
+      "zoo_id": "zoo_hand_arm"
+    },
+    {
+      "bundle_sha256": "35f740f521fbc053a1350938b90236b540d1079af6e2d58ef24be568c82a6c44",
+      "duration_s": 16.008000000001868,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_hand_arm-seed003",
+      "failed_gate": "hold_not_sustained",
+      "goal": "G06",
+      "kind": "calibration_excluded",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_hand_arm/seed-003/physical",
+      "trace_sha256": "e1132c21b7660b74dd0f1c7a7df19708e933d472157950e3e0f8835aafce8a93",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1",
+      "zoo_id": "zoo_hand_arm"
+    },
+    {
+      "bundle_sha256": "433d5b4196546a64c51855ce94a55daf3e24c1188fb94298068fe0ab78132649",
+      "duration_s": 15.906000000001924,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_hand_arm-seed004",
+      "failed_gate": "hold_not_sustained",
+      "goal": "G06",
+      "kind": "calibration_excluded",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_hand_arm/seed-004/physical",
+      "trace_sha256": "2e682c65b992256094d55a59adce7c3668a4aa6794a9aff5523d11c5d7509d6a",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1",
+      "zoo_id": "zoo_hand_arm"
+    },
+    {
+      "bundle_sha256": "440347388a1233c83b7d2eacbdb363e0638f892bde6bd887912fdf854061074e",
+      "duration_s": 15.882000000001938,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_hand_arm-seed019",
+      "failed_gate": "object_not_lifted",
+      "goal": "G06",
+      "kind": "calibration_excluded",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_hand_arm/seed-019/physical",
+      "trace_sha256": "788fc3a45324a733a9b6da50c5e6d7c51b242d8a9ff8db0919ef681c87e04412",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1",
+      "zoo_id": "zoo_hand_arm"
+    },
+    {
+      "bundle_sha256": "d1508f8c53a5b686c044cdad9595b61eca912dd92976a43641fc69b4d87d41c1",
+      "duration_s": 15.778000000001995,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_hand_arm-seed023",
+      "failed_gate": "object_not_lifted",
+      "goal": "G06",
+      "kind": "calibration_excluded",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_hand_arm/seed-023/physical",
+      "trace_sha256": "5f8b9574d7068ff7bcfb7cb6389f9f2aad7618259eb98e461724f59f621e9fc2",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1",
+      "zoo_id": "zoo_hand_arm"
+    },
+    {
+      "bundle_sha256": "71259339f784efdf932c46567a0b7abc1d0525fe2b298f9d84dd71afa7a31566",
+      "duration_s": 15.920000000001917,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_hand_arm-seed040",
+      "failed_gate": "object_not_lifted",
+      "goal": "G06",
+      "kind": "calibration_excluded",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_hand_arm/seed-040/physical",
+      "trace_sha256": "af657c2f38d8c5d40713a39c5507cd363f5a96632b9787708b357a21867c9240",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1",
+      "zoo_id": "zoo_hand_arm"
+    },
+    {
+      "bundle_sha256": "2e9f2dd7d1b3a815c07c6c74375df5ed3d6d440c9aeace1ddd1d645cd091da2d",
+      "duration_s": 13.640000000001308,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_hand_arm-seed047",
+      "failed_gate": "object_not_lifted",
+      "goal": "G06",
+      "kind": "calibration_excluded",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_hand_arm/seed-047/physical",
+      "trace_sha256": "1307379e9288951802b0059c597d658ab719f45f18b97246cb7f7b8ba5037218",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1",
+      "zoo_id": "zoo_hand_arm"
+    },
+    {
+      "bundle_sha256": "91ab343038cb9722bc731522c5f245f0113bd2483f074f53fd310050c7573f8d",
+      "duration_s": 15.870000000001944,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_hand_arm-seed049",
+      "failed_gate": "object_not_lifted",
+      "goal": "G06",
+      "kind": "calibration_excluded",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_hand_arm/seed-049/physical",
+      "trace_sha256": "16233b46dfc62373efe3bfde6e3970f06593dcaf7bf6b0c5475a31d0cfb8da60",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1",
+      "zoo_id": "zoo_hand_arm"
+    },
+    {
+      "bundle_sha256": "ade578e1ba6fd9ce65da468ebfb7dac7747eb1f6a24446c7ff0917d304ed55b4",
+      "duration_s": 13.566000000001283,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-seed000",
+      "failed_gate": null,
+      "goal": "G06",
+      "kind": "calibration_excluded",
+      "outcome": "success",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_jaw_arm/seed-000/physical",
+      "trace_sha256": "ae3890cf76002474686fa79d23b1746394749ca23995b4788ba8941baaef6c8e",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "511cbaf68efea36ae372f9dcc85ba458b429c69c9dae00a78fc2bd3e5a190a9c",
+      "duration_s": 13.604000000001296,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-seed001",
+      "failed_gate": null,
+      "goal": "G06",
+      "kind": "calibration_excluded",
+      "outcome": "success",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_jaw_arm/seed-001/physical",
+      "trace_sha256": "80fded3b0cdcdd5922554e53c40842aa85541fcb77ea6216c6a8268cb07f6f52",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "376efadb799e06d24ebc1fc2d6a2bfeead1a0d9dd74b5e37a35f597c825ff2db",
+      "duration_s": 13.642000000001309,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-seed002",
+      "failed_gate": null,
+      "goal": "G06",
+      "kind": "calibration_excluded",
+      "outcome": "success",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_jaw_arm/seed-002/physical",
+      "trace_sha256": "6929a927b1b41b0666d587e583ac92c2f6c421a87a687b38ad2e9fa9facc2e7e",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "3d6decd161cd4ebf180682e41c47980f5714f2385f2cda0d32c8ba1534fe3ce9",
+      "duration_s": 13.718000000001334,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-seed003",
+      "failed_gate": null,
+      "goal": "G06",
+      "kind": "calibration_excluded",
+      "outcome": "success",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_jaw_arm/seed-003/physical",
+      "trace_sha256": "9397beff78cf387f2e5010a05c454d36ea6b9fff0e9da266fc0c85199752e8cb",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "25f0a0d4547af41602f9f5318a5b6a7fd6472a68aafe46687d4c3bc0e89bc5fe",
+      "duration_s": 13.636000000001307,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-seed004",
+      "failed_gate": null,
+      "goal": "G06",
+      "kind": "calibration_excluded",
+      "outcome": "success",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_jaw_arm/seed-004/physical",
+      "trace_sha256": "164118c6acbf17543ec307549d7c0fe5aed973c64727498a80bce662d4431d3a",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "f5deff3009f50755f58d80b2083042c0a9aa9c2bdc123925be3256e5658da87e",
+      "duration_s": 14.42400000000157,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-seed005",
+      "failed_gate": "grasp_not_achieved",
+      "goal": "G06",
+      "kind": "calibration_excluded",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_jaw_arm/seed-005/physical",
+      "trace_sha256": "a06127222ec5ed8b48d01e4091696de4c28d8329522489c229c3134eb0c74224",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "54fbff91f5c1a07e1e47a4dbdd67647c9f68d37f755134177243f3eb20253275",
+      "duration_s": 13.786000000001357,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-seed008",
+      "failed_gate": "grasp_not_achieved",
+      "goal": "G06",
+      "kind": "calibration_excluded",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_jaw_arm/seed-008/physical",
+      "trace_sha256": "4d05492c3d32c36fd51e4061fade130cb10c50b5e11caa58be40c10b8bc21cc6",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "8b472b3f655db2c90953fea03deb5cf05c040650d8d703f3971d6708a0fbca9a",
+      "duration_s": 14.380000000001555,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-seed011",
+      "failed_gate": "grasp_not_achieved",
+      "goal": "G06",
+      "kind": "calibration_excluded",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_jaw_arm/seed-011/physical",
+      "trace_sha256": "91b5892a32b5797839068aa25dbafe14383c24d5ea90982240581f916aa31d17",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "2b771c573908142150beec0b7ee35f3a56ade027b6553234a176a96295fdc68c",
+      "duration_s": 14.402000000001562,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-seed012",
+      "failed_gate": "grasp_not_achieved",
+      "goal": "G06",
+      "kind": "calibration_excluded",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_jaw_arm/seed-012/physical",
+      "trace_sha256": "070bd72b60e65357f5ad03b443e20195b2d9073452dc302ca1afafb3fde5316f",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "cce67e0c10a64ba0ad7425ba604d6c9a85e259b47b738cf1674e2e07f4f8d5e8",
+      "duration_s": 13.782000000001355,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-seed014",
+      "failed_gate": "grasp_not_achieved",
+      "goal": "G06",
+      "kind": "calibration_excluded",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_jaw_arm/seed-014/physical",
+      "trace_sha256": "8f15b43a949fb71b8fd552f7f32b3a3e5c1dacf72f393d04cdaf7ec248d6a722",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "6472c841cea0dfa7fecafc220a29dbb89bd8c09d4d12c5121a1d36787c8b21df",
+      "duration_s": 14.376000000001554,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-seed071",
+      "failed_gate": "object_not_lifted",
+      "goal": "G06",
+      "kind": "calibration_excluded",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_jaw_arm/seed-071/physical",
+      "trace_sha256": "f4dc21aec8d030ee81299ee17a6b87c19b6c638049cdf006cc92e9548943254c",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "d983598ad23fca82363913df1387bd8f71c3e9370f7f4a01ae6322fb08a32d27",
+      "duration_s": 14.404000000001563,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_jaw_arm-seed087",
+      "failed_gate": "object_not_lifted",
+      "goal": "G06",
+      "kind": "calibration_excluded",
+      "outcome": "runtime_failure",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_jaw_arm/seed-087/physical",
+      "trace_sha256": "3da9b5b35d79823d8897dee3033d55bfb859b07be4662845a8ab13000da7d76e",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "bundle_sha256": "ee8071841fabed519c87ec3fe62e5044b70d3157450b303ed3eede814e3ef509",
+      "duration_s": 14.526000000001604,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_long_arm-seed000",
+      "failed_gate": null,
+      "goal": "G06",
+      "kind": "calibration_excluded",
+      "outcome": "success",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_long_arm/seed-000/physical",
+      "trace_sha256": "c8abed3661f9a6896818441ff2b0c3c74acf9e81d4d0b1ea9baa4373ab8be156",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "bundle_sha256": "595a5c5752a1b581038d63d4191b6c4b131d361ce7c1091d7f685fc73a258edf",
+      "duration_s": 14.518000000001601,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_long_arm-seed001",
+      "failed_gate": null,
+      "goal": "G06",
+      "kind": "calibration_excluded",
+      "outcome": "success",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_long_arm/seed-001/physical",
+      "trace_sha256": "868bcc57f9a4f6ba5c7fed9a19f4ca5436c91c645fe62ec01a28a1d0b83bd7d4",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "bundle_sha256": "7f4427d025f5c6933ba98d8511c743b95d943f8e5268cd96312a0c30e2092286",
+      "duration_s": 14.504000000001597,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_long_arm-seed002",
+      "failed_gate": null,
+      "goal": "G06",
+      "kind": "calibration_excluded",
+      "outcome": "success",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_long_arm/seed-002/physical",
+      "trace_sha256": "c5ef14a047333c614c37b4f85480d4a84c31c0c1efcd74655af4e8b217ce0e0b",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "bundle_sha256": "3cc0605005767d5dd2f738cd35e2a0de06d96120744ad2f4571d932b277baea1",
+      "duration_s": 14.48600000000159,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_long_arm-seed003",
+      "failed_gate": null,
+      "goal": "G06",
+      "kind": "calibration_excluded",
+      "outcome": "success",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_long_arm/seed-003/physical",
+      "trace_sha256": "abdd0d17162a4b34fcf5827984d36a4b862f3f74a0777617d06a9f60f394fbf5",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "bundle_sha256": "042fba780e711480a8bbeb81244913faee05c032ab9f71a36c28b403177850bb",
+      "duration_s": 14.506000000001597,
+      "effectors": [
+        "palm"
+      ],
+      "episode_id": "zoo_long_arm-seed004",
+      "failed_gate": null,
+      "goal": "G06",
+      "kind": "calibration_excluded",
+      "outcome": "success",
+      "protocol": "rigby.transfer-trial/1",
+      "refusal": false,
+      "relative": "zoo_long_arm/seed-004/physical",
+      "trace_sha256": "9a3214516d198fd76a91ca72b5c85dafa72438ab543c60c2f43582bbd585726d",
+      "tree": "C:/Users/hocke/GitHub/rigby-g06/any-robot/results/g06-campaign-pilot-1",
+      "zoo_id": "zoo_long_arm"
+    }
+  ],
+  "evaluation_count": 114,
+  "excluded_count": 33,
+  "generation_calls": 0,
+  "policy_sha256": "6d2912e8df7d0a098f5d75f59ad37fc5bdf3c5bdd28f7ef940df7973cb4d1ed1",
+  "schema": "g09.conditionals-corpus.v1",
+  "scored_runs_started": false
+}

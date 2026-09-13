@@ -1,0 +1,45 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-say-39e5fa70",
+  "title": "D09: occluded placement (zoo_long_arm), verdict overlays under two sensor configurations",
+  "prompt": "pick up the cube and set it on the platform; say when it is stably placed",
+  "tier": "any-robot",
+  "embodiment": "zoo_long_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T12:38:34Z",
+  "source": {
+    "commit": "1c675397fe",
+    "branch": "feat/g09-conditionals",
+    "dirty": false,
+    "how": "python any-robot/scripts/g09_d09_media.py --out docs/results/g09-d09"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS (long arm, G06 scored seed 0). The hand hovers over the platform through the dwell; the overhead camera cannot see the cube and stably-placed stays unknown with its re-observe fallback; the front camera decides the placement."
+  },
+  "notes": "See docs/results/g09-report.md. A recorded episode rendered in full from its sealed physical record at real-time playback with the simulation clock and outcome in the banner, with a strip beneath every frame: the verdicts of the six observable conditionals under two declared sensor configurations, the sensors each used with the age of their newest sample, and the oracle labels from the full state that the monitor never reads. frames.json beside the MP4 maps every frame to its recorded sample; verdicts.json in the overlay bundle records every verdict.",
+  "media": [
+    {
+      "path": "docs/results/g09-d09/occluded-placement.mp4",
+      "bytes": 239178,
+      "sha256": "b43a30660f927438edfa799379fac2b1dd5fef011d05077a9d43907374a7fd7e",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g09-d09/occluded-placement-preview.gif",
+      "bytes": 2752169,
+      "sha256": "caed1be85981bdc08abc70cffed2b0cc0bfdc5e871c499e6f37d2d3f713cc093",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G09",
+    "D09",
+    "occluded-placement",
+    "conditionals",
+    "sensor-provenance",
+    "success"
+  ]
+}

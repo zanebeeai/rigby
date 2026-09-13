@@ -1,0 +1,280 @@
+{
+  "cases": [
+    {
+      "caption": "front camera and contact decide the grasp as it happens; the overhead camera is hidden by the hand",
+      "configurations": [
+        "front_contact",
+        "overhead_contact"
+      ],
+      "failed_gate": null,
+      "frames": "visible-grasp-frames.json",
+      "media_sha256": "edc88a14f9b892bb56ee96b33fc53da3b8b57eb239a38466ae1d0713b548859e",
+      "name": "visible-grasp",
+      "outcome": "success",
+      "overlay": {
+        "bundle": "C:/Users/hocke/GitHub/rigby-g09/docs/results/g09-d09/visible-grasp/overlay",
+        "frames": 174,
+        "sha256": "60234722d54e3b701dde8cdb4f6a905aa83416e6b47b16788f506b5926cf4148",
+        "simulation_duration_s": 14.368000000001551,
+        "verdict_frames": {
+          "front_contact": {
+            "area_clear": {
+              "fail": 62,
+              "pass": 110,
+              "unknown": 2
+            },
+            "held": {
+              "fail": 116,
+              "pass": 57,
+              "unknown": 1
+            },
+            "moving_with_robot": {
+              "fail": 135,
+              "pass": 36,
+              "unknown": 3
+            },
+            "opposition_established": {
+              "fail": 116,
+              "pass": 57,
+              "unknown": 1
+            },
+            "reachable": {
+              "fail": 0,
+              "pass": 173,
+              "unknown": 1
+            },
+            "stably_placed": {
+              "fail": 146,
+              "pass": 23,
+              "unknown": 5
+            }
+          },
+          "overhead_contact": {
+            "area_clear": {
+              "fail": 0,
+              "pass": 45,
+              "unknown": 129
+            },
+            "held": {
+              "fail": 116,
+              "pass": 57,
+              "unknown": 1
+            },
+            "moving_with_robot": {
+              "fail": 44,
+              "pass": 0,
+              "unknown": 130
+            },
+            "opposition_established": {
+              "fail": 116,
+              "pass": 57,
+              "unknown": 1
+            },
+            "reachable": {
+              "fail": 0,
+              "pass": 46,
+              "unknown": 128
+            },
+            "stably_placed": {
+              "fail": 46,
+              "pass": 0,
+              "unknown": 128
+            }
+          }
+        }
+      },
+      "physical_sha256": "1f14be9b1f64d0e3b9f276b4f08f1e39ced1a3bfe28ed41b51e01010672f2a8b",
+      "preview": "visible-grasp-preview.gif",
+      "relative": "zoo_jaw_arm/seed-000/physical",
+      "title": "VISIBLE GRASP | jaw arm, scored transfer seed 0",
+      "trace_sha256": "349f94539024c9d2ab752f4698bfadaac28e12cbf35ac133f020b9b591cada83",
+      "video": "visible-grasp.mp4"
+    },
+    {
+      "caption": "the cube drops out during the return: contact fails the hold at once under a blind overhead camera; side camera alone is unknown until it sees the cube again",
+      "configurations": [
+        "overhead_contact",
+        "side_vision_only"
+      ],
+      "failed_gate": null,
+      "frames": "hidden-slip-frames.json",
+      "media_sha256": "f09aed54315ecc6ca9f27acf2ab5548b99a9225e1b6baf91ec2946767c63e55e",
+      "name": "hidden-slip",
+      "outcome": "success",
+      "overlay": {
+        "bundle": "C:/Users/hocke/GitHub/rigby-g09/docs/results/g09-d09/hidden-slip/overlay",
+        "frames": 145,
+        "sha256": "f5bc1f78448e4a3d4b7956ec5f95c84c1018ed7288a6b2cf6385b5e869821e87",
+        "simulation_duration_s": 11.926000000000736,
+        "verdict_frames": {
+          "overhead_contact": {
+            "area_clear": {
+              "fail": 15,
+              "pass": 46,
+              "unknown": 84
+            },
+            "held": {
+              "fail": 97,
+              "pass": 47,
+              "unknown": 1
+            },
+            "moving_with_robot": {
+              "fail": 60,
+              "pass": 0,
+              "unknown": 85
+            },
+            "opposition_established": {
+              "fail": 96,
+              "pass": 48,
+              "unknown": 1
+            },
+            "reachable": {
+              "fail": 0,
+              "pass": 62,
+              "unknown": 83
+            },
+            "stably_placed": {
+              "fail": 46,
+              "pass": 0,
+              "unknown": 99
+            }
+          },
+          "side_vision_only": {
+            "area_clear": {
+              "fail": 20,
+              "pass": 64,
+              "unknown": 61
+            },
+            "held": {
+              "fail": 0,
+              "pass": 0,
+              "unknown": 145
+            },
+            "moving_with_robot": {
+              "fail": 83,
+              "pass": 0,
+              "unknown": 62
+            },
+            "opposition_established": {
+              "fail": 0,
+              "pass": 0,
+              "unknown": 145
+            },
+            "reachable": {
+              "fail": 0,
+              "pass": 85,
+              "unknown": 60
+            },
+            "stably_placed": {
+              "fail": 70,
+              "pass": 0,
+              "unknown": 75
+            }
+          }
+        }
+      },
+      "physical_sha256": "27ef5a4c340e90e2b307950570ecadb60cece34dc45e079a4774ab3f9a5cc906",
+      "preview": "hidden-slip-preview.gif",
+      "relative": "contact-mode-change/before/physical",
+      "title": "HIDDEN SLIP | jaw arm, unchecked return with the cube in hand (G08 D08, before)",
+      "trace_sha256": "458d3403e20f0da69ebe190ee602663803c0fe6a5dc1ce5c324b23aa09cff305",
+      "video": "hidden-slip.mp4"
+    },
+    {
+      "caption": "the hand hovers over the platform: overhead stays unknown (re-observe); the front camera decides the placement",
+      "configurations": [
+        "overhead_contact",
+        "front_contact"
+      ],
+      "failed_gate": null,
+      "frames": "occluded-placement-frames.json",
+      "media_sha256": "276c5db48876c812c063f5dee226d9ab555bc4eff2b769959f81c5b811b14888",
+      "name": "occluded-placement",
+      "outcome": "success",
+      "overlay": {
+        "bundle": "C:/Users/hocke/GitHub/rigby-g09/docs/results/g09-d09/occluded-placement/overlay",
+        "frames": 185,
+        "sha256": "c6c29d95a9e9f5de88dcec76dedd7a725bed68e2ee7232bff3addcb02002e6c1",
+        "simulation_duration_s": 15.330000000001872,
+        "verdict_frames": {
+          "front_contact": {
+            "area_clear": {
+              "fail": 30,
+              "pass": 76,
+              "unknown": 79
+            },
+            "held": {
+              "fail": 128,
+              "pass": 56,
+              "unknown": 1
+            },
+            "moving_with_robot": {
+              "fail": 105,
+              "pass": 0,
+              "unknown": 80
+            },
+            "opposition_established": {
+              "fail": 126,
+              "pass": 58,
+              "unknown": 1
+            },
+            "reachable": {
+              "fail": 0,
+              "pass": 107,
+              "unknown": 78
+            },
+            "stably_placed": {
+              "fail": 77,
+              "pass": 16,
+              "unknown": 92
+            }
+          },
+          "overhead_contact": {
+            "area_clear": {
+              "fail": 0,
+              "pass": 45,
+              "unknown": 140
+            },
+            "held": {
+              "fail": 128,
+              "pass": 56,
+              "unknown": 1
+            },
+            "moving_with_robot": {
+              "fail": 44,
+              "pass": 0,
+              "unknown": 141
+            },
+            "opposition_established": {
+              "fail": 126,
+              "pass": 58,
+              "unknown": 1
+            },
+            "reachable": {
+              "fail": 0,
+              "pass": 46,
+              "unknown": 139
+            },
+            "stably_placed": {
+              "fail": 46,
+              "pass": 0,
+              "unknown": 139
+            }
+          }
+        }
+      },
+      "physical_sha256": "7f45b2f193abf7ebd35f80fab6954ad43490c8d4018abe6ca1a38b117e276004",
+      "preview": "occluded-placement-preview.gif",
+      "relative": "zoo_long_arm/seed-000/physical",
+      "title": "OCCLUDED PLACEMENT | long arm, scored transfer seed 0",
+      "trace_sha256": "95afc7d9778b406b6debdb2351f85122ab51359da3edb9526ecbc05229f6d828",
+      "video": "occluded-placement.mp4"
+    }
+  ],
+  "commit": "1c675397febbc666dc84232ab9faec44aac295e9",
+  "created_at_utc": "2026-09-13T12:35:58.321600+00:00",
+  "demo": "D09",
+  "generation_calls": 0,
+  "goal": "G09",
+  "policy_sha256": "6d2912e8df7d0a098f5d75f59ad37fc5bdf3c5bdd28f7ef940df7973cb4d1ed1"
+}
