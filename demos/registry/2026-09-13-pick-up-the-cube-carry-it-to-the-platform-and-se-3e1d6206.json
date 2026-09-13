@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-carry-it-to-the-platform-and-se-3e1d6206",
+  "title": "G06 pilot 1: zoo_compact_arm, strict fixed world, seed 0 (unreachable_path)",
+  "prompt": "pick up the cube, carry it to the platform and set it down",
+  "tier": "any-robot",
+  "embodiment": "zoo_compact_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T08:54:03Z",
+  "source": {
+    "commit": "d313256eae",
+    "branch": "feat/g06-contact-transfer",
+    "dirty": false,
+    "how": "python any-robot/scripts/g06_transfer_campaign.py --out docs/results/g06-campaign --local any-robot/results/g06-campaign"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "PRE-EXECUTION REFUSAL, typed unreachable_path; no motion executed. waypoint 1 is 0.0334 m from where it was asked to be, past a tolerance of 0.0040 m"
+  },
+  "notes": "See docs/results/g06-report.md. Rendered from recorded physical states at real-time playback with the simulation clock and outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. Pilot 1 at f68ab68, before the turn phase. Registered perturbation seed 0: cube displaced (-11.4, -5.9) mm, mass x0.919, friction x1.018. The bundle was not retained; its digest is in the pilot's trials.json (b82a05b5cae5).",
+  "media": [
+    {
+      "path": "docs/results/g06-campaign-pilot-1/zoo_compact_arm/fixed/seed-000/media/episode.mp4",
+      "bytes": 21429,
+      "sha256": "50cb4731d38d3438e497db752b19133e6b9414ab497b747ac5c817b7e5dfa051",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g06-campaign-pilot-1/zoo_compact_arm/fixed/seed-000/media/preview.gif",
+      "bytes": 17364,
+      "sha256": "ee423192d2a04d9bcf4c442c777f03eac715ebfdab446f792ac3b45ad3fda993",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G06",
+    "transfer",
+    "pilot-1",
+    "seeded",
+    "failure"
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-carry-it-to-the-platform-and-se-3a2270cc",
+  "title": "D06: zoo_jaw_arm, standoff repair BEFORE (hold_not_sustained)",
+  "prompt": "pick up the cube, carry it to the platform and set it down",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T08:54:29Z",
+  "source": {
+    "commit": "d313256eae",
+    "branch": "feat/g06-contact-transfer",
+    "dirty": false,
+    "how": "python any-robot/scripts/g06_d06_media.py --campaign docs/results/g06-campaign --out docs/results/g06-d06"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "RUNTIME FAILURE, typed hold_not_sustained: the object was not held continuously through the 2 s hold; sim 16.80 s"
+  },
+  "notes": "See docs/results/g06-report.md. Rendered from recorded physical states at real-time playback with the simulation clock and outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. The before side of the standoff before/after pair.",
+  "media": [
+    {
+      "path": "docs/results/g06-d06/standoff/before/media/episode.mp4",
+      "bytes": 152371,
+      "sha256": "5735ea28bdf1bc634ab595f03cdb5bf3fb1bcb59f17e83936396858515798e04",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g06-d06/standoff/before/media/preview.gif",
+      "bytes": 914124,
+      "sha256": "6615b596c6e9e5129d7ff19585a04779e7b0a412ec205bcfb65d5741155447bf",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G06",
+    "D06",
+    "before-after",
+    "standoff",
+    "before"
+  ]
+}

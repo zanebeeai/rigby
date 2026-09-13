@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-carry-it-to-the-platform-and-se-157261ac",
+  "title": "D06: zoo_jaw_arm, standoff repair AFTER",
+  "prompt": "pick up the cube, carry it to the platform and set it down",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T08:54:29Z",
+  "source": {
+    "commit": "d313256eae",
+    "branch": "feat/g06-contact-transfer",
+    "dirty": false,
+    "how": "python any-robot/scripts/g06_d06_media.py --campaign docs/results/g06-campaign --out docs/results/g06-d06"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: approach, opposition, lift, 2 s hold, carry, lower, release, retreat and 2 s released dwell all certified; sim 14.47 s"
+  },
+  "notes": "See docs/results/g06-report.md. Rendered from recorded physical states at real-time playback with the simulation clock and outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. The after side of the standoff before/after pair.",
+  "media": [
+    {
+      "path": "docs/results/g06-d06/standoff/after/media/episode.mp4",
+      "bytes": 118583,
+      "sha256": "3b14e7fb1e8dda04cc6480dc67b40f050bad0a7deba9491e60d52022051b4098",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g06-d06/standoff/after/media/preview.gif",
+      "bytes": 916822,
+      "sha256": "a20dcef07ad6338ab76fb22d228d92e0cf387bb7fe4fe671b9baa10443f50f8c",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G06",
+    "D06",
+    "before-after",
+    "standoff",
+    "after"
+  ]
+}

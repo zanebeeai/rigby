@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-carry-it-to-the-platform-and-se-9f0312ff",
+  "title": "G06 pilot 1: zoo_hand_arm, strict fixed world, seed 1 (hold_not_sustained)",
+  "prompt": "pick up the cube, carry it to the platform and set it down",
+  "tier": "any-robot",
+  "embodiment": "zoo_hand_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T08:54:09Z",
+  "source": {
+    "commit": "d313256eae",
+    "branch": "feat/g06-contact-transfer",
+    "dirty": false,
+    "how": "python any-robot/scripts/g06_transfer_campaign.py --out docs/results/g06-campaign --local any-robot/results/g06-campaign"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "RUNTIME FAILURE, typed hold_not_sustained: the object was not held continuously through the 2 s hold; sim 15.93 s"
+  },
+  "notes": "See docs/results/g06-report.md. Rendered from recorded physical states at real-time playback with the simulation clock and outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. Pilot 1 at f68ab68, before the turn phase. Registered perturbation seed 1: cube displaced (-12.0, 3.8) mm, mass x1.172, friction x0.910. The bundle was not retained; its digest is in the pilot's trials.json (53da121b8f33).",
+  "media": [
+    {
+      "path": "docs/results/g06-campaign-pilot-1/zoo_hand_arm/fixed/seed-001/media/episode.mp4",
+      "bytes": 111071,
+      "sha256": "16082164e45f3d2ce901ee5a15c838a93a9d98803530d67bc4b11a95d2339513",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g06-campaign-pilot-1/zoo_hand_arm/fixed/seed-001/media/preview.gif",
+      "bytes": 801355,
+      "sha256": "a1d988f3672c212528fcce535bcaa54a87b8ad2b2fcff4f4d425887262188a55",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G06",
+    "transfer",
+    "pilot-1",
+    "seeded",
+    "failure"
+  ]
+}

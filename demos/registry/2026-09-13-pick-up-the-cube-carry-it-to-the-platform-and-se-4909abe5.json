@@ -1,0 +1,43 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-carry-it-to-the-platform-and-se-4909abe5",
+  "title": "D06: zoo_long_arm turn-normalized repair, before and after",
+  "prompt": "pick up the cube, carry it to the platform and set it down",
+  "tier": "any-robot",
+  "embodiment": "zoo_long_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T08:54:31Z",
+  "source": {
+    "commit": "d313256eae",
+    "branch": "feat/g06-contact-transfer",
+    "dirty": false,
+    "how": "python any-robot/scripts/g06_d06_media.py --campaign docs/results/g06-campaign --out docs/results/g06-d06"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "Left, without the repair: runtime_failure (grasp_not_achieved). Right, with it: success. Identical physics, same body, same world."
+  },
+  "notes": "See docs/results/g06-report.md. Rendered from recorded physical states at real-time playback with the simulation clock and outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. Repair: turn-normalized.",
+  "media": [
+    {
+      "path": "docs/results/g06-d06/turn-normalized-before-after.mp4",
+      "bytes": 216392,
+      "sha256": "842aa71a47aac63583e07699296324309d3c5b116497eaa71a7627c539b1a807",
+      "role": "comparison"
+    },
+    {
+      "path": "docs/results/g06-d06/turn-normalized-before-after-preview.gif",
+      "bytes": 1483191,
+      "sha256": "2bd4861139ded2a6695acb93e4ba21fe1306fb5d33b75d2465eb570de88f73bf",
+      "role": "comparison"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G06",
+    "D06",
+    "before-after",
+    "turn-normalized"
+  ]
+}

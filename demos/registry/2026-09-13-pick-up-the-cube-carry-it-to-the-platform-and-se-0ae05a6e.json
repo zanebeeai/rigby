@@ -1,0 +1,43 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-carry-it-to-the-platform-and-se-0ae05a6e",
+  "title": "G06 transfer: zoo_hand_arm, strict fixed world, seed 80 (object_not_lifted)",
+  "prompt": "pick up the cube, carry it to the platform and set it down",
+  "tier": "any-robot",
+  "embodiment": "zoo_hand_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T08:53:53Z",
+  "source": {
+    "commit": "d313256eae",
+    "branch": "feat/g06-contact-transfer",
+    "dirty": false,
+    "how": "python any-robot/scripts/g06_transfer_campaign.py --out docs/results/g06-campaign --local any-robot/results/g06-campaign"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "RUNTIME FAILURE, typed object_not_lifted: the object never came off its support; sim 14.46 s"
+  },
+  "notes": "See docs/results/g06-report.md. Rendered from recorded physical states at real-time playback with the simulation clock and outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. Registered perturbation seed 80: cube displaced (13.6, 8.6) mm, mass x0.886, friction x0.802. The replayable bundle lives in the local results tree (sha256 19901cdb9579).",
+  "media": [
+    {
+      "path": "docs/results/g06-campaign/zoo_hand_arm/fixed/seed-080/media/episode.mp4",
+      "bytes": 111163,
+      "sha256": "98460ef9e37e8312990acfa539b91e8f1c07e20d2f839d713aeda5f76a716a27",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g06-campaign/zoo_hand_arm/fixed/seed-080/media/preview.gif",
+      "bytes": 853490,
+      "sha256": "6538643e269cb12e1311c5152775e8bfb70c3350cb64cd6e29ad847e004c2f21",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G06",
+    "transfer",
+    "seeded",
+    "failure"
+  ]
+}

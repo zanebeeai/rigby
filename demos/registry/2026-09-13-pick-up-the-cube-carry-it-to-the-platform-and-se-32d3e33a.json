@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-carry-it-to-the-platform-and-se-32d3e33a",
+  "title": "G06 pilot 1: zoo_jaw_arm, strict fixed world, nominal cube",
+  "prompt": "pick up the cube, carry it to the platform and set it down",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T08:54:15Z",
+  "source": {
+    "commit": "d313256eae",
+    "branch": "feat/g06-contact-transfer",
+    "dirty": false,
+    "how": "python any-robot/scripts/g06_transfer_campaign.py --out docs/results/g06-campaign --local any-robot/results/g06-campaign"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: approach, opposition, lift, 2 s hold, carry, lower, release, retreat and 2 s released dwell all certified; sim 13.67 s"
+  },
+  "notes": "See docs/results/g06-report.md. Rendered from recorded physical states at real-time playback with the simulation clock and outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. Pilot 1: the first scored pass of the registered roster at f68ab68, before the turn phase; retained whole. Track: fixed-canonical.",
+  "media": [
+    {
+      "path": "docs/results/g06-campaign-pilot-1/zoo_jaw_arm/fixed-canonical/media/episode.mp4",
+      "bytes": 108655,
+      "sha256": "dda5658ac0e32334b2770525a78bb5e09d530c1d6df5d76aded6ca1fa01460e6",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g06-campaign-pilot-1/zoo_jaw_arm/fixed-canonical/media/preview.gif",
+      "bytes": 889897,
+      "sha256": "7226b5fd8a20671f423e64893bc584926872a19724fbfae32c9e8b3c39c527e5",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G06",
+    "transfer",
+    "pilot-1",
+    "fixed-canonical",
+    "success"
+  ]
+}

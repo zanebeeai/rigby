@@ -1,0 +1,43 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-carry-it-to-the-platform-and-se-c9928bb5",
+  "title": "G06 transfer: zoo_hand_arm, strict fixed world, nominal cube",
+  "prompt": "pick up the cube, carry it to the platform and set it down",
+  "tier": "any-robot",
+  "embodiment": "zoo_hand_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T08:53:48Z",
+  "source": {
+    "commit": "d313256eae",
+    "branch": "feat/g06-contact-transfer",
+    "dirty": false,
+    "how": "python any-robot/scripts/g06_transfer_campaign.py --out docs/results/g06-campaign --local any-robot/results/g06-campaign"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "RUNTIME FAILURE, typed hold_not_sustained: the object was not held continuously through the 2 s hold; sim 16.59 s"
+  },
+  "notes": "See docs/results/g06-report.md. Rendered from recorded physical states at real-time playback with the simulation clock and outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. Track: fixed-canonical; feasibility class feasible.",
+  "media": [
+    {
+      "path": "docs/results/g06-campaign/zoo_hand_arm/fixed-canonical/media/episode.mp4",
+      "bytes": 110501,
+      "sha256": "0947cb7603b682e6fef0e74674df365c2f846422d12475fc21c9b6805ce5d81c",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g06-campaign/zoo_hand_arm/fixed-canonical/media/preview.gif",
+      "bytes": 765036,
+      "sha256": "4af8ea835107945382bb4a80462248eb11b74c7ae8a30426e493195b8bdfec54",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G06",
+    "transfer",
+    "fixed-canonical",
+    "failure"
+  ]
+}

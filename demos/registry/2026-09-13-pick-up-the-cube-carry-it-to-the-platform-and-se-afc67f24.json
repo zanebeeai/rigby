@@ -1,0 +1,43 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-carry-it-to-the-platform-and-se-afc67f24",
+  "title": "D06: the enabled set, synchronized in the fixed world",
+  "prompt": "pick up the cube, carry it to the platform and set it down",
+  "tier": "any-robot",
+  "embodiment": "zoo_dual_arm, zoo_jaw_arm, zoo_long_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T08:54:26Z",
+  "source": {
+    "commit": "d313256eae",
+    "branch": "feat/g06-contact-transfer",
+    "dirty": false,
+    "how": "python any-robot/scripts/g06_d06_media.py --campaign docs/results/g06-campaign --out docs/results/g06-d06"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "All three certified: zoo_dual_arm, zoo_jaw_arm, zoo_long_arm"
+  },
+  "notes": "See docs/results/g06-report.md. Rendered from recorded physical states at real-time playback with the simulation clock and outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. The three structural configurations (bimanual, jaw, long-reach jaw) the independent map classed feasible and the primitive certified, on one clock.",
+  "media": [
+    {
+      "path": "docs/results/g06-d06/enabled-set-synchronized.mp4",
+      "bytes": 324225,
+      "sha256": "96868e7c03acca54f7afc42adac7986d7c90bee056fcac2900c5545368228ff2",
+      "role": "comparison"
+    },
+    {
+      "path": "docs/results/g06-d06/enabled-set-synchronized-preview.gif",
+      "bytes": 1130949,
+      "sha256": "283362cb4d3cd04ba7f8593b8aaf9f54c8aa09743c4d1a4bd0eb96809d41c0b0",
+      "role": "comparison"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G06",
+    "D06",
+    "synchronized",
+    "enabled-set"
+  ]
+}

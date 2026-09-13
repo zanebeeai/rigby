@@ -1,0 +1,42 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-carry-it-to-the-platform-and-se-bc1a5509",
+  "title": "D06: five bodies, one fixed world, one physics clock",
+  "prompt": "pick up the cube, carry it to the platform and set it down",
+  "tier": "any-robot",
+  "embodiment": "zoo (five gripper-bearing bodies)",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T08:54:25Z",
+  "source": {
+    "commit": "d313256eae",
+    "branch": "feat/g06-contact-transfer",
+    "dirty": false,
+    "how": "python any-robot/scripts/g06_d06_media.py --campaign docs/results/g06-campaign --out docs/results/g06-d06"
+  },
+  "outcome": {
+    "state": "partial",
+    "text": "Tiled strict fixed-world canonical episodes: zoo_compact_arm pre_execution_refusal; zoo_dual_arm success; zoo_hand_arm runtime_failure; zoo_jaw_arm success; zoo_long_arm success"
+  },
+  "notes": "See docs/results/g06-report.md. Rendered from recorded physical states at real-time playback with the simulation clock and outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. Each shorter episode holds its final recorded state until the longest ends; failures and the refusal are shown as such.",
+  "media": [
+    {
+      "path": "docs/results/g06-d06/five-body-fixed-world.mp4",
+      "bytes": 446482,
+      "sha256": "7fddb500657ffafd8da29166d74daad3f52b6bb3c48e5edf8ff8956d2851bf5c",
+      "role": "comparison"
+    },
+    {
+      "path": "docs/results/g06-d06/five-body-fixed-world-preview.gif",
+      "bytes": 2325975,
+      "sha256": "5b8592f1ae6a1619ef8f438ab52bc09e77b12ab317cf18669a78cc85c2d8779b",
+      "role": "comparison"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G06",
+    "D06",
+    "synchronized"
+  ]
+}

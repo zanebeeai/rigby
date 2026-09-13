@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-carry-it-to-the-platform-and-se-b55c8f94",
+  "title": "G06 pilot 1: zoo_compact_arm, strict fixed world, nominal cube",
+  "prompt": "pick up the cube, carry it to the platform and set it down",
+  "tier": "any-robot",
+  "embodiment": "zoo_compact_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T08:54:02Z",
+  "source": {
+    "commit": "d313256eae",
+    "branch": "feat/g06-contact-transfer",
+    "dirty": false,
+    "how": "python any-robot/scripts/g06_transfer_campaign.py --out docs/results/g06-campaign --local any-robot/results/g06-campaign"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "PRE-EXECUTION REFUSAL, typed unreachable_path; no motion executed. waypoint 1 is 0.0369 m from where it was asked to be, past a tolerance of 0.0040 m"
+  },
+  "notes": "See docs/results/g06-report.md. Rendered from recorded physical states at real-time playback with the simulation clock and outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. Pilot 1: the first scored pass of the registered roster at f68ab68, before the turn phase; retained whole. Track: fixed-canonical.",
+  "media": [
+    {
+      "path": "docs/results/g06-campaign-pilot-1/zoo_compact_arm/fixed-canonical/media/episode.mp4",
+      "bytes": 21528,
+      "sha256": "a397f09e963f82061d14bca89e6fd274845720c652b1e8883a33149ee080b11c",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g06-campaign-pilot-1/zoo_compact_arm/fixed-canonical/media/preview.gif",
+      "bytes": 17511,
+      "sha256": "4b187f9089cdb72eba9fdbf01acb4dadb638950660c8ded29165bb5922575403",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G06",
+    "transfer",
+    "pilot-1",
+    "fixed-canonical",
+    "refusal"
+  ]
+}

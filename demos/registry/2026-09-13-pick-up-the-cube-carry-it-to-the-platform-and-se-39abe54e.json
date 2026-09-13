@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-carry-it-to-the-platform-and-se-39abe54e",
+  "title": "G06 pilot 1: zoo_compact_arm, capability-normalized fixture",
+  "prompt": "pick up the cube, carry it to the platform and set it down",
+  "tier": "any-robot",
+  "embodiment": "zoo_compact_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T08:54:02Z",
+  "source": {
+    "commit": "d313256eae",
+    "branch": "feat/g06-contact-transfer",
+    "dirty": false,
+    "how": "python any-robot/scripts/g06_transfer_campaign.py --out docs/results/g06-campaign --local any-robot/results/g06-campaign"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "RUNTIME FAILURE, typed object_not_lifted: the object never came off its support; sim 13.66 s"
+  },
+  "notes": "See docs/results/g06-report.md. Rendered from recorded physical states at real-time playback with the simulation clock and outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. Pilot 1: the first scored pass of the registered roster at f68ab68, before the turn phase; retained whole. Track: normalized.",
+  "media": [
+    {
+      "path": "docs/results/g06-campaign-pilot-1/zoo_compact_arm/normalized/media/episode.mp4",
+      "bytes": 99411,
+      "sha256": "615b780c0af6a2d8770f02cb8e4774c99db8622448e06a02776b9fc5e0e22c3b",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g06-campaign-pilot-1/zoo_compact_arm/normalized/media/preview.gif",
+      "bytes": 698070,
+      "sha256": "5d9d705604520c5388009f84a808fba227cb03c529a67a5a72d36dad8685be4c",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G06",
+    "transfer",
+    "pilot-1",
+    "normalized",
+    "failure"
+  ]
+}

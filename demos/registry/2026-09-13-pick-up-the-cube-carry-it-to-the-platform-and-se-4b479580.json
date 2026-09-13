@@ -1,0 +1,43 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-carry-it-to-the-platform-and-se-4b479580",
+  "title": "G06 transfer: zoo_compact_arm, strict fixed world, seed 0 (unreachable_path)",
+  "prompt": "pick up the cube, carry it to the platform and set it down",
+  "tier": "any-robot",
+  "embodiment": "zoo_compact_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T08:53:42Z",
+  "source": {
+    "commit": "d313256eae",
+    "branch": "feat/g06-contact-transfer",
+    "dirty": false,
+    "how": "python any-robot/scripts/g06_transfer_campaign.py --out docs/results/g06-campaign --local any-robot/results/g06-campaign"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "PRE-EXECUTION REFUSAL, typed unreachable_path; no motion executed. waypoint 1 is 0.0325 m from where it was asked to be, past a tolerance of 0.0040 m"
+  },
+  "notes": "See docs/results/g06-report.md. Rendered from recorded physical states at real-time playback with the simulation clock and outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. Registered perturbation seed 0: cube displaced (-11.4, -5.9) mm, mass x0.919, friction x1.018. The replayable bundle lives in the local results tree (sha256 9857cf10a57e).",
+  "media": [
+    {
+      "path": "docs/results/g06-campaign/zoo_compact_arm/fixed/seed-000/media/episode.mp4",
+      "bytes": 21415,
+      "sha256": "1efa74a2c6ef8da41356326a62ab342533c8ca05fabd35685cda0a0d50a70ee1",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g06-campaign/zoo_compact_arm/fixed/seed-000/media/preview.gif",
+      "bytes": 17448,
+      "sha256": "f5b050c498d7521e9add278b8909e1305f89b82bec6b9d2367505c6601b39a24",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G06",
+    "transfer",
+    "seeded",
+    "failure"
+  ]
+}

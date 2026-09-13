@@ -1,0 +1,43 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-carry-it-to-the-platform-and-se-b298d9a5",
+  "title": "G06 transfer: zoo_jaw_arm, strict fixed world, nominal cube",
+  "prompt": "pick up the cube, carry it to the platform and set it down",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T08:53:54Z",
+  "source": {
+    "commit": "d313256eae",
+    "branch": "feat/g06-contact-transfer",
+    "dirty": false,
+    "how": "python any-robot/scripts/g06_transfer_campaign.py --out docs/results/g06-campaign --local any-robot/results/g06-campaign"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: approach, opposition, lift, 2 s hold, carry, lower, release, retreat and 2 s released dwell all certified; sim 14.47 s"
+  },
+  "notes": "See docs/results/g06-report.md. Rendered from recorded physical states at real-time playback with the simulation clock and outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. Track: fixed-canonical; feasibility class feasible.",
+  "media": [
+    {
+      "path": "docs/results/g06-campaign/zoo_jaw_arm/fixed-canonical/media/episode.mp4",
+      "bytes": 115577,
+      "sha256": "6f3de319ca7303429e3b53a1c5b9a9ef3de38d345c760a4d361ac81660c0195e",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g06-campaign/zoo_jaw_arm/fixed-canonical/media/preview.gif",
+      "bytes": 885184,
+      "sha256": "2bae036ad813c796c6c43f5beaf0c7062b79644f0526540f2a9530cf617becc8",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G06",
+    "transfer",
+    "fixed-canonical",
+    "success"
+  ]
+}
