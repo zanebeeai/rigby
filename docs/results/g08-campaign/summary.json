@@ -1,0 +1,100 @@
+{
+  "feasible": {
+    "count": 100,
+    "per_body": {
+      "zoo_dual_arm": {
+        "failure_taxonomy": {},
+        "feasible": 34,
+        "successes": 34
+      },
+      "zoo_jaw_arm": {
+        "failure_taxonomy": {},
+        "feasible": 33,
+        "successes": 33
+      },
+      "zoo_long_arm": {
+        "failure_taxonomy": {},
+        "feasible": 33,
+        "successes": 33
+      }
+    },
+    "successes": 100
+  },
+  "finished_at_utc": "2026-09-13T10:49:14.271976+00:00",
+  "goal": "G08",
+  "injected": {
+    "count": 47,
+    "handled_correctly": 47,
+    "per_kind": {
+      "belief_stale": {
+        "count": 5,
+        "handled_correctly": 5,
+        "handling": {
+          "repaired_then_reverified": 5
+        }
+      },
+      "free_into_holding": {
+        "count": 6,
+        "handled_correctly": 6,
+        "handling": {
+          "rejected": 6
+        }
+      },
+      "holding_into_free": {
+        "count": 6,
+        "handled_correctly": 6,
+        "handling": {
+          "rejected": 6
+        }
+      },
+      "joint_beyond_limit": {
+        "count": 10,
+        "handled_correctly": 10,
+        "handling": {
+          "repaired_then_reverified": 10
+        }
+      },
+      "joint_inside_margin": {
+        "count": 7,
+        "handled_correctly": 7,
+        "handling": {
+          "repaired_then_reverified": 7
+        }
+      },
+      "resource_conflict": {
+        "count": 5,
+        "handled_correctly": 5,
+        "handling": {
+          "rejected": 5
+        }
+      },
+      "velocity_too_high": {
+        "count": 8,
+        "handled_correctly": 8,
+        "handling": {
+          "repaired_then_reverified": 8
+        }
+      }
+    }
+  },
+  "provenance": {
+    "commit": "cd3448b539ab22a522cf1712850a4a574c2deab2",
+    "corpus_sha256": "e53ee2ac1260f0d4d9691ce64d7eb525f7bab12a2acc0999adcb7b63466b6236",
+    "generation_calls": 0,
+    "mujoco": "3.11.0",
+    "numpy": "2.5.1",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.7 (tags/v3.12.7:0b05ead, Oct  1 2024, 03:06:41) [MSC v.1941 64 bit (AMD64)]",
+    "registration_sha256": "73259ea3d6e90c885722205492fde14e8bdd30427035e594ab96f22d1a47f7da",
+    "scored": true,
+    "started_at_utc": "2026-09-13T10:34:43.292737+00:00",
+    "working_tree_dirty": true
+  },
+  "registration_sha256": "73259ea3d6e90c885722205492fde14e8bdd30427035e594ab96f22d1a47f7da",
+  "transition_cost": {
+    "joint_travel_rad_mean": 2.8188102291508867,
+    "physics_s_max": 5.314000000000617,
+    "physics_s_mean": 1.9657419354837988,
+    "repaired_cases": 31
+  }
+}

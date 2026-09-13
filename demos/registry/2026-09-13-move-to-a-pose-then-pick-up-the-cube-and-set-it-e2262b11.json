@@ -1,0 +1,45 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-move-to-a-pose-then-pick-up-the-cube-and-set-it-e2262b11",
+  "title": "G08 pilot 1: zoo_long_arm-feasible-024 (feasible, composed_failure)",
+  "prompt": "move to a pose, then pick up the cube and set it on the platform, checking the boundary between",
+  "tier": "any-robot",
+  "embodiment": "zoo_long_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T10:51:36Z",
+  "source": {
+    "commit": "cd3448b539",
+    "branch": "feat/g08-transitions",
+    "dirty": true,
+    "how": "python any-robot/scripts/g08_transition_campaign.py --out docs/results/g08-campaign --local any-robot/results/g08-campaign"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "RUNTIME FAILURE: repairs none; second skill failed (grasp_not_achieved); gates ['joint_position_limit', 'joint_position_limit']."
+  },
+  "notes": "See docs/results/g08-report.md. One composition of two certified skills through the boundary check, one continuous physics record across the first skill, the transitions and the second, rendered at real-time playback with the simulation clock and the composition's outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. Pilot 1: the first scored pass on the corpus as first registered, retained whole. Case kind feasible; handling composed_failure.",
+  "media": [
+    {
+      "path": "docs/results/g08-campaign-pilot-1/feasible/zoo_long_arm-feasible-024/media/episode.mp4",
+      "bytes": 128906,
+      "sha256": "3d88f603b422bff5c0256a0b8e5caa1a78b61a3be5707c277bfd4f6168494644",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g08-campaign-pilot-1/feasible/zoo_long_arm-feasible-024/media/preview.gif",
+      "bytes": 848954,
+      "sha256": "99be15854666fcd23fbb932f454674b192ce8644132bc5a131e3263158e7d115",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G08",
+    "transition",
+    "feasible",
+    "feasible",
+    "pilot-1",
+    "failure"
+  ]
+}

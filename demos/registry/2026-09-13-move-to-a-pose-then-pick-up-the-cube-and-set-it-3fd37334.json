@@ -1,0 +1,45 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-move-to-a-pose-then-pick-up-the-cube-and-set-it-3fd37334",
+  "title": "G08 pilot 1: zoo_long_arm-joint_beyond_limit-02 (joint_beyond_limit, repaired_then_reverified)",
+  "prompt": "move to a pose, then pick up the cube and set it on the platform, checking the boundary between",
+  "tier": "any-robot",
+  "embodiment": "zoo_long_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T10:51:40Z",
+  "source": {
+    "commit": "cd3448b539",
+    "branch": "feat/g08-transitions",
+    "dirty": true,
+    "how": "python any-robot/scripts/g08_transition_campaign.py --out docs/results/g08-campaign --local any-robot/results/g08-campaign"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "RUNTIME FAILURE: repairs joint_move; second skill failed (unreachable_path); gates ['joint_position_limit']."
+  },
+  "notes": "See docs/results/g08-report.md. One composition of two certified skills through the boundary check, one continuous physics record across the first skill, the transitions and the second, rendered at real-time playback with the simulation clock and the composition's outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. Pilot 1: the first scored pass on the corpus as first registered, retained whole. Case kind joint_beyond_limit; handling repaired_then_reverified:joint_move.",
+  "media": [
+    {
+      "path": "docs/results/g08-campaign-pilot-1/injected/zoo_long_arm-joint_beyond_limit-02/media/episode.mp4",
+      "bytes": 70787,
+      "sha256": "251a349bcd3f726fedca18bef32b0ebb759557f26e303cb0e263285c21a12ff3",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g08-campaign-pilot-1/injected/zoo_long_arm-joint_beyond_limit-02/media/preview.gif",
+      "bytes": 1163604,
+      "sha256": "d42ba47e9be7eaa4009a0980998ed661dfd12f4196226b9bbdc697a8dadb5e77",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G08",
+    "transition",
+    "injected",
+    "joint_beyond_limit",
+    "pilot-1",
+    "failure"
+  ]
+}

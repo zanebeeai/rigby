@@ -1,0 +1,45 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-move-to-a-pose-then-pick-up-the-cube-and-set-it-23098f56",
+  "title": "G08 scored: zoo_jaw_arm-velocity_too_high-04 (velocity_too_high, repaired_then_reverified)",
+  "prompt": "move to a pose, then pick up the cube and set it on the platform, checking the boundary between",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T10:51:04Z",
+  "source": {
+    "commit": "cd3448b539",
+    "branch": "feat/g08-transitions",
+    "dirty": true,
+    "how": "python any-robot/scripts/g08_transition_campaign.py --out docs/results/g08-campaign --local any-robot/results/g08-campaign"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: joint_move then transfer; boundary repaired (settle) and verified again; both skills certified, no joint gate fired."
+  },
+  "notes": "See docs/results/g08-report.md. One composition of two certified skills through the boundary check, one continuous physics record across the first skill, the transitions and the second, rendered at real-time playback with the simulation clock and the composition's outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. Case kind velocity_too_high; handling repaired_then_reverified:settle.",
+  "media": [
+    {
+      "path": "docs/results/g08-campaign/injected/zoo_jaw_arm-velocity_too_high-04/media/episode.mp4",
+      "bytes": 115387,
+      "sha256": "4cd410018bf81bc5664f62ea4065bedd9a9491ec6039918b64303f36831466eb",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g08-campaign/injected/zoo_jaw_arm-velocity_too_high-04/media/preview.gif",
+      "bytes": 903549,
+      "sha256": "c8170dab5c31ee0e1c58ce925fc75c6b50303f960259d37766f71ad7769b19b7",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G08",
+    "transition",
+    "injected",
+    "velocity_too_high",
+    "scored",
+    "success"
+  ]
+}

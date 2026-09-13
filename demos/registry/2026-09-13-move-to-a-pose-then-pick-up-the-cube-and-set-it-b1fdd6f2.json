@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-move-to-a-pose-then-pick-up-the-cube-and-set-it-b1fdd6f2",
+  "title": "D08: zoo_jaw_arm, contact-mode-change AFTER",
+  "prompt": "move to a pose, then pick up the cube and set it on the platform, checking the boundary between",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T10:52:11Z",
+  "source": {
+    "commit": "cd3448b539",
+    "branch": "feat/g08-transitions",
+    "dirty": true,
+    "how": "python any-robot/scripts/g08_d08_media.py --out docs/results/g08-d08"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "REJECTED: the after side of the contact-mode-change pair."
+  },
+  "notes": "See docs/results/g08-report.md. One composition of two certified skills through the boundary check, one continuous physics record across the first skill, the transitions and the second, rendered at real-time playback with the simulation clock and the composition's outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. The after side of the contact-mode-change pair.",
+  "media": [
+    {
+      "path": "docs/results/g08-d08/contact-mode-change/after/media/episode.mp4",
+      "bytes": 96260,
+      "sha256": "3835d106ef053299d4b1195e80f2d78cbaac0efb4f89c068bb399cb7dc9f0953",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g08-d08/contact-mode-change/after/media/preview.gif",
+      "bytes": 1028998,
+      "sha256": "d7f6c217bf0a56930e0d96f8e5596ee051f06e1c8158f24d04afd641dd007cab",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G08",
+    "D08",
+    "before-after",
+    "contact-mode-change",
+    "after"
+  ]
+}

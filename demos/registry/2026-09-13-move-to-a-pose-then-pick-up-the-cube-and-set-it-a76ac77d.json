@@ -1,0 +1,45 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-move-to-a-pose-then-pick-up-the-cube-and-set-it-a76ac77d",
+  "title": "G08 pilot 1: zoo_jaw_arm-velocity_too_high-01 (velocity_too_high, repaired_then_reverified)",
+  "prompt": "move to a pose, then pick up the cube and set it on the platform, checking the boundary between",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T10:51:49Z",
+  "source": {
+    "commit": "cd3448b539",
+    "branch": "feat/g08-transitions",
+    "dirty": true,
+    "how": "python any-robot/scripts/g08_transition_campaign.py --out docs/results/g08-campaign --local any-robot/results/g08-campaign"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "RUNTIME FAILURE: repairs settle; second skill failed (unreachable_path); gates none."
+  },
+  "notes": "See docs/results/g08-report.md. One composition of two certified skills through the boundary check, one continuous physics record across the first skill, the transitions and the second, rendered at real-time playback with the simulation clock and the composition's outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. Pilot 1: the first scored pass on the corpus as first registered, retained whole. Case kind velocity_too_high; handling repaired_then_reverified:settle.",
+  "media": [
+    {
+      "path": "docs/results/g08-campaign-pilot-1/injected/zoo_jaw_arm-velocity_too_high-01/media/episode.mp4",
+      "bytes": 21769,
+      "sha256": "60a79f2ba4e026220f343de79a00db67472447c481255accbeac600927de2967",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g08-campaign-pilot-1/injected/zoo_jaw_arm-velocity_too_high-01/media/preview.gif",
+      "bytes": 138347,
+      "sha256": "861457a66fac5cb16434a3d92ea9c759a9b9830a11c5a6d3c95099abbc5ea1f7",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G08",
+    "transition",
+    "injected",
+    "velocity_too_high",
+    "pilot-1",
+    "failure"
+  ]
+}

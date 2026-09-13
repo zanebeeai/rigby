@@ -49,3 +49,16 @@ __all__ = [
     "SkillDefinitionV1", "SkillExecutionError", "SkillLibraryV1", "TaskNodeV1", "TaskTreeV1", "TerminationRuleV1",
     "ValidityContextV1", "Verdict", "execute", "parse_argument", "substitute",
 ]
+from .boundary import (  # noqa: E402
+    BoundaryStateV1,
+    BoundaryVerdictV1,
+    BoundaryViolationV1,
+    ContactMode,
+    InitiationSetV1,
+    JointStateV1,
+    Repair,
+    TransitionCostV1,
+    check_boundary,
+)
+
+__all__ += ["BoundaryStateV1", "BoundaryVerdictV1", "BoundaryViolationV1", "ContactMode", "InitiationSetV1", "JointStateV1", "Repair", "TransitionCostV1", "check_boundary"]

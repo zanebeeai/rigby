@@ -1,0 +1,45 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-move-to-a-pose-then-pick-up-the-cube-and-set-it-9218795f",
+  "title": "G08 pilot 1: zoo_jaw_arm-joint_inside_margin-01 (joint_inside_margin, repaired_then_reverified)",
+  "prompt": "move to a pose, then pick up the cube and set it on the platform, checking the boundary between",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T10:51:45Z",
+  "source": {
+    "commit": "cd3448b539",
+    "branch": "feat/g08-transitions",
+    "dirty": true,
+    "how": "python any-robot/scripts/g08_transition_campaign.py --out docs/results/g08-campaign --local any-robot/results/g08-campaign"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: joint_move then transfer; boundary repaired (joint_move) and verified again; both skills certified, no joint gate fired."
+  },
+  "notes": "See docs/results/g08-report.md. One composition of two certified skills through the boundary check, one continuous physics record across the first skill, the transitions and the second, rendered at real-time playback with the simulation clock and the composition's outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. Pilot 1: the first scored pass on the corpus as first registered, retained whole. Case kind joint_inside_margin; handling repaired_then_reverified:joint_move.",
+  "media": [
+    {
+      "path": "docs/results/g08-campaign-pilot-1/injected/zoo_jaw_arm-joint_inside_margin-01/media/episode.mp4",
+      "bytes": 152956,
+      "sha256": "b62dc118b95743cc8d668e346bde814f645320014f61c5b77f416e2ee25ddc59",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g08-campaign-pilot-1/injected/zoo_jaw_arm-joint_inside_margin-01/media/preview.gif",
+      "bytes": 1051696,
+      "sha256": "2fc77f9fa3f0ce7d1df8f6b056e167ceacf4bcd29250309cab33b52485b08c2c",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G08",
+    "transition",
+    "injected",
+    "joint_inside_margin",
+    "pilot-1",
+    "success"
+  ]
+}

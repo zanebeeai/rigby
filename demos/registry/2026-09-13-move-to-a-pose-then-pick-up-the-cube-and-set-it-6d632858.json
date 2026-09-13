@@ -1,0 +1,45 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-move-to-a-pose-then-pick-up-the-cube-and-set-it-6d632858",
+  "title": "G08 scored: zoo_dual_arm-joint_inside_margin-00 (joint_inside_margin, repaired_then_reverified)",
+  "prompt": "move to a pose, then pick up the cube and set it on the platform, checking the boundary between",
+  "tier": "any-robot",
+  "embodiment": "zoo_dual_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T10:50:59Z",
+  "source": {
+    "commit": "cd3448b539",
+    "branch": "feat/g08-transitions",
+    "dirty": true,
+    "how": "python any-robot/scripts/g08_transition_campaign.py --out docs/results/g08-campaign --local any-robot/results/g08-campaign"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: joint_move then transfer; boundary repaired (joint_move, joint_move) and verified again; both skills certified, no joint gate fired."
+  },
+  "notes": "See docs/results/g08-report.md. One composition of two certified skills through the boundary check, one continuous physics record across the first skill, the transitions and the second, rendered at real-time playback with the simulation clock and the composition's outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. Case kind joint_inside_margin; handling repaired_then_reverified:joint_move,joint_move.",
+  "media": [
+    {
+      "path": "docs/results/g08-campaign/injected/zoo_dual_arm-joint_inside_margin-00/media/episode.mp4",
+      "bytes": 133202,
+      "sha256": "11d7a9f7d1406473f3c36fe1d984800b5e611f54e3028322346800d477b810b8",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g08-campaign/injected/zoo_dual_arm-joint_inside_margin-00/media/preview.gif",
+      "bytes": 874313,
+      "sha256": "e1d6ac2af2e404fb355ac065a48fae9d0ad98be247eeade9f8fba4697775daf2",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G08",
+    "transition",
+    "injected",
+    "joint_inside_margin",
+    "scored",
+    "success"
+  ]
+}

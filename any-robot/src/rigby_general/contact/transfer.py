@@ -25,7 +25,7 @@ import mujoco
 import numpy as np
 
 from rigby_core.simulation.controller import ControlTarget
-from rigby_core.simulation.recording import PhysicsRecorder
+from rigby_core.simulation.recording import STATE_SPEC, PhysicsRecorder
 
 from ..contracts import EffectorV1, RobotAssetManifestV1, SiteSemantic
 from ..gates.control import ComputedTorqueController, ControllerConfig
@@ -69,6 +69,13 @@ LIFT_REQUIRED_FRACTION = 0.8
 """Of the object's height: the least a lift has to raise it to count."""
 HOLD_DROP_FRACTION = 0.5
 """Of the required lift: how far the object may sag during the hold."""
+FACING_TOLERANCE_RAD = np.radians(15.0)
+"""How far from the requested facing the planned hand may be at the end of
+the turn and at the grasp. From the rest pose every body arrives within ten
+degrees; from a folded posture the solver can leave the hand forty-five
+degrees over, and a hand that descends tilted closes its fingers beside
+the object. That is refused before motion, typed, so a composition can
+insert a transition instead of executing a grasp that cannot close."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -113,6 +120,12 @@ class TransferStart:
     qpos: np.ndarray
     qvel: np.ndarray
     time_s: float
+    state: np.ndarray | None = None
+    """The full integration state (positions, velocities, actuator state,
+    solver warm start, clock) the previous leaf recorded last. Restoring it
+    exactly is what lets the recorded controls replay across the boundary:
+    a fresh solver warm start would integrate to a slightly different
+    state than the record shows."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -147,6 +160,7 @@ class TransferResult:
     are recorded and the object was never written."""
     final_qvel: np.ndarray = field(repr=False, default_factory=lambda: np.zeros(0))
     final_time_s: float = 0.0
+    final_state: np.ndarray | None = field(repr=False, default=None)
 
     @property
     def failed_gate(self) -> str | None:
@@ -161,7 +175,8 @@ class TransferResult:
 
         if not self.executed:
             return None
-        return TransferStart(qpos=np.array(self.qpos[-1], dtype=float), qvel=np.array(self.final_qvel, dtype=float), time_s=self.final_time_s)
+        return TransferStart(qpos=np.array(self.qpos[-1], dtype=float), qvel=np.array(self.final_qvel, dtype=float), time_s=self.final_time_s,
+                             state=None if self.final_state is None else np.array(self.final_state, dtype=float))
 
 
 def transfer_scene_from_environment(
@@ -217,8 +232,15 @@ def collision_policy(model: mujoco.MjModel, object_body: str = "scene_block") ->
     }
 
 
-def _path(scene: TransferScene, frame: WorkspaceFrame, home: np.ndarray, offset_m: float = 0.0, standoff_m: float = 0.0) -> tuple[list[np.ndarray], dict[str, tuple[int, int]]]:
+def _path(scene: TransferScene, frame: WorkspaceFrame, home: np.ndarray, offset_m: float = 0.0, standoff_m: float = 0.0,
+          phase_range: tuple[str, str] = (PHASES[0], PHASES[-1])) -> tuple[list[np.ndarray], dict[str, tuple[int, int]]]:
     """Waypoints, and which consecutive pair each moving phase travels.
+
+    ``phase_range`` names the first and last phase that will run. The
+    waypoint list begins at ``home`` -- where the grasp point is now -- and
+    continues from the end of the first moving phase in the range, so a
+    transfer that resumes mid-sequence (a place skill after a carry) solves
+    only the spans it will travel, from where the arm actually is.
 
     The reach envelope was measured for the grasp centre; the point being
     driven is the grasp point, ``offset_m`` further along a hand that points
@@ -256,7 +278,16 @@ def _path(scene: TransferScene, frame: WorkspaceFrame, home: np.ndarray, offset_
     # millimetres off the nominal spot and knocked it away.
     points = [home, above_source, above_source.copy(), at_source, lifted, above_destination, at_destination, retreat]
     spans = {"approach": (0, 1), "turn": (1, 2), "descend": (2, 3), "lift": (3, 4), "carry": (4, 5), "lower": (5, 6), "retreat": (6, 7)}
-    return points, spans
+    first, last = phase_range
+    if first == PHASES[0]:
+        return points, spans
+    moving = [name for name in PHASES[PHASES.index(first): PHASES.index(last) + 1] if name in spans]
+    if not moving:
+        return [home], {}
+    start_index = spans[moving[0]][0]
+    trimmed = [home] + points[start_index + 1:]
+    shift = start_index
+    return trimmed, {name: (a - shift, b - shift) for name, (a, b) in spans.items() if name in moving}
 
 
 def restart_seeds(model, frame: WorkspaceFrame, joints: tuple[str, ...], rest: np.ndarray, target: np.ndarray) -> list[tuple[str, np.ndarray]]:
@@ -390,8 +421,15 @@ def attempt_transfer(
     per_span: int = 6,
     resume: TransferStart | None = None,
     should_stop: Callable[[float], bool] | None = None,
+    phase_range: tuple[str, str] = (PHASES[0], PHASES[-1]),
 ) -> TransferResult:
     """Run one transfer and gate every phase of it.
+
+    ``phase_range`` runs a contiguous part of the sequence -- approach
+    through carry as an acquisition that ends holding the object, lower
+    through dwell as a placement that begins holding it -- and gates only
+    what those phases can establish: a placement is not asked whether it
+    lifted, an acquisition is not asked whether it released.
 
     With ``resume`` the transfer continues the world another leaf left: the
     arm begins where it is, the object where it lies, the clock where it
@@ -431,15 +469,30 @@ def attempt_transfer(
     facing = _hand_facing(manifest, effector)
     offset = _grasp_offset_m(manifest, effector)
     standoff = grasp_standoff_m(model, manifest, effector, solve_site, grasp.block_half_extent_m)
-    points, spans = _path(scene, frame, home, offset, standoff)
+    first_phase, last_phase = phase_range
+    if first_phase not in PHASES or last_phase not in PHASES or PHASES.index(first_phase) > PHASES.index(last_phase):
+        raise ValueError(f"phase range {phase_range} is not a contiguous part of {PHASES}")
+    order = list(PHASES[PHASES.index(first_phase): PHASES.index(last_phase) + 1])
+    points, spans = _path(scene, frame, home, offset, standoff, phase_range=phase_range)
     downward = (facing, -np.asarray(frame.up, dtype=float)) if facing is not None else None
 
-    seeds = restart_seeds(model, frame, arm_joints, rest, points[spans["descend"][1]])
+    seed_target = points[spans["descend"][1]] if "descend" in spans else points[-1]
+    # Restart seeds are configurations the arm may be placed in before the
+    # first recorded state; a transfer that continues a world another skill
+    # left must solve from where the arm actually stands, since a path whose
+    # first row is another solution of the same point would ask the
+    # controller to jump to it.
+    seeds = restart_seeds(model, frame, arm_joints, rest, seed_target) if (first_phase == PHASES[0] and resume is None) else [("rest", np.array(rest, dtype=float))]
+    facing_from_span = 1 if "turn" in spans else 0
     try:
-        path, marks, seed_used = _joint_path(model, solve_site, arm_joints, points, seeds, guard, per_span, facing=downward)
+        path, marks, seed_used = _joint_path(model, solve_site, arm_joints, points, seeds, guard, per_span, facing=downward, facing_from_span=facing_from_span)
     except ik.IkFailure as error:
         code = "self_collision_path" if error.collision is not None else "unreachable_path"
         return _refused(violations, TransferViolation(code, str(error)[:300], float(error.residual_m), 0.0), policy)
+    if downward is not None and "descend" in spans:
+        worst = max(facing_angle(model, solve_site, path[marks[index]], downward[0], downward[1]) for index in spans["descend"])
+        if worst > FACING_TOLERANCE_RAD:
+            return _refused(violations, TransferViolation("facing_unmet", f"the planned hand is {np.degrees(worst):.1f} degrees from the requested facing at the hover or the grasp", float(worst), float(FACING_TOLERANCE_RAD)), policy)
 
     controller = ComputedTorqueController(model, ControllerConfig())
     closure = ClosureController(model, manifest, effector, object_geoms=frozenset({"scene_block_geom"}))
@@ -476,21 +529,31 @@ def attempt_transfer(
     # starts counting a step after the object first qualifies, and a phase
     # exactly as long as the requirement ends two milliseconds short of it.
     durations.update({"close": CLOSE_TIMEOUT_S, "hold": MIN_PHASE_S["hold"], "release": MIN_PHASE_S["release"], "dwell": scene.goal.dwell_s + DWELL_MARGIN_S})
+    durations = {name: durations[name] for name in order}
 
     data = mujoco.MjData(model)
-    data.qpos[:] = rest
-    data.qpos[arm_adr] = path[0][arm_adr]
-    mujoco.mj_forward(model, data)
     dt = float(model.opt.timestep)
     if resume is None:
+        data.qpos[:] = rest
+        data.qpos[arm_adr] = path[0][arm_adr]
+        mujoco.mj_forward(model, data)
         for _ in range(int(round(SETTLE_S / dt))):
             data.ctrl[:] = 0.0
             mujoco.mj_step(model, data)
         data.qvel[:] = 0.0
+        mujoco.mj_forward(model, data)
+    elif resume.state is not None:
+        # The arm is where it is; the controller tracks the path from there.
+        # The forward pass fills in positions and contacts but replaces the
+        # solver warm start, which is then restored from the record.
+        mujoco.mj_setState(model, data, np.asarray(resume.state, dtype=float), STATE_SPEC)
+        mujoco.mj_forward(model, data)
+        mujoco.mj_setState(model, data, np.asarray(resume.state, dtype=float), STATE_SPEC)
     else:
+        data.qpos[:] = rest
         data.qvel[:] = np.asarray(resume.qvel, dtype=float)
         data.time = float(resume.time_s)
-    mujoco.mj_forward(model, data)
+        mujoco.mj_forward(model, data)
     start_position = np.array(data.qpos[block_adr: block_adr + 3], dtype=float)
     start_height = float(start_position[2])
     nudge_limit = 0.25 * grasp.block_half_extent_m
@@ -512,7 +575,6 @@ def attempt_transfer(
     hold_supported_s = 0.0
     lift_height = 0.0
     target = mujoco.MjData(model)
-    order = list(PHASES)
     phase_index = 0
     phase_start = float(data.time)
     frozen_arm = path[0][arm_adr].copy()
@@ -667,25 +729,31 @@ def attempt_transfer(
         data.ctrl[:] = command
         mujoco.mj_step(model, data)
 
+    final_state = np.empty(mujoco.mj_stateSize(model, STATE_SPEC), dtype=np.float64)
+    mujoco.mj_getState(model, data, final_state, STATE_SPEC)
     final = evaluator.last
     lift = peak_height - start_height
+    ran = set(order)
     if interrupted:
         violations.append(TransferViolation("interrupted", f"stopped from outside during {phases[-1].name} at {phases[-1].end_s:.3f} s", float(phases[-1].end_s), 0.0))
-    if not opposition:
+    if not opposition and ("close" in ran or "lower" in ran):
         violations.append(TransferViolation("grasp_not_achieved", "opposing members never both made contact with the object", 0.0, 1.0))
-    if lift < required_lift:
+    if "lift" in ran and lift < required_lift:
         violations.append(TransferViolation("object_not_lifted", "the object never came off its support", lift, required_lift))
-    if hold_supported_s + 1e-9 < MIN_PHASE_S["hold"]:
+    if "hold" in ran and hold_supported_s + 1e-9 < MIN_PHASE_S["hold"]:
         violations.append(TransferViolation("hold_not_sustained", "the object was not held continuously through the hold", hold_supported_s, MIN_PHASE_S["hold"]))
     carry_limit = CARRY_OFFSET_FRACTION * (effector.max_aperture_m or 0.05)
     if opposition and max_carry_offset > carry_limit:
         violations.append(TransferViolation("object_not_carried", "the object left the gripper instead of being carried", max_carry_offset, carry_limit))
-    if final is None or not final.whole_geometry_inside:
-        violations.append(TransferViolation("not_transported", "the object did not end inside the destination region", 0.0, 1.0))
-    if final is not None and not final.released:
-        violations.append(TransferViolation("not_released", "the robot was still touching the object at the end", final.maximum_robot_normal_force_n, 0.0))
-    if not evaluator.success:
-        violations.append(TransferViolation("placement_unstable", "the object did not rest inside the region, released and still, for the dwell", evaluator.dwell_s, scene.goal.dwell_s))
+    if "dwell" in ran:
+        if final is None or not final.whole_geometry_inside:
+            violations.append(TransferViolation("not_transported", "the object did not end inside the destination region", 0.0, 1.0))
+        if final is not None and not final.released:
+            violations.append(TransferViolation("not_released", "the robot was still touching the object at the end", final.maximum_robot_normal_force_n, 0.0))
+        if not evaluator.success:
+            violations.append(TransferViolation("placement_unstable", "the object did not rest inside the region, released and still, for the dwell", evaluator.dwell_s, scene.goal.dwell_s))
+    elif "carry" in ran and last_phase == "carry" and not (opposition and closure.state is GripState.HOLDING):
+        violations.append(TransferViolation("hold_not_sustained", "the acquisition ended without the object held in opposition", 0.0, 1.0))
     if peak_penetration > closure.config.max_penetration_m:
         violations.append(TransferViolation("excessive_penetration", "the members were inside the object rather than around it", peak_penetration, closure.config.max_penetration_m))
     if unexpected:
@@ -701,8 +769,19 @@ def attempt_transfer(
         unexpected_contacts=tuple(sorted(unexpected)), robot_fixture_contacts=tuple(sorted(fixture_contacts)),
         collision_policy=policy, path_seed=seed_used, times_s=np.asarray(times), qpos=np.asarray(qpos_log), ctrl=np.asarray(ctrl_log),
         demand=np.asarray(demand_log), object_position_m=np.asarray(object_log), grip_force_n=np.asarray(force_log),
-        interrupted=interrupted, final_qvel=np.array(data.qvel, dtype=float), final_time_s=float(data.time),
+        interrupted=interrupted, final_qvel=np.array(data.qvel, dtype=float), final_time_s=float(data.time), final_state=final_state,
     )
+
+
+def facing_angle(model, site: str, qpos: np.ndarray, local_axis: np.ndarray, world_axis: np.ndarray) -> float:
+    """Radians between the site's local axis at ``qpos`` and the world axis."""
+
+    data = mujoco.MjData(model)
+    data.qpos[:] = qpos
+    mujoco.mj_kinematics(model, data)
+    rotation = np.array(data.site_xmat[mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_SITE, site)], dtype=float).reshape(3, 3)
+    pointed = rotation @ np.asarray(local_axis, dtype=float)
+    return float(np.arccos(np.clip(pointed @ np.asarray(world_axis, dtype=float) / max(np.linalg.norm(pointed) * np.linalg.norm(world_axis), 1e-12), -1.0, 1.0)))
 
 
 def _extent_along(model, data, bodies: tuple[str, ...], origin: np.ndarray, direction: np.ndarray) -> float:

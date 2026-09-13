@@ -1,0 +1,4136 @@
+{
+  "bodies": [
+    "zoo_dual_arm",
+    "zoo_jaw_arm",
+    "zoo_long_arm"
+  ],
+  "created_at_utc": "2026-09-13T10:31:04.892297+00:00",
+  "draw": {
+    "feasible_band_fraction": 0.2,
+    "generator": "numpy.random.default_rng(seed), one stream, bodies in the order listed, feasible then injected",
+    "guard_samples_along_straight_path": 24,
+    "seed": 20260914,
+    "witness": "the straight joint path from rest clear of the body and of the world; the transfer's guarded path from the pose alone solved, inside every joint range, the hand within the facing tolerance at the hover and the grasp, and clear of the world up to the hover",
+    "world_clearance_m": 0.001
+  },
+  "environment_id": "g06_transfer_v1",
+  "feasible_cases": [
+    {
+      "case_id": "zoo_dual_arm-feasible-000",
+      "draw": 3,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 0.8084874832531459,
+          "left_joint_1": -0.07615978646567867,
+          "left_joint_2": 1.6539521488525106,
+          "left_joint_3": 0.6520711078360844,
+          "left_joint_4": 0.5135954673339267
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-001",
+      "draw": 4,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 0.2808898529549433,
+          "left_joint_1": 0.06610947811098611,
+          "left_joint_2": 0.8833829645926108,
+          "left_joint_3": 0.39816580448833827,
+          "left_joint_4": 0.12573033795983513
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-002",
+      "draw": 5,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 0.520011879249227,
+          "left_joint_1": 0.8660003202909112,
+          "left_joint_2": 1.6463975966506976,
+          "left_joint_3": 1.074032284671636,
+          "left_joint_4": 1.4036138254293493
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-003",
+      "draw": 7,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 1.0823718088888787,
+          "left_joint_1": -0.7616669540690073,
+          "left_joint_2": -0.6592564837143602,
+          "left_joint_3": -0.09851726656354454,
+          "left_joint_4": -0.7459910397675139
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-004",
+      "draw": 8,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 0.0044355669529696495,
+          "left_joint_1": -0.20929641367820517,
+          "left_joint_2": -0.19985429579067948,
+          "left_joint_3": 1.6770177479308743,
+          "left_joint_4": -1.620801064802195
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-005",
+      "draw": 10,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 1.415590327709015,
+          "left_joint_1": -1.2408778016783149,
+          "left_joint_2": -0.26342927893907686,
+          "left_joint_3": -0.07953625834879019,
+          "left_joint_4": -0.16170247608471322
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-006",
+      "draw": 11,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 1.666554913591658,
+          "left_joint_1": 0.7182808561412526,
+          "left_joint_2": 1.0370303153528608,
+          "left_joint_3": -0.19626065736605014,
+          "left_joint_4": -0.5411514366123344
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-007",
+      "draw": 14,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": -0.15266012459390388,
+          "left_joint_1": 1.1275519745794145,
+          "left_joint_2": 0.8220912320388449,
+          "left_joint_3": 0.3242107320040346,
+          "left_joint_4": -1.4234787297080234
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-008",
+      "draw": 15,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 1.5427109117475282,
+          "left_joint_1": -0.23816949471450433,
+          "left_joint_2": -0.8611882345405896,
+          "left_joint_3": -1.4562423220042398,
+          "left_joint_4": -0.4486282437545075
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-009",
+      "draw": 19,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 1.23727409984906,
+          "left_joint_1": 0.8977495670765907,
+          "left_joint_2": 0.4686259389305749,
+          "left_joint_3": -0.7899402418184386,
+          "left_joint_4": 0.20404319249763248
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-010",
+      "draw": 20,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": -0.12125276294110332,
+          "left_joint_1": 0.7107742468469445,
+          "left_joint_2": 0.3927476783597985,
+          "left_joint_3": 1.0502893302282037,
+          "left_joint_4": 1.460494829526112
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-011",
+      "draw": 21,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 0.21971859068428112,
+          "left_joint_1": 0.07043976065007573,
+          "left_joint_2": -1.2325804317471731,
+          "left_joint_3": 0.08462629322822068,
+          "left_joint_4": -0.01163297356036841
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-012",
+      "draw": 22,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 0.1425091462130792,
+          "left_joint_1": -1.6368023002696896,
+          "left_joint_2": -0.8799928351819201,
+          "left_joint_3": 0.4683407877929362,
+          "left_joint_4": -0.5443117323148967
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-013",
+      "draw": 25,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 0.7000323309420233,
+          "left_joint_1": 0.980979933214714,
+          "left_joint_2": -1.38724555668055,
+          "left_joint_3": 1.1005276340129901,
+          "left_joint_4": 1.476067754463262
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-014",
+      "draw": 28,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 0.9989469775255406,
+          "left_joint_1": 0.9950918975770326,
+          "left_joint_2": 1.372267207949069,
+          "left_joint_3": -0.1055034889392259,
+          "left_joint_4": 1.0730503065015937
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-015",
+      "draw": 32,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 1.4026047199870413,
+          "left_joint_1": 0.7046749220735569,
+          "left_joint_2": 1.4600505385679603,
+          "left_joint_3": 0.21345181963788318,
+          "left_joint_4": -0.38855919762235747
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-016",
+      "draw": 34,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": -1.01384993426345,
+          "left_joint_1": 0.8030202200838423,
+          "left_joint_2": -0.6064087065014434,
+          "left_joint_3": -1.059278380158107,
+          "left_joint_4": -1.3353337533279293
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-017",
+      "draw": 35,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": -0.8542032761873408,
+          "left_joint_1": -0.0029156069088629444,
+          "left_joint_2": -1.5540773355517872,
+          "left_joint_3": -1.2483672209985608,
+          "left_joint_4": -1.6872328053667065
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-018",
+      "draw": 36,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 0.18435059139148868,
+          "left_joint_1": 0.0915580118702648,
+          "left_joint_2": 0.552396049230258,
+          "left_joint_3": 1.4378592597241875,
+          "left_joint_4": 1.6286749189626164
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-019",
+      "draw": 39,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 1.6356855811620252,
+          "left_joint_1": -0.32844952060617727,
+          "left_joint_2": 0.7462572263555578,
+          "left_joint_3": 0.8198806974872519,
+          "left_joint_4": 1.3832748433161934
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-020",
+      "draw": 41,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 0.8609490490470679,
+          "left_joint_1": 1.3835499232018948,
+          "left_joint_2": 0.6083975221008506,
+          "left_joint_3": 1.4489157402841633,
+          "left_joint_4": 0.7247425167273822
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-021",
+      "draw": 42,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": -0.2788822234974926,
+          "left_joint_1": -1.6954643305771118,
+          "left_joint_2": 0.3734819289970983,
+          "left_joint_3": -0.19798820779934978,
+          "left_joint_4": -1.4912779035468604
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-022",
+      "draw": 44,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 0.6234509316298649,
+          "left_joint_1": 1.4317211281867546,
+          "left_joint_2": -0.17747488700135894,
+          "left_joint_3": 0.05714940710196892,
+          "left_joint_4": 0.18895289528765846
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-023",
+      "draw": 46,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 0.48167068137387403,
+          "left_joint_1": 0.3988054739747988,
+          "left_joint_2": 0.4910926437608989,
+          "left_joint_3": -0.19498323664200057,
+          "left_joint_4": -0.823398562786512
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-024",
+      "draw": 47,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 1.5122245430078807,
+          "left_joint_1": -0.5096199731637039,
+          "left_joint_2": -0.8396965349845876,
+          "left_joint_3": -0.5487729195461974,
+          "left_joint_4": -1.5842132823554023
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-025",
+      "draw": 51,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": -0.1595733446966381,
+          "left_joint_1": 0.9595576494756473,
+          "left_joint_2": -0.4531974929200766,
+          "left_joint_3": 1.4102482854861518,
+          "left_joint_4": 0.9467441451054359
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-026",
+      "draw": 56,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": -1.3464087648078775,
+          "left_joint_1": -0.25350380554437923,
+          "left_joint_2": -0.7243507978956699,
+          "left_joint_3": -0.9828472531133121,
+          "left_joint_4": -0.730188540593801
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-027",
+      "draw": 59,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 0.41033275895775345,
+          "left_joint_1": -1.1745735989556894,
+          "left_joint_2": -1.0306575558457092,
+          "left_joint_3": 0.0579009224247804,
+          "left_joint_4": -1.4682081369295932
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-028",
+      "draw": 61,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 0.17188613230646776,
+          "left_joint_1": -1.0732129795794227,
+          "left_joint_2": -0.7085627731934907,
+          "left_joint_3": 0.20722228243513663,
+          "left_joint_4": -0.8663638095459882
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-029",
+      "draw": 62,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 1.3606903320511696,
+          "left_joint_1": 0.03515959544182423,
+          "left_joint_2": 0.6023039290829333,
+          "left_joint_3": 0.8933229246262884,
+          "left_joint_4": 0.12603868804400964
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-030",
+      "draw": 67,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": -0.7521451957899478,
+          "left_joint_1": 0.06877528212229933,
+          "left_joint_2": 0.08265887573423036,
+          "left_joint_3": -1.6923569585711122,
+          "left_joint_4": -0.015011772897235653
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-031",
+      "draw": 68,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 0.9218863949377276,
+          "left_joint_1": -0.8742667835561807,
+          "left_joint_2": -1.5037164587571101,
+          "left_joint_3": 0.19317579891948533,
+          "left_joint_4": -0.1367021732790532
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-032",
+      "draw": 70,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": -1.2585075849234397,
+          "left_joint_1": 0.5579390495118739,
+          "left_joint_2": -0.682917063259185,
+          "left_joint_3": -1.159170226432951,
+          "left_joint_4": 0.34173960475798193
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-feasible-033",
+      "draw": 74,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": -0.3700877729935177,
+          "left_joint_1": -1.1025054826778669,
+          "left_joint_2": -1.5684239910488986,
+          "left_joint_3": -0.5601552444565201,
+          "left_joint_4": 0.3405613971735204
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-000",
+      "draw": 1,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -1.037468365210223,
+          "joint_1": -1.41726291560519,
+          "joint_2": 1.0130278912654678,
+          "joint_3": -1.576502036804177,
+          "joint_4": -1.028950129573052,
+          "joint_5": -0.5276570681088959
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-001",
+      "draw": 3,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 0.4659817932669532,
+          "joint_1": -1.3306949074259937,
+          "joint_2": 0.5751452824412242,
+          "joint_3": -0.673140963363049,
+          "joint_4": -1.430079974195628,
+          "joint_5": -0.3794775083605404
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-002",
+      "draw": 4,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -1.204754656037557,
+          "joint_1": -1.4373167455577032,
+          "joint_2": 0.2294000301849477,
+          "joint_3": 1.243442737370176,
+          "joint_4": -1.242601247348492,
+          "joint_5": 1.0982407122411897
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-003",
+      "draw": 5,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -1.2180856856506956,
+          "joint_1": 0.8415783731950648,
+          "joint_2": -1.3589260364760274,
+          "joint_3": -1.4332684673411866,
+          "joint_4": -0.45173250964248646,
+          "joint_5": 0.9117635170584188
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-004",
+      "draw": 6,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 0.5954442874515675,
+          "joint_1": 1.5962558712991397,
+          "joint_2": -0.364410134593284,
+          "joint_3": 0.476846242315236,
+          "joint_4": 0.41615042049742357,
+          "joint_5": 1.4784922312107542
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-005",
+      "draw": 7,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -0.9043608922669862,
+          "joint_1": -1.090544643720229,
+          "joint_2": 0.002673923867752892,
+          "joint_3": 0.6411167284056929,
+          "joint_4": -0.45693501735954634,
+          "joint_5": 1.2169228724816117
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-006",
+      "draw": 9,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -0.7095027078557035,
+          "joint_1": 0.9141546320540761,
+          "joint_2": 0.4255259517083325,
+          "joint_3": -1.1232757633186417,
+          "joint_4": 0.7405837797776931,
+          "joint_5": 1.1852942295309505
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-007",
+      "draw": 10,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 1.1861124542705537,
+          "joint_1": -0.4562189148517888,
+          "joint_2": 1.5800838747927188,
+          "joint_3": -1.0965079048439155,
+          "joint_4": 1.3765981083565806,
+          "joint_5": 1.291440161199171
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-008",
+      "draw": 14,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -0.5629486697098323,
+          "joint_1": -1.50103797421558,
+          "joint_2": 1.5909393404406806,
+          "joint_3": -0.6439399954802252,
+          "joint_4": -0.8151274543544428,
+          "joint_5": -0.6620876534226248
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-009",
+      "draw": 16,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -0.4150591934714698,
+          "joint_1": -1.0347720518105452,
+          "joint_2": 1.348784114094888,
+          "joint_3": -0.5589126406417309,
+          "joint_4": 0.030350879807435893,
+          "joint_5": 0.1562872668207631
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-010",
+      "draw": 20,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -0.8565765848697144,
+          "joint_1": 0.2985704093991335,
+          "joint_2": -0.8985829214540769,
+          "joint_3": 1.1248052076344197,
+          "joint_4": -0.5401013055647741,
+          "joint_5": 0.24400147586561882
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-011",
+      "draw": 22,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 0.12188976273433116,
+          "joint_1": -0.1415555152076502,
+          "joint_2": -1.3930766449648264,
+          "joint_3": 0.535353838177334,
+          "joint_4": -0.638112422921435,
+          "joint_5": -1.298874860404934
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-012",
+      "draw": 23,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -0.8888815856460306,
+          "joint_1": 1.0378111785040263,
+          "joint_2": -1.3624621681472444,
+          "joint_3": -1.5863070431961965,
+          "joint_4": -0.7648033258576957,
+          "joint_5": 0.16186388111159045
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-013",
+      "draw": 25,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 0.2598745517356611,
+          "joint_1": -0.45705370699430237,
+          "joint_2": 1.1701998733034698,
+          "joint_3": -0.8951961424956033,
+          "joint_4": 1.5110334692674745,
+          "joint_5": 1.3057017487227771
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-014",
+      "draw": 26,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 0.6662043343170865,
+          "joint_1": 0.12035390314654171,
+          "joint_2": 0.1799233677876504,
+          "joint_3": -1.6443232951169435,
+          "joint_4": 1.5636323267079169,
+          "joint_5": -0.8172146535817865
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-015",
+      "draw": 27,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 1.4065858410463155,
+          "joint_1": 0.7923642487973717,
+          "joint_2": -1.5405912147268368,
+          "joint_3": 0.3379059966614526,
+          "joint_4": 0.5264501407424507,
+          "joint_5": -0.8795214102298465
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-016",
+      "draw": 29,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -0.5108610168735177,
+          "joint_1": -0.4740914719561282,
+          "joint_2": 0.9561462566007037,
+          "joint_3": 0.1851861099189187,
+          "joint_4": -1.5551959156083714,
+          "joint_5": -0.3443535594784126
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-017",
+      "draw": 30,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 1.562906807887396,
+          "joint_1": -0.5836659160463049,
+          "joint_2": 1.1680296263656116,
+          "joint_3": 0.8399487346835319,
+          "joint_4": 0.6582811885324023,
+          "joint_5": 0.5542707713887789
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-018",
+      "draw": 33,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 1.4538311734680973,
+          "joint_1": -0.17360755205762035,
+          "joint_2": 0.45441992158169997,
+          "joint_3": 0.01685398505301139,
+          "joint_4": 1.5855861119242851,
+          "joint_5": -1.679121404084349
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-019",
+      "draw": 34,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 1.0681384520399768,
+          "joint_1": 0.033237627225748856,
+          "joint_2": 1.3816018131562133,
+          "joint_3": -0.6423061645305235,
+          "joint_4": 1.057148038123696,
+          "joint_5": -0.4838341607484451
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-020",
+      "draw": 38,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -0.441763742125582,
+          "joint_1": -0.5575301750969615,
+          "joint_2": -1.0530448613702517,
+          "joint_3": 0.6839277739020617,
+          "joint_4": -0.9683427642603963,
+          "joint_5": 0.18283485149459144
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-021",
+      "draw": 41,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -1.5374760371090792,
+          "joint_1": 0.8086855583201937,
+          "joint_2": -0.8797598024870837,
+          "joint_3": -0.028258832931584932,
+          "joint_4": -0.21275425292853223,
+          "joint_5": 1.5331613523385146
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-022",
+      "draw": 42,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -0.6667187878081939,
+          "joint_1": 1.043685472510425,
+          "joint_2": -1.5376764554027125,
+          "joint_3": -0.30275054259679757,
+          "joint_4": -0.2420568723983798,
+          "joint_5": -0.7773926983143322
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-023",
+      "draw": 43,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -1.0087219013538973,
+          "joint_1": -0.7109291277110846,
+          "joint_2": -1.6082256673775377,
+          "joint_3": -1.3178770570596052,
+          "joint_4": 0.06694659273625336,
+          "joint_5": -0.20360018386469703
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-024",
+      "draw": 44,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 0.27728753319859534,
+          "joint_1": -0.6240293289114962,
+          "joint_2": -1.5066341677431263,
+          "joint_3": 0.8369489381663477,
+          "joint_4": -1.15172145486999,
+          "joint_5": 1.422163004253639
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-025",
+      "draw": 45,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -0.20062673080873816,
+          "joint_1": 0.08990545102256631,
+          "joint_2": 0.08634531532745782,
+          "joint_3": 0.6086197360680008,
+          "joint_4": -0.1986226074070192,
+          "joint_5": -1.0858313434034272
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-026",
+      "draw": 46,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 1.0945243924905492,
+          "joint_1": -0.535959030961312,
+          "joint_2": -1.309423304900743,
+          "joint_3": -0.8308461587099498,
+          "joint_4": -0.08185578463534626,
+          "joint_5": 0.30907264983036153
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-027",
+      "draw": 48,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 0.015158686586571157,
+          "joint_1": -1.5622370012477858,
+          "joint_2": 0.6436365126641115,
+          "joint_3": 0.5645863501585531,
+          "joint_4": -0.6648003744589026,
+          "joint_5": -0.684899964714822
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-028",
+      "draw": 49,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -0.7516835445204889,
+          "joint_1": -1.6235618772660152,
+          "joint_2": 0.24248884517243963,
+          "joint_3": 0.523580451003371,
+          "joint_4": -0.40563551086390515,
+          "joint_5": -1.6279846293498141
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-029",
+      "draw": 50,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -1.1150195132272476,
+          "joint_1": -1.3830190305052983,
+          "joint_2": 1.5851293387380294,
+          "joint_3": 1.447138049125682,
+          "joint_4": -1.1607148410791215,
+          "joint_5": 1.177033769495572
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-030",
+      "draw": 53,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 0.7535905114760886,
+          "joint_1": -0.719259859776473,
+          "joint_2": 1.6744019585322372,
+          "joint_3": -0.3112290146953234,
+          "joint_4": 0.29717783943529996,
+          "joint_5": 1.5521424633088587
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-031",
+      "draw": 55,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 0.1130012160082896,
+          "joint_1": 0.10566486858956248,
+          "joint_2": 0.6535505391780183,
+          "joint_3": 0.9639417113546047,
+          "joint_4": -0.9415213738822462,
+          "joint_5": 1.6645865716437003
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-feasible-032",
+      "draw": 59,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -1.4332032242754487,
+          "joint_1": -1.591625511681888,
+          "joint_2": 0.38360897560230534,
+          "joint_3": 0.021809742708834623,
+          "joint_4": -0.42988466573951034,
+          "joint_5": -1.19502770899038
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-000",
+      "draw": 1,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -0.6371844171707812,
+          "joint_1": 0.5680861654929323,
+          "joint_2": 0.9654076406917276,
+          "joint_3": -1.6399390526366244,
+          "joint_4": 0.9131657937731106,
+          "joint_5": -0.028977691881951317
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-001",
+      "draw": 7,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -0.470942634850934,
+          "joint_1": 0.4642338713640757,
+          "joint_2": 0.4137947629277119,
+          "joint_3": -0.21953594530795417,
+          "joint_4": -0.05392398193874515,
+          "joint_5": 1.6247471118690173
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-002",
+      "draw": 11,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 0.5831222763373134,
+          "joint_1": -1.1763222965673361,
+          "joint_2": -0.17264720990589422,
+          "joint_3": -0.3649989765795889,
+          "joint_4": -1.2020286476061655,
+          "joint_5": -0.1898453782780869
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-003",
+      "draw": 14,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -0.5758062645728717,
+          "joint_1": -0.20909278884680416,
+          "joint_2": 0.2585403793659411,
+          "joint_3": -1.5200932888681018,
+          "joint_4": -0.49723383151054157,
+          "joint_5": -1.5050564602725052
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-004",
+      "draw": 16,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 1.2043062458115958,
+          "joint_1": -1.554190222824364,
+          "joint_2": 1.0323161502472886,
+          "joint_3": -1.591797378129932,
+          "joint_4": 1.6406044023703856,
+          "joint_5": -1.414945348007004
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-005",
+      "draw": 17,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -0.857801777160083,
+          "joint_1": 0.9426838273824845,
+          "joint_2": 0.7208233756952023,
+          "joint_3": 0.41929611790005605,
+          "joint_4": 0.02613901573628663,
+          "joint_5": 0.7991306925154711
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-006",
+      "draw": 21,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 0.4222834133212299,
+          "joint_1": -0.5247287926471875,
+          "joint_2": 1.5578034443624968,
+          "joint_3": -1.7000980140183235,
+          "joint_4": 1.3545785118012441,
+          "joint_5": 1.488214264017362
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-007",
+      "draw": 22,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 0.11133633927804398,
+          "joint_1": -1.0970355181691946,
+          "joint_2": 1.547151279290413,
+          "joint_3": -1.1279460766763854,
+          "joint_4": 1.3636019638111452,
+          "joint_5": 1.1467453093684745
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-008",
+      "draw": 25,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -1.0616895549103926,
+          "joint_1": 1.6750479644588383,
+          "joint_2": 1.298097622260526,
+          "joint_3": -0.9254122666104784,
+          "joint_4": -0.12035555790226571,
+          "joint_5": -1.070744000286135
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-009",
+      "draw": 26,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 1.703681603033829,
+          "joint_1": 0.7137608254291292,
+          "joint_2": 0.49563379352969417,
+          "joint_3": 0.24893310226370846,
+          "joint_4": 0.35600698426158495,
+          "joint_5": 1.183135170751204
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-010",
+      "draw": 28,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 0.7188327954347766,
+          "joint_1": -0.4377993873482615,
+          "joint_2": -0.6959187811283429,
+          "joint_3": -1.242017592425446,
+          "joint_4": -0.8320402888833349,
+          "joint_5": 0.016352191309886743
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-011",
+      "draw": 29,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 1.4143073308150629,
+          "joint_1": -0.7675426809561469,
+          "joint_2": 1.4035092599031063,
+          "joint_3": 0.9437046422508821,
+          "joint_4": 1.5573816078233431,
+          "joint_5": 0.39040865296734095
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-012",
+      "draw": 32,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 1.5310294197363485,
+          "joint_1": 0.10920028798376524,
+          "joint_2": 0.7795171252268087,
+          "joint_3": -1.113410657521784,
+          "joint_4": 0.2018969428574504,
+          "joint_5": 0.57159436932317
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-013",
+      "draw": 33,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -1.470494870034093,
+          "joint_1": -1.50841239891747,
+          "joint_2": -0.042032369834202665,
+          "joint_3": -1.2339993779167937,
+          "joint_4": -0.7893737006408067,
+          "joint_5": 0.2612072797677125
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-014",
+      "draw": 39,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -1.2554519098480488,
+          "joint_1": 0.61746307349989,
+          "joint_2": 1.4738718411650473,
+          "joint_3": 0.5640623535052671,
+          "joint_4": 0.4011923342185755,
+          "joint_5": -1.3468941731430681
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-015",
+      "draw": 44,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -0.13606286762178765,
+          "joint_1": -0.2932929745042445,
+          "joint_2": -1.2241942681005586,
+          "joint_3": -0.8383187609051176,
+          "joint_4": -1.5486347936399443,
+          "joint_5": -0.8155931022942762
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-016",
+      "draw": 45,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -1.4963622495145101,
+          "joint_1": -0.36467982080671013,
+          "joint_2": -1.667962661883588,
+          "joint_3": 0.059522497425678944,
+          "joint_4": -1.5304134696817584,
+          "joint_5": -1.5869775476719197
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-017",
+      "draw": 48,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -1.1770916694339277,
+          "joint_1": 1.0708436479298613,
+          "joint_2": 0.6360450801429098,
+          "joint_3": -1.6876991778139443,
+          "joint_4": -0.606154025462788,
+          "joint_5": 0.6656961181516463
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-018",
+      "draw": 49,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -0.8123214671316799,
+          "joint_1": 0.5437536039209494,
+          "joint_2": 0.6153911279675577,
+          "joint_3": -0.9192650310010709,
+          "joint_4": 1.357024558947526,
+          "joint_5": 0.6264012224233766
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-019",
+      "draw": 51,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 0.7130786112324681,
+          "joint_1": -0.2427859862159365,
+          "joint_2": -1.0483521476554696,
+          "joint_3": -0.45199573253116143,
+          "joint_4": -1.4817156773142601,
+          "joint_5": 1.59646186368151
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-020",
+      "draw": 52,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -1.0568074269077377,
+          "joint_1": 1.4007055824522863,
+          "joint_2": 0.38836975561975606,
+          "joint_3": -0.3946228527140325,
+          "joint_4": 1.1663549139129477,
+          "joint_5": -0.12458073378198287
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-021",
+      "draw": 54,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -0.6738076918097469,
+          "joint_1": 0.0013931236983570905,
+          "joint_2": -0.13003228669257405,
+          "joint_3": -0.5711087450462748,
+          "joint_4": -1.3535004743133698,
+          "joint_5": -0.5291434836673954
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-022",
+      "draw": 55,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -0.7060760442373968,
+          "joint_1": -0.1361034921477069,
+          "joint_2": -0.6754481331135103,
+          "joint_3": -1.4779247741874655,
+          "joint_4": -0.8864885507793191,
+          "joint_5": -0.0477417085415619
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-023",
+      "draw": 58,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 1.4668449467245153,
+          "joint_1": 1.521285408090316,
+          "joint_2": 0.277303259841746,
+          "joint_3": 0.8509705001777634,
+          "joint_4": 0.621728775165725,
+          "joint_5": -0.7121776378342776
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-024",
+      "draw": 61,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 0.2814548622556572,
+          "joint_1": -0.7565849084106735,
+          "joint_2": -1.4112569733090714,
+          "joint_3": -1.4972941116748206,
+          "joint_4": -0.6459602289591406,
+          "joint_5": -0.24296422232652692
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-025",
+      "draw": 79,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -1.5354357663798732,
+          "joint_1": -0.2858605304892827,
+          "joint_2": -0.14036999346528822,
+          "joint_3": 1.2483054162564513,
+          "joint_4": -0.515506361431395,
+          "joint_5": -0.421165356795026
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-026",
+      "draw": 83,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 1.0520474441376537,
+          "joint_1": -0.27342646356008316,
+          "joint_2": 1.093660689095298,
+          "joint_3": -1.1468271021762284,
+          "joint_4": 1.4995637917289781,
+          "joint_5": -1.0061812741466007
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-027",
+      "draw": 86,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -1.5116517939592042,
+          "joint_1": 0.553152747299094,
+          "joint_2": -1.6857797419521188,
+          "joint_3": 0.502371803138276,
+          "joint_4": -1.2022676283036873,
+          "joint_5": 0.22397563637651974
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-028",
+      "draw": 87,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 1.0587438895376988,
+          "joint_1": 1.25279231189583,
+          "joint_2": 0.37181130559033315,
+          "joint_3": -1.3406090785704723,
+          "joint_4": 0.30404023863043594,
+          "joint_5": -1.1410322968152689
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-029",
+      "draw": 88,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 1.586396358968785,
+          "joint_1": -0.18917783806228794,
+          "joint_2": 0.4835123432899122,
+          "joint_3": 1.0723465591183543,
+          "joint_4": 0.6236680526469169,
+          "joint_5": 0.8901410797063312
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-030",
+      "draw": 90,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -1.1283180812185123,
+          "joint_1": -0.49174054966335734,
+          "joint_2": 0.30148098190927364,
+          "joint_3": -1.4157692200782073,
+          "joint_4": -0.42471646407213726,
+          "joint_5": 1.2415034387296333
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-031",
+      "draw": 95,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 1.0150812538272884,
+          "joint_1": -0.49431374716646626,
+          "joint_2": -1.5285241538777257,
+          "joint_3": -1.1387265506413222,
+          "joint_4": -0.23886327427206555,
+          "joint_5": -0.28759905947957853
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-feasible-032",
+      "draw": 98,
+      "expect": "composed_success",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -0.6547196595066647,
+          "joint_1": 1.0904569441367915,
+          "joint_2": 0.9588876936215058,
+          "joint_3": -0.06277026060479574,
+          "joint_4": 1.419951136543911,
+          "joint_5": -0.9209626170420614
+        }
+      },
+      "kind": "feasible",
+      "second": {
+        "skill": "transfer"
+      },
+      "witness": {
+        "straight_joint_path_clear": true,
+        "transfer_path_seed": "pose"
+      },
+      "zoo_id": "zoo_long_arm"
+    }
+  ],
+  "g06_registration_sha256": "0846972af045f04cd46006fae1d280691c8c9ec03fba30cf361ade7b8de1109e",
+  "generation_calls": 0,
+  "goal": "G08",
+  "initiation": {
+    "limit_margin_fraction": 0.02,
+    "max_belief_age_s": 5.0,
+    "note": "the transfer begins free with the cube resting; the placement begins holding the cube; every skill requires its manipulator and the object not owned elsewhere",
+    "speed_fraction": 0.05
+  },
+  "injected_cases": [
+    {
+      "case_id": "zoo_dual_arm-joint_beyond_limit-00",
+      "expect": "repaired_then_reverified",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 3.021,
+          "left_joint_1": -0.4632120568663396,
+          "left_joint_2": -0.36977794375449924,
+          "left_joint_3": 0.8478810109581194,
+          "left_joint_4": 0.024778823469566724
+        }
+      },
+      "kind": "joint_beyond_limit",
+      "note": "left_joint_0 commanded to 3.0210 against a limit of 2.8500",
+      "second": {
+        "skill": "transfer"
+      },
+      "subject": "left_joint_0",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-joint_beyond_limit-01",
+      "expect": "repaired_then_reverified",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 3.021,
+          "joint_1": -0.7499912484358509,
+          "joint_2": -1.322085852281926,
+          "joint_3": -0.496083867015372,
+          "joint_4": 0.38331037405459645,
+          "joint_5": -1.165476478088559
+        }
+      },
+      "kind": "joint_beyond_limit",
+      "note": "joint_0 commanded to 3.0210 against a limit of 2.8500",
+      "second": {
+        "skill": "transfer"
+      },
+      "subject": "joint_0",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-joint_beyond_limit-02",
+      "expect": "repaired_then_reverified",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 3.021,
+          "joint_1": 0.9236210621945653,
+          "joint_2": 0.6099678327964906,
+          "joint_3": -0.38532057953105925,
+          "joint_4": 1.0844565958911856,
+          "joint_5": -1.1156513307785496
+        }
+      },
+      "kind": "joint_beyond_limit",
+      "note": "joint_0 commanded to 3.0210 against a limit of 2.8500",
+      "second": {
+        "skill": "transfer"
+      },
+      "subject": "joint_0",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-joint_beyond_limit-03",
+      "expect": "repaired_then_reverified",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 3.021,
+          "left_joint_1": 1.3795795541946556,
+          "left_joint_2": -0.058920198465504336,
+          "left_joint_3": -0.422627826271204,
+          "left_joint_4": 0.7507011513214752
+        }
+      },
+      "kind": "joint_beyond_limit",
+      "note": "left_joint_0 commanded to 3.0210 against a limit of 2.8500",
+      "second": {
+        "skill": "transfer"
+      },
+      "subject": "left_joint_0",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-joint_beyond_limit-04",
+      "expect": "repaired_then_reverified",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 3.021,
+          "joint_1": -0.24832525914872905,
+          "joint_2": -1.1168683426964592,
+          "joint_3": -0.3951686471573974,
+          "joint_4": -1.4353246812906268,
+          "joint_5": -1.0887138993540564
+        }
+      },
+      "kind": "joint_beyond_limit",
+      "note": "joint_0 commanded to 3.0210 against a limit of 2.8500",
+      "second": {
+        "skill": "transfer"
+      },
+      "subject": "joint_0",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-joint_beyond_limit-05",
+      "expect": "repaired_then_reverified",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 3.021,
+          "joint_1": -1.1387772529082643,
+          "joint_2": -0.9228099866414644,
+          "joint_3": -0.10290795714795165,
+          "joint_4": -1.085645779341466,
+          "joint_5": -0.5094367358337628
+        }
+      },
+      "kind": "joint_beyond_limit",
+      "note": "joint_0 commanded to 3.0210 against a limit of 2.8500",
+      "second": {
+        "skill": "transfer"
+      },
+      "subject": "joint_0",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-joint_beyond_limit-06",
+      "expect": "repaired_then_reverified",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 3.021,
+          "left_joint_1": -0.10948571030594634,
+          "left_joint_2": 1.2423790781961972,
+          "left_joint_3": 0.09822367158284151,
+          "left_joint_4": -1.5741980525345243
+        }
+      },
+      "kind": "joint_beyond_limit",
+      "note": "left_joint_0 commanded to 3.0210 against a limit of 2.8500",
+      "second": {
+        "skill": "transfer"
+      },
+      "subject": "left_joint_0",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-joint_beyond_limit-07",
+      "expect": "repaired_then_reverified",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 3.021,
+          "joint_1": -0.7726960672746935,
+          "joint_2": -0.5017176907330492,
+          "joint_3": 0.12093393049754475,
+          "joint_4": -0.5411088577374932,
+          "joint_5": -0.9932610596306531
+        }
+      },
+      "kind": "joint_beyond_limit",
+      "note": "joint_0 commanded to 3.0210 against a limit of 2.8500",
+      "second": {
+        "skill": "transfer"
+      },
+      "subject": "joint_0",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-joint_beyond_limit-08",
+      "expect": "repaired_then_reverified",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 3.021,
+          "joint_1": -0.23635818489014038,
+          "joint_2": 1.2930853792556447,
+          "joint_3": -0.4322127584260371,
+          "joint_4": 0.46399835769101516,
+          "joint_5": -0.34266910713458043
+        }
+      },
+      "kind": "joint_beyond_limit",
+      "note": "joint_0 commanded to 3.0210 against a limit of 2.8500",
+      "second": {
+        "skill": "transfer"
+      },
+      "subject": "joint_0",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-joint_beyond_limit-09",
+      "expect": "repaired_then_reverified",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 3.021,
+          "left_joint_1": 0.7885974364718864,
+          "left_joint_2": -0.04726749648087325,
+          "left_joint_3": 1.0577236424512995,
+          "left_joint_4": 0.4644809519306552
+        }
+      },
+      "kind": "joint_beyond_limit",
+      "note": "left_joint_0 commanded to 3.0210 against a limit of 2.8500",
+      "second": {
+        "skill": "transfer"
+      },
+      "subject": "left_joint_0",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-joint_inside_margin-00",
+      "expect": "repaired_then_reverified",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 2.793,
+          "left_joint_1": -0.5279734532511522,
+          "left_joint_2": -0.6154360517734088,
+          "left_joint_3": 0.356723200298537,
+          "left_joint_4": -0.044150948715854454
+        }
+      },
+      "kind": "joint_inside_margin",
+      "note": "left_joint_0 commanded to 2.7930 against a limit of 2.8500",
+      "second": {
+        "skill": "transfer"
+      },
+      "subject": "left_joint_0",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-joint_inside_margin-01",
+      "expect": "repaired_then_reverified",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 2.793,
+          "joint_1": 0.9915938428755595,
+          "joint_2": -1.2472487300899628,
+          "joint_3": 0.5359687729154783,
+          "joint_4": -0.9086382411508577,
+          "joint_5": 0.3053387688358047
+        }
+      },
+      "kind": "joint_inside_margin",
+      "note": "joint_0 commanded to 2.7930 against a limit of 2.8500",
+      "second": {
+        "skill": "transfer"
+      },
+      "subject": "joint_0",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-joint_inside_margin-02",
+      "expect": "repaired_then_reverified",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 2.793,
+          "joint_1": 0.7017923013606282,
+          "joint_2": 0.479346775568938,
+          "joint_3": -1.487136409208493,
+          "joint_4": -0.11684940415471234,
+          "joint_5": -0.26625242933352444
+        }
+      },
+      "kind": "joint_inside_margin",
+      "note": "joint_0 commanded to 2.7930 against a limit of 2.8500",
+      "second": {
+        "skill": "transfer"
+      },
+      "subject": "joint_0",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-joint_inside_margin-03",
+      "expect": "repaired_then_reverified",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 2.793,
+          "left_joint_1": -1.1371083734224032,
+          "left_joint_2": -0.06407825959532287,
+          "left_joint_3": -1.1116181732644477,
+          "left_joint_4": -1.63765397027792
+        }
+      },
+      "kind": "joint_inside_margin",
+      "note": "left_joint_0 commanded to 2.7930 against a limit of 2.8500",
+      "second": {
+        "skill": "transfer"
+      },
+      "subject": "left_joint_0",
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-joint_inside_margin-04",
+      "expect": "repaired_then_reverified",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 2.793,
+          "joint_1": 1.6073061229804546,
+          "joint_2": -0.8470904125349872,
+          "joint_3": -1.4679956113328125,
+          "joint_4": 0.6147760194300371,
+          "joint_5": 0.05482776617485707
+        }
+      },
+      "kind": "joint_inside_margin",
+      "note": "joint_0 commanded to 2.7930 against a limit of 2.8500",
+      "second": {
+        "skill": "transfer"
+      },
+      "subject": "joint_0",
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-joint_inside_margin-05",
+      "expect": "repaired_then_reverified",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 2.793,
+          "joint_1": 0.21307805282751802,
+          "joint_2": -0.048979461918498,
+          "joint_3": -1.4600698724200458,
+          "joint_4": 1.4215732526755755,
+          "joint_5": 0.9002644528880737
+        }
+      },
+      "kind": "joint_inside_margin",
+      "note": "joint_0 commanded to 2.7930 against a limit of 2.8500",
+      "second": {
+        "skill": "transfer"
+      },
+      "subject": "joint_0",
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-velocity_too_high-00",
+      "expect": "repaired_then_reverified",
+      "first": {
+        "skill": "joint_move",
+        "stop_fraction": 0.5220393519667453,
+        "targets": {
+          "left_joint_0": -1.1120984994183836,
+          "left_joint_1": 1.5687167961263775,
+          "left_joint_2": -1.1001344518476637,
+          "left_joint_3": 0.12230322359375423,
+          "left_joint_4": -1.1195662447611086
+        }
+      },
+      "kind": "velocity_too_high",
+      "note": "the motion is cut part way, still moving",
+      "second": {
+        "skill": "transfer"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-velocity_too_high-01",
+      "expect": "repaired_then_reverified",
+      "first": {
+        "skill": "joint_move",
+        "stop_fraction": 0.5351898597468194,
+        "targets": {
+          "joint_0": 0.6903158634959037,
+          "joint_1": -0.33473770975464867,
+          "joint_2": 0.5328526024799207,
+          "joint_3": -0.6066186045183548,
+          "joint_4": -1.5519228506831289,
+          "joint_5": -1.217246319158448
+        }
+      },
+      "kind": "velocity_too_high",
+      "note": "the motion is cut part way, still moving",
+      "second": {
+        "skill": "transfer"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-velocity_too_high-02",
+      "expect": "repaired_then_reverified",
+      "first": {
+        "skill": "joint_move",
+        "stop_fraction": 0.5103761074931086,
+        "targets": {
+          "joint_0": 1.1532355752885284,
+          "joint_1": -0.20828198917030294,
+          "joint_2": 1.1398600393716616,
+          "joint_3": -0.8747825094763161,
+          "joint_4": 1.5089701966599263,
+          "joint_5": -1.6924500250486283
+        }
+      },
+      "kind": "velocity_too_high",
+      "note": "the motion is cut part way, still moving",
+      "second": {
+        "skill": "transfer"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-velocity_too_high-03",
+      "expect": "repaired_then_reverified",
+      "first": {
+        "skill": "joint_move",
+        "stop_fraction": 0.5195414845266675,
+        "targets": {
+          "left_joint_0": -0.11781106032866906,
+          "left_joint_1": 0.33777219184802965,
+          "left_joint_2": -1.1673733137068623,
+          "left_joint_3": 1.488142085482688,
+          "left_joint_4": -1.2927848016013797
+        }
+      },
+      "kind": "velocity_too_high",
+      "note": "the motion is cut part way, still moving",
+      "second": {
+        "skill": "transfer"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-velocity_too_high-04",
+      "expect": "repaired_then_reverified",
+      "first": {
+        "skill": "joint_move",
+        "stop_fraction": 0.42065185462249005,
+        "targets": {
+          "joint_0": 0.5341781781689026,
+          "joint_1": -0.7328012153272995,
+          "joint_2": -1.5981665883246572,
+          "joint_3": 1.4486650011044504,
+          "joint_4": -0.9396105483600952,
+          "joint_5": -1.5669208953399736
+        }
+      },
+      "kind": "velocity_too_high",
+      "note": "the motion is cut part way, still moving",
+      "second": {
+        "skill": "transfer"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-velocity_too_high-05",
+      "expect": "repaired_then_reverified",
+      "first": {
+        "skill": "joint_move",
+        "stop_fraction": 0.47757197846668964,
+        "targets": {
+          "joint_0": -1.4044297293481949,
+          "joint_1": 0.3344305168278763,
+          "joint_2": 0.8248584928470124,
+          "joint_3": 0.4838610179743621,
+          "joint_4": 1.571090083509747,
+          "joint_5": 0.02874597472746676
+        }
+      },
+      "kind": "velocity_too_high",
+      "note": "the motion is cut part way, still moving",
+      "second": {
+        "skill": "transfer"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-velocity_too_high-06",
+      "expect": "repaired_then_reverified",
+      "first": {
+        "skill": "joint_move",
+        "stop_fraction": 0.5178641850103289,
+        "targets": {
+          "left_joint_0": 1.034662339767607,
+          "left_joint_1": 0.34958912341255566,
+          "left_joint_2": -1.312802934054507,
+          "left_joint_3": -0.831517937602679,
+          "left_joint_4": -1.314831318968991
+        }
+      },
+      "kind": "velocity_too_high",
+      "note": "the motion is cut part way, still moving",
+      "second": {
+        "skill": "transfer"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-velocity_too_high-07",
+      "expect": "repaired_then_reverified",
+      "first": {
+        "skill": "joint_move",
+        "stop_fraction": 0.3686351806314266,
+        "targets": {
+          "joint_0": 0.43024970860603506,
+          "joint_1": -1.2263267226028292,
+          "joint_2": 0.5335372342658631,
+          "joint_3": 0.2912794356302939,
+          "joint_4": -1.3976894055361344,
+          "joint_5": 1.3975967922982737
+        }
+      },
+      "kind": "velocity_too_high",
+      "note": "the motion is cut part way, still moving",
+      "second": {
+        "skill": "transfer"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-holding_into_free-00",
+      "expect": "rejected",
+      "first": {
+        "skill": "acquire_carry"
+      },
+      "kind": "holding_into_free",
+      "note": "ends holding the cube; the next skill begins free with the cube resting",
+      "second": {
+        "skill": "transfer"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-holding_into_free-01",
+      "expect": "rejected",
+      "first": {
+        "skill": "acquire_carry"
+      },
+      "kind": "holding_into_free",
+      "note": "ends holding the cube; the next skill begins free with the cube resting",
+      "second": {
+        "skill": "transfer"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-holding_into_free-02",
+      "expect": "rejected",
+      "first": {
+        "skill": "acquire_carry"
+      },
+      "kind": "holding_into_free",
+      "note": "ends holding the cube; the next skill begins free with the cube resting",
+      "second": {
+        "skill": "transfer"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-holding_into_free-03",
+      "expect": "rejected",
+      "first": {
+        "skill": "acquire_carry"
+      },
+      "kind": "holding_into_free",
+      "note": "ends holding the cube; the next skill begins free with the cube resting",
+      "second": {
+        "skill": "transfer"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-holding_into_free-04",
+      "expect": "rejected",
+      "first": {
+        "skill": "acquire_carry"
+      },
+      "kind": "holding_into_free",
+      "note": "ends holding the cube; the next skill begins free with the cube resting",
+      "second": {
+        "skill": "transfer"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-holding_into_free-05",
+      "expect": "rejected",
+      "first": {
+        "skill": "acquire_carry"
+      },
+      "kind": "holding_into_free",
+      "note": "ends holding the cube; the next skill begins free with the cube resting",
+      "second": {
+        "skill": "transfer"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-free_into_holding-00",
+      "expect": "rejected",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 0.1889382457984976,
+          "left_joint_1": -0.3912077993049943,
+          "left_joint_2": -1.6671787054480156,
+          "left_joint_3": 0.31090531399495624,
+          "left_joint_4": -0.5314009970455928
+        }
+      },
+      "kind": "free_into_holding",
+      "note": "ends free; the next skill begins holding the cube",
+      "second": {
+        "skill": "place"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-free_into_holding-01",
+      "expect": "rejected",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 1.1298057625192826,
+          "joint_1": 0.3959432707030812,
+          "joint_2": -1.235145918164792,
+          "joint_3": 0.9292907862784503,
+          "joint_4": 1.5097754734660365,
+          "joint_5": 1.4808957475037103
+        }
+      },
+      "kind": "free_into_holding",
+      "note": "ends free; the next skill begins holding the cube",
+      "second": {
+        "skill": "place"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-free_into_holding-02",
+      "expect": "rejected",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -0.9303631805564392,
+          "joint_1": 0.01714085067194393,
+          "joint_2": -0.5260571927856923,
+          "joint_3": -1.0758399898405642,
+          "joint_4": 0.6564897577639113,
+          "joint_5": 0.021403831840959286
+        }
+      },
+      "kind": "free_into_holding",
+      "note": "ends free; the next skill begins holding the cube",
+      "second": {
+        "skill": "place"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-free_into_holding-03",
+      "expect": "rejected",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 0.8079250582715232,
+          "left_joint_1": -0.9297045985380193,
+          "left_joint_2": -0.09414809002392355,
+          "left_joint_3": -1.6137029652351444,
+          "left_joint_4": -0.6555243239912463
+        }
+      },
+      "kind": "free_into_holding",
+      "note": "ends free; the next skill begins holding the cube",
+      "second": {
+        "skill": "place"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-free_into_holding-04",
+      "expect": "rejected",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -1.164809288169479,
+          "joint_1": 0.10330168809770401,
+          "joint_2": -1.5757456133656804,
+          "joint_3": -1.1723379377193166,
+          "joint_4": -0.07813268364618753,
+          "joint_5": 0.6402694077224038
+        }
+      },
+      "kind": "free_into_holding",
+      "note": "ends free; the next skill begins holding the cube",
+      "second": {
+        "skill": "place"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-free_into_holding-05",
+      "expect": "rejected",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 0.27804610125077,
+          "joint_1": -0.8775007733496697,
+          "joint_2": -0.5572214459088369,
+          "joint_3": -0.1598399221365152,
+          "joint_4": -0.6858574605709435,
+          "joint_5": -1.0699101212789697
+        }
+      },
+      "kind": "free_into_holding",
+      "note": "ends free; the next skill begins holding the cube",
+      "second": {
+        "skill": "place"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "belief_age_s": 35.236955045941684,
+      "case_id": "zoo_dual_arm-belief_stale-00",
+      "expect": "repaired_then_reverified",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 0.8848945518899529,
+          "left_joint_1": -0.8326477469459451,
+          "left_joint_2": -0.5170264408224761,
+          "left_joint_3": -0.543696389329626,
+          "left_joint_4": 0.0014785336867004784
+        }
+      },
+      "kind": "belief_stale",
+      "note": "the belief predates the motion by more than the next skill allows",
+      "second": {
+        "skill": "transfer"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "belief_age_s": 38.69044506377913,
+      "case_id": "zoo_jaw_arm-belief_stale-01",
+      "expect": "repaired_then_reverified",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -0.7378298907150674,
+          "joint_1": -0.2550834507992643,
+          "joint_2": -0.17520813634342058,
+          "joint_3": -1.2881781599789761,
+          "joint_4": -1.4343031656186709,
+          "joint_5": -1.456871267105504
+        }
+      },
+      "kind": "belief_stale",
+      "note": "the belief predates the motion by more than the next skill allows",
+      "second": {
+        "skill": "transfer"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "belief_age_s": 25.711462132000708,
+      "case_id": "zoo_long_arm-belief_stale-02",
+      "expect": "repaired_then_reverified",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -0.6871770969504654,
+          "joint_1": -0.47812205476575653,
+          "joint_2": -0.7517463372955943,
+          "joint_3": 0.4215238958019132,
+          "joint_4": -0.2878484241638033,
+          "joint_5": -1.3336471239131438
+        }
+      },
+      "kind": "belief_stale",
+      "note": "the belief predates the motion by more than the next skill allows",
+      "second": {
+        "skill": "transfer"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "belief_age_s": 16.812838743515506,
+      "case_id": "zoo_dual_arm-belief_stale-03",
+      "expect": "repaired_then_reverified",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 1.2577717414443024,
+          "left_joint_1": 0.6375271465642198,
+          "left_joint_2": -1.0692418105434898,
+          "left_joint_3": 0.04805436458539436,
+          "left_joint_4": 0.5335383124093265
+        }
+      },
+      "kind": "belief_stale",
+      "note": "the belief predates the motion by more than the next skill allows",
+      "second": {
+        "skill": "transfer"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "belief_age_s": 27.800487098346874,
+      "case_id": "zoo_jaw_arm-belief_stale-04",
+      "expect": "repaired_then_reverified",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 0.05229993616990347,
+          "joint_1": 0.2709508931661395,
+          "joint_2": 0.3917108847410482,
+          "joint_3": 0.7556435290038799,
+          "joint_4": 1.0155171181850617,
+          "joint_5": 1.1571653490392153
+        }
+      },
+      "kind": "belief_stale",
+      "note": "the belief predates the motion by more than the next skill allows",
+      "second": {
+        "skill": "transfer"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-resource_conflict-00",
+      "expect": "rejected",
+      "first": {
+        "keeps_resources": [
+          "effector:left_palm"
+        ],
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 1.0389272620011765,
+          "left_joint_1": -0.10512605151214105,
+          "left_joint_2": -0.5478295655338317,
+          "left_joint_3": -0.17607543889881883,
+          "left_joint_4": -1.0844451819230836
+        }
+      },
+      "kind": "resource_conflict",
+      "note": "the first skill keeps owning the manipulator",
+      "second": {
+        "skill": "transfer"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-resource_conflict-01",
+      "expect": "rejected",
+      "first": {
+        "keeps_resources": [
+          "effector:palm"
+        ],
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 1.4067974288411262,
+          "joint_1": -0.9031881663552731,
+          "joint_2": 0.24739751295615897,
+          "joint_3": -1.4861425683602196,
+          "joint_4": 0.8973571243105236,
+          "joint_5": -0.20568689827990694
+        }
+      },
+      "kind": "resource_conflict",
+      "note": "the first skill keeps owning the manipulator",
+      "second": {
+        "skill": "transfer"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_long_arm-resource_conflict-02",
+      "expect": "rejected",
+      "first": {
+        "keeps_resources": [
+          "effector:palm"
+        ],
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": 0.01907933618550617,
+          "joint_1": -0.424726977601531,
+          "joint_2": -0.025899737567682823,
+          "joint_3": -0.22815858303557635,
+          "joint_4": -1.6575162570189494,
+          "joint_5": 0.15055696241809668
+        }
+      },
+      "kind": "resource_conflict",
+      "note": "the first skill keeps owning the manipulator",
+      "second": {
+        "skill": "transfer"
+      },
+      "zoo_id": "zoo_long_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-resource_conflict-03",
+      "expect": "rejected",
+      "first": {
+        "keeps_resources": [
+          "effector:left_palm"
+        ],
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": 0.9042949655708061,
+          "left_joint_1": -0.8137840889703007,
+          "left_joint_2": -0.35462113372592285,
+          "left_joint_3": -1.062402894631009,
+          "left_joint_4": -0.47906443518029085
+        }
+      },
+      "kind": "resource_conflict",
+      "note": "the first skill keeps owning the manipulator",
+      "second": {
+        "skill": "transfer"
+      },
+      "zoo_id": "zoo_dual_arm"
+    },
+    {
+      "case_id": "zoo_jaw_arm-resource_conflict-04",
+      "expect": "rejected",
+      "first": {
+        "keeps_resources": [
+          "effector:palm"
+        ],
+        "skill": "joint_move",
+        "targets": {
+          "joint_0": -0.23513027375917028,
+          "joint_1": -0.18026482699834268,
+          "joint_2": 0.11451896460410738,
+          "joint_3": 1.3688245683287064,
+          "joint_4": -1.6307491226097564,
+          "joint_5": 0.8498088266735748
+        }
+      },
+      "kind": "resource_conflict",
+      "note": "the first skill keeps owning the manipulator",
+      "second": {
+        "skill": "transfer"
+      },
+      "zoo_id": "zoo_jaw_arm"
+    },
+    {
+      "case_id": "zoo_dual_arm-reviewed_dual_arm_failure-00",
+      "expect": "repaired_then_reverified",
+      "first": {
+        "skill": "joint_move",
+        "targets": {
+          "left_joint_0": -0.49194922071391234,
+          "left_joint_1": -0.03722630543594327,
+          "left_joint_2": 0.08402640020334062,
+          "left_joint_3": 2.85,
+          "left_joint_4": 0.08962889615957975
+        }
+      },
+      "fixture": "any-robot/tests/fixtures/g05_composition/dual_arm_program_before_guard.json",
+      "fixture_sha256": "0a1f1ada662632d91706f1c939e75cc303116d55d3a56b5baa785c29c075e8a6",
+      "kind": "joint_inside_margin",
+      "note": "the reviewed dual-arm failure: the pre-guard program's keyframe at 32.96 s, left_joint_3 at 2.850 rad against a limit of 2.85, the latest keyframe of that program with a joint inside its limit margin that the body can be moved to clear of itself and of the world (the keyframes with the wrist folded into the forearm are self-colliding and cannot be reached as a certified motion)",
+      "second": {
+        "skill": "transfer"
+      },
+      "subject": "left_joint_3",
+      "zoo_id": "zoo_dual_arm"
+    }
+  ],
+  "rejected_draws": {
+    "zoo_dual_arm": [
+      {
+        "detail": "waypoint 0 is 0.0278 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 1,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0457 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 2,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0278 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 6,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 2 is 0.0064 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 9,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0268 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 12,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0278 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 13,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "world: geom against env_fixture_bench_geom by 12.0 mm at 1.00",
+        "draw": 16,
+        "reason": "straight_joint_path_self_collision"
+      },
+      {
+        "detail": "waypoint 0 is 0.0278 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 17,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 5 is 0.0913 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 18,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "world: geom against env_fixture_bench_geom by 5.4 mm at 0.91",
+        "draw": 23,
+        "reason": "straight_joint_path_self_collision"
+      },
+      {
+        "detail": "waypoint 5 is 0.1315 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 24,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 5 is 0.0092 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 26,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0278 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 27,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 4 is 0.0280 m from where it was asked to be, held off by left_link_0 against left_palm: no configuration reaching it kept them apart",
+        "draw": 29,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0278 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 30,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 3 is 0.0400 m from where it was asked to be, held off by left_link_2 against left_palm: no configuration reaching it kept them apart",
+        "draw": 31,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "the span into waypoint 4 passes left_finger_left 10.5 mm through left_link_0, although both of its ends are clear",
+        "draw": 33,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "world: geom against env_fixture_platform_geom by 6.1 mm at 0.96",
+        "draw": 37,
+        "reason": "straight_joint_path_self_collision"
+      },
+      {
+        "detail": "waypoint 5 is 0.0264 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 38,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "row 5 + 0.25: geom against scene_block_geom by 0.6 mm",
+        "draw": 40,
+        "reason": "transfer_path_through_world"
+      },
+      {
+        "detail": "waypoint 0 is 0.0278 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 43,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 4 is 0.0165 m from where it was asked to be, held off by left_finger_left against left_link_1: no configuration reaching it kept them apart",
+        "draw": 45,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "row 5 + 0.50: geom against scene_block_geom by 0.8 mm",
+        "draw": 48,
+        "reason": "transfer_path_through_world"
+      },
+      {
+        "detail": "waypoint 2 is 0.0064 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 49,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0528 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 50,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0803 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 52,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0278 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 53,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0198 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 54,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "world: geom against env_fixture_bench_geom by 10.0 mm at 0.91",
+        "draw": 55,
+        "reason": "straight_joint_path_self_collision"
+      },
+      {
+        "detail": "waypoint 0 is 0.0070 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 57,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0278 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 58,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0172 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 60,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 2 is 0.0064 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 63,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0278 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 64,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 5 is 0.0189 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 65,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0278 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 66,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0128 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 69,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0205 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 71,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0278 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 72,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0610 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 73,
+        "reason": "unreachable_path"
+      }
+    ],
+    "zoo_jaw_arm": [
+      {
+        "detail": "waypoint 0 is 0.0160 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 2,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0394 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 8,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0174 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 11,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0557 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 12,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "row 4 + 0.00: geom against env_fixture_platform_geom by 8.7 mm",
+        "draw": 13,
+        "reason": "transfer_path_through_world"
+      },
+      {
+        "detail": "waypoint 0 is 0.0557 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 15,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0557 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 17,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 4 is 0.0679 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 18,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0336 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 19,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "world: geom against env_fixture_platform_geom by 4.0 mm at 0.96",
+        "draw": 21,
+        "reason": "straight_joint_path_self_collision"
+      },
+      {
+        "detail": "waypoint 0 is 0.0557 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 24,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0557 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 28,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0557 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 31,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 3 is 0.1479 m from where it was asked to be, held off by base against palm: no configuration reaching it kept them apart",
+        "draw": 32,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0557 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 35,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0557 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 36,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "row 5 + 0.75: geom against scene_block_geom by 6.7 mm",
+        "draw": 37,
+        "reason": "transfer_path_through_world"
+      },
+      {
+        "detail": "waypoint 0 is 0.0557 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 39,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "world: geom against env_fixture_platform_geom by 11.7 mm at 0.91",
+        "draw": 40,
+        "reason": "straight_joint_path_self_collision"
+      },
+      {
+        "detail": "waypoint 0 is 0.0557 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 47,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0203 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 51,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0348 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 52,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0557 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 54,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 4 is 0.0679 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 56,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0225 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 57,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0161 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 58,
+        "reason": "unreachable_path"
+      }
+    ],
+    "zoo_long_arm": [
+      {
+        "detail": "waypoint 0 is 0.0119 m from where it was asked to be, held off by link_2 against link_4: no configuration reaching it kept them apart",
+        "draw": 2,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0615 m from where it was asked to be, held off by link_2 against link_4: no configuration reaching it kept them apart",
+        "draw": 3,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "the planned hand is 39.7 degrees from vertical at the hover or the grasp",
+        "draw": 4,
+        "reason": "facing_unmet"
+      },
+      {
+        "detail": "waypoint 5 is 0.0771 m from where it was asked to be, held off by base against link_1: no configuration reaching it kept them apart",
+        "draw": 5,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 5 is 0.0398 m from where it was asked to be, held off by base against link_1: no configuration reaching it kept them apart",
+        "draw": 6,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "row 4 + 0.50: geom against env_fixture_platform_geom by 14.7 mm",
+        "draw": 8,
+        "reason": "transfer_path_through_world"
+      },
+      {
+        "detail": "waypoint 0 is 0.0151 m from where it was asked to be, held off by link_2 against link_4: no configuration reaching it kept them apart",
+        "draw": 9,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 3 is 0.0493 m from where it was asked to be, held off by finger_left against link_0: no configuration reaching it kept them apart",
+        "draw": 10,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "the planned hand is 39.2 degrees from vertical at the hover or the grasp",
+        "draw": 12,
+        "reason": "facing_unmet"
+      },
+      {
+        "detail": "waypoint 5 is 0.0081 m from where it was asked to be, held off by base against link_1: no configuration reaching it kept them apart",
+        "draw": 13,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0590 m from where it was asked to be, held off by link_2 against link_4: no configuration reaching it kept them apart",
+        "draw": 15,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "row 2 + 0.50: geom against env_fixture_bench_geom by 6.5 mm",
+        "draw": 18,
+        "reason": "transfer_path_through_world"
+      },
+      {
+        "detail": "the planned hand is 42.0 degrees from vertical at the hover or the grasp",
+        "draw": 19,
+        "reason": "facing_unmet"
+      },
+      {
+        "detail": "waypoint 6 puts base 8.8 mm inside link_1; no configuration reaching it kept them apart",
+        "draw": 20,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0130 m from where it was asked to be, held off by link_2 against link_4: no configuration reaching it kept them apart",
+        "draw": 23,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "the planned hand is 44.1 degrees from vertical at the hover or the grasp",
+        "draw": 24,
+        "reason": "facing_unmet"
+      },
+      {
+        "detail": "waypoint 0 is 0.0236 m from where it was asked to be, held off by link_2 against link_4: no configuration reaching it kept them apart",
+        "draw": 27,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0385 m from where it was asked to be, held off by link_2 against link_4: no configuration reaching it kept them apart",
+        "draw": 30,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0160 m from where it was asked to be, held off by link_2 against link_4: no configuration reaching it kept them apart",
+        "draw": 31,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 5 is 0.1003 m from where it was asked to be, held off by base against link_1: no configuration reaching it kept them apart",
+        "draw": 34,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "the planned hand is 64.3 degrees from vertical at the hover or the grasp",
+        "draw": 35,
+        "reason": "facing_unmet"
+      },
+      {
+        "detail": "the planned hand is 43.8 degrees from vertical at the hover or the grasp",
+        "draw": 36,
+        "reason": "facing_unmet"
+      },
+      {
+        "detail": "the planned hand is 42.9 degrees from vertical at the hover or the grasp",
+        "draw": 37,
+        "reason": "facing_unmet"
+      },
+      {
+        "detail": "the planned hand is 59.1 degrees from vertical at the hover or the grasp",
+        "draw": 38,
+        "reason": "facing_unmet"
+      },
+      {
+        "detail": "row 5 + 0.00: geom against env_fixture_bench_geom by 3.2 mm",
+        "draw": 40,
+        "reason": "transfer_path_through_world"
+      },
+      {
+        "detail": "row 1 + 0.25: geom against env_fixture_platform_geom by 8.7 mm",
+        "draw": 41,
+        "reason": "transfer_path_through_world"
+      },
+      {
+        "detail": "waypoint 0 is 0.0215 m from where it was asked to be, held off by link_2 against link_4: no configuration reaching it kept them apart",
+        "draw": 42,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0773 m from where it was asked to be, held off by link_2 against link_4: no configuration reaching it kept them apart",
+        "draw": 43,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "the planned hand is 64.3 degrees from vertical at the hover or the grasp",
+        "draw": 46,
+        "reason": "facing_unmet"
+      },
+      {
+        "detail": "waypoint 0 is 0.0168 m from where it was asked to be, held off by link_2 against link_4: no configuration reaching it kept them apart",
+        "draw": 47,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 5 is 0.0604 m from where it was asked to be, held off by base against link_1: no configuration reaching it kept them apart",
+        "draw": 50,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 6 is 0.1344 m from where it was asked to be, held off by base against link_1: no configuration reaching it kept them apart",
+        "draw": 53,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 6 is 0.0156 m from where it was asked to be, held off by link_3 against link_5: no configuration reaching it kept them apart",
+        "draw": 56,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0414 m from where it was asked to be, held off by link_2 against link_4: no configuration reaching it kept them apart",
+        "draw": 57,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0745 m from where it was asked to be, held off by link_2 against link_4: no configuration reaching it kept them apart",
+        "draw": 59,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 6 is 0.3357 m from where it was asked to be, past a tolerance of 0.0040 m",
+        "draw": 60,
+        "reason": "unreachable_path"
+      },
+      {
+        "detail": "waypoint 5 is 0.0148 m from where it was asked to be, held off by base against link_1: no configuration reaching it kept them apart",
+        "draw": 62,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "the planned hand is 42.6 degrees from vertical at the hover or the grasp",
+        "draw": 63,
+        "reason": "facing_unmet"
+      },
+      {
+        "detail": "the planned hand is 40.8 degrees from vertical at the hover or the grasp",
+        "draw": 64,
+        "reason": "facing_unmet"
+      },
+      {
+        "detail": "waypoint 6 is 0.1343 m from where it was asked to be, held off by base against link_1: no configuration reaching it kept them apart",
+        "draw": 65,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "the planned hand is 71.2 degrees from vertical at the hover or the grasp",
+        "draw": 66,
+        "reason": "facing_unmet"
+      },
+      {
+        "detail": "the planned hand is 45.1 degrees from vertical at the hover or the grasp",
+        "draw": 67,
+        "reason": "facing_unmet"
+      },
+      {
+        "detail": "waypoint 0 is 0.0118 m from where it was asked to be, held off by link_2 against link_4: no configuration reaching it kept them apart",
+        "draw": 68,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0127 m from where it was asked to be, held off by link_2 against link_4: no configuration reaching it kept them apart",
+        "draw": 69,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "the planned hand is 65.4 degrees from vertical at the hover or the grasp",
+        "draw": 70,
+        "reason": "facing_unmet"
+      },
+      {
+        "detail": "waypoint 0 is 0.0125 m from where it was asked to be, held off by link_2 against link_4: no configuration reaching it kept them apart",
+        "draw": 71,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0176 m from where it was asked to be, held off by link_2 against link_4: no configuration reaching it kept them apart",
+        "draw": 72,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "row 1 + 0.25: geom against env_fixture_bench_geom by 2.9 mm",
+        "draw": 73,
+        "reason": "transfer_path_through_world"
+      },
+      {
+        "detail": "the planned hand is 39.1 degrees from vertical at the hover or the grasp",
+        "draw": 74,
+        "reason": "facing_unmet"
+      },
+      {
+        "detail": "waypoint 6 is 0.1344 m from where it was asked to be, held off by base against link_1: no configuration reaching it kept them apart",
+        "draw": 75,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0187 m from where it was asked to be, held off by link_2 against link_4: no configuration reaching it kept them apart",
+        "draw": 76,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0759 m from where it was asked to be, held off by link_2 against link_4: no configuration reaching it kept them apart",
+        "draw": 77,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "the span into waypoint 3 passes base 1.1 mm through finger_right, although both of its ends are clear",
+        "draw": 78,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 6 is 0.1344 m from where it was asked to be, held off by base against link_1: no configuration reaching it kept them apart",
+        "draw": 80,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "the planned hand is 47.5 degrees from vertical at the hover or the grasp",
+        "draw": 81,
+        "reason": "facing_unmet"
+      },
+      {
+        "detail": "waypoint 3 is 0.0899 m from where it was asked to be, held off by link_1 against link_3: no configuration reaching it kept them apart",
+        "draw": 82,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "the planned hand is 62.8 degrees from vertical at the hover or the grasp",
+        "draw": 84,
+        "reason": "facing_unmet"
+      },
+      {
+        "detail": "the planned hand is 41.4 degrees from vertical at the hover or the grasp",
+        "draw": 85,
+        "reason": "facing_unmet"
+      },
+      {
+        "detail": "the planned hand is 68.1 degrees from vertical at the hover or the grasp",
+        "draw": 89,
+        "reason": "facing_unmet"
+      },
+      {
+        "detail": "waypoint 0 is 0.0319 m from where it was asked to be, held off by link_2 against link_4: no configuration reaching it kept them apart",
+        "draw": 91,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "the planned hand is 39.7 degrees from vertical at the hover or the grasp",
+        "draw": 92,
+        "reason": "facing_unmet"
+      },
+      {
+        "detail": "the planned hand is 42.8 degrees from vertical at the hover or the grasp",
+        "draw": 93,
+        "reason": "facing_unmet"
+      },
+      {
+        "detail": "waypoint 3 is 0.1904 m from where it was asked to be, held off by link_0 against link_3: no configuration reaching it kept them apart",
+        "draw": 94,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 0 is 0.0272 m from where it was asked to be, held off by link_2 against link_4: no configuration reaching it kept them apart",
+        "draw": 96,
+        "reason": "self_collision_path"
+      },
+      {
+        "detail": "waypoint 4 is 0.1840 m from where it was asked to be, held off by link_1 against link_3: no configuration reaching it kept them apart",
+        "draw": 97,
+        "reason": "self_collision_path"
+      }
+    ]
+  },
+  "repair_budget": 2,
+  "schema": "g08.transition-corpus.v1",
+  "scored_runs_started": false,
+  "success": {
+    "feasible": "the first skill certified on its own gates, the boundary compatible (after any repair), the second skill certified, no joint gate violation on the transitions or the second skill; target at least 95 of 100",
+    "injected": "rejected before execution, or repaired and the boundary verified compatible before the second skill runs; every one of at least 40"
+  }
+}

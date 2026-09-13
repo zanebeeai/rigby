@@ -1,0 +1,45 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-move-to-a-pose-then-pick-up-the-cube-and-set-it-be881d25",
+  "title": "G08 pilot 1: zoo_dual_arm-joint_beyond_limit-03 (joint_beyond_limit, repaired_then_reverified)",
+  "prompt": "move to a pose, then pick up the cube and set it on the platform, checking the boundary between",
+  "tier": "any-robot",
+  "embodiment": "zoo_dual_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T10:51:40Z",
+  "source": {
+    "commit": "cd3448b539",
+    "branch": "feat/g08-transitions",
+    "dirty": true,
+    "how": "python any-robot/scripts/g08_transition_campaign.py --out docs/results/g08-campaign --local any-robot/results/g08-campaign"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "RUNTIME FAILURE: repairs joint_move; second skill certified; gates ['joint_position_limit']."
+  },
+  "notes": "See docs/results/g08-report.md. One composition of two certified skills through the boundary check, one continuous physics record across the first skill, the transitions and the second, rendered at real-time playback with the simulation clock and the composition's outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. Pilot 1: the first scored pass on the corpus as first registered, retained whole. Case kind joint_beyond_limit; handling repaired_then_reverified:joint_move.",
+  "media": [
+    {
+      "path": "docs/results/g08-campaign-pilot-1/injected/zoo_dual_arm-joint_beyond_limit-03/media/episode.mp4",
+      "bytes": 117417,
+      "sha256": "a12cf27e99483d0086f1f20f95125c149562332a9539f5065e012b718b87d25f",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g08-campaign-pilot-1/injected/zoo_dual_arm-joint_beyond_limit-03/media/preview.gif",
+      "bytes": 882040,
+      "sha256": "56220e8414aba562cf509e217458014c5a22f8447c80335e4f37bd2c05cd4819",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G08",
+    "transition",
+    "injected",
+    "joint_beyond_limit",
+    "pilot-1",
+    "failure"
+  ]
+}

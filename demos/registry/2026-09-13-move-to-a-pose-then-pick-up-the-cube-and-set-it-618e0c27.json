@@ -1,0 +1,45 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-move-to-a-pose-then-pick-up-the-cube-and-set-it-618e0c27",
+  "title": "G08 scored: zoo_jaw_arm-resource_conflict-04 (resource_conflict, rejected)",
+  "prompt": "move to a pose, then pick up the cube and set it on the platform, checking the boundary between",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T10:51:18Z",
+  "source": {
+    "commit": "cd3448b539",
+    "branch": "feat/g08-transitions",
+    "dirty": true,
+    "how": "python any-robot/scripts/g08_transition_campaign.py --out docs/results/g08-campaign --local any-robot/results/g08-campaign"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "REJECTED before the second skill moved: resource_conflict; no path was proposed to bridge it."
+  },
+  "notes": "See docs/results/g08-report.md. One composition of two certified skills through the boundary check, one continuous physics record across the first skill, the transitions and the second, rendered at real-time playback with the simulation clock and the composition's outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample. Case kind resource_conflict; handling rejected:resource_conflict.",
+  "media": [
+    {
+      "path": "docs/results/g08-campaign/injected/zoo_jaw_arm-resource_conflict-04/media/episode.mp4",
+      "bytes": 25635,
+      "sha256": "78067eaecba26906f2762dad543a8166b8aa4209898aebda4f4f0ecfb3a48bdb",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g08-campaign/injected/zoo_jaw_arm-resource_conflict-04/media/preview.gif",
+      "bytes": 283332,
+      "sha256": "1852ff1f4d3c994729fe4458b984e7091a90ca7f3269089388c58e015b58c411",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G08",
+    "transition",
+    "injected",
+    "resource_conflict",
+    "scored",
+    "failure"
+  ]
+}
