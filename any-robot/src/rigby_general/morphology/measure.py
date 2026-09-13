@@ -71,9 +71,10 @@ class ClosureEvidence:
     """Member indices, split into the two sides that face each other."""
 
     grasp_point_world: tuple[float, float, float] | None = None
-    """Where the aperture was measured, in world coordinates at the open pose.
+    """A proposed grasp-region point in world coordinates at the open pose.
 
-    An object sized from the aperture belongs where that aperture is."""
+    It lies outside compiled robot colliders. Finite-object fit, supporting
+    contact patches and physical retention still require separate checks."""
 
     grasp_aperture_m: float = 0.0
     """How much room there is between the opposing sides, where an object sits.
@@ -416,17 +417,62 @@ def _first_hit_distance(
     return float(distance)
 
 
+def _point_occupied(graph: KinematicGraph, data: mujoco.MjData, point: np.ndarray) -> bool:
+    """Test a point against compiled convex collision solids, including palms.
+
+    This is only a necessary point-clearance check, never an object-fit test.
+    Mesh half-spaces are cached on this graph, whose model is not mutated.
+    """
+    from scipy.spatial import ConvexHull
+
+    model = graph.model
+    if not hasattr(graph, "_point_hulls"):
+        graph._point_hulls = {}
+    for index in range(model.ngeom):
+        if not (model.geom_contype[index] or model.geom_conaffinity[index]):
+            continue
+        local = data.geom_xmat[index].reshape(3, 3).T @ (point - data.geom_xpos[index])
+        size, kind = model.geom_size[index], model.geom_type[index]
+        margin = 1e-10
+        if kind == mujoco.mjtGeom.mjGEOM_BOX:
+            occupied = bool(np.all(np.abs(local) <= size + margin))
+        elif kind == mujoco.mjtGeom.mjGEOM_SPHERE:
+            occupied = np.linalg.norm(local) <= size[0] + margin
+        elif kind == mujoco.mjtGeom.mjGEOM_ELLIPSOID:
+            occupied = np.linalg.norm(local / size) <= 1 + margin
+        elif kind == mujoco.mjtGeom.mjGEOM_CYLINDER:
+            occupied = np.linalg.norm(local[:2]) <= size[0] + margin and abs(local[2]) <= size[1] + margin
+        elif kind == mujoco.mjtGeom.mjGEOM_CAPSULE:
+            local[2] -= np.clip(local[2], -size[1], size[1])
+            occupied = np.linalg.norm(local) <= size[0] + margin
+        elif kind == mujoco.mjtGeom.mjGEOM_PLANE:
+            occupied = local[2] <= margin
+        elif kind == mujoco.mjtGeom.mjGEOM_MESH:
+            mesh = int(model.geom_dataid[index])
+            if mesh not in graph._point_hulls:
+                start, count = model.mesh_vertadr[mesh], model.mesh_vertnum[mesh]
+                graph._point_hulls[mesh] = ConvexHull(model.mesh_vert[start:start+count]).equations
+            equations = graph._point_hulls[mesh]
+            occupied = bool(np.all(equations[:, :3] @ local + equations[:, 3] <= margin))
+        else:
+            # This profile cannot establish clearance for an unknown solid.
+            occupied = True
+        if occupied:
+            return True
+    return False
+
+
 def grasp_aperture(
     graph: "KinematicGraph",
     data: mujoco.MjData,
     member_bodies: tuple[int, ...],
     opposition_groups: tuple[tuple[int, ...], ...],
 ) -> tuple[float, "np.ndarray | None"]:
-    """Measure the opening the way the number is used: what fits between them.
+    """Measure opposing surface clearance and propose a free grasp-region point.
 
     Stand at the midpoint between the two opposing sides and look at each of
     them. The room between the surfaces those two sightlines land on is the
-    widest thing that can sit there. That is a measurement rather than a rule,
+    sampled gap at that ray. Finite-object fit needs a separate check. The measurement
     so it needs to know nothing about whether the members slide, pivot, or curl,
     and it reduces to the plate separation when the members *are* plates.
 
@@ -486,6 +532,7 @@ def grasp_aperture(
     radius = 0.5 * span
     widest = 0.0
     widest_at: np.ndarray | None = None
+    widest_witnesses: list[np.ndarray] = []
     for u in (-1.0, -0.5, 0.0, 0.5, 1.0):
         for v in (-1.0, -0.5, 0.0, 0.5, 1.0):
             origin = middle + radius * (u * first + v * second)
@@ -498,12 +545,24 @@ def grasp_aperture(
             if forward is None or backward is None:
                 continue
             clear = float(forward + backward)
-            if clear > widest:
+            witness = origin + axis * (forward - backward) / 2.0
+            # Equally wide support patches belong to one grasping region. A
+            # finite object can bridge separated digits even when the central
+            # ray misses a finger. Keep all widest witnesses, not the first
+            # sampled edge. The centroid remains a geometric proposal: object
+            # fit and physical retention still need independent validation.
+            if clear > widest + 1e-12:
                 widest = clear
-                # Midway between the two surfaces the sightline landed on. This
-                # is the point the aperture is an aperture *at*, so it is also
-                # where an object of that width has to be put.
-                widest_at = origin + axis * (forward - backward) / 2.0
+                widest_witnesses = [witness]
+            elif abs(clear - widest) <= 1e-12:
+                widest_witnesses.append(witness)
+    if widest_witnesses:
+        widest_at = np.mean(widest_witnesses, axis=0)
+        if _point_occupied(graph, data, widest_at):
+            # A centroid can cross a central obstacle or concave gap. Select a
+            # measured free witness by geometry only; never use source names.
+            ordered = sorted(widest_witnesses, key=lambda p: (float(np.linalg.norm(p-widest_at)), tuple(p)))
+            widest_at = next((p for p in ordered if not _point_occupied(graph, data, p)), None)
     return widest, widest_at
 
 
@@ -762,6 +821,9 @@ def measure_closure(
             grasp_point = _witness_midpoint(
                 graph, data, groups, evaluate, drive_to_upper
             )
+
+    if grasp_point is not None and _point_occupied(graph, data, grasp_point):
+        grasp_point = None
 
     return ClosureEvidence(
         closes=closes,

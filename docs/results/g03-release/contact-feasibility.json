@@ -1,0 +1,133 @@
+{
+  "bodies": [
+    {
+      "body": "zoo_compact_arm",
+      "physical_contact_feasibility": "unknown; requires G06 object-specific independent checks",
+      "task_infeasible": false
+    },
+    {
+      "body": "zoo_dual_arm",
+      "physical_contact_feasibility": "unknown; requires G06 object-specific independent checks",
+      "task_infeasible": false
+    },
+    {
+      "body": "zoo_hand_arm",
+      "physical_contact_feasibility": "unknown; requires G06 object-specific independent checks",
+      "task_infeasible": false
+    },
+    {
+      "body": "zoo_jaw_arm",
+      "physical_contact_feasibility": "unknown; requires G06 object-specific independent checks",
+      "task_infeasible": false
+    },
+    {
+      "body": "zoo_long_arm",
+      "physical_contact_feasibility": "unknown; requires G06 object-specific independent checks",
+      "task_infeasible": false
+    },
+    {
+      "body": "zoo_tool_arm",
+      "physical_contact_feasibility": "unknown; requires G06 object-specific independent checks",
+      "task_infeasible": false
+    },
+    {
+      "body": "iiwa7",
+      "physical_contact_feasibility": "unknown; requires G06 object-specific independent checks",
+      "task_infeasible": false
+    },
+    {
+      "body": "kuka_lwr",
+      "physical_contact_feasibility": "unknown; requires G06 object-specific independent checks",
+      "task_infeasible": false
+    },
+    {
+      "body": "so101",
+      "physical_contact_feasibility": "unknown; requires G06 object-specific independent checks",
+      "task_infeasible": false
+    },
+    {
+      "body": "panda",
+      "physical_contact_feasibility": "unknown; requires G06 object-specific independent checks",
+      "task_infeasible": false
+    }
+  ],
+  "independent_fixture_results": {
+    "opposing_jaws": {
+      "analytic_points_verified": 5,
+      "contact_q_m": 0.013,
+      "gripping_region_centre_verified": true,
+      "kinematic_contact_witnesses": [
+        {
+          "body": "jaw_left",
+          "contact_rectangle_area_m2": 0.0003240000000000003,
+          "face_gap_m": 0.0,
+          "normal_toward_object": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "body": "jaw_right",
+          "contact_rectangle_area_m2": 0.0003240000000000003,
+          "face_gap_m": 0.0,
+          "normal_toward_object": [
+            -1,
+            0,
+            0
+          ]
+        }
+      ],
+      "label_file_sha256": "29ae833bf138f66ea8f4227d06b89b7f8c32e5a415ff6927199cedf3ba7c6348",
+      "physical_grip_success_proven": false,
+      "rest_collision_boxes_separated": true
+    },
+    "rigid_tool": {
+      "analytic_points_verified": 3,
+      "label_file_sha256": "ad1ffe3d90c9164117b1ed2b49db16a9b52964acaf9433721cb5d62964a1a79d",
+      "physical_grip_success_proven": false,
+      "rest_collision_boxes_separated": true
+    },
+    "three_digits": {
+      "analytic_points_verified": 6,
+      "contact_q_m": 0.013,
+      "gripping_region_centre_verified": true,
+      "kinematic_contact_witnesses": [
+        {
+          "body": "digit_left_low",
+          "contact_rectangle_area_m2": 0.00016200000000000014,
+          "face_gap_m": 0.0,
+          "normal_toward_object": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "body": "digit_left_high",
+          "contact_rectangle_area_m2": 0.00016200000000000014,
+          "face_gap_m": 0.0,
+          "normal_toward_object": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "body": "digit_right",
+          "contact_rectangle_area_m2": 0.0005400000000000004,
+          "face_gap_m": 0.0,
+          "normal_toward_object": [
+            -1,
+            0,
+            0
+          ]
+        }
+      ],
+      "label_file_sha256": "bc278fd17cebfd703c8fd13e9a7cddee4c0d1aead1a160ba6175e731cf504486",
+      "physical_grip_success_proven": false,
+      "rest_collision_boxes_separated": true
+    }
+  },
+  "scope": "Independent analytic box-contact feasibility only; no dynamic lift or retention claims"
+}

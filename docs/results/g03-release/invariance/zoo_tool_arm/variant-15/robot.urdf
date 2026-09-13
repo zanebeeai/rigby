@@ -1,0 +1,177 @@
+<robot name="zoo_tool_arm">
+  <link name="opaque_0012">
+    <visual>
+      <geometry>
+        <cylinder radius="0.040269" length="0.240000" />
+      </geometry>
+    <origin xyz="0.000000 0.000000 0.120000" rpy="0.000000 0.000000 0.000000" />
+      </visual>
+    <inertial>
+      <inertia ixx="0.00572789" ixy="0" ixz="0" iyy="0.00572789" iyz="0" izz="0.00089217" />
+    <mass value="1.100376" />
+      <origin xyz="0.000000 0.000000 0.120000" rpy="0.000000 0.000000 0.000000" />
+      </inertial>
+    <collision>
+      <origin xyz="0.000000 0.000000 0.120000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <cylinder radius="0.040269" length="0.240000" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="opaque_0002" type="revolute">
+    <child link="opaque_0010" />
+    <origin xyz="0.000000 0.000000 0.100000" rpy="0.000000 0.000000 0.000000" />
+    <limit lower="-2.850000" upper="2.850000" effort="140.000" velocity="2.100" />
+  <axis xyz="0.000000 1.000000 0.000000" />
+    <parent link="opaque_0000" />
+    </joint>
+  <link name="opaque_0010">
+    <visual>
+      <origin xyz="0.000000 0.000000 0.035000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <cylinder radius="0.031184" length="0.070000" />
+      </geometry>
+    </visual>
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.035000" rpy="0.000000 0.000000 0.000000" />
+      <inertia ixx="0.00016286" ixy="0" ixz="0" iyy="0.00016286" iyz="0" izz="0.00012156" />
+    <mass value="0.250000" />
+      </inertial>
+    <collision>
+      <origin xyz="0.000000 0.000000 0.035000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <cylinder radius="0.031184" length="0.070000" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="opaque_0005">
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.045000" rpy="0.000000 0.000000 0.000000" />
+      <inertia ixx="0.00012798" ixy="0" ixz="0" iyy="0.00012798" iyz="0" izz="0.00001296" />
+    <mass value="0.180000" />
+      </inertial>
+    <visual>
+      <origin xyz="0.000000 0.000000 0.045000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <cylinder radius="0.012000" length="0.090000" />
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder radius="0.012000" length="0.090000" />
+      </geometry>
+    <origin xyz="0.000000 0.000000 0.045000" rpy="0.000000 0.000000 0.000000" />
+      </collision>
+  </link>
+  <joint name="opaque_0007" type="revolute">
+    <axis xyz="0.000000 1.000000 0.000000" />
+    <origin xyz="0.000000 0.000000 0.240000" rpy="0.000000 0.000000 0.000000" />
+    <parent link="opaque_0009" />
+    <child link="opaque_0004" />
+    <limit lower="-2.850000" upper="2.850000" effort="140.000" velocity="2.100" />
+  </joint>
+  <joint name="opaque_0006" type="fixed">
+    <limit lower="0.000000" upper="0.000000" effort="0.000" velocity="0.000" />
+  <origin xyz="0.000000 0.000000 0.070000" rpy="0.000000 0.000000 0.000000" />
+    <axis xyz="0.000000 0.000000 1.000000" />
+    <parent link="opaque_0010" />
+    <child link="opaque_0005" />
+    </joint>
+<link name="opaque_0009">
+    <visual>
+      <geometry>
+        <cylinder radius="0.052000" length="0.240000" />
+      </geometry>
+    <origin xyz="0.000000 0.000000 0.120000" rpy="0.000000 0.000000 0.000000" />
+      </visual>
+    <inertial>
+      <mass value="1.834891" />
+      <origin xyz="0.000000 0.000000 0.120000" rpy="0.000000 0.000000 0.000000" />
+      <inertia ixx="0.01004786" ixy="0" ixz="0" iyy="0.01004786" iyz="0" izz="0.00248077" />
+    </inertial>
+    <collision>
+      <geometry>
+        <cylinder radius="0.052000" length="0.240000" />
+      </geometry>
+    <origin xyz="0.000000 0.000000 0.120000" rpy="0.000000 0.000000 0.000000" />
+      </collision>
+  </link>
+  <link name="opaque_0003">
+    <collision>
+      <origin xyz="0.000000 0.000000 0.070000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <cylinder radius="0.100000" length="0.140000" />
+      </geometry>
+    </collision>
+  <inertial>
+      <origin xyz="0.000000 0.000000 0.070000" rpy="0.000000 0.000000 0.000000" />
+      <inertia ixx="0.02480000" ixy="0" ixz="0" iyy="0.02480000" iyz="0" izz="0.03000000" />
+    <mass value="6.000000" />
+      </inertial>
+    <visual>
+      <origin xyz="0.000000 0.000000 0.070000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <cylinder radius="0.100000" length="0.140000" />
+      </geometry>
+    </visual>
+    </link>
+  <joint name="opaque_0008" type="revolute">
+    <child link="opaque_0012" />
+    <origin xyz="0.000000 0.000000 0.300000" rpy="0.000000 0.000000 0.000000" />
+    <axis xyz="0.000000 1.000000 0.000000" />
+    <parent link="opaque_0004" />
+    <limit lower="-2.850000" upper="2.850000" effort="140.000" velocity="2.100" />
+  </joint>
+  <link name="opaque_0000">
+    <collision>
+      <origin xyz="0.000000 0.000000 0.050000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <cylinder radius="0.035437" length="0.100000" />
+      </geometry>
+    </collision>
+  <visual>
+      <origin xyz="0.000000 0.000000 0.050000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <cylinder radius="0.035437" length="0.100000" />
+      </geometry>
+    </visual>
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.050000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.355055" />
+      <inertia ixx="0.00040734" ixy="0" ixz="0" iyy="0.00040734" iyz="0" izz="0.00022293" />
+    </inertial>
+    </link>
+  <joint name="opaque_0011" type="revolute">
+    <limit lower="-2.850000" upper="2.850000" effort="140.000" velocity="2.100" />
+  <parent link="opaque_0003" />
+    <axis xyz="0.000000 0.000000 1.000000" />
+    <origin xyz="0.000000 0.000000 0.140000" rpy="0.000000 0.000000 0.000000" />
+    <child link="opaque_0009" />
+    </joint>
+  <joint name="opaque_0001" type="revolute">
+    <axis xyz="0.000000 0.000000 1.000000" />
+    <origin xyz="0.000000 0.000000 0.240000" rpy="0.000000 0.000000 0.000000" />
+    <child link="opaque_0000" />
+    <limit lower="-2.850000" upper="2.850000" effort="140.000" velocity="2.100" />
+  <parent link="opaque_0012" />
+    </joint>
+  <link name="opaque_0004">
+    <inertial>
+      <mass value="1.776175" />
+      <origin xyz="0.000000 0.000000 0.150000" rpy="0.000000 0.000000 0.000000" />
+      <inertia ixx="0.01425113" ixy="0" ixz="0" iyy="0.01425113" iyz="0" izz="0.00185963" />
+    </inertial>
+    <collision>
+      <geometry>
+        <cylinder radius="0.045760" length="0.300000" />
+      </geometry>
+    <origin xyz="0.000000 0.000000 0.150000" rpy="0.000000 0.000000 0.000000" />
+      </collision>
+  <visual>
+      <origin xyz="0.000000 0.000000 0.150000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <cylinder radius="0.045760" length="0.300000" />
+      </geometry>
+    </visual>
+    </link>
+  </robot>
