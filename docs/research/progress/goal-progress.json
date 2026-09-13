@@ -4,7 +4,7 @@
   "goal_catalog": "docs/research/rigby-verifiable-goals.json",
   "goal_catalog_sha256": "3672ebf5fa10ff4216fa0213499d5988281f2ebbc611500e8526afe6e618b250",
   "started_at_utc": "2026-09-12T02:34:49.841258+00:00",
-  "current_goal": "G07",
+  "current_goal": "G08",
   "overall_status": "active",
   "authorization": {
     "commits_and_pull_requests": true,
@@ -816,39 +816,122 @@
     {
       "id": "G07",
       "title": "Implement recursive superprimitive contracts",
-      "status": "planned",
+      "status": "complete",
       "criteria": [
         {
           "id": "G07.A01",
           "requirement": "Use one neutral typed contract for leaves and composites: arguments, requirements, initiation, invariants, effects, termination, timeout, recovery, resource ownership and validity context.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "core/src/rigby_core/skills/contract.py",
+            "docs/results/g07-trees/schema/SkillLibraryV1.schema.json",
+            "core/tests/test_skills_contract.py",
+            "docs/results/g07-report.md"
+          ]
         },
         {
           "id": "G07.A02",
           "requirement": "Execute Sequence, Selector, Observe, Primitive and bounded RepeatUntil at nesting depth at least 4; represent Parallel with explicit resource conflicts.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "docs/results/g07-trees/example/clear_bench.tree.json (depth 5)",
+            "docs/results/g07-trees/physical/<run>/physical",
+            "core/tests/test_skills_executor.py (Parallel with disjoint ownership)",
+            "docs/results/g07-validation.json"
+          ]
         },
         {
           "id": "G07.A03",
           "requirement": "Reject cycles, unbounded retries, unknown predicates and incompatible resource ownership; test success, failure, unknown and interruption at each node.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "core/tests/test_skills_contract.py (refusals)",
+            "core/tests/test_skills_executor.py (four verdicts per kind)",
+            "docs/results/g07-trees/scripted/*.record.json",
+            "docs/results/g07-trees/physical (success, failure, interruption, refusal on bodies)"
+          ]
         },
         {
           "id": "G07.A04",
           "requirement": "Round-trip persisted definitions without changing meaning; no thumb/finger/arm names are required by the neutral contract.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "docs/results/g07-trees/index.json (round_trip)",
+            "core/tests/test_skills_contract.py (round trip; no limb, digit or joint in the schema)"
+          ]
         }
       ],
       "demo_requirement": null,
       "demo_status": "not_required",
-      "assessment_complete": false,
-      "capability_supported": false,
-      "commits": [],
-      "pull_requests": []
+      "assessment_complete": true,
+      "capability_supported": true,
+      "commits": [
+        "162bc93",
+        "206ea6b",
+        "3e91255",
+        "5c477d9",
+        "776a0b1",
+        "d7a0431"
+      ],
+      "pull_requests": [
+        "https://github.com/zanebeeai/rigby/pull/35"
+      ],
+      "discovered_prerequisites": [
+        {
+          "finding": "A second leaf continuing the world a first left starts from the exact state and instant the first recorded last; that sample's command was never applied, so the recorder must let the resumed run replace it or the recorded controls cannot replay across the boundary.",
+          "evidence": "core/src/rigby_core/simulation/recording.py (amend_last_action); any-robot/tests/test_general_skill_runtime.py",
+          "required_action": "Done: a transfer can resume from a recorded state and clock, and the hand-off amends the boundary sample; the multifinger hand's four-leaf run replays whole."
+        }
+      ],
+      "demo_evidence": [
+        "docs/results/g07-trees/physical/dual-selector/media/episode.mp4",
+        "docs/results/g07-trees/physical/hand-budget/media/episode.mp4",
+        "docs/results/g07-trees/physical/jaw-interrupt/media/episode.mp4",
+        "docs/results/g07-trees/physical/compact-refused/media/episode.mp4",
+        "demos/registry (G07 entries)"
+      ],
+      "evidence_worktree": "C:/Users/hocke/GitHub/rigby-g07",
+      "work_basis": "Branch feat/g07-skill-contracts stacked on feat/g06-contact-transfer (PR 34); lands after it.",
+      "integration_status": "open_pr_ci_infrastructure_blocked",
+      "completed_at_utc": "2026-09-13T09:36:25.724973+00:00",
+      "supported_scope": "One neutral typed contract for leaves and composites in rigby_core.skills; a library that refuses cycles, unbounded retries, unknown predicates and incompatible ownership; expansion into task trees; an executor for Sequence, Selector, Parallel, RepeatUntil, Observe and Primitive with success, failure, unknown and interrupted verdicts recorded per node; the leaves bound to the G06 transfer on physics. No transition validation, recovery synthesis, replanning or language.",
+      "local_validation": {
+        "example_depth": 5,
+        "scripted": {
+          "failure-budget-exhausted": "failure",
+          "failure-no-progress": "failure",
+          "interrupted-mid-leaf": "interrupted",
+          "success-first-alternative": "success",
+          "success-second-alternative": "success",
+          "unknown-nothing-observed": "unknown"
+        },
+        "physical": {
+          "compact-refused": "failure",
+          "dual-selector": "success",
+          "hand-budget": "failure",
+          "jaw-interrupt": "interrupted"
+        },
+        "round_trip": {
+          "library_equal": true,
+          "library_sha256_equal": true,
+          "tree_sha256_equal": true
+        },
+        "tests": {
+          "anyrobot_failed": 0,
+          "anyrobot_passed": 409,
+          "anyrobot_policyworker_failed": 0,
+          "anyrobot_policyworker_passed": 1,
+          "anyrobot_policyworker_skipped": 0,
+          "anyrobot_skipped": 5,
+          "core_failed": 0,
+          "core_passed": 322,
+          "core_skipped": 2,
+          "exotic_failed": 0,
+          "exotic_passed": 10,
+          "exotic_skipped": 0
+        },
+        "generation_calls": 0
+      }
     },
     {
       "id": "G08",
@@ -1649,10 +1732,10 @@
   ],
   "milestones": [],
   "next_actions": [
-    "Begin G07 in pursuit order on top of the certified transfer primitive; the multifinger hand's fixed-world failure (fingertip pinch lost at the top of the lift) is the first natural failure to collect for G13.",
-    "Restore GitHub Actions billing/allowance and rerun PRs 27-34; merge only after required checks are green, bottom of the stack first.",
+    "Begin G08 (validate and repair transitions between certified skills) on the skill contract and the transfer leaves; the executor's per-node records are the transition evidence to build on.",
+    "Restore GitHub Actions billing/allowance and rerun PRs 27-35; merge only after required checks are green, bottom of the stack first.",
     "G04 independent language validation remains pending on U3_independent_review.",
     "Preserve all 30 goals and their frozen criteria."
   ],
-  "updated_at_utc": "2026-09-13T08:57:05.236049+00:00"
+  "updated_at_utc": "2026-09-13T09:36:25.724973+00:00"
 }
