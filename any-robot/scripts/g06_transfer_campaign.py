@@ -9,10 +9,11 @@ classed feasible, over the registered seeds: one attempt per seed, the cube
 displaced, its mass and friction scaled by the registered perturbation draws.
 Infeasible bodies are attempted once anyway, so their typed refusal is on
 record beside the map's reason. Every trial keeps its full physical trace
-locally; the canonical trials, the first five successes and the first five
-failures of each kind per body are sealed as replayable bundles and rendered
-to full-duration video, so no failure class is ever represented by its
-numbers alone. No API or model calls.
+locally; the canonical trials are sealed as replayable bundles under --out,
+and the first five successes and the first five failures of each kind per
+body are sealed under --local and rendered to full-duration video under
+--out, so no failure class is ever represented by its numbers alone. No API
+or model calls.
 
     python any-robot/scripts/g06_transfer_campaign.py --out docs/results/g06-campaign \
         --local any-robot/results/g06-campaign [--bodies a,b] [--seeds N]
@@ -272,10 +273,15 @@ def main() -> int:
                 keep = rendered_failures.get(result.failed_gate, 0) < args.render_failures_per_gate
                 rendered_failures[result.failed_gate] = rendered_failures.get(result.failed_gate, 0) + int(keep)
             if keep:
-                sealed = seal(out / "fixed" / f"seed-{draw['seed']:03d}" / "physical", label=f"{zoo_id}-seed{draw['seed']:03d}", robot=robot, source=source, scene=scene,
+                # A seeded trial's replayable bundle (a 500 Hz physical record
+                # runs to several megabytes) lives in the local results tree;
+                # its full-duration video, frame map and summary go beside the
+                # canonical evidence under --out.
+                bundle_dir = args.local / zoo_id / f"seed-{draw['seed']:03d}" / "physical"
+                sealed = seal(bundle_dir, label=f"{zoo_id}-seed{draw['seed']:03d}", robot=robot, source=source, scene=scene,
                               env=trial_env, goal=goal, result=result, recorder=recorder, track="strict_fixed_world", trial={"kind": "seeded_fixed", "seed": draw["seed"], "draw": draw},
                               caption=f"{zoo_id} | transfer | strict fixed world | seed {draw['seed']}" + ("" if result.certified else f" | {result.failed_gate}"))
-                media = render_bundle(out / "fixed" / f"seed-{draw['seed']:03d}" / "physical", out / "fixed" / f"seed-{draw['seed']:03d}" / "media", expected_digest=sealed["sha256"])
+                media = render_bundle(bundle_dir, out / "fixed" / f"seed-{draw['seed']:03d}" / "media", expected_digest=sealed["sha256"])
                 row["bundle"] = sealed
                 row["media_sha256"] = media["sha256"]
                 if result.certified:
