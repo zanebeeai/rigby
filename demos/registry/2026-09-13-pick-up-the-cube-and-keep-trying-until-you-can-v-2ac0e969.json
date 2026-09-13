@@ -1,0 +1,45 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-keep-trying-until-you-can-v-2ac0e969",
+  "title": "G11 reuse: acquire_until_held on zoo_long_arm in near_heavy (success)",
+  "prompt": "pick up the cube and keep trying until you can verify you are holding it",
+  "tier": "any-robot",
+  "embodiment": "zoo_long_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T19:02:17Z",
+  "source": {
+    "commit": "d29eb0ce7d",
+    "branch": "feat/g11-skill-library",
+    "dirty": true,
+    "how": "python any-robot/scripts/g11_skill_store_campaign.py <phase> --out docs/results/g11-store --local any-robot/results/g11-store"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: acquire_until_held reused from the persisted store in the near_heavy layout under certificate a0057cadac3b v1; verdict success at 11.2 s of physics."
+  },
+  "notes": "See docs/results/g11-report.md. One tree run on physics from the skill store: a certificate promoted only after an independent validation set passed, reused only where its six-facet context matches exactly, invalidated when a dimension changes and revalidated by a new outcome; restarts open a fresh session on the checkpoint's physical state and reconstruct their belief from the sensors alone. Rendered from recorded states at real-time playback with the simulation clock and the tree's verdict in the banner; frames.json beside the MP4 maps every frame to its recorded sample.",
+  "media": [
+    {
+      "path": "docs/results/g11-store/reuse/zoo_long_arm-near_heavy-acquire_until_held/media/episode.mp4",
+      "bytes": 112255,
+      "sha256": "5606b409a4130dc85bb51b44817416bda31127c076e2d3c7fa368b5bb5790210",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g11-store/reuse/zoo_long_arm-near_heavy-acquire_until_held/media/preview.gif",
+      "bytes": 1395904,
+      "sha256": "4f5dcd6552f662145ba9878f541a7bff68408864ec69610815dc162f50efe93f",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G11",
+    "reuse",
+    "near_heavy",
+    "acquire_until_held",
+    "zoo_long_arm",
+    "success"
+  ]
+}

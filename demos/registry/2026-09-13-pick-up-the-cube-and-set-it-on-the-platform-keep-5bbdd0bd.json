@@ -1,0 +1,45 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-keep-5bbdd0bd",
+  "title": "G11 reuse: transfer_object on zoo_jaw_arm in platform_far (success)",
+  "prompt": "pick up the cube and set it on the platform; keep going until you can verify it is placed",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T19:02:14Z",
+  "source": {
+    "commit": "d29eb0ce7d",
+    "branch": "feat/g11-skill-library",
+    "dirty": true,
+    "how": "python any-robot/scripts/g11_skill_store_campaign.py <phase> --out docs/results/g11-store --local any-robot/results/g11-store"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: transfer_object reused from the persisted store in the platform_far layout under certificate da718da89b50 v1; verdict success at 15.6 s of physics."
+  },
+  "notes": "See docs/results/g11-report.md. One tree run on physics from the skill store: a certificate promoted only after an independent validation set passed, reused only where its six-facet context matches exactly, invalidated when a dimension changes and revalidated by a new outcome; restarts open a fresh session on the checkpoint's physical state and reconstruct their belief from the sensors alone. Rendered from recorded states at real-time playback with the simulation clock and the tree's verdict in the banner; frames.json beside the MP4 maps every frame to its recorded sample.",
+  "media": [
+    {
+      "path": "docs/results/g11-store/reuse/zoo_jaw_arm-platform_far-transfer_object/media/episode.mp4",
+      "bytes": 159379,
+      "sha256": "d75a7069734bce0d3888859acac1a3848007e3c9dc65355877324c4e47148a0a",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g11-store/reuse/zoo_jaw_arm-platform_far-transfer_object/media/preview.gif",
+      "bytes": 985882,
+      "sha256": "89f08d82368c121582f9be5c9aec7ecf516e335042ebd1aca00da8044cc7d094",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G11",
+    "reuse",
+    "platform_far",
+    "transfer_object",
+    "zoo_jaw_arm",
+    "success"
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-keep-2257385a",
+  "title": "G11 interrupt: zoo_jaw_arm after leaf 4 (transport)",
+  "prompt": "pick up the cube and set it on the platform; keep going until you can verify it is placed",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T19:02:31Z",
+  "source": {
+    "commit": "d29eb0ce7d",
+    "branch": "feat/g11-skill-library",
+    "dirty": true,
+    "how": "python any-robot/scripts/g11_skill_store_campaign.py <phase> --out docs/results/g11-store --local any-robot/results/g11-store"
+  },
+  "outcome": {
+    "state": "partial",
+    "text": "INTERRUPTED at the safe boundary after leaf 4 (transport) at 11.6 s; the checkpoint carries the full physical state and the clock, and none of the belief is trusted."
+  },
+  "notes": "See docs/results/g11-report.md. One tree run on physics from the skill store: a certificate promoted only after an independent validation set passed, reused only where its six-facet context matches exactly, invalidated when a dimension changes and revalidated by a new outcome; restarts open a fresh session on the checkpoint's physical state and reconstruct their belief from the sensors alone. Rendered from recorded states at real-time playback with the simulation clock and the tree's verdict in the banner; frames.json beside the MP4 maps every frame to its recorded sample.",
+  "media": [
+    {
+      "path": "docs/results/g11-store/restart/zoo_jaw_arm-restart-after-04-transport/before/media/episode.mp4",
+      "bytes": 125421,
+      "sha256": "2d7d1b1d476950f8885b44a3aa30c6856302edcc772086eceb69c1a83eb7cab2",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g11-store/restart/zoo_jaw_arm-restart-after-04-transport/before/media/preview.gif",
+      "bytes": 1046043,
+      "sha256": "d424bca481897ca3e6ea5b6ac6c4015e8a98cd8fa3cb87d396b097e103aba6cc",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G11",
+    "restart",
+    "before",
+    "zoo_jaw_arm",
+    "boundary-4"
+  ]
+}

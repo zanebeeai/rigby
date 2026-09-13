@@ -1,0 +1,482 @@
+{
+  "certificates": [
+    "c28c350a044e250984e2251df915db04",
+    "5fda2c8bf91cf05d08c7a0a535d4f309",
+    "7924663b132c4ab54f2b8eb47c78f60a",
+    "da718da89b5060d8b4ffb781bae6307b",
+    "274058bc6b9c4819d3efdec663b64d9d",
+    "d4bf21675f88c141720a2fc54f3d793a",
+    "ed430c59cb5ff6ef3b85609816666f91",
+    "a0057cadac3bef2e9304274a8e3d11eb",
+    "875b1adb1e21593454e0b76029d42e9b",
+    "cb0e66bfec1944cdbd92355615a06518",
+    "2a0dbf8e86c68a1dd5bd5ade395b47d0",
+    "b81dc35adab101762e015ee7d9820f65"
+  ],
+  "files": {
+    "certificates/274058bc6b9c4819d3efdec663b64d9d.json": "68fb8d38dad64bddeadbd1ebd2446904a51f0fdd2c09fcae0059b7dc005b2791",
+    "certificates/2a0dbf8e86c68a1dd5bd5ade395b47d0.json": "17d729d89b288aa88c602346d2e129675c6ede8bc248eb2038ecbf98ec3c0b71",
+    "certificates/5fda2c8bf91cf05d08c7a0a535d4f309.json": "e75bf1842cb7c2a8a533bbc40e2a522577a39be2b8f0adea4a5481c0dac42b34",
+    "certificates/7924663b132c4ab54f2b8eb47c78f60a.json": "841196a62370849abfd53d06046f9fe3212d7e6e6d3ea76ca33fcd2f38b5caae",
+    "certificates/875b1adb1e21593454e0b76029d42e9b.json": "7d4e63a2e61ef8fea4f15ecaf0083e819aaad7c22439631744b9cf20a6b1d9e2",
+    "certificates/a0057cadac3bef2e9304274a8e3d11eb.json": "7bac26b814d13c2a20e1df5c8285d88bce71d22ea4c7ff4fadc88a910cf953b6",
+    "certificates/b81dc35adab101762e015ee7d9820f65.json": "e04879bc1669709be9f9a2e644ac19953386d433a025bee1940b3212cd93f795",
+    "certificates/c28c350a044e250984e2251df915db04.json": "ea681878fb82060b1e87cd1f16a03fa630d746ccb0234b3b875c3bd1ec739dbe",
+    "certificates/cb0e66bfec1944cdbd92355615a06518.json": "cb0ecc81a917c02e0988387ecb8515c8fdacddc012e848e2a635fe022d431a9e",
+    "certificates/d4bf21675f88c141720a2fc54f3d793a.json": "d04f9a5112114b53c09cd39639045e2b760ab26de88498a4a1d683286520a04c",
+    "certificates/da718da89b5060d8b4ffb781bae6307b.json": "65d14fb3c235e0214f44800c82fca3204ed27072337b3ece0ef988c7c9895420",
+    "certificates/ed430c59cb5ff6ef3b85609816666f91.json": "8934221dc7f91ebb43e3ded450e587098a4f4677feb00cedb40f3ca793c3b75e",
+    "libraries/8af1e9cda3a446e7c75f53c0074c92b01ae51fefabfa2fef0c4cb33ae74d9f47.json": "8af1e9cda3a446e7c75f53c0074c92b01ae51fefabfa2fef0c4cb33ae74d9f47"
+  },
+  "history": [
+    {
+      "at_utc": "2026-09-13T18:45:01.173850+00:00",
+      "certificate_id": null,
+      "detail": {
+        "library_id": "transfer_object_v1",
+        "sha256": "8af1e9cda3a446e7c75f53c0074c92b01ae51fefabfa2fef0c4cb33ae74d9f47"
+      },
+      "event": "library_added",
+      "skill_id": null
+    },
+    {
+      "at_utc": "2026-09-13T18:46:55.749346+00:00",
+      "certificate_id": "c28c350a044e250984e2251df915db04",
+      "detail": {
+        "reasons": [
+          "validation_failed:10/12<11"
+        ]
+      },
+      "event": "rejected",
+      "skill_id": "transfer_object"
+    },
+    {
+      "at_utc": "2026-09-13T18:46:55.749346+00:00",
+      "certificate_id": "5fda2c8bf91cf05d08c7a0a535d4f309",
+      "detail": {
+        "reasons": [
+          "validation_failed:10/12<11"
+        ]
+      },
+      "event": "rejected",
+      "skill_id": "acquire_until_held"
+    },
+    {
+      "at_utc": "2026-09-13T18:46:55.749346+00:00",
+      "certificate_id": "7924663b132c4ab54f2b8eb47c78f60a",
+      "detail": {
+        "episodes": 12,
+        "successes": 12,
+        "supersedes": null,
+        "validation_set": "g11-validation-zoo_dual_arm"
+      },
+      "event": "promoted",
+      "skill_id": "observe_object"
+    },
+    {
+      "at_utc": "2026-09-13T18:48:10.157687+00:00",
+      "certificate_id": "da718da89b5060d8b4ffb781bae6307b",
+      "detail": {
+        "episodes": 12,
+        "successes": 12,
+        "supersedes": null,
+        "validation_set": "g11-validation-zoo_jaw_arm"
+      },
+      "event": "promoted",
+      "skill_id": "transfer_object"
+    },
+    {
+      "at_utc": "2026-09-13T18:48:10.157687+00:00",
+      "certificate_id": "274058bc6b9c4819d3efdec663b64d9d",
+      "detail": {
+        "episodes": 12,
+        "successes": 12,
+        "supersedes": null,
+        "validation_set": "g11-validation-zoo_jaw_arm"
+      },
+      "event": "promoted",
+      "skill_id": "acquire_until_held"
+    },
+    {
+      "at_utc": "2026-09-13T18:48:10.157687+00:00",
+      "certificate_id": "d4bf21675f88c141720a2fc54f3d793a",
+      "detail": {
+        "episodes": 12,
+        "successes": 12,
+        "supersedes": null,
+        "validation_set": "g11-validation-zoo_jaw_arm"
+      },
+      "event": "promoted",
+      "skill_id": "observe_object"
+    },
+    {
+      "at_utc": "2026-09-13T18:49:23.954618+00:00",
+      "certificate_id": "ed430c59cb5ff6ef3b85609816666f91",
+      "detail": {
+        "episodes": 12,
+        "successes": 12,
+        "supersedes": null,
+        "validation_set": "g11-validation-zoo_long_arm"
+      },
+      "event": "promoted",
+      "skill_id": "transfer_object"
+    },
+    {
+      "at_utc": "2026-09-13T18:49:23.954618+00:00",
+      "certificate_id": "a0057cadac3bef2e9304274a8e3d11eb",
+      "detail": {
+        "episodes": 12,
+        "successes": 12,
+        "supersedes": null,
+        "validation_set": "g11-validation-zoo_long_arm"
+      },
+      "event": "promoted",
+      "skill_id": "acquire_until_held"
+    },
+    {
+      "at_utc": "2026-09-13T18:49:23.954618+00:00",
+      "certificate_id": "875b1adb1e21593454e0b76029d42e9b",
+      "detail": {
+        "episodes": 12,
+        "successes": 12,
+        "supersedes": null,
+        "validation_set": "g11-validation-zoo_long_arm"
+      },
+      "event": "promoted",
+      "skill_id": "observe_object"
+    },
+    {
+      "at_utc": "2026-09-13T18:49:27.229039+00:00",
+      "certificate_id": null,
+      "detail": {
+        "candidates": 3,
+        "reason": "no valid promoted certificate; the most similar (c28c350a044e250984e2251df915db04) is candidate"
+      },
+      "event": "retrieved",
+      "skill_id": "transfer_object"
+    },
+    {
+      "at_utc": "2026-09-13T18:49:27.437175+00:00",
+      "certificate_id": null,
+      "detail": {
+        "candidates": 3,
+        "reason": "no valid promoted certificate; the most similar (5fda2c8bf91cf05d08c7a0a535d4f309) is candidate"
+      },
+      "event": "retrieved",
+      "skill_id": "acquire_until_held"
+    },
+    {
+      "at_utc": "2026-09-13T18:49:27.773993+00:00",
+      "certificate_id": "7924663b132c4ab54f2b8eb47c78f60a",
+      "detail": {
+        "candidates": 3,
+        "reason": "promoted certificate 7924663b132c4ab54f2b8eb47c78f60a v1 matches every facet and range"
+      },
+      "event": "retrieved",
+      "skill_id": "observe_object"
+    },
+    {
+      "at_utc": "2026-09-13T18:49:31.093927+00:00",
+      "certificate_id": null,
+      "detail": {
+        "candidates": 3,
+        "reason": "no valid promoted certificate; the most similar (c28c350a044e250984e2251df915db04) is candidate"
+      },
+      "event": "retrieved",
+      "skill_id": "transfer_object"
+    },
+    {
+      "at_utc": "2026-09-13T18:49:31.437548+00:00",
+      "certificate_id": null,
+      "detail": {
+        "candidates": 3,
+        "reason": "no valid promoted certificate; the most similar (5fda2c8bf91cf05d08c7a0a535d4f309) is candidate"
+      },
+      "event": "retrieved",
+      "skill_id": "acquire_until_held"
+    },
+    {
+      "at_utc": "2026-09-13T18:49:31.800814+00:00",
+      "certificate_id": "7924663b132c4ab54f2b8eb47c78f60a",
+      "detail": {
+        "candidates": 3,
+        "reason": "promoted certificate 7924663b132c4ab54f2b8eb47c78f60a v1 matches every facet and range"
+      },
+      "event": "retrieved",
+      "skill_id": "observe_object"
+    },
+    {
+      "at_utc": "2026-09-13T18:49:33.940149+00:00",
+      "certificate_id": null,
+      "detail": {
+        "candidates": 3,
+        "reason": "no valid promoted certificate; the most similar (c28c350a044e250984e2251df915db04) is candidate"
+      },
+      "event": "retrieved",
+      "skill_id": "transfer_object"
+    },
+    {
+      "at_utc": "2026-09-13T18:49:34.289899+00:00",
+      "certificate_id": null,
+      "detail": {
+        "candidates": 3,
+        "reason": "no valid promoted certificate; the most similar (5fda2c8bf91cf05d08c7a0a535d4f309) is candidate"
+      },
+      "event": "retrieved",
+      "skill_id": "acquire_until_held"
+    },
+    {
+      "at_utc": "2026-09-13T18:49:34.645244+00:00",
+      "certificate_id": "7924663b132c4ab54f2b8eb47c78f60a",
+      "detail": {
+        "candidates": 3,
+        "reason": "promoted certificate 7924663b132c4ab54f2b8eb47c78f60a v1 matches every facet and range"
+      },
+      "event": "retrieved",
+      "skill_id": "observe_object"
+    },
+    {
+      "at_utc": "2026-09-13T18:49:36.636886+00:00",
+      "certificate_id": "da718da89b5060d8b4ffb781bae6307b",
+      "detail": {
+        "candidates": 3,
+        "reason": "promoted certificate da718da89b5060d8b4ffb781bae6307b v1 matches every facet and range"
+      },
+      "event": "retrieved",
+      "skill_id": "transfer_object"
+    },
+    {
+      "at_utc": "2026-09-13T18:49:48.017020+00:00",
+      "certificate_id": "274058bc6b9c4819d3efdec663b64d9d",
+      "detail": {
+        "candidates": 3,
+        "reason": "promoted certificate 274058bc6b9c4819d3efdec663b64d9d v1 matches every facet and range"
+      },
+      "event": "retrieved",
+      "skill_id": "acquire_until_held"
+    },
+    {
+      "at_utc": "2026-09-13T18:49:56.786075+00:00",
+      "certificate_id": "d4bf21675f88c141720a2fc54f3d793a",
+      "detail": {
+        "candidates": 3,
+        "reason": "promoted certificate d4bf21675f88c141720a2fc54f3d793a v1 matches every facet and range"
+      },
+      "event": "retrieved",
+      "skill_id": "observe_object"
+    },
+    {
+      "at_utc": "2026-09-13T18:49:58.810351+00:00",
+      "certificate_id": "da718da89b5060d8b4ffb781bae6307b",
+      "detail": {
+        "candidates": 3,
+        "reason": "promoted certificate da718da89b5060d8b4ffb781bae6307b v1 matches every facet and range"
+      },
+      "event": "retrieved",
+      "skill_id": "transfer_object"
+    },
+    {
+      "at_utc": "2026-09-13T18:50:10.074124+00:00",
+      "certificate_id": "274058bc6b9c4819d3efdec663b64d9d",
+      "detail": {
+        "candidates": 3,
+        "reason": "promoted certificate 274058bc6b9c4819d3efdec663b64d9d v1 matches every facet and range"
+      },
+      "event": "retrieved",
+      "skill_id": "acquire_until_held"
+    },
+    {
+      "at_utc": "2026-09-13T18:50:18.462233+00:00",
+      "certificate_id": "d4bf21675f88c141720a2fc54f3d793a",
+      "detail": {
+        "candidates": 3,
+        "reason": "promoted certificate d4bf21675f88c141720a2fc54f3d793a v1 matches every facet and range"
+      },
+      "event": "retrieved",
+      "skill_id": "observe_object"
+    },
+    {
+      "at_utc": "2026-09-13T18:50:20.663865+00:00",
+      "certificate_id": "da718da89b5060d8b4ffb781bae6307b",
+      "detail": {
+        "candidates": 3,
+        "reason": "promoted certificate da718da89b5060d8b4ffb781bae6307b v1 matches every facet and range"
+      },
+      "event": "retrieved",
+      "skill_id": "transfer_object"
+    },
+    {
+      "at_utc": "2026-09-13T18:50:31.423159+00:00",
+      "certificate_id": "274058bc6b9c4819d3efdec663b64d9d",
+      "detail": {
+        "candidates": 3,
+        "reason": "promoted certificate 274058bc6b9c4819d3efdec663b64d9d v1 matches every facet and range"
+      },
+      "event": "retrieved",
+      "skill_id": "acquire_until_held"
+    },
+    {
+      "at_utc": "2026-09-13T18:50:40.641946+00:00",
+      "certificate_id": "d4bf21675f88c141720a2fc54f3d793a",
+      "detail": {
+        "candidates": 3,
+        "reason": "promoted certificate d4bf21675f88c141720a2fc54f3d793a v1 matches every facet and range"
+      },
+      "event": "retrieved",
+      "skill_id": "observe_object"
+    },
+    {
+      "at_utc": "2026-09-13T18:50:43.010856+00:00",
+      "certificate_id": "ed430c59cb5ff6ef3b85609816666f91",
+      "detail": {
+        "candidates": 3,
+        "reason": "promoted certificate ed430c59cb5ff6ef3b85609816666f91 v1 matches every facet and range"
+      },
+      "event": "retrieved",
+      "skill_id": "transfer_object"
+    },
+    {
+      "at_utc": "2026-09-13T18:50:55.147789+00:00",
+      "certificate_id": "a0057cadac3bef2e9304274a8e3d11eb",
+      "detail": {
+        "candidates": 3,
+        "reason": "promoted certificate a0057cadac3bef2e9304274a8e3d11eb v1 matches every facet and range"
+      },
+      "event": "retrieved",
+      "skill_id": "acquire_until_held"
+    },
+    {
+      "at_utc": "2026-09-13T18:51:04.921721+00:00",
+      "certificate_id": "875b1adb1e21593454e0b76029d42e9b",
+      "detail": {
+        "candidates": 3,
+        "reason": "promoted certificate 875b1adb1e21593454e0b76029d42e9b v1 matches every facet and range"
+      },
+      "event": "retrieved",
+      "skill_id": "observe_object"
+    },
+    {
+      "at_utc": "2026-09-13T18:51:07.119080+00:00",
+      "certificate_id": "ed430c59cb5ff6ef3b85609816666f91",
+      "detail": {
+        "candidates": 3,
+        "reason": "promoted certificate ed430c59cb5ff6ef3b85609816666f91 v1 matches every facet and range"
+      },
+      "event": "retrieved",
+      "skill_id": "transfer_object"
+    },
+    {
+      "at_utc": "2026-09-13T18:51:19.614087+00:00",
+      "certificate_id": "a0057cadac3bef2e9304274a8e3d11eb",
+      "detail": {
+        "candidates": 3,
+        "reason": "promoted certificate a0057cadac3bef2e9304274a8e3d11eb v1 matches every facet and range"
+      },
+      "event": "retrieved",
+      "skill_id": "acquire_until_held"
+    },
+    {
+      "at_utc": "2026-09-13T18:51:29.521768+00:00",
+      "certificate_id": "875b1adb1e21593454e0b76029d42e9b",
+      "detail": {
+        "candidates": 3,
+        "reason": "promoted certificate 875b1adb1e21593454e0b76029d42e9b v1 matches every facet and range"
+      },
+      "event": "retrieved",
+      "skill_id": "observe_object"
+    },
+    {
+      "at_utc": "2026-09-13T18:51:31.600037+00:00",
+      "certificate_id": "ed430c59cb5ff6ef3b85609816666f91",
+      "detail": {
+        "candidates": 3,
+        "reason": "promoted certificate ed430c59cb5ff6ef3b85609816666f91 v1 matches every facet and range"
+      },
+      "event": "retrieved",
+      "skill_id": "transfer_object"
+    },
+    {
+      "at_utc": "2026-09-13T18:51:42.240598+00:00",
+      "certificate_id": "a0057cadac3bef2e9304274a8e3d11eb",
+      "detail": {
+        "candidates": 3,
+        "reason": "promoted certificate a0057cadac3bef2e9304274a8e3d11eb v1 matches every facet and range"
+      },
+      "event": "retrieved",
+      "skill_id": "acquire_until_held"
+    },
+    {
+      "at_utc": "2026-09-13T18:51:51.641421+00:00",
+      "certificate_id": "875b1adb1e21593454e0b76029d42e9b",
+      "detail": {
+        "candidates": 3,
+        "reason": "promoted certificate 875b1adb1e21593454e0b76029d42e9b v1 matches every facet and range"
+      },
+      "event": "retrieved",
+      "skill_id": "observe_object"
+    },
+    {
+      "at_utc": "2026-09-13T18:57:29.234138+00:00",
+      "certificate_id": null,
+      "detail": {
+        "affected": [
+          "7924663b132c4ab54f2b8eb47c78f60a",
+          "da718da89b5060d8b4ffb781bae6307b",
+          "274058bc6b9c4819d3efdec663b64d9d",
+          "d4bf21675f88c141720a2fc54f3d793a",
+          "ed430c59cb5ff6ef3b85609816666f91",
+          "a0057cadac3bef2e9304274a8e3d11eb",
+          "875b1adb1e21593454e0b76029d42e9b"
+        ],
+        "changed_to": "cube 35 mm on 4 fixtures",
+        "dimension": "geometry",
+        "reason": "the cube grows from 30 mm to 35 mm a side, its mass with its volume; every fixture as it was"
+      },
+      "event": "invalidated",
+      "skill_id": null
+    },
+    {
+      "at_utc": "2026-09-13T18:58:10.805121+00:00",
+      "certificate_id": "cb0e66bfec1944cdbd92355615a06518",
+      "detail": {
+        "episodes": 6,
+        "successes": 6,
+        "supersedes": "da718da89b5060d8b4ffb781bae6307b",
+        "validation_set": "g11-revalidation-geometry"
+      },
+      "event": "revalidated",
+      "skill_id": "transfer_object"
+    },
+    {
+      "at_utc": "2026-09-13T18:58:10.810330+00:00",
+      "certificate_id": "2a0dbf8e86c68a1dd5bd5ade395b47d0",
+      "detail": {
+        "episodes": 6,
+        "successes": 6,
+        "supersedes": "274058bc6b9c4819d3efdec663b64d9d",
+        "validation_set": "g11-revalidation-geometry"
+      },
+      "event": "revalidated",
+      "skill_id": "acquire_until_held"
+    },
+    {
+      "at_utc": "2026-09-13T18:58:10.810330+00:00",
+      "certificate_id": "b81dc35adab101762e015ee7d9820f65",
+      "detail": {
+        "episodes": 6,
+        "successes": 6,
+        "supersedes": "d4bf21675f88c141720a2fc54f3d793a",
+        "validation_set": "g11-revalidation-geometry"
+      },
+      "event": "revalidated",
+      "skill_id": "observe_object"
+    }
+  ],
+  "libraries": [
+    "8af1e9cda3a446e7c75f53c0074c92b01ae51fefabfa2fef0c4cb33ae74d9f47"
+  ],
+  "saved_at_utc": "2026-09-13T18:58:11.074425+00:00",
+  "schema_version": "1.0",
+  "store_id": "rigby-skill-store-v1",
+  "version": 41
+}

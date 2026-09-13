@@ -165,6 +165,17 @@ class LiveSensing:
                                                           "inner_m": float(frame.inner_reach(azimuth, elevation)), "outer_m": float(frame.directional_reach(azimuth, elevation)),
                                                           "azimuth_deg": float(azimuth), "elevation_deg": float(elevation)})
 
+    def grip_force_now(self, data: mujoco.MjData, entity: str) -> float:
+        """The largest opposition-group force on the object in ``data`` as it
+        stands, read the way the contact sensor reads it; for a restart that
+        has no stream yet and has to learn whether the closure is engaged."""
+
+        if entity not in self.members:
+            return 0.0
+        effector = self.effectors[entity]
+        groups = group_forces_from_data(self.model, data, self.members[entity], effector.opposition_groups, self.object_geom)
+        return float(max(groups, default=0.0))
+
     # -- reading -------------------------------------------------------------------------
     def samples(self, start_s: float, end_s: float) -> list[EvidenceSampleV1]:
         out: list[EvidenceSampleV1] = []

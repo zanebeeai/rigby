@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-keep-9e7d862e",
+  "title": "G11 revalidation (geometry): zoo_jaw_arm-g11-revalidation-geometry-2001 (success)",
+  "prompt": "pick up the cube and set it on the platform; keep going until you can verify it is placed",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T19:02:24Z",
+  "source": {
+    "commit": "d29eb0ce7d",
+    "branch": "feat/g11-skill-library",
+    "dirty": true,
+    "how": "python any-robot/scripts/g11_skill_store_campaign.py <phase> --out docs/results/g11-store --local any-robot/results/g11-store"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: revalidation episode under the geometry change (the cube grows from 30 mm to 35 mm a side, its mass with its volume; every fixture as it was); the set's decision: promoted; verdict success at 15.6 s of physics."
+  },
+  "notes": "See docs/results/g11-report.md. One tree run on physics from the skill store: a certificate promoted only after an independent validation set passed, reused only where its six-facet context matches exactly, invalidated when a dimension changes and revalidated by a new outcome; restarts open a fresh session on the checkpoint's physical state and reconstruct their belief from the sensors alone. Rendered from recorded states at real-time playback with the simulation clock and the tree's verdict in the banner; frames.json beside the MP4 maps every frame to its recorded sample.",
+  "media": [
+    {
+      "path": "docs/results/g11-store/invalidation/geometry/zoo_jaw_arm-g11-revalidation-geometry-2001/media/episode.mp4",
+      "bytes": 162734,
+      "sha256": "50927cc4cde1f01201fc768b02b543e0f9542b81fbfb8877117e1ea3722cc2fb",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g11-store/invalidation/geometry/zoo_jaw_arm-g11-revalidation-geometry-2001/media/preview.gif",
+      "bytes": 1048334,
+      "sha256": "0e31a1615e52e832eb61d8b99993dcdae08754482e2c7dcba68f74ff7fb7e9f9",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G11",
+    "revalidation",
+    "geometry",
+    "zoo_jaw_arm",
+    "success"
+  ]
+}

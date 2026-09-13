@@ -1,0 +1,45 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-look-at-the-cube-and-tell-me-whether-you-can-rea-62180c9d",
+  "title": "G11 reuse: observe_object on zoo_dual_arm in mirrored (success)",
+  "prompt": "look at the cube and tell me whether you can reach it",
+  "tier": "any-robot",
+  "embodiment": "zoo_dual_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T19:02:10Z",
+  "source": {
+    "commit": "d29eb0ce7d",
+    "branch": "feat/g11-skill-library",
+    "dirty": true,
+    "how": "python any-robot/scripts/g11_skill_store_campaign.py <phase> --out docs/results/g11-store --local any-robot/results/g11-store"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: observe_object reused from the persisted store in the mirrored layout under certificate 7924663b132c v1; verdict success at 1.1 s of physics."
+  },
+  "notes": "See docs/results/g11-report.md. One tree run on physics from the skill store: a certificate promoted only after an independent validation set passed, reused only where its six-facet context matches exactly, invalidated when a dimension changes and revalidated by a new outcome; restarts open a fresh session on the checkpoint's physical state and reconstruct their belief from the sensors alone. Rendered from recorded states at real-time playback with the simulation clock and the tree's verdict in the banner; frames.json beside the MP4 maps every frame to its recorded sample.",
+  "media": [
+    {
+      "path": "docs/results/g11-store/reuse/zoo_dual_arm-mirrored-observe_object/media/episode.mp4",
+      "bytes": 24424,
+      "sha256": "04ce9774bb69103fe2956d5f07c52339c243f6575838820eed3ed3eb6ceaa775",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g11-store/reuse/zoo_dual_arm-mirrored-observe_object/media/preview.gif",
+      "bytes": 76207,
+      "sha256": "cbb4857b847eba65cc2c9036a2c396c7cf9b4c86fc3feb1e9a10ce40b9d132c5",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G11",
+    "reuse",
+    "mirrored",
+    "observe_object",
+    "zoo_dual_arm",
+    "success"
+  ]
+}

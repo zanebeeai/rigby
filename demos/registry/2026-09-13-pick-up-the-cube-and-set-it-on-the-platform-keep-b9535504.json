@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-keep-b9535504",
+  "title": "G11 revalidation (sensors): zoo_jaw_arm-g11-revalidation-sensors-2000 (success)",
+  "prompt": "pick up the cube and set it on the platform; keep going until you can verify it is placed",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T19:02:25Z",
+  "source": {
+    "commit": "d29eb0ce7d",
+    "branch": "feat/g11-skill-library",
+    "dirty": true,
+    "how": "python any-robot/scripts/g11_skill_store_campaign.py <phase> --out docs/results/g11-store --local any-robot/results/g11-store"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: revalidation episode under the sensors change (the overhead camera is removed: the front camera and the gripper's contact sensor alone); the set's decision: promoted; verdict success at 15.4 s of physics."
+  },
+  "notes": "See docs/results/g11-report.md. One tree run on physics from the skill store: a certificate promoted only after an independent validation set passed, reused only where its six-facet context matches exactly, invalidated when a dimension changes and revalidated by a new outcome; restarts open a fresh session on the checkpoint's physical state and reconstruct their belief from the sensors alone. Rendered from recorded states at real-time playback with the simulation clock and the tree's verdict in the banner; frames.json beside the MP4 maps every frame to its recorded sample.",
+  "media": [
+    {
+      "path": "docs/results/g11-store/invalidation/sensors/zoo_jaw_arm-g11-revalidation-sensors-2000/media/episode.mp4",
+      "bytes": 149358,
+      "sha256": "2a18da736af29e28457357cd771e076f23f4012d1065c5e01c12f305c2b6be07",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g11-store/invalidation/sensors/zoo_jaw_arm-g11-revalidation-sensors-2000/media/preview.gif",
+      "bytes": 1004559,
+      "sha256": "c34af972e1d81d6b7afe7c77eebfb8c81f59411e5ea4853e19091768b523591a",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G11",
+    "revalidation",
+    "sensors",
+    "zoo_jaw_arm",
+    "success"
+  ]
+}

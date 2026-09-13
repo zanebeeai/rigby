@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-keep-ec83a27b",
+  "title": "G11 revalidation (friction): zoo_jaw_arm-g11-revalidation-friction-2002 (unknown)",
+  "prompt": "pick up the cube and set it on the platform; keep going until you can verify it is placed",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T19:02:22Z",
+  "source": {
+    "commit": "d29eb0ce7d",
+    "branch": "feat/g11-skill-library",
+    "dirty": true,
+    "how": "python any-robot/scripts/g11_skill_store_campaign.py <phase> --out docs/results/g11-store --local any-robot/results/g11-store"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "UNKNOWN (child_unknown:0.0): revalidation episode under the friction change (the friction assumption drops to 0.5-0.9 and the revalidation cubes are drawn at half the registered friction); the set's decision: candidate; physics 15.2 s."
+  },
+  "notes": "See docs/results/g11-report.md. One tree run on physics from the skill store: a certificate promoted only after an independent validation set passed, reused only where its six-facet context matches exactly, invalidated when a dimension changes and revalidated by a new outcome; restarts open a fresh session on the checkpoint's physical state and reconstruct their belief from the sensors alone. Rendered from recorded states at real-time playback with the simulation clock and the tree's verdict in the banner; frames.json beside the MP4 maps every frame to its recorded sample.",
+  "media": [
+    {
+      "path": "docs/results/g11-store/invalidation/friction/zoo_jaw_arm-g11-revalidation-friction-2002/media/episode.mp4",
+      "bytes": 109427,
+      "sha256": "7f02e9602322d558192ae688b1a473f8e1699a2f9796912f8d2566096526de6b",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g11-store/invalidation/friction/zoo_jaw_arm-g11-revalidation-friction-2002/media/preview.gif",
+      "bytes": 742969,
+      "sha256": "7092b9fc8468cedb7cb8f7101162c84b32a46bf7a60c50732db5fe31f7e4de80",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G11",
+    "revalidation",
+    "friction",
+    "zoo_jaw_arm",
+    "failure"
+  ]
+}

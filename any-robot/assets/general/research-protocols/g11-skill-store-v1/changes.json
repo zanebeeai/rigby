@@ -1,0 +1,44 @@
+{
+  "body": "zoo_jaw_arm",
+  "changes": {
+    "controller": {
+      "damping_ratio": 1.2,
+      "declared": "the arm's computed-torque tracking runs at half its natural frequency (7 Hz instead of 14 Hz), damping ratio unchanged",
+      "dimension": "controller",
+      "natural_frequency_hz": 7.0
+    },
+    "evidence_schema": {
+      "declared": "the episode protocol is bumped to /2; nothing physical changes",
+      "dimension": "evidence_schema",
+      "episode_protocol": "rigby.transfer-object-episode/2"
+    },
+    "friction": {
+      "declared": "the friction assumption drops to 0.5-0.9 and the revalidation cubes are drawn at half the registered friction",
+      "dimension": "friction",
+      "friction_scale": 0.5,
+      "object_friction_range": [
+        0.5,
+        0.9
+      ]
+    },
+    "geometry": {
+      "declared": "the cube grows from 30 mm to 35 mm a side, its mass with its volume; every fixture as it was",
+      "dimension": "geometry",
+      "mass_scale": 1.5879629629629632,
+      "object_half_size_m": 0.0175
+    },
+    "sensors": {
+      "configuration": "front_contact",
+      "declared": "the overhead camera is removed: the front camera and the gripper's contact sensor alone",
+      "dimension": "sensors"
+    }
+  },
+  "evidence_schema": {
+    "bundle_layout": "rigby.evidence-bundle/G01",
+    "certificate": "1.0",
+    "episode_protocol": "rigby.transfer-object-episode/1",
+    "execution_record": "1.0"
+  },
+  "rule": "each change is applied to a copy of the promoted store from the same baseline, on its own, and followed by its revalidation set; the geometry change is also applied to the persisted store as D11's physical-context change",
+  "schema": "g11.changes.v1"
+}

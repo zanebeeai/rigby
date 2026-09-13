@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-keep-a0bff487",
+  "title": "G11 revalidation (evidence_schema): zoo_jaw_arm-g11-revalidation-evidence_schema-2000 (success)",
+  "prompt": "pick up the cube and set it on the platform; keep going until you can verify it is placed",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T19:02:20Z",
+  "source": {
+    "commit": "d29eb0ce7d",
+    "branch": "feat/g11-skill-library",
+    "dirty": true,
+    "how": "python any-robot/scripts/g11_skill_store_campaign.py <phase> --out docs/results/g11-store --local any-robot/results/g11-store"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: revalidation episode under the evidence_schema change (the episode protocol is bumped to /2; nothing physical changes); the set's decision: promoted; verdict success at 15.5 s of physics."
+  },
+  "notes": "See docs/results/g11-report.md. One tree run on physics from the skill store: a certificate promoted only after an independent validation set passed, reused only where its six-facet context matches exactly, invalidated when a dimension changes and revalidated by a new outcome; restarts open a fresh session on the checkpoint's physical state and reconstruct their belief from the sensors alone. Rendered from recorded states at real-time playback with the simulation clock and the tree's verdict in the banner; frames.json beside the MP4 maps every frame to its recorded sample.",
+  "media": [
+    {
+      "path": "docs/results/g11-store/invalidation/evidence_schema/zoo_jaw_arm-g11-revalidation-evidence_schema-2000/media/episode.mp4",
+      "bytes": 155562,
+      "sha256": "c1fd0489a362cebe59f6b5c3ac61aa1462a6643535f2a04ce2fc93a06798127d",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g11-store/invalidation/evidence_schema/zoo_jaw_arm-g11-revalidation-evidence_schema-2000/media/preview.gif",
+      "bytes": 1052689,
+      "sha256": "ec9523bdff510ab07044e3adb62e0c0fdd3fcf0fc01b2b49bf4f35d119db88db",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G11",
+    "revalidation",
+    "evidence_schema",
+    "zoo_jaw_arm",
+    "success"
+  ]
+}

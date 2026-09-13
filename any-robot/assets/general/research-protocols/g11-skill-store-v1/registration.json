@@ -1,0 +1,59 @@
+{
+  "bodies": [
+    "zoo_dual_arm",
+    "zoo_jaw_arm",
+    "zoo_long_arm"
+  ],
+  "change_body": "zoo_jaw_arm",
+  "environment_sha256": "57197e4d6c1b9dbd956d50f301120147f70c31d08e3153a1b8489164c8c66402",
+  "files": {
+    "changes.json": "529554ae882966ac490c5552a6c822dbfd55c3320cb68ac867571dbe389f7a29",
+    "layouts.json": "03618819709f8784ca2cbe6d6343df8e8eda8b724c3baf5ddce2739e2579dd19",
+    "restart.json": "0642ebbebfee345ce999bfdc1ffea5819e70fb62750f72bb5360a72d5b3ad838",
+    "validation-sets.json": "09a40250ffdea79fee0ace3d9785a750a4a052e5c6e25331dbd79e5bb24b3a00"
+  },
+  "generation_calls": 0,
+  "library_id": "transfer_object_v1",
+  "library_sha256": "8af1e9cda3a446e7c75f53c0074c92b01ae51fefabfa2fef0c4cb33ae74d9f47",
+  "note": "registered before any scored run; the campaign refuses a protocol, library, policy or world that does not hash to this",
+  "policy_sha256": "6d2912e8df7d0a098f5d75f59ad37fc5bdf3c5bdd28f7ef940df7973cb4d1ed1",
+  "registered_at_utc": "2026-09-13T18:23:07.120300+00:00",
+  "registration_sha256": "8c9701398879b6240471db17d179b09be84fcb5b695417820d96ea6a04dabb4b",
+  "revalidation": {
+    "rng_seed": 20262222,
+    "seeds": [
+      2000,
+      2001,
+      2002,
+      2003,
+      2004,
+      2005
+    ],
+    "threshold": 5
+  },
+  "schema": "g11.registration.v1",
+  "sensor_configuration": "front_overhead_contact",
+  "skills": [
+    "transfer_object",
+    "acquire_until_held",
+    "observe_object"
+  ],
+  "validation": {
+    "rng_seed": 20261111,
+    "seeds": [
+      1000,
+      1001,
+      1002,
+      1003,
+      1004,
+      1005,
+      1006,
+      1007,
+      1008,
+      1009,
+      1010,
+      1011
+    ],
+    "threshold": 11
+  }
+}

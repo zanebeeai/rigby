@@ -83,3 +83,21 @@ from .conditionals import (  # noqa: E402
 
 __all__ += ["PREDICATES", "RULES", "AbstentionV1", "ConditionalV1", "ConditionalVerdictV1", "Decision", "DecisionRuleV1", "EvidenceKind", "EvidenceRequirementV1",
             "EvidenceSampleV1", "FallbackV1", "SampleQuality", "SensorConfigurationV1", "SensorSpecV1", "TemporalWindowV1", "evaluate"]
+from .restart import CheckpointV1, CheckpointingRuntime, safe_boundaries
+from .store import (
+    CertificateStatus,
+    CertificateV1,
+    ContextDimension,
+    ContextFacetV1,
+    CostV1,
+    ExecutionContextV1,
+    RetrievalMatchV1,
+    RetrievalTraceV1,
+    SkillStoreV1,
+    StoreEventV1,
+    ValidationOutcomeV1,
+    ValidationSetV1,
+    ValidityDifferenceV1,
+    ValidityVerdictV1,
+    compare,
+)

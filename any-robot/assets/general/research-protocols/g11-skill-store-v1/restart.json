@@ -1,0 +1,43 @@
+{
+  "bodies": [
+    "zoo_dual_arm",
+    "zoo_jaw_arm",
+    "zoo_long_arm"
+  ],
+  "boundaries": [
+    {
+      "index": 1,
+      "node_id": "0.0.0.0.0.0",
+      "skill_id": "observe_object"
+    },
+    {
+      "index": 2,
+      "node_id": "0.0.0.0.0.1",
+      "skill_id": "acquire"
+    },
+    {
+      "index": 3,
+      "node_id": "0.0.0.0.0.2",
+      "skill_id": "verify_hold"
+    },
+    {
+      "index": 4,
+      "node_id": "0.0.0.1",
+      "skill_id": "transport"
+    },
+    {
+      "index": 5,
+      "node_id": "0.0.0.2",
+      "skill_id": "release"
+    },
+    {
+      "index": 6,
+      "node_id": "0.0.0.3",
+      "skill_id": "verify_placement"
+    }
+  ],
+  "episode_draw": "the first validation draw of each body (seed 1000)",
+  "restarts": 18,
+  "rule": "the tree is run with a checkpoint requested as the k-th leaf completes; a fresh session is opened on the checkpoint's physical state, reconstructs its belief from the sensors alone, and runs the tree from its root; it completes or stops with a typed reason",
+  "schema": "g11.restart.v1"
+}
