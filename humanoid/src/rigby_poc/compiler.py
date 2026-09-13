@@ -4534,6 +4534,7 @@ def _compile_object_interaction(scene: SceneManifest, program: MotionProgram) ->
             path_start = bone_world_position(start, f"{program.hand.value}Hand")
             path_elbow = bone_world_position(start, f"{program.hand.value}LowerArm")
             path_pole = bend_pole(program.hand, start, primitive.parameters)
+        path_escape_from: Vec3 | None = None
         grasp_path: tuple[np.ndarray, Rotation, np.ndarray] | None = None
         if seated:
             start_bones = {name: BonePose(rotation=rotation) for name, rotation in start.items()}
@@ -4655,9 +4656,35 @@ def _compile_object_interaction(scene: SceneManifest, program: MotionProgram) ->
                             program.object_motion.distance_m,
                         )
                     )
+                # A seated throw or place continues the escape from where the
+                # previous frame left it. This loop runs per frame and the
+                # escape is not a continuous function of its target: it steps
+                # away from whichever hand vertex is deepest, and which vertex
+                # that is can change between two neighbouring frames, so an
+                # independent solve per frame is free to land on a different
+                # escape each time and render the jump between them. Seating
+                # the hand brings it close enough to the block and the table
+                # through the carry for that to happen every frame: measured on
+                # `object-place-gently`, the authored wrist path advances
+                # smoothly while the cleared target jumps 66 mm between two
+                # frames, for 4 discontinuities and a 76.5 deg single-frame
+                # step against a 5 deg median.
+                #
+                # Only the seated actions. A guided push is cleared against a
+                # wall that advances with the authored path, and starting from
+                # where that wall was last frame leaves the hand behind it for
+                # good -- `sequence-push-then-pull` then stops moving the block
+                # at all and fails "guided object under-traveled".
                 cleared = clear_wrist_target(
-                    program.hand, path_target, _solve_path_arm, frame_pose, {}, frame_bodies
+                    program.hand,
+                    path_target,
+                    _solve_path_arm,
+                    frame_pose,
+                    {},
+                    frame_bodies,
+                    start_at=path_escape_from if seat_action else None,
                 )
+                path_escape_from = cleared.target
                 bones.update(
                     {name: BonePose(rotation=rotation) for name, rotation in cleared.arm.items()}
                 )

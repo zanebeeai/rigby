@@ -105,19 +105,30 @@ def clear_wrist_target(
     bodies: list[ForbiddenBody],
     *,
     margin_m: float | None = None,
+    start_at: Vec3 | None = None,
 ) -> Clearance:
     """Move ``target`` until the skinned hand clears every body by ``margin_m``.
 
     ``solve_arm`` is the caller's own arm solve for a wrist target, so the
     clearance is measured with exactly the pose the caller will render.
     ``body_pose`` is everything but the arm and fingers.
+
+    ``start_at`` begins the search somewhere other than ``target``, for a
+    caller running this per frame rather than per keyframe. The search picks
+    its direction from whichever hand vertex is deepest, and which vertex that
+    is can change between two neighbouring frames, so an independent solve per
+    frame is free to land on a different escape each time and render the jump
+    between them. Continuing from where the previous frame finished makes the
+    escape a continuous function of time. ``displacement_m`` stays measured
+    from ``target``, so the number still answers "how far from what the phase
+    authored".
     """
 
     margin = hand_clearance_m() if margin_m is None else float(margin_m)
     mesh = hand_mesh(hand.value)
     origin = np.asarray(target.as_list(), dtype=float)
-    current = origin.copy()
-    arm = solve_arm(target)
+    current = origin.copy() if start_at is None else np.asarray(start_at.as_list(), dtype=float)
+    arm = solve_arm(target if start_at is None else start_at)
     residual: dict[str, float] = {body.name: 0.0 for body in bodies}
     escapes: dict[str, np.ndarray] = {}
     converged = not bodies
