@@ -75,12 +75,31 @@ So **every case is `platform_dependent`**, and all three digests — `motion_sha
 `metrics_sha256`, `observables_sha256` — are platform-keyed maps. A platform is blessed
 for all three or for none.
 
-The key is `<sys.platform>-<machine>`, plus `|mujoco-<version>` **only** when compiling
-the case actually enters the solver. Whether it does is observed by counting
+The key is `<sys.platform>-<machine>-<cpu model>`, plus `|mujoco-<version>` **only** when
+compiling the case actually enters the solver. Whether it does is observed by counting
 `simulate_grasp` calls rather than inferred from the intent: four cases reach it without
 being named `grab`. Keying non-solver cases on the MuJoCo version would invalidate every
 hash on an unrelated dependency bump, and a routine re-bless is indistinguishable from a
 real drift at review time.
+
+**The CPU is in the key because `<platform>-<machine>` named two machines.** Measured
+2026-09-13: checking out `8e777f8`, whose own commit message records "verify 47 matched",
+and running `verify` on a second `darwin-arm64` machine gives **1 matched, 46 moved** —
+same commit, `uv.lock` and every `pyproject.toml` untouched since, pinned versions
+installed, BLAS thread count making no difference to a digest, two runs in separate
+processes agreeing. 43 of the 46 were identical to the committed clip at slim precision;
+the difference was in the last bits. Two machines cannot share a key and both be right:
+whichever blessed last made the other red, and a reader could not tell that from a real
+drift. The CPU model is the narrowest field that separates them, and it is the attribute
+most directly tied to the causes above — numpy's SIMD dispatch and FMA contraction. It is
+not *proven* to be the differing attribute, which would need the other machine; if a
+mismatch survives it, the OS version (libm) and the numpy build are next.
+
+Keys written before that change (`darwin-arm64`, `win32-amd64`) name a machine class
+rather than a machine and **nothing matches them any more**. They are left in place rather
+than deleted: they are the record of what was blessed, and the machine that produced each
+can still claim its own column by blessing. `evals/probes/corpus_snapshot.py` exists to
+tell drift from a real change without needing a blessed key at all.
 
 On a platform with no entry, the committed `clip.slim.json.gz` is compared against a
 fresh compile instead — every numeric leaf, with the maximum deviation and its JSON path
