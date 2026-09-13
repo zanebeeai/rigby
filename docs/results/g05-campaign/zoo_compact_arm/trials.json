@@ -1,0 +1,1340 @@
+{
+  "canonical": {
+    "bundle": "docs/results/g05-campaign-final/zoo_compact_arm/canonical/physical",
+    "camera": {
+      "centre": [
+        0.002072746724400395,
+        -0.0009064967715285031,
+        0.13441024744083208
+      ],
+      "reach": 0.385
+    },
+    "caption": "zoo_compact_arm | reach/return | structural intake | canonical (pace 0, measured rest)",
+    "controller": "computed torque",
+    "created_at_utc": "2026-09-13T03:22:40.458031+00:00",
+    "fault": false,
+    "goal": "G05",
+    "media": {
+      "bundle": "docs/results/g05-campaign-final/zoo_compact_arm/canonical/media",
+      "fps": 12,
+      "frame_count": 368,
+      "full_episode": true,
+      "outcome": "success",
+      "physics_replay_performed_by_renderer": false,
+      "playback_duration_s": 30.666666666666668,
+      "presentation_lighting": {
+        "diffuse": 0.8,
+        "headlight_ambient": 0.7,
+        "specular": 0.2
+      },
+      "presentation_views_are_policy_observations": false,
+      "preview_is_summary": true,
+      "refusal_slate": false,
+      "renderer_source_sha256": "3e43ae7ad1019e77f3c3cf7d3d58f1bb5e9d99d4affe57f4cd0d11f122bde85f",
+      "robot_id": "zoo_compact_arm",
+      "schema": "rigby.presentation/1",
+      "sha256": "33c3e56a1e97ce89c261ffe7ca15f75861103d78ed87e3eb51830a019094d95a",
+      "simulation_duration_s": 30.50999999999397,
+      "source_bundle_sha256": "f5c02cd95dc4ac1795f567b847e36aacdb929596eb8579a460da6ddaac62db24",
+      "source_trace_sha256": "b291b6f29c9d59c1d710b643ad9249c64ba1a0cd919d5f003e3f2000d17be22c",
+      "task_camera_tracks_recorded_site": "body_0005_grasp_center"
+    },
+    "observation": "model + joint encoders",
+    "outcome": "success",
+    "outcome_record": {
+      "actual_physics_duration_s": 30.50999999999397,
+      "fault": null,
+      "leaf_duration_scales": [
+        1.0,
+        1.0
+      ],
+      "nominal_pipeline_result": {
+        "accepted": true,
+        "bound_schema_keys": [
+          "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+          "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+        ],
+        "certified_primitives_used": 2,
+        "duration_s": 30.51,
+        "elapsed_seconds": 3.99,
+        "prompt": "reach out as far as you can and then come back",
+        "region_substitutions": 0,
+        "replay_agreement": true,
+        "robot_id": "body_2e3d1c514d083e8a",
+        "role_normalized_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6",
+        "schema_keys": [
+          "path:to.boundary.neutral.straight|primary_effector->base|distal.point|absolute",
+          "path:from.point.neutral.straight|primary_effector->base|medial.point|absolute"
+        ],
+        "tracking_error_m": 9.5e-05
+      },
+      "path_repairs": [],
+      "physical_steps": 15255,
+      "reference_duration_s": 30.509918,
+      "refusal": null,
+      "refused_leaf_bakes": [],
+      "region_substitutions": 0,
+      "scope": "free-space motion; no object task",
+      "status": "success",
+      "tracking_error_m": 9.514521262046184e-05,
+      "unexpected_contacts": [],
+      "violations": []
+    },
+    "protocol": "rigby.composition-trial/1",
+    "reference_clock_matches_physics": true,
+    "reference_duration_s": 30.509918,
+    "replay": {
+      "agrees": true,
+      "recomputed_controller": {
+        "agrees": true,
+        "first_action_difference": null,
+        "first_state_difference": null,
+        "integrated_steps": 15255,
+        "max_state_error": 0.0,
+        "mode": "recomputed_controller",
+        "samples": 15256,
+        "tolerance": {
+          "absolute": 0.0,
+          "relative": 0.0
+        }
+      },
+      "recorded_controls": {
+        "agrees": true,
+        "first_action_difference": null,
+        "first_state_difference": null,
+        "integrated_steps": 15255,
+        "max_state_error": 0.0,
+        "mode": "recorded_controls",
+        "samples": 15256,
+        "tolerance": {
+          "absolute": 0.0,
+          "relative": 0.0
+        }
+      },
+      "task_outcome": "success"
+    },
+    "rig_id": "body_2e3d1c514d083e8a",
+    "robot_id": "zoo_compact_arm",
+    "sha256": "f5c02cd95dc4ac1795f567b847e36aacdb929596eb8579a460da6ddaac62db24",
+    "simulation_duration_s": 30.50999999999397,
+    "task_site": "body_0005_grasp_center",
+    "trace_sha256": "b291b6f29c9d59c1d710b643ad9249c64ba1a0cd919d5f003e3f2000d17be22c",
+    "world_sha256": "f729464aff64b2ca4f1f84d930c787a8454c9ea5f2568a0dd7ee2ee9a0bc143a"
+  },
+  "feasible_count": 20,
+  "feasible_successes": 20,
+  "feasible_trials": [
+    {
+      "accepted": true,
+      "actual_physics_duration_s": 46.402000000010744,
+      "authored_duration_s": 46.40158,
+      "base_drift_m": 0.0,
+      "certified": true,
+      "failure": null,
+      "fresh_leaves_certified": 2,
+      "grounded_program_sha256": "186e93dda6cc8bb2991492cb2da75e565a480645306b5111609702500ca150e7",
+      "kind": "feasible",
+      "leaf_duration_scales": [
+        1.0,
+        1.0
+      ],
+      "leaf_failures": [],
+      "leaf_path_repairs": [
+        0,
+        0
+      ],
+      "pace_ordinal": -2,
+      "path_repairs": [],
+      "peak_demand_fraction": 1.0,
+      "prompt": "very slowly reach out as far as you can and then very slowly come back",
+      "region_substitutions": 0,
+      "repeat_outcomes_agree": true,
+      "replay_agreement": true,
+      "replay_hashes": [
+        "2bd96fafd62aa94b44391e10e255a73002f0d3604d896675d4d891cdc6174713",
+        "2bd96fafd62aa94b44391e10e255a73002f0d3604d896675d4d891cdc6174713",
+        "2bd96fafd62aa94b44391e10e255a73002f0d3604d896675d4d891cdc6174713"
+      ],
+      "requested_semantic_hash": "dd0b47ae397c46acccf5596060736d68f7fd5df1006344d6a1d746ac953f41b5",
+      "stages_ms": {
+        "binding": 20.057,
+        "certification": 4702.47,
+        "compilation": 955.099,
+        "firewall": 0.0,
+        "grounding": 0.0,
+        "planning": 0.31
+      },
+      "start_id": "start_0",
+      "trace_file_sha256": "e351456fa24dcd987e21cc7d4f2beaf00c5e8c627e46b6e7cdb6ed18748808f9",
+      "tracking_error_m": 9.494390052026813e-05,
+      "trial_id": "pace-2_start_0",
+      "unexpected_contacts": [],
+      "violations": [],
+      "wall_seconds": 22.585
+    },
+    {
+      "accepted": true,
+      "actual_physics_duration_s": 37.131999999999415,
+      "authored_duration_s": 37.131444,
+      "base_drift_m": 0.0,
+      "certified": true,
+      "failure": null,
+      "fresh_leaves_certified": 2,
+      "grounded_program_sha256": "b3b2f7ca9ee94d71cc95ef101bafd24c59c2cceaa71644dc0fc52d4bd1a067c7",
+      "kind": "feasible",
+      "leaf_duration_scales": [
+        1.0,
+        1.0
+      ],
+      "leaf_failures": [],
+      "leaf_path_repairs": [
+        0,
+        0
+      ],
+      "pace_ordinal": -1,
+      "path_repairs": [],
+      "peak_demand_fraction": 1.0,
+      "prompt": "slowly reach out as far as you can and then slowly come back",
+      "region_substitutions": 0,
+      "repeat_outcomes_agree": true,
+      "replay_agreement": true,
+      "replay_hashes": [
+        "f6549e05706eb6e20eb32e72c4f6b7fb17e5943c748b047d1f83e44d719d1b0f",
+        "f6549e05706eb6e20eb32e72c4f6b7fb17e5943c748b047d1f83e44d719d1b0f",
+        "f6549e05706eb6e20eb32e72c4f6b7fb17e5943c748b047d1f83e44d719d1b0f"
+      ],
+      "requested_semantic_hash": "914be37e8d7d79a03bd122d22968c7bbfb67e14ba21eb864029f1110f5ea3787",
+      "stages_ms": {
+        "binding": 23.51,
+        "certification": 3825.861,
+        "compilation": 872.865,
+        "firewall": 0.0,
+        "grounding": 0.0,
+        "planning": 0.338
+      },
+      "start_id": "start_0",
+      "trace_file_sha256": "b62d1f12a5cb602f6d19277184407457ecd1514f57e23339157f76c18d66c59c",
+      "tracking_error_m": 9.91919983341237e-05,
+      "trial_id": "pace-1_start_0",
+      "unexpected_contacts": [],
+      "violations": [],
+      "wall_seconds": 19.292
+    },
+    {
+      "accepted": true,
+      "actual_physics_duration_s": 30.50999999999397,
+      "authored_duration_s": 30.509918,
+      "base_drift_m": 0.0,
+      "certified": true,
+      "failure": null,
+      "fresh_leaves_certified": 2,
+      "grounded_program_sha256": "602df033726aa3b839c73c89c12869f6d94b3fa73e6a148bdfad8ca5cb7cb4f2",
+      "kind": "feasible",
+      "leaf_duration_scales": [
+        1.0,
+        1.0
+      ],
+      "leaf_failures": [],
+      "leaf_path_repairs": [
+        0,
+        0
+      ],
+      "pace_ordinal": 0,
+      "path_repairs": [],
+      "peak_demand_fraction": 1.0,
+      "prompt": "reach out as far as you can and then come back",
+      "region_substitutions": 0,
+      "repeat_outcomes_agree": true,
+      "replay_agreement": true,
+      "replay_hashes": [
+        "0864d57fa1521f5a4aee4966b3ebfdad3b9ab9b60d6f08464df997198b24c629",
+        "0864d57fa1521f5a4aee4966b3ebfdad3b9ab9b60d6f08464df997198b24c629",
+        "0864d57fa1521f5a4aee4966b3ebfdad3b9ab9b60d6f08464df997198b24c629"
+      ],
+      "requested_semantic_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6",
+      "stages_ms": {
+        "binding": 21.716,
+        "certification": 3190.011,
+        "compilation": 652.695,
+        "firewall": 0.0,
+        "grounding": 0.0,
+        "planning": 0.565
+      },
+      "start_id": "start_0",
+      "trace_file_sha256": "b80b4b2cac3646380d9250f6879f32092528642efc54140db7ab5dafc8abdf85",
+      "tracking_error_m": 9.514521262046184e-05,
+      "trial_id": "pace+0_start_0",
+      "unexpected_contacts": [],
+      "violations": [],
+      "wall_seconds": 17.284
+    },
+    {
+      "accepted": true,
+      "actual_physics_duration_s": 25.78199999999659,
+      "authored_duration_s": 25.780257,
+      "base_drift_m": 0.0,
+      "certified": true,
+      "failure": null,
+      "fresh_leaves_certified": 2,
+      "grounded_program_sha256": "4bd5bbc33a0d5640c5e720e39508189cb1a849287b9b9e3fd29a8e3d18c19b9e",
+      "kind": "feasible",
+      "leaf_duration_scales": [
+        1.0,
+        1.0
+      ],
+      "leaf_failures": [],
+      "leaf_path_repairs": [
+        0,
+        0
+      ],
+      "pace_ordinal": 1,
+      "path_repairs": [],
+      "peak_demand_fraction": 1.0,
+      "prompt": "quickly reach out as far as you can and then quickly come back",
+      "region_substitutions": 0,
+      "repeat_outcomes_agree": true,
+      "replay_agreement": true,
+      "replay_hashes": [
+        "9be780ab84e448e0d40bcdd4f4b472ea12f3dfbe580753ad295d7a19a11ca5d9",
+        "9be780ab84e448e0d40bcdd4f4b472ea12f3dfbe580753ad295d7a19a11ca5d9",
+        "9be780ab84e448e0d40bcdd4f4b472ea12f3dfbe580753ad295d7a19a11ca5d9"
+      ],
+      "requested_semantic_hash": "69ad6c950610a5fc245174c38ab5a116ce09b3dfce78f7d9ec76d02cb484e89b",
+      "stages_ms": {
+        "binding": 19.877,
+        "certification": 2376.567,
+        "compilation": 625.583,
+        "firewall": 0.0,
+        "grounding": 0.0,
+        "planning": 0.316
+      },
+      "start_id": "start_0",
+      "trace_file_sha256": "9512aa3b96daf0b5b5954ca32efabb271acfed71a65356ea0b36fdee0cebc890",
+      "tracking_error_m": 9.870269372480838e-05,
+      "trial_id": "pace+1_start_0",
+      "unexpected_contacts": [],
+      "violations": [],
+      "wall_seconds": 15.314
+    },
+    {
+      "accepted": true,
+      "actual_physics_duration_s": 22.401999999998463,
+      "authored_duration_s": 22.401928,
+      "base_drift_m": 0.0,
+      "certified": true,
+      "failure": null,
+      "fresh_leaves_certified": 2,
+      "grounded_program_sha256": "3f2a0261d1892b83c20e4545cf958bf5fc496302f17b18341bb550080eba9a1c",
+      "kind": "feasible",
+      "leaf_duration_scales": [
+        1.0,
+        1.0
+      ],
+      "leaf_failures": [],
+      "leaf_path_repairs": [
+        0,
+        0
+      ],
+      "pace_ordinal": 2,
+      "path_repairs": [],
+      "peak_demand_fraction": 1.0,
+      "prompt": "flat out reach out as far as you can and then come back flat out",
+      "region_substitutions": 0,
+      "repeat_outcomes_agree": true,
+      "replay_agreement": true,
+      "replay_hashes": [
+        "da413201802c977950470ccc48157d591c352d03c9e6da402fd1f69e300c3106",
+        "da413201802c977950470ccc48157d591c352d03c9e6da402fd1f69e300c3106",
+        "da413201802c977950470ccc48157d591c352d03c9e6da402fd1f69e300c3106"
+      ],
+      "requested_semantic_hash": "39b9df92865566649895da616c2c0dd86ac4586dc871d0050ef4eb02b10ae757",
+      "stages_ms": {
+        "binding": 24.776,
+        "certification": 2364.531,
+        "compilation": 527.848,
+        "firewall": 0.0,
+        "grounding": 0.0,
+        "planning": 0.601
+      },
+      "start_id": "start_0",
+      "trace_file_sha256": "c59b6dd659fda31da14b425d54742171c7d30770ba4f7d5931166d5e16323e93",
+      "tracking_error_m": 0.00011405008326046336,
+      "trial_id": "pace+2_start_0",
+      "unexpected_contacts": [],
+      "violations": [],
+      "wall_seconds": 13.641
+    },
+    {
+      "accepted": true,
+      "actual_physics_duration_s": 46.13800000001042,
+      "authored_duration_s": 46.137666,
+      "base_drift_m": 0.0,
+      "certified": true,
+      "failure": null,
+      "fresh_leaves_certified": 2,
+      "grounded_program_sha256": "9b8df925a25cc95f97b4eb55339c64ca297aca9ae0cfd9f2660d3c2181bad29b",
+      "kind": "feasible",
+      "leaf_duration_scales": [
+        1.0,
+        1.0
+      ],
+      "leaf_failures": [],
+      "leaf_path_repairs": [
+        0,
+        0
+      ],
+      "pace_ordinal": -2,
+      "path_repairs": [],
+      "peak_demand_fraction": 1.0,
+      "prompt": "very slowly reach out as far as you can and then very slowly come back",
+      "region_substitutions": 0,
+      "repeat_outcomes_agree": true,
+      "replay_agreement": true,
+      "replay_hashes": [
+        "93f72b242361248d9e7d08ef7964d26e33e074a7c55e1425b380c182ec50b6bd",
+        "93f72b242361248d9e7d08ef7964d26e33e074a7c55e1425b380c182ec50b6bd",
+        "93f72b242361248d9e7d08ef7964d26e33e074a7c55e1425b380c182ec50b6bd"
+      ],
+      "requested_semantic_hash": "dd0b47ae397c46acccf5596060736d68f7fd5df1006344d6a1d746ac953f41b5",
+      "stages_ms": {
+        "binding": 28.359,
+        "certification": 5033.764,
+        "compilation": 1070.518,
+        "firewall": 0.0,
+        "grounding": 0.0,
+        "planning": 0.462
+      },
+      "start_id": "start_1",
+      "trace_file_sha256": "c86484e1a68bacea04581e2790cbe3c757adebfcf5290d94b156026f7019427c",
+      "tracking_error_m": 0.00010163404720226764,
+      "trial_id": "pace-2_start_1",
+      "unexpected_contacts": [],
+      "violations": [],
+      "wall_seconds": 23.844
+    },
+    {
+      "accepted": true,
+      "actual_physics_duration_s": 36.92999999999917,
+      "authored_duration_s": 36.929682,
+      "base_drift_m": 0.0,
+      "certified": true,
+      "failure": null,
+      "fresh_leaves_certified": 2,
+      "grounded_program_sha256": "91e1717c0cc1d77e4dd58eec45c6678eb330632caceb8a946b42144420ebfdef",
+      "kind": "feasible",
+      "leaf_duration_scales": [
+        1.0,
+        1.0
+      ],
+      "leaf_failures": [],
+      "leaf_path_repairs": [
+        0,
+        0
+      ],
+      "pace_ordinal": -1,
+      "path_repairs": [],
+      "peak_demand_fraction": 1.0,
+      "prompt": "slowly reach out as far as you can and then slowly come back",
+      "region_substitutions": 0,
+      "repeat_outcomes_agree": true,
+      "replay_agreement": true,
+      "replay_hashes": [
+        "ce93c14c2f51020d76a9cde02397cb3d776d3e39b0b3b06cc4d9430c1691a9db",
+        "ce93c14c2f51020d76a9cde02397cb3d776d3e39b0b3b06cc4d9430c1691a9db",
+        "ce93c14c2f51020d76a9cde02397cb3d776d3e39b0b3b06cc4d9430c1691a9db"
+      ],
+      "requested_semantic_hash": "914be37e8d7d79a03bd122d22968c7bbfb67e14ba21eb864029f1110f5ea3787",
+      "stages_ms": {
+        "binding": 23.729,
+        "certification": 4413.267,
+        "compilation": 930.207,
+        "firewall": 0.0,
+        "grounding": 0.0,
+        "planning": 0.546
+      },
+      "start_id": "start_1",
+      "trace_file_sha256": "9e7d12d88cc9a7cfa5edbaecf4140dd35765616f161df55b8a5dfb2d9c0442cb",
+      "tracking_error_m": 0.00010326617533978097,
+      "trial_id": "pace-1_start_1",
+      "unexpected_contacts": [],
+      "violations": [],
+      "wall_seconds": 20.692
+    },
+    {
+      "accepted": true,
+      "actual_physics_duration_s": 30.353999999994056,
+      "authored_duration_s": 30.352551,
+      "base_drift_m": 0.0,
+      "certified": true,
+      "failure": null,
+      "fresh_leaves_certified": 2,
+      "grounded_program_sha256": "d2cea3ed7d193a43a8dc00a474c695b1067f1e4ea8f8bbdd95968bb00c4e9ada",
+      "kind": "feasible",
+      "leaf_duration_scales": [
+        1.0,
+        1.0
+      ],
+      "leaf_failures": [],
+      "leaf_path_repairs": [
+        0,
+        0
+      ],
+      "pace_ordinal": 0,
+      "path_repairs": [],
+      "peak_demand_fraction": 1.0,
+      "prompt": "reach out as far as you can and then come back",
+      "region_substitutions": 0,
+      "repeat_outcomes_agree": true,
+      "replay_agreement": true,
+      "replay_hashes": [
+        "98e9ffd75e52e3f7993253e68ceb8c0cf83561efad96e1fee51c0d834d255621",
+        "98e9ffd75e52e3f7993253e68ceb8c0cf83561efad96e1fee51c0d834d255621",
+        "98e9ffd75e52e3f7993253e68ceb8c0cf83561efad96e1fee51c0d834d255621"
+      ],
+      "requested_semantic_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6",
+      "stages_ms": {
+        "binding": 21.186,
+        "certification": 2920.56,
+        "compilation": 619.901,
+        "firewall": 0.0,
+        "grounding": 0.0,
+        "planning": 0.294
+      },
+      "start_id": "start_1",
+      "trace_file_sha256": "bcd50f3a24719c7479575201219ec5fd8f9983a1cc4b565c6a2e746996a3f84d",
+      "tracking_error_m": 0.00010241467235028622,
+      "trial_id": "pace+0_start_1",
+      "unexpected_contacts": [],
+      "violations": [],
+      "wall_seconds": 16.295
+    },
+    {
+      "accepted": true,
+      "actual_physics_duration_s": 25.65599999999666,
+      "authored_duration_s": 25.6546,
+      "base_drift_m": 0.0,
+      "certified": true,
+      "failure": null,
+      "fresh_leaves_certified": 2,
+      "grounded_program_sha256": "20350efb32a73d21d9e47cb9cba9067ac26646923deb1fb4c2fef5973147af89",
+      "kind": "feasible",
+      "leaf_duration_scales": [
+        1.0,
+        1.0
+      ],
+      "leaf_failures": [],
+      "leaf_path_repairs": [
+        0,
+        0
+      ],
+      "pace_ordinal": 1,
+      "path_repairs": [],
+      "peak_demand_fraction": 1.0,
+      "prompt": "quickly reach out as far as you can and then quickly come back",
+      "region_substitutions": 0,
+      "repeat_outcomes_agree": true,
+      "replay_agreement": true,
+      "replay_hashes": [
+        "f36ded8a8ee1b5d2d11f01dce0e98f583c2675583008092cb6efd427c7b03892",
+        "f36ded8a8ee1b5d2d11f01dce0e98f583c2675583008092cb6efd427c7b03892",
+        "f36ded8a8ee1b5d2d11f01dce0e98f583c2675583008092cb6efd427c7b03892"
+      ],
+      "requested_semantic_hash": "69ad6c950610a5fc245174c38ab5a116ce09b3dfce78f7d9ec76d02cb484e89b",
+      "stages_ms": {
+        "binding": 29.296,
+        "certification": 2672.16,
+        "compilation": 572.027,
+        "firewall": 0.0,
+        "grounding": 0.0,
+        "planning": 0.61
+      },
+      "start_id": "start_1",
+      "trace_file_sha256": "edf77cce7a83a3dd80c7b381cb75651ab7a18485b6fa080c94dd84800b53f074",
+      "tracking_error_m": 0.00010254669708725098,
+      "trial_id": "pace+1_start_1",
+      "unexpected_contacts": [],
+      "violations": [],
+      "wall_seconds": 15.288
+    },
+    {
+      "accepted": true,
+      "actual_physics_duration_s": 22.29999999999852,
+      "authored_duration_s": 22.298921,
+      "base_drift_m": 0.0,
+      "certified": true,
+      "failure": null,
+      "fresh_leaves_certified": 2,
+      "grounded_program_sha256": "3ed3ceb315cbd834aafda0564be49a018da5b696ac334f5a07cf8c0ac72dbcb7",
+      "kind": "feasible",
+      "leaf_duration_scales": [
+        1.0,
+        1.0
+      ],
+      "leaf_failures": [],
+      "leaf_path_repairs": [
+        0,
+        0
+      ],
+      "pace_ordinal": 2,
+      "path_repairs": [],
+      "peak_demand_fraction": 1.0,
+      "prompt": "flat out reach out as far as you can and then come back flat out",
+      "region_substitutions": 0,
+      "repeat_outcomes_agree": true,
+      "replay_agreement": true,
+      "replay_hashes": [
+        "ade71c8e64ade73180dd553931d3349450cadb37febffc58aed4dd3646d84852",
+        "ade71c8e64ade73180dd553931d3349450cadb37febffc58aed4dd3646d84852",
+        "ade71c8e64ade73180dd553931d3349450cadb37febffc58aed4dd3646d84852"
+      ],
+      "requested_semantic_hash": "39b9df92865566649895da616c2c0dd86ac4586dc871d0050ef4eb02b10ae757",
+      "stages_ms": {
+        "binding": 18.213,
+        "certification": 2516.961,
+        "compilation": 463.575,
+        "firewall": 0.0,
+        "grounding": 0.0,
+        "planning": 0.394
+      },
+      "start_id": "start_1",
+      "trace_file_sha256": "0744f51e24aabe6f3e8303e0d6f68dbb5c0eed2f03fad338b4a8e2e1bb252c09",
+      "tracking_error_m": 0.00011010419754336951,
+      "trial_id": "pace+2_start_1",
+      "unexpected_contacts": [],
+      "violations": [],
+      "wall_seconds": 14.91
+    },
+    {
+      "accepted": true,
+      "actual_physics_duration_s": 69.17800000002018,
+      "authored_duration_s": 69.177434,
+      "base_drift_m": 0.0,
+      "certified": true,
+      "failure": null,
+      "fresh_leaves_certified": 2,
+      "grounded_program_sha256": "58af7641bfcb1556a9780163cd56ecb8b1d8f0d52c353aa4e3afe5289d7833c1",
+      "kind": "feasible",
+      "leaf_duration_scales": [
+        1.0,
+        1.0
+      ],
+      "leaf_failures": [],
+      "leaf_path_repairs": [
+        0,
+        1
+      ],
+      "pace_ordinal": -2,
+      "path_repairs": [
+        {
+          "blocked_by": [
+            "body_0000",
+            "body_0002"
+          ],
+          "deflection_fraction_of_reach": 0.3,
+          "deflection_m": 0.1005,
+          "direction": "outward",
+          "entry_id": "retract_from_point",
+          "kind": "self_collision",
+          "segment": 1,
+          "span": 1,
+          "straight_refusal": "waypoint 6 is 0.0195 m from where it was asked to be, held off by body_0000 against body_0002: no configuration reaching it kept them apart",
+          "straight_residual_m": 0.019515424487461817,
+          "via_point_m": [
+            0.1672616204452289,
+            -0.07315033580771291,
+            0.21750000000000003
+          ]
+        }
+      ],
+      "peak_demand_fraction": 1.0,
+      "prompt": "very slowly reach out as far as you can and then very slowly come back",
+      "region_substitutions": 0,
+      "repeat_outcomes_agree": true,
+      "replay_agreement": true,
+      "replay_hashes": [
+        "add6a1a6f92915a363ff548533863ab94f1b19154522f5c424efbc93bed6726a",
+        "add6a1a6f92915a363ff548533863ab94f1b19154522f5c424efbc93bed6726a",
+        "add6a1a6f92915a363ff548533863ab94f1b19154522f5c424efbc93bed6726a"
+      ],
+      "requested_semantic_hash": "dd0b47ae397c46acccf5596060736d68f7fd5df1006344d6a1d746ac953f41b5",
+      "stages_ms": {
+        "binding": 215.648,
+        "certification": 7657.82,
+        "compilation": 1823.838,
+        "firewall": 0.0,
+        "grounding": 0.0,
+        "planning": 0.554
+      },
+      "start_id": "start_2",
+      "trace_file_sha256": "d9a6710bacd95f13a1382ca5943629ccd514c44317839e6328a20a068ad95b13",
+      "tracking_error_m": 4.3207581056204516e-05,
+      "trial_id": "pace-2_start_2",
+      "unexpected_contacts": [],
+      "violations": [],
+      "wall_seconds": 37.301
+    },
+    {
+      "accepted": true,
+      "actual_physics_duration_s": 55.31600000002164,
+      "authored_duration_s": 55.314079,
+      "base_drift_m": 0.0,
+      "certified": true,
+      "failure": null,
+      "fresh_leaves_certified": 2,
+      "grounded_program_sha256": "f5a29fdea8ac3229d36613a91bb08f5a43c1fda28fc000e96502a57ec8bfc5d6",
+      "kind": "feasible",
+      "leaf_duration_scales": [
+        1.0,
+        1.0
+      ],
+      "leaf_failures": [],
+      "leaf_path_repairs": [
+        0,
+        1
+      ],
+      "pace_ordinal": -1,
+      "path_repairs": [
+        {
+          "blocked_by": [
+            "body_0000",
+            "body_0002"
+          ],
+          "deflection_fraction_of_reach": 0.3,
+          "deflection_m": 0.1005,
+          "direction": "outward",
+          "entry_id": "retract_from_point",
+          "kind": "self_collision",
+          "segment": 1,
+          "span": 1,
+          "straight_refusal": "waypoint 6 is 0.0195 m from where it was asked to be, held off by body_0000 against body_0002: no configuration reaching it kept them apart",
+          "straight_residual_m": 0.019515424487461817,
+          "via_point_m": [
+            0.1672616204452289,
+            -0.07315033580771291,
+            0.21750000000000003
+          ]
+        }
+      ],
+      "peak_demand_fraction": 1.0,
+      "prompt": "slowly reach out as far as you can and then slowly come back",
+      "region_substitutions": 0,
+      "repeat_outcomes_agree": true,
+      "replay_agreement": true,
+      "replay_hashes": [
+        "8ae3e2d541ec292929818b098291433232332c63009e23f674b66202aeee6355",
+        "8ae3e2d541ec292929818b098291433232332c63009e23f674b66202aeee6355",
+        "8ae3e2d541ec292929818b098291433232332c63009e23f674b66202aeee6355"
+      ],
+      "requested_semantic_hash": "914be37e8d7d79a03bd122d22968c7bbfb67e14ba21eb864029f1110f5ea3787",
+      "stages_ms": {
+        "binding": 166.03,
+        "certification": 6249.628,
+        "compilation": 1095.288,
+        "firewall": 0.0,
+        "grounding": 0.0,
+        "planning": 0.379
+      },
+      "start_id": "start_2",
+      "trace_file_sha256": "170b9ffa1483d3fa73d85e7e81ce5f30c8283850d72dc974a022d70c414c2ead",
+      "tracking_error_m": 4.210033115703397e-05,
+      "trial_id": "pace-1_start_2",
+      "unexpected_contacts": [],
+      "violations": [],
+      "wall_seconds": 31.517
+    },
+    {
+      "accepted": true,
+      "actual_physics_duration_s": 45.412000000009535,
+      "authored_duration_s": 45.411683,
+      "base_drift_m": 0.0,
+      "certified": true,
+      "failure": null,
+      "fresh_leaves_certified": 2,
+      "grounded_program_sha256": "9ce1b4dae17837d5d1648b4a45199d49c161f919faee5ea9616f161c2c7dff9d",
+      "kind": "feasible",
+      "leaf_duration_scales": [
+        1.0,
+        1.0
+      ],
+      "leaf_failures": [],
+      "leaf_path_repairs": [
+        0,
+        1
+      ],
+      "pace_ordinal": 0,
+      "path_repairs": [
+        {
+          "blocked_by": [
+            "body_0000",
+            "body_0002"
+          ],
+          "deflection_fraction_of_reach": 0.3,
+          "deflection_m": 0.1005,
+          "direction": "outward",
+          "entry_id": "retract_from_point",
+          "kind": "self_collision",
+          "segment": 1,
+          "span": 1,
+          "straight_refusal": "waypoint 6 is 0.0195 m from where it was asked to be, held off by body_0000 against body_0002: no configuration reaching it kept them apart",
+          "straight_residual_m": 0.019515424487461817,
+          "via_point_m": [
+            0.1672616204452289,
+            -0.07315033580771291,
+            0.21750000000000003
+          ]
+        }
+      ],
+      "peak_demand_fraction": 1.0,
+      "prompt": "reach out as far as you can and then come back",
+      "region_substitutions": 0,
+      "repeat_outcomes_agree": true,
+      "replay_agreement": true,
+      "replay_hashes": [
+        "864464dc13f6d6485ef01025e867cde0cb55d9d65e4ce6781d4545578aa6be1b",
+        "864464dc13f6d6485ef01025e867cde0cb55d9d65e4ce6781d4545578aa6be1b",
+        "864464dc13f6d6485ef01025e867cde0cb55d9d65e4ce6781d4545578aa6be1b"
+      ],
+      "requested_semantic_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6",
+      "stages_ms": {
+        "binding": 214.514,
+        "certification": 4791.465,
+        "compilation": 1267.715,
+        "firewall": 0.0,
+        "grounding": 0.0,
+        "planning": 0.435
+      },
+      "start_id": "start_2",
+      "trace_file_sha256": "9148e5dd7bd75f35494bdd0a458547bb5fdc602bb533d7416b74085728f88fe4",
+      "tracking_error_m": 4.1942356262168786e-05,
+      "trial_id": "pace+0_start_2",
+      "unexpected_contacts": [],
+      "violations": [],
+      "wall_seconds": 27.535
+    },
+    {
+      "accepted": true,
+      "actual_physics_duration_s": 38.34000000000089,
+      "authored_duration_s": 38.338543,
+      "base_drift_m": 0.0,
+      "certified": true,
+      "failure": null,
+      "fresh_leaves_certified": 2,
+      "grounded_program_sha256": "3bbdf0bf7ae47c34aa97ad4e44158dcb56adf015508dba6f1a1e9e4fd1cc9637",
+      "kind": "feasible",
+      "leaf_duration_scales": [
+        1.0,
+        1.0
+      ],
+      "leaf_failures": [],
+      "leaf_path_repairs": [
+        0,
+        1
+      ],
+      "pace_ordinal": 1,
+      "path_repairs": [
+        {
+          "blocked_by": [
+            "body_0000",
+            "body_0002"
+          ],
+          "deflection_fraction_of_reach": 0.3,
+          "deflection_m": 0.1005,
+          "direction": "outward",
+          "entry_id": "retract_from_point",
+          "kind": "self_collision",
+          "segment": 1,
+          "span": 1,
+          "straight_refusal": "waypoint 6 is 0.0195 m from where it was asked to be, held off by body_0000 against body_0002: no configuration reaching it kept them apart",
+          "straight_residual_m": 0.019515424487461817,
+          "via_point_m": [
+            0.1672616204452289,
+            -0.07315033580771291,
+            0.21750000000000003
+          ]
+        }
+      ],
+      "peak_demand_fraction": 1.0,
+      "prompt": "quickly reach out as far as you can and then quickly come back",
+      "region_substitutions": 0,
+      "repeat_outcomes_agree": true,
+      "replay_agreement": true,
+      "replay_hashes": [
+        "33fae7b36103a4fa2090bfde497369d5ca73c958d569efd8b4bf434ca27d71a7",
+        "33fae7b36103a4fa2090bfde497369d5ca73c958d569efd8b4bf434ca27d71a7",
+        "33fae7b36103a4fa2090bfde497369d5ca73c958d569efd8b4bf434ca27d71a7"
+      ],
+      "requested_semantic_hash": "69ad6c950610a5fc245174c38ab5a116ce09b3dfce78f7d9ec76d02cb484e89b",
+      "stages_ms": {
+        "binding": 146.936,
+        "certification": 3643.271,
+        "compilation": 942.288,
+        "firewall": 0.0,
+        "grounding": 0.0,
+        "planning": 0.463
+      },
+      "start_id": "start_2",
+      "trace_file_sha256": "8e2b8fc7d21ad0960c72e39f507396ec4bcfb7d0d4cc7c5aead88bea97532e5f",
+      "tracking_error_m": 7.545994744630976e-05,
+      "trial_id": "pace+1_start_2",
+      "unexpected_contacts": [],
+      "violations": [],
+      "wall_seconds": 21.801
+    },
+    {
+      "accepted": true,
+      "actual_physics_duration_s": 33.28799999999472,
+      "authored_duration_s": 33.2863,
+      "base_drift_m": 0.0,
+      "certified": true,
+      "failure": null,
+      "fresh_leaves_certified": 2,
+      "grounded_program_sha256": "0054718855da4f6e4d53d608c4cef51481d438a79432e66374eb9932ccea8efd",
+      "kind": "feasible",
+      "leaf_duration_scales": [
+        1.0,
+        1.0
+      ],
+      "leaf_failures": [],
+      "leaf_path_repairs": [
+        0,
+        1
+      ],
+      "pace_ordinal": 2,
+      "path_repairs": [
+        {
+          "blocked_by": [
+            "body_0000",
+            "body_0002"
+          ],
+          "deflection_fraction_of_reach": 0.3,
+          "deflection_m": 0.1005,
+          "direction": "outward",
+          "entry_id": "retract_from_point",
+          "kind": "self_collision",
+          "segment": 1,
+          "span": 1,
+          "straight_refusal": "waypoint 6 is 0.0195 m from where it was asked to be, held off by body_0000 against body_0002: no configuration reaching it kept them apart",
+          "straight_residual_m": 0.019515424487461817,
+          "via_point_m": [
+            0.1672616204452289,
+            -0.07315033580771291,
+            0.21750000000000003
+          ]
+        }
+      ],
+      "peak_demand_fraction": 1.0,
+      "prompt": "flat out reach out as far as you can and then come back flat out",
+      "region_substitutions": 0,
+      "repeat_outcomes_agree": true,
+      "replay_agreement": true,
+      "replay_hashes": [
+        "ed5b0b62f905d82cf87fc85bf517630dc20599dbddcfe755d4efe2efd6e821fc",
+        "ed5b0b62f905d82cf87fc85bf517630dc20599dbddcfe755d4efe2efd6e821fc",
+        "ed5b0b62f905d82cf87fc85bf517630dc20599dbddcfe755d4efe2efd6e821fc"
+      ],
+      "requested_semantic_hash": "39b9df92865566649895da616c2c0dd86ac4586dc871d0050ef4eb02b10ae757",
+      "stages_ms": {
+        "binding": 183.216,
+        "certification": 3539.737,
+        "compilation": 690.289,
+        "firewall": 0.0,
+        "grounding": 0.0,
+        "planning": 0.478
+      },
+      "start_id": "start_2",
+      "trace_file_sha256": "fb72565ee0d45f083f402c6cdc9c35c85ff8253c9f84a85d11c3ae30020875e7",
+      "tracking_error_m": 0.00013297415906263568,
+      "trial_id": "pace+2_start_2",
+      "unexpected_contacts": [],
+      "violations": [],
+      "wall_seconds": 22.047
+    },
+    {
+      "accepted": true,
+      "actual_physics_duration_s": 46.876000000011324,
+      "authored_duration_s": 46.875997,
+      "base_drift_m": 0.0,
+      "certified": true,
+      "failure": null,
+      "fresh_leaves_certified": 2,
+      "grounded_program_sha256": "83457e67b57e71fe179b8ba529551fee55d381240ef0cda573ef94c43b5594e8",
+      "kind": "feasible",
+      "leaf_duration_scales": [
+        1.0,
+        1.0
+      ],
+      "leaf_failures": [],
+      "leaf_path_repairs": [
+        0,
+        0
+      ],
+      "pace_ordinal": -2,
+      "path_repairs": [],
+      "peak_demand_fraction": 1.0,
+      "prompt": "very slowly reach out as far as you can and then very slowly come back",
+      "region_substitutions": 0,
+      "repeat_outcomes_agree": true,
+      "replay_agreement": true,
+      "replay_hashes": [
+        "6a26f0abe3865ece7a11c05c68b812a512a39540636c76ad598dc97aef999c20",
+        "6a26f0abe3865ece7a11c05c68b812a512a39540636c76ad598dc97aef999c20",
+        "6a26f0abe3865ece7a11c05c68b812a512a39540636c76ad598dc97aef999c20"
+      ],
+      "requested_semantic_hash": "dd0b47ae397c46acccf5596060736d68f7fd5df1006344d6a1d746ac953f41b5",
+      "stages_ms": {
+        "binding": 24.183,
+        "certification": 5046.571,
+        "compilation": 1073.627,
+        "firewall": 0.0,
+        "grounding": 0.0,
+        "planning": 0.342
+      },
+      "start_id": "start_3",
+      "trace_file_sha256": "4a56fe0daf6c9d1e939a06a6186118f850db8ecdcf32dea21264175f3e6d7ac4",
+      "tracking_error_m": 0.00010225888407740004,
+      "trial_id": "pace-2_start_3",
+      "unexpected_contacts": [],
+      "violations": [],
+      "wall_seconds": 24.645
+    },
+    {
+      "accepted": true,
+      "actual_physics_duration_s": 37.47799999999984,
+      "authored_duration_s": 37.477241,
+      "base_drift_m": 0.0,
+      "certified": true,
+      "failure": null,
+      "fresh_leaves_certified": 2,
+      "grounded_program_sha256": "77db2e0928f94ada23cdf1ac8b48bb8f45fc83135d3792da0d64138aa15b1aad",
+      "kind": "feasible",
+      "leaf_duration_scales": [
+        1.0,
+        1.0
+      ],
+      "leaf_failures": [],
+      "leaf_path_repairs": [
+        0,
+        0
+      ],
+      "pace_ordinal": -1,
+      "path_repairs": [],
+      "peak_demand_fraction": 1.0,
+      "prompt": "slowly reach out as far as you can and then slowly come back",
+      "region_substitutions": 0,
+      "repeat_outcomes_agree": true,
+      "replay_agreement": true,
+      "replay_hashes": [
+        "d0c3c831fe3f9335ddf93aeae9ccf1c29e8e43fea14bc32b4c15096be940e7dd",
+        "d0c3c831fe3f9335ddf93aeae9ccf1c29e8e43fea14bc32b4c15096be940e7dd",
+        "d0c3c831fe3f9335ddf93aeae9ccf1c29e8e43fea14bc32b4c15096be940e7dd"
+      ],
+      "requested_semantic_hash": "914be37e8d7d79a03bd122d22968c7bbfb67e14ba21eb864029f1110f5ea3787",
+      "stages_ms": {
+        "binding": 15.646,
+        "certification": 2926.656,
+        "compilation": 693.398,
+        "firewall": 0.0,
+        "grounding": 0.0,
+        "planning": 0.295
+      },
+      "start_id": "start_3",
+      "trace_file_sha256": "09fb768680c56f9f134c848712f9d62d63839d60aa10ec2d6c87a8027c97942f",
+      "tracking_error_m": 0.00010192704538826375,
+      "trial_id": "pace-1_start_3",
+      "unexpected_contacts": [],
+      "violations": [],
+      "wall_seconds": 18.05
+    },
+    {
+      "accepted": true,
+      "actual_physics_duration_s": 30.76399999999383,
+      "authored_duration_s": 30.763844,
+      "base_drift_m": 0.0,
+      "certified": true,
+      "failure": null,
+      "fresh_leaves_certified": 2,
+      "grounded_program_sha256": "ddf781fce5f3122b19efab32ea8f3c2cbd88f89c864374663a3dc1f4830ea2ac",
+      "kind": "feasible",
+      "leaf_duration_scales": [
+        1.0,
+        1.0
+      ],
+      "leaf_failures": [],
+      "leaf_path_repairs": [
+        0,
+        0
+      ],
+      "pace_ordinal": 0,
+      "path_repairs": [],
+      "peak_demand_fraction": 1.0,
+      "prompt": "reach out as far as you can and then come back",
+      "region_substitutions": 0,
+      "repeat_outcomes_agree": true,
+      "replay_agreement": true,
+      "replay_hashes": [
+        "62b18bab3d73b0f5e511128c92b85ba32b18852a8f73883998747604b1f4f579",
+        "62b18bab3d73b0f5e511128c92b85ba32b18852a8f73883998747604b1f4f579",
+        "62b18bab3d73b0f5e511128c92b85ba32b18852a8f73883998747604b1f4f579"
+      ],
+      "requested_semantic_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6",
+      "stages_ms": {
+        "binding": 17.921,
+        "certification": 2715.553,
+        "compilation": 672.833,
+        "firewall": 0.0,
+        "grounding": 0.0,
+        "planning": 0.471
+      },
+      "start_id": "start_3",
+      "trace_file_sha256": "16ddaa7903b75efac960d63284ecdd6a3c41f1a6f9e9689518ab402cfe065e21",
+      "tracking_error_m": 0.00010025968224240826,
+      "trial_id": "pace+0_start_3",
+      "unexpected_contacts": [],
+      "violations": [],
+      "wall_seconds": 16.163
+    },
+    {
+      "accepted": true,
+      "actual_physics_duration_s": 25.969999999996485,
+      "authored_duration_s": 25.968561,
+      "base_drift_m": 0.0,
+      "certified": true,
+      "failure": null,
+      "fresh_leaves_certified": 2,
+      "grounded_program_sha256": "2b50d0b940314442696978229bb35fd435633d47f5c75e16d83c848e60f6f3dd",
+      "kind": "feasible",
+      "leaf_duration_scales": [
+        1.0,
+        1.0
+      ],
+      "leaf_failures": [],
+      "leaf_path_repairs": [
+        0,
+        0
+      ],
+      "pace_ordinal": 1,
+      "path_repairs": [],
+      "peak_demand_fraction": 1.0,
+      "prompt": "quickly reach out as far as you can and then quickly come back",
+      "region_substitutions": 0,
+      "repeat_outcomes_agree": true,
+      "replay_agreement": true,
+      "replay_hashes": [
+        "b460cc68b8a53f59b400ee3a7a27c3dc4f1599ddc7ed5bcb3424495adaa556bf",
+        "b460cc68b8a53f59b400ee3a7a27c3dc4f1599ddc7ed5bcb3424495adaa556bf",
+        "b460cc68b8a53f59b400ee3a7a27c3dc4f1599ddc7ed5bcb3424495adaa556bf"
+      ],
+      "requested_semantic_hash": "69ad6c950610a5fc245174c38ab5a116ce09b3dfce78f7d9ec76d02cb484e89b",
+      "stages_ms": {
+        "binding": 25.473,
+        "certification": 3217.286,
+        "compilation": 713.255,
+        "firewall": 0.0,
+        "grounding": 0.0,
+        "planning": 0.34
+      },
+      "start_id": "start_3",
+      "trace_file_sha256": "f029eb46683c74858883bcdc4188d3705e58e1372054ea29dd4b25fefffe0a9a",
+      "tracking_error_m": 0.00010063424047588062,
+      "trial_id": "pace+1_start_3",
+      "unexpected_contacts": [],
+      "violations": [],
+      "wall_seconds": 16.849
+    },
+    {
+      "accepted": true,
+      "actual_physics_duration_s": 22.543999999998384,
+      "authored_duration_s": 22.543358,
+      "base_drift_m": 0.0,
+      "certified": true,
+      "failure": null,
+      "fresh_leaves_certified": 2,
+      "grounded_program_sha256": "5585efe0680857dd94e374f0912a3f8af148729d078e728b7dcf2bb30b666110",
+      "kind": "feasible",
+      "leaf_duration_scales": [
+        1.0,
+        1.0
+      ],
+      "leaf_failures": [],
+      "leaf_path_repairs": [
+        0,
+        0
+      ],
+      "pace_ordinal": 2,
+      "path_repairs": [],
+      "peak_demand_fraction": 1.0,
+      "prompt": "flat out reach out as far as you can and then come back flat out",
+      "region_substitutions": 0,
+      "repeat_outcomes_agree": true,
+      "replay_agreement": true,
+      "replay_hashes": [
+        "953692b6df35a85f579e87a4f0a6b132b0a75c1d7441991f82f66d3ae8081172",
+        "953692b6df35a85f579e87a4f0a6b132b0a75c1d7441991f82f66d3ae8081172",
+        "953692b6df35a85f579e87a4f0a6b132b0a75c1d7441991f82f66d3ae8081172"
+      ],
+      "requested_semantic_hash": "39b9df92865566649895da616c2c0dd86ac4586dc871d0050ef4eb02b10ae757",
+      "stages_ms": {
+        "binding": 23.944,
+        "certification": 2350.183,
+        "compilation": 517.698,
+        "firewall": 0.0,
+        "grounding": 0.0,
+        "planning": 0.42
+      },
+      "start_id": "start_3",
+      "trace_file_sha256": "2ea62d917b295c210d728a6bf374439e4432fd4d1e24c149afc0a4610c30b6a6",
+      "tracking_error_m": 0.00010909684781997494,
+      "trial_id": "pace+2_start_3",
+      "unexpected_contacts": [],
+      "violations": [],
+      "wall_seconds": 13.675
+    }
+  ],
+  "invalid_constructed": 3,
+  "invalid_correctly_refused": 3,
+  "invalid_requests": [
+    {
+      "accepted": false,
+      "case_id": "start_beyond_limit",
+      "correct_typed_refusal": true,
+      "expected": {
+        "measurement": "start_state.joint_limit",
+        "refusal_code": "ungroundable",
+        "where": "leaf_bake_and_binding"
+      },
+      "failure": {
+        "code": "unafforded_schema",
+        "detail": "body_2e3d1c514d083e8a has no certified 'reach_to_edge' at distal: it failed at the grounding stage -- body_2e3d1c514d083e8a: the start state puts axis_0000 at 3.3500, outside its range [-2.8500, 2.8500]",
+        "stage": "binding"
+      },
+      "fresh_leaves_certified": 0,
+      "kind": "invalid",
+      "leaf_duration_scales": [],
+      "leaf_failures": [
+        {
+          "code": "ungroundable",
+          "detail": "body_2e3d1c514d083e8a: the start state puts axis_0000 at 3.3500, outside its range [-2.8500, 2.8500]",
+          "entry": "reach_to_edge",
+          "gate": "start_state.joint_limit",
+          "measurements": {},
+          "stage": "grounding"
+        },
+        {
+          "code": "ungroundable",
+          "detail": "body_2e3d1c514d083e8a: the start state puts axis_0000 at 3.3500, outside its range [-2.8500, 2.8500]",
+          "entry": "retract_from_point",
+          "gate": "start_state.joint_limit",
+          "measurements": {},
+          "stage": "grounding"
+        }
+      ],
+      "observed_codes": [
+        "unafforded_schema",
+        "ungroundable"
+      ],
+      "observed_measurements": [
+        "start_state.joint_limit"
+      ],
+      "prompt": "reach out as far as you can and then come back",
+      "reason": "axis_0000 placed past its maximum",
+      "repeat_outcomes_agree": true,
+      "requested_semantic_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6",
+      "stages_ms": {
+        "binding": 0.048,
+        "firewall": 0.0,
+        "planning": 0.329
+      },
+      "wall_seconds": 0.004
+    },
+    {
+      "accepted": false,
+      "case_id": "unafforded_request",
+      "correct_typed_refusal": true,
+      "expected": {
+        "measurement": null,
+        "refusal_code": "unafforded_schema",
+        "where": "planning"
+      },
+      "failure": {
+        "code": "unafforded_schema",
+        "detail": "this robot has no certified 'transport_object' primitive",
+        "stage": "planning"
+      },
+      "fresh_leaves_certified": 0,
+      "kind": "invalid",
+      "leaf_duration_scales": [],
+      "leaf_failures": [],
+      "observed_codes": [
+        "unafforded_schema"
+      ],
+      "observed_measurements": [],
+      "prompt": "grasp the cup and then come back",
+      "reason": "asks for a contact schema this free-space campaign does not certify",
+      "repeat_outcomes_agree": true,
+      "requested_semantic_hash": null,
+      "stages_ms": {
+        "planning": 0.04
+      },
+      "wall_seconds": 0.0
+    },
+    {
+      "accepted": false,
+      "case_id": "start_self_collision",
+      "correct_typed_refusal": true,
+      "expected": {
+        "measurement": "start_state.self_collision",
+        "refusal_code": "ungroundable",
+        "where": "leaf_bake_and_binding"
+      },
+      "failure": {
+        "code": "unafforded_schema",
+        "detail": "body_2e3d1c514d083e8a has no certified 'reach_to_edge' at distal: it failed at the grounding stage -- body_2e3d1c514d083e8a: the start state has body_0002 26.0 mm inside body_0006",
+        "stage": "binding"
+      },
+      "fresh_leaves_certified": 0,
+      "kind": "invalid",
+      "leaf_duration_scales": [],
+      "leaf_failures": [
+        {
+          "code": "ungroundable",
+          "detail": "body_2e3d1c514d083e8a: the start state has body_0002 26.0 mm inside body_0006",
+          "entry": "reach_to_edge",
+          "gate": "start_state.self_collision",
+          "measurements": {},
+          "stage": "grounding"
+        },
+        {
+          "code": "ungroundable",
+          "detail": "body_2e3d1c514d083e8a: the start state has body_0002 26.0 mm inside body_0006",
+          "entry": "retract_from_point",
+          "gate": "start_state.self_collision",
+          "measurements": {},
+          "stage": "grounding"
+        }
+      ],
+      "observed_codes": [
+        "unafforded_schema",
+        "ungroundable"
+      ],
+      "observed_measurements": [
+        "start_state.self_collision"
+      ],
+      "prompt": "reach out as far as you can and then come back",
+      "reason": "body_0002 26.0 mm inside body_0006",
+      "repeat_outcomes_agree": true,
+      "requested_semantic_hash": "09191df11fd0af2d0172d92356e8beaabba12206e701ab1684c730ad7fccd1e6",
+      "stages_ms": {
+        "binding": 0.059,
+        "firewall": 0.0,
+        "planning": 0.543
+      },
+      "wall_seconds": 0.01
+    }
+  ],
+  "meets_19_of_20": true,
+  "package_sha256": "2e3d1c514d083e8af8ebdce1f47ec1f4c761217bfeb8b286a8506c1ddd9a5774",
+  "rig_id": "body_2e3d1c514d083e8a",
+  "successes_straight": 15,
+  "successes_with_path_repair": 5,
+  "zoo_id": "zoo_compact_arm"
+}

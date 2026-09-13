@@ -1,0 +1,42 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-reach-out-as-far-as-you-can-and-then-come-back-9e7e82b4",
+  "title": "G05 D05: six bodies, one prompt, synchronized",
+  "prompt": "reach out as far as you can and then come back",
+  "tier": "any-robot",
+  "embodiment": "zoo (all six bodies)",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T04:34:30Z",
+  "source": {
+    "commit": "46c9edf20b",
+    "branch": "feat/g05-six-body-composition",
+    "dirty": false,
+    "how": "python any-robot/scripts/g05_composition_campaign.py --out docs/results/g05-campaign --local any-robot/results/g05-campaign --render && python any-robot/scripts/g05_d05_media.py --campaign docs/results/g05-campaign --out docs/results/g05-d05"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "Six canonical full-duration episodes on one physics clock; every body certified by all gates including self-collision; 120/120 registered variants succeeded."
+  },
+  "notes": "Real-time playback of recorded physical states through the structural capability intake; a shorter episode holds its final state until the longest (67.5 s) ends. The GIF is a labelled ~11x summary. See docs/results/g05-report.md and g05-d05/index.json.",
+  "media": [
+    {
+      "path": "docs/results/g05-d05/six-body-synchronized.mp4",
+      "bytes": 1728040,
+      "sha256": "2368fc166433ae1ca13ead3008fe22c616514fad2b2c585044d517d2c6306375",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g05-d05/six-body-preview.gif",
+      "bytes": 1407534,
+      "sha256": "2d655f211dffa1585533c23d086ffe225b91c10ac47d4854dd92af89a6677f82",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G05",
+    "D05",
+    "physical-replay"
+  ]
+}

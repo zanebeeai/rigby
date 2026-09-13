@@ -1,0 +1,50 @@
+{
+  "actual_physics_duration_s": 60.59200000002809,
+  "fault": null,
+  "physical_steps": 30296,
+  "reference_duration_s": 60.591332,
+  "refusal": null,
+  "scope": "free-space motion; no object task",
+  "status": "runtime_failure",
+  "tracking_error_m": 0.03890403568082811,
+  "unexpected_contacts": [
+    [
+      "left_finger_left",
+      "left_link_2"
+    ],
+    [
+      "left_link_2",
+      "left_palm"
+    ]
+  ],
+  "violations": [
+    {
+      "code": "joint_position_limit",
+      "detail": "left_grip_left went below its lower limit",
+      "limit": 0.0,
+      "measured": -0.01117921345750488,
+      "subject": "left_grip_left"
+    },
+    {
+      "code": "actuator_effort_limit",
+      "detail": "left_joint_4_motor demanded more force than it has, for 14% of the motion",
+      "limit": 95.0,
+      "measured": 2922.426943958643,
+      "subject": "left_joint_4_motor"
+    },
+    {
+      "code": "actuator_effort_limit",
+      "detail": "left_grip_left_motor demanded more force than it has, for 9% of the motion",
+      "limit": 45.0,
+      "measured": 3194.9179797578154,
+      "subject": "left_grip_left_motor"
+    },
+    {
+      "code": "self_collision",
+      "detail": "left_finger_left and left_link_2 collided",
+      "limit": 0.0,
+      "measured": 2.0,
+      "subject": "left_finger_left|left_link_2"
+    }
+  ]
+}

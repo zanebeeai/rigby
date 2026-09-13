@@ -1,0 +1,210 @@
+{
+  "commit": "46c9edf20bc5b0720931756a8a1cc9cf99424546",
+  "created_at_utc": "2026-09-13T04:31:17.692102+00:00",
+  "demo": "D05",
+  "dual_arm": {
+    "after": {
+      "frames": 646,
+      "media_sha256": "719f137f0721f7dbb2558091a430282a6fbb1ccb4b95a6574ce16954ddf140c2",
+      "outcome": "success",
+      "physical_sha256": "d5a9e927938dbf6d4a295cc45d5231e64d5570f57c4ef02eba16f57d12096349",
+      "simulation_duration_s": 53.718000000019686,
+      "tracking_error_m": 8.933825472669532e-05,
+      "unexpected_contacts": [],
+      "violations": []
+    },
+    "after_duration_s": 53.716499,
+    "before": {
+      "frames": 729,
+      "media_sha256": "07fbf311611b305f67d85799778e541d8003274315d65290184473ff3fddbf54",
+      "outcome": "runtime_failure",
+      "physical_sha256": "f9ca24077262023fdfea59a3c3f28c2a339641808e60c9992f615f1eeffa63e2",
+      "simulation_duration_s": 60.59200000002809,
+      "tracking_error_m": 0.03890403568082811,
+      "unexpected_contacts": [
+        [
+          "left_finger_left",
+          "left_link_2"
+        ],
+        [
+          "left_link_2",
+          "left_palm"
+        ]
+      ],
+      "violations": [
+        {
+          "code": "joint_position_limit",
+          "detail": "left_grip_left went below its lower limit",
+          "limit": 0.0,
+          "measured": -0.01117921345750488,
+          "subject": "left_grip_left"
+        },
+        {
+          "code": "actuator_effort_limit",
+          "detail": "left_joint_4_motor demanded more force than it has, for 14% of the motion",
+          "limit": 95.0,
+          "measured": 2922.426943958643,
+          "subject": "left_joint_4_motor"
+        },
+        {
+          "code": "actuator_effort_limit",
+          "detail": "left_grip_left_motor demanded more force than it has, for 9% of the motion",
+          "limit": 45.0,
+          "measured": 3194.9179797578154,
+          "subject": "left_grip_left_motor"
+        },
+        {
+          "code": "self_collision",
+          "detail": "left_finger_left and left_link_2 collided",
+          "limit": 0.0,
+          "measured": 2.0,
+          "subject": "left_finger_left|left_link_2"
+        }
+      ]
+    },
+    "before_commit": "5a6c0b3bb17eb721da6ba6c144743c24ba872301",
+    "before_duration_s": 60.591332,
+    "before_matches_frozen_fixture": true,
+    "body": "zoo_dual_arm",
+    "side_by_side": {
+      "duration_s": 60.75,
+      "frames": 729,
+      "height": 408,
+      "inputs": [
+        "docs/results/g05-d05/dual-arm/before/media/episode.mp4",
+        "docs/results/g05-d05/dual-arm/after/media/episode.mp4"
+      ],
+      "preview": {
+        "approximate_speed": 10.12,
+        "frames": 60,
+        "gif": "dual-arm-before-after-preview.gif",
+        "summary_of": "dual-arm-before-after.mp4"
+      },
+      "video": "dual-arm-before-after.mp4",
+      "width": 1920
+    }
+  },
+  "files": {
+    "dual-arm-before-after-preview.gif": "dc7f15c4637127ca162f1f09cccd339c2a103c95aad1ddbd7add4be81b71922f",
+    "dual-arm-before-after.mp4": "1ebfeb5aaa1db0daa7604ca9456e2fb70b47c71163040e6c968d62abc92f507e",
+    "dual-arm/after/media/encoding.json": "f30f9cd1a2ae2564beda8466f82d1f0134947f3c1734d91950f45630c82f39e8",
+    "dual-arm/after/media/episode.mp4": "6c1065601ed32ac766c9a04178185a0d2fbc47e93bb1a12a0f04a26c83f4c5c0",
+    "dual-arm/after/media/final.png": "b35301240e43e8b7211aad376f83380ac2fd0197f4a20136e6a332820d7e6796",
+    "dual-arm/after/media/frames.json": "d2a3fc9e3fa595c3047b71eed8e83d53d92d19ed6ac2259d408a9d72a979ff6f",
+    "dual-arm/after/media/initial.png": "021bebb2115bac66a3efcabca02fea2f951e0f7824d9ecb7e8f4049e126388c0",
+    "dual-arm/after/media/manifest.json": "719f137f0721f7dbb2558091a430282a6fbb1ccb4b95a6574ce16954ddf140c2",
+    "dual-arm/after/media/preview.gif": "75d558e8d6e2a13bdfbbb0bcb57ef8fa6e38c4425efbbcdf9485b0df640e07a7",
+    "dual-arm/after/media/seal.json": "9345102bb9083818386193b8945d72858a27ff47a5e378c4108edb41181c006b",
+    "dual-arm/after/physical/controller.json": "9006382b811f678588e316249852d8a3e28ea2fe8f00967105b040f005a8f76a",
+    "dual-arm/after/physical/manifest.json": "d5a9e927938dbf6d4a295cc45d5231e64d5570f57c4ef02eba16f57d12096349",
+    "dual-arm/after/physical/model.mjb": "6b1a01518e6811b4f37926117334f2175396efd252b4efbcbcd36abb0f2371ba",
+    "dual-arm/after/physical/model.xml": "4e22bd24353fa8c27d90b112e8823a253cca882a36447c6e2ba130f3f175df5c",
+    "dual-arm/after/physical/outcome.json": "8243d2344c16ed139ae1c49c3a7c076a5cef65887dcdbbaf2bc757f31ce63670",
+    "dual-arm/after/physical/program.json": "85c489ce99c85b047244a368101dad99186931f59a8762de7499f97d190c75d5",
+    "dual-arm/after/physical/reference.json": "a910dc455fff4ad7b42237e688f627803a80c4aee3b598613d21be3545a63e59",
+    "dual-arm/after/physical/repeats.json": "7c3d15ae018cd5e70f31c3add58b6ef8d9d57360b6e6cded45b58cbd6a614ce3",
+    "dual-arm/after/physical/robot.json": "ef7928388e751f9a0250ad57581b1812b6e69c2d8a154e901a639063ed395fd9",
+    "dual-arm/after/physical/robot.urdf": "628edbed60eb5732d38f1542a1411ea76518bc8c0f78c43f5910f6e9a0868d71",
+    "dual-arm/after/physical/seal.json": "dd42ab547f6b094208c23660559923487bc5d0f7de251cdb12aa87b917f83a06",
+    "dual-arm/after/physical/source.json": "326a23a71de8c0c4a651b2b4e3485a3b84211ea44e8bd456f14da65792874438",
+    "dual-arm/after/physical/source.zip": "2095b43410e086a6528bda226b260cedf31eb8caaf2b4f94c44941ec6dc034dd",
+    "dual-arm/after/physical/task.json": "20ea215ad3c5146b053faca831ccddc8cc0419fce0d5b382799e7cb76c4e5288",
+    "dual-arm/after/physical/trace.npz": "ec8b7544d39ebe70a0b13404c6f565d5ed2422defa8014124eb8751ee26c8cda",
+    "dual-arm/after/physical/world.json": "346ab4c4fbd28f3f46e908cb41061d0c8b9f55e771262dd65eff5591094dc0ee",
+    "dual-arm/before/media/encoding.json": "08e455e97bd818ae8c2755680ebdf98933cf568f0d427e515c6c79058136ed5e",
+    "dual-arm/before/media/episode.mp4": "e5331674f3dc562022d7f49bf5e60068ceb11ff05af81c0a358a1ae83e540553",
+    "dual-arm/before/media/final.png": "faa22a5e6a838fa6e2441a47257f9c120d1817eca05a1c001b9b5b888d8d1930",
+    "dual-arm/before/media/frames.json": "ebb227ffc1ce89e16380a57fcad314e74fbb885c485c8a51ff6fe00a9e68643f",
+    "dual-arm/before/media/initial.png": "abcf7f1b956a81bbba2d9338326ee4501d32a0afb552fae095dd7747055efdcc",
+    "dual-arm/before/media/manifest.json": "07fbf311611b305f67d85799778e541d8003274315d65290184473ff3fddbf54",
+    "dual-arm/before/media/preview.gif": "d75cca30d651d30e083654236ff1bbb3fb2e886ac1af435c9ebafbfd08990f22",
+    "dual-arm/before/media/seal.json": "820b6548957c03adae100525a4330d97fb5dff5e2fedafff09e7dd51fee7d89c",
+    "dual-arm/before/physical/controller.json": "9006382b811f678588e316249852d8a3e28ea2fe8f00967105b040f005a8f76a",
+    "dual-arm/before/physical/manifest.json": "f9ca24077262023fdfea59a3c3f28c2a339641808e60c9992f615f1eeffa63e2",
+    "dual-arm/before/physical/model.mjb": "6b1a01518e6811b4f37926117334f2175396efd252b4efbcbcd36abb0f2371ba",
+    "dual-arm/before/physical/model.xml": "4e22bd24353fa8c27d90b112e8823a253cca882a36447c6e2ba130f3f175df5c",
+    "dual-arm/before/physical/outcome.json": "a8352dfa5c892f255c3d684fe082ddd20ea8c0a3df9dcdafce1dfea28fff5934",
+    "dual-arm/before/physical/program.json": "bd896043549acf457e6e25d0e25c528caa7cf06ee25d797712cd46d40d49968e",
+    "dual-arm/before/physical/reference.json": "78d137e5ccd1b040236f5e21bcf6330a8ef5a6c254e101dfb6a0d5d286465ebc",
+    "dual-arm/before/physical/repeats.json": "b2f36f48411280d22103aaf9b3685a0d7952f2fa2e91a865fb9c6bd8854ed3ec",
+    "dual-arm/before/physical/robot.json": "ef7928388e751f9a0250ad57581b1812b6e69c2d8a154e901a639063ed395fd9",
+    "dual-arm/before/physical/robot.urdf": "628edbed60eb5732d38f1542a1411ea76518bc8c0f78c43f5910f6e9a0868d71",
+    "dual-arm/before/physical/seal.json": "1105937233c8282504d6337e0e6987ed27b197b7d375f1e6de268f4e0c6a0a0d",
+    "dual-arm/before/physical/source.json": "326a23a71de8c0c4a651b2b4e3485a3b84211ea44e8bd456f14da65792874438",
+    "dual-arm/before/physical/source.zip": "2095b43410e086a6528bda226b260cedf31eb8caaf2b4f94c44941ec6dc034dd",
+    "dual-arm/before/physical/task.json": "ec69baf82150289106724dbcde19477afa925ca93fd377352475d9352718e4ed",
+    "dual-arm/before/physical/trace.npz": "c4234655d4df21f5c7801cc4c75d407ce5528bebd2ed8ce15860ea9d2a1d11b1",
+    "dual-arm/before/physical/world.json": "346ab4c4fbd28f3f46e908cb41061d0c8b9f55e771262dd65eff5591094dc0ee",
+    "pinned/__pycache__/grounder-before.cpython-312.pyc": "a59b8bec5b1a574a6877453c65832171ca6e116770717c64ee3919bbef2fc435",
+    "pinned/grounder-before.py": "7c800d13f002ec6966bee29bbc2ed019274887dfd2fde14fcbb3a24f60d54b0d",
+    "six-body-preview.gif": "2d655f211dffa1585533c23d086ffe225b91c10ac47d4854dd92af89a6677f82",
+    "six-body-synchronized.mp4": "2368fc166433ae1ca13ead3008fe22c616514fad2b2c585044d517d2c6306375"
+  },
+  "goal": "G05",
+  "six_body": {
+    "bodies": [
+      {
+        "frames": 368,
+        "media_sha256": "33c3e56a1e97ce89c261ffe7ca15f75861103d78ed87e3eb51830a019094d95a",
+        "outcome": "success",
+        "simulation_duration_s": 30.50999999999397,
+        "zoo_id": "zoo_compact_arm"
+      },
+      {
+        "frames": 646,
+        "media_sha256": "c7fd15921573e050ec32776c27e16c6b8fe2377e52204cf58b6ec61e923bcf07",
+        "outcome": "success",
+        "simulation_duration_s": 53.718000000019686,
+        "zoo_id": "zoo_dual_arm"
+      },
+      {
+        "frames": 592,
+        "media_sha256": "f5b552a28ca5641a423c32bd01cc58af5feca85cc8dc8170795009a216d6f2ff",
+        "outcome": "success",
+        "simulation_duration_s": 49.24600000001422,
+        "zoo_id": "zoo_hand_arm"
+      },
+      {
+        "frames": 576,
+        "media_sha256": "436555390b23728ef97b56e73736c2cf89e345635a89041ecff68acc80fabd50",
+        "outcome": "success",
+        "simulation_duration_s": 47.84600000001251,
+        "zoo_id": "zoo_jaw_arm"
+      },
+      {
+        "frames": 811,
+        "media_sha256": "ff7272f1654b076394ca5739f12ec589eaa8d74adc0a83fcd641e2735e15990c",
+        "outcome": "success",
+        "simulation_duration_s": 67.45600000002419,
+        "zoo_id": "zoo_long_arm"
+      },
+      {
+        "frames": 631,
+        "media_sha256": "bd78ef4d5445f17919a5e753a16c957a2b951c682c8cd219a367f40eacb6f5b9",
+        "outcome": "success",
+        "simulation_duration_s": 52.43800000001812,
+        "zoo_id": "zoo_tool_arm"
+      }
+    ],
+    "duration_s": 67.583333,
+    "frames": 811,
+    "height": 816,
+    "inputs": [
+      "docs/results/g05-campaign/zoo_compact_arm/canonical/media/episode.mp4",
+      "docs/results/g05-campaign/zoo_dual_arm/canonical/media/episode.mp4",
+      "docs/results/g05-campaign/zoo_hand_arm/canonical/media/episode.mp4",
+      "docs/results/g05-campaign/zoo_jaw_arm/canonical/media/episode.mp4",
+      "docs/results/g05-campaign/zoo_long_arm/canonical/media/episode.mp4",
+      "docs/results/g05-campaign/zoo_tool_arm/canonical/media/episode.mp4"
+    ],
+    "playback": "real time on the shared physics clock; a shorter episode holds its final recorded state",
+    "preview": {
+      "approximate_speed": 11.26,
+      "frames": 60,
+      "gif": "six-body-preview.gif",
+      "summary_of": "six-body-synchronized.mp4"
+    },
+    "video": "six-body-synchronized.mp4",
+    "width": 2880
+  }
+}
