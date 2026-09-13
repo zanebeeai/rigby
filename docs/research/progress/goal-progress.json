@@ -4,25 +4,34 @@
   "goal_catalog": "docs/research/rigby-verifiable-goals.json",
   "goal_catalog_sha256": "3672ebf5fa10ff4216fa0213499d5988281f2ebbc611500e8526afe6e618b250",
   "started_at_utc": "2026-09-12T02:34:49.841258+00:00",
-  "current_goal": "G04",
+  "current_goal": "G11",
   "overall_status": "active",
   "authorization": {
     "commits_and_pull_requests": true,
     "conservative_subagents": true,
     "openai_key_configured": true,
     "openai_models_endpoint_authenticated": true,
-    "generation_calls_so_far": 0,
+    "generation_calls_so_far": 957,
     "model_budget": {
       "source": "U1_model_access_budget (user, 13 Sep 2026)",
       "hard_ceiling_usd": 20.0,
       "soft_cap_usd": 18.0,
-      "dollars_so_far": 0.0,
-      "generation_calls_so_far": 0,
-      "per_goal_usd": {},
+      "dollars_so_far": 2.563602,
+      "generation_calls_so_far": 957,
+      "per_goal_usd": {
+        "G04": 2.563602
+      },
       "gemini_key": "free plan; fallback only when OpenAI is unavailable, never for scored runs, use recorded in evidence",
       "keys_in_chat_commits_or_evidence": false,
-      "rule": "before the first paid call: identify the calling module, count tokens against a mock, report the projected cost, proceed only under the soft cap; cache every response by prompt hash; stop at the ceiling or on a billing failure and mark the language gate pending"
-    }
+      "rule": "before the first paid call: identify the calling module, count tokens against a mock, report the projected cost, proceed only under the soft cap; cache every response by prompt hash; stop at the ceiling or on a billing failure and mark the language gate pending",
+      "calls_by_goal": {
+        "G04": 957
+      },
+      "last_updated_utc": "2026-09-13T18:07:24.477302+00:00",
+      "gemini_used": false,
+      "evidence": "docs/results/g04-semantics/calls.jsonl (scoring), round-1/calls.jsonl, round-2/calls.jsonl (selection), docs/results/g04-d04/calls.jsonl; every row carries model, prompt and completion tokens as reported by the provider, purpose and cost at the recorded rates"
+    },
+    "calling_module": "any-robot/src/rigby_general/planner/model_planner.py (ModelSchemaPlanner over OpenAITransport); no other module issues a model call"
   },
   "previous_goal_turn_classification": "progress",
   "goals": [
@@ -366,39 +375,175 @@
     {
       "id": "G04",
       "title": "Verify semantic fidelity beyond identical hashes",
-      "status": "planned",
+      "status": "partial",
       "criteria": [
         {
           "id": "G04.A01",
           "requirement": "Freeze 60 shared semantic cases spanning the inventory, reference frames, qualitative extent/speed, repetition and object roles; corresponding requested semantic programs agree across applicable bodies.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "docs/results/g04-report.md",
+            "docs/results/g04-validation.json",
+            "docs/results/verify_g04.py",
+            "any-robot/assets/general/research-protocols/g04-semantics-v1/",
+            "docs/results/g04-semantics/"
+          ],
+          "note": "60 canonical cases registered by hash; gpt-4.1 reads all 60 exactly; every case agrees on every zoo body that affords its entries and is refused typed, naming the entry, on the bodies that do not (60/60); docs/results/g04-semantics/agreement.json",
+          "verified_at_utc": "2026-09-13T18:07:24.477302+00:00"
         },
         {
           "id": "G04.A02",
           "requirement": "Add at least 120 independently authored/reviewed language cases with paraphrases, minimal contrasts, negation, ambiguous deixis and explicit quantities. Canonical symbolic cases must be exact; language correctness target is at least 95%, with all prohibited substitutions rejected.",
-          "status": "pending",
-          "evidence": []
+          "status": "partial",
+          "evidence": [
+            "docs/results/g04-report.md",
+            "docs/results/g04-validation.json",
+            "docs/results/verify_g04.py",
+            "any-robot/assets/general/research-protocols/g04-semantics-v1/",
+            "docs/results/g04-semantics/"
+          ],
+          "note": "120 language cases authored (paraphrase, minimal contrast, negation, ambiguous deixis, explicit quantity, manner, sequence, unsupported) with labels recorded as internal in labels.json; at those labels gpt-4.1 reads 114/120 exactly (95.0%) and rejects 27/27 prohibited substitutions; canonical cases exact 60/60; the 'independently authored/reviewed' claim is withheld pending U3_independent_review",
+          "verified_at_utc": "2026-09-13T18:07:24.477302+00:00"
         },
         {
           "id": "G04.A03",
           "requirement": "Preserve '5 cm' as an exact requested quantity while grounding 'a little' from context; verify two distinct body-relative distances without changing the semantic reading.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "docs/results/g04-report.md",
+            "docs/results/g04-validation.json",
+            "docs/results/verify_g04.py",
+            "any-robot/assets/general/research-protocols/g04-semantics-v1/",
+            "docs/results/g04-semantics/",
+            "docs/results/g04-d04/"
+          ],
+          "note": "a stated '5 cm' travels beside the metric-free program as RequestedQuantityV1 and grounds to five centimetres of effector travel on every D04 body (within 4 mm); 'a little' and 'as far as you can' ground body-relatively under one reading hash to different metres per body; docs/results/g04-d04/index.json, tests in any-robot/tests/test_general_planner_quantities.py",
+          "verified_at_utc": "2026-09-13T18:07:24.477302+00:00"
         },
         {
           "id": "G04.A04",
           "requirement": "Publish errors and unsupported language coverage separately. If independent labels are unavailable, complete the engineering fixture but leave the research-language gate pending.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "docs/results/g04-report.md",
+            "docs/results/g04-validation.json",
+            "docs/results/verify_g04.py",
+            "any-robot/assets/general/research-protocols/g04-semantics-v1/",
+            "docs/results/g04-semantics/"
+          ],
+          "note": "errors (confusion.json: every wrong reading with expected and actual, entry matrix, counts by kind) and unsupported coverage (unsupported.json: refused readings and stated quantities grounding refuses) published separately for the model and the offline recognizer; the language gate left pending for want of independent labels",
+          "verified_at_utc": "2026-09-13T18:07:24.477302+00:00"
         }
       ],
       "demo_requirement": "D04: synchronized 'a little' versus 'as far as possible' versus '5 cm' on three bodies, with the semantic fields and measured distances visible.",
-      "demo_status": "pending",
-      "assessment_complete": false,
-      "capability_supported": false,
-      "commits": [],
-      "pull_requests": []
+      "demo_status": "delivered",
+      "assessment_complete": true,
+      "capability_supported": true,
+      "commits": [
+        "54dbae7",
+        "719f7da",
+        "d29eb0c"
+      ],
+      "pull_requests": [
+        "https://github.com/zanebeeai/rigby/pull/41"
+      ],
+      "demo_evidence": [
+        "docs/results/g04-d04/nine-way-synchronized.mp4",
+        "docs/results/g04-d04/nine-way-preview.gif",
+        "docs/results/g04-d04/index.json",
+        "demos/registry"
+      ],
+      "closed_at_utc": "2026-09-13T18:07:24.477302+00:00",
+      "language_gate": {
+        "status": "pending",
+        "reason": "labels are internal; the catalog's independently authored/reviewed claim waits on U3_independent_review",
+        "engineering_result_at_internal_labels": "114/120 exact, 27/27 prohibited substitutions rejected"
+      },
+      "model": {
+        "selected": "gpt-4.1",
+        "selection_rounds": {
+          "round-1": {
+            "selected": null,
+            "dollars": 0.106088,
+            "candidates": [
+              [
+                "gpt-5-nano",
+                "0/60"
+              ],
+              [
+                "gpt-4.1-nano",
+                "2/60"
+              ],
+              [
+                "gpt-4o-mini",
+                "1/60"
+              ],
+              [
+                "gpt-5-mini",
+                "32/60"
+              ]
+            ]
+          },
+          "round-2": {
+            "selected": null,
+            "dollars": 1.004283,
+            "candidates": [
+              [
+                "gpt-5-nano",
+                "23/60"
+              ],
+              [
+                "gpt-4.1-nano",
+                "17/60"
+              ],
+              [
+                "gpt-4o-mini",
+                "3/60"
+              ],
+              [
+                "gpt-5-mini",
+                "54/60"
+              ],
+              [
+                "gpt-5-mini@low",
+                "57/60"
+              ],
+              [
+                "gpt-4.1",
+                "56/60"
+              ],
+              [
+                "gpt-5@low",
+                "59/60"
+              ]
+            ]
+          },
+          "round-3": {
+            "selected": "gpt-4.1",
+            "dollars": 0.585469,
+            "candidates": [
+              [
+                "gpt-5-mini",
+                "57/60"
+              ],
+              [
+                "gpt-5-mini@low",
+                "59/60"
+              ],
+              [
+                "gpt-4.1",
+                "60/60"
+              ]
+            ]
+          },
+          "scoring": {
+            "selected": null,
+            "dollars": 0.867762,
+            "candidates": []
+          }
+        }
+      },
+      "note": "Closed partial on A02 only because the labels are internal. The engineering fixture is complete: the model planner (rigby_general/planner/model_planner.py, the only module that issues a model call) reads the closed class exactly on the canonical cases and the language cases at the internal labels above the 95% target with every prohibited substitution rejected; D04 shows '5 cm' exact and 'a little' body-relative on three bodies. Pending: U3_independent_review to label or review the 120 language prompts blind; the fixture is registered by hash so a review scores without a re-run."
     },
     {
       "id": "G05",
@@ -2255,5 +2400,5 @@
     "Restore GitHub Actions billing/allowance and rerun PRs 27-39; merge only after required checks are green, bottom of the stack first.",
     "Preserve all 30 goals and their frozen criteria."
   ],
-  "updated_at_utc": "2026-09-13T16:48:09.047840+00:00"
+  "updated_at_utc": "2026-09-13T18:07:24.477302+00:00"
 }
