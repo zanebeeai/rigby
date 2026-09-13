@@ -30,7 +30,7 @@ import mujoco
 import numpy as np
 
 from rigby_general.contact.grasp import _hand_facing, _scene_rest_qpos
-from rigby_general.contact.transfer import PHASES, _grasp_offset_m, _joint_path, _path, grasp_standoff_m, transfer_scene_from_environment
+from rigby_general.contact.transfer import FACING_TOLERANCE_RAD, PHASES, _grasp_offset_m, _joint_path, _path, facing_angle, grasp_standoff_m, transfer_scene_from_environment
 from rigby_general.contracts import SiteSemantic
 from rigby_general.grounding import ik
 from rigby_general.grounding.grounder import _collision_guard, figure_site_for
@@ -139,6 +139,10 @@ class Body:
             path, marks, seed = _joint_path(model, site, self.arm, points, seeds, self.guard, 6, facing=downward)
         except ik.IkFailure as error:
             return False, "self_collision_path" if error.collision is not None else "unreachable_path", str(error)[:160]
+        if downward is not None and "descend" in spans:
+            worst = max(facing_angle(model, site, path[marks[index]], downward[0], downward[1]) for index in spans["descend"])
+            if worst > FACING_TOLERANCE_RAD:
+                return False, "facing_unmet", f"the planned hand is {np.degrees(worst):.1f} degrees from vertical at the hover or the grasp"
         low = np.array([self.dofs[n].minimum for n in self.arm])
         high = np.array([self.dofs[n].maximum for n in self.arm])
         arm_rows = path[:, self.arm_adr]
@@ -300,7 +304,7 @@ def main() -> None:
         "g06_registration_sha256": registration["registration_sha256"], "environment_id": env.environment_id,
         "draw": {"seed": SEED, "generator": "numpy.random.default_rng(seed), one stream, bodies in the order listed, feasible then injected",
                  "feasible_band_fraction": BAND, "guard_samples_along_straight_path": GUARD_SAMPLES, "world_clearance_m": WORLD_CLEARANCE_M,
-                 "witness": "the straight joint path from rest clear of the body and of the world; the transfer's guarded path from the pose alone solved, inside every joint range, and clear of the world up to the hover"},
+                 "witness": "the straight joint path from rest clear of the body and of the world; the transfer's guarded path from the pose alone solved, inside every joint range, the hand within the facing tolerance at the hover and the grasp, and clear of the world up to the hover"},
         "initiation": {"limit_margin_fraction": 0.02, "speed_fraction": 0.05, "max_belief_age_s": 5.0,
                        "note": "the transfer begins free with the cube resting; the placement begins holding the cube; every skill requires its manipulator and the object not owned elsewhere"},
         "success": {"feasible": "the first skill certified on its own gates, the boundary compatible (after any repair), the second skill certified, no joint gate violation on the transitions or the second skill; target at least 95 of 100",

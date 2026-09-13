@@ -328,7 +328,7 @@ def compose(model, manifest: RobotAssetManifestV1, effector: EffectorV1, frame: 
     else:
         second_rows_from = max(0, len(recorder.rows["qpos"]) - 1) if recorder is not None else None
         second_outcome = second.run(current, recorder, should_stop)
-        if validate and not second_outcome.executed and second_outcome.gate in ("unreachable_path", "self_collision_path") and reference_configuration is not None:
+        if validate and not second_outcome.executed and second_outcome.gate in ("unreachable_path", "self_collision_path", "facing_unmet") and reference_configuration is not None:
             # The boundary was compatible and the second skill still could
             # not plan from it: the arm stands where no guarded path to the
             # task exists. The verified transition to insert is a guarded

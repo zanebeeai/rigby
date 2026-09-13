@@ -69,6 +69,13 @@ LIFT_REQUIRED_FRACTION = 0.8
 """Of the object's height: the least a lift has to raise it to count."""
 HOLD_DROP_FRACTION = 0.5
 """Of the required lift: how far the object may sag during the hold."""
+FACING_TOLERANCE_RAD = np.radians(15.0)
+"""How far from the requested facing the planned hand may be at the end of
+the turn and at the grasp. From the rest pose every body arrives within ten
+degrees; from a folded posture the solver can leave the hand forty-five
+degrees over, and a hand that descends tilted closes its fingers beside
+the object. That is refused before motion, typed, so a composition can
+insert a transition instead of executing a grasp that cannot close."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -482,6 +489,10 @@ def attempt_transfer(
     except ik.IkFailure as error:
         code = "self_collision_path" if error.collision is not None else "unreachable_path"
         return _refused(violations, TransferViolation(code, str(error)[:300], float(error.residual_m), 0.0), policy)
+    if downward is not None and "descend" in spans:
+        worst = max(facing_angle(model, solve_site, path[marks[index]], downward[0], downward[1]) for index in spans["descend"])
+        if worst > FACING_TOLERANCE_RAD:
+            return _refused(violations, TransferViolation("facing_unmet", f"the planned hand is {np.degrees(worst):.1f} degrees from the requested facing at the hover or the grasp", float(worst), float(FACING_TOLERANCE_RAD)), policy)
 
     controller = ComputedTorqueController(model, ControllerConfig())
     closure = ClosureController(model, manifest, effector, object_geoms=frozenset({"scene_block_geom"}))
@@ -760,6 +771,17 @@ def attempt_transfer(
         demand=np.asarray(demand_log), object_position_m=np.asarray(object_log), grip_force_n=np.asarray(force_log),
         interrupted=interrupted, final_qvel=np.array(data.qvel, dtype=float), final_time_s=float(data.time), final_state=final_state,
     )
+
+
+def facing_angle(model, site: str, qpos: np.ndarray, local_axis: np.ndarray, world_axis: np.ndarray) -> float:
+    """Radians between the site's local axis at ``qpos`` and the world axis."""
+
+    data = mujoco.MjData(model)
+    data.qpos[:] = qpos
+    mujoco.mj_kinematics(model, data)
+    rotation = np.array(data.site_xmat[mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_SITE, site)], dtype=float).reshape(3, 3)
+    pointed = rotation @ np.asarray(local_axis, dtype=float)
+    return float(np.arccos(np.clip(pointed @ np.asarray(world_axis, dtype=float) / max(np.linalg.norm(pointed) * np.linalg.norm(world_axis), 1e-12), -1.0, 1.0)))
 
 
 def _extent_along(model, data, bodies: tuple[str, ...], origin: np.ndarray, direction: np.ndarray) -> float:
