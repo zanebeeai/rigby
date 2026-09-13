@@ -433,6 +433,7 @@ def attempt_transfer(
     phase_range: tuple[str, str] = (PHASES[0], PHASES[-1]),
     object_position_m: np.ndarray | None = None,
     on_step: Callable[[mujoco.MjData], None] | None = None,
+    controller_config: ControllerConfig | None = None,
 ) -> TransferResult:
     """Run one transfer and gate every phase of it.
 
@@ -512,7 +513,7 @@ def attempt_transfer(
         if worst > FACING_TOLERANCE_RAD:
             return _refused(violations, TransferViolation("facing_unmet", f"the planned hand is {np.degrees(worst):.1f} degrees from the requested facing at the hover or the grasp", float(worst), float(FACING_TOLERANCE_RAD)), policy)
 
-    controller = ComputedTorqueController(model, ControllerConfig())
+    controller = ComputedTorqueController(model, controller_config or ControllerConfig())
     closure = ClosureController(model, manifest, effector, object_geoms=frozenset({"scene_block_geom"}))
     evaluator = PlacementEvaluator(model, scene.goal, object_geom="scene_block_geom", object_joint="scene_block_free")
 

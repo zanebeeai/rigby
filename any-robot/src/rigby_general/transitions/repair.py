@@ -100,7 +100,7 @@ def reference_of(segment: QuinticSegment, duration_s: float) -> Reference:
 def track(model: mujoco.MjModel, manifest: RobotAssetManifestV1, effector: EffectorV1, arm_joints: tuple[str, ...], resume: TransferStart | None,
           recorder: PhysicsRecorder | None, planned: Reference, duration_s: float, *, holding: bool,
           stop_when: Callable[[mujoco.MjData], bool] | None = None, should_stop: Callable[[float], bool] | None = None,
-          on_step: Callable[[mujoco.MjData], None] | None = None) -> Executed:
+          on_step: Callable[[mujoco.MjData], None] | None = None, controller_config: ControllerConfig | None = None) -> Executed:
     """Follow ``planned(elapsed)`` -- position, velocity and acceleration of
     the arm joints -- for ``duration_s`` of physics (or until ``stop_when``),
     the closure holding if ``holding``. The velocity and acceleration reach
@@ -111,7 +111,7 @@ def track(model: mujoco.MjModel, manifest: RobotAssetManifestV1, effector: Effec
     if on_step is not None:
         on_step(data)
     dt = float(model.opt.timestep)
-    controller = ComputedTorqueController(model, ControllerConfig())
+    controller = ComputedTorqueController(model, controller_config or ControllerConfig())
     closure = ClosureController(model, manifest, effector, object_geoms=frozenset({"scene_block_geom"}))
     arm_adr = np.array([int(model.jnt_qposadr[mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, n)]) for n in arm_joints])
     arm_dof = np.array([int(model.jnt_dofadr[mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, n)]) for n in arm_joints])
@@ -202,7 +202,8 @@ def settle(model, manifest, effector, arm_joints, resume: TransferStart, recorde
 
 
 def joint_move(model, manifest, effector, arm_joints, resume: TransferStart, recorder, targets: dict[str, float], guard: "ik.CollisionGuard | None", *,
-               holding: bool, speed_fraction: float = MOVE_SPEED_FRACTION, on_step: Callable[[mujoco.MjData], None] | None = None) -> Executed:
+               holding: bool, speed_fraction: float = MOVE_SPEED_FRACTION, on_step: Callable[[mujoco.MjData], None] | None = None,
+               controller_config: ControllerConfig | None = None) -> Executed:
     """A quintic move of the named joints to their targets, the rest of the
     arm held; refused typed if any sample of the straight joint-space path
     puts guarded bodies inside one another."""
@@ -233,4 +234,4 @@ def joint_move(model, manifest, effector, arm_joints, resume: TransferStart, rec
     v0 = np.array(resume.qvel, dtype=float)[dof]
     duration = max(MIN_MOVE_S, float(np.max(np.abs(end_arm - start_arm) / (speed_fraction * limits))), float(np.max(np.abs(v0) / (BRAKE_RATE * limits))))
     segment = QuinticSegment(start_arm, end_arm, duration, start_velocity=v0, end_velocity=np.zeros_like(v0))
-    return track(model, manifest, effector, arm_joints, resume, recorder, reference_of(segment, duration), duration, holding=holding, on_step=on_step)
+    return track(model, manifest, effector, arm_joints, resume, recorder, reference_of(segment, duration), duration, holding=holding, on_step=on_step, controller_config=controller_config)

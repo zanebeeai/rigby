@@ -37,6 +37,7 @@ from rigby_core.skills import ConditionalV1, Decision, Interrupt, LeafContext, L
 from ..contact.transfer import TransferResult, TransferStart, attempt_transfer, transfer_scene_from_environment
 from ..contact.placement import PlacementGoal
 from ..contracts import EffectorV1
+from ..gates.control import ControllerConfig
 from ..grounding.grounder import figure_site_for
 from ..grounding.workspace import WorkspaceFrame, build_workspace_frame
 from ..pipeline import ingest_robot
@@ -337,6 +338,8 @@ class TransferObjectSession:
     policy_sha256: str
     configuration_id: str
     disturbance: Disturbance | None = None
+    controller_config: ControllerConfig = field(default_factory=ControllerConfig)
+    """The arm controller every leaf and hold runs; part of a certificate's context."""
     state: TransferStart | None = None
     time_s: float = 0.0
     results: list[tuple[str, TransferResult]] = field(default_factory=list)
@@ -348,7 +351,7 @@ class TransferObjectSession:
 
     @classmethod
     def open(cls, zoo_id: str, source: Path, environment: EnvironmentV1, goal: PlacementGoal, policy: dict, *, configuration_name: str = "front_overhead_contact",
-             disturbance: Disturbance | None = None, seed_label: str = "") -> "TransferObjectSession":
+             disturbance: Disturbance | None = None, seed_label: str = "", controller_config: ControllerConfig | None = None) -> "TransferObjectSession":
         robot = ingest_robot(source, robot_id=zoo_id)
         effectors = tuple(robot.morphology.grasping_effectors)
         if not effectors:
@@ -363,7 +366,8 @@ class TransferObjectSession:
         support = next(f for f in environment.fixtures if abs(f.position_m[0] - cube.position_m[0]) <= f.size_m[0] + 0.05 and abs(f.position_m[1] - cube.position_m[1]) <= f.size_m[1] + 0.05)
         conditionals = bind_conditionals(policy, effector.chain_id, support_top_m=float(support.position_m[2] + support.size_m[2]), half_height_m=float(cube.size_m[2]), half_extent_m=float(max(cube.size_m)))
         return cls(robot=robot, source=source, environment=environment, goal=goal, scene=scene, effector=effector, frame=frame, recorder=PhysicsRecorder(scene.model),
-                   sensing=sensing, conditionals=conditionals, policy_sha256=policy_digest(policy), configuration_id=configuration_name, disturbance=disturbance)
+                   sensing=sensing, conditionals=conditionals, policy_sha256=policy_digest(policy), configuration_id=configuration_name, disturbance=disturbance,
+                   controller_config=controller_config or ControllerConfig())
 
     @property
     def model(self) -> mujoco.MjModel:
@@ -419,7 +423,8 @@ class TransferObjectSession:
         rest = np.asarray(_scene_rest_qpos(model, manifest), dtype=float)
         by_joint = {dof.joint: dof for dof in manifest.dofs}
         targets = {by_joint[n].name: float(rest[int(model.jnt_qposadr[mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, n)])]) for n in arm}
-        executed = joint_move(model, manifest, self.effector, arm, self.state, self.recorder, targets, _collision_guard(manifest, model), holding=holding, on_step=self.hook)
+        executed = joint_move(model, manifest, self.effector, arm, self.state, self.recorder, targets, _collision_guard(manifest, model), holding=holding, on_step=self.hook,
+                              controller_config=self.controller_config)
         if executed.executed:
             self.adopt(executed.start)
         return {"executed": executed.executed, "refusal": executed.refusal, "physics_s": executed.physics_s, "joint_travel_rad": executed.joint_travel_rad, "detail": executed.detail}
@@ -447,7 +452,7 @@ class TransferObjectSession:
             return q0, zero, zero
 
         executed = track(self.model, self.robot.manifest, self.effector, arm, resume, self.recorder, planned, duration_s, holding=holding,
-                         stop_when=stop_when, should_stop=should_stop, on_step=self.hook)
+                         stop_when=stop_when, should_stop=should_stop, on_step=self.hook, controller_config=self.controller_config)
         self.adopt(executed.start)
         return executed.physics_s
 
@@ -497,14 +502,14 @@ class TransferObjectRuntime:
         believed = context.belief.get("pose:cube")
         object_position = None if believed is None else np.asarray(believed, dtype=float)
         result = attempt_transfer(session.robot.manifest, session.scene, session.effector, session.frame, recorder=session.recorder, resume=session.state,
-                                  should_stop=stopper, phase_range=PHASES_OF[leaf], object_position_m=object_position, on_step=session.hook)
+                                  should_stop=stopper, phase_range=PHASES_OF[leaf], object_position_m=object_position, on_step=session.hook, controller_config=session.controller_config)
         reroute = None
         if leaf == "acquire" and not result.executed and result.failed_gate in REROUTE_ON and session.state is not None:
             reroute = {"refusal": result.failed_gate, **session.reroute(holding=False)}
             session.events.append({"time_s": session.time_s, "event": "reroute", "detail": reroute})
             if reroute["executed"]:
                 result = attempt_transfer(session.robot.manifest, session.scene, session.effector, session.frame, recorder=session.recorder, resume=session.state,
-                                          should_stop=stopper, phase_range=PHASES_OF[leaf], object_position_m=object_position, on_step=session.hook)
+                                          should_stop=stopper, phase_range=PHASES_OF[leaf], object_position_m=object_position, on_step=session.hook, controller_config=session.controller_config)
         session.results.append((node.node_id, result))
         if result.executed:
             session.adopt(result.continuation())
