@@ -41,7 +41,7 @@ BODIES = ("zoo_dual_arm", "zoo_jaw_arm", "zoo_long_arm")
 CLASSES = ("nominal", "displaced", "slip", "occlusion")
 NOMINAL_PER_BODY = 100
 DISTURBED_PER_CLASS = 20
-CONFIGURATION = "front_contact"
+CONFIGURATION = "front_overhead_contact"
 
 
 def registered_goal() -> PlacementGoal:

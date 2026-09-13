@@ -347,7 +347,7 @@ class TransferObjectSession:
     steps: int = 0
 
     @classmethod
-    def open(cls, zoo_id: str, source: Path, environment: EnvironmentV1, goal: PlacementGoal, policy: dict, *, configuration_name: str = "front_contact",
+    def open(cls, zoo_id: str, source: Path, environment: EnvironmentV1, goal: PlacementGoal, policy: dict, *, configuration_name: str = "front_overhead_contact",
              disturbance: Disturbance | None = None, seed_label: str = "") -> "TransferObjectSession":
         robot = ingest_robot(source, robot_id=zoo_id)
         effectors = tuple(robot.morphology.grasping_effectors)

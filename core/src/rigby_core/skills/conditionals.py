@@ -200,27 +200,34 @@ def evaluate(conditional: ConditionalV1, configuration: SensorConfigurationV1, s
             if requirement.required:
                 return unknown(f"missing_source:{requirement.kind.value}")
             continue
+        # Every sensor of the kind that is fresh and mostly valid contributes
+        # its valid samples; a kind is undecidable only when no sensor of it
+        # is usable, and then the reason is the first sensor's. A second
+        # camera the hand stands under does not blind a first that sees.
         kind_samples: list[EvidenceSampleV1] = []
+        refusals: list[tuple[str, dict[str, float]]] = []
         for sensor in sensors:
             own = [s for s in samples if s.sensor_id == sensor.sensor_id and start - 1e-9 <= s.time_s <= now_s + 1e-9]
             if not own:
-                if requirement.required:
-                    return unknown(f"stale:{sensor.sensor_id}:no_sample_in_window")
+                refusals.append((f"stale:{sensor.sensor_id}:no_sample_in_window", {}))
                 continue
             newest = max(s.time_s for s in own)
             if now_s - newest > min(sensor.max_age_s, conditional.window.max_age_s) + 1e-9:
-                if requirement.required:
-                    return unknown(f"stale:{sensor.sensor_id}", age_s=now_s - newest)
+                refusals.append((f"stale:{sensor.sensor_id}", {"age_s": now_s - newest}))
                 continue
             valid = [s for s in own if s.quality is SampleQuality.VALID]
             fraction = len(valid) / len(own)
             if fraction < conditional.abstention.min_valid_fraction:
-                if requirement.required:
-                    worst = max((s.quality for s in own if s.quality is not SampleQuality.VALID), key=lambda q: q.value, default=SampleQuality.MISSING)
-                    return unknown(f"{worst.value}:{sensor.sensor_id}", valid_fraction=fraction)
+                worst = max((s.quality for s in own if s.quality is not SampleQuality.VALID), key=lambda q: q.value, default=SampleQuality.MISSING)
+                refusals.append((f"{worst.value}:{sensor.sensor_id}", {"valid_fraction": fraction}))
                 continue
             kind_samples.extend(valid)
             sensors_used.append(sensor.sensor_id)
+        if not kind_samples and refusals:
+            if requirement.required:
+                reason, detail = refusals[0]
+                return unknown(reason, **detail)
+            continue
         if len(kind_samples) < requirement.min_samples:
             if requirement.required:
                 return unknown(f"insufficient_samples:{requirement.kind.value}", samples=float(len(kind_samples)))

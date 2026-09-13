@@ -40,8 +40,8 @@ class CameraSpec:
     many must reach it first for the sample to report a position."""
     noise_m: float = 0.002
     """Standard deviation of the reported position, per axis, seeded per trace and sensor."""
-    range_m: float = 3.0
-    """Beyond this distance the camera reports nothing (a missing sample), not a position."""
+    range_m: float = float("inf")
+    """Beyond this distance the camera reports nothing (a missing sample), not a position; unbounded by default, as the G09 campaign was scored."""
 
 
 CAMERAS = {
@@ -92,10 +92,14 @@ def sensor_specs(name: str, effectors: tuple[EffectorV1, ...]) -> tuple[SensorSp
         return tuple(common + [camera(CAMERAS["side_low"])] + geometry + reach)
     if name == "front_contact_with_oracle":
         return tuple(common + contact + [camera(CAMERAS["front"])] + geometry + reach + [oracle])
+    if name == "front_overhead_contact":
+        return tuple(common + contact + [camera(CAMERAS["front"]), camera(CAMERAS["overhead"])] + geometry + reach)
     raise KeyError(f"no sensor configuration named {name!r}")
 
 
 CONFIGURATIONS = ("overhead_contact", "front_contact", "side_contact", "contact_only", "front_vision_only", "side_vision_only", "front_contact_with_oracle")
+"""The configurations the G09 campaign scored. ``front_overhead_contact``
+(both cameras with contact) is what the G10 skill observes with."""
 
 
 def configuration(name: str, effectors: tuple[EffectorV1, ...]) -> SensorConfigurationV1:
@@ -107,6 +111,7 @@ def configuration(name: str, effectors: tuple[EffectorV1, ...]) -> SensorConfigu
         "front_vision_only": "encoders and the front camera; no contact sensing",
         "side_vision_only": "encoders and the low side camera; no contact sensing: a hand closing on the cube hides it",
         "front_contact_with_oracle": "front_contact plus a privileged oracle sensor, present to show it is never read",
+        "front_overhead_contact": "encoders, gripper contact, the front camera and the overhead camera: what one cannot see the other may",
     }
     return SensorConfigurationV1(configuration_id=name, sensors=sensor_specs(name, effectors), description=descriptions[name])
 
