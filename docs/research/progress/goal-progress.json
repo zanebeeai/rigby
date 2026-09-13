@@ -4,7 +4,7 @@
   "goal_catalog": "docs/research/rigby-verifiable-goals.json",
   "goal_catalog_sha256": "3672ebf5fa10ff4216fa0213499d5988281f2ebbc611500e8526afe6e618b250",
   "started_at_utc": "2026-09-12T02:34:49.841258+00:00",
-  "current_goal": "G11",
+  "current_goal": "G12",
   "overall_status": "active",
   "authorization": {
     "commits_and_pull_requests": true,
@@ -1709,39 +1709,89 @@
     {
       "id": "G11",
       "title": "Promote, retrieve and reuse skills with validity conditions",
-      "status": "planned",
+      "status": "partial",
       "criteria": [
         {
           "id": "G11.A01",
           "requirement": "Promote a candidate only after its independent validation set passes; store definition, body/controller/sensor context, cost and evidence hashes.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "docs/results/g11-report.md",
+            "docs/results/g11-validation.json",
+            "docs/results/verify_g11.py",
+            "any-robot/assets/general/research-protocols/g11-skill-store-v1/",
+            "any-robot/assets/general/skill-store-v1/",
+            "docs/results/g11-store/"
+          ],
+          "note": "promotion is a gate in rigby_core.skills.store: a candidate is promoted only when a registered validation set independent of every development set passes its threshold with no false completion; zoo_dual_arm transfer 10/12 -> candidate; zoo_jaw_arm transfer 12/12 -> promoted; zoo_long_arm transfer 12/12 -> promoted; each certificate stores the definition and library digests, the six-facet context (body, controller, sensors, geometry, friction assumption, evidence schema), the cost and the evidence digests; docs/results/g11-store/promotion.json",
+          "verified_at_utc": "2026-09-13T19:11:11.572467+00:00"
         },
         {
           "id": "G11.A02",
           "requirement": "Execute the same TransferObject and at least two subskills from persisted storage on three new object/layout instances per enabled body without manual edits; log cache reuse.",
-          "status": "pending",
-          "evidence": []
+          "status": "partial",
+          "evidence": [
+            "docs/results/g11-report.md",
+            "docs/results/g11-validation.json",
+            "docs/results/verify_g11.py",
+            "any-robot/assets/general/research-protocols/g11-skill-store-v1/",
+            "any-robot/assets/general/skill-store-v1/",
+            "docs/results/g11-store/"
+          ],
+          "note": "21 of 27 queries (3 bodies x 3 layouts x transfer_object, acquire_until_held, observe_object) executed from the persisted store and library with no manual edits, 21 successful, cache hits logged (252 validation episodes not re-run); met on the jaw and long arms; not met on the dual arm, whose transfer and acquisition hold no promoted certificate and were refused typed in every layout; docs/results/g11-store/reuse.json",
+          "verified_at_utc": "2026-09-13T19:11:11.572467+00:00"
         },
         {
           "id": "G11.A03",
           "requirement": "Change geometry, controller, sensors, friction assumptions and evidence schema in separate tests; invalidate or revalidate every affected certificate.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "docs/results/g11-report.md",
+            "docs/results/g11-validation.json",
+            "docs/results/verify_g11.py",
+            "any-robot/assets/general/research-protocols/g11-skill-store-v1/",
+            "any-robot/assets/general/skill-store-v1/",
+            "docs/results/g11-store/"
+          ],
+          "note": "five changes, one per dimension, each from the same baseline store: controller invalidated 7, revalidation 6/6 -> promoted; evidence_schema invalidated 7, revalidation 6/6 -> promoted; friction invalidated 7, revalidation 0/6 -> candidate; geometry invalidated 7, revalidation 6/6 -> promoted; sensors invalidated 7, revalidation 6/6 -> promoted; the friction change's revalidation fails and its certificates stay invalidated on record; docs/results/g11-store/invalidation.json",
+          "verified_at_utc": "2026-09-13T19:11:11.572467+00:00"
         },
         {
           "id": "G11.A04",
           "requirement": "Interrupt and restart at at least 10 safe boundaries; reconstruct state from observations and complete or stop explicitly. Do not treat retrieval similarity as proof of validity.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "docs/results/g11-report.md",
+            "docs/results/g11-validation.json",
+            "docs/results/verify_g11.py",
+            "any-robot/assets/general/research-protocols/g11-skill-store-v1/",
+            "any-robot/assets/general/skill-store-v1/",
+            "docs/results/g11-store/"
+          ],
+          "note": "18 restarts at every leaf boundary on three bodies, 18 completed, 0 explicit stops; each restart opens a fresh session on the checkpoint's physical state and reconstructs its belief from the sensors alone (9 holds and 6 placements reconstructed); retrieval similarity is reported and never decides validity; docs/results/g11-store/restart.json",
+          "verified_at_utc": "2026-09-13T19:11:11.572467+00:00"
         }
       ],
       "demo_requirement": "D11: learn/validate once, reuse in a new layout, then invalidate and repair after a physical-context change.",
-      "demo_status": "pending",
-      "assessment_complete": false,
-      "capability_supported": false,
-      "commits": [],
-      "pull_requests": []
+      "demo_status": "delivered",
+      "assessment_complete": true,
+      "capability_supported": true,
+      "commits": [
+        "daac3e1b",
+        "2a64f75b",
+        "eeece832"
+      ],
+      "pull_requests": [
+        "https://github.com/zanebeeai/rigby/pull/42"
+      ],
+      "demo_evidence": [
+        "docs/results/g11-d11/d11-five-way.mp4",
+        "docs/results/g11-d11/d11-five-way-preview.gif",
+        "docs/results/g11-d11/index.json",
+        "demos/registry"
+      ],
+      "closed_at_utc": "2026-09-13T19:11:11.572467+00:00",
+      "note": "Closed partial on A02 only because the dual arm's transfer did not pass its independent validation set (10/12 against 11, two episodes undecided after the closure flung the cube, the G10 open item) and so could not be reused from the store; the store, retrieval, invalidation, revalidation and restart machinery is complete and verified with replay. Open prerequisite unchanged: a force limit on the dual arm's closure advance."
     },
     {
       "id": "G12",
@@ -2400,5 +2450,5 @@
     "Restore GitHub Actions billing/allowance and rerun PRs 27-39; merge only after required checks are green, bottom of the stack first.",
     "Preserve all 30 goals and their frozen criteria."
   ],
-  "updated_at_utc": "2026-09-13T18:07:24.477302+00:00"
+  "updated_at_utc": "2026-09-13T19:11:11.572467+00:00"
 }
