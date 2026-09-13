@@ -1,0 +1,214 @@
+{
+  "schema_version": "1.0",
+  "tree_sha256": "c16b5aeb0c08927c2d263bfdabada92a2364d8fbd447f8135cb41c0bcaf03c1b",
+  "library_id": "clear_bench_v1",
+  "verdict": "interrupted",
+  "interrupted": true,
+  "interrupt_reason": "stopped from outside at 6.002 s of physics",
+  "started_s": 0.0,
+  "ended_s": 6.001999999999561,
+  "root": {
+    "node_id": "0",
+    "skill_id": "clear_bench",
+    "kind": "sequence",
+    "verdict": "interrupted",
+    "reason": "interrupted",
+    "started_s": 0.0,
+    "ended_s": 6.001999999999561,
+    "attempts": 1,
+    "initiation": [],
+    "invariants": [],
+    "effects": [],
+    "loop_checks": [],
+    "resources": [
+      "effector:palm",
+      "object:cube"
+    ],
+    "evidence": {},
+    "children": [
+      {
+        "node_id": "0.0",
+        "skill_id": "observe_inventory",
+        "kind": "observe",
+        "verdict": "success",
+        "reason": "",
+        "started_s": 0.0,
+        "ended_s": 0.0,
+        "attempts": 1,
+        "initiation": [],
+        "invariants": [],
+        "effects": [
+          {
+            "predicate": "object_known",
+            "arguments": [
+              "cube"
+            ],
+            "negate": false,
+            "answer": true
+          }
+        ],
+        "loop_checks": [],
+        "resources": [],
+        "evidence": {
+          "observed": [
+            "known:cube",
+            "placed:cube:platform",
+            "pose:cube",
+            "reach:cube"
+          ]
+        },
+        "children": [],
+        "recoveries": []
+      },
+      {
+        "node_id": "0.1",
+        "skill_id": "place_until_done",
+        "kind": "repeat_until",
+        "verdict": "interrupted",
+        "reason": "interrupted",
+        "started_s": 0.0,
+        "ended_s": 6.001999999999561,
+        "attempts": 1,
+        "initiation": [
+          {
+            "predicate": "object_known",
+            "arguments": [
+              "cube"
+            ],
+            "negate": false,
+            "answer": true
+          }
+        ],
+        "invariants": [],
+        "effects": [],
+        "loop_checks": [
+          {
+            "predicate": "object_placed",
+            "arguments": [
+              "cube",
+              "platform"
+            ],
+            "negate": false,
+            "answer": false
+          }
+        ],
+        "resources": [
+          "effector:palm",
+          "object:cube"
+        ],
+        "evidence": {
+          "attempts": 1
+        },
+        "children": [
+          {
+            "node_id": "0.1.0",
+            "skill_id": "transfer_and_verify",
+            "kind": "sequence",
+            "verdict": "interrupted",
+            "reason": "interrupted",
+            "started_s": 0.0,
+            "ended_s": 6.001999999999561,
+            "attempts": 1,
+            "initiation": [],
+            "invariants": [],
+            "effects": [],
+            "loop_checks": [],
+            "resources": [
+              "effector:palm",
+              "object:cube"
+            ],
+            "evidence": {},
+            "children": [
+              {
+                "node_id": "0.1.0.0",
+                "skill_id": "transfer_with_any_effector",
+                "kind": "selector",
+                "verdict": "interrupted",
+                "reason": "interrupted",
+                "started_s": 0.0,
+                "ended_s": 6.001999999999561,
+                "attempts": 1,
+                "initiation": [],
+                "invariants": [],
+                "effects": [],
+                "loop_checks": [],
+                "resources": [
+                  "effector:palm",
+                  "object:cube"
+                ],
+                "evidence": {},
+                "children": [
+                  {
+                    "node_id": "0.1.0.0.0",
+                    "skill_id": "transfer",
+                    "kind": "primitive",
+                    "verdict": "interrupted",
+                    "reason": "interrupted",
+                    "started_s": 0.0,
+                    "ended_s": 6.001999999999561,
+                    "attempts": 1,
+                    "initiation": [
+                      {
+                        "predicate": "object_known",
+                        "arguments": [
+                          "cube"
+                        ],
+                        "negate": false,
+                        "answer": true
+                      }
+                    ],
+                    "invariants": [],
+                    "effects": [],
+                    "loop_checks": [],
+                    "resources": [
+                      "effector:palm",
+                      "object:cube"
+                    ],
+                    "evidence": {
+                      "effector": "palm",
+                      "executed": true,
+                      "failed_gate": "interrupted",
+                      "phases": [
+                        "approach",
+                        "turn",
+                        "descend",
+                        "close",
+                        "lift"
+                      ],
+                      "lift_height_m": 0.004284010818000006,
+                      "hold_s": 0.0,
+                      "placement_dwell_s": 0.0,
+                      "max_penetration_m": 0.0008933038888627767,
+                      "peak_force_n": 21.929849911132276,
+                      "path_seed": "rest",
+                      "physics_time_s": [
+                        0.25000000000000017,
+                        5.999999999999561
+                      ]
+                    },
+                    "children": [],
+                    "recoveries": []
+                  }
+                ],
+                "recoveries": []
+              }
+            ],
+            "recoveries": []
+          }
+        ],
+        "recoveries": []
+      }
+    ],
+    "recoveries": []
+  },
+  "belief": {
+    "known:cube": true,
+    "pose:cube": [
+      -0.15,
+      0.65,
+      0.275
+    ],
+    "reach:cube": true,
+    "placed:cube:platform": false
+  }
+}

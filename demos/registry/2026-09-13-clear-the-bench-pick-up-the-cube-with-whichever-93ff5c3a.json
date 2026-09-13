@@ -1,0 +1,42 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-clear-the-bench-pick-up-the-cube-with-whichever-93ff5c3a",
+  "title": "G07 skill tree: zoo_hand_arm, hand-budget",
+  "prompt": "clear the bench: pick up the cube with whichever manipulator can and set it on the platform",
+  "tier": "any-robot",
+  "embodiment": "zoo_hand_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T09:26:51Z",
+  "source": {
+    "commit": "5c477d9917",
+    "branch": "feat/g07-skill-contracts",
+    "dirty": false,
+    "how": "python any-robot/scripts/g07_tree_evidence.py --out docs/results/g07-trees"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "RUNTIME FAILURE: every alternative on both loop attempts executed and failed typed (hold_not_sustained, then grasp_not_achieved); the loop spent its budget of two; four leaves on one record."
+  },
+  "notes": "See docs/results/g07-report.md. One tree run of the five-deep clear_bench library through the neutral skill executor, one continuous physics record across every leaf, rendered at real-time playback with the simulation clock and the tree's verdict in the banner; frames.json beside the MP4 maps every frame to its recorded sample. Tree sha256 c16b5aeb0c08; verdict failure.",
+  "media": [
+    {
+      "path": "docs/results/g07-trees/physical/hand-budget/media/episode.mp4",
+      "bytes": 331114,
+      "sha256": "eb2f57b03572b5d4d4d20602d07e4f508cceceed4bf15898cedae562f0e8f696",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g07-trees/physical/hand-budget/media/preview.gif",
+      "bytes": 801077,
+      "sha256": "c4fdc68b0d18c112fa22cade7cf6ae48ffbd250442b29f3ffc92603ba6653967",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G07",
+    "skill-tree",
+    "failure"
+  ]
+}

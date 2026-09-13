@@ -1,0 +1,391 @@
+{
+  "active_skill_tree": "the expanded tree in tree.json; verdicts per node in record",
+  "record": {
+    "belief": {
+      "known:cube": true,
+      "placed:cube:platform": true,
+      "placement_dwell_s": 2.498000000000834,
+      "pose:cube": [
+        -0.15,
+        0.65,
+        0.275
+      ],
+      "reach:cube": true,
+      "released:cube": true
+    },
+    "ended_s": 13.890000000001308,
+    "interrupt_reason": "",
+    "interrupted": false,
+    "library_id": "clear_bench_v1",
+    "root": {
+      "attempts": 1,
+      "children": [
+        {
+          "attempts": 1,
+          "children": [],
+          "effects": [
+            {
+              "answer": true,
+              "arguments": [
+                "cube"
+              ],
+              "negate": false,
+              "predicate": "object_known"
+            }
+          ],
+          "ended_s": 0.0,
+          "evidence": {
+            "observed": [
+              "known:cube",
+              "placed:cube:platform",
+              "pose:cube",
+              "reach:cube"
+            ]
+          },
+          "initiation": [],
+          "invariants": [],
+          "kind": "observe",
+          "loop_checks": [],
+          "node_id": "0.0",
+          "reason": "",
+          "recoveries": [],
+          "resources": [],
+          "skill_id": "observe_inventory",
+          "started_s": 0.0,
+          "verdict": "success"
+        },
+        {
+          "attempts": 1,
+          "children": [
+            {
+              "attempts": 1,
+              "children": [
+                {
+                  "attempts": 1,
+                  "children": [
+                    {
+                      "attempts": 1,
+                      "children": [],
+                      "effects": [],
+                      "ended_s": 0.0,
+                      "evidence": {
+                        "effector": "right_palm",
+                        "executed": false,
+                        "failed_gate": "self_collision_path",
+                        "hold_s": 0.0,
+                        "lift_height_m": 0.0,
+                        "max_penetration_m": 0.0,
+                        "path_seed": "",
+                        "peak_force_n": 0.0,
+                        "phases": [],
+                        "physics_time_s": null,
+                        "placement_dwell_s": 0.0
+                      },
+                      "initiation": [
+                        {
+                          "answer": true,
+                          "arguments": [
+                            "cube"
+                          ],
+                          "negate": false,
+                          "predicate": "object_known"
+                        }
+                      ],
+                      "invariants": [],
+                      "kind": "primitive",
+                      "loop_checks": [],
+                      "node_id": "0.1.0.0.0",
+                      "reason": "self_collision_path",
+                      "recoveries": [],
+                      "resources": [
+                        "effector:right_palm",
+                        "object:cube"
+                      ],
+                      "skill_id": "transfer",
+                      "started_s": 0.0,
+                      "verdict": "failure"
+                    },
+                    {
+                      "attempts": 1,
+                      "children": [],
+                      "effects": [
+                        {
+                          "answer": true,
+                          "arguments": [
+                            "cube",
+                            "platform"
+                          ],
+                          "negate": false,
+                          "predicate": "object_placed"
+                        }
+                      ],
+                      "ended_s": 13.890000000001308,
+                      "evidence": {
+                        "effector": "left_palm",
+                        "executed": true,
+                        "failed_gate": null,
+                        "hold_s": 2.002000000000001,
+                        "lift_height_m": 0.07417363327572835,
+                        "max_penetration_m": 0.00038056078382202416,
+                        "path_seed": "rest",
+                        "peak_force_n": 11.343771276195639,
+                        "phases": [
+                          "approach",
+                          "turn",
+                          "descend",
+                          "close",
+                          "lift",
+                          "hold",
+                          "carry",
+                          "lower",
+                          "release",
+                          "retreat",
+                          "dwell"
+                        ],
+                        "physics_time_s": [
+                          0.25000000000000017,
+                          13.890000000001308
+                        ],
+                        "placement_dwell_s": 2.498000000000834
+                      },
+                      "initiation": [
+                        {
+                          "answer": true,
+                          "arguments": [
+                            "cube"
+                          ],
+                          "negate": false,
+                          "predicate": "object_known"
+                        }
+                      ],
+                      "invariants": [],
+                      "kind": "primitive",
+                      "loop_checks": [],
+                      "node_id": "0.1.0.0.1",
+                      "reason": "",
+                      "recoveries": [],
+                      "resources": [
+                        "effector:left_palm",
+                        "object:cube"
+                      ],
+                      "skill_id": "transfer",
+                      "started_s": 0.0,
+                      "verdict": "success"
+                    }
+                  ],
+                  "effects": [],
+                  "ended_s": 13.890000000001308,
+                  "evidence": {},
+                  "initiation": [],
+                  "invariants": [],
+                  "kind": "selector",
+                  "loop_checks": [],
+                  "node_id": "0.1.0.0",
+                  "reason": "alternative:0.1.0.0.1",
+                  "recoveries": [],
+                  "resources": [
+                    "effector:right_palm",
+                    "effector:left_palm",
+                    "object:cube"
+                  ],
+                  "skill_id": "transfer_with_any_effector",
+                  "started_s": 0.0,
+                  "verdict": "success"
+                },
+                {
+                  "attempts": 1,
+                  "children": [],
+                  "effects": [],
+                  "ended_s": 13.890000000001308,
+                  "evidence": {
+                    "observed": [
+                      "placed:cube:platform",
+                      "placement_dwell_s",
+                      "released:cube"
+                    ]
+                  },
+                  "initiation": [],
+                  "invariants": [],
+                  "kind": "observe",
+                  "loop_checks": [],
+                  "node_id": "0.1.0.1",
+                  "reason": "",
+                  "recoveries": [],
+                  "resources": [],
+                  "skill_id": "observe_placement",
+                  "started_s": 13.890000000001308,
+                  "verdict": "success"
+                }
+              ],
+              "effects": [],
+              "ended_s": 13.890000000001308,
+              "evidence": {},
+              "initiation": [],
+              "invariants": [],
+              "kind": "sequence",
+              "loop_checks": [],
+              "node_id": "0.1.0",
+              "reason": "",
+              "recoveries": [],
+              "resources": [
+                "effector:right_palm",
+                "effector:left_palm",
+                "object:cube"
+              ],
+              "skill_id": "transfer_and_verify",
+              "started_s": 0.0,
+              "verdict": "success"
+            }
+          ],
+          "effects": [
+            {
+              "answer": true,
+              "arguments": [
+                "cube",
+                "platform"
+              ],
+              "negate": false,
+              "predicate": "object_placed"
+            }
+          ],
+          "ended_s": 13.890000000001308,
+          "evidence": {
+            "attempts": 1
+          },
+          "initiation": [
+            {
+              "answer": true,
+              "arguments": [
+                "cube"
+              ],
+              "negate": false,
+              "predicate": "object_known"
+            }
+          ],
+          "invariants": [],
+          "kind": "repeat_until",
+          "loop_checks": [
+            {
+              "answer": false,
+              "arguments": [
+                "cube",
+                "platform"
+              ],
+              "negate": false,
+              "predicate": "object_placed"
+            },
+            {
+              "answer": true,
+              "arguments": [
+                "cube"
+              ],
+              "negate": false,
+              "predicate": "object_in_reach"
+            },
+            {
+              "answer": true,
+              "arguments": [
+                "cube",
+                "platform"
+              ],
+              "negate": false,
+              "predicate": "object_placed"
+            }
+          ],
+          "node_id": "0.1",
+          "reason": "until_after_1",
+          "recoveries": [],
+          "resources": [
+            "effector:right_palm",
+            "effector:left_palm",
+            "object:cube"
+          ],
+          "skill_id": "place_until_done",
+          "started_s": 0.0,
+          "verdict": "success"
+        }
+      ],
+      "effects": [
+        {
+          "answer": true,
+          "arguments": [
+            "cube",
+            "platform"
+          ],
+          "negate": false,
+          "predicate": "object_placed"
+        }
+      ],
+      "ended_s": 13.890000000001308,
+      "evidence": {},
+      "initiation": [],
+      "invariants": [],
+      "kind": "sequence",
+      "loop_checks": [],
+      "node_id": "0",
+      "reason": "",
+      "recoveries": [],
+      "resources": [
+        "effector:right_palm",
+        "effector:left_palm",
+        "object:cube"
+      ],
+      "skill_id": "clear_bench",
+      "started_s": 0.0,
+      "verdict": "success"
+    },
+    "schema_version": "1.0",
+    "started_s": 0.0,
+    "tree_sha256": "974749dda6043cb6af37e018a265fc538e1e59f8542dbce14f89f0e5f55c5ee2",
+    "verdict": "success"
+  },
+  "runtime_calls": [
+    {
+      "in_reach": true,
+      "node": "0.0",
+      "object_position_m": [
+        -0.15,
+        0.65,
+        0.275
+      ],
+      "observed": "inventory"
+    },
+    {
+      "certified": false,
+      "duration_s": 0.0,
+      "effector": "right_palm",
+      "executed": false,
+      "gate": "self_collision_path",
+      "interrupted": false,
+      "node": "0.1.0.0.0",
+      "phases": []
+    },
+    {
+      "certified": true,
+      "duration_s": 13.890000000001308,
+      "effector": "left_palm",
+      "executed": true,
+      "gate": null,
+      "interrupted": false,
+      "node": "0.1.0.0.1",
+      "phases": [
+        "approach",
+        "turn",
+        "descend",
+        "close",
+        "lift",
+        "hold",
+        "carry",
+        "lower",
+        "release",
+        "retreat",
+        "dwell"
+      ]
+    },
+    {
+      "answer": true,
+      "node": "0.1.0.1",
+      "observed": "placement"
+    }
+  ]
+}

@@ -1,0 +1,122 @@
+<mujoco model="zoo_dual_arm">
+  <compiler angle="radian" meshdir="C:\Users\hocke\GitHub\rigby-g07\any-robot\assets\general\zoo\zoo_dual_arm" texturedir="C:\Users\hocke\GitHub\rigby-g07\any-robot\assets\general\zoo\zoo_dual_arm" />
+
+  <worldbody>
+    <body name="base">
+      <inertial pos="0 0 0.15" mass="22" diaginertia="0.3058 0.3058 0.2816" />
+      <geom size="0.16 0.15" pos="0 0 0.15" type="cylinder" />
+      <site name="robot_base" pos="0 0 0" />
+      <body name="torso" pos="0 0 0.3">
+        <inertial pos="0 0 0.05" quat="0.5 0.5 -0.5 0.5" mass="7" diaginertia="0.151667 0.129267 0.0340667" />
+        <geom size="0.11 0.23 0.05" pos="0 0 0.05" type="box" />
+        <body name="left_link_0" pos="0 0.3 0.14" quat="0.980067 -0.198669 0 0">
+          <inertial pos="0 0 0.08" mass="0.798015" diaginertia="0.00205436 0.00205436 0.00070385" />
+          <joint name="left_joint_0" pos="0 0 0" axis="0 0 1" range="-2.85 2.85" actuatorfrcrange="-95 95" />
+          <geom size="0.042 0.08" pos="0 0 0.08" type="cylinder" />
+          <body name="left_link_1" pos="0 0 0.16">
+            <inertial pos="0 0 0.12" mass="0.926974" diaginertia="0.00476605 0.00476605 0.00063314" />
+            <joint name="left_joint_1" pos="0 0 0" axis="0 1 0" range="-2.85 2.85" actuatorfrcrange="-95 95" />
+            <geom size="0.03696 0.12" pos="0 0 0.12" type="cylinder" />
+            <body name="left_link_2" pos="0 0 0.24">
+              <inertial pos="0 0 0.1" mass="0.598207" diaginertia="0.00215223 0.00215223 0.00031641" />
+              <joint name="left_joint_2" pos="0 0 0" axis="0 1 0" range="-2.85 2.85" actuatorfrcrange="-95 95" />
+              <geom size="0.032525 0.1" pos="0 0 0.1" type="cylinder" />
+              <body name="left_link_3" pos="0 0 0.2">
+                <inertial pos="0 0 0.045" mass="0.25" diaginertia="0.00021995 0.00021995 0.0001024" />
+                <joint name="left_joint_3" pos="0 0 0" axis="0 0 1" range="-2.85 2.85" actuatorfrcrange="-95 95" />
+                <geom size="0.028622 0.045" pos="0 0 0.045" type="cylinder" />
+                <body name="left_link_4" pos="0 0 0.09">
+                  <inertial pos="0 0 0.03" mass="0.25" diaginertia="0.00011465 0.00011465 7.93e-05" />
+                  <joint name="left_joint_4" pos="0 0 0" axis="0 1 0" range="-2.85 2.85" actuatorfrcrange="-95 95" />
+                  <geom size="0.025187 0.03" pos="0 0 0.03" type="cylinder" />
+                  <body name="left_palm" pos="0 0 0.06">
+                    <inertial pos="0 0 0.025" quat="0.5 0.5 0.5 0.5" mass="0.35" diaginertia="0.00030917 0.00030917 0.00014583" />
+                    <geom size="0.045 0.025 0.025" pos="0 0 0.025" type="box" />
+                    <site name="left_palm_grasp_point" pos="0 0 0.08" />
+                    <site name="left_palm_grasp_center" pos="0 0 0.05" />
+                    <site name="left_palm_wrist" pos="0 0 0" />
+                    <body name="left_finger_left" pos="0.043 0 0.05">
+                      <inertial pos="0 0 0.03" mass="0.06" diaginertia="2.25e-05 1.898e-05 5.48e-06" />
+                      <joint name="left_grip_left" pos="0 0 0" axis="-1 0 0" type="slide" range="0 0.035" actuatorfrcrange="-45 45" />
+                      <geom size="0.007 0.015 0.03" pos="0 0 0.03" type="box" />
+                      <site name="left_palm_tip" pos="0 0 0.06" />
+                      <site name="left_palm_contact_0" pos="0 0 0.06" />
+                    </body>
+                    <body name="left_finger_right" pos="-0.043 0 0.05">
+                      <inertial pos="0 0 0.03" mass="0.06" diaginertia="2.25e-05 1.898e-05 5.48e-06" />
+                      <joint name="left_grip_right" pos="0 0 0" axis="1 0 0" type="slide" range="0 0.035" actuatorfrcrange="-45 45" />
+                      <geom size="0.007 0.015 0.03" pos="0 0 0.03" type="box" />
+                      <site name="left_palm_contact_1" pos="0 0 0.06" />
+                    </body>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+        <body name="right_link_0" pos="0 -0.3 0.14" quat="0.980067 0.198669 0 0">
+          <inertial pos="0 0 0.08" mass="0.798015" diaginertia="0.00205436 0.00205436 0.00070385" />
+          <joint name="right_joint_0" pos="0 0 0" axis="0 0 1" range="-2.85 2.85" actuatorfrcrange="-95 95" />
+          <geom size="0.042 0.08" pos="0 0 0.08" type="cylinder" />
+          <body name="right_link_1" pos="0 0 0.16">
+            <inertial pos="0 0 0.12" mass="0.926974" diaginertia="0.00476605 0.00476605 0.00063314" />
+            <joint name="right_joint_1" pos="0 0 0" axis="0 1 0" range="-2.85 2.85" actuatorfrcrange="-95 95" />
+            <geom size="0.03696 0.12" pos="0 0 0.12" type="cylinder" />
+            <body name="right_link_2" pos="0 0 0.24">
+              <inertial pos="0 0 0.1" mass="0.598207" diaginertia="0.00215223 0.00215223 0.00031641" />
+              <joint name="right_joint_2" pos="0 0 0" axis="0 1 0" range="-2.85 2.85" actuatorfrcrange="-95 95" />
+              <geom size="0.032525 0.1" pos="0 0 0.1" type="cylinder" />
+              <body name="right_link_3" pos="0 0 0.2">
+                <inertial pos="0 0 0.045" mass="0.25" diaginertia="0.00021995 0.00021995 0.0001024" />
+                <joint name="right_joint_3" pos="0 0 0" axis="0 0 1" range="-2.85 2.85" actuatorfrcrange="-95 95" />
+                <geom size="0.028622 0.045" pos="0 0 0.045" type="cylinder" />
+                <body name="right_link_4" pos="0 0 0.09">
+                  <inertial pos="0 0 0.03" mass="0.25" diaginertia="0.00011465 0.00011465 7.93e-05" />
+                  <joint name="right_joint_4" pos="0 0 0" axis="0 1 0" range="-2.85 2.85" actuatorfrcrange="-95 95" />
+                  <geom size="0.025187 0.03" pos="0 0 0.03" type="cylinder" />
+                  <body name="right_palm" pos="0 0 0.06">
+                    <inertial pos="0 0 0.025" quat="0.5 0.5 0.5 0.5" mass="0.35" diaginertia="0.00030917 0.00030917 0.00014583" />
+                    <geom size="0.045 0.025 0.025" pos="0 0 0.025" type="box" />
+                    <site name="right_palm_grasp_point" pos="0 0 0.08" />
+                    <site name="right_palm_grasp_center" pos="0 0 0.05" />
+                    <site name="right_palm_wrist" pos="0 0 0" />
+                    <body name="right_finger_left" pos="0.043 0 0.05">
+                      <inertial pos="0 0 0.03" mass="0.06" diaginertia="2.25e-05 1.898e-05 5.48e-06" />
+                      <joint name="right_grip_left" pos="0 0 0" axis="-1 0 0" type="slide" range="0 0.035" actuatorfrcrange="-45 45" />
+                      <geom size="0.007 0.015 0.03" pos="0 0 0.03" type="box" />
+                      <site name="right_palm_tip" pos="0 0 0.06" />
+                      <site name="right_palm_contact_0" pos="0 0 0.06" />
+                    </body>
+                    <body name="right_finger_right" pos="-0.043 0 0.05">
+                      <inertial pos="0 0 0.03" mass="0.06" diaginertia="2.25e-05 1.898e-05 5.48e-06" />
+                      <joint name="right_grip_right" pos="0 0 0" axis="1 0 0" type="slide" range="0 0.035" actuatorfrcrange="-45 45" />
+                      <geom size="0.007 0.015 0.03" pos="0 0 0.03" type="box" />
+                      <site name="right_palm_contact_1" pos="0 0 0.06" />
+                    </body>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  <body name="env_fixture_bench" pos="-0.150000 0.650000 0.245000"><geom name="env_fixture_bench_geom" type="box" size="0.050000 0.050000 0.015000" rgba="0.3500 0.3500 0.4000 1.0000" solref="0.002 1" solimp="0.95 0.99 0.001" /></body><body name="env_fixture_platform" pos="-0.010000 0.650000 0.245000"><geom name="env_fixture_platform_geom" type="box" size="0.050000 0.050000 0.015000" rgba="0.3000 0.4500 0.7500 1.0000" solref="0.002 1" solimp="0.95 0.99 0.001" /></body><body name="scene_block" pos="-0.150000 0.650000 0.275000"><freejoint name="scene_block_free" /><geom name="scene_block_geom" type="box" size="0.015000 0.015000 0.015000" mass="0.008640" friction="1.400 0.03 0.001" rgba="0.8500 0.4500 0.1500 1.0000" condim="4" solref="0.002 1" solimp="0.95 0.99 0.001" priority="1" /><site name="scene_block_center" pos="0 0 0" size="0.002" /></body></worldbody>
+
+  <actuator>
+    <general name="left_joint_0_motor" joint="left_joint_0" ctrllimited="true" ctrlrange="-95 95" forcelimited="true" forcerange="-95 95" />
+    <general name="left_joint_1_motor" joint="left_joint_1" ctrllimited="true" ctrlrange="-95 95" forcelimited="true" forcerange="-95 95" />
+    <general name="left_joint_2_motor" joint="left_joint_2" ctrllimited="true" ctrlrange="-95 95" forcelimited="true" forcerange="-95 95" />
+    <general name="left_joint_3_motor" joint="left_joint_3" ctrllimited="true" ctrlrange="-95 95" forcelimited="true" forcerange="-95 95" />
+    <general name="left_joint_4_motor" joint="left_joint_4" ctrllimited="true" ctrlrange="-95 95" forcelimited="true" forcerange="-95 95" />
+    <general name="left_grip_left_motor" joint="left_grip_left" ctrllimited="true" ctrlrange="-45 45" forcelimited="true" forcerange="-45 45" />
+    <general name="left_grip_right_motor" joint="left_grip_right" ctrllimited="true" ctrlrange="-45 45" forcelimited="true" forcerange="-45 45" />
+    <general name="right_joint_0_motor" joint="right_joint_0" ctrllimited="true" ctrlrange="-95 95" forcelimited="true" forcerange="-95 95" />
+    <general name="right_joint_1_motor" joint="right_joint_1" ctrllimited="true" ctrlrange="-95 95" forcelimited="true" forcerange="-95 95" />
+    <general name="right_joint_2_motor" joint="right_joint_2" ctrllimited="true" ctrlrange="-95 95" forcelimited="true" forcerange="-95 95" />
+    <general name="right_joint_3_motor" joint="right_joint_3" ctrllimited="true" ctrlrange="-95 95" forcelimited="true" forcerange="-95 95" />
+    <general name="right_joint_4_motor" joint="right_joint_4" ctrllimited="true" ctrlrange="-95 95" forcelimited="true" forcerange="-95 95" />
+    <general name="right_grip_left_motor" joint="right_grip_left" ctrllimited="true" ctrlrange="-45 45" forcelimited="true" forcerange="-45 45" />
+    <general name="right_grip_right_motor" joint="right_grip_right" ctrllimited="true" ctrlrange="-45 45" forcelimited="true" forcerange="-45 45" />
+  </actuator>
+</mujoco>

@@ -1,0 +1,121 @@
+{
+  "$defs": {
+    "NodeKind": {
+      "enum": [
+        "primitive",
+        "sequence",
+        "selector",
+        "parallel",
+        "repeat_until",
+        "observe"
+      ],
+      "title": "NodeKind",
+      "type": "string"
+    },
+    "TaskNodeV1": {
+      "additionalProperties": false,
+      "description": "One node of an expanded tree: a definition with its arguments bound.",
+      "properties": {
+        "arguments": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "default": {},
+          "title": "Arguments",
+          "type": "object"
+        },
+        "children": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/TaskNodeV1"
+          },
+          "title": "Children",
+          "type": "array"
+        },
+        "depth": {
+          "minimum": 1,
+          "title": "Depth",
+          "type": "integer"
+        },
+        "kind": {
+          "$ref": "#/$defs/NodeKind"
+        },
+        "node_id": {
+          "minLength": 1,
+          "title": "Node Id",
+          "type": "string"
+        },
+        "recovery": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TaskNodeV1"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "resources": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Resources",
+          "type": "array"
+        },
+        "shared_resources": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Shared Resources",
+          "type": "array"
+        },
+        "skill_id": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Skill Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "node_id",
+        "skill_id",
+        "kind",
+        "depth"
+      ],
+      "title": "TaskNodeV1",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "library_id": {
+      "minLength": 1,
+      "title": "Library Id",
+      "type": "string"
+    },
+    "library_sha256": {
+      "maxLength": 64,
+      "minLength": 64,
+      "title": "Library Sha256",
+      "type": "string"
+    },
+    "root": {
+      "$ref": "#/$defs/TaskNodeV1"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "library_id",
+    "library_sha256",
+    "root"
+  ],
+  "title": "TaskTreeV1",
+  "type": "object"
+}

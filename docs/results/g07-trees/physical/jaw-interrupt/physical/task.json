@@ -1,0 +1,108 @@
+{
+  "arguments": {
+    "alternate": "palm",
+    "destination": "platform",
+    "effector": "palm",
+    "object": "cube"
+  },
+  "attempts": 1,
+  "clock_disclosure": {
+    "executor_clock": "physics time of the session",
+    "phase_timing_on_native_physics_time": true,
+    "physics_timestep_s": 0.002
+  },
+  "environment": {
+    "authored_for_aperture_m": null,
+    "authored_for_reach_m": null,
+    "description": "A 30 mm cube on a low bench to the left of and slightly behind the mount, and an empty platform of the same height beside it, both in absolute metres. Nothing about the world depends on which body enters it.",
+    "environment_id": "g06_transfer_v1",
+    "fixtures": [
+      {
+        "name": "bench",
+        "position_m": [
+          -0.15,
+          0.65,
+          0.245
+        ],
+        "rgba": [
+          0.35,
+          0.35,
+          0.4,
+          1.0
+        ],
+        "size_m": [
+          0.05,
+          0.05,
+          0.015
+        ]
+      },
+      {
+        "name": "platform",
+        "position_m": [
+          -0.01,
+          0.65,
+          0.245
+        ],
+        "rgba": [
+          0.3,
+          0.45,
+          0.75,
+          1.0
+        ],
+        "size_m": [
+          0.05,
+          0.05,
+          0.015
+        ]
+      }
+    ],
+    "objects": [
+      {
+        "friction": 1.4,
+        "mass_kg": 0.00864,
+        "name": "cube",
+        "position_m": [
+          -0.15,
+          0.65,
+          0.275
+        ],
+        "rgba": [
+          0.85,
+          0.45,
+          0.15,
+          1.0
+        ],
+        "size_m": [
+          0.015,
+          0.015,
+          0.015
+        ]
+      }
+    ],
+    "robot_mount_m": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "goal": "G07",
+  "interventions": [],
+  "label": "zoo_jaw_arm-jaw-interrupt",
+  "library_id": "clear_bench_v1",
+  "library_sha256": "3accc16dbf04b9c496cc3bc83e588a6b930014fa99e5d38d181090dcc4d73569",
+  "limits": "Manifest joint/actuator limits; closure force bounded; penetration 4 mm; every leaf timeout from the library; no relaxed thresholds.",
+  "max_depth": 5,
+  "observation_contract": {
+    "inputs": [
+      "joint encoders",
+      "model parameters",
+      "contact forces on the gripper"
+    ],
+    "policy": "fully_observed_model_based_baseline",
+    "vlm": false
+  },
+  "protocol": "rigby.skill-tree-run/1",
+  "retry_limit": 0,
+  "root": "clear_bench",
+  "tree_sha256": "c16b5aeb0c08927c2d263bfdabada92a2364d8fbd447f8135cb41c0bcaf03c1b"
+}

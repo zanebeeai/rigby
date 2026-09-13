@@ -1,0 +1,162 @@
+{
+  "schema_version": "1.0",
+  "library_id": "clear_bench_v1",
+  "library_sha256": "3accc16dbf04b9c496cc3bc83e588a6b930014fa99e5d38d181090dcc4d73569",
+  "root": {
+    "node_id": "0",
+    "skill_id": "clear_bench",
+    "kind": "sequence",
+    "depth": 1,
+    "arguments": {
+      "alternate": "left_palm",
+      "destination": "platform",
+      "effector": "right_palm",
+      "object": "cube"
+    },
+    "resources": [
+      "effector:right_palm",
+      "effector:left_palm",
+      "object:cube"
+    ],
+    "shared_resources": [
+      "perception"
+    ],
+    "children": [
+      {
+        "node_id": "0.0",
+        "skill_id": "observe_inventory",
+        "kind": "observe",
+        "depth": 2,
+        "arguments": {
+          "object": "cube"
+        },
+        "resources": [],
+        "shared_resources": [
+          "perception"
+        ],
+        "children": [],
+        "recovery": null
+      },
+      {
+        "node_id": "0.1",
+        "skill_id": "place_until_done",
+        "kind": "repeat_until",
+        "depth": 2,
+        "arguments": {
+          "alternate": "left_palm",
+          "destination": "platform",
+          "effector": "right_palm",
+          "object": "cube"
+        },
+        "resources": [
+          "effector:right_palm",
+          "effector:left_palm",
+          "object:cube"
+        ],
+        "shared_resources": [
+          "perception"
+        ],
+        "children": [
+          {
+            "node_id": "0.1.0",
+            "skill_id": "transfer_and_verify",
+            "kind": "sequence",
+            "depth": 3,
+            "arguments": {
+              "alternate": "left_palm",
+              "destination": "platform",
+              "effector": "right_palm",
+              "object": "cube"
+            },
+            "resources": [
+              "effector:right_palm",
+              "effector:left_palm",
+              "object:cube"
+            ],
+            "shared_resources": [
+              "perception"
+            ],
+            "children": [
+              {
+                "node_id": "0.1.0.0",
+                "skill_id": "transfer_with_any_effector",
+                "kind": "selector",
+                "depth": 4,
+                "arguments": {
+                  "alternate": "left_palm",
+                  "destination": "platform",
+                  "effector": "right_palm",
+                  "object": "cube"
+                },
+                "resources": [
+                  "effector:right_palm",
+                  "effector:left_palm",
+                  "object:cube"
+                ],
+                "shared_resources": [],
+                "children": [
+                  {
+                    "node_id": "0.1.0.0.0",
+                    "skill_id": "transfer",
+                    "kind": "primitive",
+                    "depth": 5,
+                    "arguments": {
+                      "destination": "platform",
+                      "effector": "right_palm",
+                      "object": "cube"
+                    },
+                    "resources": [
+                      "effector:right_palm",
+                      "object:cube"
+                    ],
+                    "shared_resources": [],
+                    "children": [],
+                    "recovery": null
+                  },
+                  {
+                    "node_id": "0.1.0.0.1",
+                    "skill_id": "transfer",
+                    "kind": "primitive",
+                    "depth": 5,
+                    "arguments": {
+                      "destination": "platform",
+                      "effector": "left_palm",
+                      "object": "cube"
+                    },
+                    "resources": [
+                      "effector:left_palm",
+                      "object:cube"
+                    ],
+                    "shared_resources": [],
+                    "children": [],
+                    "recovery": null
+                  }
+                ],
+                "recovery": null
+              },
+              {
+                "node_id": "0.1.0.1",
+                "skill_id": "observe_placement",
+                "kind": "observe",
+                "depth": 4,
+                "arguments": {
+                  "destination": "platform",
+                  "object": "cube"
+                },
+                "resources": [],
+                "shared_resources": [
+                  "perception"
+                ],
+                "children": [],
+                "recovery": null
+              }
+            ],
+            "recovery": null
+          }
+        ],
+        "recovery": null
+      }
+    ],
+    "recovery": null
+  }
+}

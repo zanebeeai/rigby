@@ -1,0 +1,42 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-clear-the-bench-pick-up-the-cube-with-whichever-a6c0a6e9",
+  "title": "G07 skill tree: zoo_compact_arm, compact-refused",
+  "prompt": "clear the bench: pick up the cube with whichever manipulator can and set it on the platform",
+  "tier": "any-robot",
+  "embodiment": "zoo_compact_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T09:26:52Z",
+  "source": {
+    "commit": "5c477d9917",
+    "branch": "feat/g07-skill-contracts",
+    "dirty": false,
+    "how": "python any-robot/scripts/g07_tree_evidence.py --out docs/results/g07-trees"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "PRE-EXECUTION REFUSAL: the inventory saw the cube outside the arm's envelope; both alternatives were refused before motion (unreachable_path); the loop stopped for lack of progress; nothing moved."
+  },
+  "notes": "See docs/results/g07-report.md. One tree run of the five-deep clear_bench library through the neutral skill executor, one continuous physics record across every leaf, rendered at real-time playback with the simulation clock and the tree's verdict in the banner; frames.json beside the MP4 maps every frame to its recorded sample. Tree sha256 c16b5aeb0c08; verdict failure.",
+  "media": [
+    {
+      "path": "docs/results/g07-trees/physical/compact-refused/media/episode.mp4",
+      "bytes": 22190,
+      "sha256": "f22c314b792d3ed057e37347c73e7e0a242cdd066cb78824e21109fcd10c983c",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g07-trees/physical/compact-refused/media/preview.gif",
+      "bytes": 17903,
+      "sha256": "90367f6cb897013e1264a88574aaffd683bce58c709d719406591a3dad7508b0",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G07",
+    "skill-tree",
+    "failure"
+  ]
+}
