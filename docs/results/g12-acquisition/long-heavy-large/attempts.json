@@ -1,0 +1,119 @@
+{
+  "attempts": [
+    {
+      "certified": 0,
+      "confirmation": [],
+      "episodes": [
+        {
+          "certified": false,
+          "failed_gate": "object_not_lifted",
+          "measurements": {
+            "hold_s": 0.0,
+            "lift_height_m": 0.013744269765857742,
+            "max_penetration_m": 0.001852657013535314,
+            "peak_force_n": 40.10393702137568,
+            "placement_dwell_s": 0.0
+          },
+          "physics_s": 17.52200000000103,
+          "seed": 4000,
+          "wall_s": 2.320044499996584
+        }
+      ],
+      "improved": true,
+      "index": 0,
+      "of": 2,
+      "parameters": {
+        "arm.natural_frequency_hz": 14.0,
+        "closure.actuator_ceiling_fraction": 0.5,
+        "closure.closing_force_fraction": 0.12,
+        "closure.closure_rate_per_s": 0.55,
+        "closure.grip_safety_factor": 80.0,
+        "closure.hold_duration_s": 0.15,
+        "duration_scale": 1.0
+      },
+      "physics_s": 17.52200000000103,
+      "sigma": 0.25,
+      "wall_s": 2.320044499996584
+    },
+    {
+      "certified": 2,
+      "confirmation": [
+        {
+          "certified": true,
+          "failed_gate": null,
+          "measurements": {
+            "hold_s": 2.0000000000000013,
+            "lift_height_m": 0.08747990518785459,
+            "max_penetration_m": 0.0017050311892028817,
+            "peak_force_n": 32.3511899781554,
+            "placement_dwell_s": 2.498000000000202
+          },
+          "physics_s": 16.460000000001617,
+          "seed": 4002,
+          "wall_s": 2.2377806000004057
+        },
+        {
+          "certified": true,
+          "failed_gate": null,
+          "measurements": {
+            "hold_s": 2.0000000000000013,
+            "lift_height_m": 0.08747307449442432,
+            "max_penetration_m": 0.0013812080110284324,
+            "peak_force_n": 30.922286797822665,
+            "placement_dwell_s": 2.4980000000002516
+          },
+          "physics_s": 16.40400000000165,
+          "seed": 4003,
+          "wall_s": 2.1394822000002023
+        }
+      ],
+      "episodes": [
+        {
+          "certified": true,
+          "failed_gate": null,
+          "measurements": {
+            "hold_s": 2.0000000000000013,
+            "lift_height_m": 0.09076492539397873,
+            "max_penetration_m": 0.0018696741134624063,
+            "peak_force_n": 49.2689377337024,
+            "placement_dwell_s": 2.4980000000002143
+          },
+          "physics_s": 16.446000000001625,
+          "seed": 4000,
+          "wall_s": 2.3970763999968767
+        },
+        {
+          "certified": true,
+          "failed_gate": null,
+          "measurements": {
+            "hold_s": 2.0000000000000013,
+            "lift_height_m": 0.08797654789454995,
+            "max_penetration_m": 0.0020340638796413433,
+            "peak_force_n": 23.439864415756325,
+            "placement_dwell_s": 2.498000000000177
+          },
+          "physics_s": 16.488000000001602,
+          "seed": 4001,
+          "wall_s": 2.294322600006126
+        }
+      ],
+      "improved": true,
+      "index": 1,
+      "of": 2,
+      "parameters": {
+        "arm.natural_frequency_hz": 17.115242096698864,
+        "closure.actuator_ceiling_fraction": 0.40783960401004116,
+        "closure.closing_force_fraction": 0.12953010668500248,
+        "closure.closure_rate_per_s": 0.5637932052305796,
+        "closure.grip_safety_factor": 108.94763245072079,
+        "closure.hold_duration_s": 0.12839426644158916,
+        "duration_scale": 1.1177474063207324
+      },
+      "physics_s": 65.79800000000648,
+      "sigma": 0.25,
+      "wall_s": 9.06866180000361
+    }
+  ],
+  "problem_id": "long-heavy-large",
+  "worker_minutes_so_far": 0.1898117716666699
+}

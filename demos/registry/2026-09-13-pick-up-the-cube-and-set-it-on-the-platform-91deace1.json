@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-91deace1",
+  "title": "D12 jaw-slick: missing, failed, acquired, held-out, reuse",
+  "prompt": "pick up the cube and set it on the platform",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T20:07:58Z",
+  "source": {
+    "commit": "eeece832d5",
+    "branch": "feat/g12-skill-acquisition",
+    "dirty": true,
+    "how": "python any-robot/scripts/g12_d12_media.py --campaign docs/results/g12-acquisition --out docs/results/g12-d12"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "D12 jaw-slick | budget_exhausted (no kind) | search 200/200 attempts, 7.5/30 worker min | held-out 0/50 (threshold 40)"
+  },
+  "notes": "See docs/results/g12-report.md. One contact transfer single-shot with every hard gate on under a parameter vector of the transfer family (closure advance, contact detection and squeeze, arm tracking bandwidth, duration scale), proposed by a seeded evolution strategy inside a registered ceiling or run once on a registered held-out draw; rendered from recorded states at real-time playback with the simulation clock and the outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample.",
+  "media": [
+    {
+      "path": "docs/results/g12-d12/jaw-slick/jaw-slick-five-way.mp4",
+      "bytes": 121978,
+      "sha256": "2cc73578121a825d386700b334b6f7a9393d928d6a6200ad8c888da67fb845e8",
+      "role": "comparison"
+    },
+    {
+      "path": "docs/results/g12-d12/jaw-slick/jaw-slick-five-way-preview.gif",
+      "bytes": 2034661,
+      "sha256": "76c0c0bbf59e27c6691e894d7c539568ef4341da7a324251f452346e3e476611",
+      "role": "comparison"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G12",
+    "D12",
+    "jaw-slick",
+    "zoo_jaw_arm",
+    "budget_exhausted"
+  ]
+}

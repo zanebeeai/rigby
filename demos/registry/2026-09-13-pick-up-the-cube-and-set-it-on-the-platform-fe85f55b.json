@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-fe85f55b",
+  "title": "G12 long-heavy-large: reuse from the store in the mirrored layout (success)",
+  "prompt": "pick up the cube and set it on the platform",
+  "tier": "any-robot",
+  "embodiment": "zoo_long_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T20:08:27Z",
+  "source": {
+    "commit": "eeece832d5",
+    "branch": "feat/g12-skill-acquisition",
+    "dirty": true,
+    "how": "python any-robot/scripts/g12_acquisition_campaign.py <problem> --out docs/results/g12-acquisition --local any-robot/results/g12-acquisition"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: transfer_object from the persisted store under certificate e7329b941d20 carrying the acquired parameters."
+  },
+  "notes": "See docs/results/g12-report.md. One contact transfer single-shot with every hard gate on under a parameter vector of the transfer family (closure advance, contact detection and squeeze, arm tracking bandwidth, duration scale), proposed by a seeded evolution strategy inside a registered ceiling or run once on a registered held-out draw; rendered from recorded states at real-time playback with the simulation clock and the outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample.",
+  "media": [
+    {
+      "path": "docs/results/g12-acquisition/long-heavy-large/reuse/media/episode.mp4",
+      "bytes": 164246,
+      "sha256": "75708db8c679dfd7ee9ba63ab726a5e3fb62ae078e0bae059506312555a4b3a2",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g12-acquisition/long-heavy-large/reuse/media/preview.gif",
+      "bytes": 1469539,
+      "sha256": "b5b47c168b3e2d3a760ee4d8db2f2d122a07b93ceeeeaaecde12e462a22c05a1",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G12",
+    "long-heavy-large",
+    "reuse",
+    "zoo_long_arm",
+    "success"
+  ]
+}

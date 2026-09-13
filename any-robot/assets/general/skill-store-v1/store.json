@@ -11,7 +11,8 @@
     "875b1adb1e21593454e0b76029d42e9b",
     "cb0e66bfec1944cdbd92355615a06518",
     "2a0dbf8e86c68a1dd5bd5ade395b47d0",
-    "b81dc35adab101762e015ee7d9820f65"
+    "b81dc35adab101762e015ee7d9820f65",
+    "e7329b941d20863fd34faba367b17f7b"
   ],
   "files": {
     "certificates/274058bc6b9c4819d3efdec663b64d9d.json": "68fb8d38dad64bddeadbd1ebd2446904a51f0fdd2c09fcae0059b7dc005b2791",
@@ -25,6 +26,7 @@
     "certificates/cb0e66bfec1944cdbd92355615a06518.json": "cb0ecc81a917c02e0988387ecb8515c8fdacddc012e848e2a635fe022d431a9e",
     "certificates/d4bf21675f88c141720a2fc54f3d793a.json": "d04f9a5112114b53c09cd39639045e2b760ab26de88498a4a1d683286520a04c",
     "certificates/da718da89b5060d8b4ffb781bae6307b.json": "65d14fb3c235e0214f44800c82fca3204ed27072337b3ece0ef988c7c9895420",
+    "certificates/e7329b941d20863fd34faba367b17f7b.json": "4a7b4c21daa4e577c74dc41d20f0d87da09f32e8db1aafe2bad179c2c90eb94e",
     "certificates/ed430c59cb5ff6ef3b85609816666f91.json": "8934221dc7f91ebb43e3ded450e587098a4f4677feb00cedb40f3ca793c3b75e",
     "libraries/8af1e9cda3a446e7c75f53c0074c92b01ae51fefabfa2fef0c4cb33ae74d9f47.json": "8af1e9cda3a446e7c75f53c0074c92b01ae51fefabfa2fef0c4cb33ae74d9f47"
   },
@@ -470,13 +472,25 @@
       },
       "event": "revalidated",
       "skill_id": "observe_object"
+    },
+    {
+      "at_utc": "2026-09-13T20:06:02.294771+00:00",
+      "certificate_id": "e7329b941d20863fd34faba367b17f7b",
+      "detail": {
+        "episodes": 50,
+        "successes": 47,
+        "supersedes": null,
+        "validation_set": "g12-holdout-long-heavy-large"
+      },
+      "event": "promoted",
+      "skill_id": "transfer_object"
     }
   ],
   "libraries": [
     "8af1e9cda3a446e7c75f53c0074c92b01ae51fefabfa2fef0c4cb33ae74d9f47"
   ],
-  "saved_at_utc": "2026-09-13T18:58:11.265945+00:00",
+  "saved_at_utc": "2026-09-13T20:06:02.306859+00:00",
   "schema_version": "1.0",
   "store_id": "rigby-skill-store-v1",
-  "version": 41
+  "version": 42
 }

@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-740c1dab",
+  "title": "G12 long-heavy-large: held-out 3030 (hold_not_sustained)",
+  "prompt": "pick up the cube and set it on the platform",
+  "tier": "any-robot",
+  "embodiment": "zoo_long_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T20:08:26Z",
+  "source": {
+    "commit": "eeece832d5",
+    "branch": "feat/g12-skill-acquisition",
+    "dirty": true,
+    "how": "python any-robot/scripts/g12_acquisition_campaign.py <problem> --out docs/results/g12-acquisition --local any-robot/results/g12-acquisition"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "HOLD_NOT_SUSTAINED under the settled vector on unseen draw 3030; the set scored 47/50."
+  },
+  "notes": "See docs/results/g12-report.md. One contact transfer single-shot with every hard gate on under a parameter vector of the transfer family (closure advance, contact detection and squeeze, arm tracking bandwidth, duration scale), proposed by a seeded evolution strategy inside a registered ceiling or run once on a registered held-out draw; rendered from recorded states at real-time playback with the simulation clock and the outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample.",
+  "media": [
+    {
+      "path": "docs/results/g12-acquisition/long-heavy-large/holdout/long-heavy-large-holdout-3030/media/episode.mp4",
+      "bytes": 141005,
+      "sha256": "06e6b01094685a9d38cecd42e4de901af74cd39e6e08fb1d409b66debb3ef4a6",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g12-acquisition/long-heavy-large/holdout/long-heavy-large-holdout-3030/media/preview.gif",
+      "bytes": 1025916,
+      "sha256": "91f7ad5d1efcbc005411733dbbb43ab8133b1fe42d4d6ea3d239564b885246b2",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G12",
+    "long-heavy-large",
+    "holdout",
+    "zoo_long_arm",
+    "failure"
+  ]
+}

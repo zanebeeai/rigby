@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-13-pick-up-the-cube-and-set-it-on-the-platform-66696453",
+  "title": "G12 long-heavy-large: held-out 3000 (certified)",
+  "prompt": "pick up the cube and set it on the platform",
+  "tier": "any-robot",
+  "embodiment": "zoo_long_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-13T20:08:25Z",
+  "source": {
+    "commit": "eeece832d5",
+    "branch": "feat/g12-skill-acquisition",
+    "dirty": true,
+    "how": "python any-robot/scripts/g12_acquisition_campaign.py <problem> --out docs/results/g12-acquisition --local any-robot/results/g12-acquisition"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "CERTIFIED under the settled vector on unseen draw 3000; the set scored 47/50."
+  },
+  "notes": "See docs/results/g12-report.md. One contact transfer single-shot with every hard gate on under a parameter vector of the transfer family (closure advance, contact detection and squeeze, arm tracking bandwidth, duration scale), proposed by a seeded evolution strategy inside a registered ceiling or run once on a registered held-out draw; rendered from recorded states at real-time playback with the simulation clock and the outcome in the banner; frames.json beside the MP4 maps every frame to its recorded sample.",
+  "media": [
+    {
+      "path": "docs/results/g12-acquisition/long-heavy-large/holdout/long-heavy-large-holdout-3000/media/episode.mp4",
+      "bytes": 156049,
+      "sha256": "961e11a67d14cb7cc2b2cf156c085fcc80cd118c82938c5160ed15f9bcdf9402",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g12-acquisition/long-heavy-large/holdout/long-heavy-large-holdout-3000/media/preview.gif",
+      "bytes": 1418786,
+      "sha256": "f10c893fac10f7f37582c20fa79545f91041114eddab7937b429f1de2bca2512",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G12",
+    "long-heavy-large",
+    "holdout",
+    "zoo_long_arm",
+    "success"
+  ]
+}

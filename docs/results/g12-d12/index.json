@@ -1,0 +1,252 @@
+{
+  "commit": "eeece832d56e757ccf316dfef66609499f99c8dc",
+  "created_at_utc": "2026-09-13T20:06:14.094059+00:00",
+  "demo": "D12",
+  "generation_calls": 0,
+  "goal": "G12",
+  "problems": [
+    {
+      "budget": {
+        "attempts": 200,
+        "ceiling": {
+          "attempts": 200,
+          "worker_minutes": 30.0
+        },
+        "ceiling_hit": "attempts",
+        "physics_minutes": 66.2457999999993,
+        "wall_minutes": 8.25800424333332,
+        "worker_minutes": 7.509968966668142
+      },
+      "holdout": {
+        "accepted": false,
+        "successes": 0,
+        "threshold": 40,
+        "trials": 50
+      },
+      "kind": null,
+      "panels": [
+        {
+          "frames": "jaw-slick/missing/frames.json",
+          "name": "missing",
+          "source_media": "attempts/defaults/media",
+          "text": "attempt 0 at the defaults: hold_not_sustained",
+          "title": "1 missing: the defaults | jaw-slick",
+          "video": "jaw-slick/missing/episode.mp4"
+        },
+        {
+          "frames": "jaw-slick/failed/frames.json",
+          "name": "failed",
+          "source_media": "attempts/failed_search/media",
+          "text": "attempt 1: hold_not_sustained; natural_frequency_hz=17.1, actuator_ceiling_fraction=0.408, closing_force_fraction=0.13, closure_rate_per_s=0.564, grip_safety_factor=109, hold_duration_s=0.128, duration_scale=1.12",
+          "title": "2 a failed searched attempt | jaw-slick",
+          "video": "jaw-slick/failed/episode.mp4"
+        },
+        {
+          "frames": null,
+          "name": "acquired",
+          "slate": true,
+          "text": "BUDGET EXHAUSTED at 200 attempts, 7.5 worker minutes: within the contact transfer family no closure force, rate, tracking bandwidth or slowing of the lift held a cube at half the registered friction through the hold and carry on the jaw arm",
+          "title": "3 the confirming attempt | jaw-slick",
+          "video": "jaw-slick/acquired/slate.mp4"
+        },
+        {
+          "frames": "jaw-slick/holdout/frames.json",
+          "name": "holdout",
+          "source_media": "holdout/jaw-slick-holdout-3000/media",
+          "text": "held-out seed 3000: hold_not_sustained; the set scored 0/50 against 40",
+          "title": "4 an uninterrupted held-out trial | jaw-slick",
+          "video": "jaw-slick/holdout/episode.mp4"
+        },
+        {
+          "frames": null,
+          "name": "reuse",
+          "slate": true,
+          "text": "not promoted: nothing to reuse",
+          "title": "5 reuse from the store | jaw-slick",
+          "video": "jaw-slick/reuse/slate.mp4"
+        }
+      ],
+      "problem_id": "jaw-slick",
+      "status": "budget_exhausted",
+      "tile": {
+        "duration_s": 18.0,
+        "frame_count": 216,
+        "frames": "jaw-slick/jaw-slick-five-way-frames.json",
+        "height": 192,
+        "preview": {
+          "approximate_speed": 3.0,
+          "frames": 60,
+          "gif": "jaw-slick-five-way-preview.gif",
+          "summary_of": "jaw-slick-five-way.mp4"
+        },
+        "preview_gif": "jaw-slick/jaw-slick-five-way-preview.gif",
+        "strip_drawn_in_video": true,
+        "strip_text": "D12 jaw-slick | budget_exhausted (no kind) | search 200/200 attempts, 7.5/30 worker min | held-out 0/50 (threshold 40)",
+        "video": "jaw-slick/jaw-slick-five-way.mp4",
+        "width": 1920
+      }
+    },
+    {
+      "budget": {
+        "attempts": 200,
+        "ceiling": {
+          "attempts": 200,
+          "worker_minutes": 30.0
+        },
+        "ceiling_hit": "attempts",
+        "physics_minutes": 64.78453333333324,
+        "wall_minutes": 6.9595202816669675,
+        "worker_minutes": 6.231715839998894
+      },
+      "holdout": {
+        "accepted": false,
+        "successes": 0,
+        "threshold": 40,
+        "trials": 50
+      },
+      "kind": null,
+      "panels": [
+        {
+          "frames": "hand-fixed-world/missing/frames.json",
+          "name": "missing",
+          "source_media": "attempts/defaults/media",
+          "text": "attempt 0 at the defaults: hold_not_sustained",
+          "title": "1 missing: the defaults | hand-fixed-world",
+          "video": "hand-fixed-world/missing/episode.mp4"
+        },
+        {
+          "frames": "hand-fixed-world/failed/frames.json",
+          "name": "failed",
+          "source_media": "attempts/failed_search/media",
+          "text": "attempt 1: hold_not_sustained; natural_frequency_hz=17.1, actuator_ceiling_fraction=0.408, closing_force_fraction=0.13, closure_rate_per_s=0.564, grip_safety_factor=109, hold_duration_s=0.128, duration_scale=1.12",
+          "title": "2 a failed searched attempt | hand-fixed-world",
+          "video": "hand-fixed-world/failed/episode.mp4"
+        },
+        {
+          "frames": null,
+          "name": "acquired",
+          "slate": true,
+          "text": "BUDGET EXHAUSTED at 200 attempts, 6.2 worker minutes: the multifinger hand's digits are 47 mm long against a 30 mm cube and its closure is a single-parameter squeeze, so the only grasp that clears the bench is a fingertip pinch; within the contact transf",
+          "title": "3 the confirming attempt | hand-fixed-world",
+          "video": "hand-fixed-world/acquired/slate.mp4"
+        },
+        {
+          "frames": "hand-fixed-world/holdout/frames.json",
+          "name": "holdout",
+          "source_media": "holdout/hand-fixed-world-holdout-3000/media",
+          "text": "held-out seed 3000: hold_not_sustained; the set scored 0/50 against 40",
+          "title": "4 an uninterrupted held-out trial | hand-fixed-world",
+          "video": "hand-fixed-world/holdout/episode.mp4"
+        },
+        {
+          "frames": null,
+          "name": "reuse",
+          "slate": true,
+          "text": "not promoted: nothing to reuse",
+          "title": "5 reuse from the store | hand-fixed-world",
+          "video": "hand-fixed-world/reuse/slate.mp4"
+        }
+      ],
+      "problem_id": "hand-fixed-world",
+      "status": "budget_exhausted",
+      "tile": {
+        "duration_s": 17.916667,
+        "frame_count": 215,
+        "frames": "hand-fixed-world/hand-fixed-world-five-way-frames.json",
+        "height": 192,
+        "preview": {
+          "approximate_speed": 2.99,
+          "frames": 60,
+          "gif": "hand-fixed-world-five-way-preview.gif",
+          "summary_of": "hand-fixed-world-five-way.mp4"
+        },
+        "preview_gif": "hand-fixed-world/hand-fixed-world-five-way-preview.gif",
+        "strip_drawn_in_video": true,
+        "strip_text": "D12 hand-fixed-world | budget_exhausted (no kind) | search 200/200 attempts, 6.2/30 worker min | held-out 0/50 (threshold 40)",
+        "video": "hand-fixed-world/hand-fixed-world-five-way.mp4",
+        "width": 1920
+      }
+    },
+    {
+      "budget": {
+        "attempts": 2,
+        "ceiling": {
+          "attempts": 200,
+          "worker_minutes": 30.0
+        },
+        "ceiling_hit": null,
+        "physics_minutes": 1.388666666666792,
+        "wall_minutes": 0.21312669166654813,
+        "worker_minutes": 0.1898117716666699
+      },
+      "holdout": {
+        "accepted": true,
+        "successes": 47,
+        "threshold": 40,
+        "trials": 50
+      },
+      "kind": "discovery",
+      "panels": [
+        {
+          "frames": "long-heavy-large/missing/frames.json",
+          "name": "missing",
+          "source_media": "attempts/defaults/media",
+          "text": "attempt 0 at the defaults: object_not_lifted",
+          "title": "1 missing: the defaults | long-heavy-large",
+          "video": "long-heavy-large/missing/episode.mp4"
+        },
+        {
+          "frames": null,
+          "name": "failed",
+          "slate": true,
+          "text": "no searched attempt recorded",
+          "title": "2 a failed searched attempt | long-heavy-large",
+          "video": "long-heavy-large/failed/slate.mp4"
+        },
+        {
+          "frames": "long-heavy-large/acquired/frames.json",
+          "name": "acquired",
+          "source_media": "attempts/confirming/media",
+          "text": "attempt 1 certified the development and confirmation draws; moved: closure.grip_safety_factor, closure.actuator_ceiling_fraction, closure.hold_duration_s, arm.natural_frequency_hz",
+          "title": "3 the confirming attempt | long-heavy-large",
+          "video": "long-heavy-large/acquired/episode.mp4"
+        },
+        {
+          "frames": "long-heavy-large/holdout/frames.json",
+          "name": "holdout",
+          "source_media": "holdout/long-heavy-large-holdout-3000/media",
+          "text": "held-out seed 3000: certified; the set scored 47/50 against 40",
+          "title": "4 an uninterrupted held-out trial | long-heavy-large",
+          "video": "long-heavy-large/holdout/episode.mp4"
+        },
+        {
+          "frames": "long-heavy-large/reuse/frames.json",
+          "name": "reuse",
+          "source_media": "reuse/media",
+          "text": "transfer_object from the persisted store in the mirrored layout under certificate e7329b941d20: success",
+          "title": "5 reuse from the store | long-heavy-large",
+          "video": "long-heavy-large/reuse/episode.mp4"
+        }
+      ],
+      "problem_id": "long-heavy-large",
+      "status": "acquired",
+      "tile": {
+        "duration_s": 17.666016,
+        "frame_count": 212,
+        "frames": "long-heavy-large/long-heavy-large-five-way-frames.json",
+        "height": 192,
+        "preview": {
+          "approximate_speed": 2.94,
+          "frames": 60,
+          "gif": "long-heavy-large-five-way-preview.gif",
+          "summary_of": "long-heavy-large-five-way.mp4"
+        },
+        "preview_gif": "long-heavy-large/long-heavy-large-five-way-preview.gif",
+        "strip_drawn_in_video": true,
+        "strip_text": "D12 long-heavy-large | acquired (discovery) | search 2/200 attempts, 0.2/30 worker min | held-out 47/50 (threshold 40)",
+        "video": "long-heavy-large/long-heavy-large-five-way.mp4",
+        "width": 1920
+      }
+    }
+  ]
+}
