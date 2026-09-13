@@ -4,7 +4,7 @@
   "goal_catalog": "docs/research/rigby-verifiable-goals.json",
   "goal_catalog_sha256": "3672ebf5fa10ff4216fa0213499d5988281f2ebbc611500e8526afe6e618b250",
   "started_at_utc": "2026-09-12T02:34:49.841258+00:00",
-  "current_goal": "G10",
+  "current_goal": "G11",
   "overall_status": "active",
   "authorization": {
     "commits_and_pull_requests": true,
@@ -1321,39 +1321,234 @@
     {
       "id": "G10",
       "title": "Deliver the first reusable closed-loop TransferObject skill",
-      "status": "planned",
+      "status": "partial",
       "criteria": [
         {
           "id": "G10.A01",
           "requirement": "Run one root skill definition through Acquire, VerifyHold, Transport, Release and VerifyPlacement on the frozen enabled bodies and identical physical scene.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "core/src/rigby_core/skills/examples.py (transfer_object_library)",
+            "any-robot/src/rigby_general/skills/transfer_object.py",
+            "any-robot/assets/general/research-protocols/g10-transfer-v1/library.json",
+            "docs/results/g10-campaign/trials.json"
+          ],
+          "note": "One root definition (library 8af1e9cda3a4) run on 480 episodes over the three enabled bodies in one registered world."
         },
         {
           "id": "G10.A02",
           "requirement": "At least 90/100 nominal successful episodes per body under a frozen 120 s default episode cap; report cap changes as protocol revisions before evaluation.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "docs/results/g10-campaign/summary.json",
+            "docs/results/g10-validation.json"
+          ],
+          "note": "Nominal: zoo_dual_arm 94/100, zoo_jaw_arm 100/100, zoo_long_arm 100/100 under the frozen 120 s cap; every episode within the cap: True."
         },
         {
           "id": "G10.A03",
           "requirement": "For each body, run 20 trials each of displaced object, induced slip and temporary occlusion; recover and finish at least 16/20 in each class, with no false completion across all trials.",
-          "status": "pending",
-          "evidence": []
+          "status": "failed",
+          "evidence": [
+            "docs/results/g10-campaign/trials.json",
+            "docs/results/g10-validation.json",
+            "docs/results/g10-report.md"
+          ],
+          "note": "Displaced: zoo_dual_arm 15/20, zoo_jaw_arm 14/20, zoo_long_arm 14/20; slip: zoo_dual_arm 13/20, zoo_jaw_arm 16/20, zoo_long_arm 18/20; occlusion: zoo_dual_arm 18/20, zoo_jaw_arm 20/20, zoo_long_arm 20/20; false completions 0."
         },
         {
           "id": "G10.A04",
           "requirement": "Retry budgets are at most 3 per subgoal and execution is resumable from observed state; a recovery does not restart the environment or teleport an object.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "any-robot/assets/general/research-protocols/g10-transfer-v1/library.json",
+            "docs/results/g10-validation.json (max_attempts_any)",
+            "any-robot/tests/test_general_transfer_object.py"
+          ],
+          "note": "Budgets 3 per subgoal (largest used: {'acquire_until_held': 3, 'place_until_placed': 3}); every attempt plans from the sensed object position and the arm where it stands on one continuous record; the object's recorded motion is continuous."
         }
       ],
       "demo_requirement": "D10: three-body fixed-world transfer, plus uninterrupted slip and occlusion recoveries.",
-      "demo_status": "pending",
-      "assessment_complete": false,
+      "demo_status": "verified",
+      "assessment_complete": true,
       "capability_supported": false,
-      "commits": [],
-      "pull_requests": []
+      "commits": [
+        "3038d06",
+        "46d1dd3",
+        "593b9df",
+        "aa3c074",
+        "cc35597",
+        "e50ecb2"
+      ],
+      "pull_requests": [
+        "https://github.com/zanebeeai/rigby/pull/39"
+      ],
+      "discovered_prerequisites": [
+        {
+          "finding": "A slab one object-length across sends a dropped object to the floor: in pilot 1 an object that slipped from the grip fell from its lift height onto the 10 cm G06 slab it came from, bounced, and landed on a floor 38 cm down, outside the dual arm's reach shell; thirteen of its twenty induced slips ended there.",
+          "evidence": "docs/results/g10-campaign-pilot-1 (slip rows and clips); any-robot/src/rigby_general/skills/transfer_object.py (with_table)",
+          "required_action": "Done: the G10 world stands the G06 fixtures on a table three centimetres below their tops; the pilot is retained whole and the corpus re-registered with the reason."
+        },
+        {
+          "finding": "An acquisition planned to the newest camera frame (two millimetres of noise a side) pinched the cube off-centre and lost it on the lift; the acquisition now plans to the mean of the frames that showed the object still.",
+          "evidence": "docs/results/g10-campaign-pilot-1 (dual arm nominal failures); any-robot/src/rigby_general/sensing/live.py (mean_object_position)",
+          "required_action": "Done in the skill; pilot 1 retained."
+        },
+        {
+          "finding": "A required evidence kind was undecidable the moment any one sensor of that kind was stale or occluded, so a second camera the hand stands under blinded a first that saw; the evaluator now decides a kind from every usable sensor of it.",
+          "evidence": "core/src/rigby_core/skills/conditionals.py (evaluate); core/tests/test_skills_conditionals.py; docs/results/g10-campaign-pilot-2",
+          "required_action": "Done in core (G09's evidence unchanged, verify_g09 --recompute passes); the skill observes with the front and the overhead cameras; pilot 2 retained."
+        },
+        {
+          "finding": "The dual arm's closure ejects the cube when the planned grasp is under half a millimetre off: the fingers advance under position control until contact, a cube caught on an edge by one finger is driven against the bench, and the contact stiffness launches it (contact forces of forty to five hundred newtons, cubes found hundreds of metres away in the sealed records) before opposition is measured. G06 planned to the authored position and never met it; it is the reason the dual arm's nominal count is 94 rather than 99 and most of its disturbed non-recoveries.",
+          "evidence": "docs/results/g10-report.md (Where the failures come from); docs/results/g10-campaign (dual arm nominal failures, sealed with their contact forces)",
+          "required_action": "Open: a force limit on the closure's advance in rigby_general.contact.closure (a G06 primitive change), to be made with its own retained pilot before the next goal that grasps with the dual arm."
+        }
+      ],
+      "demo_evidence": [
+        "docs/results/g10-d10/index.json",
+        "docs/results/g10-d10/three-body-nominal.mp4",
+        "docs/results/g10-d10/slip-zoo_dual_arm.mp4",
+        "docs/results/g10-d10/slip-zoo_jaw_arm.mp4",
+        "docs/results/g10-d10/slip-zoo_long_arm.mp4",
+        "docs/results/g10-d10/occlusion-zoo_dual_arm.mp4",
+        "docs/results/g10-d10/occlusion-zoo_jaw_arm.mp4",
+        "docs/results/g10-d10/occlusion-zoo_long_arm.mp4",
+        "demos/registry (G10 and D10 entries)"
+      ],
+      "evidence_worktree": "C:/Users/hocke/GitHub/rigby-g10",
+      "work_basis": "Branch feat/g10-transfer-skill stacked on feat/g09-conditionals (PR 37); lands after it.",
+      "integration_status": "open_pr_ci_infrastructure_blocked",
+      "completed_at_utc": "2026-09-13T16:47:25.337237+00:00",
+      "supported_scope": "A closed-loop TransferObject skill on the three G06-enabled bodies in the G06 fixture standing on a floor, verifications from declared simulated sensors, retries bounded at three per subgoal under a 120 s cap; recoveries from a pushed object, a served slip and a three-second occlusion as the registered protocol declares them. No learned perception, no other worlds, no locomotion.",
+      "local_validation": {
+        "episodes": 480,
+        "per_body": {
+          "zoo_dual_arm": {
+            "displaced": {
+              "episodes": 20,
+              "successes": 15,
+              "false_completions": 0,
+              "within_cap": 20,
+              "met": false
+            },
+            "nominal": {
+              "episodes": 100,
+              "successes": 94,
+              "false_completions": 0,
+              "within_cap": 100,
+              "met": true
+            },
+            "occlusion": {
+              "episodes": 20,
+              "successes": 18,
+              "false_completions": 0,
+              "within_cap": 20,
+              "met": true
+            },
+            "slip": {
+              "episodes": 20,
+              "successes": 13,
+              "false_completions": 0,
+              "within_cap": 20,
+              "met": false
+            }
+          },
+          "zoo_jaw_arm": {
+            "displaced": {
+              "episodes": 20,
+              "successes": 14,
+              "false_completions": 0,
+              "within_cap": 20,
+              "met": false
+            },
+            "nominal": {
+              "episodes": 100,
+              "successes": 100,
+              "false_completions": 0,
+              "within_cap": 100,
+              "met": true
+            },
+            "occlusion": {
+              "episodes": 20,
+              "successes": 20,
+              "false_completions": 0,
+              "within_cap": 20,
+              "met": true
+            },
+            "slip": {
+              "episodes": 20,
+              "successes": 16,
+              "false_completions": 0,
+              "within_cap": 20,
+              "met": true
+            }
+          },
+          "zoo_long_arm": {
+            "displaced": {
+              "episodes": 20,
+              "successes": 14,
+              "false_completions": 0,
+              "within_cap": 20,
+              "met": false
+            },
+            "nominal": {
+              "episodes": 100,
+              "successes": 100,
+              "false_completions": 0,
+              "within_cap": 100,
+              "met": true
+            },
+            "occlusion": {
+              "episodes": 20,
+              "successes": 20,
+              "false_completions": 0,
+              "within_cap": 20,
+              "met": true
+            },
+            "slip": {
+              "episodes": 20,
+              "successes": 18,
+              "false_completions": 0,
+              "within_cap": 20,
+              "met": true
+            }
+          }
+        },
+        "false_completions": 0,
+        "targets_met": {
+          "displaced": false,
+          "false_completions": true,
+          "nominal": true,
+          "occlusion": true,
+          "slip": false
+        },
+        "max_attempts_any": {
+          "acquire_until_held": 3,
+          "place_until_placed": 3
+        },
+        "tests": {
+          "any_robot": {
+            "errors": 0,
+            "failures": 0,
+            "skipped": 5,
+            "tests": 445
+          },
+          "core": {
+            "errors": 0,
+            "failures": 0,
+            "skipped": 2,
+            "tests": 358
+          },
+          "exotic": {
+            "errors": 0,
+            "failures": 0,
+            "skipped": 0,
+            "tests": 10
+          }
+        },
+        "generation_calls": 0
+      }
     },
     {
       "id": "G11",
@@ -2043,10 +2238,11 @@
   ],
   "milestones": [],
   "next_actions": [
-    "Begin G10 (the first reusable closed-loop TransferObject skill): Acquire, VerifyHold, Transport, Release and VerifyPlacement over the G06 primitive, the G08 transitions and the G09 conditionals, with the 120 s episode cap frozen before evaluation.",
-    "Restore GitHub Actions billing/allowance and rerun PRs 27-37; merge only after required checks are green, bottom of the stack first.",
+    "G10 recorded partial: the classes below target are listed in the ledger note; a general fix with a retained pilot is the next step if one is found.",
+    "Begin G11 (promote, retrieve and reuse skills with validity conditions) over the certified transfer_object skill and its validity context.",
+    "Restore GitHub Actions billing/allowance and rerun PRs 27-38; merge only after required checks are green, bottom of the stack first.",
     "G04 independent language validation remains pending on U3_independent_review.",
     "Preserve all 30 goals and their frozen criteria."
   ],
-  "updated_at_utc": "2026-09-13T12:45:15.054021+00:00"
+  "updated_at_utc": "2026-09-13T16:47:25.337237+00:00"
 }
