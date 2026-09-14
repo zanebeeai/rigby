@@ -58,6 +58,66 @@ class PhysicsRecord:
         return cls(arrays)
 
 
+class _Column:
+    """Rows of one shape kept in numpy chunks, so a recording's memory is its
+    data and not a Python object per sample: a crawler's trial of six
+    hundred seconds logs three and a half million contacts, and a list of
+    thirteen Python floats for each of them was a memory error at finish.
+    Reads by index and slice, and a write to the last row, behave as the
+    list did.
+    """
+
+    CHUNK = 16384
+
+    def __init__(self, shape: tuple[int, ...], dtype: type) -> None:
+        self.shape = shape
+        self.dtype = dtype
+        self.chunks: list[np.ndarray] = []
+        self.buffer = np.empty((self.CHUNK, *shape), dtype=dtype)
+        self.fill = 0
+
+    def append(self, row: object) -> None:
+        if self.fill == self.CHUNK:
+            self.chunks.append(self.buffer)
+            self.buffer = np.empty((self.CHUNK, *self.shape), dtype=self.dtype)
+            self.fill = 0
+        self.buffer[self.fill] = row
+        self.fill += 1
+
+    def __len__(self) -> int:
+        return sum(len(chunk) for chunk in self.chunks) + self.fill
+
+    def _locate(self, index: int) -> tuple[np.ndarray, int]:
+        count = len(self)
+        position = index + count if index < 0 else index
+        if not 0 <= position < count:
+            raise IndexError(index)
+        for chunk in self.chunks:
+            if position < len(chunk):
+                return chunk, position
+            position -= len(chunk)
+        return self.buffer, position
+
+    def __getitem__(self, index: int | slice) -> np.ndarray:
+        if isinstance(index, slice):
+            return self.array()[index]
+        chunk, position = self._locate(index)
+        return chunk[position]
+
+    def __setitem__(self, index: int, value: object) -> None:
+        chunk, position = self._locate(index)
+        chunk[position] = value
+
+    def array(self) -> np.ndarray:
+        """Every row as one array; the rows are kept as that one chunk afterwards, so a record and its recorder share them."""
+        parts = [*self.chunks, self.buffer[:self.fill]]
+        whole = np.concatenate(parts, axis=0) if len(self) else np.empty((0, *self.shape), dtype=self.dtype)
+        self.chunks = [whole] if len(whole) else []
+        self.buffer = np.empty((self.CHUNK, *self.shape), dtype=self.dtype)
+        self.fill = 0
+        return whole
+
+
 class PhysicsRecorder:
     """Observe samples immediately before commands are applied to mj_step.
 
@@ -70,12 +130,22 @@ class PhysicsRecorder:
     def __init__(self, model: mujoco.MjModel):
         _require_self_contained_physics(model)
         self.model = model
-        self.rows: dict[str, list] = {
-            key: [] for key in (
-                "time_s", "control_time_s", "state", "qpos", "qvel", "action",
-                "demand", "user_input", "sensordata", "qfrc_actuator", "contact_sample_time_s",
-                "contact_offsets", "contact_geom", "contact_geometry", "contact_wrench",
-            )
+        self.rows: dict[str, _Column] = {
+            "time_s": _Column((), np.float64),
+            "control_time_s": _Column((), np.float64),
+            "state": _Column((mujoco.mj_stateSize(model, STATE_SPEC),), np.float64),
+            "qpos": _Column((model.nq,), np.float64),
+            "qvel": _Column((model.nv,), np.float64),
+            "action": _Column((model.nu,), np.float64),
+            "demand": _Column((model.nu,), np.float64),
+            "user_input": _Column((mujoco.mj_stateSize(model, INPUT_SPEC),), np.float64),
+            "sensordata": _Column((model.nsensordata,), np.float64),
+            "qfrc_actuator": _Column((model.nv,), np.float64),
+            "contact_sample_time_s": _Column((), np.float64),
+            "contact_offsets": _Column((), np.int64),
+            "contact_geom": _Column((2,), np.int64),
+            "contact_geometry": _Column((13,), np.float64),
+            "contact_wrench": _Column((6,), np.float64),
         }
         self.rows["contact_offsets"].append(0)
 
@@ -108,14 +178,16 @@ class PhysicsRecorder:
         rows["contact_sample_time_s"].append(
             float(data.time) if len(rows["time_s"]) == 1 else float(data.time - model.opt.timestep)
         )
+        wrench = np.zeros(6, dtype=np.float64)
+        geometry = np.empty(13, dtype=np.float64)
         for i in range(data.ncon):
             contact = data.contact[i]
-            wrench = np.zeros(6, dtype=np.float64)
             mujoco.mj_contactForce(model, data, i, wrench)
-            rows["contact_geom"].append([int(contact.geom1), int(contact.geom2)])
-            rows["contact_geometry"].append([
-                float(contact.dist), *contact.pos.tolist(), *contact.frame.tolist(),
-            ])
+            rows["contact_geom"].append((int(contact.geom1), int(contact.geom2)))
+            geometry[0] = float(contact.dist)
+            geometry[1:4] = contact.pos
+            geometry[4:13] = contact.frame
+            rows["contact_geometry"].append(geometry)
             rows["contact_wrench"].append(wrench)
         rows["contact_offsets"].append(len(rows["contact_geom"]))
 
@@ -142,10 +214,8 @@ class PhysicsRecorder:
     def finish(self) -> PhysicsRecord:
         if not self.rows["time_s"]:
             raise ValueError("An evidence record needs at least the initial state")
-        arrays = {
-            key: np.asarray(value, dtype=np.int64 if key in {"contact_geom", "contact_offsets"} else np.float64)
-            for key, value in self.rows.items()
-        }
+        # one column at a time: the peak is the data plus one column's copy, not twice the data
+        arrays = {key: column.array() for key, column in self.rows.items()}
         for key, width in (("contact_geom", 2), ("contact_geometry", 13), ("contact_wrench", 6)):
             arrays[key] = arrays[key].reshape(-1, width)
         arrays["state_spec"] = np.asarray(STATE_SPEC, dtype=np.int64)
