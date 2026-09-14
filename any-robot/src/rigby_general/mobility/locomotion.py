@@ -155,6 +155,8 @@ class DogTrot(Locomotor):
     TRACK_M = 0.32
     LEGS = {"fl": 0.0, "hr": 0.0, "fr": 0.5, "hl": 0.5}
     SIDE = {"fl": 1.0, "hl": 1.0, "fr": -1.0, "hr": -1.0}
+    BOOST_IN_PLACE_TURN = True
+    """False reproduces the first trot, whose in-place turn used the moving stride difference (two-centimetre strides, mostly slip); kept for before/after pairs."""
 
     def __init__(self, body: MobileBody, model: mujoco.MjModel) -> None:
         super().__init__(body, model)
@@ -187,7 +189,7 @@ class DogTrot(Locomotor):
                 self.phase = 0.0
         control = self.hold()
         # turning in place, the stride difference is half again as large: strides of two centimetres mostly slip, and the turn would take a full minute
-        turn_gain = 1.5 - 0.5 * min(1.0, abs(v) / 0.1)
+        turn_gain = 1.5 - 0.5 * min(1.0, abs(v) / 0.1) if self.BOOST_IN_PLACE_TURN else 1.0
         for leg, offset in self.LEGS.items():
             side = self.SIDE[leg]
             v_leg = v - omega * side * self.TRACK_M / 2.0 * turn_gain
@@ -254,6 +256,10 @@ class WheeledBalance(Locomotor):
     """Turn torque per rad/s of yaw-rate error, closed on the gyro: an open differential would spin the body up without limit."""
     KD_LEG = 6.0
     """Leg damping (N m s / rad) applied through the position servos as a target offset of -KD_LEG / kp times the joint speed."""
+    HOLD_LEGS = True
+    """False reproduces the balance before the legs were held under the wheel torque and damped (it rings against the torque limit); kept for before/after pairs."""
+    GATE_INTEGRAL = True
+    """False reproduces the ungated integral (it winds up under a push and the speed overshoots on the far side); kept for before/after pairs."""
 
     def __init__(self, body: MobileBody, model: mujoco.MjModel) -> None:
         super().__init__(body, model)
@@ -311,8 +317,8 @@ class WheeledBalance(Locomotor):
         speed = float(np.dot(self.axle_velocity(data)[:2], forward))
         # lean forward to gain speed, back to lose it; and learn, slowly, where upright really is for this load
         # the lean that produces the commanded acceleration (atan(a / g)) is fed forward, so a stop begins as the command falls and not after the speed error has grown
-        lean = float(np.clip(self.K_LEAN * (v - speed) + self.K_FEEDFORWARD * math.atan2(acceleration, 9.81), -self.LEAN_MAX, self.LEAN_MAX))
-        if abs(v - speed) < self.INT_GATE_MPS:
+        lean = float(np.clip(self.K_LEAN * (v - speed) + (self.K_FEEDFORWARD if self.GATE_INTEGRAL else 0.0) * math.atan2(acceleration, 9.81), -self.LEAN_MAX, self.LEAN_MAX))
+        if abs(v - speed) < self.INT_GATE_MPS or not self.GATE_INTEGRAL:
             # the integral learns only near the commanded speed: during a transient (a push, a hard start) it would wind up and the speed would overshoot on the far side
             self.pitch_offset = float(np.clip(self.pitch_offset + self.K_INT * (v - speed) * dt, -0.3, 0.3))
         error = pitch - (self.pitch_offset + lean)
@@ -325,7 +331,7 @@ class WheeledBalance(Locomotor):
             asked = float(np.clip(torque + sign * turn, -self.TORQUE_MAX, self.TORQUE_MAX))
             control[self.actuator_of[f"{side}_wheel_spin"]] = float(np.clip(wheel_speed + asked / self.KV, -25.0, 25.0))
             # the wheel torque reacts through this leg's knee and hip: hold them on target under it, and damp them
-            for joint in self.leg_joints[side]:
+            for joint in self.leg_joints[side] if self.HOLD_LEGS else ():
                 kp = self.kp_of[joint]
                 a = self.actuator_of[joint]
                 control[a] = float(np.clip(self.stance[joint] + asked / kp - self.KD_LEG / kp * float(data.qvel[self.dof_of[joint]]), self.model.actuator_ctrlrange[a][0], self.model.actuator_ctrlrange[a][1]))
@@ -355,6 +361,8 @@ class OctopusCrawl(Locomotor):
     PRESS_RAD = 0.18
     ANGLES = {0: math.pi / 6, 1: math.pi / 2, 2: 5 * math.pi / 6, 3: 7 * math.pi / 6, 4: 3 * math.pi / 2, 5: 11 * math.pi / 6}
     GROUP = {0: 0.0, 2: 0.0, 4: 0.0, 1: 0.5, 3: 0.5, 5: 0.5}
+    IN_PLACE_SENSE = -1.0
+    """The sign of the in-place sweep difference; +1.0 reproduces the first crawl, whose in-place turn ran the wrong way (the navigator then drove the heading back to the seam instead of round); kept for before/after pairs."""
 
     def __init__(self, body: MobileBody, model: mujoco.MjModel) -> None:
         super().__init__(body, model)
@@ -392,7 +400,7 @@ class OctopusCrawl(Locomotor):
         for index, angle in self.ANGLES.items():
             side = 1.0 if math.sin(angle) > 0 else -1.0  # +1 left, -1 right
             # moving: the outer side sweeps more, as a differential drive; in place: the two sides sweep in opposite senses (the sign is the opposite of the moving case, where a larger sweep on the right turns the body left)
-            amplitude = self.SWEEP_RAD * (gain * (1.0 - 0.8 * turn * side) - 0.8 * turn * side * (1.0 if abs(gain) < 0.05 else 0.0))
+            amplitude = self.SWEEP_RAD * (gain * (1.0 - 0.8 * turn * side) + self.IN_PLACE_SENSE * 0.8 * turn * side * (1.0 if abs(gain) < 0.05 else 0.0))
             p = (self.phase + self.GROUP[index]) % 1.0
             prefix = f"t{index}_"
             if p < 0.5:
@@ -449,6 +457,10 @@ class Navigator:
     arrived_at: float | None = None
     turn_sign: float = 0.0
     """the direction committed to while the target is behind: the wrapped heading error flips sign across the seam, the body should not"""
+    run_in: bool = True
+    """False reproduces the first approach (speed proportional to the distance over 0.6 m, no floor at the drive's minimum): a balancing body arrived a quarter of a metre past the waypoint, a trot marked time at the end; kept for before/after pairs."""
+    commit_turns: bool = True
+    """False reproduces the uncommitted turn; kept for before/after pairs."""
     log: list[dict] = field(default_factory=list)
 
     @property
@@ -476,12 +488,14 @@ class Navigator:
         self.arrived_at = None
         heading = math.atan2(float(delta[1]), float(delta[0]))
         error = wrap(heading - state.yaw)
-        if abs(error) > math.pi - 0.35 and self.turn_sign != 0.0:
+        if abs(error) > math.pi - 0.35 and self.turn_sign != 0.0 and self.commit_turns:
             error = self.turn_sign * abs(error)
         self.turn_sign = math.copysign(1.0, error) if abs(error) > 0.05 else 0.0
         omega = float(np.clip(self.k_turn * error, -locomotor.max_turn_radps, locomotor.max_turn_radps))
         if abs(error) > self.facing_rad:
             return 0.0, omega
+        if not self.run_in:
+            return locomotor.max_speed_mps * min(1.0, distance / 0.6) * max(0.2, math.cos(error)), omega
         speed = locomotor.max_speed_mps * min(1.0, (distance - self.radius_m) / self.slow_m) * max(0.2, math.cos(error))
         return max(locomotor.min_speed_mps, speed), omega
 

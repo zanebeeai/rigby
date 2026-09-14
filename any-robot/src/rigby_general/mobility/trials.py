@@ -102,8 +102,8 @@ def _tilt(model: mujoco.MjModel, data: mujoco.MjData, base: int) -> float:
 
 
 def run_travel(body: MobileBody, course: Course, *, seed: int, waypoints: list[tuple[float, float]], cap_s: float, jitter_xy_m: float = 0.10, jitter_yaw_deg: float = 10.0,
-               perturbation: Perturbation | None = None, settle_s: float = 1.5, start_stance: str | None = None) -> TrialResult:
-    """One travel trial, recorded every step."""
+               perturbation: Perturbation | None = None, settle_s: float = 1.5, start_stance: str | None = None, navigator_options: dict | None = None) -> TrialResult:
+    """One travel trial, recorded every step. `navigator_options` are the Navigator's fields (the before/after pairs turn its fixes off)."""
 
     rng = np.random.default_rng(seed)
     world_xml = course_world_xml(body, course, perturbation)
@@ -123,7 +123,7 @@ def run_travel(body: MobileBody, course: Course, *, seed: int, waypoints: list[t
     static_hazards = {mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, n) for n in ("course_corridor_left", "course_corridor_right", "course_station", "course_tray_plinth", "course_tray", "course_doorway_left", "course_doorway_right")}
     static_hazards.discard(-1)
     arm_bodies = {b for b in robot if (mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_BODY, b) or "").startswith("arm_")} | {base}
-    navigator = Navigator(waypoints=list(waypoints))
+    navigator = Navigator(waypoints=list(waypoints), **(navigator_options or {}))
     recorder = PhysicsRecorder(model)
     locomotor.reset(data)
     steps = int(round(cap_s / model.opt.timestep))
