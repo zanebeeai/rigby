@@ -1,0 +1,288 @@
+<mujoco model="mobile_octopus">
+  <compiler angle="radian" autolimits="true" inertiafromgeom="true" />
+  <option timestep="0.002" gravity="0 0 -9.81" integrator="implicitfast" />
+  <default>
+    <geom condim="3" friction="1.0 0.005 0.0001" solref="0.01 1" solimp="0.95 0.99 0.001" margin="0.0005" />
+    <joint damping="0.5" armature="0.01" limited="true" />
+    <position ctrllimited="true" forcelimited="true" />
+    <velocity ctrllimited="true" forcelimited="true" />
+  </default>
+  <worldbody>
+    <body name="mantle" pos="0.00000 0.00000 0.16000">
+      <freejoint name="root" />
+      <geom name="mantle_geom" type="ellipsoid" size="0.16000 0.14000 0.11000" density="540.0" rgba="0.5 0.3 0.45 1" friction="0.8 0.005 0.0001" />
+      <site name="mantle_imu" pos="0.00000 0.00000 0.00000" size="0.0040" rgba="1 0.3 0.3 0.5" />
+      <site name="mantle_touch" pos="0.00000 0.00000 -0.10000" size="0.0600" rgba="1 0.3 0.3 0.5" />
+      <body name="t0_root" pos="0.12990 0.06500 -0.06000" euler="0.00000 0.00000 0.52360">
+        <geom name="t0_root_geom" type="sphere" size="0.03000" density="900.0" pos="0.00000 0.00000 0.00000" rgba="0.45 0.28 0.4 1" />
+        <body name="t0_seg_0" pos="0.00000 0.00000 0.00000">
+          <joint name="t0_yaw_0" type="hinge" axis="0.00000 0.00000 1.00000" range="-1.20000 1.20000" />
+          <joint name="t0_pitch_0" type="hinge" axis="0.00000 1.00000 0.00000" range="-1.40000 1.40000" />
+          <geom name="t0_seg_0_geom" type="capsule" size="0.03000" fromto="0.00000 0.00000 0.00000 0.14000 0.00000 0.00000" density="900.0" rgba="0.6 0.35 0.5 1" friction="1.0 0.005 0.0001" />
+          <site name="t0_seg_0_touch" pos="0.07000 0.00000 0.00000" size="0.0340" rgba="1 0.3 0.3 0.5" />
+          <body name="t0_seg_1" pos="0.14000 0.00000 0.00000">
+            <joint name="t0_yaw_1" type="hinge" axis="0.00000 0.00000 1.00000" range="-1.20000 1.20000" />
+            <joint name="t0_pitch_1" type="hinge" axis="0.00000 1.00000 0.00000" range="-1.40000 1.40000" />
+            <geom name="t0_seg_1_geom" type="capsule" size="0.02600" fromto="0.00000 0.00000 0.00000 0.13000 0.00000 0.00000" density="900.0" rgba="0.6 0.35 0.5 1" friction="1.0 0.005 0.0001" />
+            <site name="t0_seg_1_touch" pos="0.06500 0.00000 0.00000" size="0.0300" rgba="1 0.3 0.3 0.5" />
+            <body name="t0_seg_2" pos="0.13000 0.00000 0.00000">
+              <joint name="t0_yaw_2" type="hinge" axis="0.00000 0.00000 1.00000" range="-1.20000 1.20000" />
+              <joint name="t0_pitch_2" type="hinge" axis="0.00000 1.00000 0.00000" range="-1.40000 1.40000" />
+              <geom name="t0_seg_2_geom" type="capsule" size="0.02200" fromto="0.00000 0.00000 0.00000 0.12000 0.00000 0.00000" density="900.0" rgba="0.6 0.35 0.5 1" friction="1.0 0.005 0.0001" />
+              <site name="t0_seg_2_touch" pos="0.06000 0.00000 0.00000" size="0.0260" rgba="1 0.3 0.3 0.5" />
+              <body name="t0_seg_3" pos="0.12000 0.00000 0.00000">
+                <joint name="t0_yaw_3" type="hinge" axis="0.00000 0.00000 1.00000" range="-1.20000 1.20000" />
+                <joint name="t0_pitch_3" type="hinge" axis="0.00000 1.00000 0.00000" range="-1.40000 1.40000" />
+                <geom name="t0_seg_3_geom" type="capsule" size="0.01800" fromto="0.00000 0.00000 0.00000 0.11000 0.00000 0.00000" density="900.0" rgba="0.6 0.35 0.5 1" friction="1.0 0.005 0.0001" />
+                <site name="t0_seg_3_touch" pos="0.05500 0.00000 0.00000" size="0.0220" rgba="1 0.3 0.3 0.5" />
+                <body name="t0_pincer" pos="0.11000 0.00000 0.00000">
+                  <geom name="t0_pincer_geom" type="sphere" size="0.02000" density="900.0" pos="0.00000 0.00000 0.00000" rgba="0.4 0.25 0.35 1" />
+                  <body name="t0_finger_left" pos="0.01000 0.02200 0.00000">
+                    <joint name="t0_pinch_left" type="hinge" axis="0.00000 0.00000 -1.00000" range="-0.05000 0.90000" />
+                    <geom name="t0_finger_left_geom" type="capsule" size="0.00800" fromto="0.00000 0.00000 0.00000 0.05000 0.00000 0.00000" density="900.0" rgba="0.3 0.2 0.28 1" friction="1.4 0.005 0.0001" />
+                  </body>
+                  <body name="t0_finger_right" pos="0.01000 -0.02200 0.00000">
+                    <joint name="t0_pinch_right" type="hinge" axis="0.00000 0.00000 1.00000" range="-0.05000 0.90000" />
+                    <geom name="t0_finger_right_geom" type="capsule" size="0.00800" fromto="0.00000 0.00000 0.00000 0.05000 0.00000 0.00000" density="900.0" rgba="0.3 0.2 0.28 1" friction="1.4 0.005 0.0001" />
+                  </body>
+                  <site name="t0_grasp_centre" pos="0.04500 0.00000 0.00000" size="0.0060" rgba="1 0.3 0.3 0.5" />
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+      <body name="t1_root" pos="0.00000 0.13000 -0.06000" euler="0.00000 0.00000 1.57080">
+        <geom name="t1_root_geom" type="sphere" size="0.03000" density="900.0" pos="0.00000 0.00000 0.00000" rgba="0.45 0.28 0.4 1" />
+        <body name="t1_seg_0" pos="0.00000 0.00000 0.00000">
+          <joint name="t1_yaw_0" type="hinge" axis="0.00000 0.00000 1.00000" range="-1.20000 1.20000" />
+          <joint name="t1_pitch_0" type="hinge" axis="0.00000 1.00000 0.00000" range="-1.40000 1.40000" />
+          <geom name="t1_seg_0_geom" type="capsule" size="0.03000" fromto="0.00000 0.00000 0.00000 0.14000 0.00000 0.00000" density="900.0" rgba="0.6 0.35 0.5 1" friction="1.0 0.005 0.0001" />
+          <site name="t1_seg_0_touch" pos="0.07000 0.00000 0.00000" size="0.0340" rgba="1 0.3 0.3 0.5" />
+          <body name="t1_seg_1" pos="0.14000 0.00000 0.00000">
+            <joint name="t1_yaw_1" type="hinge" axis="0.00000 0.00000 1.00000" range="-1.20000 1.20000" />
+            <joint name="t1_pitch_1" type="hinge" axis="0.00000 1.00000 0.00000" range="-1.40000 1.40000" />
+            <geom name="t1_seg_1_geom" type="capsule" size="0.02600" fromto="0.00000 0.00000 0.00000 0.13000 0.00000 0.00000" density="900.0" rgba="0.6 0.35 0.5 1" friction="1.0 0.005 0.0001" />
+            <site name="t1_seg_1_touch" pos="0.06500 0.00000 0.00000" size="0.0300" rgba="1 0.3 0.3 0.5" />
+            <body name="t1_seg_2" pos="0.13000 0.00000 0.00000">
+              <joint name="t1_yaw_2" type="hinge" axis="0.00000 0.00000 1.00000" range="-1.20000 1.20000" />
+              <joint name="t1_pitch_2" type="hinge" axis="0.00000 1.00000 0.00000" range="-1.40000 1.40000" />
+              <geom name="t1_seg_2_geom" type="capsule" size="0.02200" fromto="0.00000 0.00000 0.00000 0.12000 0.00000 0.00000" density="900.0" rgba="0.6 0.35 0.5 1" friction="1.0 0.005 0.0001" />
+              <site name="t1_seg_2_touch" pos="0.06000 0.00000 0.00000" size="0.0260" rgba="1 0.3 0.3 0.5" />
+              <body name="t1_seg_3" pos="0.12000 0.00000 0.00000">
+                <joint name="t1_yaw_3" type="hinge" axis="0.00000 0.00000 1.00000" range="-1.20000 1.20000" />
+                <joint name="t1_pitch_3" type="hinge" axis="0.00000 1.00000 0.00000" range="-1.40000 1.40000" />
+                <geom name="t1_seg_3_geom" type="capsule" size="0.01800" fromto="0.00000 0.00000 0.00000 0.11000 0.00000 0.00000" density="900.0" rgba="0.6 0.35 0.5 1" friction="1.0 0.005 0.0001" />
+                <site name="t1_seg_3_touch" pos="0.05500 0.00000 0.00000" size="0.0220" rgba="1 0.3 0.3 0.5" />
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+      <body name="t2_root" pos="-0.12990 0.06500 -0.06000" euler="0.00000 0.00000 2.61799">
+        <geom name="t2_root_geom" type="sphere" size="0.03000" density="900.0" pos="0.00000 0.00000 0.00000" rgba="0.45 0.28 0.4 1" />
+        <body name="t2_seg_0" pos="0.00000 0.00000 0.00000">
+          <joint name="t2_yaw_0" type="hinge" axis="0.00000 0.00000 1.00000" range="-1.20000 1.20000" />
+          <joint name="t2_pitch_0" type="hinge" axis="0.00000 1.00000 0.00000" range="-1.40000 1.40000" />
+          <geom name="t2_seg_0_geom" type="capsule" size="0.03000" fromto="0.00000 0.00000 0.00000 0.14000 0.00000 0.00000" density="900.0" rgba="0.6 0.35 0.5 1" friction="1.0 0.005 0.0001" />
+          <site name="t2_seg_0_touch" pos="0.07000 0.00000 0.00000" size="0.0340" rgba="1 0.3 0.3 0.5" />
+          <body name="t2_seg_1" pos="0.14000 0.00000 0.00000">
+            <joint name="t2_yaw_1" type="hinge" axis="0.00000 0.00000 1.00000" range="-1.20000 1.20000" />
+            <joint name="t2_pitch_1" type="hinge" axis="0.00000 1.00000 0.00000" range="-1.40000 1.40000" />
+            <geom name="t2_seg_1_geom" type="capsule" size="0.02600" fromto="0.00000 0.00000 0.00000 0.13000 0.00000 0.00000" density="900.0" rgba="0.6 0.35 0.5 1" friction="1.0 0.005 0.0001" />
+            <site name="t2_seg_1_touch" pos="0.06500 0.00000 0.00000" size="0.0300" rgba="1 0.3 0.3 0.5" />
+            <body name="t2_seg_2" pos="0.13000 0.00000 0.00000">
+              <joint name="t2_yaw_2" type="hinge" axis="0.00000 0.00000 1.00000" range="-1.20000 1.20000" />
+              <joint name="t2_pitch_2" type="hinge" axis="0.00000 1.00000 0.00000" range="-1.40000 1.40000" />
+              <geom name="t2_seg_2_geom" type="capsule" size="0.02200" fromto="0.00000 0.00000 0.00000 0.12000 0.00000 0.00000" density="900.0" rgba="0.6 0.35 0.5 1" friction="1.0 0.005 0.0001" />
+              <site name="t2_seg_2_touch" pos="0.06000 0.00000 0.00000" size="0.0260" rgba="1 0.3 0.3 0.5" />
+              <body name="t2_seg_3" pos="0.12000 0.00000 0.00000">
+                <joint name="t2_yaw_3" type="hinge" axis="0.00000 0.00000 1.00000" range="-1.20000 1.20000" />
+                <joint name="t2_pitch_3" type="hinge" axis="0.00000 1.00000 0.00000" range="-1.40000 1.40000" />
+                <geom name="t2_seg_3_geom" type="capsule" size="0.01800" fromto="0.00000 0.00000 0.00000 0.11000 0.00000 0.00000" density="900.0" rgba="0.6 0.35 0.5 1" friction="1.0 0.005 0.0001" />
+                <site name="t2_seg_3_touch" pos="0.05500 0.00000 0.00000" size="0.0220" rgba="1 0.3 0.3 0.5" />
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+      <body name="t3_root" pos="-0.12990 -0.06500 -0.06000" euler="0.00000 0.00000 3.66519">
+        <geom name="t3_root_geom" type="sphere" size="0.03000" density="900.0" pos="0.00000 0.00000 0.00000" rgba="0.45 0.28 0.4 1" />
+        <body name="t3_seg_0" pos="0.00000 0.00000 0.00000">
+          <joint name="t3_yaw_0" type="hinge" axis="0.00000 0.00000 1.00000" range="-1.20000 1.20000" />
+          <joint name="t3_pitch_0" type="hinge" axis="0.00000 1.00000 0.00000" range="-1.40000 1.40000" />
+          <geom name="t3_seg_0_geom" type="capsule" size="0.03000" fromto="0.00000 0.00000 0.00000 0.14000 0.00000 0.00000" density="900.0" rgba="0.6 0.35 0.5 1" friction="1.0 0.005 0.0001" />
+          <site name="t3_seg_0_touch" pos="0.07000 0.00000 0.00000" size="0.0340" rgba="1 0.3 0.3 0.5" />
+          <body name="t3_seg_1" pos="0.14000 0.00000 0.00000">
+            <joint name="t3_yaw_1" type="hinge" axis="0.00000 0.00000 1.00000" range="-1.20000 1.20000" />
+            <joint name="t3_pitch_1" type="hinge" axis="0.00000 1.00000 0.00000" range="-1.40000 1.40000" />
+            <geom name="t3_seg_1_geom" type="capsule" size="0.02600" fromto="0.00000 0.00000 0.00000 0.13000 0.00000 0.00000" density="900.0" rgba="0.6 0.35 0.5 1" friction="1.0 0.005 0.0001" />
+            <site name="t3_seg_1_touch" pos="0.06500 0.00000 0.00000" size="0.0300" rgba="1 0.3 0.3 0.5" />
+            <body name="t3_seg_2" pos="0.13000 0.00000 0.00000">
+              <joint name="t3_yaw_2" type="hinge" axis="0.00000 0.00000 1.00000" range="-1.20000 1.20000" />
+              <joint name="t3_pitch_2" type="hinge" axis="0.00000 1.00000 0.00000" range="-1.40000 1.40000" />
+              <geom name="t3_seg_2_geom" type="capsule" size="0.02200" fromto="0.00000 0.00000 0.00000 0.12000 0.00000 0.00000" density="900.0" rgba="0.6 0.35 0.5 1" friction="1.0 0.005 0.0001" />
+              <site name="t3_seg_2_touch" pos="0.06000 0.00000 0.00000" size="0.0260" rgba="1 0.3 0.3 0.5" />
+              <body name="t3_seg_3" pos="0.12000 0.00000 0.00000">
+                <joint name="t3_yaw_3" type="hinge" axis="0.00000 0.00000 1.00000" range="-1.20000 1.20000" />
+                <joint name="t3_pitch_3" type="hinge" axis="0.00000 1.00000 0.00000" range="-1.40000 1.40000" />
+                <geom name="t3_seg_3_geom" type="capsule" size="0.01800" fromto="0.00000 0.00000 0.00000 0.11000 0.00000 0.00000" density="900.0" rgba="0.6 0.35 0.5 1" friction="1.0 0.005 0.0001" />
+                <site name="t3_seg_3_touch" pos="0.05500 0.00000 0.00000" size="0.0220" rgba="1 0.3 0.3 0.5" />
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+      <body name="t4_root" pos="-0.00000 -0.13000 -0.06000" euler="0.00000 0.00000 4.71239">
+        <geom name="t4_root_geom" type="sphere" size="0.03000" density="900.0" pos="0.00000 0.00000 0.00000" rgba="0.45 0.28 0.4 1" />
+        <body name="t4_seg_0" pos="0.00000 0.00000 0.00000">
+          <joint name="t4_yaw_0" type="hinge" axis="0.00000 0.00000 1.00000" range="-1.20000 1.20000" />
+          <joint name="t4_pitch_0" type="hinge" axis="0.00000 1.00000 0.00000" range="-1.40000 1.40000" />
+          <geom name="t4_seg_0_geom" type="capsule" size="0.03000" fromto="0.00000 0.00000 0.00000 0.14000 0.00000 0.00000" density="900.0" rgba="0.6 0.35 0.5 1" friction="1.0 0.005 0.0001" />
+          <site name="t4_seg_0_touch" pos="0.07000 0.00000 0.00000" size="0.0340" rgba="1 0.3 0.3 0.5" />
+          <body name="t4_seg_1" pos="0.14000 0.00000 0.00000">
+            <joint name="t4_yaw_1" type="hinge" axis="0.00000 0.00000 1.00000" range="-1.20000 1.20000" />
+            <joint name="t4_pitch_1" type="hinge" axis="0.00000 1.00000 0.00000" range="-1.40000 1.40000" />
+            <geom name="t4_seg_1_geom" type="capsule" size="0.02600" fromto="0.00000 0.00000 0.00000 0.13000 0.00000 0.00000" density="900.0" rgba="0.6 0.35 0.5 1" friction="1.0 0.005 0.0001" />
+            <site name="t4_seg_1_touch" pos="0.06500 0.00000 0.00000" size="0.0300" rgba="1 0.3 0.3 0.5" />
+            <body name="t4_seg_2" pos="0.13000 0.00000 0.00000">
+              <joint name="t4_yaw_2" type="hinge" axis="0.00000 0.00000 1.00000" range="-1.20000 1.20000" />
+              <joint name="t4_pitch_2" type="hinge" axis="0.00000 1.00000 0.00000" range="-1.40000 1.40000" />
+              <geom name="t4_seg_2_geom" type="capsule" size="0.02200" fromto="0.00000 0.00000 0.00000 0.12000 0.00000 0.00000" density="900.0" rgba="0.6 0.35 0.5 1" friction="1.0 0.005 0.0001" />
+              <site name="t4_seg_2_touch" pos="0.06000 0.00000 0.00000" size="0.0260" rgba="1 0.3 0.3 0.5" />
+              <body name="t4_seg_3" pos="0.12000 0.00000 0.00000">
+                <joint name="t4_yaw_3" type="hinge" axis="0.00000 0.00000 1.00000" range="-1.20000 1.20000" />
+                <joint name="t4_pitch_3" type="hinge" axis="0.00000 1.00000 0.00000" range="-1.40000 1.40000" />
+                <geom name="t4_seg_3_geom" type="capsule" size="0.01800" fromto="0.00000 0.00000 0.00000 0.11000 0.00000 0.00000" density="900.0" rgba="0.6 0.35 0.5 1" friction="1.0 0.005 0.0001" />
+                <site name="t4_seg_3_touch" pos="0.05500 0.00000 0.00000" size="0.0220" rgba="1 0.3 0.3 0.5" />
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+      <body name="t5_root" pos="0.12990 -0.06500 -0.06000" euler="0.00000 0.00000 5.75959">
+        <geom name="t5_root_geom" type="sphere" size="0.03000" density="900.0" pos="0.00000 0.00000 0.00000" rgba="0.45 0.28 0.4 1" />
+        <body name="t5_seg_0" pos="0.00000 0.00000 0.00000">
+          <joint name="t5_yaw_0" type="hinge" axis="0.00000 0.00000 1.00000" range="-1.20000 1.20000" />
+          <joint name="t5_pitch_0" type="hinge" axis="0.00000 1.00000 0.00000" range="-1.40000 1.40000" />
+          <geom name="t5_seg_0_geom" type="capsule" size="0.03000" fromto="0.00000 0.00000 0.00000 0.14000 0.00000 0.00000" density="900.0" rgba="0.6 0.35 0.5 1" friction="1.0 0.005 0.0001" />
+          <site name="t5_seg_0_touch" pos="0.07000 0.00000 0.00000" size="0.0340" rgba="1 0.3 0.3 0.5" />
+          <body name="t5_seg_1" pos="0.14000 0.00000 0.00000">
+            <joint name="t5_yaw_1" type="hinge" axis="0.00000 0.00000 1.00000" range="-1.20000 1.20000" />
+            <joint name="t5_pitch_1" type="hinge" axis="0.00000 1.00000 0.00000" range="-1.40000 1.40000" />
+            <geom name="t5_seg_1_geom" type="capsule" size="0.02600" fromto="0.00000 0.00000 0.00000 0.13000 0.00000 0.00000" density="900.0" rgba="0.6 0.35 0.5 1" friction="1.0 0.005 0.0001" />
+            <site name="t5_seg_1_touch" pos="0.06500 0.00000 0.00000" size="0.0300" rgba="1 0.3 0.3 0.5" />
+            <body name="t5_seg_2" pos="0.13000 0.00000 0.00000">
+              <joint name="t5_yaw_2" type="hinge" axis="0.00000 0.00000 1.00000" range="-1.20000 1.20000" />
+              <joint name="t5_pitch_2" type="hinge" axis="0.00000 1.00000 0.00000" range="-1.40000 1.40000" />
+              <geom name="t5_seg_2_geom" type="capsule" size="0.02200" fromto="0.00000 0.00000 0.00000 0.12000 0.00000 0.00000" density="900.0" rgba="0.6 0.35 0.5 1" friction="1.0 0.005 0.0001" />
+              <site name="t5_seg_2_touch" pos="0.06000 0.00000 0.00000" size="0.0260" rgba="1 0.3 0.3 0.5" />
+              <body name="t5_seg_3" pos="0.12000 0.00000 0.00000">
+                <joint name="t5_yaw_3" type="hinge" axis="0.00000 0.00000 1.00000" range="-1.20000 1.20000" />
+                <joint name="t5_pitch_3" type="hinge" axis="0.00000 1.00000 0.00000" range="-1.40000 1.40000" />
+                <geom name="t5_seg_3_geom" type="capsule" size="0.01800" fromto="0.00000 0.00000 0.00000 0.11000 0.00000 0.00000" density="900.0" rgba="0.6 0.35 0.5 1" friction="1.0 0.005 0.0001" />
+                <site name="t5_seg_3_touch" pos="0.05500 0.00000 0.00000" size="0.0220" rgba="1 0.3 0.3 0.5" />
+                <body name="t5_pincer" pos="0.11000 0.00000 0.00000">
+                  <geom name="t5_pincer_geom" type="sphere" size="0.02000" density="900.0" pos="0.00000 0.00000 0.00000" rgba="0.4 0.25 0.35 1" />
+                  <body name="t5_finger_left" pos="0.01000 0.02200 0.00000">
+                    <joint name="t5_pinch_left" type="hinge" axis="0.00000 0.00000 -1.00000" range="-0.05000 0.90000" />
+                    <geom name="t5_finger_left_geom" type="capsule" size="0.00800" fromto="0.00000 0.00000 0.00000 0.05000 0.00000 0.00000" density="900.0" rgba="0.3 0.2 0.28 1" friction="1.4 0.005 0.0001" />
+                  </body>
+                  <body name="t5_finger_right" pos="0.01000 -0.02200 0.00000">
+                    <joint name="t5_pinch_right" type="hinge" axis="0.00000 0.00000 1.00000" range="-0.05000 0.90000" />
+                    <geom name="t5_finger_right_geom" type="capsule" size="0.00800" fromto="0.00000 0.00000 0.00000 0.05000 0.00000 0.00000" density="900.0" rgba="0.3 0.2 0.28 1" friction="1.4 0.005 0.0001" />
+                  </body>
+                  <site name="t5_grasp_centre" pos="0.04500 0.00000 0.00000" size="0.0060" rgba="1 0.3 0.3 0.5" />
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+  <actuator>
+    <position name="t0_yaw_0_servo" joint="t0_yaw_0" kp="30.0" ctrlrange="-1.20000 1.20000" forcerange="-12.00000 12.00000" />
+    <position name="t0_pitch_0_servo" joint="t0_pitch_0" kp="30.0" ctrlrange="-1.40000 1.40000" forcerange="-12.00000 12.00000" />
+    <position name="t0_yaw_1_servo" joint="t0_yaw_1" kp="30.0" ctrlrange="-1.20000 1.20000" forcerange="-12.00000 12.00000" />
+    <position name="t0_pitch_1_servo" joint="t0_pitch_1" kp="30.0" ctrlrange="-1.40000 1.40000" forcerange="-12.00000 12.00000" />
+    <position name="t0_yaw_2_servo" joint="t0_yaw_2" kp="30.0" ctrlrange="-1.20000 1.20000" forcerange="-12.00000 12.00000" />
+    <position name="t0_pitch_2_servo" joint="t0_pitch_2" kp="30.0" ctrlrange="-1.40000 1.40000" forcerange="-12.00000 12.00000" />
+    <position name="t0_yaw_3_servo" joint="t0_yaw_3" kp="30.0" ctrlrange="-1.20000 1.20000" forcerange="-12.00000 12.00000" />
+    <position name="t0_pitch_3_servo" joint="t0_pitch_3" kp="30.0" ctrlrange="-1.40000 1.40000" forcerange="-12.00000 12.00000" />
+    <position name="t0_pinch_left_servo" joint="t0_pinch_left" kp="20.0" ctrlrange="-0.05000 0.90000" forcerange="-6.00000 6.00000" />
+    <position name="t0_pinch_right_servo" joint="t0_pinch_right" kp="20.0" ctrlrange="-0.05000 0.90000" forcerange="-6.00000 6.00000" />
+    <position name="t1_yaw_0_servo" joint="t1_yaw_0" kp="30.0" ctrlrange="-1.20000 1.20000" forcerange="-12.00000 12.00000" />
+    <position name="t1_pitch_0_servo" joint="t1_pitch_0" kp="30.0" ctrlrange="-1.40000 1.40000" forcerange="-12.00000 12.00000" />
+    <position name="t1_yaw_1_servo" joint="t1_yaw_1" kp="30.0" ctrlrange="-1.20000 1.20000" forcerange="-12.00000 12.00000" />
+    <position name="t1_pitch_1_servo" joint="t1_pitch_1" kp="30.0" ctrlrange="-1.40000 1.40000" forcerange="-12.00000 12.00000" />
+    <position name="t1_yaw_2_servo" joint="t1_yaw_2" kp="30.0" ctrlrange="-1.20000 1.20000" forcerange="-12.00000 12.00000" />
+    <position name="t1_pitch_2_servo" joint="t1_pitch_2" kp="30.0" ctrlrange="-1.40000 1.40000" forcerange="-12.00000 12.00000" />
+    <position name="t1_yaw_3_servo" joint="t1_yaw_3" kp="30.0" ctrlrange="-1.20000 1.20000" forcerange="-12.00000 12.00000" />
+    <position name="t1_pitch_3_servo" joint="t1_pitch_3" kp="30.0" ctrlrange="-1.40000 1.40000" forcerange="-12.00000 12.00000" />
+    <position name="t2_yaw_0_servo" joint="t2_yaw_0" kp="30.0" ctrlrange="-1.20000 1.20000" forcerange="-12.00000 12.00000" />
+    <position name="t2_pitch_0_servo" joint="t2_pitch_0" kp="30.0" ctrlrange="-1.40000 1.40000" forcerange="-12.00000 12.00000" />
+    <position name="t2_yaw_1_servo" joint="t2_yaw_1" kp="30.0" ctrlrange="-1.20000 1.20000" forcerange="-12.00000 12.00000" />
+    <position name="t2_pitch_1_servo" joint="t2_pitch_1" kp="30.0" ctrlrange="-1.40000 1.40000" forcerange="-12.00000 12.00000" />
+    <position name="t2_yaw_2_servo" joint="t2_yaw_2" kp="30.0" ctrlrange="-1.20000 1.20000" forcerange="-12.00000 12.00000" />
+    <position name="t2_pitch_2_servo" joint="t2_pitch_2" kp="30.0" ctrlrange="-1.40000 1.40000" forcerange="-12.00000 12.00000" />
+    <position name="t2_yaw_3_servo" joint="t2_yaw_3" kp="30.0" ctrlrange="-1.20000 1.20000" forcerange="-12.00000 12.00000" />
+    <position name="t2_pitch_3_servo" joint="t2_pitch_3" kp="30.0" ctrlrange="-1.40000 1.40000" forcerange="-12.00000 12.00000" />
+    <position name="t3_yaw_0_servo" joint="t3_yaw_0" kp="30.0" ctrlrange="-1.20000 1.20000" forcerange="-12.00000 12.00000" />
+    <position name="t3_pitch_0_servo" joint="t3_pitch_0" kp="30.0" ctrlrange="-1.40000 1.40000" forcerange="-12.00000 12.00000" />
+    <position name="t3_yaw_1_servo" joint="t3_yaw_1" kp="30.0" ctrlrange="-1.20000 1.20000" forcerange="-12.00000 12.00000" />
+    <position name="t3_pitch_1_servo" joint="t3_pitch_1" kp="30.0" ctrlrange="-1.40000 1.40000" forcerange="-12.00000 12.00000" />
+    <position name="t3_yaw_2_servo" joint="t3_yaw_2" kp="30.0" ctrlrange="-1.20000 1.20000" forcerange="-12.00000 12.00000" />
+    <position name="t3_pitch_2_servo" joint="t3_pitch_2" kp="30.0" ctrlrange="-1.40000 1.40000" forcerange="-12.00000 12.00000" />
+    <position name="t3_yaw_3_servo" joint="t3_yaw_3" kp="30.0" ctrlrange="-1.20000 1.20000" forcerange="-12.00000 12.00000" />
+    <position name="t3_pitch_3_servo" joint="t3_pitch_3" kp="30.0" ctrlrange="-1.40000 1.40000" forcerange="-12.00000 12.00000" />
+    <position name="t4_yaw_0_servo" joint="t4_yaw_0" kp="30.0" ctrlrange="-1.20000 1.20000" forcerange="-12.00000 12.00000" />
+    <position name="t4_pitch_0_servo" joint="t4_pitch_0" kp="30.0" ctrlrange="-1.40000 1.40000" forcerange="-12.00000 12.00000" />
+    <position name="t4_yaw_1_servo" joint="t4_yaw_1" kp="30.0" ctrlrange="-1.20000 1.20000" forcerange="-12.00000 12.00000" />
+    <position name="t4_pitch_1_servo" joint="t4_pitch_1" kp="30.0" ctrlrange="-1.40000 1.40000" forcerange="-12.00000 12.00000" />
+    <position name="t4_yaw_2_servo" joint="t4_yaw_2" kp="30.0" ctrlrange="-1.20000 1.20000" forcerange="-12.00000 12.00000" />
+    <position name="t4_pitch_2_servo" joint="t4_pitch_2" kp="30.0" ctrlrange="-1.40000 1.40000" forcerange="-12.00000 12.00000" />
+    <position name="t4_yaw_3_servo" joint="t4_yaw_3" kp="30.0" ctrlrange="-1.20000 1.20000" forcerange="-12.00000 12.00000" />
+    <position name="t4_pitch_3_servo" joint="t4_pitch_3" kp="30.0" ctrlrange="-1.40000 1.40000" forcerange="-12.00000 12.00000" />
+    <position name="t5_yaw_0_servo" joint="t5_yaw_0" kp="30.0" ctrlrange="-1.20000 1.20000" forcerange="-12.00000 12.00000" />
+    <position name="t5_pitch_0_servo" joint="t5_pitch_0" kp="30.0" ctrlrange="-1.40000 1.40000" forcerange="-12.00000 12.00000" />
+    <position name="t5_yaw_1_servo" joint="t5_yaw_1" kp="30.0" ctrlrange="-1.20000 1.20000" forcerange="-12.00000 12.00000" />
+    <position name="t5_pitch_1_servo" joint="t5_pitch_1" kp="30.0" ctrlrange="-1.40000 1.40000" forcerange="-12.00000 12.00000" />
+    <position name="t5_yaw_2_servo" joint="t5_yaw_2" kp="30.0" ctrlrange="-1.20000 1.20000" forcerange="-12.00000 12.00000" />
+    <position name="t5_pitch_2_servo" joint="t5_pitch_2" kp="30.0" ctrlrange="-1.40000 1.40000" forcerange="-12.00000 12.00000" />
+    <position name="t5_yaw_3_servo" joint="t5_yaw_3" kp="30.0" ctrlrange="-1.20000 1.20000" forcerange="-12.00000 12.00000" />
+    <position name="t5_pitch_3_servo" joint="t5_pitch_3" kp="30.0" ctrlrange="-1.40000 1.40000" forcerange="-12.00000 12.00000" />
+    <position name="t5_pinch_left_servo" joint="t5_pinch_left" kp="20.0" ctrlrange="-0.05000 0.90000" forcerange="-6.00000 6.00000" />
+    <position name="t5_pinch_right_servo" joint="t5_pinch_right" kp="20.0" ctrlrange="-0.05000 0.90000" forcerange="-6.00000 6.00000" />
+  </actuator>
+  <sensor>
+    <gyro name="mantle_gyro" site="mantle_imu" />
+    <accelerometer name="mantle_accel" site="mantle_imu" />
+    <framequat name="mantle_orientation" objtype="site" objname="mantle_imu" />
+    <touch name="mantle_contact" site="mantle_touch" />
+    <touch name="t0_seg_0_contact" site="t0_seg_0_touch" />
+    <touch name="t0_seg_1_contact" site="t0_seg_1_touch" />
+    <touch name="t0_seg_2_contact" site="t0_seg_2_touch" />
+    <touch name="t0_seg_3_contact" site="t0_seg_3_touch" />
+    <touch name="t1_seg_0_contact" site="t1_seg_0_touch" />
+    <touch name="t1_seg_1_contact" site="t1_seg_1_touch" />
+    <touch name="t1_seg_2_contact" site="t1_seg_2_touch" />
+    <touch name="t1_seg_3_contact" site="t1_seg_3_touch" />
+    <touch name="t2_seg_0_contact" site="t2_seg_0_touch" />
+    <touch name="t2_seg_1_contact" site="t2_seg_1_touch" />
+    <touch name="t2_seg_2_contact" site="t2_seg_2_touch" />
+    <touch name="t2_seg_3_contact" site="t2_seg_3_touch" />
+    <touch name="t3_seg_0_contact" site="t3_seg_0_touch" />
+    <touch name="t3_seg_1_contact" site="t3_seg_1_touch" />
+    <touch name="t3_seg_2_contact" site="t3_seg_2_touch" />
+    <touch name="t3_seg_3_contact" site="t3_seg_3_touch" />
+    <touch name="t4_seg_0_contact" site="t4_seg_0_touch" />
+    <touch name="t4_seg_1_contact" site="t4_seg_1_touch" />
+    <touch name="t4_seg_2_contact" site="t4_seg_2_touch" />
+    <touch name="t4_seg_3_contact" site="t4_seg_3_touch" />
+    <touch name="t5_seg_0_contact" site="t5_seg_0_touch" />
+    <touch name="t5_seg_1_contact" site="t5_seg_1_touch" />
+    <touch name="t5_seg_2_contact" site="t5_seg_2_touch" />
+    <touch name="t5_seg_3_contact" site="t5_seg_3_touch" />
+  </sensor>
+</mujoco>
