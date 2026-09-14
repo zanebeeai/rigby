@@ -1,0 +1,1135 @@
+{
+  "closure_fix": true,
+  "disturbance_log": [],
+  "draw_sha256": "3ce11290180403ef95d7d671e8694e61125ed5b079f9c2055fdaf4ef87f70f59",
+  "effector": "palm",
+  "episode_id": "look-before-zoo_jaw_arm-3-5030",
+  "events": [],
+  "executor": "tree",
+  "false_completion": true,
+  "half": "before",
+  "interrupt_reason": "",
+  "interrupted": false,
+  "label": "v1 tree, loop closed on verdicts",
+  "layout": "v1",
+  "leaf_calls": [
+    {
+      "attempt": 1,
+      "leaf": "observe_object",
+      "node": "0.0.0.0.0.0.0.0.0.0",
+      "object": "cube_01",
+      "observed": {
+        "known:cube_01": true,
+        "pose:cube_01": [
+          -0.32120460984986754,
+          0.5515305183788703,
+          0.24483083070361036
+        ],
+        "reach:cube_01": true,
+        "reach_verdict:cube_01": "pass"
+      },
+      "re_observations": 0,
+      "segment": 0
+    },
+    {
+      "attempt": 1,
+      "certified": true,
+      "detail": "",
+      "executed": true,
+      "gate": null,
+      "leaf": "acquire",
+      "node": "0.0.0.0.0.0.0.0.0.1",
+      "object": "cube_01",
+      "phases": [
+        "approach",
+        "turn",
+        "descend",
+        "close",
+        "lift",
+        "hold"
+      ],
+      "physics_time_s": [
+        1.1000000000000008,
+        8.651999999999559
+      ],
+      "planned_to": [
+        -0.32120460984986754,
+        0.5515305183788703,
+        0.24483083070361036
+      ],
+      "reason": "",
+      "reroute": null,
+      "segment": 0,
+      "verdict": "success"
+    },
+    {
+      "attempt": 1,
+      "leaf": "verify_hold",
+      "node": "0.0.0.0.0.0.0.0.0.2",
+      "object": "cube_01",
+      "segment": 0,
+      "trail": [
+        {
+          "cameras": {
+            "camera:front": {
+              "age_s": 0.01900000000001789,
+              "visible_fraction": 0.8333333333333334
+            },
+            "camera:overhead": {
+              "age_s": 0.01900000000001789,
+              "visible_fraction": 0.16666666666666666
+            }
+          },
+          "conditional": "held",
+          "decision": "pass",
+          "detail": {
+            "newest_z_m": 0.3184,
+            "opposed_fraction": 1.0,
+            "peak_force_n": 2.4507
+          },
+          "re_observation": 0,
+          "reason": "",
+          "sensors": [
+            "contact:palm",
+            "camera:front"
+          ],
+          "time_s": 9.151999999999726
+        }
+      ]
+    },
+    {
+      "attempt": 1,
+      "certified": true,
+      "detail": "",
+      "executed": true,
+      "gate": null,
+      "leaf": "transport",
+      "node": "0.0.0.0.0.0.0.1",
+      "object": "cube_01",
+      "phases": [
+        "carry"
+      ],
+      "physics_time_s": [
+        9.151999999999726,
+        10.352000000000126
+      ],
+      "planned_to": [
+        -0.32120460984986754,
+        0.5515305183788703,
+        0.24483083070361036
+      ],
+      "reason": "",
+      "reroute": null,
+      "segment": 0,
+      "verdict": "success"
+    },
+    {
+      "attempt": 1,
+      "certified": true,
+      "detail": "",
+      "executed": true,
+      "gate": null,
+      "leaf": "release",
+      "node": "0.0.0.0.0.0.0.2",
+      "object": "cube_01",
+      "phases": [
+        "lower",
+        "release",
+        "retreat"
+      ],
+      "physics_time_s": [
+        10.352000000000126,
+        12.452000000000828
+      ],
+      "planned_to": [
+        -0.32120460984986754,
+        0.5515305183788703,
+        0.24483083070361036
+      ],
+      "reason": "",
+      "reroute": null,
+      "segment": 0,
+      "verdict": "success"
+    },
+    {
+      "attempt": 1,
+      "leaf": "verify_placement",
+      "node": "0.0.0.0.0.0.0.3",
+      "object": "cube_01",
+      "segment": 0,
+      "trail": [
+        {
+          "cameras": {
+            "camera:front": {
+              "age_s": 0.01900000000001789,
+              "visible_fraction": 1.0
+            },
+            "camera:overhead": {
+              "age_s": 0.01900000000001789,
+              "visible_fraction": 0.16666666666666666
+            }
+          },
+          "conditional": "stably_placed",
+          "decision": "pass",
+          "detail": {
+            "drift_speed_mps": 0.0017,
+            "inside": 1.0,
+            "released": 1.0,
+            "samples": 60.0,
+            "spread_m": 0.006
+          },
+          "re_observation": 0,
+          "reason": "",
+          "sensors": [
+            "camera:front",
+            "region",
+            "contact:palm"
+          ],
+          "time_s": 14.452000000001496
+        }
+      ]
+    },
+    {
+      "attempt": 1,
+      "leaf": "observe_object",
+      "node": "0.0.0.1.0.0.0.0.0.0",
+      "object": "cube_02",
+      "observed": {
+        "known:cube_02": true,
+        "pose:cube_02": [
+          -0.19480399564108283,
+          0.5192813042598955,
+          0.24490271976538036
+        ],
+        "reach:cube_02": true,
+        "reach_verdict:cube_02": "pass"
+      },
+      "re_observations": 0,
+      "segment": 1
+    },
+    {
+      "attempt": 1,
+      "certified": true,
+      "detail": "",
+      "executed": true,
+      "gate": null,
+      "leaf": "acquire",
+      "node": "0.0.0.1.0.0.0.0.0.1",
+      "object": "cube_02",
+      "phases": [
+        "approach",
+        "turn",
+        "descend",
+        "close",
+        "lift",
+        "hold"
+      ],
+      "physics_time_s": [
+        15.552000000001863,
+        21.389999999999024
+      ],
+      "planned_to": [
+        -0.19480399564108283,
+        0.5192813042598955,
+        0.24490271976538036
+      ],
+      "reason": "",
+      "reroute": null,
+      "segment": 1,
+      "verdict": "success"
+    },
+    {
+      "attempt": 1,
+      "leaf": "verify_hold",
+      "node": "0.0.0.1.0.0.0.0.0.2",
+      "object": "cube_02",
+      "segment": 1,
+      "trail": [
+        {
+          "cameras": {
+            "camera:front": {
+              "age_s": 0.004999999999977689,
+              "visible_fraction": 0.8333333333333334
+            },
+            "camera:overhead": {
+              "age_s": 0.004999999999977689,
+              "visible_fraction": 0.0
+            }
+          },
+          "conditional": "held",
+          "decision": "pass",
+          "detail": {
+            "newest_z_m": 0.3173,
+            "opposed_fraction": 1.0,
+            "peak_force_n": 2.3251
+          },
+          "re_observation": 0,
+          "reason": "",
+          "sensors": [
+            "contact:palm",
+            "camera:front"
+          ],
+          "time_s": 21.889999999998746
+        }
+      ]
+    },
+    {
+      "attempt": 1,
+      "certified": true,
+      "detail": "",
+      "executed": true,
+      "gate": null,
+      "leaf": "transport",
+      "node": "0.0.0.1.0.0.0.1",
+      "object": "cube_02",
+      "phases": [
+        "carry"
+      ],
+      "physics_time_s": [
+        21.889999999998746,
+        23.09199999999808
+      ],
+      "planned_to": [
+        -0.19480399564108283,
+        0.5192813042598955,
+        0.24490271976538036
+      ],
+      "reason": "",
+      "reroute": null,
+      "segment": 1,
+      "verdict": "success"
+    },
+    {
+      "attempt": 1,
+      "certified": true,
+      "detail": "",
+      "executed": true,
+      "gate": null,
+      "leaf": "release",
+      "node": "0.0.0.1.0.0.0.2",
+      "object": "cube_02",
+      "phases": [
+        "lower",
+        "release",
+        "retreat"
+      ],
+      "physics_time_s": [
+        23.09199999999808,
+        25.197999999996913
+      ],
+      "planned_to": [
+        -0.19480399564108283,
+        0.5192813042598955,
+        0.24490271976538036
+      ],
+      "reason": "",
+      "reroute": null,
+      "segment": 1,
+      "verdict": "success"
+    },
+    {
+      "attempt": 1,
+      "leaf": "verify_placement",
+      "node": "0.0.0.1.0.0.0.3",
+      "object": "cube_02",
+      "segment": 1,
+      "trail": [
+        {
+          "cameras": {
+            "camera:front": {
+              "age_s": 0.012999999999973255,
+              "visible_fraction": 1.0
+            },
+            "camera:overhead": {
+              "age_s": 0.012999999999973255,
+              "visible_fraction": 0.0
+            }
+          },
+          "conditional": "stably_placed",
+          "decision": "pass",
+          "detail": {
+            "drift_speed_mps": 0.0012,
+            "inside": 1.0,
+            "released": 1.0,
+            "samples": 60.0,
+            "spread_m": 0.0069
+          },
+          "re_observation": 0,
+          "reason": "",
+          "sensors": [
+            "camera:front",
+            "region",
+            "contact:palm"
+          ],
+          "time_s": 27.197999999995805
+        }
+      ]
+    },
+    {
+      "leaf": "observe_work_area",
+      "node": "0.1",
+      "observed": {
+        "cameras": [
+          "overhead",
+          "front"
+        ],
+        "clear": true,
+        "in_cells": {
+          "cube_01": false,
+          "cube_02": false,
+          "cube_03": true
+        },
+        "objects": [
+          {
+            "in_cell": false,
+            "in_work_area": false,
+            "object": "cube_01",
+            "reported_m": [
+              -0.2793,
+              0.4452,
+              0.2428
+            ],
+            "seen_by": [
+              "overhead",
+              "front"
+            ],
+            "visible_fraction": {
+              "front": 1.0,
+              "overhead": 1.0
+            }
+          },
+          {
+            "in_cell": false,
+            "in_work_area": false,
+            "object": "cube_02",
+            "reported_m": [
+              -0.0089,
+              0.4991,
+              0.2731
+            ],
+            "seen_by": [
+              "overhead",
+              "front"
+            ],
+            "visible_fraction": {
+              "front": 1.0,
+              "overhead": 1.0
+            }
+          },
+          {
+            "in_cell": true,
+            "in_work_area": false,
+            "object": "cube_03",
+            "reported_m": [
+              0.1548,
+              0.5293,
+              0.2753
+            ],
+            "seen_by": [
+              "front"
+            ],
+            "visible_fraction": {
+              "front": 1.0,
+              "overhead": 0.167
+            }
+          }
+        ],
+        "time_s": 40.240000000003214
+      },
+      "segment": 2
+    },
+    {
+      "attempt": 1,
+      "leaf": "observe_object",
+      "node": "0.0.0.2.0.0.0.0.0.0",
+      "object": "cube_03",
+      "observed": {
+        "known:cube_03": true,
+        "pose:cube_03": [
+          -0.1671619967524779,
+          0.5487049935587348,
+          0.24521133221945599
+        ],
+        "reach:cube_03": true,
+        "reach_verdict:cube_03": "pass"
+      },
+      "re_observations": 0,
+      "segment": 2
+    },
+    {
+      "attempt": 1,
+      "certified": true,
+      "detail": "",
+      "executed": true,
+      "gate": null,
+      "leaf": "acquire",
+      "node": "0.0.0.2.0.0.0.0.0.1",
+      "object": "cube_03",
+      "phases": [
+        "approach",
+        "turn",
+        "descend",
+        "close",
+        "lift",
+        "hold"
+      ],
+      "physics_time_s": [
+        28.297999999995195,
+        34.13999999999576
+      ],
+      "planned_to": [
+        -0.1671619967524779,
+        0.5487049935587348,
+        0.24521133221945599
+      ],
+      "reason": "",
+      "reroute": null,
+      "segment": 2,
+      "verdict": "success"
+    },
+    {
+      "attempt": 1,
+      "leaf": "verify_hold",
+      "node": "0.0.0.2.0.0.0.0.0.2",
+      "object": "cube_03",
+      "segment": 2,
+      "trail": [
+        {
+          "cameras": {
+            "camera:front": {
+              "age_s": 0.009000000000050079,
+              "visible_fraction": 0.8333333333333334
+            },
+            "camera:overhead": {
+              "age_s": 0.009000000000050079,
+              "visible_fraction": 0.0
+            }
+          },
+          "conditional": "held",
+          "decision": "pass",
+          "detail": {
+            "newest_z_m": 0.3181,
+            "opposed_fraction": 1.0,
+            "peak_force_n": 2.2729
+          },
+          "re_observation": 0,
+          "reason": "",
+          "sensors": [
+            "contact:palm",
+            "camera:front"
+          ],
+          "time_s": 34.63999999999637
+        }
+      ]
+    },
+    {
+      "attempt": 1,
+      "certified": true,
+      "detail": "",
+      "executed": true,
+      "gate": null,
+      "leaf": "transport",
+      "node": "0.0.0.2.0.0.0.1",
+      "object": "cube_03",
+      "phases": [
+        "carry"
+      ],
+      "physics_time_s": [
+        34.63999999999637,
+        35.839999999997836
+      ],
+      "planned_to": [
+        -0.1671619967524779,
+        0.5487049935587348,
+        0.24521133221945599
+      ],
+      "reason": "",
+      "reroute": null,
+      "segment": 2,
+      "verdict": "success"
+    },
+    {
+      "attempt": 1,
+      "certified": true,
+      "detail": "",
+      "executed": true,
+      "gate": null,
+      "leaf": "release",
+      "node": "0.0.0.2.0.0.0.2",
+      "object": "cube_03",
+      "phases": [
+        "lower",
+        "release",
+        "retreat"
+      ],
+      "physics_time_s": [
+        35.839999999997836,
+        37.9400000000004
+      ],
+      "planned_to": [
+        -0.1671619967524779,
+        0.5487049935587348,
+        0.24521133221945599
+      ],
+      "reason": "",
+      "reroute": null,
+      "segment": 2,
+      "verdict": "success"
+    },
+    {
+      "attempt": 1,
+      "leaf": "verify_placement",
+      "node": "0.0.0.2.0.0.0.3",
+      "object": "cube_03",
+      "segment": 2,
+      "trail": [
+        {
+          "cameras": {
+            "camera:front": {
+              "age_s": 0.009000000000050079,
+              "visible_fraction": 1.0
+            },
+            "camera:overhead": {
+              "age_s": 0.009000000000050079,
+              "visible_fraction": 0.16666666666666666
+            }
+          },
+          "conditional": "stably_placed",
+          "decision": "pass",
+          "detail": {
+            "drift_speed_mps": 0.0022,
+            "inside": 1.0,
+            "released": 1.0,
+            "samples": 60.0,
+            "spread_m": 0.0053
+          },
+          "re_observation": 0,
+          "reason": "",
+          "sensors": [
+            "camera:front",
+            "region",
+            "contact:palm"
+          ],
+          "time_s": 39.94000000000285
+        }
+      ]
+    }
+  ],
+  "library_id": "clear_work_area_v1_tree_3",
+  "looks": 1,
+  "objects": 3,
+  "observations": [
+    {
+      "cameras": [
+        "overhead",
+        "front"
+      ],
+      "clear": true,
+      "in_cells": {
+        "cube_01": false,
+        "cube_02": false,
+        "cube_03": true
+      },
+      "objects": [
+        {
+          "in_cell": false,
+          "in_work_area": false,
+          "object": "cube_01",
+          "reported_m": [
+            -0.2793,
+            0.4452,
+            0.2428
+          ],
+          "seen_by": [
+            "overhead",
+            "front"
+          ],
+          "visible_fraction": {
+            "front": 1.0,
+            "overhead": 1.0
+          }
+        },
+        {
+          "in_cell": false,
+          "in_work_area": false,
+          "object": "cube_02",
+          "reported_m": [
+            -0.0089,
+            0.4991,
+            0.2731
+          ],
+          "seen_by": [
+            "overhead",
+            "front"
+          ],
+          "visible_fraction": {
+            "front": 1.0,
+            "overhead": 1.0
+          }
+        },
+        {
+          "in_cell": true,
+          "in_work_area": false,
+          "object": "cube_03",
+          "reported_m": [
+            0.1548,
+            0.5293,
+            0.2753
+          ],
+          "seen_by": [
+            "front"
+          ],
+          "visible_fraction": {
+            "front": 1.0,
+            "overhead": 0.167
+          }
+        }
+      ],
+      "time_s": 40.240000000003214
+    }
+  ],
+  "observe_each_pass": false,
+  "opening_sized": false,
+  "oracle": {
+    "objects": {
+      "cube_01": {
+        "in_cell": false,
+        "in_work_area": false,
+        "position_m": [
+          -0.2798,
+          0.4481,
+          0.245
+        ]
+      },
+      "cube_02": {
+        "in_cell": false,
+        "in_work_area": false,
+        "position_m": [
+          -0.0077,
+          0.4973,
+          0.275
+        ]
+      },
+      "cube_03": {
+        "in_cell": true,
+        "in_work_area": false,
+        "position_m": [
+          0.1537,
+          0.5323,
+          0.275
+        ]
+      }
+    },
+    "of": 3,
+    "placed": 1,
+    "root_success": false,
+    "work_area_clear": true
+  },
+  "passes": 1,
+  "per_object": {
+    "cube_01": [
+      {
+        "attempts": 1,
+        "ended_s": 14.452000000001496,
+        "reason": "",
+        "started_s": 0.0,
+        "verdict": "success"
+      }
+    ],
+    "cube_02": [
+      {
+        "attempts": 1,
+        "ended_s": 27.197999999995805,
+        "reason": "",
+        "started_s": 14.452000000001496,
+        "verdict": "success"
+      }
+    ],
+    "cube_03": [
+      {
+        "attempts": 1,
+        "ended_s": 39.94000000000285,
+        "reason": "",
+        "started_s": 27.197999999995805,
+        "verdict": "success"
+      }
+    ]
+  },
+  "physics_s": 40.240000000003214,
+  "placed_by_belief": [
+    "cube_01",
+    "cube_02",
+    "cube_03"
+  ],
+  "placed_by_oracle": 1,
+  "placements_undone_by_look": [
+    "cube_01",
+    "cube_02"
+  ],
+  "planning_calls": {
+    "library_generated": 1,
+    "tree_expansions": 1
+  },
+  "reuse": {
+    "groundings_per_object": 1,
+    "instances_per_definition": 3,
+    "reused_bindings": 22,
+    "sessions_opened": 3,
+    "shared_transfer_definitions": 11
+  },
+  "root_reason": "",
+  "sealed": {
+    "segments": [
+      {
+        "bundle": "any-robot/results/g15-before-after/look/before/segment-00-cube_01/physical",
+        "object": "cube_01",
+        "replay_agrees": true,
+        "segment": 0,
+        "sha256": "30d304656b84810d6649848fcaaf1d97c17c6fcc8fa53f9fb10eb3cd556f9d99",
+        "simulation_duration_s": 14.452000000001496,
+        "trace_sha256": "4a418801feb72ea1359b58fc3a81c38347ada21e272278c5e53589dc54d44818"
+      },
+      {
+        "bundle": "any-robot/results/g15-before-after/look/before/segment-01-cube_02/physical",
+        "object": "cube_02",
+        "replay_agrees": true,
+        "segment": 1,
+        "sha256": "dde5b1d5b39d4eb5832de1165b07e21ada20af32f6bcfb63c0f5858933b9fbfd",
+        "simulation_duration_s": 27.197999999995805,
+        "trace_sha256": "cf6812dec96fb3fd33deb0cb37fbd4bb147f0253103f7186576a6e7167df94af"
+      },
+      {
+        "bundle": "any-robot/results/g15-before-after/look/before/segment-02-cube_03/physical",
+        "object": "cube_03",
+        "replay_agrees": true,
+        "segment": 2,
+        "sha256": "a13c468f6d2df3d2304654907cf8e2990b016b4c6c9be0200ca2c1aec3c27f78",
+        "simulation_duration_s": 40.240000000003214,
+        "trace_sha256": "5f6393bb8f2607e534a0c0f572f0badbb23887c1541e6ad228e11a52d7fac5e0"
+      }
+    ]
+  },
+  "seed": 5030,
+  "segments": [
+    {
+      "ended_s": 14.452000000001496,
+      "index": 0,
+      "leaves": [
+        "observe_object",
+        "acquire",
+        "verify_hold",
+        "transport",
+        "release",
+        "verify_placement"
+      ],
+      "object": "cube_01",
+      "started_s": 0.0
+    },
+    {
+      "ended_s": 27.197999999995805,
+      "index": 1,
+      "leaves": [
+        "observe_object",
+        "acquire",
+        "verify_hold",
+        "transport",
+        "release",
+        "verify_placement"
+      ],
+      "object": "cube_02",
+      "started_s": 14.452000000001496
+    },
+    {
+      "ended_s": 40.240000000003214,
+      "index": 2,
+      "leaves": [
+        "observe_object",
+        "acquire",
+        "verify_hold",
+        "transport",
+        "release",
+        "verify_placement",
+        "observe_work_area"
+      ],
+      "object": "cube_03",
+      "started_s": 27.197999999995805
+    }
+  ],
+  "skill_success": true,
+  "tree": {
+    "definitions": 17,
+    "max_depth": 10,
+    "total": 43,
+    "transfer_instances": 3
+  },
+  "verdict": "success",
+  "verdict_trail": [
+    {
+      "cameras": {
+        "camera:front": {
+          "age_s": 0.03300000000000014,
+          "visible_fraction": 1.0
+        },
+        "camera:overhead": {
+          "age_s": 0.03300000000000014,
+          "visible_fraction": 1.0
+        }
+      },
+      "conditional": "reachable",
+      "decision": "pass",
+      "detail": {
+        "distance_m": 0.6431,
+        "inner_m": 0.0846,
+        "outer_m": 0.9138
+      },
+      "object": "cube_01",
+      "re_observation": 0,
+      "reason": "",
+      "segment": 0,
+      "sensors": [
+        "camera:front",
+        "camera:overhead",
+        "reach:palm"
+      ],
+      "time_s": 1.1000000000000008
+    },
+    {
+      "cameras": {
+        "camera:front": {
+          "age_s": 0.01900000000001789,
+          "visible_fraction": 0.8333333333333334
+        },
+        "camera:overhead": {
+          "age_s": 0.01900000000001789,
+          "visible_fraction": 0.16666666666666666
+        }
+      },
+      "conditional": "held",
+      "decision": "pass",
+      "detail": {
+        "newest_z_m": 0.3184,
+        "opposed_fraction": 1.0,
+        "peak_force_n": 2.4507
+      },
+      "object": "cube_01",
+      "re_observation": 0,
+      "reason": "",
+      "segment": 0,
+      "sensors": [
+        "contact:palm",
+        "camera:front"
+      ],
+      "time_s": 9.151999999999726
+    },
+    {
+      "cameras": {
+        "camera:front": {
+          "age_s": 0.01900000000001789,
+          "visible_fraction": 1.0
+        },
+        "camera:overhead": {
+          "age_s": 0.01900000000001789,
+          "visible_fraction": 0.16666666666666666
+        }
+      },
+      "conditional": "stably_placed",
+      "decision": "pass",
+      "detail": {
+        "drift_speed_mps": 0.0017,
+        "inside": 1.0,
+        "released": 1.0,
+        "samples": 60.0,
+        "spread_m": 0.006
+      },
+      "object": "cube_01",
+      "re_observation": 0,
+      "reason": "",
+      "segment": 0,
+      "sensors": [
+        "camera:front",
+        "region",
+        "contact:palm"
+      ],
+      "time_s": 14.452000000001496
+    },
+    {
+      "cameras": {
+        "camera:front": {
+          "age_s": 0.03300000000002257,
+          "visible_fraction": 0.8333333333333334
+        },
+        "camera:overhead": {
+          "age_s": 0.03300000000002257,
+          "visible_fraction": 1.0
+        }
+      },
+      "conditional": "reachable",
+      "decision": "pass",
+      "detail": {
+        "distance_m": 0.5588,
+        "inner_m": 0.0846,
+        "outer_m": 0.9138
+      },
+      "object": "cube_02",
+      "re_observation": 0,
+      "reason": "",
+      "segment": 1,
+      "sensors": [
+        "camera:front",
+        "camera:overhead",
+        "reach:palm"
+      ],
+      "time_s": 15.552000000001863
+    },
+    {
+      "cameras": {
+        "camera:front": {
+          "age_s": 0.004999999999977689,
+          "visible_fraction": 0.8333333333333334
+        },
+        "camera:overhead": {
+          "age_s": 0.004999999999977689,
+          "visible_fraction": 0.0
+        }
+      },
+      "conditional": "held",
+      "decision": "pass",
+      "detail": {
+        "newest_z_m": 0.3173,
+        "opposed_fraction": 1.0,
+        "peak_force_n": 2.3251
+      },
+      "object": "cube_02",
+      "re_observation": 0,
+      "reason": "",
+      "segment": 1,
+      "sensors": [
+        "contact:palm",
+        "camera:front"
+      ],
+      "time_s": 21.889999999998746
+    },
+    {
+      "cameras": {
+        "camera:front": {
+          "age_s": 0.012999999999973255,
+          "visible_fraction": 1.0
+        },
+        "camera:overhead": {
+          "age_s": 0.012999999999973255,
+          "visible_fraction": 0.0
+        }
+      },
+      "conditional": "stably_placed",
+      "decision": "pass",
+      "detail": {
+        "drift_speed_mps": 0.0012,
+        "inside": 1.0,
+        "released": 1.0,
+        "samples": 60.0,
+        "spread_m": 0.0069
+      },
+      "object": "cube_02",
+      "re_observation": 0,
+      "reason": "",
+      "segment": 1,
+      "sensors": [
+        "camera:front",
+        "region",
+        "contact:palm"
+      ],
+      "time_s": 27.197999999995805
+    },
+    {
+      "cameras": {
+        "camera:front": {
+          "age_s": 0.03299999999996217,
+          "visible_fraction": 1.0
+        },
+        "camera:overhead": {
+          "age_s": 0.03299999999996217,
+          "visible_fraction": 1.0
+        }
+      },
+      "conditional": "reachable",
+      "decision": "pass",
+      "detail": {
+        "distance_m": 0.5828,
+        "inner_m": 0.1019,
+        "outer_m": 0.8908
+      },
+      "object": "cube_03",
+      "re_observation": 0,
+      "reason": "",
+      "segment": 2,
+      "sensors": [
+        "camera:front",
+        "camera:overhead",
+        "reach:palm"
+      ],
+      "time_s": 28.297999999995195
+    },
+    {
+      "cameras": {
+        "camera:front": {
+          "age_s": 0.009000000000050079,
+          "visible_fraction": 0.8333333333333334
+        },
+        "camera:overhead": {
+          "age_s": 0.009000000000050079,
+          "visible_fraction": 0.0
+        }
+      },
+      "conditional": "held",
+      "decision": "pass",
+      "detail": {
+        "newest_z_m": 0.3181,
+        "opposed_fraction": 1.0,
+        "peak_force_n": 2.2729
+      },
+      "object": "cube_03",
+      "re_observation": 0,
+      "reason": "",
+      "segment": 2,
+      "sensors": [
+        "contact:palm",
+        "camera:front"
+      ],
+      "time_s": 34.63999999999637
+    },
+    {
+      "cameras": {
+        "camera:front": {
+          "age_s": 0.009000000000050079,
+          "visible_fraction": 1.0
+        },
+        "camera:overhead": {
+          "age_s": 0.009000000000050079,
+          "visible_fraction": 0.16666666666666666
+        }
+      },
+      "conditional": "stably_placed",
+      "decision": "pass",
+      "detail": {
+        "drift_speed_mps": 0.0022,
+        "inside": 1.0,
+        "released": 1.0,
+        "samples": 60.0,
+        "spread_m": 0.0053
+      },
+      "object": "cube_03",
+      "re_observation": 0,
+      "reason": "",
+      "segment": 2,
+      "sensors": [
+        "camera:front",
+        "region",
+        "contact:palm"
+      ],
+      "time_s": 39.94000000000285
+    }
+  ],
+  "wall_seconds": 14.756269399978919,
+  "work_area_clear_observed": true,
+  "zoo_id": "zoo_jaw_arm"
+}

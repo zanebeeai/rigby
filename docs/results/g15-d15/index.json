@@ -1,0 +1,95 @@
+{
+  "body": "zoo_jaw_arm",
+  "body_rule": "the requested body where it has a sealed success at that chain length, else the first enabled body that has one",
+  "clearances": [
+    {
+      "body": "zoo_jaw_arm",
+      "episode_id": "zoo_jaw_arm-3-tree-5000",
+      "frame_count": 535,
+      "frames": "clearance-3/media/frames.json",
+      "media_sha256": "41b35c768001cd4ea49942ec0fff2bbc8b9ac3b1d9c5399deb2a3086a2ebd94e",
+      "objects": 3,
+      "passes": 1,
+      "physics_s": 44.24400000000811,
+      "preview": "clearance-3/media/preview.gif",
+      "seed": 5000,
+      "segments": 3,
+      "verdict": "success",
+      "video": "clearance-3/media/episode.mp4"
+    },
+    {
+      "body": "zoo_jaw_arm",
+      "episode_id": "zoo_jaw_arm-5-tree-5000",
+      "frame_count": 853,
+      "frames": "clearance-5/media/frames.json",
+      "media_sha256": "73e272bf615cecb7ef1f404f86366840486961a56a863f82a840474643b2e077",
+      "objects": 5,
+      "passes": 1,
+      "physics_s": 70.43400000001725,
+      "preview": "clearance-5/media/preview.gif",
+      "seed": 5000,
+      "segments": 5,
+      "verdict": "success",
+      "video": "clearance-5/media/episode.mp4"
+    },
+    {
+      "body": "zoo_jaw_arm",
+      "episode_id": "zoo_jaw_arm-10-tree-5000",
+      "frame_count": 1799,
+      "frames": "clearance-10/media/frames.json",
+      "media_sha256": "f5e4749747cf96c794bc950cff5dea6ba79fc8582981722dc278c658f275305f",
+      "objects": 10,
+      "passes": 1,
+      "physics_s": 148.65199999998168,
+      "preview": "clearance-10/media/preview.gif",
+      "seed": 5000,
+      "segments": 10,
+      "verdict": "success",
+      "video": "clearance-10/media/episode.mp4"
+    }
+  ],
+  "commit": "056b8da7591515701410a8284c8729789b17d157",
+  "created_at_utc": "2026-09-14T04:20:23.311166+00:00",
+  "demo": "D15",
+  "disturbance": {
+    "body": "zoo_jaw_arm",
+    "flat": {
+      "episode_id": "zoo_jaw_arm-5-flat-6000-displaced",
+      "frame_count": 272,
+      "frames": "disturbed-flat/media/frames.json",
+      "media_sha256": "c5821f373f8d9972359e0e67b1ceabf05ef821b37a80e92e9fcb421f409fa1e7",
+      "placed": 1,
+      "preview": "disturbed-flat/media/preview.gif",
+      "root_reason": "child_failed:0.0",
+      "verdict": "failure",
+      "video": "disturbed-flat/media/episode.mp4"
+    },
+    "kind": "displaced",
+    "object": "cube_01",
+    "pair": {
+      "duration_s": 92.25,
+      "frame_count": 1107,
+      "layout": "left the generated tree, right its flat twin; the same seed, world and disturbance; a shorter clip holds its final state",
+      "preview": {
+        "approximate_speed": 15.38,
+        "frames": 60,
+        "gif": "disturbed-pair-preview.gif"
+      },
+      "video": "disturbed-pair.mp4"
+    },
+    "seed": 6000,
+    "tree": {
+      "episode_id": "zoo_jaw_arm-5-tree-6000-displaced",
+      "frame_count": 1107,
+      "frames": "disturbed-tree/media/frames.json",
+      "media_sha256": "ea3295db47ef2d42da64aa5f3a9ab085ba37dd2bff0d74c5c20fec4ce3439b2c",
+      "placed": 5,
+      "preview": "disturbed-tree/media/preview.gif",
+      "root_reason": "",
+      "verdict": "success",
+      "video": "disturbed-tree/media/episode.mp4"
+    }
+  },
+  "generation_calls": 0,
+  "goal": "G15"
+}

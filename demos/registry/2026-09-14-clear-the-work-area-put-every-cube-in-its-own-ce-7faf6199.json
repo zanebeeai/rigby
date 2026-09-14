@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-clear-the-work-area-put-every-cube-in-its-own-ce-7faf6199",
+  "title": "G15 before/after, closure: soft grip limits and a guard counting the fingers against limits that hold and a guard that leaves them to the closure (seed 5002)",
+  "prompt": "clear the work area: put every cube in its own cell on the platform and check the area is clear",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T05:18:43Z",
+  "source": {
+    "commit": "056b8da759",
+    "branch": "feat/g15",
+    "dirty": false,
+    "how": "python any-robot/scripts/g15_before_after.py --out docs/results/g15-before-after --local any-robot/results/g15-before-after"
+  },
+  "outcome": {
+    "state": "partial",
+    "text": "Left before (failure, 0/3), right after (unknown, 2/3); the same seed and draw, identical physics until the change bites."
+  },
+  "notes": "See docs/results/g15-report.md. the closure only: grip-joint limits that hold against the closure's force (fingers cannot cross), and the arm planner's guard no longer counting the closure's own finger pair; the same world, the same draw, the same tree, identical physics until the first lost hold",
+  "media": [
+    {
+      "path": "docs/results/g15-before-after/closure/pair.mp4",
+      "bytes": 402750,
+      "sha256": "49788264d322f5a0c456f210c5d9f4c67069cffa955f6d26d30fc2d1f4ee4fb8",
+      "role": "comparison"
+    },
+    {
+      "path": "docs/results/g15-before-after/closure/pair-preview.gif",
+      "bytes": 5296036,
+      "sha256": "bc70ebbbd2017d6674beb21068d6a69f456202ecfbfd42a8116c3d9b25a3e307",
+      "role": "comparison"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G15",
+    "before-after",
+    "closure",
+    "pair",
+    "zoo_jaw_arm"
+  ]
+}

@@ -37,6 +37,58 @@ from ..contracts import EffectorV1, RobotAssetManifestV1
 from ..morphology import measure
 
 
+CLOSURE_LIMITS_HOLD = True
+"""Whether a compiled scene's grip joints get limit constraints that hold
+against the closure's own force. The compiler's default limit is soft
+(solref 0.02 s): a 60 N finger actuator drove the jaw arm's fingers 1.3 cm
+past their range and through one another when a lost hold snapped the jaw
+shut, and no later grasp could open them (G15's first campaign). False
+reproduces the soft limits for the comparison."""
+LIMIT_TIMECONST_S = 0.005
+"""The limit constraint's time constant: at least twice the 2 ms step."""
+LIMIT_SOLIMP = (0.95, 0.99, 0.001, 0.5, 2.0)
+OPENING_SIZED = True
+"""Whether a jaw opens as wide as the object needs rather than as wide as it
+can. A jaw open to its limit is a sweep: the long arm's fingers stand 17 cm
+apart across the outer faces, and descending on a 3 cm cube they came down
+on the cube 8 cm away (G15's first campaign). With the opening sized from
+the object's width, the measured aperture at closed and a clearance per
+side, the fingers stand where the grasp needs them and nowhere else. False
+reproduces the full opening for the comparison."""
+
+
+def hold_closure_limits(model: mujoco.MjModel, manifest: RobotAssetManifestV1) -> tuple[str, ...]:
+    """Stiffen the limit constraints of every declared grip joint in a
+    compiled model so the closure cannot drive its fingers past their range;
+    returns the joints changed. A no-op while ``CLOSURE_LIMITS_HOLD`` is off."""
+
+    if not CLOSURE_LIMITS_HOLD:
+        return ()
+    changed = []
+    for effector in manifest.morphology.grasping_effectors:
+        for joint_name in effector.grip_joints:
+            joint = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, joint_name)
+            if joint < 0 or not model.jnt_limited[joint]:
+                continue
+            model.jnt_solref[joint] = (LIMIT_TIMECONST_S, 1.0)
+            model.jnt_solimp[joint] = LIMIT_SOLIMP
+            changed.append(joint_name)
+    return tuple(changed)
+
+
+def carry_joint_limits(source: mujoco.MjModel, target: mujoco.MjModel) -> None:
+    """Copy every named joint's limit constraint parameters from one compiled
+    model to another (a scene recompiled with a body added keeps the limits
+    the first compile was given)."""
+
+    for joint in range(source.njnt):
+        name = mujoco.mj_id2name(source, mujoco.mjtObj.mjOBJ_JOINT, joint)
+        other = mujoco.mj_name2id(target, mujoco.mjtObj.mjOBJ_JOINT, name) if name else -1
+        if other >= 0:
+            target.jnt_solref[other] = source.jnt_solref[joint]
+            target.jnt_solimp[other] = source.jnt_solimp[joint]
+
+
 class GripState(StrEnum):
     OPEN = "open"
     CLOSING = "closing"
@@ -134,6 +186,9 @@ class ClosureConfig:
 
     hold_duration_s: float = 0.15
     max_penetration_m: float = 0.004
+    opening_clearance_m: float | None = 0.015
+    """How far each gripping surface stands from the object before the
+    closure, when the opening is sized to it (None: open to the limit)."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -300,6 +355,24 @@ class ClosureController:
             self._open_end = self._ranges[:, 1]
         self._closing_sign = np.sign(self._closed_end - self._open_end)
 
+        # The jaw opens as wide as the object needs. The aperture at the
+        # closed end was measured at ingest (it may be negative, for fingers
+        # that interleave); each slide finger moves half the aperture, so
+        # the travel from closed that stands the surfaces a clearance off the
+        # object's faces follows, clamped to the joint's own range.
+        self.opening_sized = False
+        self.opening_aperture_m: float | None = None
+        width = _object_width(model, self._object_geoms)
+        slides = all(int(model.jnt_type[joint]) == int(mujoco.mjtJoint.mjJNT_SLIDE) for joint in self._joints)
+        if OPENING_SIZED and self.config.opening_clearance_m is not None and effector.min_aperture_m is not None and width is not None and slides and len(self._joints) == 2:
+            target = width + 2.0 * float(self.config.opening_clearance_m)
+            travel = max(0.0, (target - float(effector.min_aperture_m)) / 2.0)
+            span = np.abs(self._closed_end - self._open_end)
+            travel = np.minimum(travel, span)
+            self._open_end = self._closed_end - self._closing_sign * travel
+            self.opening_sized = True
+            self.opening_aperture_m = float(effector.min_aperture_m) + 2.0 * float(np.min(travel))
+
         self._closure = 0.0
         self._held_for = 0.0
         self._lost_for = 0.0
@@ -442,6 +515,18 @@ class ClosureController:
     @property
     def settled(self) -> bool:
         return self._held_for >= self.config.hold_duration_s
+
+
+def _object_width(model: mujoco.MjModel, object_geoms: frozenset[int]) -> float | None:
+    """The object's width across its widest horizontal box extent, or None
+    when it is not made of boxes: what a jaw has to open past."""
+
+    widths = []
+    for geom in object_geoms:
+        if int(model.geom_type[geom]) != int(mujoco.mjtGeom.mjGEOM_BOX):
+            return None
+        widths.append(2.0 * float(max(model.geom_size[geom][0], model.geom_size[geom][1])))
+    return max(widths) if widths else None
 
 
 def _object_properties(

@@ -1,0 +1,707 @@
+{
+  "goal": "G15",
+  "generated_at_utc": "2026-09-14T05:15:32.968187+00:00",
+  "commit": "056b8da7591515701410a8284c8729789b17d157",
+  "registration_sha256": "fb452dd0005d320166c69d890c0fcf5d9a1ca090aece95e3d30a5bc7b13393ee",
+  "protocol": "g15-clearance-v3",
+  "generation_calls": 0,
+  "nominal": {
+    "zoo_dual_arm": {
+      "3": {
+        "episodes": 50,
+        "successes": 50,
+        "rate": 1.0,
+        "wilson95": [
+          0.9286499658256813,
+          1.0
+        ],
+        "target": 0.9,
+        "met": true,
+        "false_completions": 0,
+        "oracle_root": 50,
+        "mean_placed": 3.0,
+        "within_cap": 50,
+        "physics_s_mean": 51.26,
+        "wall_s_mean": 23.15,
+        "passes_mean": 1.0,
+        "episodes_with_a_placement_undone_by_a_look": 0,
+        "recovered_after_a_look": 0,
+        "reasons": {},
+        "first_failed_object": {},
+        "tree": {
+          "definitions": 19,
+          "max_depth": 11,
+          "total": 45,
+          "transfer_instances": 3
+        },
+        "reuse": {
+          "groundings_per_object": 1,
+          "instances_per_definition": 3,
+          "reused_bindings": 22,
+          "sessions_opened": 3,
+          "shared_transfer_definitions": 11
+        },
+        "planning_calls": {
+          "library_generated": 1,
+          "tree_expansions": 1
+        }
+      },
+      "5": {
+        "episodes": 50,
+        "successes": 50,
+        "rate": 1.0,
+        "wilson95": [
+          0.9286499658256813,
+          1.0
+        ],
+        "target": 0.8,
+        "met": true,
+        "false_completions": 0,
+        "oracle_root": 50,
+        "mean_placed": 5.0,
+        "within_cap": 50,
+        "physics_s_mean": 85.14,
+        "wall_s_mean": 45.37,
+        "passes_mean": 1.0,
+        "episodes_with_a_placement_undone_by_a_look": 0,
+        "recovered_after_a_look": 0,
+        "reasons": {},
+        "first_failed_object": {},
+        "tree": {
+          "definitions": 19,
+          "max_depth": 11,
+          "total": 71,
+          "transfer_instances": 5
+        },
+        "reuse": {
+          "groundings_per_object": 1,
+          "instances_per_definition": 5,
+          "reused_bindings": 44,
+          "sessions_opened": 5,
+          "shared_transfer_definitions": 11
+        },
+        "planning_calls": {
+          "library_generated": 1,
+          "tree_expansions": 1
+        }
+      },
+      "10": {
+        "episodes": 50,
+        "successes": 47,
+        "rate": 0.94,
+        "wilson95": [
+          0.8378265662912299,
+          0.9793854036353695
+        ],
+        "target": 0.6,
+        "met": true,
+        "false_completions": 0,
+        "oracle_root": 47,
+        "mean_placed": 9.94,
+        "within_cap": 50,
+        "physics_s_mean": 169.45,
+        "wall_s_mean": 111.75,
+        "passes_mean": 1.0,
+        "episodes_with_a_placement_undone_by_a_look": 0,
+        "recovered_after_a_look": 0,
+        "reasons": {
+          "child_unknown:0.0": 3
+        },
+        "first_failed_object": {
+          "cube_07": 2,
+          "cube_09": 1
+        },
+        "tree": {
+          "definitions": 19,
+          "max_depth": 11,
+          "total": 136,
+          "transfer_instances": 10
+        },
+        "reuse": {
+          "groundings_per_object": 1,
+          "instances_per_definition": 10,
+          "reused_bindings": 99,
+          "sessions_opened": 10,
+          "shared_transfer_definitions": 11
+        },
+        "planning_calls": {
+          "library_generated": 1,
+          "tree_expansions": 1
+        }
+      }
+    },
+    "zoo_jaw_arm": {
+      "3": {
+        "episodes": 50,
+        "successes": 50,
+        "rate": 1.0,
+        "wilson95": [
+          0.9286499658256813,
+          1.0
+        ],
+        "target": 0.9,
+        "met": true,
+        "false_completions": 0,
+        "oracle_root": 50,
+        "mean_placed": 3.0,
+        "within_cap": 50,
+        "physics_s_mean": 45.79,
+        "wall_s_mean": 14.3,
+        "passes_mean": 1.0,
+        "episodes_with_a_placement_undone_by_a_look": 0,
+        "recovered_after_a_look": 0,
+        "reasons": {},
+        "first_failed_object": {},
+        "tree": {
+          "definitions": 19,
+          "max_depth": 11,
+          "total": 45,
+          "transfer_instances": 3
+        },
+        "reuse": {
+          "groundings_per_object": 1,
+          "instances_per_definition": 3,
+          "reused_bindings": 22,
+          "sessions_opened": 3,
+          "shared_transfer_definitions": 11
+        },
+        "planning_calls": {
+          "library_generated": 1,
+          "tree_expansions": 1
+        }
+      },
+      "5": {
+        "episodes": 50,
+        "successes": 50,
+        "rate": 1.0,
+        "wilson95": [
+          0.9286499658256813,
+          1.0
+        ],
+        "target": 0.8,
+        "met": true,
+        "false_completions": 0,
+        "oracle_root": 50,
+        "mean_placed": 5.0,
+        "within_cap": 50,
+        "physics_s_mean": 73.02,
+        "wall_s_mean": 26.89,
+        "passes_mean": 1.0,
+        "episodes_with_a_placement_undone_by_a_look": 0,
+        "recovered_after_a_look": 0,
+        "reasons": {},
+        "first_failed_object": {},
+        "tree": {
+          "definitions": 19,
+          "max_depth": 11,
+          "total": 71,
+          "transfer_instances": 5
+        },
+        "reuse": {
+          "groundings_per_object": 1,
+          "instances_per_definition": 5,
+          "reused_bindings": 44,
+          "sessions_opened": 5,
+          "shared_transfer_definitions": 11
+        },
+        "planning_calls": {
+          "library_generated": 1,
+          "tree_expansions": 1
+        }
+      },
+      "10": {
+        "episodes": 50,
+        "successes": 50,
+        "rate": 1.0,
+        "wilson95": [
+          0.9286499658256813,
+          1.0
+        ],
+        "target": 0.6,
+        "met": true,
+        "false_completions": 0,
+        "oracle_root": 50,
+        "mean_placed": 10.0,
+        "within_cap": 50,
+        "physics_s_mean": 138.57,
+        "wall_s_mean": 77.01,
+        "passes_mean": 1.0,
+        "episodes_with_a_placement_undone_by_a_look": 0,
+        "recovered_after_a_look": 0,
+        "reasons": {},
+        "first_failed_object": {},
+        "tree": {
+          "definitions": 19,
+          "max_depth": 11,
+          "total": 136,
+          "transfer_instances": 10
+        },
+        "reuse": {
+          "groundings_per_object": 1,
+          "instances_per_definition": 10,
+          "reused_bindings": 99,
+          "sessions_opened": 10,
+          "shared_transfer_definitions": 11
+        },
+        "planning_calls": {
+          "library_generated": 1,
+          "tree_expansions": 1
+        }
+      }
+    },
+    "zoo_long_arm": {
+      "3": {
+        "episodes": 50,
+        "successes": 50,
+        "rate": 1.0,
+        "wilson95": [
+          0.9286499658256813,
+          1.0
+        ],
+        "target": 0.9,
+        "met": true,
+        "false_completions": 0,
+        "oracle_root": 50,
+        "mean_placed": 3.0,
+        "within_cap": 50,
+        "physics_s_mean": 48.21,
+        "wall_s_mean": 14.83,
+        "passes_mean": 1.0,
+        "episodes_with_a_placement_undone_by_a_look": 0,
+        "recovered_after_a_look": 0,
+        "reasons": {},
+        "first_failed_object": {},
+        "tree": {
+          "definitions": 19,
+          "max_depth": 11,
+          "total": 45,
+          "transfer_instances": 3
+        },
+        "reuse": {
+          "groundings_per_object": 1,
+          "instances_per_definition": 3,
+          "reused_bindings": 22,
+          "sessions_opened": 3,
+          "shared_transfer_definitions": 11
+        },
+        "planning_calls": {
+          "library_generated": 1,
+          "tree_expansions": 1
+        }
+      },
+      "5": {
+        "episodes": 50,
+        "successes": 50,
+        "rate": 1.0,
+        "wilson95": [
+          0.9286499658256813,
+          1.0
+        ],
+        "target": 0.8,
+        "met": true,
+        "false_completions": 0,
+        "oracle_root": 50,
+        "mean_placed": 5.0,
+        "within_cap": 50,
+        "physics_s_mean": 75.22,
+        "wall_s_mean": 27.52,
+        "passes_mean": 1.0,
+        "episodes_with_a_placement_undone_by_a_look": 0,
+        "recovered_after_a_look": 0,
+        "reasons": {},
+        "first_failed_object": {},
+        "tree": {
+          "definitions": 19,
+          "max_depth": 11,
+          "total": 71,
+          "transfer_instances": 5
+        },
+        "reuse": {
+          "groundings_per_object": 1,
+          "instances_per_definition": 5,
+          "reused_bindings": 44,
+          "sessions_opened": 5,
+          "shared_transfer_definitions": 11
+        },
+        "planning_calls": {
+          "library_generated": 1,
+          "tree_expansions": 1
+        }
+      },
+      "10": {
+        "episodes": 50,
+        "successes": 50,
+        "rate": 1.0,
+        "wilson95": [
+          0.9286499658256813,
+          1.0
+        ],
+        "target": 0.6,
+        "met": true,
+        "false_completions": 0,
+        "oracle_root": 50,
+        "mean_placed": 10.0,
+        "within_cap": 50,
+        "physics_s_mean": 145.39,
+        "wall_s_mean": 78.26,
+        "passes_mean": 1.0,
+        "episodes_with_a_placement_undone_by_a_look": 0,
+        "recovered_after_a_look": 0,
+        "reasons": {},
+        "first_failed_object": {},
+        "tree": {
+          "definitions": 19,
+          "max_depth": 11,
+          "total": 136,
+          "transfer_instances": 10
+        },
+        "reuse": {
+          "groundings_per_object": 1,
+          "instances_per_definition": 10,
+          "reused_bindings": 99,
+          "sessions_opened": 10,
+          "shared_transfer_definitions": 11
+        },
+        "planning_calls": {
+          "library_generated": 1,
+          "tree_expansions": 1
+        }
+      }
+    }
+  },
+  "disturbed": {
+    "zoo_dual_arm": {
+      "pairs": 30,
+      "tree": 25,
+      "flat": 15,
+      "gain_pp": 33.333333333333336,
+      "target_pp": 15.0,
+      "met": true,
+      "false_completions": 0,
+      "tree_wins": 10,
+      "flat_wins": 0,
+      "mean_placed": {
+        "tree": 4.833,
+        "flat": 3.5
+      },
+      "physics_s_mean": {
+        "tree": 91.37,
+        "flat": 65.57
+      },
+      "by_kind": {
+        "displaced": {
+          "pairs": 10,
+          "tree": 10,
+          "flat": 6
+        },
+        "slip": {
+          "pairs": 10,
+          "tree": 5,
+          "flat": 0
+        },
+        "occlusion": {
+          "pairs": 10,
+          "tree": 10,
+          "flat": 9
+        }
+      }
+    },
+    "zoo_jaw_arm": {
+      "pairs": 30,
+      "tree": 28,
+      "flat": 15,
+      "gain_pp": 43.333333333333336,
+      "target_pp": 15.0,
+      "met": true,
+      "false_completions": 0,
+      "tree_wins": 13,
+      "flat_wins": 0,
+      "mean_placed": {
+        "tree": 4.933,
+        "flat": 3.633
+      },
+      "physics_s_mean": {
+        "tree": 77.72,
+        "flat": 55.68
+      },
+      "by_kind": {
+        "displaced": {
+          "pairs": 10,
+          "tree": 10,
+          "flat": 7
+        },
+        "slip": {
+          "pairs": 10,
+          "tree": 8,
+          "flat": 0
+        },
+        "occlusion": {
+          "pairs": 10,
+          "tree": 10,
+          "flat": 8
+        }
+      }
+    },
+    "zoo_long_arm": {
+      "pairs": 30,
+      "tree": 28,
+      "flat": 13,
+      "gain_pp": 50.0,
+      "target_pp": 15.0,
+      "met": true,
+      "false_completions": 0,
+      "tree_wins": 16,
+      "flat_wins": 1,
+      "mean_placed": {
+        "tree": 4.933,
+        "flat": 3.2
+      },
+      "physics_s_mean": {
+        "tree": 81.42,
+        "flat": 55.82
+      },
+      "by_kind": {
+        "displaced": {
+          "pairs": 10,
+          "tree": 8,
+          "flat": 3
+        },
+        "slip": {
+          "pairs": 10,
+          "tree": 10,
+          "flat": 0
+        },
+        "occlusion": {
+          "pairs": 10,
+          "tree": 10,
+          "flat": 10
+        }
+      }
+    }
+  },
+  "targets_met": {
+    "nominal": {
+      "zoo_dual_arm": {
+        "3": true,
+        "5": true,
+        "10": true
+      },
+      "zoo_jaw_arm": {
+        "3": true,
+        "5": true,
+        "10": true
+      },
+      "zoo_long_arm": {
+        "3": true,
+        "5": true,
+        "10": true
+      }
+    },
+    "disturbed": {
+      "zoo_dual_arm": true,
+      "zoo_jaw_arm": true,
+      "zoo_long_arm": true
+    }
+  },
+  "baseline": {
+    "protocol": "g15-clearance-v1",
+    "note": "the first registration: neighbours 8 cm apart, the loop closed on the transfers' verdicts; run until the revision, stopped where it stood",
+    "cells": [
+      {
+        "name": "nominal-zoo_dual_arm-3",
+        "body": "zoo_dual_arm",
+        "objects": 3,
+        "episodes": 50,
+        "successes": 42,
+        "rate": 0.84,
+        "wilson95": [
+          0.7148551903823401,
+          0.9166267863791231
+        ],
+        "false_completions": 0,
+        "oracle_root": 42,
+        "complete": true,
+        "target": 0.9,
+        "reasons": {
+          "child_failed:0.0": 8
+        }
+      },
+      {
+        "name": "nominal-zoo_dual_arm-5",
+        "body": "zoo_dual_arm",
+        "objects": 5,
+        "episodes": 35,
+        "successes": 28,
+        "rate": 0.8,
+        "wilson95": [
+          0.6410806339053748,
+          0.899576805540992
+        ],
+        "false_completions": 0,
+        "oracle_root": 28,
+        "complete": false,
+        "target": 0.8,
+        "reasons": {
+          "child_failed:0.0": 7
+        }
+      },
+      {
+        "name": "nominal-zoo_jaw_arm-3",
+        "body": "zoo_jaw_arm",
+        "objects": 3,
+        "episodes": 50,
+        "successes": 44,
+        "rate": 0.88,
+        "wilson95": [
+          0.7619492111337642,
+          0.9438247628937535
+        ],
+        "false_completions": 7,
+        "oracle_root": 37,
+        "complete": true,
+        "target": 0.9,
+        "reasons": {
+          "child_failed:0.0": 6
+        }
+      },
+      {
+        "name": "nominal-zoo_jaw_arm-5",
+        "body": "zoo_jaw_arm",
+        "objects": 5,
+        "episodes": 50,
+        "successes": 39,
+        "rate": 0.78,
+        "wilson95": [
+          0.6475818431054045,
+          0.8724621377569771
+        ],
+        "false_completions": 5,
+        "oracle_root": 34,
+        "complete": true,
+        "target": 0.8,
+        "reasons": {
+          "child_failed:0.0": 9,
+          "effects_unmet": 2
+        }
+      },
+      {
+        "name": "nominal-zoo_long_arm-3",
+        "body": "zoo_long_arm",
+        "objects": 3,
+        "episodes": 50,
+        "successes": 50,
+        "rate": 1.0,
+        "wilson95": [
+          0.9286499658256813,
+          1.0
+        ],
+        "false_completions": 0,
+        "oracle_root": 50,
+        "complete": true,
+        "target": 0.9,
+        "reasons": {}
+      },
+      {
+        "name": "nominal-zoo_long_arm-5",
+        "body": "zoo_long_arm",
+        "objects": 5,
+        "episodes": 50,
+        "successes": 20,
+        "rate": 0.4,
+        "wilson95": [
+          0.2760818978624575,
+          0.5381881089724063
+        ],
+        "false_completions": 8,
+        "oracle_root": 12,
+        "complete": true,
+        "target": 0.8,
+        "reasons": {
+          "child_unknown:0.1": 4,
+          "child_failed:0.0": 24,
+          "effects_unmet": 2
+        }
+      }
+    ]
+  },
+  "before_after": {
+    "closure": {
+      "before": {
+        "verdict": "failure",
+        "false_completion": false,
+        "placed_by_oracle": 0
+      },
+      "after": {
+        "verdict": "unknown",
+        "false_completion": false,
+        "placed_by_oracle": 2
+      }
+    },
+    "look": {
+      "before": {
+        "verdict": "success",
+        "false_completion": true,
+        "placed_by_oracle": 1
+      },
+      "after": {
+        "verdict": "success",
+        "false_completion": false,
+        "placed_by_oracle": 3
+      }
+    },
+    "pitch": {
+      "before": {
+        "verdict": "unknown",
+        "false_completion": false,
+        "placed_by_oracle": 3
+      },
+      "after": {
+        "verdict": "success",
+        "false_completion": false,
+        "placed_by_oracle": 5
+      }
+    }
+  },
+  "d15_episodes": [
+    "zoo_jaw_arm-3-tree-5000",
+    "zoo_jaw_arm-5-tree-5000",
+    "zoo_jaw_arm-10-tree-5000",
+    "zoo_jaw_arm-5-tree-6000-displaced",
+    "zoo_jaw_arm-5-flat-6000-displaced"
+  ],
+  "d15": {
+    "body": "zoo_jaw_arm",
+    "clearances": [
+      {
+        "objects": 3,
+        "body": "zoo_jaw_arm",
+        "episode_id": "zoo_jaw_arm-3-tree-5000",
+        "verdict": "success",
+        "physics_s": 44.24400000000811,
+        "segments": 3
+      },
+      {
+        "objects": 5,
+        "body": "zoo_jaw_arm",
+        "episode_id": "zoo_jaw_arm-5-tree-5000",
+        "verdict": "success",
+        "physics_s": 70.43400000001725,
+        "segments": 5
+      },
+      {
+        "objects": 10,
+        "body": "zoo_jaw_arm",
+        "episode_id": "zoo_jaw_arm-10-tree-5000",
+        "verdict": "success",
+        "physics_s": 148.65199999998168,
+        "segments": 10
+      }
+    ],
+    "disturbance": {
+      "seed": 6000,
+      "body": "zoo_jaw_arm",
+      "kind": "displaced",
+      "object": "cube_01"
+    }
+  }
+}

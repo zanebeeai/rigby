@@ -36,7 +36,7 @@ from rigby_core.skills import ConditionalV1, Decision, Interrupt, LeafContext, L
 
 from ..contact.transfer import TransferResult, TransferStart, attempt_transfer, transfer_scene_from_environment
 from ..contact.placement import PlacementGoal
-from ..contact.closure import ClosureConfig
+from ..contact.closure import ClosureConfig, carry_joint_limits
 from ..contracts import EffectorV1
 from ..gates.control import ControllerConfig
 from ..grounding.grounder import figure_site_for
@@ -130,6 +130,7 @@ def with_shutter(scene, xml: str):
     ET.SubElement(body, "geom", name=f"{SHUTTER_BODY}_geom", type="box", size=" ".join(f"{v:.4f}" for v in SHUTTER_HALF), contype="0", conaffinity="0", rgba="0.25 0.25 0.28 0.9")
     new_xml = ET.tostring(root, encoding="unicode")
     model = mujoco.MjSpec.from_string(new_xml).compile()
+    carry_joint_limits(scene.scene.model, model)
     return replace(scene, scene=replace(scene.scene, model=model, xml=new_xml))
 
 
@@ -176,7 +177,12 @@ class DisplacedObject(Disturbance):
             if self.force_n is not None:
                 self._force = np.asarray(self.force_n, dtype=float)
             else:
-                centre = next(np.asarray(f.position_m[:2], dtype=float) for f in session.environment.fixtures if f.name == self.support)
+                centre = next((np.asarray(f.position_m[:2], dtype=float) for f in session.environment.fixtures if f.name == self.support), None)
+                if centre is None:
+                    # A world without the named fixture: push toward the centre
+                    # of whatever the object rests on, which is what the bench was.
+                    resting = session.environment.object_by_name(session.object_name)
+                    centre = np.asarray(support_fixture(session.environment, resting.position_m).position_m[:2], dtype=float)
                 offset = centre - np.asarray(data.xpos[body][:2], dtype=float)
                 direction = offset / max(float(np.linalg.norm(offset)), 1e-6)
                 self._force = np.array([direction[0] * self.push_n, direction[1] * self.push_n, 0.0])
@@ -324,6 +330,25 @@ def disturbance_named(kind: str) -> Disturbance | None:
 # --------------------------------------------------------------------------
 
 
+def support_fixture(environment: EnvironmentV1, position_m) -> FixtureV1:
+    """The fixture an object rests on: of those whose top footprint contains
+    the object's centre, the one whose top is nearest below it. A bench on a
+    table is found before the table it stands on."""
+
+    x, y, z = (float(v) for v in position_m)
+    candidates = []
+    for fixture in environment.fixtures:
+        top = float(fixture.position_m[2] + fixture.size_m[2])
+        if abs(fixture.position_m[0] - x) <= fixture.size_m[0] + 0.005 and abs(fixture.position_m[1] - y) <= fixture.size_m[1] + 0.005 and top <= z + 1e-6:
+            candidates.append((z - top, fixture))
+    if not candidates:
+        # Nothing under it: an object flung off the world, or authored in
+        # mid-air. The widest fixture stands in, so a session can still open
+        # and report the object as it finds it (or fails to).
+        return max(environment.fixtures, key=lambda f: f.size_m[0] * f.size_m[1])
+    return min(candidates, key=lambda item: item[0])[1]
+
+
 @dataclass
 class TransferObjectSession:
     robot: Any
@@ -345,6 +370,8 @@ class TransferObjectSession:
     """How the closure advances, detects contact and squeezes; part of the same context."""
     duration_scale: float = 1.0
     """How much slower than the declared joint speeds the transfer's moving phases run."""
+    object_name: str = "cube"
+    """Which of the environment's objects this session manipulates; the model calls it scene_block."""
     state: TransferStart | None = None
     time_s: float = 0.0
     results: list[tuple[str, TransferResult]] = field(default_factory=list)
@@ -357,23 +384,33 @@ class TransferObjectSession:
     @classmethod
     def open(cls, zoo_id: str, source: Path, environment: EnvironmentV1, goal: PlacementGoal, policy: dict, *, configuration_name: str = "front_overhead_contact",
              disturbance: Disturbance | None = None, seed_label: str = "", controller_config: ControllerConfig | None = None,
-             closure_config: ClosureConfig | None = None, duration_scale: float = 1.0) -> "TransferObjectSession":
-        robot = ingest_robot(source, robot_id=zoo_id)
+             closure_config: ClosureConfig | None = None, duration_scale: float = 1.0, object_name: str = "cube", destination_fixture: str = "platform",
+             destination_offset_m: tuple[float, float] = (0.0, 0.0), robot: Any = None) -> "TransferObjectSession":
+        """``object_name`` is the object this session manipulates; every other
+        object of the environment stands in the world as a bystander. The
+        destination is the named fixture's top at the offset, so several
+        objects can be placed on one fixture in their own cells. A robot
+        already ingested may be passed in, which a chain of sessions over one
+        world does once rather than per object."""
+
+        robot = robot if robot is not None else ingest_robot(source, robot_id=zoo_id)
         effectors = tuple(robot.morphology.grasping_effectors)
         if not effectors:
             raise ValueError(f"{zoo_id} has no grasping effector")
         effector = effectors[0]
         chain = next(c for c in robot.morphology.chains if c.chain_id == effector.chain_id)
-        scene = transfer_scene_from_environment(robot.manifest, robot.mjcf_xml, environment, object_name="cube", destination_fixture="platform", goal=goal, asset_root=source.parent)
+        scene = transfer_scene_from_environment(robot.manifest, robot.mjcf_xml, environment, object_name=object_name, destination_fixture=destination_fixture, goal=goal, asset_root=source.parent,
+                                                destination_offset_m=destination_offset_m)
         scene = with_shutter(scene, scene.scene.xml)
         frame = build_workspace_frame(scene.model, robot.morphology, chain, figure_site=figure_site_for(robot.manifest, effector.chain_id))
         sensing = LiveSensing(scene.model, robot.manifest, effectors, configuration(configuration_name, effectors), goal, seed=f"{zoo_id}|{seed_label}")
-        cube = environment.objects[0]
-        support = next(f for f in environment.fixtures if abs(f.position_m[0] - cube.position_m[0]) <= f.size_m[0] + 0.05 and abs(f.position_m[1] - cube.position_m[1]) <= f.size_m[1] + 0.05)
+        cube = environment.object_by_name(object_name)
+        support = support_fixture(environment, cube.position_m)
         conditionals = bind_conditionals(policy, effector.chain_id, support_top_m=float(support.position_m[2] + support.size_m[2]), half_height_m=float(cube.size_m[2]), half_extent_m=float(max(cube.size_m)))
         return cls(robot=robot, source=source, environment=environment, goal=goal, scene=scene, effector=effector, frame=frame, recorder=PhysicsRecorder(scene.model),
                    sensing=sensing, conditionals=conditionals, policy_sha256=policy_digest(policy), configuration_id=configuration_name, disturbance=disturbance,
-                   controller_config=controller_config or ControllerConfig(), closure_config=closure_config or ClosureConfig(), duration_scale=float(duration_scale))
+                   controller_config=controller_config or ControllerConfig(), closure_config=closure_config or ClosureConfig(), duration_scale=float(duration_scale),
+                   object_name=object_name)
 
     @property
     def model(self) -> mujoco.MjModel:
@@ -503,9 +540,10 @@ class TransferObjectRuntime:
         node = context.node
         session = self.session
         leaf = node.skill_id
+        obj = node.arguments.get("object", "cube")
         session.begin_leaf(leaf)
         stopper, last = self._stopper(context, monitor=(leaf == "transport"))
-        believed = context.belief.get("pose:cube")
+        believed = context.belief.get(f"pose:{obj}")
         object_position = None if believed is None else np.asarray(believed, dtype=float)
         result = attempt_transfer(session.robot.manifest, session.scene, session.effector, session.frame, recorder=session.recorder, resume=session.state,
                                   should_stop=stopper, phase_range=PHASES_OF[leaf], object_position_m=object_position, on_step=session.hook, controller_config=session.controller_config,
@@ -524,7 +562,7 @@ class TransferObjectRuntime:
         facts: dict[str, Any] = {}
         if last["reason"] == "hold_lost":
             verdict, reason = Verdict.FAILURE, "hold_lost"
-            facts["held:cube"] = False
+            facts[f"held:{obj}"] = False
         elif result.interrupted:
             verdict, reason = Verdict.INTERRUPTED, self.interrupt.reason or "interrupted"
         elif result.certified:
@@ -532,9 +570,9 @@ class TransferObjectRuntime:
         else:
             verdict, reason = Verdict.FAILURE, result.failed_gate or "failed"
         if leaf in ("transport", "release") and verdict is not Verdict.SUCCESS:
-            facts["held:cube"] = False
+            facts[f"held:{obj}"] = False
         if leaf == "release" and verdict is Verdict.SUCCESS:
-            facts["held:cube"] = False
+            facts[f"held:{obj}"] = False
         self.calls.append({"node": node.node_id, "leaf": leaf, "attempt": session.leaf_count[leaf], "executed": result.executed, "certified": result.certified, "gate": result.failed_gate,
                            "phases": [p.name for p in result.phases], "physics_time_s": [float(result.times_s[0]), float(result.times_s[-1])] if result.executed else None,
                            "verdict": verdict.value, "reason": reason, "planned_to": None if object_position is None else [float(v) for v in object_position], "reroute": reroute,
@@ -567,8 +605,10 @@ class TransferObjectRuntime:
         node = context.node
         session = self.session
         leaf = node.skill_id
+        obj = node.arguments.get("object", "cube")
+        dest = node.arguments.get("destination", "platform")
         session.begin_leaf(leaf)
-        holding = bool(context.belief.get("held:cube", False))
+        holding = bool(context.belief.get(f"held:{obj}", False))
         if leaf == "observe_object":
             budget = session.conditionals["reachable"].fallback.budget
             stopper, _ = self._stopper(context)
@@ -597,7 +637,7 @@ class TransferObjectRuntime:
                 self.verdicts.append({"time_s": session.time_s, "conditional": "reachable", "decision": reach.decision.value, "reason": reach.reason, "sensors": list(reach.sensors_used),
                                       "detail": {k: round(v, 4) for k, v in reach.detail.items()}, "re_observation": attempt, "cameras": session.sensing.camera_state(session.time_s)})
                 if position is not None:
-                    facts = {"known:cube": True, "pose:cube": [float(v) for v in position], "reach:cube": reach.decision is Decision.PASS, "reach_verdict:cube": reach.decision.value}
+                    facts = {f"known:{obj}": True, f"pose:{obj}": [float(v) for v in position], f"reach:{obj}": reach.decision is Decision.PASS, f"reach_verdict:{obj}": reach.decision.value}
                     self.calls.append({"node": node.node_id, "leaf": leaf, "attempt": session.leaf_count[leaf], "re_observations": attempt, "observed": facts})
                     return facts
                 if context.should_stop() or self.interrupt.requested:
@@ -610,14 +650,14 @@ class TransferObjectRuntime:
             self.calls.append({"node": node.node_id, "leaf": leaf, "attempt": session.leaf_count[leaf], "trail": trail})
             if verdict.decision is Decision.UNKNOWN:
                 return None
-            return {"held:cube": verdict.decision is Decision.PASS}
+            return {f"held:{obj}": verdict.decision is Decision.PASS}
         if leaf == "verify_placement":
             conditional = session.conditionals["stably_placed"]
             verdict, trail = self._observe_until(context, "stably_placed", holding=False, dwell_s=conditional.window.duration_s, budget=conditional.fallback.budget)
             self.calls.append({"node": node.node_id, "leaf": leaf, "attempt": session.leaf_count[leaf], "trail": trail})
             if verdict.decision is Decision.UNKNOWN:
                 return None
-            return {"placed:cube:platform": verdict.decision is Decision.PASS, "held:cube": False}
+            return {f"placed:{obj}:{dest}": verdict.decision is Decision.PASS, f"held:{obj}": False}
         return None
 
 

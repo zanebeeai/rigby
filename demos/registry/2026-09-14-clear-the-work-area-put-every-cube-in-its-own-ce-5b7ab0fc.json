@@ -1,0 +1,45 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-clear-the-work-area-put-every-cube-in-its-own-ce-5b7ab0fc",
+  "title": "D15: displaced with and without recovery, seed 6000",
+  "prompt": "clear the work area: put every cube in its own cell on the platform and check the area is clear",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T05:18:42Z",
+  "source": {
+    "commit": "056b8da759",
+    "branch": "feat/g15",
+    "dirty": false,
+    "how": "python any-robot/scripts/g15_d15_media.py --campaign docs/results/g15-clearance --local any-robot/results/g15-clearance --out docs/results/g15-d15 --body zoo_jaw_arm"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "Left the generated tree (success, 5/5), right its flat twin (failure, 1/5); the same seed, world and disturbance on one clock."
+  },
+  "notes": "See docs/results/g15-report.md. One clearance episode: the generated ClearWorkArea tree over the shared TransferObject subskills, one session per object with the world carried exactly between them on one clock; rendered from recorded states at real-time playback with the simulation clock, the tree's active path with loop attempt counts and the placed count on every frame; frames.json maps every frame to its segment, object and recorded sample.",
+  "media": [
+    {
+      "path": "docs/results/g15-d15/disturbed-pair.mp4",
+      "bytes": 571064,
+      "sha256": "0807ffe8d13c54d35ab0ab44280b0cc09c4a32c9ce3b1341cbf3f06f3eb0a4f2",
+      "role": "comparison"
+    },
+    {
+      "path": "docs/results/g15-d15/disturbed-pair-preview.gif",
+      "bytes": 5768822,
+      "sha256": "0eea3a6ed5824bcdeb32e85ff295bfe461a36bfc08ea9737ece16e41945e80a6",
+      "role": "comparison"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G15",
+    "D15",
+    "disturbance",
+    "displaced",
+    "pair",
+    "zoo_jaw_arm"
+  ]
+}

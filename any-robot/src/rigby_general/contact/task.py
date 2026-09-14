@@ -274,6 +274,9 @@ def build_task_scene(
         .replace(f'"{OBJECT_PREFIX}{target_name}_site"', '"scene_block_center"')
     )
     model = mujoco.MjSpec.from_string(xml).compile()
+    from .closure import hold_closure_limits
+
+    hold_closure_limits(model, manifest)
 
     half = float(target.size_m[2])
     support = float(target.position_m[2]) - half

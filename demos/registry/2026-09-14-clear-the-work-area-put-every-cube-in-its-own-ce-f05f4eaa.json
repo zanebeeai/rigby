@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-clear-the-work-area-put-every-cube-in-its-own-ce-f05f4eaa",
+  "title": "G15 before/after, pitch: the v1 layout with the jaw open to its limit against the v3 layout with the jaw opened to the cube's width (seed 5001)",
+  "prompt": "clear the work area: put every cube in its own cell on the platform and check the area is clear",
+  "tier": "any-robot",
+  "embodiment": "zoo_long_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T05:18:45Z",
+  "source": {
+    "commit": "056b8da759",
+    "branch": "feat/g15",
+    "dirty": false,
+    "how": "python any-robot/scripts/g15_before_after.py --out docs/results/g15-before-after --local any-robot/results/g15-before-after"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "Left before (unknown, 3/5), right after (success, 5/5); the same seed and draw, identical physics until the change bites."
+  },
+  "notes": "See docs/results/g15-report.md. the layout (positions every enabled body has transferred from and to alone, ten centimetres between neighbours) and the jaw's opening (sized to the object rather than the joint limit); the same draw, the same library",
+  "media": [
+    {
+      "path": "docs/results/g15-before-after/pitch/pair.mp4",
+      "bytes": 482009,
+      "sha256": "a28f6a670f8f56429e2575952674d796bc8e323239675209ba72a150df6d4656",
+      "role": "comparison"
+    },
+    {
+      "path": "docs/results/g15-before-after/pitch/pair-preview.gif",
+      "bytes": 4568182,
+      "sha256": "6608bfe356ee587e3105b69ace36bc019953113ca98664fd1f90d6277ce20187",
+      "role": "comparison"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G15",
+    "before-after",
+    "pitch",
+    "pair",
+    "zoo_long_arm"
+  ]
+}

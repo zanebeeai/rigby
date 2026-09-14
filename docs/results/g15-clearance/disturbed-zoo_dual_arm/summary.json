@@ -1,0 +1,50 @@
+{
+  "body": "zoo_dual_arm",
+  "by_executor": {
+    "flat": {
+      "episodes": 30,
+      "false_completions": 0,
+      "mean_placed": 3.5,
+      "oracle_root": 15,
+      "physics_s_mean": 65.57306666666027,
+      "reasons": {
+        "child_failed:0.0": 15
+      },
+      "successes": 15,
+      "wall_s_mean": 26.50879877999966,
+      "within_cap": 30
+    },
+    "tree": {
+      "episodes": 30,
+      "false_completions": 0,
+      "mean_placed": 4.833333333333333,
+      "oracle_root": 25,
+      "physics_s_mean": 91.37146666663514,
+      "reasons": {
+        "child_failed:0.0": 2,
+        "child_unknown:0.0": 3
+      },
+      "successes": 25,
+      "wall_s_mean": 36.333399866666454,
+      "within_cap": 30
+    }
+  },
+  "episodes": 60,
+  "finished_at_utc": "2026-09-14T05:15:17.301178+00:00",
+  "objects": 5,
+  "phase": "disturbed",
+  "provenance": {
+    "body": "zoo_dual_arm",
+    "commit": "056b8da7591515701410a8284c8729789b17d157",
+    "generation_calls": 0,
+    "mujoco": "3.11.0",
+    "numpy": "2.5.1",
+    "phase": "disturbed",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.7 (tags/v3.12.7:0b05ead, Oct  1 2024, 03:06:41) [MSC v.1941 64 bit (AMD64)]",
+    "registration_sha256": "fb452dd0005d320166c69d890c0fcf5d9a1ca090aece95e3d30a5bc7b13393ee",
+    "scored": true,
+    "started_at_utc": "2026-09-14T04:39:52.838262+00:00",
+    "working_tree_dirty": true
+  }
+}

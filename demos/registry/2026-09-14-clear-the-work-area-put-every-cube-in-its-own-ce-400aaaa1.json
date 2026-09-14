@@ -1,0 +1,45 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-clear-the-work-area-put-every-cube-in-its-own-ce-400aaaa1",
+  "title": "G15 pitch before: v1 layout, 8 cm, jaw open to its limit (zoo_long_arm, 5 objects, seed 5001)",
+  "prompt": "clear the work area: put every cube in its own cell on the platform and check the area is clear",
+  "tier": "any-robot",
+  "embodiment": "zoo_long_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T05:18:45Z",
+  "source": {
+    "commit": "056b8da759",
+    "branch": "feat/g15",
+    "dirty": false,
+    "how": "python any-robot/scripts/g15_before_after.py --out docs/results/g15-before-after --local any-robot/results/g15-before-after"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "UNKNOWN (child_unknown:0.0): 3/5 placed by the oracle; v1 layout, 8 cm, jaw open to its limit."
+  },
+  "notes": "See docs/results/g15-report.md, before and after each revision. the layout (positions every enabled body has transferred from and to alone, ten centimetres between neighbours) and the jaw's opening (sized to the object rather than the joint limit); the same draw, the same library Rendered from recorded states at real-time playback with the simulation clock and the live tree on every frame; frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g15-before-after/pitch/before/media/episode.mp4",
+      "bytes": 491718,
+      "sha256": "eb14dfd2535cce418715388e36961257a28d6a126d100a15c4ee7e6a57a7b64d",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g15-before-after/pitch/before/media/preview.gif",
+      "bytes": 840235,
+      "sha256": "4aa7508eda6f7a18b05c724372567df46b12ddd61dc75197df8dfc6fcfa94a0a",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G15",
+    "before-after",
+    "pitch",
+    "before",
+    "zoo_long_arm",
+    "failure"
+  ]
+}
