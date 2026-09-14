@@ -1,0 +1,1320 @@
+{
+  "base_body": "mantle",
+  "base_kind": "crawling",
+  "description": "A rigid segmented octopus-like body: a mantle resting on the ground and six tentacles of four capsule segments each, every segment on a pitch and a yaw hinge; the two front tentacles end in a pincer.",
+  "expected_standing_height_m": 0.12,
+  "footprint_m": [
+    1.2036103985613766,
+    1.2707215858509624
+  ],
+  "joints": [
+    {
+      "actuator": "t0_yaw_0_servo",
+      "actuator_kind": "position",
+      "body": "t0_seg_0",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_0",
+      "maximum": 1.2,
+      "minimum": -1.2,
+      "name": "t0_yaw_0",
+      "rest": 0.0,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t0_pitch_0_servo",
+      "actuator_kind": "position",
+      "body": "t0_seg_0",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_0",
+      "maximum": 1.4,
+      "minimum": -1.4,
+      "name": "t0_pitch_0",
+      "rest": 0.35,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t0_yaw_1_servo",
+      "actuator_kind": "position",
+      "body": "t0_seg_1",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_0",
+      "maximum": 1.2,
+      "minimum": -1.2,
+      "name": "t0_yaw_1",
+      "rest": 0.0,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t0_pitch_1_servo",
+      "actuator_kind": "position",
+      "body": "t0_seg_1",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_0",
+      "maximum": 1.4,
+      "minimum": -1.4,
+      "name": "t0_pitch_1",
+      "rest": -0.12,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t0_yaw_2_servo",
+      "actuator_kind": "position",
+      "body": "t0_seg_2",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_0",
+      "maximum": 1.2,
+      "minimum": -1.2,
+      "name": "t0_yaw_2",
+      "rest": 0.0,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t0_pitch_2_servo",
+      "actuator_kind": "position",
+      "body": "t0_seg_2",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_0",
+      "maximum": 1.4,
+      "minimum": -1.4,
+      "name": "t0_pitch_2",
+      "rest": -0.12,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t0_yaw_3_servo",
+      "actuator_kind": "position",
+      "body": "t0_seg_3",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_0",
+      "maximum": 1.2,
+      "minimum": -1.2,
+      "name": "t0_yaw_3",
+      "rest": 0.0,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t0_pitch_3_servo",
+      "actuator_kind": "position",
+      "body": "t0_seg_3",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_0",
+      "maximum": 1.4,
+      "minimum": -1.4,
+      "name": "t0_pitch_3",
+      "rest": -0.12,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t0_pinch_left_servo",
+      "actuator_kind": "position",
+      "body": "t0_finger_left",
+      "effort_limit": 6.0,
+      "kind": "hinge",
+      "limb": "tentacle_0",
+      "maximum": 0.9,
+      "minimum": -0.05,
+      "name": "t0_pinch_left",
+      "rest": 0.0,
+      "role": "grip",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t0_pinch_right_servo",
+      "actuator_kind": "position",
+      "body": "t0_finger_right",
+      "effort_limit": 6.0,
+      "kind": "hinge",
+      "limb": "tentacle_0",
+      "maximum": 0.9,
+      "minimum": -0.05,
+      "name": "t0_pinch_right",
+      "rest": 0.0,
+      "role": "grip",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t1_yaw_0_servo",
+      "actuator_kind": "position",
+      "body": "t1_seg_0",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_1",
+      "maximum": 1.2,
+      "minimum": -1.2,
+      "name": "t1_yaw_0",
+      "rest": 0.0,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t1_pitch_0_servo",
+      "actuator_kind": "position",
+      "body": "t1_seg_0",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_1",
+      "maximum": 1.4,
+      "minimum": -1.4,
+      "name": "t1_pitch_0",
+      "rest": 0.35,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t1_yaw_1_servo",
+      "actuator_kind": "position",
+      "body": "t1_seg_1",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_1",
+      "maximum": 1.2,
+      "minimum": -1.2,
+      "name": "t1_yaw_1",
+      "rest": 0.0,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t1_pitch_1_servo",
+      "actuator_kind": "position",
+      "body": "t1_seg_1",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_1",
+      "maximum": 1.4,
+      "minimum": -1.4,
+      "name": "t1_pitch_1",
+      "rest": -0.12,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t1_yaw_2_servo",
+      "actuator_kind": "position",
+      "body": "t1_seg_2",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_1",
+      "maximum": 1.2,
+      "minimum": -1.2,
+      "name": "t1_yaw_2",
+      "rest": 0.0,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t1_pitch_2_servo",
+      "actuator_kind": "position",
+      "body": "t1_seg_2",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_1",
+      "maximum": 1.4,
+      "minimum": -1.4,
+      "name": "t1_pitch_2",
+      "rest": -0.12,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t1_yaw_3_servo",
+      "actuator_kind": "position",
+      "body": "t1_seg_3",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_1",
+      "maximum": 1.2,
+      "minimum": -1.2,
+      "name": "t1_yaw_3",
+      "rest": 0.0,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t1_pitch_3_servo",
+      "actuator_kind": "position",
+      "body": "t1_seg_3",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_1",
+      "maximum": 1.4,
+      "minimum": -1.4,
+      "name": "t1_pitch_3",
+      "rest": -0.12,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t2_yaw_0_servo",
+      "actuator_kind": "position",
+      "body": "t2_seg_0",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_2",
+      "maximum": 1.2,
+      "minimum": -1.2,
+      "name": "t2_yaw_0",
+      "rest": 0.0,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t2_pitch_0_servo",
+      "actuator_kind": "position",
+      "body": "t2_seg_0",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_2",
+      "maximum": 1.4,
+      "minimum": -1.4,
+      "name": "t2_pitch_0",
+      "rest": 0.35,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t2_yaw_1_servo",
+      "actuator_kind": "position",
+      "body": "t2_seg_1",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_2",
+      "maximum": 1.2,
+      "minimum": -1.2,
+      "name": "t2_yaw_1",
+      "rest": 0.0,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t2_pitch_1_servo",
+      "actuator_kind": "position",
+      "body": "t2_seg_1",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_2",
+      "maximum": 1.4,
+      "minimum": -1.4,
+      "name": "t2_pitch_1",
+      "rest": -0.12,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t2_yaw_2_servo",
+      "actuator_kind": "position",
+      "body": "t2_seg_2",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_2",
+      "maximum": 1.2,
+      "minimum": -1.2,
+      "name": "t2_yaw_2",
+      "rest": 0.0,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t2_pitch_2_servo",
+      "actuator_kind": "position",
+      "body": "t2_seg_2",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_2",
+      "maximum": 1.4,
+      "minimum": -1.4,
+      "name": "t2_pitch_2",
+      "rest": -0.12,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t2_yaw_3_servo",
+      "actuator_kind": "position",
+      "body": "t2_seg_3",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_2",
+      "maximum": 1.2,
+      "minimum": -1.2,
+      "name": "t2_yaw_3",
+      "rest": 0.0,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t2_pitch_3_servo",
+      "actuator_kind": "position",
+      "body": "t2_seg_3",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_2",
+      "maximum": 1.4,
+      "minimum": -1.4,
+      "name": "t2_pitch_3",
+      "rest": -0.12,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t3_yaw_0_servo",
+      "actuator_kind": "position",
+      "body": "t3_seg_0",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_3",
+      "maximum": 1.2,
+      "minimum": -1.2,
+      "name": "t3_yaw_0",
+      "rest": 0.0,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t3_pitch_0_servo",
+      "actuator_kind": "position",
+      "body": "t3_seg_0",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_3",
+      "maximum": 1.4,
+      "minimum": -1.4,
+      "name": "t3_pitch_0",
+      "rest": 0.35,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t3_yaw_1_servo",
+      "actuator_kind": "position",
+      "body": "t3_seg_1",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_3",
+      "maximum": 1.2,
+      "minimum": -1.2,
+      "name": "t3_yaw_1",
+      "rest": 0.0,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t3_pitch_1_servo",
+      "actuator_kind": "position",
+      "body": "t3_seg_1",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_3",
+      "maximum": 1.4,
+      "minimum": -1.4,
+      "name": "t3_pitch_1",
+      "rest": -0.12,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t3_yaw_2_servo",
+      "actuator_kind": "position",
+      "body": "t3_seg_2",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_3",
+      "maximum": 1.2,
+      "minimum": -1.2,
+      "name": "t3_yaw_2",
+      "rest": 0.0,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t3_pitch_2_servo",
+      "actuator_kind": "position",
+      "body": "t3_seg_2",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_3",
+      "maximum": 1.4,
+      "minimum": -1.4,
+      "name": "t3_pitch_2",
+      "rest": -0.12,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t3_yaw_3_servo",
+      "actuator_kind": "position",
+      "body": "t3_seg_3",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_3",
+      "maximum": 1.2,
+      "minimum": -1.2,
+      "name": "t3_yaw_3",
+      "rest": 0.0,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t3_pitch_3_servo",
+      "actuator_kind": "position",
+      "body": "t3_seg_3",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_3",
+      "maximum": 1.4,
+      "minimum": -1.4,
+      "name": "t3_pitch_3",
+      "rest": -0.12,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t4_yaw_0_servo",
+      "actuator_kind": "position",
+      "body": "t4_seg_0",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_4",
+      "maximum": 1.2,
+      "minimum": -1.2,
+      "name": "t4_yaw_0",
+      "rest": 0.0,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t4_pitch_0_servo",
+      "actuator_kind": "position",
+      "body": "t4_seg_0",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_4",
+      "maximum": 1.4,
+      "minimum": -1.4,
+      "name": "t4_pitch_0",
+      "rest": 0.35,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t4_yaw_1_servo",
+      "actuator_kind": "position",
+      "body": "t4_seg_1",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_4",
+      "maximum": 1.2,
+      "minimum": -1.2,
+      "name": "t4_yaw_1",
+      "rest": 0.0,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t4_pitch_1_servo",
+      "actuator_kind": "position",
+      "body": "t4_seg_1",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_4",
+      "maximum": 1.4,
+      "minimum": -1.4,
+      "name": "t4_pitch_1",
+      "rest": -0.12,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t4_yaw_2_servo",
+      "actuator_kind": "position",
+      "body": "t4_seg_2",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_4",
+      "maximum": 1.2,
+      "minimum": -1.2,
+      "name": "t4_yaw_2",
+      "rest": 0.0,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t4_pitch_2_servo",
+      "actuator_kind": "position",
+      "body": "t4_seg_2",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_4",
+      "maximum": 1.4,
+      "minimum": -1.4,
+      "name": "t4_pitch_2",
+      "rest": -0.12,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t4_yaw_3_servo",
+      "actuator_kind": "position",
+      "body": "t4_seg_3",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_4",
+      "maximum": 1.2,
+      "minimum": -1.2,
+      "name": "t4_yaw_3",
+      "rest": 0.0,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t4_pitch_3_servo",
+      "actuator_kind": "position",
+      "body": "t4_seg_3",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_4",
+      "maximum": 1.4,
+      "minimum": -1.4,
+      "name": "t4_pitch_3",
+      "rest": -0.12,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t5_yaw_0_servo",
+      "actuator_kind": "position",
+      "body": "t5_seg_0",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_5",
+      "maximum": 1.2,
+      "minimum": -1.2,
+      "name": "t5_yaw_0",
+      "rest": 0.0,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t5_pitch_0_servo",
+      "actuator_kind": "position",
+      "body": "t5_seg_0",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_5",
+      "maximum": 1.4,
+      "minimum": -1.4,
+      "name": "t5_pitch_0",
+      "rest": 0.35,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t5_yaw_1_servo",
+      "actuator_kind": "position",
+      "body": "t5_seg_1",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_5",
+      "maximum": 1.2,
+      "minimum": -1.2,
+      "name": "t5_yaw_1",
+      "rest": 0.0,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t5_pitch_1_servo",
+      "actuator_kind": "position",
+      "body": "t5_seg_1",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_5",
+      "maximum": 1.4,
+      "minimum": -1.4,
+      "name": "t5_pitch_1",
+      "rest": -0.12,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t5_yaw_2_servo",
+      "actuator_kind": "position",
+      "body": "t5_seg_2",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_5",
+      "maximum": 1.2,
+      "minimum": -1.2,
+      "name": "t5_yaw_2",
+      "rest": 0.0,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t5_pitch_2_servo",
+      "actuator_kind": "position",
+      "body": "t5_seg_2",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_5",
+      "maximum": 1.4,
+      "minimum": -1.4,
+      "name": "t5_pitch_2",
+      "rest": -0.12,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t5_yaw_3_servo",
+      "actuator_kind": "position",
+      "body": "t5_seg_3",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_5",
+      "maximum": 1.2,
+      "minimum": -1.2,
+      "name": "t5_yaw_3",
+      "rest": 0.0,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t5_pitch_3_servo",
+      "actuator_kind": "position",
+      "body": "t5_seg_3",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "tentacle_5",
+      "maximum": 1.4,
+      "minimum": -1.4,
+      "name": "t5_pitch_3",
+      "rest": -0.12,
+      "role": "tentacle",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t5_pinch_left_servo",
+      "actuator_kind": "position",
+      "body": "t5_finger_left",
+      "effort_limit": 6.0,
+      "kind": "hinge",
+      "limb": "tentacle_5",
+      "maximum": 0.9,
+      "minimum": -0.05,
+      "name": "t5_pinch_left",
+      "rest": 0.0,
+      "role": "grip",
+      "velocity_limit": 4.0
+    },
+    {
+      "actuator": "t5_pinch_right_servo",
+      "actuator_kind": "position",
+      "body": "t5_finger_right",
+      "effort_limit": 6.0,
+      "kind": "hinge",
+      "limb": "tentacle_5",
+      "maximum": 0.9,
+      "minimum": -0.05,
+      "name": "t5_pinch_right",
+      "rest": 0.0,
+      "role": "grip",
+      "velocity_limit": 4.0
+    }
+  ],
+  "limbs": [
+    {
+      "joints": [
+        "t0_yaw_0",
+        "t0_pitch_0",
+        "t0_yaw_1",
+        "t0_pitch_1",
+        "t0_yaw_2",
+        "t0_pitch_2",
+        "t0_yaw_3",
+        "t0_pitch_3",
+        "t0_pinch_left",
+        "t0_pinch_right"
+      ],
+      "length_m": 0.5241660919471891,
+      "limb_id": "tentacle_0",
+      "role": "tentacle",
+      "tip_body": "t0_finger_left"
+    },
+    {
+      "joints": [
+        "t1_yaw_0",
+        "t1_pitch_0",
+        "t1_yaw_1",
+        "t1_pitch_1",
+        "t1_yaw_2",
+        "t1_pitch_2",
+        "t1_yaw_3",
+        "t1_pitch_3"
+      ],
+      "length_m": 0.39,
+      "limb_id": "tentacle_1",
+      "role": "tentacle",
+      "tip_body": "t1_seg_3"
+    },
+    {
+      "joints": [
+        "t2_yaw_0",
+        "t2_pitch_0",
+        "t2_yaw_1",
+        "t2_pitch_1",
+        "t2_yaw_2",
+        "t2_pitch_2",
+        "t2_yaw_3",
+        "t2_pitch_3"
+      ],
+      "length_m": 0.39,
+      "limb_id": "tentacle_2",
+      "role": "tentacle",
+      "tip_body": "t2_seg_3"
+    },
+    {
+      "joints": [
+        "t3_yaw_0",
+        "t3_pitch_0",
+        "t3_yaw_1",
+        "t3_pitch_1",
+        "t3_yaw_2",
+        "t3_pitch_2",
+        "t3_yaw_3",
+        "t3_pitch_3"
+      ],
+      "length_m": 0.39,
+      "limb_id": "tentacle_3",
+      "role": "tentacle",
+      "tip_body": "t3_seg_3"
+    },
+    {
+      "joints": [
+        "t4_yaw_0",
+        "t4_pitch_0",
+        "t4_yaw_1",
+        "t4_pitch_1",
+        "t4_yaw_2",
+        "t4_pitch_2",
+        "t4_yaw_3",
+        "t4_pitch_3"
+      ],
+      "length_m": 0.39,
+      "limb_id": "tentacle_4",
+      "role": "tentacle",
+      "tip_body": "t4_seg_3"
+    },
+    {
+      "joints": [
+        "t5_yaw_0",
+        "t5_pitch_0",
+        "t5_yaw_1",
+        "t5_pitch_1",
+        "t5_yaw_2",
+        "t5_pitch_2",
+        "t5_yaw_3",
+        "t5_pitch_3",
+        "t5_pinch_left",
+        "t5_pinch_right"
+      ],
+      "length_m": 0.5241660919471891,
+      "limb_id": "tentacle_5",
+      "role": "tentacle",
+      "tip_body": "t5_finger_left"
+    }
+  ],
+  "manipulators": [
+    {
+      "aperture_m": 0.030498958463533905,
+      "fingers": [
+        "t0_finger_left",
+        "t0_finger_right"
+      ],
+      "grasp_site": "t0_grasp_centre",
+      "grip_joints": [
+        "t0_pinch_left",
+        "t0_pinch_right"
+      ],
+      "limb": "tentacle_0",
+      "reach_m": 0.545
+    },
+    {
+      "aperture_m": 0.030498958463533947,
+      "fingers": [
+        "t5_finger_left",
+        "t5_finger_right"
+      ],
+      "grasp_site": "t5_grasp_centre",
+      "grip_joints": [
+        "t5_pinch_left",
+        "t5_pinch_right"
+      ],
+      "limb": "tentacle_5",
+      "reach_m": 0.545
+    }
+  ],
+  "mass_kg": 12.887758056095532,
+  "model_sha256": "08dfe5824d774a3ff431c34101bdbc3361073a399801ed0987eb5fec5d0aff0e",
+  "provenance": {
+    "author": "the rigby repository",
+    "holdout": false,
+    "licence": "the repository's own licence; redistributable with the repository",
+    "origin": "procedural: generated by any-robot/scripts/build_mobile_zoo.py in this repository from primitive geometry; no external design, mesh or measurement was used",
+    "preferred_external_design": null,
+    "redistribution": "permitted with the repository under its licence",
+    "robot_id": "mobile_octopus",
+    "role": "development and showcase body",
+    "schema": "rigby.asset-provenance/1",
+    "substitute_for": "a soft multi-arm crawler, here rigid and segmented"
+  },
+  "robot_id": "mobile_octopus",
+  "root_joint": "root",
+  "schema_version": "1.0",
+  "sensor_names": [
+    "mantle_gyro",
+    "mantle_accel",
+    "mantle_orientation",
+    "mantle_contact",
+    "t0_seg_0_contact",
+    "t0_seg_1_contact",
+    "t0_seg_2_contact",
+    "t0_seg_3_contact",
+    "t1_seg_0_contact",
+    "t1_seg_1_contact",
+    "t1_seg_2_contact",
+    "t1_seg_3_contact",
+    "t2_seg_0_contact",
+    "t2_seg_1_contact",
+    "t2_seg_2_contact",
+    "t2_seg_3_contact",
+    "t3_seg_0_contact",
+    "t3_seg_1_contact",
+    "t3_seg_2_contact",
+    "t3_seg_3_contact",
+    "t4_seg_0_contact",
+    "t4_seg_1_contact",
+    "t4_seg_2_contact",
+    "t4_seg_3_contact",
+    "t5_seg_0_contact",
+    "t5_seg_1_contact",
+    "t5_seg_2_contact",
+    "t5_seg_3_contact"
+  ],
+  "sensors": [
+    "joint encoders on every hinge",
+    "mantle gyro, accelerometer and orientation",
+    "touch on the mantle underside and every tentacle segment"
+  ],
+  "stances": {
+    "reaching": {
+      "t0_pinch_left": 0.0,
+      "t0_pinch_right": 0.0,
+      "t0_pitch_0": -0.9,
+      "t0_pitch_1": -0.3,
+      "t0_pitch_2": -0.12,
+      "t0_pitch_3": -0.12,
+      "t0_yaw_0": 0.0,
+      "t0_yaw_1": 0.0,
+      "t0_yaw_2": 0.0,
+      "t0_yaw_3": 0.0,
+      "t1_pitch_0": 0.35,
+      "t1_pitch_1": -0.12,
+      "t1_pitch_2": -0.12,
+      "t1_pitch_3": -0.12,
+      "t1_yaw_0": 0.0,
+      "t1_yaw_1": 0.0,
+      "t1_yaw_2": 0.0,
+      "t1_yaw_3": 0.0,
+      "t2_pitch_0": 0.35,
+      "t2_pitch_1": -0.12,
+      "t2_pitch_2": -0.12,
+      "t2_pitch_3": -0.12,
+      "t2_yaw_0": 0.0,
+      "t2_yaw_1": 0.0,
+      "t2_yaw_2": 0.0,
+      "t2_yaw_3": 0.0,
+      "t3_pitch_0": 0.35,
+      "t3_pitch_1": -0.12,
+      "t3_pitch_2": -0.12,
+      "t3_pitch_3": -0.12,
+      "t3_yaw_0": 0.0,
+      "t3_yaw_1": 0.0,
+      "t3_yaw_2": 0.0,
+      "t3_yaw_3": 0.0,
+      "t4_pitch_0": 0.35,
+      "t4_pitch_1": -0.12,
+      "t4_pitch_2": -0.12,
+      "t4_pitch_3": -0.12,
+      "t4_yaw_0": 0.0,
+      "t4_yaw_1": 0.0,
+      "t4_yaw_2": 0.0,
+      "t4_yaw_3": 0.0,
+      "t5_pinch_left": 0.0,
+      "t5_pinch_right": 0.0,
+      "t5_pitch_0": -0.9,
+      "t5_pitch_1": -0.3,
+      "t5_pitch_2": -0.12,
+      "t5_pitch_3": -0.12,
+      "t5_yaw_0": 0.0,
+      "t5_yaw_1": 0.0,
+      "t5_yaw_2": 0.0,
+      "t5_yaw_3": 0.0
+    },
+    "resting": {
+      "t0_pinch_left": 0.0,
+      "t0_pinch_right": 0.0,
+      "t0_pitch_0": 0.35,
+      "t0_pitch_1": -0.12,
+      "t0_pitch_2": -0.12,
+      "t0_pitch_3": -0.12,
+      "t0_yaw_0": 0.0,
+      "t0_yaw_1": 0.0,
+      "t0_yaw_2": 0.0,
+      "t0_yaw_3": 0.0,
+      "t1_pitch_0": 0.35,
+      "t1_pitch_1": -0.12,
+      "t1_pitch_2": -0.12,
+      "t1_pitch_3": -0.12,
+      "t1_yaw_0": 0.0,
+      "t1_yaw_1": 0.0,
+      "t1_yaw_2": 0.0,
+      "t1_yaw_3": 0.0,
+      "t2_pitch_0": 0.35,
+      "t2_pitch_1": -0.12,
+      "t2_pitch_2": -0.12,
+      "t2_pitch_3": -0.12,
+      "t2_yaw_0": 0.0,
+      "t2_yaw_1": 0.0,
+      "t2_yaw_2": 0.0,
+      "t2_yaw_3": 0.0,
+      "t3_pitch_0": 0.35,
+      "t3_pitch_1": -0.12,
+      "t3_pitch_2": -0.12,
+      "t3_pitch_3": -0.12,
+      "t3_yaw_0": 0.0,
+      "t3_yaw_1": 0.0,
+      "t3_yaw_2": 0.0,
+      "t3_yaw_3": 0.0,
+      "t4_pitch_0": 0.35,
+      "t4_pitch_1": -0.12,
+      "t4_pitch_2": -0.12,
+      "t4_pitch_3": -0.12,
+      "t4_yaw_0": 0.0,
+      "t4_yaw_1": 0.0,
+      "t4_yaw_2": 0.0,
+      "t4_yaw_3": 0.0,
+      "t5_pinch_left": 0.0,
+      "t5_pinch_right": 0.0,
+      "t5_pitch_0": 0.35,
+      "t5_pitch_1": -0.12,
+      "t5_pitch_2": -0.12,
+      "t5_pitch_3": -0.12,
+      "t5_yaw_0": 0.0,
+      "t5_yaw_1": 0.0,
+      "t5_yaw_2": 0.0,
+      "t5_yaw_3": 0.0
+    }
+  },
+  "support_members": [
+    {
+      "body": "mantle",
+      "friction": 0.8,
+      "geoms": [
+        "mantle_geom"
+      ],
+      "limb": null,
+      "touch_sensor": "mantle_contact"
+    },
+    {
+      "body": "t0_root",
+      "friction": 1.0,
+      "geoms": [
+        "t0_root_geom"
+      ],
+      "limb": null,
+      "touch_sensor": null
+    },
+    {
+      "body": "t0_seg_0",
+      "friction": 1.0,
+      "geoms": [
+        "t0_seg_0_geom"
+      ],
+      "limb": "tentacle_0",
+      "touch_sensor": "t0_seg_0_contact"
+    },
+    {
+      "body": "t0_seg_1",
+      "friction": 1.0,
+      "geoms": [
+        "t0_seg_1_geom"
+      ],
+      "limb": "tentacle_0",
+      "touch_sensor": "t0_seg_1_contact"
+    },
+    {
+      "body": "t0_seg_2",
+      "friction": 1.0,
+      "geoms": [
+        "t0_seg_2_geom"
+      ],
+      "limb": "tentacle_0",
+      "touch_sensor": "t0_seg_2_contact"
+    },
+    {
+      "body": "t0_seg_3",
+      "friction": 1.0,
+      "geoms": [
+        "t0_seg_3_geom"
+      ],
+      "limb": "tentacle_0",
+      "touch_sensor": "t0_seg_3_contact"
+    },
+    {
+      "body": "t1_root",
+      "friction": 1.0,
+      "geoms": [
+        "t1_root_geom"
+      ],
+      "limb": null,
+      "touch_sensor": null
+    },
+    {
+      "body": "t1_seg_0",
+      "friction": 1.0,
+      "geoms": [
+        "t1_seg_0_geom"
+      ],
+      "limb": "tentacle_1",
+      "touch_sensor": "t1_seg_0_contact"
+    },
+    {
+      "body": "t1_seg_1",
+      "friction": 1.0,
+      "geoms": [
+        "t1_seg_1_geom"
+      ],
+      "limb": "tentacle_1",
+      "touch_sensor": "t1_seg_1_contact"
+    },
+    {
+      "body": "t1_seg_2",
+      "friction": 1.0,
+      "geoms": [
+        "t1_seg_2_geom"
+      ],
+      "limb": "tentacle_1",
+      "touch_sensor": "t1_seg_2_contact"
+    },
+    {
+      "body": "t1_seg_3",
+      "friction": 1.0,
+      "geoms": [
+        "t1_seg_3_geom"
+      ],
+      "limb": "tentacle_1",
+      "touch_sensor": "t1_seg_3_contact"
+    },
+    {
+      "body": "t2_root",
+      "friction": 1.0,
+      "geoms": [
+        "t2_root_geom"
+      ],
+      "limb": null,
+      "touch_sensor": null
+    },
+    {
+      "body": "t2_seg_0",
+      "friction": 1.0,
+      "geoms": [
+        "t2_seg_0_geom"
+      ],
+      "limb": "tentacle_2",
+      "touch_sensor": "t2_seg_0_contact"
+    },
+    {
+      "body": "t2_seg_1",
+      "friction": 1.0,
+      "geoms": [
+        "t2_seg_1_geom"
+      ],
+      "limb": "tentacle_2",
+      "touch_sensor": "t2_seg_1_contact"
+    },
+    {
+      "body": "t2_seg_2",
+      "friction": 1.0,
+      "geoms": [
+        "t2_seg_2_geom"
+      ],
+      "limb": "tentacle_2",
+      "touch_sensor": "t2_seg_2_contact"
+    },
+    {
+      "body": "t2_seg_3",
+      "friction": 1.0,
+      "geoms": [
+        "t2_seg_3_geom"
+      ],
+      "limb": "tentacle_2",
+      "touch_sensor": "t2_seg_3_contact"
+    },
+    {
+      "body": "t3_root",
+      "friction": 1.0,
+      "geoms": [
+        "t3_root_geom"
+      ],
+      "limb": null,
+      "touch_sensor": null
+    },
+    {
+      "body": "t3_seg_0",
+      "friction": 1.0,
+      "geoms": [
+        "t3_seg_0_geom"
+      ],
+      "limb": "tentacle_3",
+      "touch_sensor": "t3_seg_0_contact"
+    },
+    {
+      "body": "t3_seg_1",
+      "friction": 1.0,
+      "geoms": [
+        "t3_seg_1_geom"
+      ],
+      "limb": "tentacle_3",
+      "touch_sensor": "t3_seg_1_contact"
+    },
+    {
+      "body": "t3_seg_2",
+      "friction": 1.0,
+      "geoms": [
+        "t3_seg_2_geom"
+      ],
+      "limb": "tentacle_3",
+      "touch_sensor": "t3_seg_2_contact"
+    },
+    {
+      "body": "t3_seg_3",
+      "friction": 1.0,
+      "geoms": [
+        "t3_seg_3_geom"
+      ],
+      "limb": "tentacle_3",
+      "touch_sensor": "t3_seg_3_contact"
+    },
+    {
+      "body": "t4_root",
+      "friction": 1.0,
+      "geoms": [
+        "t4_root_geom"
+      ],
+      "limb": null,
+      "touch_sensor": null
+    },
+    {
+      "body": "t4_seg_0",
+      "friction": 1.0,
+      "geoms": [
+        "t4_seg_0_geom"
+      ],
+      "limb": "tentacle_4",
+      "touch_sensor": "t4_seg_0_contact"
+    },
+    {
+      "body": "t4_seg_1",
+      "friction": 1.0,
+      "geoms": [
+        "t4_seg_1_geom"
+      ],
+      "limb": "tentacle_4",
+      "touch_sensor": "t4_seg_1_contact"
+    },
+    {
+      "body": "t4_seg_2",
+      "friction": 1.0,
+      "geoms": [
+        "t4_seg_2_geom"
+      ],
+      "limb": "tentacle_4",
+      "touch_sensor": "t4_seg_2_contact"
+    },
+    {
+      "body": "t4_seg_3",
+      "friction": 1.0,
+      "geoms": [
+        "t4_seg_3_geom"
+      ],
+      "limb": "tentacle_4",
+      "touch_sensor": "t4_seg_3_contact"
+    },
+    {
+      "body": "t5_root",
+      "friction": 1.0,
+      "geoms": [
+        "t5_root_geom"
+      ],
+      "limb": null,
+      "touch_sensor": null
+    },
+    {
+      "body": "t5_seg_0",
+      "friction": 1.0,
+      "geoms": [
+        "t5_seg_0_geom"
+      ],
+      "limb": "tentacle_5",
+      "touch_sensor": "t5_seg_0_contact"
+    },
+    {
+      "body": "t5_seg_1",
+      "friction": 1.0,
+      "geoms": [
+        "t5_seg_1_geom"
+      ],
+      "limb": "tentacle_5",
+      "touch_sensor": "t5_seg_1_contact"
+    },
+    {
+      "body": "t5_seg_2",
+      "friction": 1.0,
+      "geoms": [
+        "t5_seg_2_geom"
+      ],
+      "limb": "tentacle_5",
+      "touch_sensor": "t5_seg_2_contact"
+    },
+    {
+      "body": "t5_seg_3",
+      "friction": 1.0,
+      "geoms": [
+        "t5_seg_3_geom"
+      ],
+      "limb": "tentacle_5",
+      "touch_sensor": "t5_seg_3_contact"
+    }
+  ],
+  "traction": {
+    "floor_friction": 1.0,
+    "members": "tentacle segments and the mantle underside"
+  },
+  "working_stance": "resting"
+}

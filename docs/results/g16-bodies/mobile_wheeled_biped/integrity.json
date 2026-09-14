@@ -1,0 +1,156 @@
+{
+  "actuator_count": 11,
+  "body_count": 15,
+  "collider_count": 18,
+  "free_joints": 1,
+  "inertia_checked_bodies": 15,
+  "joint_count": 11,
+  "mass_kg": 16.01200261769831,
+  "notes": [],
+  "passed": true,
+  "recoveries": [
+    {
+      "drop_m": 0.02,
+      "final_height_m": 0.2666694276965994,
+      "final_tilt_deg": 62.38567116081164,
+      "perturbation": "released in its working stance with no balance controller: declared unsupported",
+      "pitch_deg": 0.0,
+      "recovered": false,
+      "roll_deg": 0.0,
+      "supported": false,
+      "trial_id": "released_standing"
+    },
+    {
+      "drop_m": 0.1,
+      "final_height_m": 0.19483887774523362,
+      "final_tilt_deg": 2.5937226600436665,
+      "perturbation": "released 10 cm higher than its stance",
+      "pitch_deg": 0.0,
+      "recovered": true,
+      "roll_deg": 0.0,
+      "supported": true,
+      "trial_id": "drop_10cm"
+    },
+    {
+      "drop_m": 0.03,
+      "final_height_m": 0.19483887774568193,
+      "final_tilt_deg": 2.593722660245238,
+      "perturbation": "released rolled 8 degrees",
+      "pitch_deg": 0.0,
+      "recovered": true,
+      "roll_deg": 8.0,
+      "supported": true,
+      "trial_id": "roll_8"
+    },
+    {
+      "drop_m": 0.03,
+      "final_height_m": 0.19483887774568293,
+      "final_tilt_deg": 2.593722660245379,
+      "perturbation": "released rolled -8 degrees",
+      "pitch_deg": 0.0,
+      "recovered": true,
+      "roll_deg": -8.0,
+      "supported": true,
+      "trial_id": "roll_-8"
+    },
+    {
+      "drop_m": 0.03,
+      "final_height_m": 0.1948388777452511,
+      "final_tilt_deg": 2.5937226602583108,
+      "perturbation": "released pitched 8 degrees nose down",
+      "pitch_deg": 8.0,
+      "recovered": true,
+      "roll_deg": 0.0,
+      "supported": true,
+      "trial_id": "pitch_8"
+    },
+    {
+      "drop_m": 0.03,
+      "final_height_m": 0.19483887774524644,
+      "final_tilt_deg": 2.593722659988424,
+      "perturbation": "released pitched 8 degrees nose up",
+      "pitch_deg": -8.0,
+      "recovered": true,
+      "roll_deg": 0.0,
+      "supported": true,
+      "trial_id": "pitch_-8"
+    },
+    {
+      "drop_m": 0.03,
+      "final_height_m": 0.19483887774524192,
+      "final_tilt_deg": 2.593722660773907,
+      "perturbation": "released rolled 25 degrees",
+      "pitch_deg": 0.0,
+      "recovered": true,
+      "roll_deg": 25.0,
+      "supported": true,
+      "trial_id": "roll_25"
+    },
+    {
+      "drop_m": 0.03,
+      "final_height_m": 0.1948388777456344,
+      "final_tilt_deg": 2.593722661153154,
+      "perturbation": "released pitched 25 degrees nose down",
+      "pitch_deg": 25.0,
+      "recovered": true,
+      "roll_deg": 0.0,
+      "supported": true,
+      "trial_id": "pitch_25"
+    },
+    {
+      "drop_m": 0.05,
+      "final_height_m": 0.11008816347850564,
+      "final_tilt_deg": 93.8195399876655,
+      "perturbation": "released rolled 60 degrees: an unsupported manoeuvre, kept to show what the body does without a controller",
+      "pitch_deg": 0.0,
+      "recovered": false,
+      "roll_deg": 60.0,
+      "supported": false,
+      "trial_id": "roll_60"
+    }
+  ],
+  "robot_id": "mobile_wheeled_biped",
+  "stances": [
+    {
+      "base_height_m": 0.19483887774581266,
+      "declared_statically_stable": true,
+      "duration_s": 4.0,
+      "settled": true,
+      "stance": "parked",
+      "statically_stable": true,
+      "support_contacts": [
+        "left_wheel",
+        "right_wheel",
+        "torso"
+      ],
+      "support_polygon_area_m2": 0.13625367457714502,
+      "tilt_deg": 2.593722660316786,
+      "undeclared_contacts": [],
+      "upright": true
+    },
+    {
+      "base_height_m": 0.26483604340855604,
+      "declared_statically_stable": false,
+      "duration_s": 4.0,
+      "settled": true,
+      "stance": "standing",
+      "statically_stable": false,
+      "support_contacts": [
+        "arm_link_1",
+        "left_shank",
+        "left_wheel",
+        "right_shank",
+        "right_wheel"
+      ],
+      "support_polygon_area_m2": 0.16836117612243368,
+      "tilt_deg": 63.27802492779062,
+      "undeclared_contacts": [
+        "arm_link_1",
+        "left_shank",
+        "right_shank"
+      ],
+      "upright": false
+    }
+  ],
+  "violations": []
+}

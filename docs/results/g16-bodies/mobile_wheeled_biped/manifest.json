@@ -1,0 +1,308 @@
+{
+  "base_body": "torso",
+  "base_kind": "wheeled",
+  "description": "A two-legged wheeled body: hip and knee hinges on each leg, a driven wheel at each foot, knee pads to park on, and a three-hinge arm with a parallel jaw on the torso.",
+  "expected_standing_height_m": 0.47,
+  "footprint_m": [
+    0.6736636824989257,
+    0.696
+  ],
+  "joints": [
+    {
+      "actuator": "left_hip_pitch_servo",
+      "actuator_kind": "position",
+      "body": "left_hip",
+      "effort_limit": 45.0,
+      "kind": "hinge",
+      "limb": "leg_left",
+      "maximum": 2.0,
+      "minimum": -2.0,
+      "name": "left_hip_pitch",
+      "rest": 0.7,
+      "role": "leg",
+      "velocity_limit": 6.0
+    },
+    {
+      "actuator": "left_knee_servo",
+      "actuator_kind": "position",
+      "body": "left_shank",
+      "effort_limit": 45.0,
+      "kind": "hinge",
+      "limb": "leg_left",
+      "maximum": 2.6,
+      "minimum": 0.0,
+      "name": "left_knee",
+      "rest": 1.4,
+      "role": "leg",
+      "velocity_limit": 6.0
+    },
+    {
+      "actuator": "left_wheel_spin_drive",
+      "actuator_kind": "velocity",
+      "body": "left_wheel",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "leg_left",
+      "maximum": null,
+      "minimum": null,
+      "name": "left_wheel_spin",
+      "rest": 0.0,
+      "role": "wheel",
+      "velocity_limit": 25.0
+    },
+    {
+      "actuator": "right_hip_pitch_servo",
+      "actuator_kind": "position",
+      "body": "right_hip",
+      "effort_limit": 45.0,
+      "kind": "hinge",
+      "limb": "leg_right",
+      "maximum": 2.0,
+      "minimum": -2.0,
+      "name": "right_hip_pitch",
+      "rest": 0.7,
+      "role": "leg",
+      "velocity_limit": 6.0
+    },
+    {
+      "actuator": "right_knee_servo",
+      "actuator_kind": "position",
+      "body": "right_shank",
+      "effort_limit": 45.0,
+      "kind": "hinge",
+      "limb": "leg_right",
+      "maximum": 2.6,
+      "minimum": 0.0,
+      "name": "right_knee",
+      "rest": 1.4,
+      "role": "leg",
+      "velocity_limit": 6.0
+    },
+    {
+      "actuator": "right_wheel_spin_drive",
+      "actuator_kind": "velocity",
+      "body": "right_wheel",
+      "effort_limit": 12.0,
+      "kind": "hinge",
+      "limb": "leg_right",
+      "maximum": null,
+      "minimum": null,
+      "name": "right_wheel_spin",
+      "rest": 0.0,
+      "role": "wheel",
+      "velocity_limit": 25.0
+    },
+    {
+      "actuator": "arm_yaw_servo",
+      "actuator_kind": "position",
+      "body": "arm_base",
+      "effort_limit": 20.0,
+      "kind": "hinge",
+      "limb": "arm",
+      "maximum": 2.6,
+      "minimum": -2.6,
+      "name": "arm_yaw",
+      "rest": 0.0,
+      "role": "arm",
+      "velocity_limit": 3.0
+    },
+    {
+      "actuator": "arm_joint_0_servo",
+      "actuator_kind": "position",
+      "body": "arm_link_0",
+      "effort_limit": 25.0,
+      "kind": "hinge",
+      "limb": "arm",
+      "maximum": 2.6,
+      "minimum": -2.6,
+      "name": "arm_joint_0",
+      "rest": -1.9,
+      "role": "arm",
+      "velocity_limit": 3.0
+    },
+    {
+      "actuator": "arm_joint_1_servo",
+      "actuator_kind": "position",
+      "body": "arm_link_1",
+      "effort_limit": 18.0,
+      "kind": "hinge",
+      "limb": "arm",
+      "maximum": 2.6,
+      "minimum": -2.6,
+      "name": "arm_joint_1",
+      "rest": 1.7,
+      "role": "arm",
+      "velocity_limit": 3.0
+    },
+    {
+      "actuator": "arm_grip_left_servo",
+      "actuator_kind": "position",
+      "body": "arm_finger_left",
+      "effort_limit": 40.0,
+      "kind": "slide",
+      "limb": "arm",
+      "maximum": 0.035,
+      "minimum": 0.0,
+      "name": "arm_grip_left",
+      "rest": 0.0,
+      "role": "grip",
+      "velocity_limit": 0.2
+    },
+    {
+      "actuator": "arm_grip_right_servo",
+      "actuator_kind": "position",
+      "body": "arm_finger_right",
+      "effort_limit": 40.0,
+      "kind": "slide",
+      "limb": "arm",
+      "maximum": 0.035,
+      "minimum": 0.0,
+      "name": "arm_grip_right",
+      "rest": 0.0,
+      "role": "grip",
+      "velocity_limit": 0.2
+    }
+  ],
+  "limbs": [
+    {
+      "joints": [
+        "arm_yaw",
+        "arm_joint_0",
+        "arm_joint_1",
+        "arm_grip_left",
+        "arm_grip_right"
+      ],
+      "length_m": 0.3522414652783817,
+      "limb_id": "arm",
+      "role": "arm",
+      "tip_body": "arm_finger_left"
+    },
+    {
+      "joints": [
+        "left_hip_pitch",
+        "left_knee",
+        "left_wheel_spin"
+      ],
+      "length_m": 0.43396078054371146,
+      "limb_id": "leg_left",
+      "role": "wheel_leg",
+      "tip_body": "left_wheel"
+    },
+    {
+      "joints": [
+        "right_hip_pitch",
+        "right_knee",
+        "right_wheel_spin"
+      ],
+      "length_m": 0.43396078054371146,
+      "limb_id": "leg_right",
+      "role": "wheel_leg",
+      "tip_body": "right_wheel"
+    }
+  ],
+  "manipulators": [
+    {
+      "aperture_m": 0.072,
+      "fingers": [
+        "arm_finger_left",
+        "arm_finger_right"
+      ],
+      "grasp_site": "arm_grasp_centre",
+      "grip_joints": [
+        "arm_grip_left",
+        "arm_grip_right"
+      ],
+      "limb": "arm",
+      "reach_m": 0.33499999999999996
+    }
+  ],
+  "mass_kg": 16.01200261769831,
+  "model_sha256": "8f99f659258f357c94a7c9d5fec30db35c34592bb407ceb785ba1463f5e368cb",
+  "provenance": {
+    "author": "the rigby repository",
+    "holdout": false,
+    "licence": "the repository's own licence; redistributable with the repository",
+    "origin": "procedural: generated by any-robot/scripts/build_mobile_zoo.py in this repository from primitive geometry; no external design, mesh or measurement was used",
+    "preferred_external_design": null,
+    "redistribution": "permitted with the repository under its licence",
+    "robot_id": "mobile_wheeled_biped",
+    "role": "development and showcase body",
+    "schema": "rigby.asset-provenance/1",
+    "substitute_for": "a wheel-legged balancing robot"
+  },
+  "robot_id": "mobile_wheeled_biped",
+  "root_joint": "root",
+  "schema_version": "1.0",
+  "sensor_names": [
+    "torso_gyro",
+    "torso_accel",
+    "torso_orientation",
+    "left_wheel_contact",
+    "right_wheel_contact",
+    "tail_skid_contact"
+  ],
+  "sensors": [
+    "joint encoders on every hinge and slide, wheel angle",
+    "torso gyro, accelerometer and orientation",
+    "touch on both wheels and the tail skid"
+  ],
+  "stances": {
+    "parked": {
+      "arm_grip_left": 0.0,
+      "arm_grip_right": 0.0,
+      "arm_joint_0": -1.9,
+      "arm_joint_1": 1.7,
+      "arm_yaw": 0.0,
+      "left_hip_pitch": -1.5,
+      "left_knee": 0.1,
+      "right_hip_pitch": -1.5,
+      "right_knee": 0.1
+    },
+    "standing": {
+      "arm_grip_left": 0.0,
+      "arm_grip_right": 0.0,
+      "arm_joint_0": -1.9,
+      "arm_joint_1": 1.7,
+      "arm_yaw": 0.0,
+      "left_hip_pitch": -0.7,
+      "left_knee": 1.4,
+      "right_hip_pitch": -0.7,
+      "right_knee": 1.4
+    }
+  },
+  "support_members": [
+    {
+      "body": "left_wheel",
+      "friction": 1.1,
+      "geoms": [
+        "left_wheel_geom"
+      ],
+      "limb": "leg_left",
+      "touch_sensor": "left_wheel_contact"
+    },
+    {
+      "body": "right_wheel",
+      "friction": 1.1,
+      "geoms": [
+        "right_wheel_geom"
+      ],
+      "limb": "leg_right",
+      "touch_sensor": "right_wheel_contact"
+    },
+    {
+      "body": "torso",
+      "friction": 1.0,
+      "geoms": [
+        "torso_geom",
+        "tail_skid_geom"
+      ],
+      "limb": null,
+      "touch_sensor": null
+    }
+  ],
+  "traction": {
+    "floor_friction": 1.1,
+    "members": "rubber wheels; the tail skid when parked"
+  },
+  "working_stance": "standing"
+}

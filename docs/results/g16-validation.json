@@ -1,0 +1,600 @@
+{
+  "goal": "G16",
+  "generated_at_utc": "2026-09-14T05:55:46.577532+00:00",
+  "commit": "38f17fa9712fa77e0ce751f7ff24fc9ae2d6387c",
+  "generation_calls": 0,
+  "bodies": {
+    "mobile_dog_arm": {
+      "actuators": 18,
+      "inspection_upright": true,
+      "integrity": true,
+      "joints": 18,
+      "mass_kg": 17.549,
+      "recoveries": {
+        "supported": [
+          "drop_10cm",
+          "roll_8",
+          "roll_-8",
+          "pitch_8",
+          "pitch_-8",
+          "roll_25",
+          "pitch_25"
+        ],
+        "supported_recovered": 7,
+        "supported_total": 7,
+        "unsupported": [
+          "roll_60",
+          "rearing"
+        ],
+        "unsupported_recovered": 1,
+        "unsupported_total": 2
+      },
+      "stances": {
+        "parked": "stable",
+        "standing": "stable"
+      },
+      "violations": [],
+      "base_kind": "legged",
+      "limbs": 5,
+      "support_members": 4,
+      "manipulators": [
+        [
+          "arm",
+          0.072,
+          0.535
+        ]
+      ],
+      "footprint_m": [
+        0.944,
+        0.585
+      ],
+      "sensor_count": 7,
+      "stance_measurements": {
+        "parked": {
+          "declared_stable": true,
+          "measured_stable": true,
+          "height_m": 0.195,
+          "tilt_deg": 0.4,
+          "contacts": [
+            "fl_foot",
+            "fr_foot",
+            "hl_foot",
+            "hr_foot"
+          ],
+          "undeclared": []
+        },
+        "standing": {
+          "declared_stable": true,
+          "measured_stable": true,
+          "height_m": 0.386,
+          "tilt_deg": 0.0,
+          "contacts": [
+            "fl_foot",
+            "fr_foot",
+            "hl_foot",
+            "hr_foot"
+          ],
+          "undeclared": []
+        }
+      },
+      "recovery_trials": [
+        {
+          "trial_id": "drop_10cm",
+          "supported": true,
+          "recovered": true,
+          "final_tilt_deg": 0.0,
+          "final_height_m": 0.386,
+          "perturbation": "released 10 cm higher than its stance"
+        },
+        {
+          "trial_id": "roll_8",
+          "supported": true,
+          "recovered": true,
+          "final_tilt_deg": 0.0,
+          "final_height_m": 0.386,
+          "perturbation": "released rolled 8 degrees"
+        },
+        {
+          "trial_id": "roll_-8",
+          "supported": true,
+          "recovered": true,
+          "final_tilt_deg": 0.0,
+          "final_height_m": 0.386,
+          "perturbation": "released rolled -8 degrees"
+        },
+        {
+          "trial_id": "pitch_8",
+          "supported": true,
+          "recovered": true,
+          "final_tilt_deg": 0.0,
+          "final_height_m": 0.386,
+          "perturbation": "released pitched 8 degrees nose down"
+        },
+        {
+          "trial_id": "pitch_-8",
+          "supported": true,
+          "recovered": true,
+          "final_tilt_deg": 0.0,
+          "final_height_m": 0.386,
+          "perturbation": "released pitched 8 degrees nose up"
+        },
+        {
+          "trial_id": "roll_25",
+          "supported": true,
+          "recovered": true,
+          "final_tilt_deg": 0.0,
+          "final_height_m": 0.386,
+          "perturbation": "released rolled 25 degrees"
+        },
+        {
+          "trial_id": "pitch_25",
+          "supported": true,
+          "recovered": true,
+          "final_tilt_deg": 0.0,
+          "final_height_m": 0.386,
+          "perturbation": "released pitched 25 degrees nose down"
+        },
+        {
+          "trial_id": "roll_60",
+          "supported": false,
+          "recovered": false,
+          "final_tilt_deg": 170.6,
+          "final_height_m": 0.103,
+          "perturbation": "released rolled 60 degrees: an unsupported manoeuvre, kept to show what the body does without a controller"
+        },
+        {
+          "trial_id": "rearing",
+          "supported": false,
+          "recovered": true,
+          "final_tilt_deg": 12.6,
+          "final_height_m": 0.338,
+          "perturbation": "released rearing on its hind legs: an unsupported manoeuvre"
+        }
+      ],
+      "inspection": {
+        "joints_swept": 18,
+        "duration_s": 23.6,
+        "upright": true
+      },
+      "course_start": {
+        "stable": true,
+        "contacts": [
+          "fl_foot",
+          "fr_foot",
+          "hl_foot",
+          "hr_foot"
+        ]
+      }
+    },
+    "mobile_octopus": {
+      "actuators": 52,
+      "inspection_upright": true,
+      "integrity": true,
+      "joints": 52,
+      "mass_kg": 12.888,
+      "recoveries": {
+        "supported": [
+          "drop_10cm",
+          "roll_8",
+          "roll_-8",
+          "pitch_8",
+          "pitch_-8",
+          "roll_25",
+          "pitch_25"
+        ],
+        "supported_recovered": 7,
+        "supported_total": 7,
+        "unsupported": [
+          "roll_60",
+          "upside_down"
+        ],
+        "unsupported_recovered": 1,
+        "unsupported_total": 2
+      },
+      "stances": {
+        "reaching": "stable",
+        "resting": "stable"
+      },
+      "violations": [],
+      "base_kind": "crawling",
+      "limbs": 6,
+      "support_members": 31,
+      "manipulators": [
+        [
+          "tentacle_0",
+          0.03,
+          0.545
+        ],
+        [
+          "tentacle_5",
+          0.03,
+          0.545
+        ]
+      ],
+      "footprint_m": [
+        1.204,
+        1.271
+      ],
+      "sensor_count": 28,
+      "stance_measurements": {
+        "reaching": {
+          "declared_stable": true,
+          "measured_stable": true,
+          "height_m": 0.113,
+          "tilt_deg": 10.1,
+          "contacts": [
+            "mantle",
+            "t0_root",
+            "t0_seg_0",
+            "t1_seg_0",
+            "t1_seg_1",
+            "t2_seg_1",
+            "t3_seg_1",
+            "t4_seg_0",
+            "t4_seg_1",
+            "t5_root",
+            "t5_seg_0"
+          ],
+          "undeclared": []
+        },
+        "resting": {
+          "declared_stable": true,
+          "measured_stable": true,
+          "height_m": 0.127,
+          "tilt_deg": 0.1,
+          "contacts": [
+            "t0_seg_1",
+            "t1_seg_1",
+            "t2_seg_1",
+            "t3_seg_1",
+            "t4_seg_1",
+            "t5_seg_1"
+          ],
+          "undeclared": []
+        }
+      },
+      "recovery_trials": [
+        {
+          "trial_id": "drop_10cm",
+          "supported": true,
+          "recovered": true,
+          "final_tilt_deg": 0.1,
+          "final_height_m": 0.127,
+          "perturbation": "released 10 cm higher than its stance"
+        },
+        {
+          "trial_id": "roll_8",
+          "supported": true,
+          "recovered": true,
+          "final_tilt_deg": 0.1,
+          "final_height_m": 0.127,
+          "perturbation": "released rolled 8 degrees"
+        },
+        {
+          "trial_id": "roll_-8",
+          "supported": true,
+          "recovered": true,
+          "final_tilt_deg": 0.1,
+          "final_height_m": 0.127,
+          "perturbation": "released rolled -8 degrees"
+        },
+        {
+          "trial_id": "pitch_8",
+          "supported": true,
+          "recovered": true,
+          "final_tilt_deg": 0.0,
+          "final_height_m": 0.127,
+          "perturbation": "released pitched 8 degrees nose down"
+        },
+        {
+          "trial_id": "pitch_-8",
+          "supported": true,
+          "recovered": true,
+          "final_tilt_deg": 0.1,
+          "final_height_m": 0.127,
+          "perturbation": "released pitched 8 degrees nose up"
+        },
+        {
+          "trial_id": "roll_25",
+          "supported": true,
+          "recovered": true,
+          "final_tilt_deg": 0.2,
+          "final_height_m": 0.127,
+          "perturbation": "released rolled 25 degrees"
+        },
+        {
+          "trial_id": "pitch_25",
+          "supported": true,
+          "recovered": true,
+          "final_tilt_deg": 0.1,
+          "final_height_m": 0.127,
+          "perturbation": "released pitched 25 degrees nose down"
+        },
+        {
+          "trial_id": "roll_60",
+          "supported": false,
+          "recovered": true,
+          "final_tilt_deg": 0.3,
+          "final_height_m": 0.127,
+          "perturbation": "released rolled 60 degrees: an unsupported manoeuvre, kept to show what the body does without a controller"
+        },
+        {
+          "trial_id": "upside_down",
+          "supported": false,
+          "recovered": false,
+          "final_tilt_deg": 173.2,
+          "final_height_m": 0.112,
+          "perturbation": "released upside down: an unsupported manoeuvre, it has no righting reflex"
+        }
+      ],
+      "inspection": {
+        "joints_swept": 52,
+        "duration_s": 33.2,
+        "upright": true
+      },
+      "course_start": {
+        "stable": true,
+        "contacts": [
+          "t0_seg_1",
+          "t1_seg_1",
+          "t2_seg_1",
+          "t3_seg_1",
+          "t4_seg_1",
+          "t5_seg_1"
+        ]
+      }
+    },
+    "mobile_wheeled_biped": {
+      "actuators": 11,
+      "inspection_upright": true,
+      "integrity": true,
+      "joints": 11,
+      "mass_kg": 16.012,
+      "recoveries": {
+        "supported": [
+          "drop_10cm",
+          "roll_8",
+          "roll_-8",
+          "pitch_8",
+          "pitch_-8",
+          "roll_25",
+          "pitch_25"
+        ],
+        "supported_recovered": 7,
+        "supported_total": 7,
+        "unsupported": [
+          "released_standing",
+          "roll_60"
+        ],
+        "unsupported_recovered": 0,
+        "unsupported_total": 2
+      },
+      "stances": {
+        "parked": "stable",
+        "standing": "unstable_as_declared"
+      },
+      "violations": [],
+      "base_kind": "wheeled",
+      "limbs": 3,
+      "support_members": 3,
+      "manipulators": [
+        [
+          "arm",
+          0.072,
+          0.335
+        ]
+      ],
+      "footprint_m": [
+        0.674,
+        0.696
+      ],
+      "sensor_count": 6,
+      "stance_measurements": {
+        "parked": {
+          "declared_stable": true,
+          "measured_stable": true,
+          "height_m": 0.195,
+          "tilt_deg": 2.6,
+          "contacts": [
+            "left_wheel",
+            "right_wheel",
+            "torso"
+          ],
+          "undeclared": []
+        },
+        "standing": {
+          "declared_stable": false,
+          "measured_stable": false,
+          "height_m": 0.265,
+          "tilt_deg": 63.3,
+          "contacts": [
+            "arm_link_1",
+            "left_shank",
+            "left_wheel",
+            "right_shank",
+            "right_wheel"
+          ],
+          "undeclared": [
+            "arm_link_1",
+            "left_shank",
+            "right_shank"
+          ]
+        }
+      },
+      "recovery_trials": [
+        {
+          "trial_id": "released_standing",
+          "supported": false,
+          "recovered": false,
+          "final_tilt_deg": 62.4,
+          "final_height_m": 0.267,
+          "perturbation": "released in its working stance with no balance controller: declared unsupported"
+        },
+        {
+          "trial_id": "drop_10cm",
+          "supported": true,
+          "recovered": true,
+          "final_tilt_deg": 2.6,
+          "final_height_m": 0.195,
+          "perturbation": "released 10 cm higher than its stance"
+        },
+        {
+          "trial_id": "roll_8",
+          "supported": true,
+          "recovered": true,
+          "final_tilt_deg": 2.6,
+          "final_height_m": 0.195,
+          "perturbation": "released rolled 8 degrees"
+        },
+        {
+          "trial_id": "roll_-8",
+          "supported": true,
+          "recovered": true,
+          "final_tilt_deg": 2.6,
+          "final_height_m": 0.195,
+          "perturbation": "released rolled -8 degrees"
+        },
+        {
+          "trial_id": "pitch_8",
+          "supported": true,
+          "recovered": true,
+          "final_tilt_deg": 2.6,
+          "final_height_m": 0.195,
+          "perturbation": "released pitched 8 degrees nose down"
+        },
+        {
+          "trial_id": "pitch_-8",
+          "supported": true,
+          "recovered": true,
+          "final_tilt_deg": 2.6,
+          "final_height_m": 0.195,
+          "perturbation": "released pitched 8 degrees nose up"
+        },
+        {
+          "trial_id": "roll_25",
+          "supported": true,
+          "recovered": true,
+          "final_tilt_deg": 2.6,
+          "final_height_m": 0.195,
+          "perturbation": "released rolled 25 degrees"
+        },
+        {
+          "trial_id": "pitch_25",
+          "supported": true,
+          "recovered": true,
+          "final_tilt_deg": 2.6,
+          "final_height_m": 0.195,
+          "perturbation": "released pitched 25 degrees nose down"
+        },
+        {
+          "trial_id": "roll_60",
+          "supported": false,
+          "recovered": false,
+          "final_tilt_deg": 93.8,
+          "final_height_m": 0.11,
+          "perturbation": "released rolled 60 degrees: an unsupported manoeuvre, kept to show what the body does without a controller"
+        }
+      ],
+      "inspection": {
+        "joints_swept": 11,
+        "duration_s": 15.2,
+        "upright": true
+      },
+      "course_start": {
+        "stable": true,
+        "contacts": [
+          "left_wheel",
+          "right_wheel",
+          "torso"
+        ]
+      }
+    }
+  },
+  "course_sha256": "244af80bd16b58096836cb147bc99181ae397b32735d1853d7c97f6eb4730bdc",
+  "course_registration_sha256": "14bb869a6c825d25c04c39dc971482acb66c9a31b3ec268bb07726f15071c895",
+  "feasibility": {
+    "mobile_dog_arm": {
+      "corridor": true,
+      "doorway": true,
+      "ramp": true,
+      "step": true,
+      "station": true,
+      "tray": true
+    },
+    "mobile_octopus": {
+      "corridor": true,
+      "doorway": false,
+      "ramp": true,
+      "step": false,
+      "station": true,
+      "tray": true
+    },
+    "mobile_wheeled_biped": {
+      "corridor": true,
+      "doorway": false,
+      "ramp": true,
+      "step": false,
+      "station": true,
+      "tray": true
+    }
+  },
+  "expert_agreement": {
+    "mobile_dog_arm": {
+      "corridor": true,
+      "doorway": true,
+      "ramp": true,
+      "station": true,
+      "step": true,
+      "tray": true
+    },
+    "mobile_octopus": {
+      "corridor": true,
+      "doorway": true,
+      "ramp": true,
+      "station": true,
+      "step": true,
+      "tray": true
+    },
+    "mobile_wheeled_biped": {
+      "corridor": true,
+      "doorway": true,
+      "ramp": true,
+      "station": true,
+      "step": true,
+      "tray": true
+    }
+  },
+  "d16_clips": {
+    "mobile_dog_arm": [
+      "inspection",
+      "stance-parked",
+      "stance-standing",
+      "recovery-roll_25",
+      "recovery-roll_60",
+      "recovery-rearing",
+      "course-start"
+    ],
+    "mobile_octopus": [
+      "inspection",
+      "stance-reaching",
+      "stance-resting",
+      "recovery-roll_25",
+      "recovery-roll_60",
+      "recovery-upside_down",
+      "course-start"
+    ],
+    "mobile_wheeled_biped": [
+      "inspection",
+      "stance-parked",
+      "stance-standing",
+      "recovery-roll_25",
+      "recovery-released_standing",
+      "recovery-roll_60",
+      "course-start"
+    ]
+  },
+  "all_integrity_passed": true,
+  "all_declared_stances_confirmed": true,
+  "all_supported_recoveries": true,
+  "all_main_route_feasible": true
+}

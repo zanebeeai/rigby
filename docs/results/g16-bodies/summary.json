@@ -1,0 +1,108 @@
+{
+  "bodies": {
+    "mobile_dog_arm": {
+      "actuators": 18,
+      "inspection_upright": true,
+      "integrity": true,
+      "joints": 18,
+      "mass_kg": 17.549,
+      "recoveries": {
+        "supported": [
+          "drop_10cm",
+          "roll_8",
+          "roll_-8",
+          "pitch_8",
+          "pitch_-8",
+          "roll_25",
+          "pitch_25"
+        ],
+        "supported_recovered": 7,
+        "supported_total": 7,
+        "unsupported": [
+          "roll_60",
+          "rearing"
+        ],
+        "unsupported_recovered": 1,
+        "unsupported_total": 2
+      },
+      "stances": {
+        "parked": "stable",
+        "standing": "stable"
+      },
+      "violations": []
+    },
+    "mobile_octopus": {
+      "actuators": 52,
+      "inspection_upright": true,
+      "integrity": true,
+      "joints": 52,
+      "mass_kg": 12.888,
+      "recoveries": {
+        "supported": [
+          "drop_10cm",
+          "roll_8",
+          "roll_-8",
+          "pitch_8",
+          "pitch_-8",
+          "roll_25",
+          "pitch_25"
+        ],
+        "supported_recovered": 7,
+        "supported_total": 7,
+        "unsupported": [
+          "roll_60",
+          "upside_down"
+        ],
+        "unsupported_recovered": 1,
+        "unsupported_total": 2
+      },
+      "stances": {
+        "reaching": "stable",
+        "resting": "stable"
+      },
+      "violations": []
+    },
+    "mobile_wheeled_biped": {
+      "actuators": 11,
+      "inspection_upright": true,
+      "integrity": true,
+      "joints": 11,
+      "mass_kg": 16.012,
+      "recoveries": {
+        "supported": [
+          "drop_10cm",
+          "roll_8",
+          "roll_-8",
+          "pitch_8",
+          "pitch_-8",
+          "roll_25",
+          "pitch_25"
+        ],
+        "supported_recovered": 7,
+        "supported_total": 7,
+        "unsupported": [
+          "released_standing",
+          "roll_60"
+        ],
+        "unsupported_recovered": 0,
+        "unsupported_total": 2
+      },
+      "stances": {
+        "parked": "stable",
+        "standing": "unstable_as_declared"
+      },
+      "violations": []
+    }
+  },
+  "finished_at_utc": "2026-09-14T05:54:24.422055+00:00",
+  "provenance": {
+    "commit": "38f17fa9712fa77e0ce751f7ff24fc9ae2d6387c",
+    "generation_calls": 0,
+    "mujoco": "3.11.0",
+    "numpy": "2.5.1",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.7 (tags/v3.12.7:0b05ead, Oct  1 2024, 03:06:41) [MSC v.1941 64 bit (AMD64)]",
+    "started_at_utc": "2026-09-14T05:53:31.223446+00:00",
+    "working_tree_dirty": true
+  }
+}

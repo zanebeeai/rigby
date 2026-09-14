@@ -1,0 +1,39 @@
+{
+  "labeller": "internal (the author of the bodies and the course); not an independent reviewer",
+  "labels": {
+    "mobile_dog_arm": {
+      "corridor": true,
+      "doorway": true,
+      "ramp": true,
+      "retrieve": true,
+      "station": true,
+      "step": true,
+      "travel": true,
+      "tray": true,
+      "why": "0.6 m across, fits both openings; rubber feet on a 6 degree ramp; a 5 cm step is within a leg's stride; the arm hangs from 0.48 m and reaches 0.44 m, so 0.09 m and 0.07 m are inside its band"
+    },
+    "mobile_octopus": {
+      "corridor": true,
+      "doorway": false,
+      "ramp": true,
+      "retrieve": true,
+      "station": true,
+      "step": false,
+      "travel": true,
+      "tray": true,
+      "why": "1.2 m across at rest: the corridor fits, the 0.7 m doorway does not; the tentacles' friction holds the ramp; a 5 cm step is above its mantle's rise; the pincer tentacles reach 0.69 m along the floor and up to the station and the tray floor"
+    },
+    "mobile_wheeled_biped": {
+      "corridor": true,
+      "doorway": false,
+      "ramp": true,
+      "retrieve": true,
+      "station": true,
+      "step": false,
+      "travel": true,
+      "tray": true,
+      "why": "0.67 m across the wheels: the corridor fits, a 0.7 m doorway leaves 1.5 cm a side and a balancing body cannot hold that line; rubber wheels hold a 6 degree ramp; an 8 cm wheel cannot climb a 5 cm step; the arm hangs from the torso top and its 0.34 m reach spans the station and tray with the knees flexed"
+    }
+  },
+  "schema": "rigby.mobile-feasibility-expert-labels/1"
+}

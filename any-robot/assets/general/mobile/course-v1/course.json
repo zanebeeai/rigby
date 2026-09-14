@@ -1,0 +1,516 @@
+{
+  "branches": [
+    {
+      "branch_id": "corridor",
+      "element": "clearance",
+      "rule": "body footprint across the direction of travel + 0.1 m margin must fit",
+      "value_m": 1.4
+    },
+    {
+      "branch_id": "doorway",
+      "element": "clearance",
+      "rule": "same rule; a side branch the bodies are expected to disagree about",
+      "value_m": 0.7
+    },
+    {
+      "branch_id": "ramp",
+      "element": "traction",
+      "grade_deg": 6.0,
+      "rule": "support friction must exceed tan(grade) with a factor of two; a legged body must also keep its stance height on the slope"
+    },
+    {
+      "branch_id": "step",
+      "element": "step",
+      "rule": "a wheel climbs a step lower than half its radius; a leg steps up to a third of its length; a crawler clears a step lower than its mantle's rise",
+      "value_m": 0.05
+    },
+    {
+      "branch_id": "station",
+      "element": "reach",
+      "object_top_m": 0.09,
+      "rule": "the grasp site must reach the cube's top with the body in a stance it can hold"
+    },
+    {
+      "branch_id": "tray",
+      "element": "reach",
+      "rim_top_m": 0.11,
+      "rule": "the grasp site must reach over the rim to the tray floor at 0.07 m"
+    }
+  ],
+  "course_id": "mobile-course-v1",
+  "description": "A level floor with a start pad, a walled corridor to an object station, a delivery tray on a plinth, a gentle ramp on the way back, and two side branches: a narrow doorway and a step.",
+  "features": [
+    {
+      "euler": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "kind": "pad",
+      "mass_kg": null,
+      "name": "start_pad",
+      "note": "where every body starts and returns to",
+      "position_m": [
+        0.0,
+        0.0,
+        0.002
+      ],
+      "rgba": [
+        0.25,
+        0.55,
+        0.35,
+        1.0
+      ],
+      "size_m": [
+        0.45,
+        0.45,
+        0.002
+      ]
+    },
+    {
+      "euler": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "kind": "wall",
+      "mass_kg": null,
+      "name": "corridor_left",
+      "note": "the corridor's left wall; 1.4 m clear between the walls' inner faces",
+      "position_m": [
+        1.6,
+        0.75,
+        0.25
+      ],
+      "rgba": [
+        0.6,
+        0.6,
+        0.62,
+        1.0
+      ],
+      "size_m": [
+        1.0,
+        0.05,
+        0.25
+      ]
+    },
+    {
+      "euler": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "kind": "wall",
+      "mass_kg": null,
+      "name": "corridor_right",
+      "note": "the corridor's right wall",
+      "position_m": [
+        1.6,
+        -0.75,
+        0.25
+      ],
+      "rgba": [
+        0.6,
+        0.6,
+        0.62,
+        1.0
+      ],
+      "size_m": [
+        1.0,
+        0.05,
+        0.25
+      ]
+    },
+    {
+      "euler": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "kind": "platform",
+      "mass_kg": null,
+      "name": "station",
+      "note": "the object station: a platform 6 cm tall",
+      "position_m": [
+        3.4,
+        0.0,
+        0.03
+      ],
+      "rgba": [
+        0.3,
+        0.45,
+        0.75,
+        1.0
+      ],
+      "size_m": [
+        0.25,
+        0.25,
+        0.03
+      ]
+    },
+    {
+      "euler": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "kind": "object",
+      "mass_kg": 0.05,
+      "name": "cube",
+      "note": "a 30 mm cube on the station, top at 9 cm",
+      "position_m": [
+        3.4,
+        0.0,
+        0.075
+      ],
+      "rgba": [
+        0.85,
+        0.45,
+        0.15,
+        1.0
+      ],
+      "size_m": [
+        0.015,
+        0.015,
+        0.015
+      ]
+    },
+    {
+      "euler": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "kind": "tray",
+      "mass_kg": null,
+      "name": "tray",
+      "note": "the delivery tray's floor, 5 cm up on a plinth",
+      "position_m": [
+        3.4,
+        2.2,
+        0.06
+      ],
+      "rgba": [
+        0.35,
+        0.35,
+        0.4,
+        1.0
+      ],
+      "size_m": [
+        0.2,
+        0.2,
+        0.01
+      ]
+    },
+    {
+      "euler": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "kind": "platform",
+      "mass_kg": null,
+      "name": "tray_plinth",
+      "note": "the tray's plinth",
+      "position_m": [
+        3.4,
+        2.2,
+        0.025
+      ],
+      "rgba": [
+        0.4,
+        0.4,
+        0.45,
+        1.0
+      ],
+      "size_m": [
+        0.22,
+        0.22,
+        0.025
+      ]
+    },
+    {
+      "euler": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "kind": "tray",
+      "mass_kg": null,
+      "name": "tray_rim_n",
+      "note": "the tray's rim, 2 cm above its floor",
+      "position_m": [
+        3.4,
+        2.4,
+        0.09
+      ],
+      "rgba": [
+        0.35,
+        0.35,
+        0.4,
+        1.0
+      ],
+      "size_m": [
+        0.2,
+        0.01,
+        0.02
+      ]
+    },
+    {
+      "euler": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "kind": "tray",
+      "mass_kg": null,
+      "name": "tray_rim_s",
+      "note": "",
+      "position_m": [
+        3.4,
+        2.0,
+        0.09
+      ],
+      "rgba": [
+        0.35,
+        0.35,
+        0.4,
+        1.0
+      ],
+      "size_m": [
+        0.2,
+        0.01,
+        0.02
+      ]
+    },
+    {
+      "euler": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "kind": "tray",
+      "mass_kg": null,
+      "name": "tray_rim_e",
+      "note": "",
+      "position_m": [
+        3.6,
+        2.2,
+        0.09
+      ],
+      "rgba": [
+        0.35,
+        0.35,
+        0.4,
+        1.0
+      ],
+      "size_m": [
+        0.01,
+        0.2,
+        0.02
+      ]
+    },
+    {
+      "euler": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "kind": "tray",
+      "mass_kg": null,
+      "name": "tray_rim_w",
+      "note": "",
+      "position_m": [
+        3.2,
+        2.2,
+        0.09
+      ],
+      "rgba": [
+        0.35,
+        0.35,
+        0.4,
+        1.0
+      ],
+      "size_m": [
+        0.01,
+        0.2,
+        0.02
+      ]
+    },
+    {
+      "euler": [
+        0.0,
+        -0.10471975511965978,
+        0.0
+      ],
+      "kind": "ramp",
+      "mass_kg": null,
+      "name": "ramp",
+      "note": "a 6 degree ramp on the way back from the tray, rising 13 cm over 1.2 m",
+      "position_m": [
+        1.8,
+        2.2,
+        0.05806254115940588
+      ],
+      "rgba": [
+        0.55,
+        0.5,
+        0.45,
+        1.0
+      ],
+      "size_m": [
+        0.6,
+        0.6,
+        0.01
+      ]
+    },
+    {
+      "euler": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "kind": "platform",
+      "mass_kg": null,
+      "name": "ramp_top",
+      "note": "the landing at the top of the ramp",
+      "position_m": [
+        0.85,
+        2.2,
+        0.06306254115940588
+      ],
+      "rgba": [
+        0.55,
+        0.5,
+        0.45,
+        1.0
+      ],
+      "size_m": [
+        0.35,
+        0.6,
+        0.06306254115940588
+      ]
+    },
+    {
+      "euler": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "kind": "doorway",
+      "mass_kg": null,
+      "name": "doorway_left",
+      "note": "a doorway 0.7 m wide on a side branch",
+      "position_m": [
+        1.6,
+        -2.2,
+        0.3
+      ],
+      "rgba": [
+        0.65,
+        0.55,
+        0.5,
+        1.0
+      ],
+      "size_m": [
+        0.05,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "euler": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "kind": "doorway",
+      "mass_kg": null,
+      "name": "doorway_right",
+      "note": "",
+      "position_m": [
+        1.6,
+        -3.3,
+        0.3
+      ],
+      "rgba": [
+        0.65,
+        0.55,
+        0.5,
+        1.0
+      ],
+      "size_m": [
+        0.05,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "euler": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "kind": "step",
+      "mass_kg": null,
+      "name": "step",
+      "note": "a 5 cm step on a side branch",
+      "position_m": [
+        3.4,
+        -2.4,
+        0.025
+      ],
+      "rgba": [
+        0.5,
+        0.45,
+        0.4,
+        1.0
+      ],
+      "size_m": [
+        0.5,
+        0.4,
+        0.025
+      ]
+    }
+  ],
+  "floor_friction": 1.0,
+  "goals": [
+    {
+      "for": "G17",
+      "goal_id": "travel",
+      "route": "start -> station -> start",
+      "success": "base centre within 0.3 m of each waypoint in turn, stable for 2 s at the end, no fall",
+      "text": "leave the start pad, pass the corridor to the station, stop within 0.3 m of it for 2 s, turn around, return to the start pad and stop"
+    },
+    {
+      "for": "G18",
+      "goal_id": "retrieve",
+      "route": "start -> station -> tray -> ramp -> start",
+      "success": "the cube at rest inside the tray's rim, the body back on the start pad and stable, nothing knocked over",
+      "text": "approach the station, stabilise, acquire the cube, carry it to the tray, place it inside the rim, return to the start pad"
+    }
+  ],
+  "route_m": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      3.0,
+      0.0
+    ],
+    [
+      3.4,
+      2.2
+    ],
+    [
+      1.2,
+      2.2
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "schema": "rigby.mobile-course/1"
+}

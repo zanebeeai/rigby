@@ -1,0 +1,43 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-physical-inspection-and-contact-support-tests-of-5e7a4229",
+  "title": "D16: mobile_octopus: physical inspection in stance 'reaching'",
+  "prompt": "physical inspection and contact/support tests of a mobile body (no task prompt: the servos hold a stance)",
+  "tier": "any-robot",
+  "embodiment": "mobile_octopus",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T05:56:04Z",
+  "source": {
+    "commit": "38f17fa971",
+    "branch": "feat/g16",
+    "dirty": false,
+    "how": "python any-robot/scripts/g16_d16_media.py --bodies docs/results/g16-bodies --course docs/results/g16-course --out docs/results/g16-d16"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "STABLE: physical inspection in stance 'reaching'."
+  },
+  "notes": "See docs/results/g16-report.md. Rendered from recorded states at real-time playback with the simulation clock, the base height and tilt, and the floor contacts by body on every frame (undeclared ones in red); frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g16-d16/mobile_octopus/inspection/media/episode.mp4",
+      "bytes": 499406,
+      "sha256": "3dedce3112dcfc614064f0d7e7610c8c815b65330cc9b429ede969bb88199856",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g16-d16/mobile_octopus/inspection/media/preview.gif",
+      "bytes": 1337747,
+      "sha256": "987b41fe75840bf0485016cbca95a2dfdff2283aad3cc1689471abbccd63b29c",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G16",
+    "D16",
+    "mobile_octopus",
+    "inspection"
+  ]
+}

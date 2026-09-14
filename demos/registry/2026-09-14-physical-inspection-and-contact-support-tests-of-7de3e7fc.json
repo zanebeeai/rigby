@@ -1,0 +1,43 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-physical-inspection-and-contact-support-tests-of-7de3e7fc",
+  "title": "D16: mobile_dog_arm: physical inspection in stance 'parked'",
+  "prompt": "physical inspection and contact/support tests of a mobile body (no task prompt: the servos hold a stance)",
+  "tier": "any-robot",
+  "embodiment": "mobile_dog_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T05:56:01Z",
+  "source": {
+    "commit": "38f17fa971",
+    "branch": "feat/g16",
+    "dirty": false,
+    "how": "python any-robot/scripts/g16_d16_media.py --bodies docs/results/g16-bodies --course docs/results/g16-course --out docs/results/g16-d16"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "STABLE: physical inspection in stance 'parked'."
+  },
+  "notes": "See docs/results/g16-report.md. Rendered from recorded states at real-time playback with the simulation clock, the base height and tilt, and the floor contacts by body on every frame (undeclared ones in red); frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g16-d16/mobile_dog_arm/inspection/media/episode.mp4",
+      "bytes": 389068,
+      "sha256": "ddfdc62323eee496961206a8cab94c197e0eb0d789c40491845fe403c3359247",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g16-d16/mobile_dog_arm/inspection/media/preview.gif",
+      "bytes": 1455957,
+      "sha256": "8cce0407a23a41e86e83897f90e76b8891e4dccf74a79404880ddad66a41c94d",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G16",
+    "D16",
+    "mobile_dog_arm",
+    "inspection"
+  ]
+}

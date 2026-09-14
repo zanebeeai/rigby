@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-physical-inspection-and-contact-support-tests-of-09cec32e",
+  "title": "D16: mobile_octopus: recovery trial: released upside down: an unsupported manoeuvre, it has no righting reflex",
+  "prompt": "physical inspection and contact/support tests of a mobile body (no task prompt: the servos hold a stance)",
+  "tier": "any-robot",
+  "embodiment": "mobile_octopus",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T05:56:06Z",
+  "source": {
+    "commit": "38f17fa971",
+    "branch": "feat/g16",
+    "dirty": false,
+    "how": "python any-robot/scripts/g16_d16_media.py --bodies docs/results/g16-bodies --course docs/results/g16-course --out docs/results/g16-d16"
+  },
+  "outcome": {
+    "state": "partial",
+    "text": "NOT RECOVERED UNSUPPORTED: recovery trial: released upside down: an unsupported manoeuvre, it has no righting reflex. An UNSUPPORTED manoeuvre: the body is not meant to survive it without a controller; kept to show what it does. It did not recover, as expected."
+  },
+  "notes": "See docs/results/g16-report.md. Rendered from recorded states at real-time playback with the simulation clock, the base height and tilt, and the floor contacts by body on every frame (undeclared ones in red); frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g16-d16/mobile_octopus/recovery-upside_down/media/episode.mp4",
+      "bytes": 157232,
+      "sha256": "0204ea87f6f4a3fc9622cf35afe77cada63303c8aba3cbebdd5d2d97848b93cf",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g16-d16/mobile_octopus/recovery-upside_down/media/preview.gif",
+      "bytes": 1181051,
+      "sha256": "6e56fc2498a2b4527ffcd6a6c7507434dc8e0d35e017c266e489bf8a90a2936e",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G16",
+    "D16",
+    "mobile_octopus",
+    "recovery",
+    "unsupported"
+  ]
+}

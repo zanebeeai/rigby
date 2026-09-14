@@ -1,0 +1,333 @@
+{
+  "bodies": {
+    "mobile_dog_arm": [
+      {
+        "clip": "inspection",
+        "frame_count": 285,
+        "frames": "mobile_dog_arm/inspection/media/frames.json",
+        "joints_swept": 18,
+        "media_sha256": "05f615a8bf175ffdf0f337e36bafa95c9ba67653f081d98846860733e0a9ebb5",
+        "outcome": "stable",
+        "preview": "mobile_dog_arm/inspection/media/preview.gif",
+        "source_sha256": "4693c94cf4414adba48eea55c42d7ee6a979d735c42e43bad806ee3029c227a1",
+        "title": "physical inspection in stance 'parked'",
+        "video": "mobile_dog_arm/inspection/media/episode.mp4"
+      },
+      {
+        "clip": "stance-parked",
+        "declared_stable": true,
+        "frame_count": 49,
+        "frames": "mobile_dog_arm/stance-parked/media/frames.json",
+        "measured_stable": true,
+        "media_sha256": "5d19e8e005e2da5384ba2309123766136c45ada7aaf7f8e73c9b99f603678b37",
+        "outcome": "stable",
+        "preview": "mobile_dog_arm/stance-parked/media/preview.gif",
+        "source_sha256": "6eb5c886112231f6bbbb5ac1dc90c08e316ab584fa4102de0cd4a6f2e0dadf06",
+        "support_contacts": [
+          "fl_foot",
+          "fr_foot",
+          "hl_foot",
+          "hr_foot"
+        ],
+        "title": "settling test, stance 'parked'",
+        "video": "mobile_dog_arm/stance-parked/media/episode.mp4"
+      },
+      {
+        "clip": "stance-standing",
+        "declared_stable": true,
+        "frame_count": 49,
+        "frames": "mobile_dog_arm/stance-standing/media/frames.json",
+        "measured_stable": true,
+        "media_sha256": "f1ba6725d8a400ef4034188913f6db3d6fe79c6a161c6612151f86713cdafcaf",
+        "outcome": "stable",
+        "preview": "mobile_dog_arm/stance-standing/media/preview.gif",
+        "source_sha256": "9ec8934be3111e6158418a763ed64ca64e749bd87a0872c716df0fdf1e0035ee",
+        "support_contacts": [
+          "fl_foot",
+          "fr_foot",
+          "hl_foot",
+          "hr_foot"
+        ],
+        "title": "settling test, stance 'standing'",
+        "video": "mobile_dog_arm/stance-standing/media/episode.mp4"
+      },
+      {
+        "clip": "recovery-roll_25",
+        "final_tilt_deg": 0.0047432666430471775,
+        "frame_count": 97,
+        "frames": "mobile_dog_arm/recovery-roll_25/media/frames.json",
+        "media_sha256": "9f021473112f1571ba2d26a209d843a032955b15dc7b18b9d5b78fc442651e28",
+        "outcome": "recovered",
+        "preview": "mobile_dog_arm/recovery-roll_25/media/preview.gif",
+        "recovered": true,
+        "source_sha256": "7e2e2ff511e8a453aeddd44f4e0998b9009738a7548947f1a29215172eb720a8",
+        "supported": true,
+        "title": "recovery trial: released rolled 25 degrees",
+        "video": "mobile_dog_arm/recovery-roll_25/media/episode.mp4"
+      },
+      {
+        "clip": "recovery-roll_60",
+        "final_tilt_deg": 170.58205184614775,
+        "frame_count": 97,
+        "frames": "mobile_dog_arm/recovery-roll_60/media/frames.json",
+        "media_sha256": "52efcbf1e1d3a426cf6e16c4df46e4f8ff9b183921332de5f0d77634e07554d0",
+        "outcome": "not_recovered_unsupported",
+        "preview": "mobile_dog_arm/recovery-roll_60/media/preview.gif",
+        "recovered": false,
+        "source_sha256": "5e0ed3d42180b37dcc75a64327f09875d25611f3b8ef2a243ad0e729b073f5a0",
+        "supported": false,
+        "title": "recovery trial: released rolled 60 degrees: an unsupported manoeuvre, kept to show what the body does without a controller",
+        "video": "mobile_dog_arm/recovery-roll_60/media/episode.mp4"
+      },
+      {
+        "clip": "recovery-rearing",
+        "final_tilt_deg": 12.618574151974887,
+        "frame_count": 97,
+        "frames": "mobile_dog_arm/recovery-rearing/media/frames.json",
+        "media_sha256": "95d1d251181cc02c1c51c6efee3e52ffdf0800ae98d9b8748a6096e85dc984b6",
+        "outcome": "recovered",
+        "preview": "mobile_dog_arm/recovery-rearing/media/preview.gif",
+        "recovered": true,
+        "source_sha256": "9c54ab64f75c883a13313f168b58cd7d3aa4ef870f76b5ee3dec046e1a7707ec",
+        "supported": false,
+        "title": "recovery trial: released rearing on its hind legs: an unsupported manoeuvre",
+        "video": "mobile_dog_arm/recovery-rearing/media/episode.mp4"
+      },
+      {
+        "clip": "course-start",
+        "frame_count": 37,
+        "frames": "mobile_dog_arm/course-start/media/frames.json",
+        "media_sha256": "2c0cfe6201d13bca17de843a710f2029b39756b4482e75bb109acc7f2d77202b",
+        "outcome": "stable",
+        "preview": "mobile_dog_arm/course-start/media/preview.gif",
+        "source_sha256": "ca737d866b5bdfd01f8dd4dc3174b3f0f4de9cd447a75f8337ad0aa23a26c661",
+        "title": "on the course: settled on the start pad in stance 'standing'",
+        "video": "mobile_dog_arm/course-start/media/episode.mp4"
+      }
+    ],
+    "mobile_octopus": [
+      {
+        "clip": "inspection",
+        "frame_count": 400,
+        "frames": "mobile_octopus/inspection/media/frames.json",
+        "joints_swept": 52,
+        "media_sha256": "e62684441ff95e74423fe41634141aefc24ccdd7531034d150fe348d51b42080",
+        "outcome": "stable",
+        "preview": "mobile_octopus/inspection/media/preview.gif",
+        "source_sha256": "6fdb062662bfc3bccbeea753cb8f2f138fe7ae01e9f32bca360688df058bd917",
+        "title": "physical inspection in stance 'reaching'",
+        "video": "mobile_octopus/inspection/media/episode.mp4"
+      },
+      {
+        "clip": "stance-reaching",
+        "declared_stable": true,
+        "frame_count": 49,
+        "frames": "mobile_octopus/stance-reaching/media/frames.json",
+        "measured_stable": true,
+        "media_sha256": "5ba7e97ed0697a01a4b64287a239d98f357ce00fb69c46d3476511e87b781314",
+        "outcome": "stable",
+        "preview": "mobile_octopus/stance-reaching/media/preview.gif",
+        "source_sha256": "9f0537f838ba7060e63a413060b11d3504b9509e1729f15b053241a10ec0c556",
+        "support_contacts": [
+          "mantle",
+          "t0_root",
+          "t0_seg_0",
+          "t1_seg_0",
+          "t1_seg_1",
+          "t2_seg_1",
+          "t3_seg_1",
+          "t4_seg_0",
+          "t4_seg_1",
+          "t5_root",
+          "t5_seg_0"
+        ],
+        "title": "settling test, stance 'reaching'",
+        "video": "mobile_octopus/stance-reaching/media/episode.mp4"
+      },
+      {
+        "clip": "stance-resting",
+        "declared_stable": true,
+        "frame_count": 49,
+        "frames": "mobile_octopus/stance-resting/media/frames.json",
+        "measured_stable": true,
+        "media_sha256": "7c32c00b7f96c99ec95309724f4e1e3f29727323a357b8043881bf74188ba4f6",
+        "outcome": "stable",
+        "preview": "mobile_octopus/stance-resting/media/preview.gif",
+        "source_sha256": "c4b746ff17644284f5afd0d115b326928c84060bf3db60c4252b409541ecc712",
+        "support_contacts": [
+          "t0_seg_1",
+          "t1_seg_1",
+          "t2_seg_1",
+          "t3_seg_1",
+          "t4_seg_1",
+          "t5_seg_1"
+        ],
+        "title": "settling test, stance 'resting'",
+        "video": "mobile_octopus/stance-resting/media/episode.mp4"
+      },
+      {
+        "clip": "recovery-roll_25",
+        "final_tilt_deg": 0.1543962650586045,
+        "frame_count": 97,
+        "frames": "mobile_octopus/recovery-roll_25/media/frames.json",
+        "media_sha256": "91f9ff64f81672845bbb9dd4871d75e126e3ea376d977e54a191a7534ad090b1",
+        "outcome": "recovered",
+        "preview": "mobile_octopus/recovery-roll_25/media/preview.gif",
+        "recovered": true,
+        "source_sha256": "23d71ce3db0786a073663b82fff34ed92a640059987fe08fc920768bacc637ef",
+        "supported": true,
+        "title": "recovery trial: released rolled 25 degrees",
+        "video": "mobile_octopus/recovery-roll_25/media/episode.mp4"
+      },
+      {
+        "clip": "recovery-roll_60",
+        "final_tilt_deg": 0.2680259737735986,
+        "frame_count": 97,
+        "frames": "mobile_octopus/recovery-roll_60/media/frames.json",
+        "media_sha256": "d5467f171b410af787256898b27331fbf86ae95c8131b640b4b308beec8c33ee",
+        "outcome": "recovered",
+        "preview": "mobile_octopus/recovery-roll_60/media/preview.gif",
+        "recovered": true,
+        "source_sha256": "2d7db3db7b547254f9a20ea7d65b9a11907c9a57aa87a2175eb19ef3bada70d0",
+        "supported": false,
+        "title": "recovery trial: released rolled 60 degrees: an unsupported manoeuvre, kept to show what the body does without a controller",
+        "video": "mobile_octopus/recovery-roll_60/media/episode.mp4"
+      },
+      {
+        "clip": "recovery-upside_down",
+        "final_tilt_deg": 173.20868920355966,
+        "frame_count": 97,
+        "frames": "mobile_octopus/recovery-upside_down/media/frames.json",
+        "media_sha256": "bcd9e08ce92a43bdb2d38a023ceada8cb685694ad1f34919ab100762f3c8bacd",
+        "outcome": "not_recovered_unsupported",
+        "preview": "mobile_octopus/recovery-upside_down/media/preview.gif",
+        "recovered": false,
+        "source_sha256": "032d3d9df5aa8d75c5e5750ce6d71a9b037c7798f7cd2d67817c75d66f735c40",
+        "supported": false,
+        "title": "recovery trial: released upside down: an unsupported manoeuvre, it has no righting reflex",
+        "video": "mobile_octopus/recovery-upside_down/media/episode.mp4"
+      },
+      {
+        "clip": "course-start",
+        "frame_count": 37,
+        "frames": "mobile_octopus/course-start/media/frames.json",
+        "media_sha256": "2e21e858a9cf03620ef3e70dfa1f0838b065a0637e18ed61eb76e572eca370d7",
+        "outcome": "stable",
+        "preview": "mobile_octopus/course-start/media/preview.gif",
+        "source_sha256": "08cb6459d9aeb36fd14921814a5f300a1ac04a54ed9733969e82a5fbeba31036",
+        "title": "on the course: settled on the start pad in stance 'resting'",
+        "video": "mobile_octopus/course-start/media/episode.mp4"
+      }
+    ],
+    "mobile_wheeled_biped": [
+      {
+        "clip": "inspection",
+        "frame_count": 184,
+        "frames": "mobile_wheeled_biped/inspection/media/frames.json",
+        "joints_swept": 11,
+        "media_sha256": "f9c270b5ea44c2a0ce60dad3c544312382d670d051bec77dc14fb51d259c40ab",
+        "outcome": "stable",
+        "preview": "mobile_wheeled_biped/inspection/media/preview.gif",
+        "source_sha256": "d821da1c895733f81bcdcbafe706077956cfc1a7ef7f24413b2aab545f03ae20",
+        "title": "physical inspection in stance 'parked'",
+        "video": "mobile_wheeled_biped/inspection/media/episode.mp4"
+      },
+      {
+        "clip": "stance-parked",
+        "declared_stable": true,
+        "frame_count": 49,
+        "frames": "mobile_wheeled_biped/stance-parked/media/frames.json",
+        "measured_stable": true,
+        "media_sha256": "e79de0da53dd3234a7f1a5e32ea63a2d16346e0b84756878f315bcce0a9b9c73",
+        "outcome": "stable",
+        "preview": "mobile_wheeled_biped/stance-parked/media/preview.gif",
+        "source_sha256": "4f8a9aa584e498aa73725704358f4d788f2370af03538856637e27fe2f9ed5e3",
+        "support_contacts": [
+          "left_wheel",
+          "right_wheel",
+          "torso"
+        ],
+        "title": "settling test, stance 'parked'",
+        "video": "mobile_wheeled_biped/stance-parked/media/episode.mp4"
+      },
+      {
+        "clip": "stance-standing",
+        "declared_stable": false,
+        "frame_count": 49,
+        "frames": "mobile_wheeled_biped/stance-standing/media/frames.json",
+        "measured_stable": false,
+        "media_sha256": "e28b924c4a3a16939add865983650a487dd23c20fe98232864370871209d137d",
+        "outcome": "unstable_as_declared",
+        "preview": "mobile_wheeled_biped/stance-standing/media/preview.gif",
+        "source_sha256": "88a1a302f23167e00aa2dc00ccaca2205415e2aade952da7179086379b43116b",
+        "support_contacts": [
+          "arm_link_1",
+          "left_shank",
+          "left_wheel",
+          "right_shank",
+          "right_wheel"
+        ],
+        "title": "settling test, stance 'standing'",
+        "video": "mobile_wheeled_biped/stance-standing/media/episode.mp4"
+      },
+      {
+        "clip": "recovery-roll_25",
+        "final_tilt_deg": 2.593722660773907,
+        "frame_count": 97,
+        "frames": "mobile_wheeled_biped/recovery-roll_25/media/frames.json",
+        "media_sha256": "65ca9b3e8d23e8febcf0e718b28e249fb667fca2e620e71da9753e52f4624f85",
+        "outcome": "recovered",
+        "preview": "mobile_wheeled_biped/recovery-roll_25/media/preview.gif",
+        "recovered": true,
+        "source_sha256": "e4746feab5b73b7b6f88e451413aed414e3cdfdcd227b68a36a7d4ce1b4b1602",
+        "supported": true,
+        "title": "recovery trial: released rolled 25 degrees",
+        "video": "mobile_wheeled_biped/recovery-roll_25/media/episode.mp4"
+      },
+      {
+        "clip": "recovery-released_standing",
+        "final_tilt_deg": 62.38567116081164,
+        "frame_count": 97,
+        "frames": "mobile_wheeled_biped/recovery-released_standing/media/frames.json",
+        "media_sha256": "b687d41ef3a7c46b39547b0f1a071eb466b93f8951d1afee5fd27398388a4ec1",
+        "outcome": "not_recovered_unsupported",
+        "preview": "mobile_wheeled_biped/recovery-released_standing/media/preview.gif",
+        "recovered": false,
+        "source_sha256": "bfd9c66f14052045e9135ecc06868e1094c8b2c4fc354403d613bca647fac80b",
+        "supported": false,
+        "title": "recovery trial: released in its working stance with no balance controller: declared unsupported",
+        "video": "mobile_wheeled_biped/recovery-released_standing/media/episode.mp4"
+      },
+      {
+        "clip": "recovery-roll_60",
+        "final_tilt_deg": 93.8195399876655,
+        "frame_count": 97,
+        "frames": "mobile_wheeled_biped/recovery-roll_60/media/frames.json",
+        "media_sha256": "2b6d4400b7198499fdd76e212c0993decb0384e216cd2ec116e5a646f98699fc",
+        "outcome": "not_recovered_unsupported",
+        "preview": "mobile_wheeled_biped/recovery-roll_60/media/preview.gif",
+        "recovered": false,
+        "source_sha256": "7559db3e0d0487a32c1568624ea21e2958419fdc4cb93faf2bd168cfd959e053",
+        "supported": false,
+        "title": "recovery trial: released rolled 60 degrees: an unsupported manoeuvre, kept to show what the body does without a controller",
+        "video": "mobile_wheeled_biped/recovery-roll_60/media/episode.mp4"
+      },
+      {
+        "clip": "course-start",
+        "frame_count": 37,
+        "frames": "mobile_wheeled_biped/course-start/media/frames.json",
+        "media_sha256": "66bf71690059f3fb5ccb834377ba9ff09071a9a1d7e06dfc1015dc0a9d143ff0",
+        "outcome": "stable",
+        "preview": "mobile_wheeled_biped/course-start/media/preview.gif",
+        "source_sha256": "854871470c6c24d80c0329d7d81879579f5986c9b70fce8ddc4f94aefb9e39e7",
+        "title": "on the course: settled on the start pad in stance 'parked'",
+        "video": "mobile_wheeled_biped/course-start/media/episode.mp4"
+      }
+    ]
+  },
+  "commit": "38f17fa9712fa77e0ce751f7ff24fc9ae2d6387c",
+  "created_at_utc": "2026-09-14T05:54:31.209569+00:00",
+  "demo": "D16",
+  "generation_calls": 0,
+  "goal": "G16"
+}

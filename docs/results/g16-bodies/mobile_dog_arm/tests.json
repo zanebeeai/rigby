@@ -1,0 +1,398 @@
+{
+  "inspection": {
+    "duration_s": 23.5999999999978,
+    "schedule": [
+      {
+        "end_s": 2.2,
+        "fraction": 0.35,
+        "joint": "fl_hip_roll",
+        "limb": "leg_fl",
+        "role": "leg",
+        "start_s": 1.0
+      },
+      {
+        "end_s": 3.4000000000000004,
+        "fraction": 0.35,
+        "joint": "fl_hip_pitch",
+        "limb": "leg_fl",
+        "role": "leg",
+        "start_s": 2.2
+      },
+      {
+        "end_s": 4.6000000000000005,
+        "fraction": 0.35,
+        "joint": "fl_knee",
+        "limb": "leg_fl",
+        "role": "leg",
+        "start_s": 3.4000000000000004
+      },
+      {
+        "end_s": 5.800000000000001,
+        "fraction": 0.35,
+        "joint": "fr_hip_roll",
+        "limb": "leg_fr",
+        "role": "leg",
+        "start_s": 4.6000000000000005
+      },
+      {
+        "end_s": 7.000000000000001,
+        "fraction": 0.35,
+        "joint": "fr_hip_pitch",
+        "limb": "leg_fr",
+        "role": "leg",
+        "start_s": 5.800000000000001
+      },
+      {
+        "end_s": 8.200000000000001,
+        "fraction": 0.35,
+        "joint": "fr_knee",
+        "limb": "leg_fr",
+        "role": "leg",
+        "start_s": 7.000000000000001
+      },
+      {
+        "end_s": 9.4,
+        "fraction": 0.35,
+        "joint": "hl_hip_roll",
+        "limb": "leg_hl",
+        "role": "leg",
+        "start_s": 8.200000000000001
+      },
+      {
+        "end_s": 10.6,
+        "fraction": 0.35,
+        "joint": "hl_hip_pitch",
+        "limb": "leg_hl",
+        "role": "leg",
+        "start_s": 9.4
+      },
+      {
+        "end_s": 11.799999999999999,
+        "fraction": 0.35,
+        "joint": "hl_knee",
+        "limb": "leg_hl",
+        "role": "leg",
+        "start_s": 10.6
+      },
+      {
+        "end_s": 12.999999999999998,
+        "fraction": 0.35,
+        "joint": "hr_hip_roll",
+        "limb": "leg_hr",
+        "role": "leg",
+        "start_s": 11.799999999999999
+      },
+      {
+        "end_s": 14.199999999999998,
+        "fraction": 0.35,
+        "joint": "hr_hip_pitch",
+        "limb": "leg_hr",
+        "role": "leg",
+        "start_s": 12.999999999999998
+      },
+      {
+        "end_s": 15.399999999999997,
+        "fraction": 0.35,
+        "joint": "hr_knee",
+        "limb": "leg_hr",
+        "role": "leg",
+        "start_s": 14.199999999999998
+      },
+      {
+        "end_s": 16.599999999999998,
+        "fraction": 0.5,
+        "joint": "arm_yaw",
+        "limb": "arm",
+        "role": "arm",
+        "start_s": 15.399999999999997
+      },
+      {
+        "end_s": 17.799999999999997,
+        "fraction": 0.5,
+        "joint": "arm_joint_0",
+        "limb": "arm",
+        "role": "arm",
+        "start_s": 16.599999999999998
+      },
+      {
+        "end_s": 18.999999999999996,
+        "fraction": 0.5,
+        "joint": "arm_joint_1",
+        "limb": "arm",
+        "role": "arm",
+        "start_s": 17.799999999999997
+      },
+      {
+        "end_s": 20.199999999999996,
+        "fraction": 0.5,
+        "joint": "arm_joint_2",
+        "limb": "arm",
+        "role": "arm",
+        "start_s": 18.999999999999996
+      },
+      {
+        "end_s": 21.399999999999995,
+        "fraction": 0.5,
+        "joint": "arm_grip_left",
+        "limb": "arm",
+        "role": "grip",
+        "start_s": 20.199999999999996
+      },
+      {
+        "end_s": 22.599999999999994,
+        "fraction": 0.5,
+        "joint": "arm_grip_right",
+        "limb": "arm",
+        "role": "grip",
+        "start_s": 21.399999999999995
+      }
+    ],
+    "sealed": {
+      "bundle": "any-robot/results/g16-bodies/mobile_dog_arm/inspection/physical",
+      "replay_agrees": true,
+      "sha256": "4693c94cf4414adba48eea55c42d7ee6a979d735c42e43bad806ee3029c227a1",
+      "simulation_duration_s": 23.5999999999978,
+      "trace_sha256": "aed925ffce5ca0d56a0ad6ca8e030b07dfb491b1c649d11ab7ba87b9b8c99c75"
+    },
+    "settled": true,
+    "stance": "parked",
+    "tilt_deg": 0.3963995957017964,
+    "upright": true
+  },
+  "recoveries": [
+    {
+      "drop_m": 0.1,
+      "final_height_m": 0.3859445119437913,
+      "final_tilt_deg": 0.0015544184351058686,
+      "perturbation": "released 10 cm higher than its stance",
+      "pitch_deg": 0.0,
+      "recovered": true,
+      "roll_deg": 0.0,
+      "sealed": {
+        "bundle": "any-robot/results/g16-bodies/mobile_dog_arm/recovery-drop_10cm/physical",
+        "replay_agrees": true,
+        "sha256": "28d8f064b7e25978bb1aac91b72ffd38013e29345adb002f1d6d33674f51836f",
+        "simulation_duration_s": 7.999999999999341,
+        "trace_sha256": "959c3b0357f62d788e80a70137b11f78aa3a53c783993e27e6966711554176fb"
+      },
+      "stance": "standing",
+      "status": "recovered",
+      "supported": true,
+      "trial_id": "drop_10cm"
+    },
+    {
+      "drop_m": 0.03,
+      "final_height_m": 0.3859504467731164,
+      "final_tilt_deg": 0.00581120654697028,
+      "perturbation": "released rolled 8 degrees",
+      "pitch_deg": 0.0,
+      "recovered": true,
+      "roll_deg": 8.0,
+      "sealed": {
+        "bundle": "any-robot/results/g16-bodies/mobile_dog_arm/recovery-roll_8/physical",
+        "replay_agrees": true,
+        "sha256": "82bf7561c764be3defa781c8703e8484e65281e47cb70bd01ac7b27307140f30",
+        "simulation_duration_s": 7.999999999999341,
+        "trace_sha256": "2d3877510c2dd0c3ae4dfbcbbb6ff8117e5a87edf0f67618aba0dc6185d6c943"
+      },
+      "stance": "standing",
+      "status": "recovered",
+      "supported": true,
+      "trial_id": "roll_8"
+    },
+    {
+      "drop_m": 0.03,
+      "final_height_m": 0.38595044677311674,
+      "final_tilt_deg": 0.00581120654697028,
+      "perturbation": "released rolled -8 degrees",
+      "pitch_deg": 0.0,
+      "recovered": true,
+      "roll_deg": -8.0,
+      "sealed": {
+        "bundle": "any-robot/results/g16-bodies/mobile_dog_arm/recovery-roll_-8/physical",
+        "replay_agrees": true,
+        "sha256": "4b90e6a103bb26e6643e41036d6ef157a59729c2d97fde89722967d87648b688",
+        "simulation_duration_s": 7.999999999999341,
+        "trace_sha256": "b9d447b40b09d9a55155cdcd7d971838d4c39dde3c4a14251cac88a81eceba81"
+      },
+      "stance": "standing",
+      "status": "recovered",
+      "supported": true,
+      "trial_id": "roll_-8"
+    },
+    {
+      "drop_m": 0.03,
+      "final_height_m": 0.3859427708804523,
+      "final_tilt_deg": 0.00204837468589416,
+      "perturbation": "released pitched 8 degrees nose down",
+      "pitch_deg": 8.0,
+      "recovered": true,
+      "roll_deg": 0.0,
+      "sealed": {
+        "bundle": "any-robot/results/g16-bodies/mobile_dog_arm/recovery-pitch_8/physical",
+        "replay_agrees": true,
+        "sha256": "8c184a8f088fa836433fa126f02d5689ba5b32ff77fda5a77b2647743d18a747",
+        "simulation_duration_s": 7.999999999999341,
+        "trace_sha256": "dbc220af26497f85d6312008e588a7cc2a170ab6905bce4de76973cc0c2a6091"
+      },
+      "stance": "standing",
+      "status": "recovered",
+      "supported": true,
+      "trial_id": "pitch_8"
+    },
+    {
+      "drop_m": 0.03,
+      "final_height_m": 0.38594623843073683,
+      "final_tilt_deg": 0.004696935210656493,
+      "perturbation": "released pitched 8 degrees nose up",
+      "pitch_deg": -8.0,
+      "recovered": true,
+      "roll_deg": 0.0,
+      "sealed": {
+        "bundle": "any-robot/results/g16-bodies/mobile_dog_arm/recovery-pitch_-8/physical",
+        "replay_agrees": true,
+        "sha256": "65af812747a1523728c0f93a6bb7b7c23a5661f0b3e63fc7a95c1dd5af8cadf6",
+        "simulation_duration_s": 7.999999999999341,
+        "trace_sha256": "781610e503e50ba7cf8d0fb02aa48667ec69600fce4913589678b356ddf5a937"
+      },
+      "stance": "standing",
+      "status": "recovered",
+      "supported": true,
+      "trial_id": "pitch_-8"
+    },
+    {
+      "drop_m": 0.03,
+      "final_height_m": 0.3859857092277493,
+      "final_tilt_deg": 0.0047432666430471775,
+      "perturbation": "released rolled 25 degrees",
+      "pitch_deg": 0.0,
+      "recovered": true,
+      "roll_deg": 25.0,
+      "sealed": {
+        "bundle": "any-robot/results/g16-bodies/mobile_dog_arm/recovery-roll_25/physical",
+        "replay_agrees": true,
+        "sha256": "7e2e2ff511e8a453aeddd44f4e0998b9009738a7548947f1a29215172eb720a8",
+        "simulation_duration_s": 7.999999999999341,
+        "trace_sha256": "525d80038cd5d5bde567b8229453c423a04a58a788f32920347a322e5fdd14b3"
+      },
+      "stance": "standing",
+      "status": "recovered",
+      "supported": true,
+      "trial_id": "roll_25"
+    },
+    {
+      "drop_m": 0.03,
+      "final_height_m": 0.38595002039507187,
+      "final_tilt_deg": 0.003158461032774685,
+      "perturbation": "released pitched 25 degrees nose down",
+      "pitch_deg": 25.0,
+      "recovered": true,
+      "roll_deg": 0.0,
+      "sealed": {
+        "bundle": "any-robot/results/g16-bodies/mobile_dog_arm/recovery-pitch_25/physical",
+        "replay_agrees": true,
+        "sha256": "ef90a76c09c8a0e29e61486e9f44207731afac42b2203fa849871192c19b22df",
+        "simulation_duration_s": 7.999999999999341,
+        "trace_sha256": "0ad49d778eac997daf576b298d141eddbe2c4c87ab6ab438971113e93ff31222"
+      },
+      "stance": "standing",
+      "status": "recovered",
+      "supported": true,
+      "trial_id": "pitch_25"
+    },
+    {
+      "drop_m": 0.05,
+      "final_height_m": 0.10271778846825293,
+      "final_tilt_deg": 170.58205184614775,
+      "perturbation": "released rolled 60 degrees: an unsupported manoeuvre, kept to show what the body does without a controller",
+      "pitch_deg": 0.0,
+      "recovered": false,
+      "roll_deg": 60.0,
+      "sealed": {
+        "bundle": "any-robot/results/g16-bodies/mobile_dog_arm/recovery-roll_60/physical",
+        "replay_agrees": true,
+        "sha256": "5e0ed3d42180b37dcc75a64327f09875d25611f3b8ef2a243ad0e729b073f5a0",
+        "simulation_duration_s": 7.999999999999341,
+        "trace_sha256": "64394b4a1cae062b2b02eb99fe7d74053c7f6ba66bc3918b1c58cb9bf07635c0"
+      },
+      "stance": "standing",
+      "status": "not_recovered_unsupported",
+      "supported": false,
+      "trial_id": "roll_60"
+    },
+    {
+      "drop_m": 0.05,
+      "final_height_m": 0.337523098238475,
+      "final_tilt_deg": 12.618574151974887,
+      "perturbation": "released rearing on its hind legs: an unsupported manoeuvre",
+      "pitch_deg": -35.0,
+      "recovered": true,
+      "roll_deg": 0.0,
+      "sealed": {
+        "bundle": "any-robot/results/g16-bodies/mobile_dog_arm/recovery-rearing/physical",
+        "replay_agrees": true,
+        "sha256": "9c54ab64f75c883a13313f168b58cd7d3aa4ef870f76b5ee3dec046e1a7707ec",
+        "simulation_duration_s": 7.999999999999341,
+        "trace_sha256": "9b63589d9a63d536a538f611c24a89baebea13a958a0aea0bacfd1b7018733c4"
+      },
+      "stance": "rearing",
+      "status": "recovered",
+      "supported": false,
+      "trial_id": "rearing"
+    }
+  ],
+  "stances": [
+    {
+      "base_height_m": 0.1946363507960091,
+      "declared_statically_stable": true,
+      "duration_s": 4.0,
+      "sealed": {
+        "bundle": "any-robot/results/g16-bodies/mobile_dog_arm/stance-parked/physical",
+        "replay_agrees": true,
+        "sha256": "6eb5c886112231f6bbbb5ac1dc90c08e316ab584fa4102de0cd4a6f2e0dadf06",
+        "simulation_duration_s": 3.999999999999781,
+        "trace_sha256": "a7af5de46ac860b414a47e8351a7cef9f829740a121670f79f85db7f397d5999"
+      },
+      "settled": true,
+      "stance": "parked",
+      "statically_stable": true,
+      "status": "stable",
+      "support_contacts": [
+        "fl_foot",
+        "fr_foot",
+        "hl_foot",
+        "hr_foot"
+      ],
+      "support_polygon_area_m2": 0.1295137663572467,
+      "tilt_deg": 0.3963713981590232,
+      "undeclared_contacts": [],
+      "upright": true
+    },
+    {
+      "base_height_m": 0.3859905356859155,
+      "declared_statically_stable": true,
+      "duration_s": 4.0,
+      "sealed": {
+        "bundle": "any-robot/results/g16-bodies/mobile_dog_arm/stance-standing/physical",
+        "replay_agrees": true,
+        "sha256": "9ec8934be3111e6158418a763ed64ca64e749bd87a0872c716df0fdf1e0035ee",
+        "simulation_duration_s": 3.999999999999781,
+        "trace_sha256": "0c1e020fe1b9da7857f0286e39fbe58f5ab6dc4c3396e755a442807637741fab"
+      },
+      "settled": true,
+      "stance": "standing",
+      "statically_stable": true,
+      "status": "stable",
+      "support_contacts": [
+        "fl_foot",
+        "fr_foot",
+        "hl_foot",
+        "hr_foot"
+      ],
+      "support_polygon_area_m2": 0.13018139039597443,
+      "tilt_deg": 0.001897509191809289,
+      "undeclared_contacts": [],
+      "upright": true
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-physical-inspection-and-contact-support-tests-of-918bd049",
+  "title": "D16: mobile_octopus: recovery trial: released rolled 60 degrees: an unsupported manoeuvre, kept to show what the body does without a controller",
+  "prompt": "physical inspection and contact/support tests of a mobile body (no task prompt: the servos hold a stance)",
+  "tier": "any-robot",
+  "embodiment": "mobile_octopus",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T05:56:06Z",
+  "source": {
+    "commit": "38f17fa971",
+    "branch": "feat/g16",
+    "dirty": false,
+    "how": "python any-robot/scripts/g16_d16_media.py --bodies docs/results/g16-bodies --course docs/results/g16-course --out docs/results/g16-d16"
+  },
+  "outcome": {
+    "state": "partial",
+    "text": "RECOVERED: recovery trial: released rolled 60 degrees: an unsupported manoeuvre, kept to show what the body does without a controller. An UNSUPPORTED manoeuvre: the body is not meant to survive it without a controller; kept to show what it does. It recovered anyway."
+  },
+  "notes": "See docs/results/g16-report.md. Rendered from recorded states at real-time playback with the simulation clock, the base height and tilt, and the floor contacts by body on every frame (undeclared ones in red); frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g16-d16/mobile_octopus/recovery-roll_60/media/episode.mp4",
+      "bytes": 93172,
+      "sha256": "2d2838a9f541e65ae82dd21d2849c2bae196194c01ee99cbaf4116c21f8a2cb4",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g16-d16/mobile_octopus/recovery-roll_60/media/preview.gif",
+      "bytes": 833371,
+      "sha256": "69cb7975d949b3facc2ac5888355c6c84f92d0f6e647090324337ebb0ecb7752",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G16",
+    "D16",
+    "mobile_octopus",
+    "recovery",
+    "unsupported"
+  ]
+}
