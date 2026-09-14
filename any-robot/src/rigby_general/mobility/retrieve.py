@@ -147,6 +147,8 @@ class RetrieveSession:
 
     GRASP_TOLERANCE_M = 0.012
     """How far the grasp site may miss the grasp point: within the jaw's clearance around a 30 mm cube."""
+    PLACE_ON_BEST_BRANCH = True
+    """False reproduces the placement before the fix: a straight-line move from the carry pose keeps the arm folded back over the torso and brings the wrist down on the tray's rim; kept for before/after pairs."""
 
     def __init__(self, body: MobileBody, course: Course, *, seed: int, cap_s: float, jitter_xy_m: float = 0.10, jitter_yaw_deg: float = 10.0, disturbance: RetrieveDisturbance | None = None, settle_s: float = 1.5, retry_budget: int = 2) -> None:
         self.body = body
@@ -733,9 +735,12 @@ class RetrieveSession:
         above = target + np.array([0.0, 0.0, 0.10])
         # out over the tray on the best branch the arm has (the carry pose folds the arm back over the torso; a straight-line move from
         # there keeps that branch and brings the wrist down on the rim), then a short straight correction
-        solution = self.manipulator.solve(self.data, above, down=0.3, want=want)
-        self.move_arm(solution.joints, 1.5)
-        residual = self.move_site(above, steps=12, down=0.2, want=want)
+        if self.PLACE_ON_BEST_BRANCH:
+            solution = self.manipulator.solve(self.data, above, down=0.3, want=want)
+            self.move_arm(solution.joints, 1.5)
+            residual = self.move_site(above, steps=12, down=0.2, want=want)
+        else:
+            residual = self.move_site(above, steps=40, down=0.2, want=want)
         if residual > 0.03:
             state = self.locomotor.base_state(self.data)
             return self.end(record, False, f"tray out of reach: residual {residual * 100:.1f} cm", residual_m=residual, base=[round(float(state.position[0]), 3), round(float(state.position[1]), 3), round(math.degrees(state.yaw), 1)], distance_to_tray_m=round(float(np.linalg.norm(np.array(TRAY_CENTRE) - state.position[:2])), 3), site=[round(float(v), 3) for v in self.manipulator.site_position(self.data)], contacts=list(floor_contacts(self.model, self.data, 0, self.robot)))

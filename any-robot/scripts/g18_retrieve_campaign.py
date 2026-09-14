@@ -6,10 +6,13 @@ Every trial keeps its row: the outcome and its reason, every phase with
 its attempts, timing, support set and holding limb (the resource
 schedule), the hold events, the invariant checks, the object's slip
 while carried, falls and collisions, energy, distance, latency, the
-time against the cap, the actuation and support logs. Every failure and
-the first successes of each stage are sealed as replayable bundles,
-locally; rendering is a separate pass. `--resume` keeps the rows on
-disk whose sealed bundles are whole. No API or model calls.
+time against the cap, the actuation and support logs. The first
+failure and the first two successes of each stage are sealed as
+replayable bundles, locally, while the disk has room for them (a
+crawler's trial seals to three quarters of a gigabyte; the rows of the
+rest stay explicit, and say why they are not sealed); rendering is a
+separate pass. `--resume` keeps the rows on disk whose sealed bundles are whole.
+No API or model calls.
 """
 
 from __future__ import annotations
@@ -18,6 +21,7 @@ import argparse
 import hashlib
 import json
 import platform
+import shutil
 import subprocess
 import sys
 import time
@@ -42,6 +46,9 @@ MOBILE = ROOT / "assets/general/mobile"
 PROTOCOL = ROOT / "assets/general/research-protocols/g18-retrieve-v1"
 TRIAL_PROTOCOL = "rigby.mobile-retrieve-trial/1"
 KEEP_SUCCESSES = 2
+KEEP_FAILURES = 1
+DISK_FLOOR_BYTES = 3 * 1024**3
+"""A trial is not sealed when the disk holding the local bundles would be left with less than this."""
 CAMERA = {"centre": [1.7, 1.1, 0.25], "reach": 2.6}
 
 
@@ -155,9 +162,10 @@ def main() -> int:
     done = {r["trial_id"] for r in rows}
     kept = {}
     for row in rows:
-        if "sealed" in row and row["success"]:
-            kept[row["stage"]] = kept.get(row["stage"], 0) + 1
+        if "sealed" in row:
+            kept[(row["stage"], row["success"])] = kept.get((row["stage"], row["success"]), 0) + 1
     (out / "provenance.json").write_bytes(json_bytes(provenance))
+    local.mkdir(parents=True, exist_ok=True)
     for trial in trials:
         if trial["trial_id"] in done:
             continue
@@ -165,10 +173,12 @@ def main() -> int:
         started = time.perf_counter()
         result = run_retrieve(body, course, seed=trial["seed"], cap_s=trial["cap_s"], jitter_xy_m=protocol["jitter"]["xy_m"], jitter_yaw_deg=protocol["jitter"]["yaw_deg"], disturbance=disturbance, settle_s=protocol["settle_s"], retry_budget=protocol["retry_budget"])
         row = row_of(trial, result, time.perf_counter() - started)
-        keep = (not result.success) or kept.get(trial["stage"], 0) < KEEP_SUCCESSES
+        keep = kept.get((trial["stage"], result.success), 0) < (KEEP_SUCCESSES if result.success else KEEP_FAILURES)
+        if keep and shutil.disk_usage(local).free < DISK_FLOOR_BYTES:
+            keep = False
+            row["not_sealed"] = "the disk holding the local bundles is at its floor"
         if keep:
-            if result.success:
-                kept[trial["stage"]] = kept.get(trial["stage"], 0) + 1
+            kept[(trial["stage"], result.success)] = kept.get((trial["stage"], result.success), 0) + 1
             world_xml = course_world_xml(body, course, None)
             model = mujoco.MjSpec.from_string(world_xml).compile()
             on_course = replace(body, floor_model=model, floor_xml=world_xml)

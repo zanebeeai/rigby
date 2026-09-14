@@ -382,6 +382,8 @@ class OctopusCrawl(Locomotor):
     GROUP = {0: 0.0, 2: 0.0, 4: 0.0, 1: 0.5, 3: 0.5, 5: 0.5}
     IN_PLACE_SENSE = -1.0
     """The sign of the in-place sweep difference; +1.0 reproduces the first crawl, whose in-place turn ran the wrong way (the navigator then drove the heading back to the seam instead of round); kept for before/after pairs."""
+    WAVE_WHEN_HOLDING = True
+    """False keeps the tripod with a tentacle held out (one phase then stands on two tentacles); kept for before/after pairs."""
 
     def __init__(self, body: MobileBody, model: mujoco.MjModel) -> None:
         super().__init__(body, model)

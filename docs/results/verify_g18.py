@@ -11,9 +11,12 @@ summary count is recomputed from the rows and the validation agrees;
 every phase carries its support set and holding limb, a holding limb
 is never in the drive's support set, and every row's provenance names
 no root write, no object write and no artificial support; every failure
-is sealed and explicit; every D18 clip's source is a sealed row and its
-media hashes whole. With --replay, every sealed run behind a D18 clip
-is replayed on native physics and must agree exactly.
+is explicit, the first failure of each stage is sealed and a failure
+left unsealed says why; every D18 clip's source is a sealed row and its
+media hashes whole; every before/after pair has both sides sealed, their
+media rendered from those sealed runs, and the fix switched off on the
+before side only. With --replay, every sealed run behind a D18 clip or
+a pair is replayed on native physics and must agree exactly.
 
     python docs/results/verify_g18.py [--replay]
 """
@@ -33,7 +36,10 @@ PROTOCOL = REPO / "any-robot/assets/general/research-protocols/g18-retrieve-v1"
 MOBILE = REPO / "any-robot/assets/general/mobile"
 RESULTS = ROOT / "g18-retrieve"
 D18 = ROOT / "g18-d18"
+PAIRS = ROOT / "g18-before-after"
 BODIES = ("mobile_dog_arm_v2", "mobile_wheeled_biped_v2", "mobile_octopus_v2")
+KEEP_FAILURES = 1
+"""The campaign seals the first failures of each stage, as many as this, while the disk has room."""
 
 
 def sha256(path: Path) -> str:
@@ -55,7 +61,10 @@ def check_run(bundle: Path, expected: str, row: dict, *, replay: bool) -> None:
     for name, info in manifest["files"].items():
         assert sha256(bundle / name) == info["sha256"], (bundle, name)
     task = json.loads((bundle / "task.json").read_bytes())
-    assert task["trial_id"] == row["trial_id"] and task["disturbance"] == row["disturbance"], bundle
+    if "trial_id" in row:
+        assert task["trial_id"] == row["trial_id"] and task["disturbance"] == row["disturbance"], bundle
+    else:
+        assert task["test"] == "before_after_pair" and task["pair_id"] == row["pair_id"] and task["side"] == row["side"] and task["body"] == row["body"] and task["seed"] == row["seed"] and task["settings"] == row["settings"], bundle
     if replay:
         import mujoco
         from rigby_core.simulation.recording import PhysicsRecord, replay_physics
@@ -137,9 +146,11 @@ def main() -> int:
                     assert not (set(entry["support"]) & moving_bodies[body_id][entry["holding"]]), (r["trial_id"], "a holding limb's members are not support members")
             if not r["success"]:
                 assert r["reason"], (r["trial_id"], "every failure is explicit")
-                assert "sealed" in r, (r["trial_id"], "every failure is sealed")
+                assert "sealed" in r or r.get("not_sealed"), (r["trial_id"], "a failure is sealed or says why not")
         for stage, cell in summary["stages"].items():
             mine = [r for r in rows if r["stage"] == stage]
+            failures = [r for r in mine if not r["success"]]
+            assert sum(1 for r in failures if "sealed" in r) >= min(len(failures), KEEP_FAILURES), (body_id, stage, "the first failures of a stage are sealed")
             assert cell["trials"] == len(mine) and cell["successes"] == sum(1 for r in mine if r["success"]) and cell["falls"] == sum(1 for r in mine if r["fell"]), (body_id, stage)
         nominal = [r for r in rows if r["kind"] == "nominal"]
         disturbed = [r for r in rows if r["kind"] == "disturbed"]
@@ -158,7 +169,23 @@ def main() -> int:
             assert media["metadata"]["source_bundle_sha256"] == clip["source_sha256"] and media["metadata"]["full_episode"] and media["metadata"]["fps"] == 12
             check_run(REPO / row["sealed"]["bundle"], row["sealed"]["sha256"], row, replay=args.replay)
             replayed += args.replay
-    print(json.dumps({"verified": True, "registration_sha256": registration["registration_sha256"][:12], "bodies": {b: validation["bodies"][b]["nominal"] + validation["bodies"][b]["disturbed"] for b in BODIES}, "replayed": replayed, "goal_met": validation["all_targets_met"]}))
+    # the before/after pairs: each side sealed and whole, its media whole and rendered from that sealed run, the fix switched off on the before side only
+    pairs = json.loads((PAIRS / "index.json").read_bytes())["pairs"]
+    assert {p["pair_id"] for p in pairs} == {"dog-jaw", "octopus-pincer", "dog-place-branch", "octopus-wave-gait"}
+    assert [p["pair_id"] for p in validation["before_after"]] == [p["pair_id"] for p in pairs]
+    for pair in pairs:
+        for side in ("before", "after"):
+            run = pair["runs"][side]
+            assert run["success"] == (run["status"] == "success") and (run["success"] or run["reason"]), (pair["pair_id"], side)
+            if side == "after":
+                assert not run["settings"], (pair["pair_id"], "the after side runs as committed")
+            else:
+                assert run["settings"] or run["body"] != pair["runs"]["after"]["body"], (pair["pair_id"], "the before side differs in a body or a setting")
+            media = check_media(PAIRS / pair["pair_id"] / side / "media")
+            assert media["metadata"]["source_bundle_sha256"] == run["sealed"]["sha256"] and media["metadata"]["full_episode"] and media["metadata"]["fps"] == 12
+            check_run(REPO / run["sealed"]["bundle"], run["sealed"]["sha256"], {"pair_id": pair["pair_id"], "side": side, "body": run["body"], "seed": pair["seed"], "settings": run["settings"]}, replay=args.replay)
+            replayed += args.replay
+    print(json.dumps({"verified": True, "registration_sha256": registration["registration_sha256"][:12], "bodies": {b: validation["bodies"][b]["nominal"] + validation["bodies"][b]["disturbed"] for b in BODIES}, "pairs": len(pairs), "replayed": replayed, "goal_met": validation["all_targets_met"]}))
     return 0
 
 
