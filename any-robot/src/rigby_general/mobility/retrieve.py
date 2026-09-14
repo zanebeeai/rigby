@@ -556,6 +556,16 @@ class RetrieveSession:
         site = self.manipulator.site_position(self.data)
         self.move_site(np.array([site[0], site[1], max(height, site[2] + 0.08)]), steps=40)
 
+    def object_touches(self, body: int) -> bool:
+        """Whether the object touches `body` now."""
+
+        for i in range(self.data.ncon):
+            c = self.data.contact[i]
+            b1, b2 = int(self.model.geom_bodyid[int(c.geom1)]), int(self.model.geom_bodyid[int(c.geom2)])
+            if (b1 == self.cube and b2 == body) or (b2 == self.cube and b1 == body):
+                return True
+        return False
+
     def limb_touches(self, body: int) -> bool:
         """Whether the manipulating limb, fingers aside, touches `body` now: a link, palm or pincer body coming down on the object is the descent's end; the fingers are meant to brush it."""
 
@@ -688,14 +698,23 @@ class RetrieveSession:
         """The held object brought in front of and above the base, where it rides during the carry."""
 
         if self.body.declaration["base_kind"] == "crawling":
-            # the tentacle folds back over the mantle until the pincer rests on it: the held object is braced against the mantle's top rather
-            # than swaying on a free-standing tentacle while the others crawl; nothing of the tentacle is near the floor
+            # the tentacle folds back over the mantle: the held object rides above the mantle's centre, where the body's rocking moves it least,
+            # rather than out to the side on a free-standing tentacle; nothing of the tentacle is near the floor
             joints = list(self.manipulator.joints)
             tuck = {j: 0.0 for j in joints}
-            for name, value in zip(joints[1::2], (-1.4, -1.3, -0.7, -0.2)):
+            for name, value in zip(joints[1::2], (-1.0, -1.0, -0.9, -0.6)):
                 tuck[name] = value
             self.move_arm(tuck, 2.0)
             self.hold_still(0.5, require_stable=False)
+            # then the pincer comes down until the object rests on the mantle: pinched from above and bearing on the body, it rides on three
+            # supports and cannot swing out when the mantle rocks
+            for _ in range(10):
+                if self.object_touches(self.base):
+                    break
+                site = self.manipulator.site_position(self.data)
+                solution = self.manipulator.solve(self.data, site + np.array([0.0, 0.0, -0.01]), seed=self.arm_targets, down=0.0, single_start=True)
+                self.move_arm(solution.joints, 0.3)
+            self.hold_still(0.3, require_stable=False)
             return
         yaw = self.locomotor.base_state(self.data).yaw
         base = np.array(self.data.xpos[self.base], dtype=float)
