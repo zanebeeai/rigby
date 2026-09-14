@@ -4,7 +4,7 @@
   "goal_catalog": "docs/research/rigby-verifiable-goals.json",
   "goal_catalog_sha256": "3672ebf5fa10ff4216fa0213499d5988281f2ebbc611500e8526afe6e618b250",
   "started_at_utc": "2026-09-12T02:34:49.841258+00:00",
-  "current_goal": "G18",
+  "current_goal": "G23",
   "overall_status": "active",
   "authorization": {
     "commits_and_pull_requests": true,
@@ -2766,39 +2766,99 @@
     {
       "id": "G18",
       "title": "Combine locomotion with manipulation",
-      "status": "planned",
+      "status": "partial",
       "criteria": [
         {
           "id": "G18.A01",
           "requirement": "Execute approach object \u2192 stabilize \u2192 acquire \u2192 move while holding \u2192 place \u2192 return, with the same root contract on the three bodies.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "docs/results/g18-report.md",
+            "docs/results/g18-validation.json",
+            "docs/results/verify_g18.py",
+            "any-robot/assets/general/research-protocols/g18-retrieve-v1/",
+            "any-robot/assets/general/mobile/",
+            "docs/results/g18-retrieve/",
+            "docs/results/g18-d18/index.json",
+            "docs/results/g18-before-after/index.json"
+          ],
+          "note": "one retrieve contract (approach, stabilise, acquire, carry, place, return; one success rule) executed on the three bodies through rigby_general.mobility.retrieve with the G17 navigator and drives and a numerical reach on each body's declared grasp site; the phases, their support sets and the holding limb are in every trial row",
+          "verified_at_utc": "2026-09-14T19:14:48.163778+00:00"
         },
         {
           "id": "G18.A02",
           "requirement": "Achieve at least 80/100 nominal full-task successes per body in the fixed world; verify object control during base motion and correct support-resource allocation.",
-          "status": "pending",
-          "evidence": []
+          "status": "partial",
+          "evidence": [
+            "docs/results/g18-report.md",
+            "docs/results/g18-validation.json",
+            "docs/results/verify_g18.py",
+            "any-robot/assets/general/research-protocols/g18-retrieve-v1/",
+            "any-robot/assets/general/mobile/",
+            "docs/results/g18-retrieve/",
+            "docs/results/g18-d18/index.json",
+            "docs/results/g18-before-after/index.json"
+          ],
+          "note": "nominal full-task successes {\"mobile_dog_arm_v2\": \"100/100\", \"mobile_wheeled_biped_v2\": \"0/100\", \"mobile_octopus_v2\": \"0/100\"} of 100 (target >= 80); object control during base motion measured as the held object's slip from the grasp site every step (max per body {\"mobile_dog_arm_v2\": 0.0416, \"mobile_wheeled_biped_v2\": 0.0, \"mobile_octopus_v2\": 0.6406} m) and the hold checked every step; support resources allocated per phase with the holding limb excluded from the drive and its links checked against ground contact (violations {\"mobile_dog_arm_v2\": 0, \"mobile_wheeled_biped_v2\": 0, \"mobile_octopus_v2\": 459})",
+          "verified_at_utc": "2026-09-14T19:14:48.163778+00:00"
         },
         {
           "id": "G18.A03",
           "requirement": "Run 30 disturbances per body distributed over navigation, carrying and placement; at least 24 end in recovery and true completion, with all remaining trials explicitly failed.",
-          "status": "pending",
-          "evidence": []
+          "status": "partial",
+          "evidence": [
+            "docs/results/g18-report.md",
+            "docs/results/g18-validation.json",
+            "docs/results/verify_g18.py",
+            "any-robot/assets/general/research-protocols/g18-retrieve-v1/",
+            "any-robot/assets/general/mobile/",
+            "docs/results/g18-retrieve/",
+            "docs/results/g18-d18/index.json",
+            "docs/results/g18-before-after/index.json"
+          ],
+          "note": "30 disturbances per body over navigation (10), carrying (14) and placement (6): recovered and completed {\"mobile_dog_arm_v2\": \"29/30\", \"mobile_wheeled_biped_v2\": \"0/30\", \"mobile_octopus_v2\": \"0/30\"} (target >= 24), by stage {\"mobile_dog_arm_v2\": {\"carrying\": \"14/14\", \"navigation\": \"9/10\", \"placement\": \"6/6\"}, \"mobile_wheeled_biped_v2\": {\"carrying\": \"0/14\", \"navigation\": \"0/10\", \"placement\": \"0/6\"}, \"mobile_octopus_v2\": {\"carrying\": \"0/14\", \"navigation\": \"0/10\", \"placement\": \"0/6\"}}; every other trial explicitly failed with its reason, the first failure of each stage sealed and replayable",
+          "verified_at_utc": "2026-09-14T19:14:48.163778+00:00"
         },
         {
           "id": "G18.A04",
           "requirement": "Validate shared limbs/support contacts: a limb used to hold an object cannot simultaneously be assumed available for stance without a verified combined controller.",
-          "status": "pending",
-          "evidence": []
+          "status": "partial",
+          "evidence": [
+            "docs/results/g18-report.md",
+            "docs/results/g18-validation.json",
+            "docs/results/verify_g18.py",
+            "any-robot/assets/general/research-protocols/g18-retrieve-v1/",
+            "any-robot/assets/general/mobile/",
+            "docs/results/g18-retrieve/",
+            "docs/results/g18-d18/index.json",
+            "docs/results/g18-before-after/index.json"
+          ],
+          "note": "a limb holding the object is not a support member while it holds: the schedule excludes it, the drive is told to leave it alone (the octopus crawls a five-tentacle wave while holding), and the invariant that its links bear no ground contact is checked from the recorded contacts at every step and reported: the dog's arm never touched the ground while holding in 130 trials (a verified combined controller); the octopus's holding tentacle touched the floor at its root segment in 9 of its carries (459 steps), so its combined controller is not verified; three corrections to the G16 bodies (the jaws' placement, the pincer's opening and finger friction) were found here and made as second versions beside the first",
+          "verified_at_utc": "2026-09-14T19:14:48.163778+00:00"
         }
       ],
       "demo_requirement": "D18: uninterrupted retrieve-and-deliver on dog, wheels and articulated tentacles, with carrying perturbations.",
-      "demo_status": "pending",
-      "assessment_complete": false,
+      "demo_status": "delivered",
+      "assessment_complete": true,
       "capability_supported": false,
-      "commits": [],
-      "pull_requests": []
+      "commits": [
+        "a056307b",
+        "069dd459",
+        "ea458e2b",
+        "fe4d1ba0",
+        "b7584f49",
+        "5aa9a9a8"
+      ],
+      "pull_requests": [
+        "https://github.com/zanebeeai/rigby/pull/48"
+      ],
+      "demo_evidence": [
+        "docs/results/g18-d18/index.json",
+        "docs/results/g18-before-after/index.json",
+        "demos/registry"
+      ],
+      "closed_at_utc": "2026-09-14T19:14:48.163778+00:00",
+      "note": "Closed partial: mobile_wheeled_biped_v2: nominal 0/100; mobile_octopus_v2: nominal 0/100; mobile_wheeled_biped_v2: disturbed 0/30; mobile_octopus_v2: disturbed 0/30. The biped cannot reach the station's cube from any pose it can hold (its arm mount is too high balancing and its wheels stand ahead of the torso parked): every one of its trials fails explicitly at acquire; the G16 reach rule looked at height alone. The first-version jaws and pincer could not take a 30 mm cube; the corrections are second-version bodies beside the first."
     },
     {
       "id": "G19",
@@ -3198,5 +3258,5 @@
     "Restore GitHub Actions billing/allowance and rerun PRs 27-39; merge only after required checks are green, bottom of the stack first.",
     "Preserve all 30 goals and their frozen criteria."
   ],
-  "updated_at_utc": "2026-09-14T07:52:38.779050+00:00"
+  "updated_at_utc": "2026-09-14T19:14:48.163778+00:00"
 }
