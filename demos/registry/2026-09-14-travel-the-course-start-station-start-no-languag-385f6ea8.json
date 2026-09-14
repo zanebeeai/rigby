@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-travel-the-course-start-station-start-no-languag-385f6ea8",
+  "title": "D17: mobile_octopus: FAILURE (push): 300 N left push on the base for 0.3 s at 8.0 s; fell at 8.3 s",
+  "prompt": "travel the course: start -> station -> start (no language planner: the navigator and the body's own controller)",
+  "tier": "any-robot",
+  "embodiment": "mobile_octopus",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T07:48:36Z",
+  "source": {
+    "commit": "0de4e4d051",
+    "branch": "feat/g17",
+    "dirty": true,
+    "how": "python any-robot/scripts/g17_d17_media.py --results docs/results/g17-locomotion --out docs/results/g17-d17"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "FELL: FAILURE (push): 300 N left push on the base for 0.3 s at 8.0 s; fell at 8.3 s. Reason: fell at 8.3 s. A failure clip, kept and labelled as such."
+  },
+  "notes": "See docs/results/g17-report.md. Rendered from recorded states at real-time playback with the simulation clock, the outcome, the navigator's phase and the disturbance window, the base height and tilt, and the floor contacts by body on every frame; frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g17-d17/mobile_octopus/failure/media/episode.mp4",
+      "bytes": 227894,
+      "sha256": "a4b8b8912b9af3b6ca25f5b610a10640aaad8175827f7b9f52fb539ac0198a45",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g17-d17/mobile_octopus/failure/media/preview.gif",
+      "bytes": 2344548,
+      "sha256": "1613df30c27faba01eb618724203db55daf9683ab15cdae94543c80178896253",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G17",
+    "D17",
+    "mobile_octopus",
+    "push",
+    "failure"
+  ]
+}

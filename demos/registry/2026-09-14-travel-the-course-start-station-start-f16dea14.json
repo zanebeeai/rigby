@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-travel-the-course-start-station-start-f16dea14",
+  "title": "G17 before/after: octopus-turn-sense (after)",
+  "prompt": "travel the course: start -> station -> start",
+  "tier": "any-robot",
+  "embodiment": "mobile_octopus",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T07:48:41Z",
+  "source": {
+    "commit": "0de4e4d051",
+    "branch": "feat/g17",
+    "dirty": true,
+    "how": "python any-robot/scripts/g17_before_after.py --out docs/results/g17-before-after --local any-robot/results/g17-before-after"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "AFTER the fix (the in-place sweep difference's sense corrected (it is the opposite of the moving differential's)): SUCCESS. Symptom before: at the station the body turns the wrong way for the command; the navigator's feedback then holds the heading at the seam and it never comes back. Identical physics, seed 1."
+  },
+  "notes": "See docs/results/g17-report.md. Rendered from recorded states at real-time playback with the simulation clock, the outcome, the navigator's phase and the disturbance window, the base height and tilt, and the floor contacts by body on every frame; frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g17-before-after/octopus-turn-sense/after/media/episode.mp4",
+      "bytes": 2467311,
+      "sha256": "21d1164814e7b0782325c205d5fc08275e07eeda94de0f6285584b2d3e281754",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g17-before-after/octopus-turn-sense/after/media/preview.gif",
+      "bytes": 2493658,
+      "sha256": "ecfb2d1b059435965c1c7552c39e6a10ad971abaec9827792a5b85797e39f661",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G17",
+    "before-after",
+    "octopus-turn-sense",
+    "after",
+    "mobile_octopus"
+  ]
+}

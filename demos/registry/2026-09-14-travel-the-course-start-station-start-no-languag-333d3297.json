@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-travel-the-course-start-station-start-no-languag-333d3297",
+  "title": "D17: mobile_wheeled_biped: travel: start -> station -> start (rolls (balance))",
+  "prompt": "travel the course: start -> station -> start (no language planner: the navigator and the body's own controller)",
+  "tier": "any-robot",
+  "embodiment": "mobile_wheeled_biped",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T07:48:36Z",
+  "source": {
+    "commit": "0de4e4d051",
+    "branch": "feat/g17",
+    "dirty": true,
+    "how": "python any-robot/scripts/g17_d17_media.py --results docs/results/g17-locomotion --out docs/results/g17-d17"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: travel: start -> station -> start (rolls (balance))."
+  },
+  "notes": "See docs/results/g17-report.md. Rendered from recorded states at real-time playback with the simulation clock, the outcome, the navigator's phase and the disturbance window, the base height and tilt, and the floor contacts by body on every frame; frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g17-d17/mobile_wheeled_biped/travel/media/episode.mp4",
+      "bytes": 391845,
+      "sha256": "29e85a7b353372449b9c37eb3d63445a6f177d68a8d191c21b27ea1f4c6e1b3e",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g17-d17/mobile_wheeled_biped/travel/media/preview.gif",
+      "bytes": 2119061,
+      "sha256": "a1ce090363217e2ea67ca11ccb6fc81e06cac3141e6b368d89bb6738241303e5",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G17",
+    "D17",
+    "mobile_wheeled_biped",
+    "travel",
+    "travel"
+  ]
+}

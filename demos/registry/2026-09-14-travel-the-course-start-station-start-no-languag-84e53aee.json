@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-travel-the-course-start-station-start-no-languag-84e53aee",
+  "title": "D17: mobile_dog_arm: FAILURE (push): 70 N left push on the base for 0.3 s at 6.0 s; fell at 7.8 s",
+  "prompt": "travel the course: start -> station -> start (no language planner: the navigator and the body's own controller)",
+  "tier": "any-robot",
+  "embodiment": "mobile_dog_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T07:48:34Z",
+  "source": {
+    "commit": "0de4e4d051",
+    "branch": "feat/g17",
+    "dirty": true,
+    "how": "python any-robot/scripts/g17_d17_media.py --results docs/results/g17-locomotion --out docs/results/g17-d17"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "FELL: FAILURE (push): 70 N left push on the base for 0.3 s at 6.0 s; fell at 7.8 s. Reason: fell at 7.8 s. A failure clip, kept and labelled as such."
+  },
+  "notes": "See docs/results/g17-report.md. Rendered from recorded states at real-time playback with the simulation clock, the outcome, the navigator's phase and the disturbance window, the base height and tilt, and the floor contacts by body on every frame; frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g17-d17/mobile_dog_arm/failure/media/episode.mp4",
+      "bytes": 183447,
+      "sha256": "5aa858793527ceb40bf89eeed518910ae48e5f8523011d33db0393ec43a5edc9",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g17-d17/mobile_dog_arm/failure/media/preview.gif",
+      "bytes": 2148334,
+      "sha256": "5bb51595130b8994a2dc9c445a27c55967586063308eb4d81906124ce14666fb",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G17",
+    "D17",
+    "mobile_dog_arm",
+    "push",
+    "failure"
+  ]
+}

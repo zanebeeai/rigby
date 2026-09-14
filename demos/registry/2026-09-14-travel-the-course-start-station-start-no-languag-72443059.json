@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-travel-the-course-start-station-start-no-languag-72443059",
+  "title": "D17: mobile_wheeled_biped: FAILURE (push): 80 N fore push on the base for 0.3 s at 4.0 s; fell at 5.9 s",
+  "prompt": "travel the course: start -> station -> start (no language planner: the navigator and the body's own controller)",
+  "tier": "any-robot",
+  "embodiment": "mobile_wheeled_biped",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T07:48:38Z",
+  "source": {
+    "commit": "0de4e4d051",
+    "branch": "feat/g17",
+    "dirty": true,
+    "how": "python any-robot/scripts/g17_d17_media.py --results docs/results/g17-locomotion --out docs/results/g17-d17"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "FELL: FAILURE (push): 80 N fore push on the base for 0.3 s at 4.0 s; fell at 5.9 s. Reason: fell at 5.9 s. A failure clip, kept and labelled as such."
+  },
+  "notes": "See docs/results/g17-report.md. Rendered from recorded states at real-time playback with the simulation clock, the outcome, the navigator's phase and the disturbance window, the base height and tilt, and the floor contacts by body on every frame; frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g17-d17/mobile_wheeled_biped/failure/media/episode.mp4",
+      "bytes": 141822,
+      "sha256": "1da3539ddd15f6132539d3fcd0ace9f637a0dc09b0171285473555d70ae98620",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g17-d17/mobile_wheeled_biped/failure/media/preview.gif",
+      "bytes": 1991919,
+      "sha256": "c5597d7fe221bbd0fccad1aa23ecb29f4ed1c7b786ce29f2bfd2fee1eeef781a",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G17",
+    "D17",
+    "mobile_wheeled_biped",
+    "push",
+    "failure"
+  ]
+}

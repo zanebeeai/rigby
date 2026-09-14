@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-travel-the-course-start-station-start-no-languag-5d3e41b6",
+  "title": "D17: mobile_octopus: patch recovery: a slick patch (friction 0.15) across the corridor at x = 1.5 m, met on the",
+  "prompt": "travel the course: start -> station -> start (no language planner: the navigator and the body's own controller)",
+  "tier": "any-robot",
+  "embodiment": "mobile_octopus",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T07:48:35Z",
+  "source": {
+    "commit": "0de4e4d051",
+    "branch": "feat/g17",
+    "dirty": true,
+    "how": "python any-robot/scripts/g17_d17_media.py --results docs/results/g17-locomotion --out docs/results/g17-d17"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: patch recovery: a slick patch (friction 0.15) across the corridor at x = 1.5 m, met on the way out and on the way back."
+  },
+  "notes": "See docs/results/g17-report.md. Rendered from recorded states at real-time playback with the simulation clock, the outcome, the navigator's phase and the disturbance window, the base height and tilt, and the floor contacts by body on every frame; frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g17-d17/mobile_octopus/recovery-patch/media/episode.mp4",
+      "bytes": 2813125,
+      "sha256": "76c850d25ce54f9d7c2fb6f91a82b01f95bf8e28de4e3418cd37860c6112d9a8",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g17-d17/mobile_octopus/recovery-patch/media/preview.gif",
+      "bytes": 2267681,
+      "sha256": "7c44557293bb3542f5bd70ec783377c19d00d4a7c514e89798c498e61f30087a",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G17",
+    "D17",
+    "mobile_octopus",
+    "patch",
+    "recovery"
+  ]
+}

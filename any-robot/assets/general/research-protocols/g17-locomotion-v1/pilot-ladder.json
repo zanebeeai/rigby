@@ -1,0 +1,651 @@
+{
+  "caveats": [
+    "run on development versions of the controllers (the biped's arrival run-in, integrator gate and leg damping and the octopus's in-place turn sense were fixed during the pilot); the scored protocol uses the committed controller",
+    "pushes landed at 5 s for every body; the protocol lands them per body about a metre out (dog 6 s, biped 4 s, octopus 8 s)"
+  ],
+  "chosen_magnitudes_n": {
+    "mobile_dog_arm": [
+      40,
+      70,
+      100
+    ],
+    "mobile_octopus": [
+      100,
+      200,
+      300
+    ],
+    "mobile_wheeled_biped": [
+      30,
+      55,
+      80
+    ]
+  },
+  "purpose": "a pilot on seed 1 (0.3 s pushes at 5 s) run while the controllers were being finished, to choose push magnitudes that bracket what each body survives; not evidence, not scored, not replayable",
+  "rows": [
+    {
+      "body": "mobile_dog_arm",
+      "direction": "left (+y)",
+      "newtons": 20.0,
+      "reason": "",
+      "recovered": true,
+      "series": "first ladder: biped before the arrival run-in and integrator gate; dog and octopus at the first controller version"
+    },
+    {
+      "body": "mobile_dog_arm",
+      "direction": "left (+y)",
+      "newtons": 40.0,
+      "reason": "",
+      "recovered": true,
+      "series": "first ladder: biped before the arrival run-in and integrator gate; dog and octopus at the first controller version"
+    },
+    {
+      "body": "mobile_dog_arm",
+      "direction": "left (+y)",
+      "newtons": 60.0,
+      "reason": "",
+      "recovered": true,
+      "series": "first ladder: biped before the arrival run-in and integrator gate; dog and octopus at the first controller version"
+    },
+    {
+      "body": "mobile_dog_arm",
+      "direction": "left (+y)",
+      "newtons": 80.0,
+      "reason": "",
+      "recovered": true,
+      "series": "first ladder: biped before the arrival run-in and integrator gate; dog and octopus at the first controller version"
+    },
+    {
+      "body": "mobile_dog_arm",
+      "direction": "fore (+x)",
+      "newtons": 20.0,
+      "reason": "",
+      "recovered": true,
+      "series": "first ladder: biped before the arrival run-in and integrator gate; dog and octopus at the first controller version"
+    },
+    {
+      "body": "mobile_dog_arm",
+      "direction": "fore (+x)",
+      "newtons": 40.0,
+      "reason": "",
+      "recovered": true,
+      "series": "first ladder: biped before the arrival run-in and integrator gate; dog and octopus at the first controller version"
+    },
+    {
+      "body": "mobile_dog_arm",
+      "direction": "fore (+x)",
+      "newtons": 60.0,
+      "reason": "",
+      "recovered": true,
+      "series": "first ladder: biped before the arrival run-in and integrator gate; dog and octopus at the first controller version"
+    },
+    {
+      "body": "mobile_dog_arm",
+      "direction": "fore (+x)",
+      "newtons": 80.0,
+      "reason": "",
+      "recovered": true,
+      "series": "first ladder: biped before the arrival run-in and integrator gate; dog and octopus at the first controller version"
+    },
+    {
+      "body": "mobile_dog_arm",
+      "direction": "aft (-x)",
+      "newtons": 20.0,
+      "reason": "",
+      "recovered": true,
+      "series": "first ladder: biped before the arrival run-in and integrator gate; dog and octopus at the first controller version"
+    },
+    {
+      "body": "mobile_dog_arm",
+      "direction": "aft (-x)",
+      "newtons": 40.0,
+      "reason": "",
+      "recovered": true,
+      "series": "first ladder: biped before the arrival run-in and integrator gate; dog and octopus at the first controller version"
+    },
+    {
+      "body": "mobile_dog_arm",
+      "direction": "aft (-x)",
+      "newtons": 60.0,
+      "reason": "",
+      "recovered": true,
+      "series": "first ladder: biped before the arrival run-in and integrator gate; dog and octopus at the first controller version"
+    },
+    {
+      "body": "mobile_dog_arm",
+      "direction": "aft (-x)",
+      "newtons": 80.0,
+      "reason": "",
+      "recovered": true,
+      "series": "first ladder: biped before the arrival run-in and integrator gate; dog and octopus at the first controller version"
+    },
+    {
+      "body": "mobile_wheeled_biped",
+      "direction": "left (+y)",
+      "newtons": 20.0,
+      "reason": "",
+      "recovered": true,
+      "series": "first ladder: biped before the arrival run-in and integrator gate; dog and octopus at the first controller version"
+    },
+    {
+      "body": "mobile_wheeled_biped",
+      "direction": "left (+y)",
+      "newtons": 40.0,
+      "reason": "",
+      "recovered": true,
+      "series": "first ladder: biped before the arrival run-in and integrator gate; dog and octopus at the first controller version"
+    },
+    {
+      "body": "mobile_wheeled_biped",
+      "direction": "left (+y)",
+      "newtons": 60.0,
+      "reason": "",
+      "recovered": true,
+      "series": "first ladder: biped before the arrival run-in and integrator gate; dog and octopus at the first controller version"
+    },
+    {
+      "body": "mobile_wheeled_biped",
+      "direction": "left (+y)",
+      "newtons": 80.0,
+      "reason": "time cap: waypoint 1 of 2 not reached",
+      "recovered": false,
+      "series": "first ladder: biped before the arrival run-in and integrator gate; dog and octopus at the first controller version"
+    },
+    {
+      "body": "mobile_wheeled_biped",
+      "direction": "fore (+x)",
+      "newtons": 20.0,
+      "reason": "",
+      "recovered": true,
+      "series": "first ladder: biped before the arrival run-in and integrator gate; dog and octopus at the first controller version"
+    },
+    {
+      "body": "mobile_wheeled_biped",
+      "direction": "fore (+x)",
+      "newtons": 40.0,
+      "reason": "",
+      "recovered": true,
+      "series": "first ladder: biped before the arrival run-in and integrator gate; dog and octopus at the first controller version"
+    },
+    {
+      "body": "mobile_wheeled_biped",
+      "direction": "fore (+x)",
+      "newtons": 60.0,
+      "reason": "",
+      "recovered": true,
+      "series": "first ladder: biped before the arrival run-in and integrator gate; dog and octopus at the first controller version"
+    },
+    {
+      "body": "mobile_wheeled_biped",
+      "direction": "fore (+x)",
+      "newtons": 80.0,
+      "reason": "fell at 6.9 s",
+      "recovered": false,
+      "series": "first ladder: biped before the arrival run-in and integrator gate; dog and octopus at the first controller version"
+    },
+    {
+      "body": "mobile_wheeled_biped",
+      "direction": "aft (-x)",
+      "newtons": 20.0,
+      "reason": "",
+      "recovered": true,
+      "series": "first ladder: biped before the arrival run-in and integrator gate; dog and octopus at the first controller version"
+    },
+    {
+      "body": "mobile_wheeled_biped",
+      "direction": "aft (-x)",
+      "newtons": 40.0,
+      "reason": "",
+      "recovered": true,
+      "series": "first ladder: biped before the arrival run-in and integrator gate; dog and octopus at the first controller version"
+    },
+    {
+      "body": "mobile_wheeled_biped",
+      "direction": "aft (-x)",
+      "newtons": 60.0,
+      "reason": "time cap: waypoint 1 of 2 not reached",
+      "recovered": false,
+      "series": "first ladder: biped before the arrival run-in and integrator gate; dog and octopus at the first controller version"
+    },
+    {
+      "body": "mobile_wheeled_biped",
+      "direction": "aft (-x)",
+      "newtons": 80.0,
+      "reason": "time cap: waypoint 1 of 2 not reached",
+      "recovered": false,
+      "series": "first ladder: biped before the arrival run-in and integrator gate; dog and octopus at the first controller version"
+    },
+    {
+      "body": "mobile_octopus",
+      "direction": "left (+y)",
+      "newtons": 20.0,
+      "reason": "time cap: waypoint 1 of 2 not reached",
+      "recovered": false,
+      "series": "first ladder: biped before the arrival run-in and integrator gate; dog and octopus at the first controller version"
+    },
+    {
+      "body": "mobile_octopus",
+      "direction": "left (+y)",
+      "newtons": 40.0,
+      "reason": "time cap: waypoint 1 of 2 not reached",
+      "recovered": false,
+      "series": "first ladder: biped before the arrival run-in and integrator gate; dog and octopus at the first controller version"
+    },
+    {
+      "body": "mobile_octopus",
+      "direction": "left (+y)",
+      "newtons": 60.0,
+      "reason": "time cap: waypoint 1 of 2 not reached",
+      "recovered": false,
+      "series": "first ladder: biped before the arrival run-in and integrator gate; dog and octopus at the first controller version"
+    },
+    {
+      "body": "mobile_octopus",
+      "direction": "left (+y)",
+      "newtons": 80.0,
+      "reason": "time cap: waypoint 1 of 2 not reached",
+      "recovered": false,
+      "series": "first ladder: biped before the arrival run-in and integrator gate; dog and octopus at the first controller version"
+    },
+    {
+      "body": "mobile_octopus",
+      "direction": "fore (+x)",
+      "newtons": 20.0,
+      "reason": "time cap: waypoint 1 of 2 not reached",
+      "recovered": false,
+      "series": "first ladder: biped before the arrival run-in and integrator gate; dog and octopus at the first controller version"
+    },
+    {
+      "body": "mobile_octopus",
+      "direction": "fore (+x)",
+      "newtons": 40.0,
+      "reason": "time cap: waypoint 1 of 2 not reached",
+      "recovered": false,
+      "series": "first ladder: biped before the arrival run-in and integrator gate; dog and octopus at the first controller version"
+    },
+    {
+      "body": "mobile_octopus",
+      "direction": "fore (+x)",
+      "newtons": 60.0,
+      "reason": "time cap: waypoint 1 of 2 not reached",
+      "recovered": false,
+      "series": "first ladder: biped before the arrival run-in and integrator gate; dog and octopus at the first controller version"
+    },
+    {
+      "body": "mobile_octopus",
+      "direction": "fore (+x)",
+      "newtons": 80.0,
+      "reason": "time cap: waypoint 1 of 2 not reached",
+      "recovered": false,
+      "series": "first ladder: biped before the arrival run-in and integrator gate; dog and octopus at the first controller version"
+    },
+    {
+      "body": "mobile_octopus",
+      "direction": "aft (-x)",
+      "newtons": 20.0,
+      "reason": "time cap: waypoint 1 of 2 not reached",
+      "recovered": false,
+      "series": "first ladder: biped before the arrival run-in and integrator gate; dog and octopus at the first controller version"
+    },
+    {
+      "body": "mobile_octopus",
+      "direction": "aft (-x)",
+      "newtons": 40.0,
+      "reason": "time cap: waypoint 1 of 2 not reached",
+      "recovered": false,
+      "series": "first ladder: biped before the arrival run-in and integrator gate; dog and octopus at the first controller version"
+    },
+    {
+      "body": "mobile_octopus",
+      "direction": "aft (-x)",
+      "newtons": 60.0,
+      "reason": "time cap: waypoint 1 of 2 not reached",
+      "recovered": false,
+      "series": "first ladder: biped before the arrival run-in and integrator gate; dog and octopus at the first controller version"
+    },
+    {
+      "body": "mobile_octopus",
+      "direction": "aft (-x)",
+      "newtons": 80.0,
+      "reason": "time cap: waypoint 1 of 2 not reached",
+      "recovered": false,
+      "series": "first ladder: biped before the arrival run-in and integrator gate; dog and octopus at the first controller version"
+    },
+    {
+      "body": "mobile_dog_arm",
+      "direction": "left (+y)",
+      "newtons": 120.0,
+      "reason": "",
+      "recovered": true,
+      "series": "dog, higher magnitudes"
+    },
+    {
+      "body": "mobile_dog_arm",
+      "direction": "left (+y)",
+      "newtons": 160.0,
+      "reason": "fell at 5.4 s",
+      "recovered": false,
+      "series": "dog, higher magnitudes"
+    },
+    {
+      "body": "mobile_dog_arm",
+      "direction": "left (+y)",
+      "newtons": 200.0,
+      "reason": "fell at 5.3 s",
+      "recovered": false,
+      "series": "dog, higher magnitudes"
+    },
+    {
+      "body": "mobile_dog_arm",
+      "direction": "left (+y)",
+      "newtons": 260.0,
+      "reason": "fell at 5.3 s",
+      "recovered": false,
+      "series": "dog, higher magnitudes"
+    },
+    {
+      "body": "mobile_dog_arm",
+      "direction": "fore (+x)",
+      "newtons": 120.0,
+      "reason": "fell at 5.7 s",
+      "recovered": false,
+      "series": "dog, higher magnitudes"
+    },
+    {
+      "body": "mobile_dog_arm",
+      "direction": "fore (+x)",
+      "newtons": 160.0,
+      "reason": "fell at 5.5 s",
+      "recovered": false,
+      "series": "dog, higher magnitudes"
+    },
+    {
+      "body": "mobile_dog_arm",
+      "direction": "fore (+x)",
+      "newtons": 200.0,
+      "reason": "fell at 5.4 s",
+      "recovered": false,
+      "series": "dog, higher magnitudes"
+    },
+    {
+      "body": "mobile_dog_arm",
+      "direction": "fore (+x)",
+      "newtons": 260.0,
+      "reason": "fell at 5.3 s",
+      "recovered": false,
+      "series": "dog, higher magnitudes"
+    },
+    {
+      "body": "mobile_dog_arm",
+      "direction": "aft (-x)",
+      "newtons": 120.0,
+      "reason": "fell at 5.7 s",
+      "recovered": false,
+      "series": "dog, higher magnitudes"
+    },
+    {
+      "body": "mobile_dog_arm",
+      "direction": "aft (-x)",
+      "newtons": 160.0,
+      "reason": "fell at 5.4 s",
+      "recovered": false,
+      "series": "dog, higher magnitudes"
+    },
+    {
+      "body": "mobile_dog_arm",
+      "direction": "aft (-x)",
+      "newtons": 200.0,
+      "reason": "fell at 5.4 s",
+      "recovered": false,
+      "series": "dog, higher magnitudes"
+    },
+    {
+      "body": "mobile_dog_arm",
+      "direction": "aft (-x)",
+      "newtons": 260.0,
+      "reason": "fell at 5.3 s",
+      "recovered": false,
+      "series": "dog, higher magnitudes"
+    },
+    {
+      "body": "mobile_wheeled_biped",
+      "direction": "left (+y)",
+      "newtons": 70.0,
+      "reason": "",
+      "recovered": true,
+      "series": "biped after the arrival run-in, before the integrator gate"
+    },
+    {
+      "body": "mobile_wheeled_biped",
+      "direction": "left (+y)",
+      "newtons": 90.0,
+      "reason": "",
+      "recovered": true,
+      "series": "biped after the arrival run-in, before the integrator gate"
+    },
+    {
+      "body": "mobile_wheeled_biped",
+      "direction": "left (+y)",
+      "newtons": 110.0,
+      "reason": "",
+      "recovered": true,
+      "series": "biped after the arrival run-in, before the integrator gate"
+    },
+    {
+      "body": "mobile_wheeled_biped",
+      "direction": "fore (+x)",
+      "newtons": 70.0,
+      "reason": "",
+      "recovered": true,
+      "series": "biped after the arrival run-in, before the integrator gate"
+    },
+    {
+      "body": "mobile_wheeled_biped",
+      "direction": "fore (+x)",
+      "newtons": 90.0,
+      "reason": "fell at 6.0 s",
+      "recovered": false,
+      "series": "biped after the arrival run-in, before the integrator gate"
+    },
+    {
+      "body": "mobile_wheeled_biped",
+      "direction": "fore (+x)",
+      "newtons": 110.0,
+      "reason": "fell at 5.8 s",
+      "recovered": false,
+      "series": "biped after the arrival run-in, before the integrator gate"
+    },
+    {
+      "body": "mobile_wheeled_biped",
+      "direction": "aft (-x)",
+      "newtons": 70.0,
+      "reason": "time cap: waypoint 1 of 2 not reached",
+      "recovered": false,
+      "series": "biped after the arrival run-in, before the integrator gate"
+    },
+    {
+      "body": "mobile_wheeled_biped",
+      "direction": "aft (-x)",
+      "newtons": 90.0,
+      "reason": "time cap: waypoint 1 of 2 not reached",
+      "recovered": false,
+      "series": "biped after the arrival run-in, before the integrator gate"
+    },
+    {
+      "body": "mobile_wheeled_biped",
+      "direction": "aft (-x)",
+      "newtons": 110.0,
+      "reason": "time cap: waypoint 1 of 2 not reached",
+      "recovered": false,
+      "series": "biped after the arrival run-in, before the integrator gate"
+    },
+    {
+      "body": "mobile_octopus",
+      "direction": "left (+y)",
+      "newtons": 30.0,
+      "reason": "",
+      "recovered": true,
+      "series": "octopus after the turn-sense fix"
+    },
+    {
+      "body": "mobile_octopus",
+      "direction": "left (+y)",
+      "newtons": 60.0,
+      "reason": "",
+      "recovered": true,
+      "series": "octopus after the turn-sense fix"
+    },
+    {
+      "body": "mobile_octopus",
+      "direction": "left (+y)",
+      "newtons": 100.0,
+      "reason": "",
+      "recovered": true,
+      "series": "octopus after the turn-sense fix"
+    },
+    {
+      "body": "mobile_octopus",
+      "direction": "left (+y)",
+      "newtons": 150.0,
+      "reason": "",
+      "recovered": true,
+      "series": "octopus after the turn-sense fix"
+    },
+    {
+      "body": "mobile_octopus",
+      "direction": "fore (+x)",
+      "newtons": 30.0,
+      "reason": "",
+      "recovered": true,
+      "series": "octopus after the turn-sense fix"
+    },
+    {
+      "body": "mobile_octopus",
+      "direction": "fore (+x)",
+      "newtons": 60.0,
+      "reason": "",
+      "recovered": true,
+      "series": "octopus after the turn-sense fix"
+    },
+    {
+      "body": "mobile_octopus",
+      "direction": "fore (+x)",
+      "newtons": 100.0,
+      "reason": "",
+      "recovered": true,
+      "series": "octopus after the turn-sense fix"
+    },
+    {
+      "body": "mobile_octopus",
+      "direction": "fore (+x)",
+      "newtons": 150.0,
+      "reason": "",
+      "recovered": true,
+      "series": "octopus after the turn-sense fix"
+    },
+    {
+      "body": "mobile_octopus",
+      "direction": "aft (-x)",
+      "newtons": 30.0,
+      "reason": "",
+      "recovered": true,
+      "series": "octopus after the turn-sense fix"
+    },
+    {
+      "body": "mobile_octopus",
+      "direction": "aft (-x)",
+      "newtons": 60.0,
+      "reason": "",
+      "recovered": true,
+      "series": "octopus after the turn-sense fix"
+    },
+    {
+      "body": "mobile_octopus",
+      "direction": "aft (-x)",
+      "newtons": 100.0,
+      "reason": "",
+      "recovered": true,
+      "series": "octopus after the turn-sense fix"
+    },
+    {
+      "body": "mobile_octopus",
+      "direction": "aft (-x)",
+      "newtons": 150.0,
+      "reason": "",
+      "recovered": true,
+      "series": "octopus after the turn-sense fix"
+    },
+    {
+      "body": "mobile_octopus",
+      "direction": "left (+y)",
+      "newtons": 200.0,
+      "reason": "",
+      "recovered": true,
+      "series": "octopus, higher magnitudes"
+    },
+    {
+      "body": "mobile_octopus",
+      "direction": "left (+y)",
+      "newtons": 300.0,
+      "reason": "",
+      "recovered": true,
+      "series": "octopus, higher magnitudes"
+    },
+    {
+      "body": "mobile_octopus",
+      "direction": "left (+y)",
+      "newtons": 400.0,
+      "reason": "fell at 5.3 s",
+      "recovered": false,
+      "series": "octopus, higher magnitudes"
+    },
+    {
+      "body": "mobile_octopus",
+      "direction": "fore (+x)",
+      "newtons": 200.0,
+      "reason": "",
+      "recovered": true,
+      "series": "octopus, higher magnitudes"
+    },
+    {
+      "body": "mobile_octopus",
+      "direction": "fore (+x)",
+      "newtons": 300.0,
+      "reason": "",
+      "recovered": true,
+      "series": "octopus, higher magnitudes"
+    },
+    {
+      "body": "mobile_octopus",
+      "direction": "fore (+x)",
+      "newtons": 400.0,
+      "reason": "",
+      "recovered": true,
+      "series": "octopus, higher magnitudes"
+    },
+    {
+      "body": "mobile_octopus",
+      "direction": "aft (-x)",
+      "newtons": 200.0,
+      "reason": "",
+      "recovered": true,
+      "series": "octopus, higher magnitudes"
+    },
+    {
+      "body": "mobile_octopus",
+      "direction": "aft (-x)",
+      "newtons": 300.0,
+      "reason": "fell at 5.5 s",
+      "recovered": false,
+      "series": "octopus, higher magnitudes"
+    },
+    {
+      "body": "mobile_octopus",
+      "direction": "aft (-x)",
+      "newtons": 400.0,
+      "reason": "fell at 5.4 s",
+      "recovered": false,
+      "series": "octopus, higher magnitudes"
+    }
+  ],
+  "schema": "g17.pilot-ladder.v1"
+}

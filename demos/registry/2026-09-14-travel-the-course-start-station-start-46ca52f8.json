@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-travel-the-course-start-station-start-46ca52f8",
+  "title": "G17 before/after: biped-legs-held (before)",
+  "prompt": "travel the course: start -> station -> start",
+  "tier": "any-robot",
+  "embodiment": "mobile_wheeled_biped",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T07:48:39Z",
+  "source": {
+    "commit": "0de4e4d051",
+    "branch": "feat/g17",
+    "dirty": true,
+    "how": "python any-robot/scripts/g17_before_after.py --out docs/results/g17-before-after --local any-robot/results/g17-before-after"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "BEFORE the fix (the undamped leg servos held under the wheel torque (feed-forward) and damped through the same servos): FELL; fell at 4.7 s. Symptom before: the balance rings against the 12 N m torque limit: the legs flex in series with the pitch loop. Identical physics, seed 1."
+  },
+  "notes": "See docs/results/g17-report.md. Rendered from recorded states at real-time playback with the simulation clock, the outcome, the navigator's phase and the disturbance window, the base height and tilt, and the floor contacts by body on every frame; frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g17-before-after/biped-legs-held/before/media/episode.mp4",
+      "bytes": 138668,
+      "sha256": "f7c199040bdb421cf0a30b5d21ad406f3c68220e9ca3a3a3edfdbed10d61fa63",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g17-before-after/biped-legs-held/before/media/preview.gif",
+      "bytes": 2035842,
+      "sha256": "9eb0e375d136a24c7a79bfd94391b0a1776c16185e2112e145282a0c766b5a2a",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G17",
+    "before-after",
+    "biped-legs-held",
+    "before",
+    "mobile_wheeled_biped"
+  ]
+}

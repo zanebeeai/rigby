@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-travel-the-course-start-station-start-no-languag-6ee20e7c",
+  "title": "D17: mobile_dog_arm: support recovery: leg_fl's servos fought by a 8 N m external torque at 3 Hz for 1.0 s at 6",
+  "prompt": "travel the course: start -> station -> start (no language planner: the navigator and the body's own controller)",
+  "tier": "any-robot",
+  "embodiment": "mobile_dog_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T07:48:33Z",
+  "source": {
+    "commit": "0de4e4d051",
+    "branch": "feat/g17",
+    "dirty": true,
+    "how": "python any-robot/scripts/g17_d17_media.py --results docs/results/g17-locomotion --out docs/results/g17-d17"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: support recovery: leg_fl's servos fought by a 8 N m external torque at 3 Hz for 1.0 s at 6.0 s."
+  },
+  "notes": "See docs/results/g17-report.md. Rendered from recorded states at real-time playback with the simulation clock, the outcome, the navigator's phase and the disturbance window, the base height and tilt, and the floor contacts by body on every frame; frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g17-d17/mobile_dog_arm/recovery-support/media/episode.mp4",
+      "bytes": 1168300,
+      "sha256": "02ce90e4040dc506737642b61bd27e554c04af2388a39742e41ceeb67a795fbc",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g17-d17/mobile_dog_arm/recovery-support/media/preview.gif",
+      "bytes": 2279299,
+      "sha256": "515fa16223867c408eb82916322011d025d7fddc174fc5e4f155147deda3bb6c",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G17",
+    "D17",
+    "mobile_dog_arm",
+    "support",
+    "recovery"
+  ]
+}

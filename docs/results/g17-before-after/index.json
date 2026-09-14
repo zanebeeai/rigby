@@ -1,0 +1,475 @@
+{
+  "commit": "0de4e4d0513ea50ffc7b250f02a80ee0d77790a8",
+  "created_at_utc": "2026-09-14T06:44:48.288952+00:00",
+  "generation_calls": 0,
+  "goal": "G17",
+  "pairs": [
+    {
+      "body": "mobile_wheeled_biped",
+      "fix": "the undamped leg servos held under the wheel torque (feed-forward) and damped through the same servos",
+      "pair_id": "biped-legs-held",
+      "perturbation": null,
+      "runs": {
+        "after": {
+          "collisions": 0,
+          "distance_m": 5.306,
+          "duration_s": 29.78,
+          "energy_j": 104.6,
+          "fell": false,
+          "final_distance_m": 0.281,
+          "media": {
+            "frame_count": 359,
+            "frames": "biped-legs-held/after/media/frames.json",
+            "media_sha256": "120fb3bbfdfab353f75457a90e43dc8340b0fa0e6db37a641553f54dea117778",
+            "preview": "biped-legs-held/after/media/preview.gif",
+            "video": "biped-legs-held/after/media/episode.mp4"
+          },
+          "navigator_log": [
+            {
+              "distance_m": 0.2999092482995323,
+              "event": "arrived",
+              "time_s": 8.979999999999668,
+              "waypoint": 0
+            },
+            {
+              "distance_m": 0.252045267275974,
+              "event": "released",
+              "time_s": 10.980000000000336,
+              "waypoint": 0
+            },
+            {
+              "distance_m": 0.2999501570340155,
+              "event": "arrived",
+              "time_s": 27.771999999995487,
+              "waypoint": 1
+            },
+            {
+              "distance_m": 0.28145580987401775,
+              "event": "released",
+              "time_s": 29.773999999994377,
+              "waypoint": 1
+            }
+          ],
+          "peak_speed_mps": 0.477,
+          "reason": "",
+          "saturation_max": 0.0,
+          "sealed": {
+            "bundle": "any-robot/results/g17-before-after/biped-legs-held/after/physical",
+            "replay_agrees": true,
+            "sha256": "e4451e516ad24117464e0552112934a2ee6e15d194a1946d9b26a875fbcd3329",
+            "simulation_duration_s": 29.773999999994377,
+            "trace_sha256": "945e33d64665b3804d72ae6b3890e4d13b10e99fb3a17c333831fd2cba8d582f"
+          },
+          "settings": {},
+          "status": "success",
+          "success": true
+        },
+        "before": {
+          "collisions": 0,
+          "distance_m": 3.792,
+          "duration_s": 5.66,
+          "energy_j": 1229.1,
+          "fell": true,
+          "final_distance_m": 3.728,
+          "media": {
+            "frame_count": 69,
+            "frames": "biped-legs-held/before/media/frames.json",
+            "media_sha256": "afada6c9fdbfeb2038a21beff0756fa982b3b9217e205a341bd6887116dba08c",
+            "preview": "biped-legs-held/before/media/preview.gif",
+            "video": "biped-legs-held/before/media/episode.mp4"
+          },
+          "navigator_log": [
+            {
+              "distance_m": 0.2994058408878641,
+              "event": "arrived",
+              "time_s": 3.7979999999998033,
+              "waypoint": 0
+            },
+            {
+              "distance_m": 0.45077662757057396,
+              "event": "drifted",
+              "time_s": 4.593999999999716,
+              "waypoint": 0
+            }
+          ],
+          "peak_speed_mps": 1.401,
+          "reason": "fell at 4.7 s",
+          "saturation_max": 0.2245,
+          "sealed": {
+            "bundle": "any-robot/results/g17-before-after/biped-legs-held/before/physical",
+            "replay_agrees": true,
+            "sha256": "590cdd744ed6cc3a819d218b8fff545a754ce9b21754bf2a2d3f4125b1a4f70f",
+            "simulation_duration_s": 5.657999999999599,
+            "trace_sha256": "d1581c3568687e0172bea02607e4be1f09c59852ca05a803c64edd47cda93380"
+          },
+          "settings": {
+            "WheeledBalance.HOLD_LEGS": false
+          },
+          "status": "fell",
+          "success": false
+        }
+      },
+      "seed": 1,
+      "symptom": "the balance rings against the 12 N m torque limit: the legs flex in series with the pitch loop"
+    },
+    {
+      "body": "mobile_wheeled_biped",
+      "fix": "the navigator's run-in and floor at the drive's minimum speed, the lean fed forward, the integral gated during transients",
+      "pair_id": "biped-arrival",
+      "perturbation": {
+        "at_s": 4.0,
+        "detail": "80 N aft push on the base for 0.3 s at 4 s",
+        "direction": [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        "duration_s": 0.3,
+        "kind": "push",
+        "magnitude": 80.0,
+        "patch_centre_m": [
+          1.5,
+          0.0
+        ],
+        "patch_friction": 0.15,
+        "patch_half_m": [
+          0.4,
+          0.8
+        ],
+        "target": ""
+      },
+      "runs": {
+        "after": {
+          "collisions": 0,
+          "distance_m": 6.53,
+          "duration_s": 32.92,
+          "energy_j": 126.2,
+          "fell": false,
+          "final_distance_m": 0.282,
+          "media": {
+            "frame_count": 397,
+            "frames": "biped-arrival/after/media/frames.json",
+            "media_sha256": "1c894ada3e0a9ddbdf1651aae4ad58335eed73c547d215eeae0ded51e7d7facb",
+            "preview": "biped-arrival/after/media/preview.gif",
+            "video": "biped-arrival/after/media/episode.mp4"
+          },
+          "navigator_log": [
+            {
+              "distance_m": 0.2999705824806533,
+              "event": "arrived",
+              "time_s": 12.120000000000717,
+              "waypoint": 0
+            },
+            {
+              "distance_m": 0.26238824997696286,
+              "event": "released",
+              "time_s": 14.120000000001385,
+              "waypoint": 0
+            },
+            {
+              "distance_m": 0.29994819033990333,
+              "event": "arrived",
+              "time_s": 30.92199999999374,
+              "waypoint": 1
+            },
+            {
+              "distance_m": 0.28179043571925916,
+              "event": "released",
+              "time_s": 32.92199999999427,
+              "waypoint": 1
+            }
+          ],
+          "peak_speed_mps": 1.11,
+          "reason": "",
+          "saturation_max": 0.0,
+          "sealed": {
+            "bundle": "any-robot/results/g17-before-after/biped-arrival/after/physical",
+            "replay_agrees": true,
+            "sha256": "da98ae42cdd33e6a42465d7b4422698a96778e10175fcb6f8638e138d0963990",
+            "simulation_duration_s": 32.92199999999427,
+            "trace_sha256": "27bfa71bbf8c751c76c16cb13f1b1ceb467b94cd5dda5c8288309809f7ac818d"
+          },
+          "settings": {},
+          "status": "success",
+          "success": true
+        },
+        "before": {
+          "collisions": 0,
+          "distance_m": 4.19,
+          "duration_s": 90.0,
+          "energy_j": 109.8,
+          "fell": false,
+          "final_distance_m": 3.029,
+          "media": {
+            "frame_count": 1081,
+            "frames": "biped-arrival/before/media/frames.json",
+            "media_sha256": "afeff613416c42037c703fec8920f01c0773cf5650f48b73449a864bcb8ab7ea",
+            "preview": "biped-arrival/before/media/preview.gif",
+            "video": "biped-arrival/before/media/episode.mp4"
+          },
+          "navigator_log": [
+            {
+              "distance_m": 0.29979975473602277,
+              "event": "arrived",
+              "time_s": 9.363999999999796,
+              "waypoint": 0
+            },
+            {
+              "distance_m": 0.04979442049262106,
+              "event": "released",
+              "time_s": 11.364000000000464,
+              "waypoint": 0
+            }
+          ],
+          "peak_speed_mps": 1.13,
+          "reason": "time cap: waypoint 1 of 2 not reached",
+          "saturation_max": 0.0,
+          "sealed": {
+            "bundle": "any-robot/results/g17-before-after/biped-arrival/before/physical",
+            "replay_agrees": true,
+            "sha256": "dc465c8b8ffe03975b68e39de740e118a912f4a0b6212757969dfe31327d3e8e",
+            "simulation_duration_s": 89.99999999997165,
+            "trace_sha256": "bbc6f1513d51a1e8ff65d2a2f386cef721df01bec08bff565d4271e6ce10601a"
+          },
+          "settings": {
+            "WheeledBalance.GATE_INTEGRAL": false,
+            "navigator.run_in": false
+          },
+          "status": "time_cap",
+          "success": false
+        }
+      },
+      "seed": 201,
+      "symptom": "after a push from behind the integral winds up, the body arrives fast and stops at the route point against the station platform, where a turn in place is blocked"
+    },
+    {
+      "body": "mobile_octopus",
+      "fix": "the in-place sweep difference's sense corrected (it is the opposite of the moving differential's)",
+      "pair_id": "octopus-turn-sense",
+      "perturbation": null,
+      "runs": {
+        "after": {
+          "collisions": 0,
+          "distance_m": 6.775,
+          "duration_s": 140.18,
+          "energy_j": 3799.2,
+          "fell": false,
+          "final_distance_m": 0.292,
+          "media": {
+            "frame_count": 1684,
+            "frames": "octopus-turn-sense/after/media/frames.json",
+            "media_sha256": "06544760586f176b2a05f1bb8c71cc5db831c90dd0085606ee76e0b3c37c3972",
+            "preview": "octopus-turn-sense/after/media/preview.gif",
+            "video": "octopus-turn-sense/after/media/episode.mp4"
+          },
+          "navigator_log": [
+            {
+              "distance_m": 0.29999183682942204,
+              "event": "arrived",
+              "time_s": 64.75200000003049,
+              "waypoint": 0
+            },
+            {
+              "distance_m": 0.29849648299640064,
+              "event": "released",
+              "time_s": 66.75400000002583,
+              "waypoint": 0
+            },
+            {
+              "distance_m": 0.29998415636819403,
+              "event": "arrived",
+              "time_s": 138.12799999993143,
+              "waypoint": 1
+            },
+            {
+              "distance_m": 0.2922859464401752,
+              "event": "released",
+              "time_s": 140.12799999994098,
+              "waypoint": 1
+            }
+          ],
+          "peak_speed_mps": 0.413,
+          "reason": "",
+          "saturation_max": 0.0002,
+          "sealed": {
+            "bundle": "any-robot/results/g17-before-after/octopus-turn-sense/after/physical",
+            "replay_agrees": true,
+            "sha256": "2a49fc43588ef37e6d2cfc8be071493b15d385db7741b882d03102a6359dfe7e",
+            "simulation_duration_s": 140.1759999999412,
+            "trace_sha256": "278a211e6f013494468d7132d337a97b848a9f4bf8e15b2d8a53e7dbb6d5b9d6"
+          },
+          "settings": {},
+          "status": "success",
+          "success": true
+        },
+        "before": {
+          "collisions": 0,
+          "distance_m": 4.99,
+          "duration_s": 300.0,
+          "energy_j": 6555.3,
+          "fell": false,
+          "final_distance_m": 2.519,
+          "media": {
+            "frame_count": 3602,
+            "frames": "octopus-turn-sense/before/media/frames.json",
+            "media_sha256": "d24156f8c82a1a51607ef736da48a2142eee7b583e1c61cd56f4dc484a68706a",
+            "preview": "octopus-turn-sense/before/media/preview.gif",
+            "video": "octopus-turn-sense/before/media/episode.mp4"
+          },
+          "navigator_log": [
+            {
+              "distance_m": 0.29998824420067605,
+              "event": "arrived",
+              "time_s": 65.45000000002887,
+              "waypoint": 0
+            },
+            {
+              "distance_m": 0.30070672414939037,
+              "event": "released",
+              "time_s": 67.4520000000242,
+              "waypoint": 0
+            }
+          ],
+          "peak_speed_mps": 0.396,
+          "reason": "time cap: waypoint 1 of 2 not reached",
+          "saturation_max": 0.0,
+          "sealed": {
+            "bundle": "any-robot/results/g17-before-after/octopus-turn-sense/before/physical",
+            "replay_agrees": true,
+            "sha256": "1f93721124072451c3e24d00ed0ff1f8e08a088bf205f7e642bc8faa8e079b62",
+            "simulation_duration_s": 300.00000000070435,
+            "trace_sha256": "867d7cf425742d37c040cd19bae56788bb5307abd410f4f6f1ddd43bc610f0a3"
+          },
+          "settings": {
+            "OctopusCrawl.IN_PLACE_SENSE": 1.0,
+            "navigator.commit_turns": false
+          },
+          "status": "time_cap",
+          "success": false
+        }
+      },
+      "seed": 1,
+      "symptom": "at the station the body turns the wrong way for the command; the navigator's feedback then holds the heading at the seam and it never comes back"
+    },
+    {
+      "body": "mobile_dog_arm",
+      "fix": "the in-place stride difference half again as large",
+      "pair_id": "dog-turn-boost",
+      "perturbation": null,
+      "runs": {
+        "after": {
+          "collisions": 0,
+          "distance_m": 7.489,
+          "duration_s": 64.43,
+          "energy_j": 3867.7,
+          "fell": false,
+          "final_distance_m": 0.344,
+          "media": {
+            "frame_count": 775,
+            "frames": "dog-turn-boost/after/media/frames.json",
+            "media_sha256": "459fe4ff09bea91d3fce94c31c28309be09bd63df2f35dc0e1854c49f306827d",
+            "preview": "dog-turn-boost/after/media/preview.gif",
+            "video": "dog-turn-boost/after/media/episode.mp4"
+          },
+          "navigator_log": [
+            {
+              "distance_m": 0.2999895357664304,
+              "event": "arrived",
+              "time_s": 26.37399999999626,
+              "waypoint": 0
+            },
+            {
+              "distance_m": 0.34351307621880767,
+              "event": "released",
+              "time_s": 28.37599999999515,
+              "waypoint": 0
+            },
+            {
+              "distance_m": 0.2998454842518401,
+              "event": "arrived",
+              "time_s": 60.75600000002829,
+              "waypoint": 1
+            },
+            {
+              "distance_m": 0.3427037610551509,
+              "event": "released",
+              "time_s": 62.75600000003073,
+              "waypoint": 1
+            }
+          ],
+          "peak_speed_mps": 0.397,
+          "reason": "",
+          "saturation_max": 0.0,
+          "sealed": {
+            "bundle": "any-robot/results/g17-before-after/dog-turn-boost/after/physical",
+            "replay_agrees": true,
+            "sha256": "7b61a65869d73e8c01931c5771e315390672003a7a6dd96356db1e9ca7c49278",
+            "simulation_duration_s": 64.42400000003126,
+            "trace_sha256": "3287f164b76bc0850df31c0792ce1563e8a21945291fcb44ba9672701ab7f5fa"
+          },
+          "settings": {},
+          "status": "success",
+          "success": true
+        },
+        "before": {
+          "collisions": 0,
+          "distance_m": 8.0,
+          "duration_s": 70.21,
+          "energy_j": 4142.8,
+          "fell": false,
+          "final_distance_m": 0.348,
+          "media": {
+            "frame_count": 844,
+            "frames": "dog-turn-boost/before/media/frames.json",
+            "media_sha256": "7ddd4e05f303f1d611f3b935b6d62b5c81111c01a51c5ddd55c751578be26625",
+            "preview": "dog-turn-boost/before/media/preview.gif",
+            "video": "dog-turn-boost/before/media/episode.mp4"
+          },
+          "navigator_log": [
+            {
+              "distance_m": 0.2999432276895437,
+              "event": "arrived",
+              "time_s": 26.19599999999636,
+              "waypoint": 0
+            },
+            {
+              "distance_m": 0.3668072261071558,
+              "event": "released",
+              "time_s": 28.19799999999525,
+              "waypoint": 0
+            },
+            {
+              "distance_m": 0.2996825828024808,
+              "event": "arrived",
+              "time_s": 66.27600000002694,
+              "waypoint": 1
+            },
+            {
+              "distance_m": 0.3468166461613713,
+              "event": "released",
+              "time_s": 68.27800000002227,
+              "waypoint": 1
+            }
+          ],
+          "peak_speed_mps": 0.397,
+          "reason": "",
+          "saturation_max": 0.0,
+          "sealed": {
+            "bundle": "any-robot/results/g17-before-after/dog-turn-boost/before/physical",
+            "replay_agrees": true,
+            "sha256": "e74714d1a3c95ef3bf795655fd4fe82839b059dfad297c4bbab00074ab27ab17",
+            "simulation_duration_s": 70.21200000001777,
+            "trace_sha256": "63a15e818ccd1766117047b029505432fcde27c8916e4909ce585d63e87c9c6f"
+          },
+          "settings": {
+            "DogTrot.BOOST_IN_PLACE_TURN": false
+          },
+          "status": "success",
+          "success": true
+        }
+      },
+      "seed": 1,
+      "symptom": "two-centimetre strides mostly slip: the turn at the station is slow"
+    }
+  ]
+}

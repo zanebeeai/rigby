@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-travel-the-course-start-station-start-no-languag-ea770c77",
+  "title": "D17: mobile_dog_arm: push recovery: 40 N left push on the base for 0.3 s at 6.0 s",
+  "prompt": "travel the course: start -> station -> start (no language planner: the navigator and the body's own controller)",
+  "tier": "any-robot",
+  "embodiment": "mobile_dog_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T07:48:32Z",
+  "source": {
+    "commit": "0de4e4d051",
+    "branch": "feat/g17",
+    "dirty": true,
+    "how": "python any-robot/scripts/g17_d17_media.py --results docs/results/g17-locomotion --out docs/results/g17-d17"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: push recovery: 40 N left push on the base for 0.3 s at 6.0 s."
+  },
+  "notes": "See docs/results/g17-report.md. Rendered from recorded states at real-time playback with the simulation clock, the outcome, the navigator's phase and the disturbance window, the base height and tilt, and the floor contacts by body on every frame; frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g17-d17/mobile_dog_arm/recovery-push/media/episode.mp4",
+      "bytes": 1164826,
+      "sha256": "6289138c3fd3ffaac4be4076e18c04d51be62a35babd685a2243eaf4910979c6",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g17-d17/mobile_dog_arm/recovery-push/media/preview.gif",
+      "bytes": 2162078,
+      "sha256": "049b962df0031ff58feda84760a0b72d0952a183ce5d7bc509b3d594cb4a83c6",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G17",
+    "D17",
+    "mobile_dog_arm",
+    "push",
+    "recovery"
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-travel-the-course-start-station-start-no-languag-9aa05a61",
+  "title": "D17: mobile_wheeled_biped: patch recovery: a slick patch (friction 0.15) across the corridor at x = 1.5 m, met on the",
+  "prompt": "travel the course: start -> station -> start (no language planner: the navigator and the body's own controller)",
+  "tier": "any-robot",
+  "embodiment": "mobile_wheeled_biped",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T07:48:37Z",
+  "source": {
+    "commit": "0de4e4d051",
+    "branch": "feat/g17",
+    "dirty": true,
+    "how": "python any-robot/scripts/g17_d17_media.py --results docs/results/g17-locomotion --out docs/results/g17-d17"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: patch recovery: a slick patch (friction 0.15) across the corridor at x = 1.5 m, met on the way out and on the way back."
+  },
+  "notes": "See docs/results/g17-report.md. Rendered from recorded states at real-time playback with the simulation clock, the outcome, the navigator's phase and the disturbance window, the base height and tilt, and the floor contacts by body on every frame; frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g17-d17/mobile_wheeled_biped/recovery-patch/media/episode.mp4",
+      "bytes": 411974,
+      "sha256": "8b7877a6af7bff5d74c9442c465821b03c7f26cb7b56c60c9461b827c39a8f5f",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g17-d17/mobile_wheeled_biped/recovery-patch/media/preview.gif",
+      "bytes": 2085297,
+      "sha256": "aa20eb3780c5998cf697f3bffb6cb7e6f4d5b2ed2e9a84ff4034182e99f20565",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G17",
+    "D17",
+    "mobile_wheeled_biped",
+    "patch",
+    "recovery"
+  ]
+}

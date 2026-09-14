@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-travel-the-course-start-station-start-1f5ed594",
+  "title": "G17 before/after: dog-turn-boost (after)",
+  "prompt": "travel the course: start -> station -> start",
+  "tier": "any-robot",
+  "embodiment": "mobile_dog_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T07:48:42Z",
+  "source": {
+    "commit": "0de4e4d051",
+    "branch": "feat/g17",
+    "dirty": true,
+    "how": "python any-robot/scripts/g17_before_after.py --out docs/results/g17-before-after --local any-robot/results/g17-before-after"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "AFTER the fix (the in-place stride difference half again as large): SUCCESS. Symptom before: two-centimetre strides mostly slip: the turn at the station is slow. Identical physics, seed 1."
+  },
+  "notes": "See docs/results/g17-report.md. Rendered from recorded states at real-time playback with the simulation clock, the outcome, the navigator's phase and the disturbance window, the base height and tilt, and the floor contacts by body on every frame; frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g17-before-after/dog-turn-boost/after/media/episode.mp4",
+      "bytes": 1085599,
+      "sha256": "b68f392d19da59f86881f6bf3eb1d58ec2e27c62d65d37055b5d5b6687bd7c19",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g17-before-after/dog-turn-boost/after/media/preview.gif",
+      "bytes": 2187380,
+      "sha256": "cb55dfea8b8712523df3969205744b614dee0c4254361b4dcc3afb74bc4a75a9",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G17",
+    "before-after",
+    "dog-turn-boost",
+    "after",
+    "mobile_dog_arm"
+  ]
+}

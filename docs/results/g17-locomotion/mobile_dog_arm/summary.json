@@ -1,0 +1,217 @@
+{
+  "artificial_support": [
+    "none"
+  ],
+  "body": "mobile_dog_arm",
+  "controller": [
+    "DogTrot"
+  ],
+  "kinds": {
+    "patch": {
+      "collisions_total": 0,
+      "control_latency_ms": {
+        "mean": 0.0338,
+        "p99_max": 0.09
+      },
+      "drifted": 0,
+      "duration_s": {
+        "max": 120.0,
+        "mean": 67.6
+      },
+      "energy_j": {
+        "max": 6373.4,
+        "mean": 4388.0
+      },
+      "falls": 0,
+      "mean_speed_mps": {
+        "mean": 0.1227,
+        "min": 0.1125
+      },
+      "peak_speed_mps": {
+        "max": 0.448
+      },
+      "rate": 0.8333,
+      "saturation_max": 0.0,
+      "sealed": 3,
+      "successes": 5,
+      "time_budget_fraction": {
+        "max": 1.0,
+        "mean": 0.5633
+      },
+      "time_caps": 1,
+      "trials": 6,
+      "trials_with_collisions": 0,
+      "undeclared_contacts": [
+        "fl_shank",
+        "fr_shank",
+        "hl_shank",
+        "hl_thigh",
+        "hr_shank",
+        "hr_thigh"
+      ],
+      "unstable_ends": 0
+    },
+    "push": {
+      "collisions_total": 148,
+      "control_latency_ms": {
+        "mean": 0.0343,
+        "p99_max": 0.088
+      },
+      "drifted": 0,
+      "duration_s": {
+        "max": 70.1,
+        "mean": 65.9
+      },
+      "energy_j": {
+        "max": 4516.8,
+        "mean": 3208.9
+      },
+      "falls": 3,
+      "mean_speed_mps": {
+        "mean": 0.1236,
+        "min": 0.1167
+      },
+      "peak_speed_mps": {
+        "max": 1.377
+      },
+      "rate": 0.75,
+      "saturation_max": 0.0489,
+      "sealed": 5,
+      "successes": 9,
+      "time_budget_fraction": {
+        "max": 0.584,
+        "mean": 0.5491
+      },
+      "time_caps": 0,
+      "trials": 12,
+      "trials_with_collisions": 3,
+      "undeclared_contacts": [
+        "arm_finger_left",
+        "arm_link_0",
+        "arm_link_1",
+        "arm_palm",
+        "fl_shank",
+        "fl_thigh",
+        "fr_shank",
+        "fr_thigh",
+        "hl_shank",
+        "hl_thigh",
+        "hr_shank",
+        "hr_thigh",
+        "torso"
+      ],
+      "unstable_ends": 0
+    },
+    "support": {
+      "collisions_total": 0,
+      "control_latency_ms": {
+        "mean": 0.0362,
+        "p99_max": 0.1
+      },
+      "drifted": 0,
+      "duration_s": {
+        "max": 68.8,
+        "mean": 65.6
+      },
+      "energy_j": {
+        "max": 4383.1,
+        "mean": 4049.0
+      },
+      "falls": 0,
+      "mean_speed_mps": {
+        "mean": 0.1215,
+        "min": 0.1184
+      },
+      "peak_speed_mps": {
+        "max": 0.626
+      },
+      "rate": 1.0,
+      "saturation_max": 0.001,
+      "sealed": 2,
+      "successes": 12,
+      "time_budget_fraction": {
+        "max": 0.5737,
+        "mean": 0.5466
+      },
+      "time_caps": 0,
+      "trials": 12,
+      "trials_with_collisions": 0,
+      "undeclared_contacts": [
+        "fl_shank",
+        "fr_shank",
+        "hl_shank",
+        "hl_thigh",
+        "hr_shank",
+        "hr_thigh"
+      ],
+      "unstable_ends": 0
+    },
+    "travel": {
+      "collisions_total": 0,
+      "control_latency_ms": {
+        "mean": 0.0468,
+        "p99_max": 0.157
+      },
+      "drifted": 0,
+      "duration_s": {
+        "max": 66.0,
+        "mean": 64.7
+      },
+      "energy_j": {
+        "max": 3992.1,
+        "mean": 3879.3
+      },
+      "falls": 0,
+      "mean_speed_mps": {
+        "mean": 0.1198,
+        "min": 0.1149
+      },
+      "peak_speed_mps": {
+        "max": 0.429
+      },
+      "rate": 1.0,
+      "saturation_max": 0.0,
+      "sealed": 2,
+      "successes": 100,
+      "time_budget_fraction": {
+        "max": 0.55,
+        "mean": 0.5394
+      },
+      "time_caps": 0,
+      "trials": 100,
+      "trials_with_collisions": 0,
+      "undeclared_contacts": [
+        "fl_shank",
+        "fr_shank",
+        "hl_shank",
+        "hl_thigh",
+        "hr_shank",
+        "hr_thigh"
+      ],
+      "unstable_ends": 0
+    }
+  },
+  "perturbation": {
+    "by_kind": {
+      "patch": "5/6",
+      "push": "9/12",
+      "support": "12/12"
+    },
+    "met": true,
+    "successes": 26,
+    "target": ">= 24 of 30",
+    "trials": 30
+  },
+  "provenance": [
+    "analytic, hand-authored: trot gait over an analytic leg IK, position servos"
+  ],
+  "root_writes": [
+    "none after placement"
+  ],
+  "travel": {
+    "met": true,
+    "successes": 100,
+    "target": ">= 90 of 100",
+    "trials": 100
+  }
+}

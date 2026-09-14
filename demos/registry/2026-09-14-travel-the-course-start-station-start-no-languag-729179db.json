@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-travel-the-course-start-station-start-no-languag-729179db",
+  "title": "D17: mobile_wheeled_biped: support recovery: the left wheel's drive cut by the controller for 0.15 s at 4.0 s",
+  "prompt": "travel the course: start -> station -> start (no language planner: the navigator and the body's own controller)",
+  "tier": "any-robot",
+  "embodiment": "mobile_wheeled_biped",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T07:48:37Z",
+  "source": {
+    "commit": "0de4e4d051",
+    "branch": "feat/g17",
+    "dirty": true,
+    "how": "python any-robot/scripts/g17_d17_media.py --results docs/results/g17-locomotion --out docs/results/g17-d17"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: support recovery: the left wheel's drive cut by the controller for 0.15 s at 4.0 s."
+  },
+  "notes": "See docs/results/g17-report.md. Rendered from recorded states at real-time playback with the simulation clock, the outcome, the navigator's phase and the disturbance window, the base height and tilt, and the floor contacts by body on every frame; frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g17-d17/mobile_wheeled_biped/recovery-support/media/episode.mp4",
+      "bytes": 408561,
+      "sha256": "73cf98637c1ff7918d705c1257fca13ae056e4108aba641ae17af4803ee3291c",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g17-d17/mobile_wheeled_biped/recovery-support/media/preview.gif",
+      "bytes": 2203103,
+      "sha256": "b5ee367dce172ce6415b5f2893372a4939dd74b1f02e7b6b76700388dc10bde3",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G17",
+    "D17",
+    "mobile_wheeled_biped",
+    "support",
+    "recovery"
+  ]
+}
