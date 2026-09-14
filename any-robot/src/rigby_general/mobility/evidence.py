@@ -39,9 +39,16 @@ FPS = 12
 BACKGROUND = (17, 24, 39)
 
 
+HELD_NOTE = "servos holding the stance, nothing else acting"
+
+
 def seal_run(destination: Path, *, body: MobileBody, manifest: MobileBodyManifestV1, run: Run, label: str, caption: str, test: dict, outcome: dict, goal: str = "G16",
-             camera: dict | None = None, world_xml: str | None = None, model: mujoco.MjModel | None = None) -> dict:
-    """One bundle for one recorded run; the recorded controls must replay to the recorded states."""
+             camera: dict | None = None, world_xml: str | None = None, model: mujoco.MjModel | None = None, protocol: str = PROTOCOL, controls_note: str = HELD_NOTE) -> dict:
+    """One bundle for one recorded run; the recorded controls must replay to the recorded states.
+
+    `controls_note` says what acted on the body (the banner carries it): the
+    held stance by default, a locomotion controller and any declared external
+    input for a trial."""
 
     model = model or body.floor_model
     replay = replay_physics(model, run.record)
@@ -58,7 +65,7 @@ def seal_run(destination: Path, *, body: MobileBody, manifest: MobileBodyManifes
         "model.mjb": buffer.tobytes(), "model.xml": (world_xml or body.floor_xml).encode("utf-8"), "robot.xml": body.xml.encode("utf-8"),
         "mobility.json": json_bytes(body.declaration), "body_manifest.json": json_bytes(manifest.model_dump(mode="json")), "provenance.json": json_bytes(body.provenance),
         "world.json": json_bytes({"mode": "level_floor" if world_xml is None else "course", "timestep_s": float(model.opt.timestep), "gravity": model.opt.gravity.tolist(), "floor_friction": 1.0}),
-        "task.json": json_bytes({"goal": goal, "protocol": PROTOCOL, "label": label, **test, "clock_disclosure": {"physics_timestep_s": float(model.opt.timestep), "controls": "position servos held at the stance (velocity servos at zero); no external wrench, no teleport, no artificial support"}}),
+        "task.json": json_bytes({"goal": goal, "protocol": protocol, "label": label, **test, "clock_disclosure": {"physics_timestep_s": float(model.opt.timestep), "controls": ("position servos held at the stance (velocity servos at zero); no external wrench, no teleport, no artificial support" if controls_note == HELD_NOTE else controls_note)}}),
         "outcome.json": json_bytes({**outcome, "actual_physics_duration_s": float(times[-1] - times[0]), "physical_steps": len(times) - 1, "refusal": None}),
         "trace.npz": run.record.to_bytes(),
         "repeats.json": json_bytes({"count": 1, "recorded_control_replay": replay, "note": "one run; the recorded controls replay to the recorded states"}),
@@ -70,7 +77,7 @@ def seal_run(destination: Path, *, body: MobileBody, manifest: MobileBodyManifes
     mujoco.mj_forward(model, data)
     centre = [float(v) for v in data.xpos[base]]
     centre[2] = max(0.15, centre[2] * 0.6)
-    metadata = {"goal": goal, "protocol": PROTOCOL, "robot_id": body.robot_id, "created_at_utc": datetime.now(timezone.utc).isoformat(), "outcome": outcome["status"], "fault": False,
+    metadata = {"goal": goal, "protocol": protocol, "robot_id": body.robot_id, "created_at_utc": datetime.now(timezone.utc).isoformat(), "outcome": outcome["status"], "fault": False, "controls_note": controls_note,
                 "simulation_duration_s": float(times[-1] - times[0]), "reference_duration_s": float(times[-1] - times[0]), "reference_clock_matches_physics": True, "caption": caption,
                 "trace_sha256": run.record.content_hash(), "world_sha256": hashlib.sha256(payloads["world.json"]).hexdigest(),
                 "camera": camera or {"centre": centre, "reach": max(0.6, 1.2 * max(manifest.footprint_m))}, "task_site": None, "floor_geom": int(run.floor_geom), "base_body": body.declaration["base_body"],
@@ -115,13 +122,13 @@ def _label(frame: Image.Image, metadata: dict, time_s: float, contacts: list[str
     tint = (100, 230, 165) if status in ("SUCCESS", "STABLE", "RECOVERED") else (255, 189, 100)
     draw.text((12, 6), f"{metadata['robot_id']} | {status} | sim t={time_s:.3f}s | base {height_m:.3f} m, tilt {tilt_deg:.1f} deg", fill=tint, font=font)
     draw.text((12, 27), (str(metadata.get("caption", ""))[:120] + (f" | {phase}" if phase else ""))[:150], fill="white", font=font)
-    draw.text((12, 48), preview or "FULL EPISODE | real-time playback | recorded physical states | servos holding the stance, nothing else acting", fill=(191, 210, 233), font=font)
+    draw.text((12, 48), (preview or f"FULL EPISODE | real-time playback | recorded physical states | {metadata.get('controls_note', HELD_NOTE)}")[:150], fill=(191, 210, 233), font=font)
     declared = set(metadata.get("support_members", []))
     undeclared = [c for c in contacts if c not in declared]
     text = "ground contact now: " + (", ".join(contacts) if contacts else "none")
     draw.text((12, 68), text[:150], fill=(255, 140, 140) if undeclared else (170, 220, 190), font=small)
     draw.text((12, 82), "Global view", fill=(170, 185, 205), font=small)
-    draw.text((WIDTH + 12, 82), "Close view | position servos | joint encoders + IMU + touch", fill=(170, 185, 205), font=small)
+    draw.text((WIDTH + 12, 82), "Close view | follows the base | joint encoders + IMU + touch", fill=(170, 185, 205), font=small)
     return canvas
 
 
