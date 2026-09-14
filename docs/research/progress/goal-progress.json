@@ -4,7 +4,7 @@
   "goal_catalog": "docs/research/rigby-verifiable-goals.json",
   "goal_catalog_sha256": "3672ebf5fa10ff4216fa0213499d5988281f2ebbc611500e8526afe6e618b250",
   "started_at_utc": "2026-09-12T02:34:49.841258+00:00",
-  "current_goal": "G16",
+  "current_goal": "G17",
   "overall_status": "active",
   "authorization": {
     "commits_and_pull_requests": true,
@@ -2587,39 +2587,91 @@
     {
       "id": "G16",
       "title": "Build and validate the three exotic mobile embodiments",
-      "status": "planned",
+      "status": "complete",
       "criteria": [
         {
           "id": "G16.A01",
           "requirement": "Provide dog-plus-arm, wheeled-biped and rigid segmented octopus-like models with physical/actuator/sensor manifests; these are development/showcase bodies, not automatically held-out research bodies.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "docs/results/g16-report.md",
+            "docs/results/g16-validation.json",
+            "docs/results/verify_g16.py",
+            "any-robot/assets/general/mobile/",
+            "docs/results/g16-bodies/",
+            "docs/results/g16-course/",
+            "docs/results/g16-d16/index.json"
+          ],
+          "note": "three procedural bodies (mobile_dog_arm: legged, 18 joints; mobile_wheeled_biped: wheeled, 11 joints; mobile_octopus: crawling, 52 joints) as MJCF from primitive geometry with a mobility declaration (base, support members, limbs, manipulators, stances), position/velocity servos with declared force limits, joint encoders, base IMU and touch sensors; measured manifests (MobileBodyManifestV1) committed per body; declared development/showcase, not holdouts",
+          "verified_at_utc": "2026-09-14T05:56:56.710407+00:00"
         },
         {
           "id": "G16.A02",
           "requirement": "Validate inertias, limits, collision geometry, support/contact roles and recoverable initial states. Body definitions may differ; shared task code contains no robot-ID special cases.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "docs/results/g16-report.md",
+            "docs/results/g16-validation.json",
+            "docs/results/verify_g16.py",
+            "any-robot/assets/general/mobile/",
+            "docs/results/g16-bodies/",
+            "docs/results/g16-course/",
+            "docs/results/g16-d16/index.json"
+          ],
+          "note": "floating-base integrity rules passed by all three (inertias finite, positive, triangle inequality; valid limits; convex colliders; a collider on every support member; actuators bound with finite force); every declared stance settled on physics as declared (6 tests, support contacts measured against the declaration); supported recovery trials 21/21 recovered, 6 unsupported manoeuvres kept as clips; the same code ingests all three, no robot-ID special case",
+          "verified_at_utc": "2026-09-14T05:56:56.710407+00:00"
         },
         {
           "id": "G16.A03",
           "requirement": "Freeze one common feasible world and goal set for the three bodies before policy tuning, supported by reach/support/traction analysis and a labeled expert feasibility baseline.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "docs/results/g16-report.md",
+            "docs/results/g16-validation.json",
+            "docs/results/verify_g16.py",
+            "any-robot/assets/general/mobile/",
+            "docs/results/g16-bodies/",
+            "docs/results/g16-course/",
+            "docs/results/g16-d16/index.json"
+          ],
+          "note": "mobile-course-v1 frozen and registered (14bb869a6c82) before any controller: floor, start pad, corridor, station with a cube, tray, ramp, doorway and step branches; travel and retrieve goals; feasibility per body x element from footprint, support friction, wheel radius / leg length / mantle rise, stance heights and reach: {\"mobile_dog_arm\": {\"corridor\": true, \"doorway\": true, \"ramp\": true, \"step\": true, \"station\": true, \"tray\": true}, \"mobile_octopus\": {\"corridor\": true, \"doorway\": false, \"ramp\": true, \"step\": false, \"station\": true, \"tray\": true}, \"mobile_wheeled_biped\": {\"corridor\": true, \"doorway\": false, \"ramp\": true, \"step\": false, \"station\": true, \"tray\": true}}; internal expert labels beside it with agreement {\"mobile_dog_arm\": 6, \"mobile_octopus\": 6, \"mobile_wheeled_biped\": 6} of 6 each; every body settled on the course's start pad",
+          "verified_at_utc": "2026-09-14T05:56:56.710407+00:00"
         },
         {
           "id": "G16.A04",
           "requirement": "Record origin and redistribution terms of every asset; procedural models are the default if no preferred models are supplied. The shared task/world remains independent of which locomotion controller later succeeds.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "docs/results/g16-report.md",
+            "docs/results/g16-validation.json",
+            "docs/results/verify_g16.py",
+            "any-robot/assets/general/mobile/",
+            "docs/results/g16-bodies/",
+            "docs/results/g16-course/",
+            "docs/results/g16-d16/index.json"
+          ],
+          "note": "provenance.json per body: procedural, generated by any-robot/scripts/build_mobile_zoo.py, no external design, mesh or measurement; licence and redistribution recorded (the repository's own); the course is independent of any locomotion controller",
+          "verified_at_utc": "2026-09-14T05:56:56.710407+00:00"
         }
       ],
       "demo_requirement": "D16: physical inspection and contact/support tests for all three bodies, including any unsupported maneuvers.",
-      "demo_status": "pending",
-      "assessment_complete": false,
-      "capability_supported": false,
-      "commits": [],
-      "pull_requests": []
+      "demo_status": "delivered",
+      "assessment_complete": true,
+      "capability_supported": true,
+      "commits": [
+        "03a2d261",
+        "38f17fa9",
+        "c6011335"
+      ],
+      "pull_requests": [
+        "https://github.com/zanebeeai/rigby/pull/46"
+      ],
+      "demo_evidence": [
+        "docs/results/g16-d16/index.json",
+        "demos/registry"
+      ],
+      "closed_at_utc": "2026-09-14T05:56:56.710407+00:00",
+      "note": "Closed complete. The wheeled biped stands only with active balance: its standing stance is declared unstable without a controller, measured so, and left to G17; its parked stance holds. The feasibility map disagrees with the bodies where their geometry says it should (the doorway for the octopus and the biped, the step for the biped and the octopus)."
     },
     {
       "id": "G17",
@@ -3093,5 +3145,5 @@
     "Restore GitHub Actions billing/allowance and rerun PRs 27-39; merge only after required checks are green, bottom of the stack first.",
     "Preserve all 30 goals and their frozen criteria."
   ],
-  "updated_at_utc": "2026-09-14T05:20:27.712843+00:00"
+  "updated_at_utc": "2026-09-14T05:56:56.710407+00:00"
 }
