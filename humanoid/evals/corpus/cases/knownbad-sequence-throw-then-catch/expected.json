@@ -2,8 +2,14 @@
   "case_id": "knownbad-sequence-throw-then-catch",
   "contact_count": 4,
   "determinism_class": "platform_dependent",
-  "duration_s": 7.672354689762697,
+  "duration_s": 7.6498755560733205,
   "environment": {
+    "darwin-arm64-apple-m4|mujoco-3.11.0": {
+      "blessed_at": "2026-09-13T20:35:12+00:00",
+      "compiler_version": "rigby-compiler-0.4.0",
+      "platform_key": "darwin-arm64-apple-m4|mujoco-3.11.0",
+      "python_version": "3.12.13"
+    },
     "darwin-arm64|mujoco-3.11.0": {
       "blessed_at": "2026-09-07T05:05:01+00:00",
       "compiler_version": "rigby-compiler-0.4.0",
@@ -12,14 +18,17 @@
     }
   },
   "fps": 30,
-  "frame_count": 229,
+  "frame_count": 228,
   "metrics_sha256": {
+    "darwin-arm64-apple-m4|mujoco-3.11.0": "7d594a33b5102f367f507051bcc13815d2e6672821a9b4d7d39a065874c59ce6",
     "darwin-arm64|mujoco-3.11.0": "926da6e029b361318c4ef79cc8965a9ae044696ff050646442cf52ff755f5aab"
   },
   "motion_sha256": {
+    "darwin-arm64-apple-m4|mujoco-3.11.0": "c29631598851664080115ecd9766b00695851f977753fb8276371a7f038eae68",
     "darwin-arm64|mujoco-3.11.0": "45820a7d173d8513f80bae517e2d475c03b02aef7cdf4f0cdd6f662facdc3387"
   },
   "observables_sha256": {
+    "darwin-arm64-apple-m4|mujoco-3.11.0": "0959e0a179b8f8adbec8bffdaccce466e111d3fb4d7632eeb801b5cae1c6629d",
     "darwin-arm64|mujoco-3.11.0": "9c5d1a16d59de05cf3e542cc806181389bf45faf09fef224f0d243d10f2a9146"
   },
   "schema_version": "1.2",

@@ -229,16 +229,26 @@ def compare_case(case: CorpusCase, clip: ClipResult | None = None) -> CaseCompar
         # No hash to assert against here, but the committed clip still says whether
         # this platform produced the same motion to within solver drift.  Skipping
         # instead would give this platform zero coverage of the whole MuJoCo path.
-        tolerance = compare_slim_clip(case, clip)
-        verdict = Verdict.TOLERANCE_MATCH if tolerance.within else Verdict.MISMATCH
-        if not tolerance.within:
-            differences = [
-                FieldDifference(
-                    f"slim clip at {tolerance.at}",
-                    f"<= {tolerance.tolerance}",
-                    tolerance.max_deviation,
-                )
-            ]
+        try:
+            tolerance = compare_slim_clip(case, clip)
+        except SlimClipShapeError as shape:
+            # A different frame count is a motion change, not a deviation, and it
+            # is the strongest thing this comparison can find.  It used to escape
+            # as an unhandled exception and kill the whole `verify` run at
+            # whichever case happened to reach it first, because before the key
+            # named the CPU almost nothing took this path.  Report it.
+            verdict = Verdict.MISMATCH
+            differences = [FieldDifference("slim clip shape", "same shape", str(shape))]
+        else:
+            verdict = Verdict.TOLERANCE_MATCH if tolerance.within else Verdict.MISMATCH
+            if not tolerance.within:
+                differences = [
+                    FieldDifference(
+                        f"slim clip at {tolerance.at}",
+                        f"<= {tolerance.tolerance}",
+                        tolerance.max_deviation,
+                    )
+                ]
     return CaseComparison(
         case_id=case.id,
         verdict=verdict,

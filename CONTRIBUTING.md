@@ -208,10 +208,15 @@ measurement, the attribution, and why a re-bless on an arbitrary machine is the
 wrong fix are in
 [`humanoid/docs/evidence/corpus-red-2026-09-13.md`](humanoid/docs/evidence/corpus-red-2026-09-13.md).
 
-Until that is settled, do not use "`verify` is green" or "`pytest` is green" as
-a regression gate on this tree; neither is true before you start. Snapshot with
-`uv run python -m evals.probes.corpus_snapshot before.json`, make the change,
-snapshot `after.json`, and `--compare` the two.
+**Settled 2026-09-13.** The corpus key now names the CPU
+(`darwin-arm64-apple-m4|mujoco-3.11.0`), because `<platform>-<machine>` named
+two different Apple Silicon machines and they cannot both be green. Blessing is
+now additive: `bless --write` writes your machine's column beside everyone
+else's instead of overwriting it. Keys written before that change match no
+machine and are left as the record of what was blessed. If `verify` reports
+`no hash blessed for <your key>`, that is expected on a machine nobody has
+blessed — the committed clip is compared at a 1e-3 tolerance instead, and
+`bless --write` claims your column when you want the stronger gate.
 
 ## 7. The corpus, blessing, and behaviours behind flags
 
