@@ -127,10 +127,10 @@ class Builder:
         return ET.tostring(self.root, encoding="unicode") + "\n"
 
 
-def parallel_jaw(b: Builder, parent: ET.Element, prefix: str, *, stroke: float, finger_length: float, effort: float, limb: str) -> None:
-    """A two-finger slide jaw hanging from ``parent`` along its -z."""
+def parallel_jaw(b: Builder, parent: ET.Element, prefix: str, *, stroke: float, finger_length: float, effort: float, limb: str, drop: float = 0.03) -> None:
+    """A two-finger slide jaw hanging from ``parent`` along its -z, its palm ``drop`` below the parent's origin."""
 
-    palm = b.body(parent, f"{prefix}palm", (0.0, 0.0, -0.03))
+    palm = b.body(parent, f"{prefix}palm", (0.0, 0.0, -drop))
     b.box(palm, f"{prefix}palm_geom", (0.045, 0.025, 0.015), PLASTIC, rgba="0.35 0.35 0.4 1")
     for side, sign in (("left", 1.0), ("right", -1.0)):
         finger = b.body(palm, f"{prefix}finger_{side}", (sign * (stroke + 0.008), 0.0, -0.015 - finger_length / 2))
@@ -160,8 +160,11 @@ def serial_arm(b: Builder, parent: ET.Element, prefix: str, *, mount: tuple[floa
 # --------------------------------------------------------------------------------------------------
 
 
-def mobile_dog_arm() -> tuple[Builder, dict]:
-    b = Builder("mobile_dog_arm", "A quadruped with three-hinge legs (hip roll, hip pitch, knee) on spherical feet, carrying a four-hinge arm and a parallel jaw on the front of its torso.")
+JAW_V2_NOTE = " Version 2: the jaw hangs below the last arm link's end; in the first version the palm sat 3 cm below that link's origin, so the link's capsule ran between the fingers and a jaw could take a 30 mm object by its top few millimetres only (found in G18)."
+
+
+def mobile_dog_arm(*, jaw_at_link_end: bool = False) -> tuple[Builder, dict]:
+    b = Builder("mobile_dog_arm_v2" if jaw_at_link_end else "mobile_dog_arm", "A quadruped with three-hinge legs (hip roll, hip pitch, knee) on spherical feet, carrying a four-hinge arm and a parallel jaw on the front of its torso." + (JAW_V2_NOTE if jaw_at_link_end else ""))
     torso = b.body(None, "torso", (0.0, 0.0, 0.40))
     ET.SubElement(torso, "freejoint", name="root")
     b.box(torso, "torso_geom", (0.26, 0.12, 0.06), STEEL * 0.35, rgba="0.45 0.5 0.6 1")
@@ -192,8 +195,9 @@ def mobile_dog_arm() -> tuple[Builder, dict]:
     # -1.2 at the shoulder swings the upper arm forward and up out of the way while walking
     wrist = serial_arm(b, arm_base, "arm_", mount=(0.0, 0.0, 0.04), lengths=(0.22, 0.20, 0.08), axes=((0.0, 1.0, 0.0), (0.0, 1.0, 0.0), (0.0, 1.0, 0.0)), radius=0.03,
                        efforts=(30.0, 25.0, 15.0), rests=(-1.9, 1.6, 0.9), limb="arm")
-    parallel_jaw(b, wrist, "arm_", stroke=0.035, finger_length=0.06, effort=40.0, limb="arm")
-    stance.update({"arm_yaw": 0.0, "arm_joint_0": -1.9, "arm_joint_1": 1.6, "arm_joint_2": 0.9, "arm_grip_left": 0.0, "arm_grip_right": 0.0})
+    parallel_jaw(b, wrist, "arm_", stroke=0.035, finger_length=0.06, effort=40.0, limb="arm", drop=0.08 + 0.03 if jaw_at_link_end else 0.03)
+    # the jaw hanging lower, the wrist folds further so the fingers stay clear of the floor when the body lies parked
+    stance.update({"arm_yaw": 0.0, "arm_joint_0": -1.9, "arm_joint_1": 1.6, "arm_joint_2": 1.5 if jaw_at_link_end else 0.9, "arm_grip_left": 0.0, "arm_grip_right": 0.0})
     declaration = {
         "base_kind": "legged", "base_body": "torso", "root_joint": "root", "support_members": list(b.support),
         "limbs": {**{f"leg_{n}": [f"{n}_hip_roll", f"{n}_hip_pitch", f"{n}_knee"] for n in ("fl", "fr", "hl", "hr")}, "arm": ["arm_yaw", "arm_joint_0", "arm_joint_1", "arm_joint_2", "arm_grip_left", "arm_grip_right"]},
@@ -211,8 +215,8 @@ def mobile_dog_arm() -> tuple[Builder, dict]:
 # --------------------------------------------------------------------------------------------------
 
 
-def mobile_wheeled_biped() -> tuple[Builder, dict]:
-    b = Builder("mobile_wheeled_biped", "A two-legged wheeled body: hip and knee hinges on each leg, a driven wheel at each foot, knee pads to park on, and a three-hinge arm with a parallel jaw on the torso.")
+def mobile_wheeled_biped(*, jaw_at_link_end: bool = False) -> tuple[Builder, dict]:
+    b = Builder("mobile_wheeled_biped_v2" if jaw_at_link_end else "mobile_wheeled_biped", "A two-legged wheeled body: hip and knee hinges on each leg, a driven wheel at each foot, knee pads to park on, and a three-hinge arm with a parallel jaw on the torso." + (JAW_V2_NOTE if jaw_at_link_end else ""))
     torso = b.body(None, "torso", (0.0, 0.0, 0.55))
     ET.SubElement(torso, "freejoint", name="root")
     b.box(torso, "torso_geom", (0.10, 0.14, 0.14), STEEL * 0.3, rgba="0.55 0.45 0.4 1")
@@ -248,7 +252,7 @@ def mobile_wheeled_biped() -> tuple[Builder, dict]:
     b.hinge(arm_base, "arm_yaw", (0.0, 0.0, 1.0), -2.6, 2.6, effort=20.0, velocity=3.0, kp=60.0, rest=0.0, role="arm", limb="arm")
     b.cylinder(arm_base, "arm_base_geom", 0.04, 0.02, PLASTIC, (0.0, 0.0, 0.0), rgba="0.6 0.55 0.5 1")
     wrist = serial_arm(b, arm_base, "arm_", mount=(0.0, 0.0, 0.04), lengths=(0.22, 0.20), axes=((0.0, 1.0, 0.0), (0.0, 1.0, 0.0)), radius=0.028, efforts=(25.0, 18.0), rests=(-1.9, 1.7), limb="arm")
-    parallel_jaw(b, wrist, "arm_", stroke=0.035, finger_length=0.06, effort=40.0, limb="arm")
+    parallel_jaw(b, wrist, "arm_", stroke=0.035, finger_length=0.06, effort=40.0, limb="arm", drop=0.20 + 0.03 if jaw_at_link_end else 0.03)
     arm = {"arm_yaw": 0.0, "arm_joint_0": -1.9, "arm_joint_1": 1.7, "arm_grip_left": 0.0, "arm_grip_right": 0.0}
     stance.update(arm)
     parked.update(arm)
@@ -269,8 +273,11 @@ def mobile_wheeled_biped() -> tuple[Builder, dict]:
 # --------------------------------------------------------------------------------------------------
 
 
-def mobile_octopus() -> tuple[Builder, dict]:
-    b = Builder("mobile_octopus", "A rigid segmented octopus-like body: a mantle resting on the ground and six tentacles of four capsule segments each, every segment on a pitch and a yaw hinge; the two front tentacles end in a pincer.")
+PINCER_V2_NOTE = " Version 2: the pincer hinges open to -0.9 rad, and the finger pads carry torsional friction; in the first version the hinges' range was -0.05 to 0.9 rad, the positive sense closing, so the open fingers parted 2.8 cm at the roots and 3.3 cm at the tips around a 30 mm object, and a cube pinched at two points could pivot out (found in G18)."
+
+
+def mobile_octopus(*, pincer_opens: bool = False) -> tuple[Builder, dict]:
+    b = Builder("mobile_octopus_v2" if pincer_opens else "mobile_octopus", "A rigid segmented octopus-like body: a mantle resting on the ground and six tentacles of four capsule segments each, every segment on a pitch and a yaw hinge; the two front tentacles end in a pincer." + (PINCER_V2_NOTE if pincer_opens else ""))
     mantle = b.body(None, "mantle", (0.0, 0.0, 0.16))
     ET.SubElement(mantle, "freejoint", name="root")
     ET.SubElement(mantle, "geom", name="mantle_geom", type="ellipsoid", size=fmt(0.16, 0.14, 0.11), density=f"{PLASTIC * 0.6:.1f}", rgba="0.5 0.3 0.45 1", friction="0.8 0.005 0.0001")
@@ -309,8 +316,9 @@ def mobile_octopus() -> tuple[Builder, dict]:
             b.sphere(tip, f"{prefix}pincer_geom", 0.02, PLASTIC, rgba="0.4 0.25 0.35 1")
             for side, sign in (("left", 1.0), ("right", -1.0)):
                 finger = b.body(tip, f"{prefix}finger_{side}", (0.01, sign * 0.022, 0.0))
-                b.hinge(finger, f"{prefix}pinch_{side}", (0.0, 0.0, -sign), -0.05, 0.9, effort=6.0, velocity=4.0, kp=20.0, rest=0.0, role="grip", limb=f"tentacle_{index}")
-                b.capsule(finger, f"{prefix}finger_{side}_geom", 0.008, 0.05, PLASTIC, pos=(0.025, 0.0, 0.0), axis="x", rgba="0.3 0.2 0.28 1", friction="1.4 0.005 0.0001")
+                b.hinge(finger, f"{prefix}pinch_{side}", (0.0, 0.0, -sign), -0.9 if pincer_opens else -0.05, 0.9, effort=6.0, velocity=4.0, kp=20.0, rest=0.0, role="grip", limb=f"tentacle_{index}")
+                # version 2's finger pads carry torsional friction (a cube pinched at two points by round fingers would otherwise pivot freely about the line through them)
+                b.capsule(finger, f"{prefix}finger_{side}_geom", 0.008, 0.05, PLASTIC, pos=(0.025, 0.0, 0.0), axis="x", rgba="0.3 0.2 0.28 1", friction="1.4 0.02 0.001" if pincer_opens else "1.4 0.005 0.0001", **({"condim": "4"} if pincer_opens else {}))
                 stance[f"{prefix}pinch_{side}"] = 0.0
                 limbs[f"tentacle_{index}"].append(f"{prefix}pinch_{side}")
             b.site(tip, f"{prefix}grasp_centre", pos=(0.045, 0.0, 0.0), size=0.006)
@@ -327,6 +335,23 @@ def mobile_octopus() -> tuple[Builder, dict]:
 
 
 BUILDERS = (mobile_dog_arm, mobile_wheeled_biped, mobile_octopus)
+"""The first versions: the bodies G16 validated and G17 drove; their assets do not change."""
+
+
+def mobile_dog_arm_v2() -> tuple[Builder, dict]:
+    return mobile_dog_arm(jaw_at_link_end=True)
+
+
+def mobile_wheeled_biped_v2() -> tuple[Builder, dict]:
+    return mobile_wheeled_biped(jaw_at_link_end=True)
+
+
+def mobile_octopus_v2() -> tuple[Builder, dict]:
+    return mobile_octopus(pincer_opens=True)
+
+
+BUILDERS_V2 = (mobile_dog_arm_v2, mobile_wheeled_biped_v2, mobile_octopus_v2)
+"""The corrections found in G18, as new bodies beside the first: the dog's and the biped's jaws hung below the last link, the octopus's pincers opening wide."""
 
 
 def write_body(builder: Builder, declaration: dict, root: Path) -> dict:
@@ -341,7 +366,7 @@ def write_body(builder: Builder, declaration: dict, root: Path) -> dict:
     (folder / "mobility.json").write_text(json.dumps(mobility, indent=1, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
     provenance = {"schema": "rigby.asset-provenance/1", "robot_id": builder.robot_id, "origin": "procedural: generated by any-robot/scripts/build_mobile_zoo.py in this repository from primitive geometry; no external design, mesh or measurement was used",
                   "author": "the rigby repository", "licence": "the repository's own licence; redistributable with the repository", "redistribution": "permitted with the repository under its licence",
-                  "preferred_external_design": None, "substitute_for": {"mobile_dog_arm": "a quadruped with a manipulator", "mobile_wheeled_biped": "a wheel-legged balancing robot", "mobile_octopus": "a soft multi-arm crawler, here rigid and segmented"}[builder.robot_id],
+                  "preferred_external_design": None, "substitute_for": {"mobile_dog_arm": "a quadruped with a manipulator", "mobile_wheeled_biped": "a wheel-legged balancing robot", "mobile_octopus": "a soft multi-arm crawler, here rigid and segmented"}[builder.robot_id.removesuffix("_v2")],
                   "holdout": False, "role": "development and showcase body"}
     (folder / "provenance.json").write_text(json.dumps(provenance, indent=1, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
     return {"robot_id": builder.robot_id, "model_sha256": digest, "joints": len(builder.joints), "actuators": len(builder.actuators), "support_members": len(builder.support)}
@@ -351,7 +376,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--root", type=Path, default=MOBILE_ROOT)
     args = parser.parse_args()
-    summary = [write_body(*builder(), args.root) for builder in BUILDERS]
+    summary = [write_body(*builder(), args.root) for builder in BUILDERS + BUILDERS_V2]
     (args.root / "index.json").write_text(json.dumps({"schema": "rigby.mobile-zoo/1", "bodies": summary}, indent=1) + "\n", encoding="utf-8", newline="\n")
     print(json.dumps(summary))
     return 0
