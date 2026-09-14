@@ -141,7 +141,9 @@ def render_synchronized(roots: dict[str, Path], rows: dict[str, dict], destinati
                 frames.append(frame_row)
                 if number in preview_at:
                     preview = canvas.copy()
-                    ImageDraw.Draw(preview).text((12, 27), f"GIF SUMMARY | approximately {speed:.1f}x speed | full video: episode.mp4" + " " * 40, fill="white", font=font)
+                    label = ImageDraw.Draw(preview)
+                    label.rectangle((0, 25, width, 46), fill=BACKGROUND)
+                    label.text((12, 27), f"GIF SUMMARY | approximately {speed:.1f}x speed | full video: episode.mp4", fill="white", font=font)
                     previews.append(preview)
             process.stdin.close()
             if process.wait(timeout=1200) != 0:
@@ -171,14 +173,24 @@ def main() -> int:
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--bodies", default=",".join(BODIES))
     parser.add_argument("--skip-synchronized", action="store_true")
+    parser.add_argument("--only-synchronized", action="store_true", help="re-render the synchronized clip from the bodies' entries already in the index")
     args = parser.parse_args()
     ffmpeg, ffprobe = shutil.which("ffmpeg"), shutil.which("ffprobe")
     if not ffmpeg or not ffprobe:
         raise SystemExit("ffmpeg and ffprobe are required")
     args.out.mkdir(parents=True, exist_ok=True)
     index = {"goal": "G17", "demo": "D17", "created_at_utc": datetime.now(timezone.utc).isoformat(), "commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=REPO, text=True).strip(), "bodies": {}, "generation_calls": 0}
+    earlier = {}
+    if (args.out / "index.json").is_file():
+        # one body at a time is allowed: the bodies rendered earlier keep their entries
+        earlier = json.loads((args.out / "index.json").read_bytes())
+        index["bodies"] = {b: c for b, c in earlier.get("bodies", {}).items() if b not in args.bodies.split(",")}
+        if "synchronized" in earlier and args.skip_synchronized:
+            index["synchronized"] = earlier["synchronized"]
     travel_roots, travel_rows = {}, {}
-    for body_id in args.bodies.split(","):
+    if args.only_synchronized:
+        index["bodies"] = earlier.get("bodies", {})
+    for body_id in [] if args.only_synchronized else args.bodies.split(","):
         rows = json.loads((args.results / body_id / "trials.json").read_bytes())
         sealed = [r for r in rows if "sealed" in r]
         chosen = []
@@ -200,6 +212,14 @@ def main() -> int:
             clips.append(clip_entry(name, body_id, row, rendered, title))
             print(json.dumps({"body": body_id, "clip": name, "trial": row["trial_id"], "success": row["success"], "frames": rendered["frames"]}), flush=True)
         index["bodies"][body_id] = clips
+    if not args.skip_synchronized:
+        for body_id in BODIES:
+            if body_id not in travel_roots:
+                rows = json.loads((args.results / body_id / "trials.json").read_bytes())
+                travel = next((r for r in rows if "sealed" in r and r["kind"] == "travel" and r["success"]), None)
+                if travel is not None:
+                    travel_roots[body_id] = REPO / travel["sealed"]["bundle"]
+                    travel_rows[body_id] = travel
     if not args.skip_synchronized and len(travel_roots) == len(BODIES):
         rendered = render_synchronized(travel_roots, travel_rows, args.out / "synchronized", ffmpeg=ffmpeg, ffprobe=ffprobe)
         index["synchronized"] = {"clip": "synchronized", "title": "synchronized course: the dog walks, the biped rolls, the octopus crawls, on one clock", "video": "synchronized/media/episode.mp4", "preview": "synchronized/media/preview.gif", "frames": "synchronized/media/frames.json",

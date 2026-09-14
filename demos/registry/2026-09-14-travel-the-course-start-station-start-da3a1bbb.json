@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-travel-the-course-start-station-start-da3a1bbb",
+  "title": "G17 before/after: biped-arrival (after)",
+  "prompt": "travel the course: start -> station -> start",
+  "tier": "any-robot",
+  "embodiment": "mobile_wheeled_biped",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T07:48:40Z",
+  "source": {
+    "commit": "0de4e4d051",
+    "branch": "feat/g17",
+    "dirty": true,
+    "how": "python any-robot/scripts/g17_before_after.py --out docs/results/g17-before-after --local any-robot/results/g17-before-after"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "AFTER the fix (the navigator's run-in and floor at the drive's minimum speed, the lean fed forward, the integral gated during transients): SUCCESS. Symptom before: after a push from behind the integral winds up, the body arrives fast and stops at the route point against the station platform, where a turn in place is blocked. Identical physics, seed 201, 80 N aft push on the base for 0.3 s at 4 s."
+  },
+  "notes": "See docs/results/g17-report.md. Rendered from recorded states at real-time playback with the simulation clock, the outcome, the navigator's phase and the disturbance window, the base height and tilt, and the floor contacts by body on every frame; frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g17-before-after/biped-arrival/after/media/episode.mp4",
+      "bytes": 440229,
+      "sha256": "20f4ce51ab0ef050d63c5bd5d961a6118cb529254f2fa4a63f5a27c332f2498d",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g17-before-after/biped-arrival/after/media/preview.gif",
+      "bytes": 2152060,
+      "sha256": "bec8c603ce5e28cdadcfd18df5feded34157be55381c2620dd08b36028d7a52f",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G17",
+    "before-after",
+    "biped-arrival",
+    "after",
+    "mobile_wheeled_biped"
+  ]
+}

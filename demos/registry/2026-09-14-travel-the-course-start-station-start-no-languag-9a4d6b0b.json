@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-travel-the-course-start-station-start-no-languag-9a4d6b0b",
+  "title": "D17: mobile_wheeled_biped: push recovery: 30 N left push on the base for 0.3 s at 4.0 s",
+  "prompt": "travel the course: start -> station -> start (no language planner: the navigator and the body's own controller)",
+  "tier": "any-robot",
+  "embodiment": "mobile_wheeled_biped",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T07:48:37Z",
+  "source": {
+    "commit": "0de4e4d051",
+    "branch": "feat/g17",
+    "dirty": true,
+    "how": "python any-robot/scripts/g17_d17_media.py --results docs/results/g17-locomotion --out docs/results/g17-d17"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: push recovery: 30 N left push on the base for 0.3 s at 4.0 s."
+  },
+  "notes": "See docs/results/g17-report.md. Rendered from recorded states at real-time playback with the simulation clock, the outcome, the navigator's phase and the disturbance window, the base height and tilt, and the floor contacts by body on every frame; frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g17-d17/mobile_wheeled_biped/recovery-push/media/episode.mp4",
+      "bytes": 402901,
+      "sha256": "6a2bb5d2e9dfcfca5d74755021dbb4268b95c46bb17ddecd2dd97e3bc1e66d5c",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g17-d17/mobile_wheeled_biped/recovery-push/media/preview.gif",
+      "bytes": 2202949,
+      "sha256": "03cee8d6a3e5760edabbf6ff2637f4f6700f77033309d3d167393929553de86e",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G17",
+    "D17",
+    "mobile_wheeled_biped",
+    "push",
+    "recovery"
+  ]
+}

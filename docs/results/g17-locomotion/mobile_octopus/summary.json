@@ -1,0 +1,208 @@
+{
+  "artificial_support": [
+    "none"
+  ],
+  "body": "mobile_octopus",
+  "controller": [
+    "OctopusCrawl"
+  ],
+  "kinds": {
+    "patch": {
+      "collisions_total": 0,
+      "control_latency_ms": {
+        "mean": 0.1098,
+        "p99_max": 0.227
+      },
+      "drifted": 0,
+      "duration_s": {
+        "max": 153.5,
+        "mean": 138.2
+      },
+      "energy_j": {
+        "max": 4204.1,
+        "mean": 3790.8
+      },
+      "falls": 0,
+      "mean_speed_mps": {
+        "mean": 0.0534,
+        "min": 0.0481
+      },
+      "peak_speed_mps": {
+        "max": 0.488
+      },
+      "rate": 1.0,
+      "saturation_max": 0.0033,
+      "sealed": 2,
+      "successes": 6,
+      "time_budget_fraction": {
+        "max": 0.5118,
+        "mean": 0.4608
+      },
+      "time_caps": 0,
+      "trials": 6,
+      "trials_with_collisions": 0,
+      "undeclared_contacts": [
+        "t0_finger_left",
+        "t0_finger_right",
+        "t0_pincer",
+        "t5_finger_left",
+        "t5_finger_right",
+        "t5_pincer"
+      ],
+      "unstable_ends": 0
+    },
+    "push": {
+      "collisions_total": 1,
+      "control_latency_ms": {
+        "mean": 0.1076,
+        "p99_max": 0.243
+      },
+      "drifted": 0,
+      "duration_s": {
+        "max": 150.7,
+        "mean": 138.9
+      },
+      "energy_j": {
+        "max": 4579.2,
+        "mean": 3000.5
+      },
+      "falls": 3,
+      "mean_speed_mps": {
+        "mean": 0.0516,
+        "min": 0.0492
+      },
+      "peak_speed_mps": {
+        "max": 4.814
+      },
+      "rate": 0.75,
+      "saturation_max": 0.109,
+      "sealed": 5,
+      "successes": 9,
+      "time_budget_fraction": {
+        "max": 0.5022,
+        "mean": 0.4629
+      },
+      "time_caps": 0,
+      "trials": 12,
+      "trials_with_collisions": 1,
+      "undeclared_contacts": [
+        "t0_finger_left",
+        "t0_finger_right",
+        "t0_pincer",
+        "t5_finger_left",
+        "t5_finger_right",
+        "t5_pincer"
+      ],
+      "unstable_ends": 0
+    },
+    "support": {
+      "collisions_total": 0,
+      "control_latency_ms": {
+        "mean": 0.1131,
+        "p99_max": 0.274
+      },
+      "drifted": 0,
+      "duration_s": {
+        "max": 142.8,
+        "mean": 140.5
+      },
+      "energy_j": {
+        "max": 4032.1,
+        "mean": 3916.4
+      },
+      "falls": 0,
+      "mean_speed_mps": {
+        "mean": 0.0495,
+        "min": 0.0486
+      },
+      "peak_speed_mps": {
+        "max": 0.557
+      },
+      "rate": 1.0,
+      "saturation_max": 0.0129,
+      "sealed": 2,
+      "successes": 12,
+      "time_budget_fraction": {
+        "max": 0.4762,
+        "mean": 0.4684
+      },
+      "time_caps": 0,
+      "trials": 12,
+      "trials_with_collisions": 0,
+      "undeclared_contacts": [
+        "t0_finger_left",
+        "t0_finger_right",
+        "t0_pincer",
+        "t5_finger_left",
+        "t5_finger_right",
+        "t5_pincer"
+      ],
+      "unstable_ends": 0
+    },
+    "travel": {
+      "collisions_total": 0,
+      "control_latency_ms": {
+        "mean": 0.1333,
+        "p99_max": 0.522
+      },
+      "drifted": 0,
+      "duration_s": {
+        "max": 188.3,
+        "mean": 142.7
+      },
+      "energy_j": {
+        "max": 4939.9,
+        "mean": 3886.2
+      },
+      "falls": 0,
+      "mean_speed_mps": {
+        "mean": 0.0489,
+        "min": 0.0406
+      },
+      "peak_speed_mps": {
+        "max": 0.466
+      },
+      "rate": 1.0,
+      "saturation_max": 0.0128,
+      "sealed": 2,
+      "successes": 100,
+      "time_budget_fraction": {
+        "max": 0.6278,
+        "mean": 0.4758
+      },
+      "time_caps": 0,
+      "trials": 100,
+      "trials_with_collisions": 0,
+      "undeclared_contacts": [
+        "t0_finger_right",
+        "t0_pincer",
+        "t5_finger_left",
+        "t5_pincer"
+      ],
+      "unstable_ends": 0
+    }
+  },
+  "perturbation": {
+    "by_kind": {
+      "patch": "6/6",
+      "push": "9/12",
+      "support": "12/12"
+    },
+    "met": true,
+    "successes": 27,
+    "target": ">= 24 of 30",
+    "trials": 30
+  },
+  "provenance": [
+    "analytic, hand-authored: tripod crawl of six segmented tentacles, position servos on every joint"
+  ],
+  "root_writes": [
+    "none after placement"
+  ],
+  "travel": {
+    "met": true,
+    "successes": 100,
+    "target": ">= 90 of 100",
+    "trials": 100
+  }
+}

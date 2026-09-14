@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-travel-the-course-start-station-start-no-languag-3770f01e",
+  "title": "D17: mobile_octopus: support recovery: tentacle_0's servos fought by a 4 N m external torque at 3 Hz for 1.5 s ",
+  "prompt": "travel the course: start -> station -> start (no language planner: the navigator and the body's own controller)",
+  "tier": "any-robot",
+  "embodiment": "mobile_octopus",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T07:48:35Z",
+  "source": {
+    "commit": "0de4e4d051",
+    "branch": "feat/g17",
+    "dirty": true,
+    "how": "python any-robot/scripts/g17_d17_media.py --results docs/results/g17-locomotion --out docs/results/g17-d17"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: support recovery: tentacle_0's servos fought by a 4 N m external torque at 3 Hz for 1.5 s at 8.0 s."
+  },
+  "notes": "See docs/results/g17-report.md. Rendered from recorded states at real-time playback with the simulation clock, the outcome, the navigator's phase and the disturbance window, the base height and tilt, and the floor contacts by body on every frame; frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g17-d17/mobile_octopus/recovery-support/media/episode.mp4",
+      "bytes": 2503808,
+      "sha256": "325379ff0a301c1b44d60c2f23dca07323d0f0bbb9dd886565a2b24dca8d51af",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g17-d17/mobile_octopus/recovery-support/media/preview.gif",
+      "bytes": 2503324,
+      "sha256": "714fc890e6ef3ee3b68fe24298b5fbcf76b8761c421cd0b89e65365136b7d20b",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G17",
+    "D17",
+    "mobile_octopus",
+    "support",
+    "recovery"
+  ]
+}

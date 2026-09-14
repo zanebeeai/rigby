@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-travel-the-course-start-station-start-a545f4d6",
+  "title": "G17 before/after: biped-arrival (before)",
+  "prompt": "travel the course: start -> station -> start",
+  "tier": "any-robot",
+  "embodiment": "mobile_wheeled_biped",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T07:48:40Z",
+  "source": {
+    "commit": "0de4e4d051",
+    "branch": "feat/g17",
+    "dirty": true,
+    "how": "python any-robot/scripts/g17_before_after.py --out docs/results/g17-before-after --local any-robot/results/g17-before-after"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "BEFORE the fix (the navigator's run-in and floor at the drive's minimum speed, the lean fed forward, the integral gated during transients): TIME_CAP; time cap: waypoint 1 of 2 not reached. Symptom before: after a push from behind the integral winds up, the body arrives fast and stops at the route point against the station platform, where a turn in place is blocked. Identical physics, seed 201, 80 N aft push on the base for 0.3 s at 4 s."
+  },
+  "notes": "See docs/results/g17-report.md. Rendered from recorded states at real-time playback with the simulation clock, the outcome, the navigator's phase and the disturbance window, the base height and tilt, and the floor contacts by body on every frame; frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g17-before-after/biped-arrival/before/media/episode.mp4",
+      "bytes": 539212,
+      "sha256": "6d34a0371539260fc4bcb67d65c6df6c689fba0ca7e6c33c63e98340557bd23e",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g17-before-after/biped-arrival/before/media/preview.gif",
+      "bytes": 846304,
+      "sha256": "c1c98b677b7e021bef92f4971e69a2e3d7b75f9d698a8381d81950ec3dd5c078",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G17",
+    "before-after",
+    "biped-arrival",
+    "before",
+    "mobile_wheeled_biped"
+  ]
+}

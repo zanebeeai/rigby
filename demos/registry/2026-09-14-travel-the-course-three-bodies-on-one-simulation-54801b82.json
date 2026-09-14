@@ -1,0 +1,42 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-travel-the-course-three-bodies-on-one-simulation-54801b82",
+  "title": "D17: synchronized course: the dog walks, the biped rolls, the octopus crawls",
+  "prompt": "travel the course, three bodies on one simulation clock",
+  "tier": "any-robot",
+  "embodiment": "mobile_dog_arm,mobile_wheeled_biped,mobile_octopus",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T07:51:18Z",
+  "source": {
+    "commit": "0de4e4d051",
+    "branch": "feat/g17",
+    "dirty": true,
+    "how": "python any-robot/scripts/g17_d17_media.py --results docs/results/g17-locomotion --out docs/results/g17-d17"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "Three sealed travel trials composed on one clock (mobile_dog_arm: success, mobile_octopus: success, mobile_wheeled_biped: success); a body that finishes early holds its final state."
+  },
+  "notes": "See docs/results/g17-report.md. Rendered from recorded states at real-time playback with the simulation clock, the outcome, the navigator's phase and the disturbance window, the base height and tilt, and the floor contacts by body on every frame; frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g17-d17/synchronized/media/episode.mp4",
+      "bytes": 1608545,
+      "sha256": "f14cafb527826f593557d1512db4971b61e7585197245186caf955208909b545",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g17-d17/synchronized/media/preview.gif",
+      "bytes": 1205179,
+      "sha256": "dd05ed8446774fb17d94a26f36f0c02080dc98bd97784cdcb7b051d5f2c17c81",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G17",
+    "D17",
+    "synchronized"
+  ]
+}

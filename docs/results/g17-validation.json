@@ -1,0 +1,828 @@
+{
+  "goal": "G17",
+  "generated_at_utc": "2026-09-14T07:51:19.011883+00:00",
+  "commit": "0de4e4d0513ea50ffc7b250f02a80ee0d77790a8",
+  "generation_calls": 0,
+  "registration_sha256": "bd7a675bcd7dbd3986fe30a635bbfc555b8dd72a8d4fa98bb25fb34e92aaa2e4",
+  "protocol_sha256": "98cd9299cb124f7284c996204bc85b00f5e7d2bdd8ab7b8053187d2804bccd52",
+  "course_sha256": "244af80bd16b58096836cb147bc99181ae397b32735d1853d7c97f6eb4730bdc",
+  "targets": {
+    "perturbation_min": 24,
+    "perturbation_of": 30,
+    "travel_min": 90,
+    "travel_of": 100
+  },
+  "bodies": {
+    "mobile_dog_arm": {
+      "travel": [
+        100,
+        100
+      ],
+      "travel_met": true,
+      "perturbation": [
+        26,
+        30
+      ],
+      "perturbation_met": true,
+      "by_kind": {
+        "patch": "5/6",
+        "push": "9/12",
+        "support": "12/12"
+      },
+      "falls": 3,
+      "collisions_trials": 3,
+      "kinds": {
+        "patch": {
+          "collisions_total": 0,
+          "control_latency_ms": {
+            "mean": 0.0338,
+            "p99_max": 0.09
+          },
+          "drifted": 0,
+          "duration_s": {
+            "max": 120.0,
+            "mean": 67.6
+          },
+          "energy_j": {
+            "max": 6373.4,
+            "mean": 4388.0
+          },
+          "falls": 0,
+          "mean_speed_mps": {
+            "mean": 0.1227,
+            "min": 0.1125
+          },
+          "peak_speed_mps": {
+            "max": 0.448
+          },
+          "rate": 0.8333,
+          "saturation_max": 0.0,
+          "sealed": 3,
+          "successes": 5,
+          "time_budget_fraction": {
+            "max": 1.0,
+            "mean": 0.5633
+          },
+          "time_caps": 1,
+          "trials": 6,
+          "trials_with_collisions": 0,
+          "undeclared_contacts": [
+            "fl_shank",
+            "fr_shank",
+            "hl_shank",
+            "hl_thigh",
+            "hr_shank",
+            "hr_thigh"
+          ],
+          "unstable_ends": 0
+        },
+        "push": {
+          "collisions_total": 148,
+          "control_latency_ms": {
+            "mean": 0.0343,
+            "p99_max": 0.088
+          },
+          "drifted": 0,
+          "duration_s": {
+            "max": 70.1,
+            "mean": 65.9
+          },
+          "energy_j": {
+            "max": 4516.8,
+            "mean": 3208.9
+          },
+          "falls": 3,
+          "mean_speed_mps": {
+            "mean": 0.1236,
+            "min": 0.1167
+          },
+          "peak_speed_mps": {
+            "max": 1.377
+          },
+          "rate": 0.75,
+          "saturation_max": 0.0489,
+          "sealed": 5,
+          "successes": 9,
+          "time_budget_fraction": {
+            "max": 0.584,
+            "mean": 0.5491
+          },
+          "time_caps": 0,
+          "trials": 12,
+          "trials_with_collisions": 3,
+          "undeclared_contacts": [
+            "arm_finger_left",
+            "arm_link_0",
+            "arm_link_1",
+            "arm_palm",
+            "fl_shank",
+            "fl_thigh",
+            "fr_shank",
+            "fr_thigh",
+            "hl_shank",
+            "hl_thigh",
+            "hr_shank",
+            "hr_thigh",
+            "torso"
+          ],
+          "unstable_ends": 0
+        },
+        "support": {
+          "collisions_total": 0,
+          "control_latency_ms": {
+            "mean": 0.0362,
+            "p99_max": 0.1
+          },
+          "drifted": 0,
+          "duration_s": {
+            "max": 68.8,
+            "mean": 65.6
+          },
+          "energy_j": {
+            "max": 4383.1,
+            "mean": 4049.0
+          },
+          "falls": 0,
+          "mean_speed_mps": {
+            "mean": 0.1215,
+            "min": 0.1184
+          },
+          "peak_speed_mps": {
+            "max": 0.626
+          },
+          "rate": 1.0,
+          "saturation_max": 0.001,
+          "sealed": 2,
+          "successes": 12,
+          "time_budget_fraction": {
+            "max": 0.5737,
+            "mean": 0.5466
+          },
+          "time_caps": 0,
+          "trials": 12,
+          "trials_with_collisions": 0,
+          "undeclared_contacts": [
+            "fl_shank",
+            "fr_shank",
+            "hl_shank",
+            "hl_thigh",
+            "hr_shank",
+            "hr_thigh"
+          ],
+          "unstable_ends": 0
+        },
+        "travel": {
+          "collisions_total": 0,
+          "control_latency_ms": {
+            "mean": 0.0468,
+            "p99_max": 0.157
+          },
+          "drifted": 0,
+          "duration_s": {
+            "max": 66.0,
+            "mean": 64.7
+          },
+          "energy_j": {
+            "max": 3992.1,
+            "mean": 3879.3
+          },
+          "falls": 0,
+          "mean_speed_mps": {
+            "mean": 0.1198,
+            "min": 0.1149
+          },
+          "peak_speed_mps": {
+            "max": 0.429
+          },
+          "rate": 1.0,
+          "saturation_max": 0.0,
+          "sealed": 2,
+          "successes": 100,
+          "time_budget_fraction": {
+            "max": 0.55,
+            "mean": 0.5394
+          },
+          "time_caps": 0,
+          "trials": 100,
+          "trials_with_collisions": 0,
+          "undeclared_contacts": [
+            "fl_shank",
+            "fr_shank",
+            "hl_shank",
+            "hl_thigh",
+            "hr_shank",
+            "hr_thigh"
+          ],
+          "unstable_ends": 0
+        }
+      },
+      "travel_duration_s": {
+        "mean": 64.7,
+        "max": 66.0,
+        "cap": 120.0
+      },
+      "travel_energy_j": {
+        "mean": 3879.3
+      },
+      "travel_mean_speed_mps": 0.12,
+      "latency_ms_p99_max": 0.157,
+      "provenance": [
+        "analytic, hand-authored: trot gait over an analytic leg IK, position servos"
+      ],
+      "controller": [
+        "DogTrot"
+      ],
+      "root_writes": [
+        "none after placement"
+      ],
+      "artificial_support": [
+        "none"
+      ],
+      "failures": [
+        {
+          "trial_id": "mobile_dog_arm-push-02",
+          "kind": "push",
+          "reason": "fell at 7.8 s",
+          "perturbation": "70 N left push on the base for 0.3 s at 6.0 s",
+          "sealed": true
+        },
+        {
+          "trial_id": "mobile_dog_arm-push-03",
+          "kind": "push",
+          "reason": "fell at 6.5 s",
+          "perturbation": "100 N left push on the base for 0.3 s at 6.0 s",
+          "sealed": true
+        },
+        {
+          "trial_id": "mobile_dog_arm-push-09",
+          "kind": "push",
+          "reason": "fell at 7.1 s",
+          "perturbation": "100 N fore push on the base for 0.3 s at 6.0 s",
+          "sealed": true
+        },
+        {
+          "trial_id": "mobile_dog_arm-patch-16",
+          "kind": "patch",
+          "reason": "time cap: waypoint 0 of 2 not reached",
+          "perturbation": "a slick patch (friction 0.15) across the approach at x = 2.5 m, met on the way out and on the way back",
+          "sealed": true
+        }
+      ],
+      "sealed": 12,
+      "d17_clips": [
+        "travel",
+        "recovery-push",
+        "recovery-patch",
+        "recovery-support",
+        "failure"
+      ]
+    },
+    "mobile_wheeled_biped": {
+      "travel": [
+        100,
+        100
+      ],
+      "travel_met": true,
+      "perturbation": [
+        23,
+        30
+      ],
+      "perturbation_met": false,
+      "by_kind": {
+        "patch": "5/6",
+        "push": "11/12",
+        "support": "7/12"
+      },
+      "falls": 4,
+      "collisions_trials": 0,
+      "kinds": {
+        "patch": {
+          "collisions_total": 0,
+          "control_latency_ms": {
+            "mean": 0.1148,
+            "p99_max": 0.454
+          },
+          "drifted": 0,
+          "duration_s": {
+            "max": 30.2,
+            "mean": 29.7
+          },
+          "energy_j": {
+            "max": 231.8,
+            "mean": 128.7
+          },
+          "falls": 1,
+          "mean_speed_mps": {
+            "mean": 0.1912,
+            "min": 0.1861
+          },
+          "peak_speed_mps": {
+            "max": 1.236
+          },
+          "rate": 0.8333,
+          "saturation_max": 0.0038,
+          "sealed": 3,
+          "successes": 5,
+          "time_budget_fraction": {
+            "max": 0.3358,
+            "mean": 0.3295
+          },
+          "time_caps": 0,
+          "trials": 6,
+          "trials_with_collisions": 0,
+          "undeclared_contacts": [
+            "arm_finger_left",
+            "arm_link_1",
+            "arm_palm",
+            "left_shank",
+            "right_shank"
+          ],
+          "unstable_ends": 0
+        },
+        "push": {
+          "collisions_total": 0,
+          "control_latency_ms": {
+            "mean": 0.1166,
+            "p99_max": 0.383
+          },
+          "drifted": 0,
+          "duration_s": {
+            "max": 32.9,
+            "mean": 30.0
+          },
+          "energy_j": {
+            "max": 285.8,
+            "mean": 133.8
+          },
+          "falls": 1,
+          "mean_speed_mps": {
+            "mean": 0.1958,
+            "min": 0.1845
+          },
+          "peak_speed_mps": {
+            "max": 2.058
+          },
+          "rate": 0.9167,
+          "saturation_max": 0.0102,
+          "sealed": 3,
+          "successes": 11,
+          "time_budget_fraction": {
+            "max": 0.3655,
+            "mean": 0.3335
+          },
+          "time_caps": 0,
+          "trials": 12,
+          "trials_with_collisions": 0,
+          "undeclared_contacts": [
+            "arm_finger_left",
+            "arm_link_1",
+            "arm_palm",
+            "left_shank",
+            "right_shank"
+          ],
+          "unstable_ends": 0
+        },
+        "support": {
+          "collisions_total": 0,
+          "control_latency_ms": {
+            "mean": 0.1131,
+            "p99_max": 0.318
+          },
+          "drifted": 0,
+          "duration_s": {
+            "max": 90.0,
+            "mean": 29.3
+          },
+          "energy_j": {
+            "max": 372.3,
+            "mean": 202.8
+          },
+          "falls": 2,
+          "mean_speed_mps": {
+            "mean": 0.1987,
+            "min": 0.1958
+          },
+          "peak_speed_mps": {
+            "max": 1.276
+          },
+          "rate": 0.5833,
+          "saturation_max": 0.0783,
+          "sealed": 7,
+          "successes": 7,
+          "time_budget_fraction": {
+            "max": 1.0,
+            "mean": 0.3251
+          },
+          "time_caps": 3,
+          "trials": 12,
+          "trials_with_collisions": 0,
+          "undeclared_contacts": [
+            "arm_finger_left",
+            "arm_link_1",
+            "arm_palm",
+            "left_shank",
+            "right_shank"
+          ],
+          "unstable_ends": 0
+        },
+        "travel": {
+          "collisions_total": 0,
+          "control_latency_ms": {
+            "mean": 0.0871,
+            "p99_max": 0.666
+          },
+          "drifted": 0,
+          "duration_s": {
+            "max": 30.5,
+            "mean": 30.1
+          },
+          "energy_j": {
+            "max": 105.4,
+            "mean": 101.5
+          },
+          "falls": 0,
+          "mean_speed_mps": {
+            "mean": 0.1877,
+            "min": 0.1856
+          },
+          "peak_speed_mps": {
+            "max": 0.477
+          },
+          "rate": 1.0,
+          "saturation_max": 0.0,
+          "sealed": 2,
+          "successes": 100,
+          "time_budget_fraction": {
+            "max": 0.3388,
+            "mean": 0.3347
+          },
+          "time_caps": 0,
+          "trials": 100,
+          "trials_with_collisions": 0,
+          "undeclared_contacts": [],
+          "unstable_ends": 0
+        }
+      },
+      "travel_duration_s": {
+        "mean": 30.1,
+        "max": 30.5,
+        "cap": 90.0
+      },
+      "travel_energy_j": {
+        "mean": 101.5
+      },
+      "travel_mean_speed_mps": 0.188,
+      "latency_ms_p99_max": 0.666,
+      "provenance": [
+        "analytic, hand-authored: wheeled inverted-pendulum balance (pitch regulator about a speed-commanding lean) through velocity servos on the wheels, legs held"
+      ],
+      "controller": [
+        "WheeledBalance"
+      ],
+      "root_writes": [
+        "none after placement"
+      ],
+      "artificial_support": [
+        "none"
+      ],
+      "failures": [
+        {
+          "trial_id": "mobile_wheeled_biped-push-09",
+          "kind": "push",
+          "reason": "fell at 5.9 s",
+          "perturbation": "80 N fore push on the base for 0.3 s at 4.0 s",
+          "sealed": true
+        },
+        {
+          "trial_id": "mobile_wheeled_biped-patch-16",
+          "kind": "patch",
+          "reason": "fell at 17.9 s",
+          "perturbation": "a slick patch (friction 0.15) across the approach at x = 2.5 m, met on the way out and on the way back",
+          "sealed": true
+        },
+        {
+          "trial_id": "mobile_wheeled_biped-support-20",
+          "kind": "support",
+          "reason": "time cap: waypoint 1 of 2 not reached",
+          "perturbation": "the left wheel's drive cut by the controller for 0.30 s at 4.0 s",
+          "sealed": true
+        },
+        {
+          "trial_id": "mobile_wheeled_biped-support-21",
+          "kind": "support",
+          "reason": "time cap: waypoint 0 of 2 not reached",
+          "perturbation": "the left wheel's drive cut by the controller for 0.50 s at 4.0 s",
+          "sealed": true
+        },
+        {
+          "trial_id": "mobile_wheeled_biped-support-24",
+          "kind": "support",
+          "reason": "time cap: waypoint 0 of 2 not reached",
+          "perturbation": "the right wheel's drive cut by the controller for 0.50 s at 4.0 s",
+          "sealed": true
+        },
+        {
+          "trial_id": "mobile_wheeled_biped-support-27",
+          "kind": "support",
+          "reason": "fell at 4.5 s",
+          "perturbation": "leg_left's servos fought by a 18 N m external torque at 3 Hz for 1.0 s at 4.0 s",
+          "sealed": true
+        },
+        {
+          "trial_id": "mobile_wheeled_biped-support-30",
+          "kind": "support",
+          "reason": "fell at 4.5 s",
+          "perturbation": "leg_right's servos fought by a 18 N m external torque at 3 Hz for 1.0 s at 4.0 s",
+          "sealed": true
+        }
+      ],
+      "sealed": 15,
+      "d17_clips": [
+        "travel",
+        "recovery-push",
+        "recovery-patch",
+        "recovery-support",
+        "failure"
+      ]
+    },
+    "mobile_octopus": {
+      "travel": [
+        100,
+        100
+      ],
+      "travel_met": true,
+      "perturbation": [
+        27,
+        30
+      ],
+      "perturbation_met": true,
+      "by_kind": {
+        "patch": "6/6",
+        "push": "9/12",
+        "support": "12/12"
+      },
+      "falls": 3,
+      "collisions_trials": 1,
+      "kinds": {
+        "patch": {
+          "collisions_total": 0,
+          "control_latency_ms": {
+            "mean": 0.1098,
+            "p99_max": 0.227
+          },
+          "drifted": 0,
+          "duration_s": {
+            "max": 153.5,
+            "mean": 138.2
+          },
+          "energy_j": {
+            "max": 4204.1,
+            "mean": 3790.8
+          },
+          "falls": 0,
+          "mean_speed_mps": {
+            "mean": 0.0534,
+            "min": 0.0481
+          },
+          "peak_speed_mps": {
+            "max": 0.488
+          },
+          "rate": 1.0,
+          "saturation_max": 0.0033,
+          "sealed": 2,
+          "successes": 6,
+          "time_budget_fraction": {
+            "max": 0.5118,
+            "mean": 0.4608
+          },
+          "time_caps": 0,
+          "trials": 6,
+          "trials_with_collisions": 0,
+          "undeclared_contacts": [
+            "t0_finger_left",
+            "t0_finger_right",
+            "t0_pincer",
+            "t5_finger_left",
+            "t5_finger_right",
+            "t5_pincer"
+          ],
+          "unstable_ends": 0
+        },
+        "push": {
+          "collisions_total": 1,
+          "control_latency_ms": {
+            "mean": 0.1076,
+            "p99_max": 0.243
+          },
+          "drifted": 0,
+          "duration_s": {
+            "max": 150.7,
+            "mean": 138.9
+          },
+          "energy_j": {
+            "max": 4579.2,
+            "mean": 3000.5
+          },
+          "falls": 3,
+          "mean_speed_mps": {
+            "mean": 0.0516,
+            "min": 0.0492
+          },
+          "peak_speed_mps": {
+            "max": 4.814
+          },
+          "rate": 0.75,
+          "saturation_max": 0.109,
+          "sealed": 5,
+          "successes": 9,
+          "time_budget_fraction": {
+            "max": 0.5022,
+            "mean": 0.4629
+          },
+          "time_caps": 0,
+          "trials": 12,
+          "trials_with_collisions": 1,
+          "undeclared_contacts": [
+            "t0_finger_left",
+            "t0_finger_right",
+            "t0_pincer",
+            "t5_finger_left",
+            "t5_finger_right",
+            "t5_pincer"
+          ],
+          "unstable_ends": 0
+        },
+        "support": {
+          "collisions_total": 0,
+          "control_latency_ms": {
+            "mean": 0.1131,
+            "p99_max": 0.274
+          },
+          "drifted": 0,
+          "duration_s": {
+            "max": 142.8,
+            "mean": 140.5
+          },
+          "energy_j": {
+            "max": 4032.1,
+            "mean": 3916.4
+          },
+          "falls": 0,
+          "mean_speed_mps": {
+            "mean": 0.0495,
+            "min": 0.0486
+          },
+          "peak_speed_mps": {
+            "max": 0.557
+          },
+          "rate": 1.0,
+          "saturation_max": 0.0129,
+          "sealed": 2,
+          "successes": 12,
+          "time_budget_fraction": {
+            "max": 0.4762,
+            "mean": 0.4684
+          },
+          "time_caps": 0,
+          "trials": 12,
+          "trials_with_collisions": 0,
+          "undeclared_contacts": [
+            "t0_finger_left",
+            "t0_finger_right",
+            "t0_pincer",
+            "t5_finger_left",
+            "t5_finger_right",
+            "t5_pincer"
+          ],
+          "unstable_ends": 0
+        },
+        "travel": {
+          "collisions_total": 0,
+          "control_latency_ms": {
+            "mean": 0.1333,
+            "p99_max": 0.522
+          },
+          "drifted": 0,
+          "duration_s": {
+            "max": 188.3,
+            "mean": 142.7
+          },
+          "energy_j": {
+            "max": 4939.9,
+            "mean": 3886.2
+          },
+          "falls": 0,
+          "mean_speed_mps": {
+            "mean": 0.0489,
+            "min": 0.0406
+          },
+          "peak_speed_mps": {
+            "max": 0.466
+          },
+          "rate": 1.0,
+          "saturation_max": 0.0128,
+          "sealed": 2,
+          "successes": 100,
+          "time_budget_fraction": {
+            "max": 0.6278,
+            "mean": 0.4758
+          },
+          "time_caps": 0,
+          "trials": 100,
+          "trials_with_collisions": 0,
+          "undeclared_contacts": [
+            "t0_finger_right",
+            "t0_pincer",
+            "t5_finger_left",
+            "t5_pincer"
+          ],
+          "unstable_ends": 0
+        }
+      },
+      "travel_duration_s": {
+        "mean": 142.7,
+        "max": 188.3,
+        "cap": 300.0
+      },
+      "travel_energy_j": {
+        "mean": 3886.2
+      },
+      "travel_mean_speed_mps": 0.049,
+      "latency_ms_p99_max": 0.522,
+      "provenance": [
+        "analytic, hand-authored: tripod crawl of six segmented tentacles, position servos on every joint"
+      ],
+      "controller": [
+        "OctopusCrawl"
+      ],
+      "root_writes": [
+        "none after placement"
+      ],
+      "artificial_support": [
+        "none"
+      ],
+      "failures": [
+        {
+          "trial_id": "mobile_octopus-push-03",
+          "kind": "push",
+          "reason": "fell at 8.3 s",
+          "perturbation": "300 N left push on the base for 0.3 s at 8.0 s",
+          "sealed": true
+        },
+        {
+          "trial_id": "mobile_octopus-push-11",
+          "kind": "push",
+          "reason": "fell at 8.5 s",
+          "perturbation": "200 N aft push on the base for 0.3 s at 8.0 s",
+          "sealed": true
+        },
+        {
+          "trial_id": "mobile_octopus-push-12",
+          "kind": "push",
+          "reason": "fell at 8.4 s",
+          "perturbation": "300 N aft push on the base for 0.3 s at 8.0 s",
+          "sealed": true
+        }
+      ],
+      "sealed": 11,
+      "d17_clips": [
+        "travel",
+        "recovery-push",
+        "recovery-patch",
+        "recovery-support",
+        "failure"
+      ]
+    }
+  },
+  "all_targets_met": false,
+  "travel_met_all": true,
+  "perturbation_met_all": false,
+  "synchronized_clip": "synchronized/media/episode.mp4",
+  "before_after_pairs": [
+    {
+      "pair_id": "biped-legs-held",
+      "body": "mobile_wheeled_biped",
+      "before": "fell",
+      "after": "success"
+    },
+    {
+      "pair_id": "biped-arrival",
+      "body": "mobile_wheeled_biped",
+      "before": "time_cap",
+      "after": "success"
+    },
+    {
+      "pair_id": "octopus-turn-sense",
+      "body": "mobile_octopus",
+      "before": "time_cap",
+      "after": "success"
+    },
+    {
+      "pair_id": "dog-turn-boost",
+      "body": "mobile_dog_arm",
+      "before": "success",
+      "after": "success"
+    }
+  ],
+  "no_planner": "the navigator and the controllers run without the language planner; no model or API call in any trial (generation_calls 0)"
+}

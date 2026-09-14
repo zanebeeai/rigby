@@ -81,7 +81,7 @@ def main() -> int:
     protocol = json.loads((PROTOCOL / "protocol.json").read_bytes())
     for name, digest in registration["files"].items():
         assert sha256(PROTOCOL / name) == digest, name
-    body = {k: v for k, v in registration.items() if k != "registered_at_utc"}
+    body = {k: v for k, v in registration.items() if k not in ("registered_at_utc", "registration_sha256")}
     assert hashlib.sha256(json.dumps(body, sort_keys=True).encode("utf-8")).hexdigest() == registration["registration_sha256"]
     assert validation["registration_sha256"] == registration["registration_sha256"]
     course = course_v1()

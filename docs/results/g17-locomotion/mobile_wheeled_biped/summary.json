@@ -1,0 +1,200 @@
+{
+  "artificial_support": [
+    "none"
+  ],
+  "body": "mobile_wheeled_biped",
+  "controller": [
+    "WheeledBalance"
+  ],
+  "kinds": {
+    "patch": {
+      "collisions_total": 0,
+      "control_latency_ms": {
+        "mean": 0.1148,
+        "p99_max": 0.454
+      },
+      "drifted": 0,
+      "duration_s": {
+        "max": 30.2,
+        "mean": 29.7
+      },
+      "energy_j": {
+        "max": 231.8,
+        "mean": 128.7
+      },
+      "falls": 1,
+      "mean_speed_mps": {
+        "mean": 0.1912,
+        "min": 0.1861
+      },
+      "peak_speed_mps": {
+        "max": 1.236
+      },
+      "rate": 0.8333,
+      "saturation_max": 0.0038,
+      "sealed": 3,
+      "successes": 5,
+      "time_budget_fraction": {
+        "max": 0.3358,
+        "mean": 0.3295
+      },
+      "time_caps": 0,
+      "trials": 6,
+      "trials_with_collisions": 0,
+      "undeclared_contacts": [
+        "arm_finger_left",
+        "arm_link_1",
+        "arm_palm",
+        "left_shank",
+        "right_shank"
+      ],
+      "unstable_ends": 0
+    },
+    "push": {
+      "collisions_total": 0,
+      "control_latency_ms": {
+        "mean": 0.1166,
+        "p99_max": 0.383
+      },
+      "drifted": 0,
+      "duration_s": {
+        "max": 32.9,
+        "mean": 30.0
+      },
+      "energy_j": {
+        "max": 285.8,
+        "mean": 133.8
+      },
+      "falls": 1,
+      "mean_speed_mps": {
+        "mean": 0.1958,
+        "min": 0.1845
+      },
+      "peak_speed_mps": {
+        "max": 2.058
+      },
+      "rate": 0.9167,
+      "saturation_max": 0.0102,
+      "sealed": 3,
+      "successes": 11,
+      "time_budget_fraction": {
+        "max": 0.3655,
+        "mean": 0.3335
+      },
+      "time_caps": 0,
+      "trials": 12,
+      "trials_with_collisions": 0,
+      "undeclared_contacts": [
+        "arm_finger_left",
+        "arm_link_1",
+        "arm_palm",
+        "left_shank",
+        "right_shank"
+      ],
+      "unstable_ends": 0
+    },
+    "support": {
+      "collisions_total": 0,
+      "control_latency_ms": {
+        "mean": 0.1131,
+        "p99_max": 0.318
+      },
+      "drifted": 0,
+      "duration_s": {
+        "max": 90.0,
+        "mean": 29.3
+      },
+      "energy_j": {
+        "max": 372.3,
+        "mean": 202.8
+      },
+      "falls": 2,
+      "mean_speed_mps": {
+        "mean": 0.1987,
+        "min": 0.1958
+      },
+      "peak_speed_mps": {
+        "max": 1.276
+      },
+      "rate": 0.5833,
+      "saturation_max": 0.0783,
+      "sealed": 7,
+      "successes": 7,
+      "time_budget_fraction": {
+        "max": 1.0,
+        "mean": 0.3251
+      },
+      "time_caps": 3,
+      "trials": 12,
+      "trials_with_collisions": 0,
+      "undeclared_contacts": [
+        "arm_finger_left",
+        "arm_link_1",
+        "arm_palm",
+        "left_shank",
+        "right_shank"
+      ],
+      "unstable_ends": 0
+    },
+    "travel": {
+      "collisions_total": 0,
+      "control_latency_ms": {
+        "mean": 0.0871,
+        "p99_max": 0.666
+      },
+      "drifted": 0,
+      "duration_s": {
+        "max": 30.5,
+        "mean": 30.1
+      },
+      "energy_j": {
+        "max": 105.4,
+        "mean": 101.5
+      },
+      "falls": 0,
+      "mean_speed_mps": {
+        "mean": 0.1877,
+        "min": 0.1856
+      },
+      "peak_speed_mps": {
+        "max": 0.477
+      },
+      "rate": 1.0,
+      "saturation_max": 0.0,
+      "sealed": 2,
+      "successes": 100,
+      "time_budget_fraction": {
+        "max": 0.3388,
+        "mean": 0.3347
+      },
+      "time_caps": 0,
+      "trials": 100,
+      "trials_with_collisions": 0,
+      "undeclared_contacts": [],
+      "unstable_ends": 0
+    }
+  },
+  "perturbation": {
+    "by_kind": {
+      "patch": "5/6",
+      "push": "11/12",
+      "support": "7/12"
+    },
+    "met": false,
+    "successes": 23,
+    "target": ">= 24 of 30",
+    "trials": 30
+  },
+  "provenance": [
+    "analytic, hand-authored: wheeled inverted-pendulum balance (pitch regulator about a speed-commanding lean) through velocity servos on the wheels, legs held"
+  ],
+  "root_writes": [
+    "none after placement"
+  ],
+  "travel": {
+    "met": true,
+    "successes": 100,
+    "target": ">= 90 of 100",
+    "trials": 100
+  }
+}
