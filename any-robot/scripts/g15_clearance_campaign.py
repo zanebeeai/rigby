@@ -159,6 +159,7 @@ def main() -> int:
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--local", type=Path, required=True)
     parser.add_argument("--limit", type=int, default=None, help="only the first N seeds (engineering smoke; never a scored run)")
+    parser.add_argument("--resume", action="store_true", help="keep the episodes already in the cell's trials.json (their sealed bundles intact) and run only the rest")
     args = parser.parse_args()
     corpus, registration = load_registration()
     policy = load_policy(g10.G09 / "policy.json")
@@ -182,12 +183,34 @@ def main() -> int:
     local = args.local / name
     out.mkdir(parents=True, exist_ok=True)
     local.mkdir(parents=True, exist_ok=True)
-    (out / "provenance.json").write_bytes(json_bytes(provenance))
     rows = []
     kept: dict[str, int] = {}
+    if args.resume and (out / "trials.json").exists() and (out / "provenance.json").exists():
+        # A cell interrupted mid-run (the machine went down) keeps every
+        # episode it finished, provided the sealed bundles it claims are
+        # whole; a row whose bundle is missing or unfinished is dropped and
+        # its seed runs again. The kept counts are rebuilt from the rows.
+        earlier = json.loads((out / "provenance.json").read_bytes())
+        if earlier["registration_sha256"] != registration["registration_sha256"]:
+            raise SystemExit("the cell on disk was run under another registration; refusing to resume")
+        for row in json.loads((out / "trials.json").read_bytes()):
+            if "sealed" in row and not all((REPO / seg["bundle"] / "manifest.json").is_file() for seg in row["sealed"]["segments"]):
+                print(json.dumps({"dropped": row["episode_id"], "why": "sealed bundle incomplete"}), flush=True)
+                continue
+            rows.append(row)
+            cell = f"{row['executor']}-{row['disturbance']['kind'] if row['disturbance'] else 'nominal'}"
+            if "sealed" in row:
+                key = cell if row["skill_success"] else cell + "-fail"
+                kept[key] = kept.get(key, 0) + 1
+        provenance = {**earlier, "resumed_at_utc": datetime.now(timezone.utc).isoformat(), "resumed_with": len(rows), "resumed_commit": provenance["commit"], "resumed_working_tree_dirty": provenance["working_tree_dirty"]}
+        print(json.dumps({"resumed": name, "episodes_kept": len(rows)}), flush=True)
+    (out / "provenance.json").write_bytes(json_bytes(provenance))
+    done = {row["episode_id"] for row in rows}
     for draw, flat, disturbance in runs:
         executor = "flat" if flat else "tree"
         episode_id = f"{body}-{count}-{executor}-{draw['seed']}" + (f"-{disturbance[1]}" if disturbance else "")
+        if episode_id in done:
+            continue
         world = world_for(count, draw)
         row = run_episode(body, source, robot, world, policy, flat=flat, disturbance=disturbance, seed_label=episode_id)
         row.update({"episode_id": episode_id, "zoo_id": body, "objects": count, "executor": executor, "seed": draw["seed"], "draw_sha256": hashlib.sha256(json_bytes(draw)).hexdigest(),
