@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-retrieve-the-cube-from-the-station-and-deliver-i-51c21838",
+  "title": "G18 before/after: octopus-pincer: after the fix",
+  "prompt": "retrieve the cube from the station and deliver it to the tray, then return (no language planner)",
+  "tier": "any-robot",
+  "embodiment": "mobile_octopus_v2",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T19:05:27Z",
+  "source": {
+    "commit": "b7584f498b",
+    "branch": "feat/g18",
+    "dirty": true,
+    "how": "python any-robot/scripts/g18_before_after.py --out docs/results/g18-before-after --local any-robot/results/g18-before-after"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "FAILED: after the fix (pincer hinges that open to -0.9 rad and finger pads with torsional friction (second-version body)), mobile_octopus_v2, seed 1. Reason: re-acquire: grasp miss 4.7 cm across, 1.0 cm up; the object moved 0.0 cm. One of a before/after pair on identical physics."
+  },
+  "notes": "See docs/results/g18-report.md. Rendered from recorded states at real-time playback with the simulation clock, the outcome, every phase attempt with its support set and holding limb, the hold events, the disturbance window, the base height and tilt, and the floor contacts by body on every frame; frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g18-before-after/octopus-pincer/after/media/episode.mp4",
+      "bytes": 11620909,
+      "sha256": "4b999b352d905cdd222808379f967aff608c784cadbca3f06c36c10888856dae",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g18-before-after/octopus-pincer/after/media/preview.gif",
+      "bytes": 1787643,
+      "sha256": "bf9611f3c4eede74a256be13f37a7666efa51d26f6a18f1ae51332a102c8463a",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G18",
+    "before-after",
+    "octopus-pincer",
+    "after",
+    "mobile_octopus_v2"
+  ]
+}

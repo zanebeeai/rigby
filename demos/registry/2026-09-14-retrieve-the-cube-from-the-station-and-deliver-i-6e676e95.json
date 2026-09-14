@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-retrieve-the-cube-from-the-station-and-deliver-i-6e676e95",
+  "title": "D18: mobile_octopus_v2: FAILURE (nominal): nominal; re-acquire: grasp miss 4.7 cm across, 1.0 cm up; the object mo",
+  "prompt": "retrieve the cube from the station and deliver it to the tray, then return (no language planner: the navigator, the body's own drive and its manipulator)",
+  "tier": "any-robot",
+  "embodiment": "mobile_octopus_v2",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T19:05:24Z",
+  "source": {
+    "commit": "b7584f498b",
+    "branch": "feat/g18",
+    "dirty": true,
+    "how": "python any-robot/scripts/g18_d18_media.py --results docs/results/g18-retrieve --out docs/results/g18-d18"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "FAILED: FAILURE (nominal): nominal; re-acquire: grasp miss 4.7 cm across, 1.0 cm up; the object moved 0.0 cm. Reason: re-acquire: grasp miss 4.7 cm across, 1.0 cm up; the object moved 0.0 cm. A failure clip, kept and labelled as such."
+  },
+  "notes": "See docs/results/g18-report.md. Rendered from recorded states at real-time playback with the simulation clock, the outcome, every phase attempt with its support set and holding limb, the hold events, the disturbance window, the base height and tilt, and the floor contacts by body on every frame; frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g18-d18/mobile_octopus_v2/failure/media/episode.mp4",
+      "bytes": 11603694,
+      "sha256": "094fc5815f7dbc83b41c84dfde72f76444135932ae61fada2e21af653f59b9e9",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g18-d18/mobile_octopus_v2/failure/media/preview.gif",
+      "bytes": 1796579,
+      "sha256": "1188130d538de794290b2853934125aa6f049e1bae00974823cf58ba4c2420e8",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G18",
+    "D18",
+    "mobile_octopus_v2",
+    "nominal",
+    "failure"
+  ]
+}

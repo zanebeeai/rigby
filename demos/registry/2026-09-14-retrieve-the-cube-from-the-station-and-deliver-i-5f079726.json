@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-retrieve-the-cube-from-the-station-and-deliver-i-5f079726",
+  "title": "D18: mobile_dog_arm_v2: placement disturbance, recovered: 40 N left push on the base for 0.3 s, 4 s into the place",
+  "prompt": "retrieve the cube from the station and deliver it to the tray, then return (no language planner: the navigator, the body's own drive and its manipulator)",
+  "tier": "any-robot",
+  "embodiment": "mobile_dog_arm_v2",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T19:05:23Z",
+  "source": {
+    "commit": "b7584f498b",
+    "branch": "feat/g18",
+    "dirty": true,
+    "how": "python any-robot/scripts/g18_d18_media.py --results docs/results/g18-retrieve --out docs/results/g18-d18"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: placement disturbance, recovered: 40 N left push on the base for 0.3 s, 4 s into the placement."
+  },
+  "notes": "See docs/results/g18-report.md. Rendered from recorded states at real-time playback with the simulation clock, the outcome, every phase attempt with its support set and holding limb, the hold events, the disturbance window, the base height and tilt, and the floor contacts by body on every frame; frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g18-d18/mobile_dog_arm_v2/recovery-placement/media/episode.mp4",
+      "bytes": 2710720,
+      "sha256": "b5a97cfb0a59f59a8e3483fa057aaa4ef388cc2ee35626997142bc9c012a6620",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g18-d18/mobile_dog_arm_v2/recovery-placement/media/preview.gif",
+      "bytes": 2120474,
+      "sha256": "9352521b974b4843d959e9d8b5b45df9e7db9d9bae450af846ca6d42f324482d",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G18",
+    "D18",
+    "mobile_dog_arm_v2",
+    "placement",
+    "recovery"
+  ]
+}

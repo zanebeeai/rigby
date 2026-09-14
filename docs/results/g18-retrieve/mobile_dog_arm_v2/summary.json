@@ -1,0 +1,139 @@
+{
+  "artificial_support": [
+    "none"
+  ],
+  "body": "mobile_dog_arm_v2",
+  "controller": [
+    "DogTrot"
+  ],
+  "disturbed": {
+    "by_stage": {
+      "carrying": "14/14",
+      "navigation": "9/10",
+      "placement": "6/6"
+    },
+    "explicit_failures": 1,
+    "met": true,
+    "successes": 29,
+    "target": ">= 24 of 30",
+    "trials": 30
+  },
+  "failure_reasons": {
+    "approach": 1
+  },
+  "invariant_violations_total": 0,
+  "nominal": {
+    "met": true,
+    "successes": 100,
+    "target": ">= 80 of 100",
+    "trials": 100
+  },
+  "object_writes": [
+    "none"
+  ],
+  "provenance": [
+    "analytic, hand-authored: trot gait over an analytic leg IK, position servos; manipulation: numerical reach on the declared grasp site, position servos"
+  ],
+  "root_writes": [
+    "none after placement"
+  ],
+  "stages": {
+    "carrying": {
+      "collisions_total": 0,
+      "control_latency_ms_p99_max": 0.146,
+      "cube_in_tray": 14,
+      "duration_s": {
+        "max": 201.4,
+        "mean": 197.6
+      },
+      "energy_j_mean": 9568.0,
+      "falls": 0,
+      "hold_lost": 0,
+      "invariant_violations": 0,
+      "last_phase_reached": {
+        "return": 14
+      },
+      "max_object_slip_m": 0.0354,
+      "rate": 1.0,
+      "recovered_after_loss": 0,
+      "retries_used": 0,
+      "sealed": 2,
+      "successes": 14,
+      "time_budget_fraction_max": 0.5595,
+      "trials": 14
+    },
+    "navigation": {
+      "collisions_total": 0,
+      "control_latency_ms_p99_max": 0.139,
+      "cube_in_tray": 9,
+      "duration_s": {
+        "max": 202.9,
+        "mean": 198.3
+      },
+      "energy_j_mean": 8679.6,
+      "falls": 1,
+      "hold_lost": 0,
+      "invariant_violations": 0,
+      "last_phase_reached": {
+        "approach": 1,
+        "return": 9
+      },
+      "max_object_slip_m": 0.0341,
+      "rate": 0.9,
+      "recovered_after_loss": 0,
+      "retries_used": 1,
+      "sealed": 3,
+      "successes": 9,
+      "time_budget_fraction_max": 0.5637,
+      "trials": 10
+    },
+    "nominal": {
+      "collisions_total": 4,
+      "control_latency_ms_p99_max": 0.231,
+      "cube_in_tray": 100,
+      "duration_s": {
+        "max": 206.8,
+        "mean": 196.8
+      },
+      "energy_j_mean": 9448.7,
+      "falls": 0,
+      "hold_lost": 0,
+      "invariant_violations": 0,
+      "last_phase_reached": {
+        "return": 100
+      },
+      "max_object_slip_m": 0.0416,
+      "rate": 1.0,
+      "recovered_after_loss": 0,
+      "retries_used": 1,
+      "sealed": 2,
+      "successes": 100,
+      "time_budget_fraction_max": 0.5743,
+      "trials": 100
+    },
+    "placement": {
+      "collisions_total": 0,
+      "control_latency_ms_p99_max": 0.141,
+      "cube_in_tray": 6,
+      "duration_s": {
+        "max": 197.3,
+        "mean": 195.5
+      },
+      "energy_j_mean": 9415.3,
+      "falls": 0,
+      "hold_lost": 0,
+      "invariant_violations": 0,
+      "last_phase_reached": {
+        "return": 6
+      },
+      "max_object_slip_m": 0.0402,
+      "rate": 1.0,
+      "recovered_after_loss": 0,
+      "retries_used": 0,
+      "sealed": 2,
+      "successes": 6,
+      "time_budget_fraction_max": 0.5481,
+      "trials": 6
+    }
+  }
+}

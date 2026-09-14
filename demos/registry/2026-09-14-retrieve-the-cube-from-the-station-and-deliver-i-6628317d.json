@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-retrieve-the-cube-from-the-station-and-deliver-i-6628317d",
+  "title": "G18 before/after: dog-jaw: before the fix",
+  "prompt": "retrieve the cube from the station and deliver it to the tray, then return (no language planner)",
+  "tier": "any-robot",
+  "embodiment": "mobile_dog_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T19:05:25Z",
+  "source": {
+    "commit": "b7584f498b",
+    "branch": "feat/g18",
+    "dirty": true,
+    "how": "python any-robot/scripts/g18_before_after.py --out docs/results/g18-before-after --local any-robot/results/g18-before-after"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "FAILED: before the fix (the jaw hung below the last arm link (second-version body)), mobile_dog_arm, seed 1. Reason: acquire: grasp miss 0.1 cm across, -3.2 cm up; the object moved 0.9 cm. Symptom: the first version's wrist capsule ran between the fingers: the jaw closed on the cube's top few millimetres and lost it on the lift. One of a before/after pair on identical physics."
+  },
+  "notes": "See docs/results/g18-report.md. Rendered from recorded states at real-time playback with the simulation clock, the outcome, every phase attempt with its support set and holding limb, the hold events, the disturbance window, the base height and tilt, and the floor contacts by body on every frame; frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g18-before-after/dog-jaw/before/media/episode.mp4",
+      "bytes": 1118833,
+      "sha256": "c60028a05eada3a62c459aa5ed44fa2480e4a70657f4cbdd3621609b66cf4c11",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g18-before-after/dog-jaw/before/media/preview.gif",
+      "bytes": 1744994,
+      "sha256": "df36910615fa58c1bdf45ae89ed5b74eab4313e7c59fca81ff3e401c23de3d73",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G18",
+    "before-after",
+    "dog-jaw",
+    "before",
+    "mobile_dog_arm"
+  ]
+}

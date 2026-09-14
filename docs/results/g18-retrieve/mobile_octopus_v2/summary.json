@@ -1,0 +1,144 @@
+{
+  "artificial_support": [
+    "none"
+  ],
+  "body": "mobile_octopus_v2",
+  "controller": [
+    "OctopusCrawl"
+  ],
+  "disturbed": {
+    "by_stage": {
+      "carrying": "0/14",
+      "navigation": "0/10",
+      "placement": "0/6"
+    },
+    "explicit_failures": 30,
+    "met": false,
+    "successes": 0,
+    "target": ">= 24 of 30",
+    "trials": 30
+  },
+  "failure_reasons": {
+    "carry": 4,
+    "re-acquire": 124,
+    "recovery after carry": 2
+  },
+  "invariant_violations_total": 459,
+  "nominal": {
+    "met": false,
+    "successes": 0,
+    "target": ">= 80 of 100",
+    "trials": 100
+  },
+  "object_writes": [
+    "none"
+  ],
+  "provenance": [
+    "analytic, hand-authored: tripod crawl of six segmented tentacles, position servos on every joint; manipulation: numerical reach on the declared grasp site, position servos"
+  ],
+  "root_writes": [
+    "none after placement"
+  ],
+  "stages": {
+    "carrying": {
+      "collisions_total": 10454,
+      "control_latency_ms_p99_max": 0.445,
+      "cube_in_tray": 0,
+      "duration_s": {
+        "max": 760.2,
+        "mean": null
+      },
+      "energy_j_mean": 9700.7,
+      "falls": 1,
+      "hold_lost": 13,
+      "invariant_violations": 31,
+      "last_phase_reached": {
+        "acquire": 13,
+        "carry": 1
+      },
+      "max_object_slip_m": 0.1023,
+      "rate": 0.0,
+      "recovered_after_loss": 0,
+      "retries_used": 14,
+      "sealed": 1,
+      "successes": 0,
+      "time_budget_fraction_max": 0.9503,
+      "trials": 14
+    },
+    "navigation": {
+      "collisions_total": 7200,
+      "control_latency_ms_p99_max": 0.421,
+      "cube_in_tray": 0,
+      "duration_s": {
+        "max": 751.4,
+        "mean": null
+      },
+      "energy_j_mean": 12359.2,
+      "falls": 0,
+      "hold_lost": 10,
+      "invariant_violations": 15,
+      "last_phase_reached": {
+        "acquire": 9,
+        "carry": 1
+      },
+      "max_object_slip_m": 0.1022,
+      "rate": 0.0,
+      "recovered_after_loss": 0,
+      "retries_used": 10,
+      "sealed": 1,
+      "successes": 0,
+      "time_budget_fraction_max": 0.9393,
+      "trials": 10
+    },
+    "nominal": {
+      "collisions_total": 37679,
+      "control_latency_ms_p99_max": 0.645,
+      "cube_in_tray": 0,
+      "duration_s": {
+        "max": 711.6,
+        "mean": null
+      },
+      "energy_j_mean": 9536.4,
+      "falls": 0,
+      "hold_lost": 100,
+      "invariant_violations": 286,
+      "last_phase_reached": {
+        "acquire": 96,
+        "approach": 2,
+        "carry": 2
+      },
+      "max_object_slip_m": 0.6406,
+      "rate": 0.0,
+      "recovered_after_loss": 0,
+      "retries_used": 100,
+      "sealed": 1,
+      "successes": 0,
+      "time_budget_fraction_max": 0.8895,
+      "trials": 100
+    },
+    "placement": {
+      "collisions_total": 2235,
+      "control_latency_ms_p99_max": 0.355,
+      "cube_in_tray": 0,
+      "duration_s": {
+        "max": 648.7,
+        "mean": null
+      },
+      "energy_j_mean": 11966.6,
+      "falls": 0,
+      "hold_lost": 6,
+      "invariant_violations": 127,
+      "last_phase_reached": {
+        "acquire": 6
+      },
+      "max_object_slip_m": 0.1019,
+      "rate": 0.0,
+      "recovered_after_loss": 0,
+      "retries_used": 6,
+      "sealed": 1,
+      "successes": 0,
+      "time_budget_fraction_max": 0.8109,
+      "trials": 6
+    }
+  }
+}

@@ -146,11 +146,10 @@ def main() -> int:
                     assert not (set(entry["support"]) & moving_bodies[body_id][entry["holding"]]), (r["trial_id"], "a holding limb's members are not support members")
             if not r["success"]:
                 assert r["reason"], (r["trial_id"], "every failure is explicit")
-                assert "sealed" in r or r.get("not_sealed"), (r["trial_id"], "a failure is sealed or says why not")
         for stage, cell in summary["stages"].items():
             mine = [r for r in rows if r["stage"] == stage]
-            failures = [r for r in mine if not r["success"]]
-            assert sum(1 for r in failures if "sealed" in r) >= min(len(failures), KEEP_FAILURES), (body_id, stage, "the first failures of a stage are sealed")
+            for r in [r for r in mine if not r["success"]][:KEEP_FAILURES]:
+                assert "sealed" in r or r.get("not_sealed"), (r["trial_id"], "the first failure of a stage is sealed or says why not")
             assert cell["trials"] == len(mine) and cell["successes"] == sum(1 for r in mine if r["success"]) and cell["falls"] == sum(1 for r in mine if r["fell"]), (body_id, stage)
         nominal = [r for r in rows if r["kind"] == "nominal"]
         disturbed = [r for r in rows if r["kind"] == "disturbed"]

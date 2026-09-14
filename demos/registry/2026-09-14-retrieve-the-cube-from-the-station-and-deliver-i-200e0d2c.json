@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-retrieve-the-cube-from-the-station-and-deliver-i-200e0d2c",
+  "title": "D18: mobile_dog_arm_v2: FAILURE (navigation): 70 N left push on the base for 0.3 s, 4 s into the approach; approac",
+  "prompt": "retrieve the cube from the station and deliver it to the tray, then return (no language planner: the navigator, the body's own drive and its manipulator)",
+  "tier": "any-robot",
+  "embodiment": "mobile_dog_arm_v2",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T19:05:24Z",
+  "source": {
+    "commit": "b7584f498b",
+    "branch": "feat/g18",
+    "dirty": true,
+    "how": "python any-robot/scripts/g18_d18_media.py --results docs/results/g18-retrieve --out docs/results/g18-d18"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "FELL: FAILURE (navigation): 70 N left push on the base for 0.3 s, 4 s into the approach; approach: fell at 6.6 s. Reason: approach: fell at 6.6 s. A failure clip, kept and labelled as such."
+  },
+  "notes": "See docs/results/g18-report.md. Rendered from recorded states at real-time playback with the simulation clock, the outcome, every phase attempt with its support set and holding limb, the hold events, the disturbance window, the base height and tilt, and the floor contacts by body on every frame; frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g18-d18/mobile_dog_arm_v2/failure/media/episode.mp4",
+      "bytes": 138570,
+      "sha256": "f037b909718f346b4bcdcee9cdd7b0fc14e7bbb596cb2b9c7b2adf56ed51a2b0",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g18-d18/mobile_dog_arm_v2/failure/media/preview.gif",
+      "bytes": 2286474,
+      "sha256": "a6288aecb08ba6c32e9eedfa7ea9465a53cf9d0d02f50b5e739ef2900a2378c9",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G18",
+    "D18",
+    "mobile_dog_arm_v2",
+    "navigation",
+    "failure"
+  ]
+}

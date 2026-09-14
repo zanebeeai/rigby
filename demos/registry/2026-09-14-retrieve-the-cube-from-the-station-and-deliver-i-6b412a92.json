@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-retrieve-the-cube-from-the-station-and-deliver-i-6b412a92",
+  "title": "D18: mobile_dog_arm_v2: retrieve and deliver: start -> station -> tray -> start (dog (v2 jaw))",
+  "prompt": "retrieve the cube from the station and deliver it to the tray, then return (no language planner: the navigator, the body's own drive and its manipulator)",
+  "tier": "any-robot",
+  "embodiment": "mobile_dog_arm_v2",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T19:05:22Z",
+  "source": {
+    "commit": "b7584f498b",
+    "branch": "feat/g18",
+    "dirty": true,
+    "how": "python any-robot/scripts/g18_d18_media.py --results docs/results/g18-retrieve --out docs/results/g18-d18"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: retrieve and deliver: start -> station -> tray -> start (dog (v2 jaw))."
+  },
+  "notes": "See docs/results/g18-report.md. Rendered from recorded states at real-time playback with the simulation clock, the outcome, every phase attempt with its support set and holding limb, the hold events, the disturbance window, the base height and tilt, and the floor contacts by body on every frame; frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g18-d18/mobile_dog_arm_v2/retrieve/media/episode.mp4",
+      "bytes": 2690367,
+      "sha256": "9b1e87ad5b9666892d4c073aa9c6837433c513e1dc08f702e33c77e2cf9134c1",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g18-d18/mobile_dog_arm_v2/retrieve/media/preview.gif",
+      "bytes": 2088086,
+      "sha256": "b8472523c4e7f1a5a6d01557448ef7f7edd86c7a59c93113ec01ea0c26a53396",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G18",
+    "D18",
+    "mobile_dog_arm_v2",
+    "nominal",
+    "retrieve"
+  ]
+}

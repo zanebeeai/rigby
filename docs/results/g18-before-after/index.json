@@ -1,0 +1,865 @@
+{
+  "commit": "b7584f498b66c9fea53fed71a2b6af02aea23874",
+  "created_at_utc": "2026-09-14T18:35:58.041587+00:00",
+  "generation_calls": 0,
+  "goal": "G18",
+  "pairs": [
+    {
+      "fix": "the jaw hung below the last arm link (second-version body)",
+      "pair_id": "dog-jaw",
+      "runs": {
+        "after": {
+          "body": "mobile_dog_arm_v2",
+          "duration_s": 196.57,
+          "fell": false,
+          "hold_events": [
+            {
+              "event": "acquired",
+              "phase": "acquire",
+              "time_s": 57.458000000024256
+            },
+            {
+              "event": "released",
+              "phase": "place",
+              "time_s": 125.64799999988857
+            }
+          ],
+          "max_object_slip_m": 0.0339,
+          "media": {
+            "frame_count": 2360,
+            "frames": "dog-jaw/after/media/frames.json",
+            "media_sha256": "73625266f8b7544cfc1733be5fe7eeeb49ef9e63fb1bfa147af45b8efbfa0063",
+            "preview": "dog-jaw/after/media/preview.gif",
+            "video": "dog-jaw/after/media/episode.mp4"
+          },
+          "phases": [
+            {
+              "attempt": 1,
+              "ended_s": 47.26,
+              "phase": "approach",
+              "reason": "",
+              "started_s": 1.5,
+              "success": true
+            },
+            {
+              "attempt": 1,
+              "ended_s": 50.76,
+              "phase": "stabilize",
+              "reason": "",
+              "started_s": 47.26,
+              "success": true
+            },
+            {
+              "attempt": 1,
+              "ended_s": 67.01,
+              "phase": "acquire",
+              "reason": "",
+              "started_s": 50.76,
+              "success": true
+            },
+            {
+              "attempt": 1,
+              "ended_s": 112.54,
+              "phase": "carry",
+              "reason": "",
+              "started_s": 67.01,
+              "success": true
+            },
+            {
+              "attempt": 1,
+              "ended_s": 132.4,
+              "phase": "place",
+              "reason": "",
+              "started_s": 112.54,
+              "success": true
+            },
+            {
+              "attempt": 1,
+              "ended_s": 194.57,
+              "phase": "return",
+              "reason": "",
+              "started_s": 132.4,
+              "success": true
+            }
+          ],
+          "phases_completed": [
+            "acquire",
+            "approach",
+            "carry",
+            "place",
+            "return",
+            "stabilize"
+          ],
+          "reason": "",
+          "sealed": {
+            "bundle": "any-robot/results/g18-before-after/dog-jaw/after/physical",
+            "replay_agrees": true,
+            "sha256": "680269971b9abd086b6c9ba4901cfc4d2107bea4ce9d916a942fa4be7dbe92c3",
+            "simulation_duration_s": 196.5720000002105,
+            "trace_sha256": "7c40a002a0d163ef04fa8d44021554c31ca8acbc01aaf9c08e3382d8cfc3dd4c"
+          },
+          "settings": {},
+          "status": "success",
+          "success": true
+        },
+        "before": {
+          "body": "mobile_dog_arm",
+          "duration_s": 88.38,
+          "fell": false,
+          "hold_events": [
+            {
+              "event": "acquired",
+              "phase": "acquire",
+              "time_s": 55.15600000002144
+            },
+            {
+              "event": "lost",
+              "phase": "acquire",
+              "time_s": 58.95600000002609
+            }
+          ],
+          "max_object_slip_m": 0.1928,
+          "media": {
+            "frame_count": 1062,
+            "frames": "dog-jaw/before/media/frames.json",
+            "media_sha256": "62c0bc4513c9f5c1e3bb5290ad491f469645302508758ec765138c5f09495da5",
+            "preview": "dog-jaw/before/media/preview.gif",
+            "video": "dog-jaw/before/media/episode.mp4"
+          },
+          "phases": [
+            {
+              "attempt": 1,
+              "ended_s": 46.96,
+              "phase": "approach",
+              "reason": "",
+              "started_s": 1.5,
+              "success": true
+            },
+            {
+              "attempt": 1,
+              "ended_s": 50.46,
+              "phase": "stabilize",
+              "reason": "",
+              "started_s": 46.96,
+              "success": true
+            },
+            {
+              "attempt": 1,
+              "ended_s": 58.96,
+              "phase": "acquire",
+              "reason": "the object did not come up with the jaw",
+              "started_s": 50.46,
+              "success": false
+            },
+            {
+              "attempt": 1,
+              "ended_s": 64.56,
+              "phase": "approach",
+              "reason": "",
+              "started_s": 58.96,
+              "success": true
+            },
+            {
+              "attempt": 1,
+              "ended_s": 68.06,
+              "phase": "stabilize",
+              "reason": "",
+              "started_s": 64.56,
+              "success": true
+            },
+            {
+              "attempt": 2,
+              "ended_s": 75.07,
+              "phase": "acquire",
+              "reason": "fingers did not both close on the object ((True, False))",
+              "started_s": 68.06,
+              "success": false
+            },
+            {
+              "attempt": 1,
+              "ended_s": 80.68,
+              "phase": "approach",
+              "reason": "",
+              "started_s": 75.07,
+              "success": true
+            },
+            {
+              "attempt": 1,
+              "ended_s": 84.18,
+              "phase": "stabilize",
+              "reason": "",
+              "started_s": 80.68,
+              "success": true
+            },
+            {
+              "attempt": 3,
+              "ended_s": 88.38,
+              "phase": "acquire",
+              "reason": "grasp miss 0.1 cm across, -3.2 cm up; the object moved 0.9 cm",
+              "started_s": 84.18,
+              "success": false
+            }
+          ],
+          "phases_completed": [
+            "approach",
+            "stabilize"
+          ],
+          "reason": "acquire: grasp miss 0.1 cm across, -3.2 cm up; the object moved 0.9 cm",
+          "sealed": {
+            "bundle": "any-robot/results/g18-before-after/dog-jaw/before/physical",
+            "replay_agrees": true,
+            "sha256": "ca12623dc4e1cc88afee9ad79dccba68c3d0abb725c3e378443a0d71fe3f3717",
+            "simulation_duration_s": 88.37799999997543,
+            "trace_sha256": "dd68f1f0dbc29a759fa26a3ccb79fb78e77fb1c833e3efadfaaf38e953ffe99b"
+          },
+          "settings": {},
+          "status": "failed",
+          "success": false
+        }
+      },
+      "seed": 1,
+      "symptom": "the first version's wrist capsule ran between the fingers: the jaw closed on the cube's top few millimetres and lost it on the lift"
+    },
+    {
+      "fix": "the placement reaches over the tray on the arm's best branch",
+      "pair_id": "dog-place-branch",
+      "runs": {
+        "after": {
+          "body": "mobile_dog_arm_v2",
+          "duration_s": 195.84,
+          "fell": false,
+          "hold_events": [
+            {
+              "event": "acquired",
+              "phase": "acquire",
+              "time_s": 57.86400000002475
+            },
+            {
+              "event": "released",
+              "phase": "place",
+              "time_s": 126.28399999988709
+            }
+          ],
+          "max_object_slip_m": 0.034,
+          "media": {
+            "frame_count": 2352,
+            "frames": "dog-place-branch/after/media/frames.json",
+            "media_sha256": "6a9348cadc9925f9e5dd632cce289b76252f2f8dcd941b1f2315bb2c083e38fd",
+            "preview": "dog-place-branch/after/media/preview.gif",
+            "video": "dog-place-branch/after/media/episode.mp4"
+          },
+          "phases": [
+            {
+              "attempt": 1,
+              "ended_s": 47.16,
+              "phase": "approach",
+              "reason": "",
+              "started_s": 1.5,
+              "success": true
+            },
+            {
+              "attempt": 1,
+              "ended_s": 50.66,
+              "phase": "stabilize",
+              "reason": "",
+              "started_s": 47.16,
+              "success": true
+            },
+            {
+              "attempt": 1,
+              "ended_s": 67.82,
+              "phase": "acquire",
+              "reason": "",
+              "started_s": 50.66,
+              "success": true
+            },
+            {
+              "attempt": 1,
+              "ended_s": 112.93,
+              "phase": "carry",
+              "reason": "",
+              "started_s": 67.82,
+              "success": true
+            },
+            {
+              "attempt": 1,
+              "ended_s": 133.03,
+              "phase": "place",
+              "reason": "",
+              "started_s": 112.93,
+              "success": true
+            },
+            {
+              "attempt": 1,
+              "ended_s": 193.84,
+              "phase": "return",
+              "reason": "",
+              "started_s": 133.03,
+              "success": true
+            }
+          ],
+          "phases_completed": [
+            "acquire",
+            "approach",
+            "carry",
+            "place",
+            "return",
+            "stabilize"
+          ],
+          "reason": "",
+          "sealed": {
+            "bundle": "any-robot/results/g18-before-after/dog-place-branch/after/physical",
+            "replay_agrees": true,
+            "sha256": "30a7662b591e79190f7016bb0c43d7beff4431a1697f7c8304c9c64a57388621",
+            "simulation_duration_s": 195.83400000020697,
+            "trace_sha256": "5c90d797835baad565f8d4e3fd43a91a0e6db3bea8c01e32c22c0312cc2c4b9e"
+          },
+          "settings": {},
+          "status": "success",
+          "success": true
+        },
+        "before": {
+          "body": "mobile_dog_arm_v2",
+          "duration_s": 121.68,
+          "fell": false,
+          "hold_events": [
+            {
+              "event": "acquired",
+              "phase": "acquire",
+              "time_s": 57.86400000002475
+            }
+          ],
+          "max_object_slip_m": 0.034,
+          "media": {
+            "frame_count": 1462,
+            "frames": "dog-place-branch/before/media/frames.json",
+            "media_sha256": "f1317cb718135e390c6ebaa2df9aa45e6783f4ca9f00bfd78f0655f73686b492",
+            "preview": "dog-place-branch/before/media/preview.gif",
+            "video": "dog-place-branch/before/media/episode.mp4"
+          },
+          "phases": [
+            {
+              "attempt": 1,
+              "ended_s": 47.16,
+              "phase": "approach",
+              "reason": "",
+              "started_s": 1.5,
+              "success": true
+            },
+            {
+              "attempt": 1,
+              "ended_s": 50.66,
+              "phase": "stabilize",
+              "reason": "",
+              "started_s": 47.16,
+              "success": true
+            },
+            {
+              "attempt": 1,
+              "ended_s": 67.82,
+              "phase": "acquire",
+              "reason": "",
+              "started_s": 50.66,
+              "success": true
+            },
+            {
+              "attempt": 1,
+              "ended_s": 112.93,
+              "phase": "carry",
+              "reason": "",
+              "started_s": 67.82,
+              "success": true
+            },
+            {
+              "attempt": 1,
+              "ended_s": 121.68,
+              "phase": "place",
+              "reason": "tray out of reach: residual 15.2 cm",
+              "started_s": 112.93,
+              "success": false
+            }
+          ],
+          "phases_completed": [
+            "acquire",
+            "approach",
+            "carry",
+            "stabilize"
+          ],
+          "reason": "place: tray out of reach: residual 15.2 cm",
+          "sealed": {
+            "bundle": "any-robot/results/g18-before-after/dog-place-branch/before/physical",
+            "replay_agrees": true,
+            "sha256": "a611c233828512375212374ed879d7bb7197badc719167eb45ecd38be6f81546",
+            "simulation_duration_s": 121.67999999989782,
+            "trace_sha256": "31d93fde779ab2bf34b0d85721cd8b177cd89deef75cce73c1948ad67bb9d0e3"
+          },
+          "settings": {
+            "RetrieveSession.PLACE_ON_BEST_BRANCH": false
+          },
+          "status": "failed",
+          "success": false
+        }
+      },
+      "seed": 2,
+      "symptom": "a straight-line move from the carry pose kept the arm folded back over the torso and brought the wrist down on the tray's rim"
+    },
+    {
+      "fix": "pincer hinges that open to -0.9 rad and finger pads with torsional friction (second-version body)",
+      "pair_id": "octopus-pincer",
+      "recovery_budget": 2,
+      "retry_budget": 2,
+      "runs": {
+        "after": {
+          "body": "mobile_octopus_v2",
+          "cap_s": 800.0,
+          "duration_s": 651.83,
+          "fell": false,
+          "hold_events": [
+            {
+              "event": "acquired",
+              "phase": "acquire",
+              "time_s": 120.8719999998997
+            },
+            {
+              "event": "lost",
+              "phase": "carry",
+              "time_s": 146.76399999997267
+            }
+          ],
+          "max_object_slip_m": 0.1014,
+          "media": {
+            "frame_count": 7823,
+            "frames": "octopus-pincer/after/media/frames.json",
+            "media_sha256": "b2462131fb5a34646b2a6dfcc846fa5b865739dabcd88a541e702f8baaf7cb7c",
+            "preview": "octopus-pincer/after/media/preview.gif",
+            "video": "octopus-pincer/after/media/episode.mp4"
+          },
+          "phases": [
+            {
+              "attempt": 1,
+              "ended_s": 103.16,
+              "phase": "approach",
+              "reason": "",
+              "started_s": 1.5,
+              "success": true
+            },
+            {
+              "attempt": 1,
+              "ended_s": 105.16,
+              "phase": "stabilize",
+              "reason": "not stable after 2 s",
+              "started_s": 103.16,
+              "success": false
+            },
+            {
+              "attempt": 2,
+              "ended_s": 107.17,
+              "phase": "stabilize",
+              "reason": "",
+              "started_s": 105.16,
+              "success": true
+            },
+            {
+              "attempt": 1,
+              "ended_s": 124.68,
+              "phase": "acquire",
+              "reason": "",
+              "started_s": 107.17,
+              "success": true
+            },
+            {
+              "attempt": 1,
+              "ended_s": 146.76,
+              "phase": "carry",
+              "reason": "hold lost at 146.8 s",
+              "started_s": 124.68,
+              "success": false
+            },
+            {
+              "attempt": 1,
+              "ended_s": 386.76,
+              "phase": "approach",
+              "reason": "phase budget",
+              "started_s": 146.76,
+              "success": false
+            },
+            {
+              "attempt": 2,
+              "ended_s": 626.77,
+              "phase": "approach",
+              "reason": "phase budget",
+              "started_s": 386.76,
+              "success": false
+            },
+            {
+              "attempt": 3,
+              "ended_s": 636.62,
+              "phase": "approach",
+              "reason": "",
+              "started_s": 626.77,
+              "success": true
+            },
+            {
+              "attempt": 1,
+              "ended_s": 638.62,
+              "phase": "stabilize",
+              "reason": "not stable after 2 s",
+              "started_s": 636.62,
+              "success": false
+            },
+            {
+              "attempt": 2,
+              "ended_s": 640.62,
+              "phase": "stabilize",
+              "reason": "",
+              "started_s": 638.62,
+              "success": true
+            },
+            {
+              "attempt": 2,
+              "ended_s": 651.83,
+              "phase": "acquire",
+              "reason": "grasp miss 4.7 cm across, 1.0 cm up; the object moved 0.0 cm",
+              "started_s": 640.62,
+              "success": false
+            }
+          ],
+          "phases_completed": [
+            "acquire",
+            "approach",
+            "stabilize"
+          ],
+          "reason": "re-acquire: grasp miss 4.7 cm across, 1.0 cm up; the object moved 0.0 cm",
+          "sealed": {
+            "bundle": "any-robot/results/g18-before-after/octopus-pincer/after/physical",
+            "replay_agrees": true,
+            "sha256": "50e18da5cb8da30a3cfd2a98ecf2a88f06a4af8249b18c4a88785059066aed12",
+            "simulation_duration_s": 651.8259999984101,
+            "trace_sha256": "0107ca8cf12bf726b5e953777819de4f6423c31fa792bf871285a6bac828eea0"
+          },
+          "settings": {},
+          "status": "failed",
+          "success": false
+        },
+        "before": {
+          "body": "mobile_octopus",
+          "cap_s": 800.0,
+          "duration_s": 167.39,
+          "fell": false,
+          "hold_events": [],
+          "max_object_slip_m": 0.0,
+          "media": {
+            "frame_count": 2010,
+            "frames": "octopus-pincer/before/media/frames.json",
+            "media_sha256": "07f6a1c9f7da5f55076006a1bede70099657ba729b410d7316cc9c9ad90cd598",
+            "preview": "octopus-pincer/before/media/preview.gif",
+            "video": "octopus-pincer/before/media/episode.mp4"
+          },
+          "phases": [
+            {
+              "attempt": 1,
+              "ended_s": 101.37,
+              "phase": "approach",
+              "reason": "",
+              "started_s": 1.5,
+              "success": true
+            },
+            {
+              "attempt": 1,
+              "ended_s": 103.37,
+              "phase": "stabilize",
+              "reason": "not stable after 2 s",
+              "started_s": 101.37,
+              "success": false
+            },
+            {
+              "attempt": 2,
+              "ended_s": 105.38,
+              "phase": "stabilize",
+              "reason": "",
+              "started_s": 103.37,
+              "success": true
+            },
+            {
+              "attempt": 1,
+              "ended_s": 119.13,
+              "phase": "acquire",
+              "reason": "fingers did not both close on the object ((False, False))",
+              "started_s": 105.38,
+              "success": false
+            },
+            {
+              "attempt": 1,
+              "ended_s": 124.78,
+              "phase": "approach",
+              "reason": "",
+              "started_s": 119.13,
+              "success": true
+            },
+            {
+              "attempt": 1,
+              "ended_s": 126.78,
+              "phase": "stabilize",
+              "reason": "not stable after 2 s",
+              "started_s": 124.78,
+              "success": false
+            },
+            {
+              "attempt": 2,
+              "ended_s": 128.78,
+              "phase": "stabilize",
+              "reason": "not stable after 2 s",
+              "started_s": 126.78,
+              "success": false
+            },
+            {
+              "attempt": 3,
+              "ended_s": 130.78,
+              "phase": "stabilize",
+              "reason": "",
+              "started_s": 128.78,
+              "success": true
+            },
+            {
+              "attempt": 2,
+              "ended_s": 147.48,
+              "phase": "acquire",
+              "reason": "grasp miss 0.1 cm across, 0.4 cm up; the object moved 7.3 cm",
+              "started_s": 130.78,
+              "success": false
+            },
+            {
+              "attempt": 1,
+              "ended_s": 152.19,
+              "phase": "approach",
+              "reason": "",
+              "started_s": 147.48,
+              "success": true
+            },
+            {
+              "attempt": 1,
+              "ended_s": 154.19,
+              "phase": "stabilize",
+              "reason": "not stable after 2 s",
+              "started_s": 152.19,
+              "success": false
+            },
+            {
+              "attempt": 2,
+              "ended_s": 156.19,
+              "phase": "stabilize",
+              "reason": "",
+              "started_s": 154.19,
+              "success": true
+            },
+            {
+              "attempt": 3,
+              "ended_s": 167.39,
+              "phase": "acquire",
+              "reason": "grasp miss 8.5 cm across, -0.6 cm up; the object moved 0.0 cm",
+              "started_s": 156.19,
+              "success": false
+            }
+          ],
+          "phases_completed": [
+            "approach",
+            "stabilize"
+          ],
+          "reason": "acquire: grasp miss 8.5 cm across, -0.6 cm up; the object moved 0.0 cm",
+          "sealed": {
+            "bundle": "any-robot/results/g18-before-after/octopus-pincer/before/physical",
+            "replay_agrees": true,
+            "sha256": "6cbe376fd135d9c831bd482390200975e0f440723ac2803cd3327ba9954bc551",
+            "simulation_duration_s": 167.39000000007115,
+            "trace_sha256": "fa09a0c5a5fa03bf99dd4f5e60fee9693a2a684188652728f589c88035562b93"
+          },
+          "settings": {},
+          "status": "failed",
+          "success": false
+        }
+      },
+      "seed": 1,
+      "symptom": "the first version's open fingers parted less than the cube, so the pincer could not close on it"
+    },
+    {
+      "fix": "a wave gait while a tentacle holds the object",
+      "pair_id": "octopus-wave-gait",
+      "recovery_budget": 0,
+      "retry_budget": 2,
+      "runs": {
+        "after": {
+          "body": "mobile_octopus_v2",
+          "cap_s": 800.0,
+          "duration_s": 146.76,
+          "fell": false,
+          "hold_events": [
+            {
+              "event": "acquired",
+              "phase": "acquire",
+              "time_s": 120.8719999998997
+            },
+            {
+              "event": "lost",
+              "phase": "carry",
+              "time_s": 146.76399999997267
+            }
+          ],
+          "max_object_slip_m": 0.1014,
+          "media": {
+            "frame_count": 1763,
+            "frames": "octopus-wave-gait/after/media/frames.json",
+            "media_sha256": "363eed11f7499a07c806ea075cc5c38027e46f7535be1311c99fa18801678e1f",
+            "preview": "octopus-wave-gait/after/media/preview.gif",
+            "video": "octopus-wave-gait/after/media/episode.mp4"
+          },
+          "phases": [
+            {
+              "attempt": 1,
+              "ended_s": 103.16,
+              "phase": "approach",
+              "reason": "",
+              "started_s": 1.5,
+              "success": true
+            },
+            {
+              "attempt": 1,
+              "ended_s": 105.16,
+              "phase": "stabilize",
+              "reason": "not stable after 2 s",
+              "started_s": 103.16,
+              "success": false
+            },
+            {
+              "attempt": 2,
+              "ended_s": 107.17,
+              "phase": "stabilize",
+              "reason": "",
+              "started_s": 105.16,
+              "success": true
+            },
+            {
+              "attempt": 1,
+              "ended_s": 124.68,
+              "phase": "acquire",
+              "reason": "",
+              "started_s": 107.17,
+              "success": true
+            },
+            {
+              "attempt": 1,
+              "ended_s": 146.76,
+              "phase": "carry",
+              "reason": "hold lost at 146.8 s",
+              "started_s": 124.68,
+              "success": false
+            }
+          ],
+          "phases_completed": [
+            "acquire",
+            "approach",
+            "stabilize"
+          ],
+          "reason": "carry: hold lost at 146.8 s",
+          "sealed": {
+            "bundle": "any-robot/results/g18-before-after/octopus-wave-gait/after/physical",
+            "replay_agrees": true,
+            "sha256": "2e412ac4b18268e7985597f6f507096e9a45df6bb4b38cf3f36af88852c37f14",
+            "simulation_duration_s": 146.76199999997266,
+            "trace_sha256": "2d9c61a1d67b9cadebabc8f634cb11935498d07eda681681b0c932a65138b935"
+          },
+          "settings": {},
+          "status": "failed",
+          "success": false
+        },
+        "before": {
+          "body": "mobile_octopus_v2",
+          "cap_s": 800.0,
+          "duration_s": 148.12,
+          "fell": false,
+          "hold_events": [
+            {
+              "event": "acquired",
+              "phase": "acquire",
+              "time_s": 120.8719999998997
+            },
+            {
+              "event": "lost",
+              "phase": "carry",
+              "time_s": 148.11599999997912
+            }
+          ],
+          "max_object_slip_m": 0.1009,
+          "media": {
+            "frame_count": 1779,
+            "frames": "octopus-wave-gait/before/media/frames.json",
+            "media_sha256": "7c64a35bba4821ca78d7efedb4e858b3c560817802d467c681fa40eaf756ed6d",
+            "preview": "octopus-wave-gait/before/media/preview.gif",
+            "video": "octopus-wave-gait/before/media/episode.mp4"
+          },
+          "phases": [
+            {
+              "attempt": 1,
+              "ended_s": 103.16,
+              "phase": "approach",
+              "reason": "",
+              "started_s": 1.5,
+              "success": true
+            },
+            {
+              "attempt": 1,
+              "ended_s": 105.16,
+              "phase": "stabilize",
+              "reason": "not stable after 2 s",
+              "started_s": 103.16,
+              "success": false
+            },
+            {
+              "attempt": 2,
+              "ended_s": 107.17,
+              "phase": "stabilize",
+              "reason": "",
+              "started_s": 105.16,
+              "success": true
+            },
+            {
+              "attempt": 1,
+              "ended_s": 124.68,
+              "phase": "acquire",
+              "reason": "",
+              "started_s": 107.17,
+              "success": true
+            },
+            {
+              "attempt": 1,
+              "ended_s": 148.12,
+              "phase": "carry",
+              "reason": "hold lost at 148.1 s",
+              "started_s": 124.68,
+              "success": false
+            }
+          ],
+          "phases_completed": [
+            "acquire",
+            "approach",
+            "stabilize"
+          ],
+          "reason": "carry: hold lost at 148.1 s",
+          "sealed": {
+            "bundle": "any-robot/results/g18-before-after/octopus-wave-gait/before/physical",
+            "replay_agrees": true,
+            "sha256": "172a2724e18aa8f7af206fc1c97b2cb507e3c8cc6f152069aecee149847bab66",
+            "simulation_duration_s": 148.11399999997911,
+            "trace_sha256": "30799307bcea1e0b86f295e50e2463baad16cd354635ff88eef818e39a03a63d"
+          },
+          "settings": {
+            "OctopusCrawl.WAVE_WHEN_HOLDING": false
+          },
+          "status": "failed",
+          "success": false
+        }
+      },
+      "seed": 1,
+      "symptom": "the tripod with a tentacle held out stood on two tentacles in one of its phases, and the mantle's rocking shook the object out"
+    }
+  ]
+}

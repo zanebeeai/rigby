@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-retrieve-the-cube-from-the-station-and-deliver-i-459a05fe",
+  "title": "G18 before/after: octopus-pincer: before the fix",
+  "prompt": "retrieve the cube from the station and deliver it to the tray, then return (no language planner)",
+  "tier": "any-robot",
+  "embodiment": "mobile_octopus",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T19:05:27Z",
+  "source": {
+    "commit": "b7584f498b",
+    "branch": "feat/g18",
+    "dirty": true,
+    "how": "python any-robot/scripts/g18_before_after.py --out docs/results/g18-before-after --local any-robot/results/g18-before-after"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "FAILED: before the fix (pincer hinges that open to -0.9 rad and finger pads with torsional friction (second-version body)), mobile_octopus, seed 1. Reason: acquire: grasp miss 8.5 cm across, -0.6 cm up; the object moved 0.0 cm. Symptom: the first version's open fingers parted less than the cube, so the pincer could not close on it. One of a before/after pair on identical physics."
+  },
+  "notes": "See docs/results/g18-report.md. Rendered from recorded states at real-time playback with the simulation clock, the outcome, every phase attempt with its support set and holding limb, the hold events, the disturbance window, the base height and tilt, and the floor contacts by body on every frame; frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g18-before-after/octopus-pincer/before/media/episode.mp4",
+      "bytes": 2322793,
+      "sha256": "1f09e98a991d018410c06b01aa799cde43bcd95cefe2cabf7bea19e9eae812c3",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g18-before-after/octopus-pincer/before/media/preview.gif",
+      "bytes": 1894689,
+      "sha256": "0e37540caf10b915718ff8db37c5fac2685e84f1219c16edf6fc2b3115619aeb",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G18",
+    "before-after",
+    "octopus-pincer",
+    "before",
+    "mobile_octopus"
+  ]
+}

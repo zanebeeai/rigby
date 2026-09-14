@@ -1,0 +1,190 @@
+{
+  "bodies": {
+    "mobile_dog_arm_v2": [
+      {
+        "clip": "retrieve",
+        "disturbance": null,
+        "duration_s": 196.574,
+        "fell": false,
+        "frame_count": 2360,
+        "frames": "mobile_dog_arm_v2/retrieve/media/frames.json",
+        "kind": "nominal",
+        "media_sha256": "bf07d8d8b86bf59ab90e0f314dc29e56bd592b42e2809e51517f76fb24a0bd44",
+        "outcome": "success",
+        "phases_completed": [
+          "acquire",
+          "approach",
+          "carry",
+          "place",
+          "return",
+          "stabilize"
+        ],
+        "preview": "mobile_dog_arm_v2/retrieve/media/preview.gif",
+        "reason": "",
+        "source_sha256": "884235df0d8c4b1c1ae8a1ee0d82aa045a5a41eb352767c3ce6919816f74e91b",
+        "stage": "nominal",
+        "success": true,
+        "title": "retrieve and deliver: start -> station -> tray -> start (dog (v2 jaw))",
+        "trial_id": "mobile_dog_arm_v2-nominal-001",
+        "video": "mobile_dog_arm_v2/retrieve/media/episode.mp4"
+      },
+      {
+        "clip": "recovery-navigation",
+        "disturbance": "40 N left push on the base for 0.3 s, 4 s into the approach",
+        "duration_s": 198.18,
+        "fell": false,
+        "frame_count": 2380,
+        "frames": "mobile_dog_arm_v2/recovery-navigation/media/frames.json",
+        "kind": "disturbed",
+        "media_sha256": "5bb9a4664766d69d7922655d7d0a7100cf7ccf7f9f64f1bd3777791a95be9251",
+        "outcome": "success",
+        "phases_completed": [
+          "acquire",
+          "approach",
+          "carry",
+          "place",
+          "return",
+          "stabilize"
+        ],
+        "preview": "mobile_dog_arm_v2/recovery-navigation/media/preview.gif",
+        "reason": "",
+        "source_sha256": "f1cec255fc6b564df5e70b5b670bd317c56d08c113da4940ba67a10ed04af241",
+        "stage": "navigation",
+        "success": true,
+        "title": "navigation disturbance, recovered: 40 N left push on the base for 0.3 s, 4 s into the approach",
+        "trial_id": "mobile_dog_arm_v2-navigation-01",
+        "video": "mobile_dog_arm_v2/recovery-navigation/media/episode.mp4"
+      },
+      {
+        "clip": "recovery-carrying",
+        "disturbance": "40 N left push on the base for 0.3 s, 6 s into the carry",
+        "duration_s": 197.344,
+        "fell": false,
+        "frame_count": 2370,
+        "frames": "mobile_dog_arm_v2/recovery-carrying/media/frames.json",
+        "kind": "disturbed",
+        "media_sha256": "e39783d2bcf127f744f2ea228720c7656364520228c3c6dddb31f7a185e7f3be",
+        "outcome": "success",
+        "phases_completed": [
+          "acquire",
+          "approach",
+          "carry",
+          "place",
+          "return",
+          "stabilize"
+        ],
+        "preview": "mobile_dog_arm_v2/recovery-carrying/media/preview.gif",
+        "reason": "",
+        "source_sha256": "508844d639391fa38b5d388531d069959790d013e72451969b2dff472856d14c",
+        "stage": "carrying",
+        "success": true,
+        "title": "carrying disturbance, recovered: 40 N left push on the base for 0.3 s, 6 s into the carry",
+        "trial_id": "mobile_dog_arm_v2-carrying-11",
+        "video": "mobile_dog_arm_v2/recovery-carrying/media/episode.mp4"
+      },
+      {
+        "clip": "recovery-placement",
+        "disturbance": "40 N left push on the base for 0.3 s, 4 s into the placement",
+        "duration_s": 197.272,
+        "fell": false,
+        "frame_count": 2369,
+        "frames": "mobile_dog_arm_v2/recovery-placement/media/frames.json",
+        "kind": "disturbed",
+        "media_sha256": "fecc3807bb56f5a3676d26f4d11b077ea8048e4826427ba68d14dd2de8a98ca0",
+        "outcome": "success",
+        "phases_completed": [
+          "acquire",
+          "approach",
+          "carry",
+          "place",
+          "return",
+          "stabilize"
+        ],
+        "preview": "mobile_dog_arm_v2/recovery-placement/media/preview.gif",
+        "reason": "",
+        "source_sha256": "10b5ae77c25563aaff11dd6f8c249eb4812d09219ef0cb01c90f2311718555ca",
+        "stage": "placement",
+        "success": true,
+        "title": "placement disturbance, recovered: 40 N left push on the base for 0.3 s, 4 s into the placement",
+        "trial_id": "mobile_dog_arm_v2-placement-25",
+        "video": "mobile_dog_arm_v2/recovery-placement/media/episode.mp4"
+      },
+      {
+        "clip": "failure",
+        "disturbance": "70 N left push on the base for 0.3 s, 4 s into the approach",
+        "duration_s": 6.634,
+        "fell": true,
+        "frame_count": 81,
+        "frames": "mobile_dog_arm_v2/failure/media/frames.json",
+        "kind": "disturbed",
+        "media_sha256": "6c49e8e1760875c404502cff4ca28222e7e75f09325cb8ef631423f4747f65bd",
+        "outcome": "fell",
+        "phases_completed": [],
+        "preview": "mobile_dog_arm_v2/failure/media/preview.gif",
+        "reason": "approach: fell at 6.6 s",
+        "source_sha256": "d315840fab5b80d3b7a79002b525f5e4071a2ba4b294c8c88cc65b1e8eb8e9a5",
+        "stage": "navigation",
+        "success": false,
+        "title": "FAILURE (navigation): 70 N left push on the base for 0.3 s, 4 s into the approach; approach: fell at 6.6 s",
+        "trial_id": "mobile_dog_arm_v2-navigation-02",
+        "video": "mobile_dog_arm_v2/failure/media/episode.mp4"
+      }
+    ],
+    "mobile_octopus_v2": [
+      {
+        "clip": "failure",
+        "disturbance": null,
+        "duration_s": 651.828,
+        "fell": false,
+        "frame_count": 7823,
+        "frames": "mobile_octopus_v2/failure/media/frames.json",
+        "kind": "nominal",
+        "media_sha256": "02c188c72226d99e11f728b5fd9fb91f3cc0e4f8373ff1a493ab55f7edb10e52",
+        "outcome": "failed",
+        "phases_completed": [
+          "acquire",
+          "approach",
+          "stabilize"
+        ],
+        "preview": "mobile_octopus_v2/failure/media/preview.gif",
+        "reason": "re-acquire: grasp miss 4.7 cm across, 1.0 cm up; the object moved 0.0 cm",
+        "source_sha256": "18e0181acd273e062f47fab41c1eac7ad1cd31ef446a77812d37578ced8dd8d5",
+        "stage": "nominal",
+        "success": false,
+        "title": "FAILURE (nominal): nominal; re-acquire: grasp miss 4.7 cm across, 1.0 cm up; the object moved 0.0 cm",
+        "trial_id": "mobile_octopus_v2-nominal-001",
+        "video": "mobile_octopus_v2/failure/media/episode.mp4"
+      }
+    ],
+    "mobile_wheeled_biped_v2": [
+      {
+        "clip": "failure",
+        "disturbance": null,
+        "duration_s": 29.04,
+        "fell": false,
+        "frame_count": 350,
+        "frames": "mobile_wheeled_biped_v2/failure/media/frames.json",
+        "kind": "nominal",
+        "media_sha256": "91a0bdcb5b8062f148dedd6d33f4105ca2a28a7c5f7bea072c7afd7bb010fffa",
+        "outcome": "failed",
+        "phases_completed": [
+          "approach",
+          "stabilize"
+        ],
+        "preview": "mobile_wheeled_biped_v2/failure/media/preview.gif",
+        "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+        "source_sha256": "a371261e0486c83b056a5ae73ea5399a38f6cd9256769c29abbe314f31d145b3",
+        "stage": "nominal",
+        "success": false,
+        "title": "FAILURE (nominal): nominal; acquire: object out of reach: pre-grasp residual 11.8 cm",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-001",
+        "video": "mobile_wheeled_biped_v2/failure/media/episode.mp4"
+      }
+    ]
+  },
+  "commit": "b7584f498b66c9fea53fed71a2b6af02aea23874",
+  "created_at_utc": "2026-09-14T18:55:30.417369+00:00",
+  "demo": "D18",
+  "generation_calls": 0,
+  "goal": "G18"
+}
