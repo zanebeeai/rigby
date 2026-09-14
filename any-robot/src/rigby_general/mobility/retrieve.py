@@ -150,12 +150,14 @@ class RetrieveSession:
     PLACE_ON_BEST_BRANCH = True
     """False reproduces the placement before the fix: a straight-line move from the carry pose keeps the arm folded back over the torso and brings the wrist down on the tray's rim; kept for before/after pairs."""
 
-    def __init__(self, body: MobileBody, course: Course, *, seed: int, cap_s: float, jitter_xy_m: float = 0.10, jitter_yaw_deg: float = 10.0, disturbance: RetrieveDisturbance | None = None, settle_s: float = 1.5, retry_budget: int = 2) -> None:
+    def __init__(self, body: MobileBody, course: Course, *, seed: int, cap_s: float, jitter_xy_m: float = 0.10, jitter_yaw_deg: float = 10.0, disturbance: RetrieveDisturbance | None = None, settle_s: float = 1.5, retry_budget: int = 2, recovery_budget: int | None = None) -> None:
         self.body = body
         self.course = course
         self.cap_s = cap_s
         self.settle_s = settle_s
         self.retry_budget = retry_budget
+        self.recovery_budget = retry_budget if recovery_budget is None else recovery_budget
+        """How many lost holds (or placements outside the rim) the session goes back for; the retry budget by default."""
         self.disturbance = disturbance
         rng = np.random.default_rng(seed)
         self.world_xml = course_world_xml(body, course, None)
@@ -851,10 +853,10 @@ class RetrieveSession:
             success, reason = False, f"acquire: {self.phases[-1].reason}"
         delivered = False
         if success:
-            for attempt in range(1, self.retry_budget + 2):
+            for attempt in range(1, self.recovery_budget + 2):
                 record = self.begin("carry", attempt)
                 if not carry(record):
-                    if self.fell or self.out_of_time():
+                    if self.fell or self.out_of_time() or attempt > self.recovery_budget:
                         reason = f"carry: {record.reason}"
                         success = False
                         break
@@ -881,7 +883,7 @@ class RetrieveSession:
                 if placed:
                     delivered = True
                     break
-                if self.fell or self.out_of_time() or "out of reach" in record.reason or self.holding_limb:
+                if self.fell or self.out_of_time() or "out of reach" in record.reason or self.holding_limb or attempt > self.recovery_budget:
                     reason = f"place: {record.reason}"
                     success = False
                     break
@@ -928,8 +930,8 @@ class RetrieveSession:
                               actuation=actuation, support=support, max_object_slip_m=self.max_slip)
 
 
-def run_retrieve(body: MobileBody, course: Course, *, seed: int, cap_s: float, jitter_xy_m: float = 0.10, jitter_yaw_deg: float = 10.0, disturbance: RetrieveDisturbance | None = None, settle_s: float = 1.5, retry_budget: int = 2) -> RetrieveResult:
-    return RetrieveSession(body, course, seed=seed, cap_s=cap_s, jitter_xy_m=jitter_xy_m, jitter_yaw_deg=jitter_yaw_deg, disturbance=disturbance, settle_s=settle_s, retry_budget=retry_budget).run()
+def run_retrieve(body: MobileBody, course: Course, *, seed: int, cap_s: float, jitter_xy_m: float = 0.10, jitter_yaw_deg: float = 10.0, disturbance: RetrieveDisturbance | None = None, settle_s: float = 1.5, retry_budget: int = 2, recovery_budget: int | None = None) -> RetrieveResult:
+    return RetrieveSession(body, course, seed=seed, cap_s=cap_s, jitter_xy_m=jitter_xy_m, jitter_yaw_deg=jitter_yaw_deg, disturbance=disturbance, settle_s=settle_s, retry_budget=retry_budget, recovery_budget=recovery_budget).run()
 
 
 __all__ = ["PHASES", "GraspPoses", "PhaseRecord", "RetrieveDisturbance", "RetrieveResult", "RetrieveSession", "grasp_poses", "run_retrieve"]

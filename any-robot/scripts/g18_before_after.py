@@ -12,7 +12,10 @@ branch against the best branch (the wrist came down on the tray's
 rim), and the octopus's tripod crawl with a tentacle held out against
 the wave it crawls now (one phase of the tripod stood on two
 tentacles). Both runs of a pair are sealed and rendered in full with
-the side named in the banner. Rendering needs ffmpeg and ffprobe.
+the side named in the banner. The wave-gait pair does not go back for
+a lost hold (a recovery budget of none): it shows the carry, and a
+crawler's recovery attempts would seal to three quarters of a gigabyte
+a side. Rendering needs ffmpeg and ffprobe.
 """
 
 from __future__ import annotations
@@ -48,7 +51,7 @@ PAIRS = [
      "fix": "pincer hinges that open to -0.9 rad and finger pads with torsional friction (second-version body)", "symptom": "the first version's open fingers parted less than the cube, so the pincer could not close on it"},
     {"pair_id": "dog-place-branch", "before": {"body": "mobile_dog_arm_v2", "RetrieveSession.PLACE_ON_BEST_BRANCH": False}, "after": {"body": "mobile_dog_arm_v2"}, "seed": 2,
      "fix": "the placement reaches over the tray on the arm's best branch", "symptom": "a straight-line move from the carry pose kept the arm folded back over the torso and brought the wrist down on the tray's rim"},
-    {"pair_id": "octopus-wave-gait", "before": {"body": "mobile_octopus_v2", "OctopusCrawl.WAVE_WHEN_HOLDING": False}, "after": {"body": "mobile_octopus_v2"}, "seed": 1,
+    {"pair_id": "octopus-wave-gait", "before": {"body": "mobile_octopus_v2", "OctopusCrawl.WAVE_WHEN_HOLDING": False}, "after": {"body": "mobile_octopus_v2"}, "seed": 1, "recovery_budget": 0,
      "fix": "a wave gait while a tentacle holds the object", "symptom": "the tripod with a tentacle held out stood on two tentacles in one of its phases, and the mantle's rocking shook the object out"},
 ]
 DEFAULTS = {"RetrieveSession.PLACE_ON_BEST_BRANCH": True, "OctopusCrawl.WAVE_WHEN_HOLDING": True}
@@ -79,14 +82,16 @@ def main() -> int:
         earlier = json.loads((args.out / "index.json").read_bytes())
         index["pairs"] = [p for p in earlier.get("pairs", []) if p["pair_id"] not in args.pairs.split(",")]
     for pair in [p for p in PAIRS if p["pair_id"] in args.pairs.split(",")]:
-        entry = {"pair_id": pair["pair_id"], "seed": pair["seed"], "fix": pair["fix"], "symptom": pair["symptom"], "runs": {}}
+        recovery_budget = pair.get("recovery_budget", 2)
+        entry = {"pair_id": pair["pair_id"], "seed": pair["seed"], "fix": pair["fix"], "symptom": pair["symptom"], "retry_budget": 2, "recovery_budget": recovery_budget, "runs": {}}
         for side in ("before", "after"):
             settings = dict(pair[side])
             body_id = settings.pop("body")
             body = load_mobile_body(MOBILE / body_id)
             manifest = measure_mobile_body(body)
             apply(settings)
-            result = run_retrieve(body, course, seed=pair["seed"], cap_s=CAPS[body_id])
+            cap_s = pair.get("cap_s", CAPS[body_id])
+            result = run_retrieve(body, course, seed=pair["seed"], cap_s=cap_s, recovery_budget=recovery_budget)
             apply({})
             world_xml = course_world_xml(body, course, None)
             model = mujoco.MjSpec.from_string(world_xml).compile()
@@ -95,12 +100,12 @@ def main() -> int:
             label = f"{pair['pair_id']}-{side}"
             caption = f"{side.upper()} the fix ({pair['fix'][:60]}): retrieve, {body_id}"
             sealed = seal_run(args.local / pair["pair_id"] / side / "physical", body=on_course, manifest=manifest, run=result.run, label=label, caption=caption[:150], goal="G18", protocol="rigby.mobile-retrieve-pair/1",
-                              test={"test": "before_after_pair", "pair_id": pair["pair_id"], "side": side, "body": body_id, "settings": settings, "seed": pair["seed"], "cap_s": CAPS[body_id], "course_sha256": course.sha256(),
+                              test={"test": "before_after_pair", "pair_id": pair["pair_id"], "side": side, "body": body_id, "settings": settings, "seed": pair["seed"], "cap_s": cap_s, "retry_budget": 2, "recovery_budget": recovery_budget, "course_sha256": course.sha256(),
                                     "controller": {"name": result.actuation["controller"], "provenance": result.actuation["provenance"]}},
                               outcome={"status": status, "success": result.success, "reason": result.reason, "fell": result.fell, "cube_in_tray": result.cube_in_tray, "at_start": result.at_start, "phases": [{"phase": p.phase, "attempt": p.attempts, "success": p.success, "reason": p.reason, "started_s": p.started_s, "ended_s": p.ended_s} for p in result.phases],
                                        "hold_events": result.hold_events, "duration_s": result.duration_s, "max_object_slip_m": result.max_object_slip_m, "invariant_violation_count": len(result.invariant_violations)},
                               camera=CAMERA, world_xml=world_xml, model=model, controls_note=f"{side} the fix: {result.actuation['controller']} + reach + navigator on {body_id}")
-            run = {"body": body_id, "success": result.success, "status": status, "reason": result.reason, "fell": result.fell, "duration_s": round(result.duration_s, 2), "phases_completed": sorted({p.phase for p in result.phases if p.success}),
+            run = {"body": body_id, "success": result.success, "status": status, "reason": result.reason, "fell": result.fell, "duration_s": round(result.duration_s, 2), "cap_s": cap_s, "phases_completed": sorted({p.phase for p in result.phases if p.success}),
                    "hold_events": result.hold_events, "max_object_slip_m": round(result.max_object_slip_m, 4), "settings": settings, "phases": [{"phase": p.phase, "attempt": p.attempts, "success": p.success, "reason": p.reason, "started_s": round(p.started_s, 2), "ended_s": round(p.ended_s, 2)} for p in result.phases],
                    "sealed": {**sealed, "bundle": Path(sealed["bundle"]).relative_to(REPO).as_posix() if Path(sealed["bundle"]).is_absolute() else sealed["bundle"]}}
             if not args.no_render:

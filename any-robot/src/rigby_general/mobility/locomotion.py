@@ -421,23 +421,31 @@ class OctopusCrawl(Locomotor):
             return control
         gain = v / self.max_speed_mps
         turn = omega / self.max_turn_radps
+        # six tentacles crawl a tripod (two groups of three, half the period each); with one held out, a tripod's other group
+        # would stand on two, so the five that remain crawl a wave: one tentacle lifted at a time, the other four pressed
+        active = [index for index in self.ANGLES if f"tentacle_{index}" not in self.excluded_limbs]
+        if len(active) == len(self.ANGLES) or not self.WAVE_WHEN_HOLDING:
+            offsets, lifted_fraction = self.GROUP, 0.5
+        else:
+            offsets = {index: k / len(active) for k, index in enumerate(active)}
+            lifted_fraction = 1.0 / len(active)
         for index, angle in self.ANGLES.items():
-            if f"tentacle_{index}" in self.excluded_limbs:
+            if index not in offsets:
                 continue
             side = 1.0 if math.sin(angle) > 0 else -1.0  # +1 left, -1 right
             # moving: the outer side sweeps more, as a differential drive; in place: the two sides sweep in opposite senses (the sign is the opposite of the moving case, where a larger sweep on the right turns the body left)
             amplitude = self.SWEEP_RAD * (gain * (1.0 - 0.8 * turn * side) + self.IN_PLACE_SENSE * 0.8 * turn * side * (1.0 if abs(gain) < 0.05 else 0.0))
-            p = (self.phase + self.GROUP[index]) % 1.0
+            p = (self.phase + offsets[index]) % 1.0
             prefix = f"t{index}_"
-            if p < 0.5:
+            if p < lifted_fraction:
                 # lifted: curl up, swing the tip forward (yaw sense: -sign(sin angle) moves the tip towards +x)
-                s = p / 0.5
+                s = p / lifted_fraction
                 yaw = -side * amplitude * (-1.0 + 2.0 * s)
                 pitch0 = self.stance[f"{prefix}pitch_0"] - self.LIFT_RAD * math.sin(math.pi * s)
                 curl = -0.35 * math.sin(math.pi * s)
             else:
                 # pressed: sweep the tip back, pushing the mantle forward
-                s = (p - 0.5) / 0.5
+                s = (p - lifted_fraction) / (1.0 - lifted_fraction)
                 yaw = -side * amplitude * (1.0 - 2.0 * s)
                 pitch0 = self.stance[f"{prefix}pitch_0"] + self.PRESS_RAD
                 curl = 0.0
