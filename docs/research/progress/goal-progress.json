@@ -4,7 +4,7 @@
   "goal_catalog": "docs/research/rigby-verifiable-goals.json",
   "goal_catalog_sha256": "3672ebf5fa10ff4216fa0213499d5988281f2ebbc611500e8526afe6e618b250",
   "started_at_utc": "2026-09-12T02:34:49.841258+00:00",
-  "current_goal": "G17",
+  "current_goal": "G18",
   "overall_status": "active",
   "authorization": {
     "commits_and_pull_requests": true,
@@ -2676,39 +2676,92 @@
     {
       "id": "G17",
       "title": "Establish independent locomotion control",
-      "status": "planned",
+      "status": "partial",
       "criteria": [
         {
           "id": "G17.A01",
           "requirement": "For each body, execute travel, stop, turn and return on the common course in at least 100 frozen trials; at least 90 reach the goal and remain stable for 2 s.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "docs/results/g17-report.md",
+            "docs/results/g17-validation.json",
+            "docs/results/verify_g17.py",
+            "any-robot/assets/general/research-protocols/g17-locomotion-v1/",
+            "docs/results/g17-locomotion/",
+            "docs/results/g17-d17/index.json",
+            "docs/results/g17-before-after/index.json"
+          ],
+          "note": "100 frozen travel trials per body on mobile-course-v1 (start -> station -> start, start jitter 10 cm / 10 deg), registered before any scored run (bd7a675bcd7d): {\"mobile_dog_arm\": \"100/100\", \"mobile_wheeled_biped\": \"100/100\", \"mobile_octopus\": \"100/100\"} reached the goal and stood stable for 2 s (target >= 90); falls {\"mobile_dog_arm\": 3, \"mobile_wheeled_biped\": 4, \"mobile_octopus\": 3}; every failure sealed and replayable",
+          "verified_at_utc": "2026-09-14T07:52:38.779050+00:00"
         },
         {
           "id": "G17.A02",
           "requirement": "Run 30 predetermined perturbation trials per body with at least 24 recoveries; include traction/support disturbances appropriate to the declared mechanics and report them separately.",
-          "status": "pending",
-          "evidence": []
+          "status": "partial",
+          "evidence": [
+            "docs/results/g17-report.md",
+            "docs/results/g17-validation.json",
+            "docs/results/verify_g17.py",
+            "any-robot/assets/general/research-protocols/g17-locomotion-v1/",
+            "docs/results/g17-locomotion/",
+            "docs/results/g17-d17/index.json",
+            "docs/results/g17-before-after/index.json"
+          ],
+          "note": "30 predetermined perturbation trials per body (12 pushes bracketing a pilot ladder, 6 slick patches, 12 support disturbances matched to the mechanics: legs fought for the dog, a wheel drive cut or a leg fought for the biped, tentacles fought for the octopus): recoveries {\"mobile_dog_arm\": \"26/30\", \"mobile_wheeled_biped\": \"23/30\", \"mobile_octopus\": \"27/30\"} (target >= 24), by kind {\"mobile_dog_arm\": {\"patch\": \"5/6\", \"push\": \"9/12\", \"support\": \"12/12\"}, \"mobile_wheeled_biped\": {\"patch\": \"5/6\", \"push\": \"11/12\", \"support\": \"7/12\"}, \"mobile_octopus\": {\"patch\": \"6/6\", \"push\": \"9/12\", \"support\": \"12/12\"}}; traction and support reported separately",
+          "verified_at_utc": "2026-09-14T07:52:38.779050+00:00"
         },
         {
           "id": "G17.A03",
           "requirement": "Controller logs identify analytic, per-body trained, automatically adapted or shared policy provenance. No root teleportation, artificial support or hidden stabilizing wrench may count as success.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "docs/results/g17-report.md",
+            "docs/results/g17-validation.json",
+            "docs/results/verify_g17.py",
+            "any-robot/assets/general/research-protocols/g17-locomotion-v1/",
+            "docs/results/g17-locomotion/",
+            "docs/results/g17-d17/index.json",
+            "docs/results/g17-before-after/index.json"
+          ],
+          "note": "every trial row carries the controller's provenance (analytic, hand-authored per body: trot over a leg IK, wheeled inverted-pendulum balance, tripod crawl), its saturation and peak-force log, its external inputs (a push or a fought limb as recorded user input, replayed exactly), 'no root write after placement' and 'no artificial support'; no hidden wrench: replay is exact from the recorded inputs",
+          "verified_at_utc": "2026-09-14T07:52:38.779050+00:00"
         },
         {
           "id": "G17.A04",
           "requirement": "Publish fall, collision, energy, speed, controller latency and time-budget outcomes; locomotion control must work without the high-level language planner.",
-          "status": "pending",
-          "evidence": []
+          "status": "verified",
+          "evidence": [
+            "docs/results/g17-report.md",
+            "docs/results/g17-validation.json",
+            "docs/results/verify_g17.py",
+            "any-robot/assets/general/research-protocols/g17-locomotion-v1/",
+            "docs/results/g17-locomotion/",
+            "docs/results/g17-d17/index.json",
+            "docs/results/g17-before-after/index.json"
+          ],
+          "note": "falls, collisions with walls/station/tray, actuator energy, mean and peak speed, controller latency (p99 max {\"mobile_dog_arm\": 0.157, \"mobile_wheeled_biped\": 0.666, \"mobile_octopus\": 0.522} ms) and time against the cap published per body and per kind; no language planner and no model call in any trial (generation_calls 0)",
+          "verified_at_utc": "2026-09-14T07:52:38.779050+00:00"
         }
       ],
       "demo_requirement": "D17: synchronized walk/roll/crawl course plus uninterrupted perturbation recoveries.",
-      "demo_status": "pending",
-      "assessment_complete": false,
+      "demo_status": "delivered",
+      "assessment_complete": true,
       "capability_supported": false,
-      "commits": [],
-      "pull_requests": []
+      "commits": [
+        "8ab6e0fa",
+        "0de4e4d0",
+        "c6219a98"
+      ],
+      "pull_requests": [
+        "https://github.com/zanebeeai/rigby/pull/47"
+      ],
+      "demo_evidence": [
+        "docs/results/g17-d17/index.json",
+        "docs/results/g17-before-after/index.json",
+        "demos/registry"
+      ],
+      "closed_at_utc": "2026-09-14T07:52:38.779050+00:00",
+      "note": "Closed partial: mobile_wheeled_biped: perturbation 23/30. Three analytic per-body controllers behind one body-neutral navigator; four before/after pairs on identical physics for the fixes made on the way (the biped's leg hold and damping, its arrival and gated integral, the octopus's in-place turn sense, the dog's in-place stride); D17 synchronized course plus recoveries and failures, all from sealed records."
     },
     {
       "id": "G18",
@@ -3145,5 +3198,5 @@
     "Restore GitHub Actions billing/allowance and rerun PRs 27-39; merge only after required checks are green, bottom of the stack first.",
     "Preserve all 30 goals and their frozen criteria."
   ],
-  "updated_at_utc": "2026-09-14T05:56:56.710407+00:00"
+  "updated_at_utc": "2026-09-14T07:52:38.779050+00:00"
 }
