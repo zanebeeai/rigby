@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-physical-inspection-and-contact-support-tests-of-572c0aaa",
+  "title": "D16: mobile_wheeled_biped: recovery trial: released in its working stance with no balance controller: declared unsupported",
+  "prompt": "physical inspection and contact/support tests of a mobile body (no task prompt: the servos hold a stance)",
+  "tier": "any-robot",
+  "embodiment": "mobile_wheeled_biped",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T05:56:08Z",
+  "source": {
+    "commit": "38f17fa971",
+    "branch": "feat/g16",
+    "dirty": false,
+    "how": "python any-robot/scripts/g16_d16_media.py --bodies docs/results/g16-bodies --course docs/results/g16-course --out docs/results/g16-d16"
+  },
+  "outcome": {
+    "state": "partial",
+    "text": "NOT RECOVERED UNSUPPORTED: recovery trial: released in its working stance with no balance controller: declared unsupported. An UNSUPPORTED manoeuvre: the body is not meant to survive it without a controller; kept to show what it does. It did not recover, as expected."
+  },
+  "notes": "See docs/results/g16-report.md. Rendered from recorded states at real-time playback with the simulation clock, the base height and tilt, and the floor contacts by body on every frame (undeclared ones in red); frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g16-d16/mobile_wheeled_biped/recovery-released_standing/media/episode.mp4",
+      "bytes": 126643,
+      "sha256": "83d8381403a8e490c6c93eb62076b9955452ead3583d4e71e42dad7e94548984",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g16-d16/mobile_wheeled_biped/recovery-released_standing/media/preview.gif",
+      "bytes": 1017155,
+      "sha256": "13b941ee3abc8ce831d56d1f3b8244bb11c40810a4cf48b8e45262905b5f25ea",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G16",
+    "D16",
+    "mobile_wheeled_biped",
+    "recovery",
+    "unsupported"
+  ]
+}

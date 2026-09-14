@@ -1,0 +1,43 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-physical-inspection-and-contact-support-tests-of-11317c17",
+  "title": "D16: mobile_dog_arm: on the course: settled on the start pad in stance 'standing'",
+  "prompt": "physical inspection and contact/support tests of a mobile body (no task prompt: the servos hold a stance)",
+  "tier": "any-robot",
+  "embodiment": "mobile_dog_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T05:56:04Z",
+  "source": {
+    "commit": "38f17fa971",
+    "branch": "feat/g16",
+    "dirty": false,
+    "how": "python any-robot/scripts/g16_d16_media.py --bodies docs/results/g16-bodies --course docs/results/g16-course --out docs/results/g16-d16"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "STABLE: on the course: settled on the start pad in stance 'standing'."
+  },
+  "notes": "See docs/results/g16-report.md. Rendered from recorded states at real-time playback with the simulation clock, the base height and tilt, and the floor contacts by body on every frame (undeclared ones in red); frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g16-d16/mobile_dog_arm/course-start/media/episode.mp4",
+      "bytes": 50201,
+      "sha256": "104495a54d9b5f60933c7fe9635ab941fb2d546f34f46994c3d7f0a80974d1bc",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g16-d16/mobile_dog_arm/course-start/media/preview.gif",
+      "bytes": 937379,
+      "sha256": "c6234cdc284bc8c36c0694f1989cf8c15b882eee4178a839dd9ba920749482ce",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G16",
+    "D16",
+    "mobile_dog_arm",
+    "course"
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "bodies": {
+    "mobile_dog_arm": {
+      "contacts": [
+        "fl_foot",
+        "fr_foot",
+        "hl_foot",
+        "hr_foot"
+      ],
+      "course_model_sha256": "bd331646b32f12fb1afba70ca68ea7d1a50d99efb991052bf796c86405b98f32",
+      "height_m": 0.3900606474635817,
+      "sealed": {
+        "bundle": "any-robot/results/g16-course/mobile_dog_arm/start-pad/physical",
+        "replay_agrees": true,
+        "sha256": "ca737d866b5bdfd01f8dd4dc3174b3f0f4de9cd447a75f8337ad0aa23a26c661",
+        "simulation_duration_s": 2.999999999999891,
+        "trace_sha256": "0816992e54b94f02c58f82fd75f8ef1ba2d8ba6470e456f55a5233fbe32b69a9"
+      },
+      "stable": true,
+      "stance": "standing",
+      "tilt_deg": 0.0023224162344813843
+    },
+    "mobile_octopus": {
+      "contacts": [
+        "t0_seg_1",
+        "t1_seg_1",
+        "t2_seg_1",
+        "t3_seg_1",
+        "t4_seg_1",
+        "t5_seg_1"
+      ],
+      "course_model_sha256": "f2e96ff6553de5caa2a9f2741a503acd3a6eb29056a8014982dc6be042a4f262",
+      "height_m": 0.13129085494089127,
+      "sealed": {
+        "bundle": "any-robot/results/g16-course/mobile_octopus/start-pad/physical",
+        "replay_agrees": true,
+        "sha256": "08cb6459d9aeb36fd14921814a5f300a1ac04a54ed9733969e82a5fbeba31036",
+        "simulation_duration_s": 2.999999999999891,
+        "trace_sha256": "42083cb0643066edc53fedd9c9a6b488344117748da6f3299ec34263d1aa930b"
+      },
+      "stable": true,
+      "stance": "resting",
+      "tilt_deg": 0.07348164461993363
+    },
+    "mobile_wheeled_biped": {
+      "contacts": [
+        "left_wheel",
+        "right_wheel",
+        "torso"
+      ],
+      "course_model_sha256": "c6864e073475cbfb781861646780811df76958d50d9534048da24bbe597cfea2",
+      "height_m": 0.19884306330370877,
+      "sealed": {
+        "bundle": "any-robot/results/g16-course/mobile_wheeled_biped/start-pad/physical",
+        "replay_agrees": true,
+        "sha256": "854871470c6c24d80c0329d7d81879579f5986c9b70fce8ddc4f94aefb9e39e7",
+        "simulation_duration_s": 2.999999999999891,
+        "trace_sha256": "1a628958ccdd05f938d247daeda52376a190677cbf9f12ba6568db29a162198a"
+      },
+      "stable": true,
+      "stance": "parked",
+      "tilt_deg": 2.5966241263227308
+    }
+  },
+  "provenance": {
+    "commit": "38f17fa9712fa77e0ce751f7ff24fc9ae2d6387c",
+    "generation_calls": 0,
+    "mujoco": "3.11.0",
+    "numpy": "2.5.1",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.7 (tags/v3.12.7:0b05ead, Oct  1 2024, 03:06:41) [MSC v.1941 64 bit (AMD64)]",
+    "registration_sha256": "14bb869a6c825d25c04c39dc971482acb66c9a31b3ec268bb07726f15071c895",
+    "started_at_utc": "2026-09-14T05:54:26.687744+00:00"
+  }
+}

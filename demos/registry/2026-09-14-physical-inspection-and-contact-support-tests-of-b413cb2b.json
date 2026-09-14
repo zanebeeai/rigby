@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-physical-inspection-and-contact-support-tests-of-b413cb2b",
+  "title": "D16: mobile_dog_arm: recovery trial: released rolled 60 degrees: an unsupported manoeuvre, kept to show what the body does without a controller",
+  "prompt": "physical inspection and contact/support tests of a mobile body (no task prompt: the servos hold a stance)",
+  "tier": "any-robot",
+  "embodiment": "mobile_dog_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T05:56:03Z",
+  "source": {
+    "commit": "38f17fa971",
+    "branch": "feat/g16",
+    "dirty": false,
+    "how": "python any-robot/scripts/g16_d16_media.py --bodies docs/results/g16-bodies --course docs/results/g16-course --out docs/results/g16-d16"
+  },
+  "outcome": {
+    "state": "partial",
+    "text": "NOT RECOVERED UNSUPPORTED: recovery trial: released rolled 60 degrees: an unsupported manoeuvre, kept to show what the body does without a controller. An UNSUPPORTED manoeuvre: the body is not meant to survive it without a controller; kept to show what it does. It did not recover, as expected."
+  },
+  "notes": "See docs/results/g16-report.md. Rendered from recorded states at real-time playback with the simulation clock, the base height and tilt, and the floor contacts by body on every frame (undeclared ones in red); frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g16-d16/mobile_dog_arm/recovery-roll_60/media/episode.mp4",
+      "bytes": 129889,
+      "sha256": "917b04227afdda27bebc1e9a3fcdb3aac01f0a4e17b36cd6b9981b5f6036a548",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g16-d16/mobile_dog_arm/recovery-roll_60/media/preview.gif",
+      "bytes": 1072339,
+      "sha256": "c03892065185101018b28e6e1510001c1890febac9ae20a4cf9bdb8767d4c193",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G16",
+    "D16",
+    "mobile_dog_arm",
+    "recovery",
+    "unsupported"
+  ]
+}

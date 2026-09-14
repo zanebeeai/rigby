@@ -1,0 +1,351 @@
+{
+  "agreement": {
+    "mobile_dog_arm": {
+      "corridor": {
+        "agree": true,
+        "analysis": true,
+        "expert": true
+      },
+      "doorway": {
+        "agree": true,
+        "analysis": true,
+        "expert": true
+      },
+      "ramp": {
+        "agree": true,
+        "analysis": true,
+        "expert": true
+      },
+      "station": {
+        "agree": true,
+        "analysis": true,
+        "expert": true
+      },
+      "step": {
+        "agree": true,
+        "analysis": true,
+        "expert": true
+      },
+      "tray": {
+        "agree": true,
+        "analysis": true,
+        "expert": true
+      }
+    },
+    "mobile_octopus": {
+      "corridor": {
+        "agree": true,
+        "analysis": true,
+        "expert": true
+      },
+      "doorway": {
+        "agree": true,
+        "analysis": false,
+        "expert": false
+      },
+      "ramp": {
+        "agree": true,
+        "analysis": true,
+        "expert": true
+      },
+      "station": {
+        "agree": true,
+        "analysis": true,
+        "expert": true
+      },
+      "step": {
+        "agree": true,
+        "analysis": false,
+        "expert": false
+      },
+      "tray": {
+        "agree": true,
+        "analysis": true,
+        "expert": true
+      }
+    },
+    "mobile_wheeled_biped": {
+      "corridor": {
+        "agree": true,
+        "analysis": true,
+        "expert": true
+      },
+      "doorway": {
+        "agree": true,
+        "analysis": false,
+        "expert": false
+      },
+      "ramp": {
+        "agree": true,
+        "analysis": true,
+        "expert": true
+      },
+      "station": {
+        "agree": true,
+        "analysis": true,
+        "expert": true
+      },
+      "step": {
+        "agree": true,
+        "analysis": false,
+        "expert": false
+      },
+      "tray": {
+        "agree": true,
+        "analysis": true,
+        "expert": true
+      }
+    }
+  },
+  "bodies": {
+    "mobile_dog_arm": {
+      "all_main_route_feasible": true,
+      "geometry": {
+        "arm_base_height_above_base_m": 0.1,
+        "leg_length_m": 0.41,
+        "mantle_rise_m": null,
+        "wheel_radius_m": null
+      },
+      "robot_id": "mobile_dog_arm",
+      "verdicts": [
+        {
+          "branch_id": "corridor",
+          "feasible": true,
+          "measured": {
+            "clearance_m": 1.4,
+            "footprint_across_m": 0.585
+          },
+          "why": "footprint 0.59 m + 0.1 m margin fits 1.4 m"
+        },
+        {
+          "branch_id": "doorway",
+          "feasible": true,
+          "measured": {
+            "clearance_m": 0.7,
+            "footprint_across_m": 0.585
+          },
+          "why": "footprint 0.59 m + 0.1 m margin fits 0.7 m"
+        },
+        {
+          "branch_id": "ramp",
+          "feasible": true,
+          "measured": {
+            "required": 0.21,
+            "support_friction": 1.3
+          },
+          "why": "support friction 1.30 against 2 x tan(6 deg) = 0.21"
+        },
+        {
+          "branch_id": "step",
+          "feasible": true,
+          "measured": {
+            "limit_m": 0.137,
+            "step_m": 0.05
+          },
+          "why": "a 5 cm step against a third of the leg length (41 cm): 13.7 cm"
+        },
+        {
+          "branch_id": "station",
+          "feasible": true,
+          "measured": {
+            "reach_m": 0.535,
+            "reachable_band_m": [
+              -0.24,
+              1.021
+            ],
+            "stance_heights_m": [
+              0.195,
+              0.386
+            ],
+            "target_m": 0.09
+          },
+          "why": "target at 0.09 m; the grasp site spans -0.24 to 1.02 m over the stances the body can hold"
+        },
+        {
+          "branch_id": "tray",
+          "feasible": true,
+          "measured": {
+            "reach_m": 0.535,
+            "reachable_band_m": [
+              -0.24,
+              1.021
+            ],
+            "stance_heights_m": [
+              0.195,
+              0.386
+            ],
+            "target_m": 0.11
+          },
+          "why": "target at 0.11 m; the grasp site spans -0.24 to 1.02 m over the stances the body can hold"
+        }
+      ]
+    },
+    "mobile_octopus": {
+      "all_main_route_feasible": true,
+      "geometry": {
+        "arm_base_height_above_base_m": -0.06,
+        "leg_length_m": null,
+        "mantle_rise_m": 0.017,
+        "wheel_radius_m": null
+      },
+      "robot_id": "mobile_octopus",
+      "verdicts": [
+        {
+          "branch_id": "corridor",
+          "feasible": true,
+          "measured": {
+            "clearance_m": 1.4,
+            "footprint_across_m": 1.204
+          },
+          "why": "footprint 1.20 m + 0.1 m margin fits 1.4 m"
+        },
+        {
+          "branch_id": "doorway",
+          "feasible": false,
+          "measured": {
+            "clearance_m": 0.7,
+            "footprint_across_m": 1.204
+          },
+          "why": "footprint 1.20 m + 0.1 m margin does not fit 0.7 m"
+        },
+        {
+          "branch_id": "ramp",
+          "feasible": true,
+          "measured": {
+            "required": 0.21,
+            "support_friction": 0.8
+          },
+          "why": "support friction 0.80 against 2 x tan(6 deg) = 0.21"
+        },
+        {
+          "branch_id": "step",
+          "feasible": false,
+          "measured": {
+            "limit_m": 0.017,
+            "step_m": 0.05
+          },
+          "why": "a 5 cm step against the mantle's rise (2 cm): 1.7 cm"
+        },
+        {
+          "branch_id": "station",
+          "feasible": true,
+          "measured": {
+            "reach_m": 0.545,
+            "reachable_band_m": [
+              -0.492,
+              0.612
+            ],
+            "stance_heights_m": [
+              0.113,
+              0.127
+            ],
+            "target_m": 0.09
+          },
+          "why": "target at 0.09 m; the grasp site spans -0.49 to 0.61 m over the stances the body can hold"
+        },
+        {
+          "branch_id": "tray",
+          "feasible": true,
+          "measured": {
+            "reach_m": 0.545,
+            "reachable_band_m": [
+              -0.492,
+              0.612
+            ],
+            "stance_heights_m": [
+              0.113,
+              0.127
+            ],
+            "target_m": 0.11
+          },
+          "why": "target at 0.11 m; the grasp site spans -0.49 to 0.61 m over the stances the body can hold"
+        }
+      ]
+    },
+    "mobile_wheeled_biped": {
+      "all_main_route_feasible": true,
+      "geometry": {
+        "arm_base_height_above_base_m": 0.18,
+        "leg_length_m": null,
+        "mantle_rise_m": null,
+        "wheel_radius_m": 0.08
+      },
+      "robot_id": "mobile_wheeled_biped",
+      "verdicts": [
+        {
+          "branch_id": "corridor",
+          "feasible": true,
+          "measured": {
+            "clearance_m": 1.4,
+            "footprint_across_m": 0.674
+          },
+          "why": "footprint 0.67 m + 0.1 m margin fits 1.4 m"
+        },
+        {
+          "branch_id": "doorway",
+          "feasible": false,
+          "measured": {
+            "clearance_m": 0.7,
+            "footprint_across_m": 0.674
+          },
+          "why": "footprint 0.67 m + 0.1 m margin does not fit 0.7 m"
+        },
+        {
+          "branch_id": "ramp",
+          "feasible": true,
+          "measured": {
+            "required": 0.21,
+            "support_friction": 1.0
+          },
+          "why": "support friction 1.00 against 2 x tan(6 deg) = 0.21"
+        },
+        {
+          "branch_id": "step",
+          "feasible": false,
+          "measured": {
+            "limit_m": 0.04,
+            "step_m": 0.05
+          },
+          "why": "a 5 cm step against half the wheel radius (8 cm): 4.0 cm"
+        },
+        {
+          "branch_id": "station",
+          "feasible": true,
+          "measured": {
+            "reach_m": 0.335,
+            "reachable_band_m": [
+              0.04,
+              0.985
+            ],
+            "stance_heights_m": [
+              0.195,
+              0.47
+            ],
+            "target_m": 0.09
+          },
+          "why": "target at 0.09 m; the grasp site spans 0.04 to 0.98 m over the stances the body can hold"
+        },
+        {
+          "branch_id": "tray",
+          "feasible": true,
+          "measured": {
+            "reach_m": 0.335,
+            "reachable_band_m": [
+              0.04,
+              0.985
+            ],
+            "stance_heights_m": [
+              0.195,
+              0.47
+            ],
+            "target_m": 0.11
+          },
+          "why": "target at 0.11 m; the grasp site spans 0.04 to 0.98 m over the stances the body can hold"
+        }
+      ]
+    }
+  },
+  "course_id": "mobile-course-v1",
+  "course_sha256": "244af80bd16b58096836cb147bc99181ae397b32735d1853d7c97f6eb4730bdc",
+  "schema": "rigby.mobile-feasibility-map/1"
+}

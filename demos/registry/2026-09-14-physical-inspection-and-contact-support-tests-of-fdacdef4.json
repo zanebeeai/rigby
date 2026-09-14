@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-physical-inspection-and-contact-support-tests-of-fdacdef4",
+  "title": "D16: mobile_dog_arm: recovery trial: released rearing on its hind legs: an unsupported manoeuvre",
+  "prompt": "physical inspection and contact/support tests of a mobile body (no task prompt: the servos hold a stance)",
+  "tier": "any-robot",
+  "embodiment": "mobile_dog_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T05:56:03Z",
+  "source": {
+    "commit": "38f17fa971",
+    "branch": "feat/g16",
+    "dirty": false,
+    "how": "python any-robot/scripts/g16_d16_media.py --bodies docs/results/g16-bodies --course docs/results/g16-course --out docs/results/g16-d16"
+  },
+  "outcome": {
+    "state": "partial",
+    "text": "RECOVERED: recovery trial: released rearing on its hind legs: an unsupported manoeuvre. An UNSUPPORTED manoeuvre: the body is not meant to survive it without a controller; kept to show what it does. It recovered anyway."
+  },
+  "notes": "See docs/results/g16-report.md. Rendered from recorded states at real-time playback with the simulation clock, the base height and tilt, and the floor contacts by body on every frame (undeclared ones in red); frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g16-d16/mobile_dog_arm/recovery-rearing/media/episode.mp4",
+      "bytes": 96018,
+      "sha256": "6af9e2ea43b7d7d06866495732b5b98ae79c19a207e2c42b23be1bf44eecff3b",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g16-d16/mobile_dog_arm/recovery-rearing/media/preview.gif",
+      "bytes": 895006,
+      "sha256": "b5a4a41f2fb0facc7c7e24ebe3474b710d8f56b88d33a203740fb69083925df4",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G16",
+    "D16",
+    "mobile_dog_arm",
+    "recovery",
+    "unsupported"
+  ]
+}

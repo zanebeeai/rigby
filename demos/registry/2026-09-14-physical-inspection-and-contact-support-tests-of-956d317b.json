@@ -1,0 +1,43 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-physical-inspection-and-contact-support-tests-of-956d317b",
+  "title": "D16: mobile_octopus: settling test, stance 'reaching'",
+  "prompt": "physical inspection and contact/support tests of a mobile body (no task prompt: the servos hold a stance)",
+  "tier": "any-robot",
+  "embodiment": "mobile_octopus",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T05:56:04Z",
+  "source": {
+    "commit": "38f17fa971",
+    "branch": "feat/g16",
+    "dirty": false,
+    "how": "python any-robot/scripts/g16_d16_media.py --bodies docs/results/g16-bodies --course docs/results/g16-course --out docs/results/g16-d16"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "STABLE: settling test, stance 'reaching'."
+  },
+  "notes": "See docs/results/g16-report.md. Rendered from recorded states at real-time playback with the simulation clock, the base height and tilt, and the floor contacts by body on every frame (undeclared ones in red); frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g16-d16/mobile_octopus/stance-reaching/media/episode.mp4",
+      "bytes": 58961,
+      "sha256": "b62c7bbd9550e92be592c28716c07fe6d187aa744ddf6124a706e915ef1b0fd1",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g16-d16/mobile_octopus/stance-reaching/media/preview.gif",
+      "bytes": 611128,
+      "sha256": "6e2c5107869770dc526064e6cbfb5012673e11cb2e9770bb4af432fe5273a2af",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G16",
+    "D16",
+    "mobile_octopus",
+    "stance"
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-physical-inspection-and-contact-support-tests-of-f847c8c8",
+  "title": "D16: mobile_dog_arm: recovery trial: released rolled 25 degrees",
+  "prompt": "physical inspection and contact/support tests of a mobile body (no task prompt: the servos hold a stance)",
+  "tier": "any-robot",
+  "embodiment": "mobile_dog_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T05:56:02Z",
+  "source": {
+    "commit": "38f17fa971",
+    "branch": "feat/g16",
+    "dirty": false,
+    "how": "python any-robot/scripts/g16_d16_media.py --bodies docs/results/g16-bodies --course docs/results/g16-course --out docs/results/g16-d16"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "RECOVERED: recovery trial: released rolled 25 degrees. A supported recovery trial. Recovered."
+  },
+  "notes": "See docs/results/g16-report.md. Rendered from recorded states at real-time playback with the simulation clock, the base height and tilt, and the floor contacts by body on every frame (undeclared ones in red); frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g16-d16/mobile_dog_arm/recovery-roll_25/media/episode.mp4",
+      "bytes": 115491,
+      "sha256": "7d01240205029e14dc25639c2abe542937966c8917333b599578196baa7a1405",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g16-d16/mobile_dog_arm/recovery-roll_25/media/preview.gif",
+      "bytes": 1190874,
+      "sha256": "770a3c11e134870276b9b6c26552928e80898d1a9abe24010ae354503400bef7",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G16",
+    "D16",
+    "mobile_dog_arm",
+    "recovery"
+  ]
+}

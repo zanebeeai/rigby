@@ -1,0 +1,575 @@
+{
+ "actuators": [
+  {
+   "forcerange": [
+    -30.0,
+    30.0
+   ],
+   "joint": "fl_hip_roll",
+   "kind": "position",
+   "kp": 120.0,
+   "name": "fl_hip_roll_servo"
+  },
+  {
+   "forcerange": [
+    -40.0,
+    40.0
+   ],
+   "joint": "fl_hip_pitch",
+   "kind": "position",
+   "kp": 160.0,
+   "name": "fl_hip_pitch_servo"
+  },
+  {
+   "forcerange": [
+    -40.0,
+    40.0
+   ],
+   "joint": "fl_knee",
+   "kind": "position",
+   "kp": 160.0,
+   "name": "fl_knee_servo"
+  },
+  {
+   "forcerange": [
+    -30.0,
+    30.0
+   ],
+   "joint": "fr_hip_roll",
+   "kind": "position",
+   "kp": 120.0,
+   "name": "fr_hip_roll_servo"
+  },
+  {
+   "forcerange": [
+    -40.0,
+    40.0
+   ],
+   "joint": "fr_hip_pitch",
+   "kind": "position",
+   "kp": 160.0,
+   "name": "fr_hip_pitch_servo"
+  },
+  {
+   "forcerange": [
+    -40.0,
+    40.0
+   ],
+   "joint": "fr_knee",
+   "kind": "position",
+   "kp": 160.0,
+   "name": "fr_knee_servo"
+  },
+  {
+   "forcerange": [
+    -30.0,
+    30.0
+   ],
+   "joint": "hl_hip_roll",
+   "kind": "position",
+   "kp": 120.0,
+   "name": "hl_hip_roll_servo"
+  },
+  {
+   "forcerange": [
+    -40.0,
+    40.0
+   ],
+   "joint": "hl_hip_pitch",
+   "kind": "position",
+   "kp": 160.0,
+   "name": "hl_hip_pitch_servo"
+  },
+  {
+   "forcerange": [
+    -40.0,
+    40.0
+   ],
+   "joint": "hl_knee",
+   "kind": "position",
+   "kp": 160.0,
+   "name": "hl_knee_servo"
+  },
+  {
+   "forcerange": [
+    -30.0,
+    30.0
+   ],
+   "joint": "hr_hip_roll",
+   "kind": "position",
+   "kp": 120.0,
+   "name": "hr_hip_roll_servo"
+  },
+  {
+   "forcerange": [
+    -40.0,
+    40.0
+   ],
+   "joint": "hr_hip_pitch",
+   "kind": "position",
+   "kp": 160.0,
+   "name": "hr_hip_pitch_servo"
+  },
+  {
+   "forcerange": [
+    -40.0,
+    40.0
+   ],
+   "joint": "hr_knee",
+   "kind": "position",
+   "kp": 160.0,
+   "name": "hr_knee_servo"
+  },
+  {
+   "forcerange": [
+    -25.0,
+    25.0
+   ],
+   "joint": "arm_yaw",
+   "kind": "position",
+   "kp": 75.0,
+   "name": "arm_yaw_servo"
+  },
+  {
+   "forcerange": [
+    -30.0,
+    30.0
+   ],
+   "joint": "arm_joint_0",
+   "kind": "position",
+   "kp": 90.0,
+   "name": "arm_joint_0_servo"
+  },
+  {
+   "forcerange": [
+    -25.0,
+    25.0
+   ],
+   "joint": "arm_joint_1",
+   "kind": "position",
+   "kp": 75.0,
+   "name": "arm_joint_1_servo"
+  },
+  {
+   "forcerange": [
+    -15.0,
+    15.0
+   ],
+   "joint": "arm_joint_2",
+   "kind": "position",
+   "kp": 45.0,
+   "name": "arm_joint_2_servo"
+  },
+  {
+   "forcerange": [
+    -40.0,
+    40.0
+   ],
+   "joint": "arm_grip_left",
+   "kind": "position",
+   "kp": 400.0,
+   "name": "arm_grip_left_servo"
+  },
+  {
+   "forcerange": [
+    -40.0,
+    40.0
+   ],
+   "joint": "arm_grip_right",
+   "kind": "position",
+   "kp": 400.0,
+   "name": "arm_grip_right_servo"
+  }
+ ],
+ "base_body": "torso",
+ "base_kind": "legged",
+ "description": "A quadruped with three-hinge legs (hip roll, hip pitch, knee) on spherical feet, carrying a four-hinge arm and a parallel jaw on the front of its torso.",
+ "expected_standing_height_m": 0.38,
+ "joints": [
+  {
+   "actuator": "fl_hip_roll_servo",
+   "actuator_kind": "position",
+   "effort": 30.0,
+   "kind": "hinge",
+   "limb": "leg_fl",
+   "name": "fl_hip_roll",
+   "range": [
+    -0.6,
+    0.6
+   ],
+   "rest": 0.0,
+   "role": "leg",
+   "velocity": 8.0
+  },
+  {
+   "actuator": "fl_hip_pitch_servo",
+   "actuator_kind": "position",
+   "effort": 40.0,
+   "kind": "hinge",
+   "limb": "leg_fl",
+   "name": "fl_hip_pitch",
+   "range": [
+    -1.6,
+    1.6
+   ],
+   "rest": 0.55,
+   "role": "leg",
+   "velocity": 8.0
+  },
+  {
+   "actuator": "fl_knee_servo",
+   "actuator_kind": "position",
+   "effort": 40.0,
+   "kind": "hinge",
+   "limb": "leg_fl",
+   "name": "fl_knee",
+   "range": [
+    -2.4,
+    -0.15
+   ],
+   "rest": -1.15,
+   "role": "leg",
+   "velocity": 8.0
+  },
+  {
+   "actuator": "fr_hip_roll_servo",
+   "actuator_kind": "position",
+   "effort": 30.0,
+   "kind": "hinge",
+   "limb": "leg_fr",
+   "name": "fr_hip_roll",
+   "range": [
+    -0.6,
+    0.6
+   ],
+   "rest": 0.0,
+   "role": "leg",
+   "velocity": 8.0
+  },
+  {
+   "actuator": "fr_hip_pitch_servo",
+   "actuator_kind": "position",
+   "effort": 40.0,
+   "kind": "hinge",
+   "limb": "leg_fr",
+   "name": "fr_hip_pitch",
+   "range": [
+    -1.6,
+    1.6
+   ],
+   "rest": 0.55,
+   "role": "leg",
+   "velocity": 8.0
+  },
+  {
+   "actuator": "fr_knee_servo",
+   "actuator_kind": "position",
+   "effort": 40.0,
+   "kind": "hinge",
+   "limb": "leg_fr",
+   "name": "fr_knee",
+   "range": [
+    -2.4,
+    -0.15
+   ],
+   "rest": -1.15,
+   "role": "leg",
+   "velocity": 8.0
+  },
+  {
+   "actuator": "hl_hip_roll_servo",
+   "actuator_kind": "position",
+   "effort": 30.0,
+   "kind": "hinge",
+   "limb": "leg_hl",
+   "name": "hl_hip_roll",
+   "range": [
+    -0.6,
+    0.6
+   ],
+   "rest": 0.0,
+   "role": "leg",
+   "velocity": 8.0
+  },
+  {
+   "actuator": "hl_hip_pitch_servo",
+   "actuator_kind": "position",
+   "effort": 40.0,
+   "kind": "hinge",
+   "limb": "leg_hl",
+   "name": "hl_hip_pitch",
+   "range": [
+    -1.6,
+    1.6
+   ],
+   "rest": 0.55,
+   "role": "leg",
+   "velocity": 8.0
+  },
+  {
+   "actuator": "hl_knee_servo",
+   "actuator_kind": "position",
+   "effort": 40.0,
+   "kind": "hinge",
+   "limb": "leg_hl",
+   "name": "hl_knee",
+   "range": [
+    -2.4,
+    -0.15
+   ],
+   "rest": -1.15,
+   "role": "leg",
+   "velocity": 8.0
+  },
+  {
+   "actuator": "hr_hip_roll_servo",
+   "actuator_kind": "position",
+   "effort": 30.0,
+   "kind": "hinge",
+   "limb": "leg_hr",
+   "name": "hr_hip_roll",
+   "range": [
+    -0.6,
+    0.6
+   ],
+   "rest": 0.0,
+   "role": "leg",
+   "velocity": 8.0
+  },
+  {
+   "actuator": "hr_hip_pitch_servo",
+   "actuator_kind": "position",
+   "effort": 40.0,
+   "kind": "hinge",
+   "limb": "leg_hr",
+   "name": "hr_hip_pitch",
+   "range": [
+    -1.6,
+    1.6
+   ],
+   "rest": 0.55,
+   "role": "leg",
+   "velocity": 8.0
+  },
+  {
+   "actuator": "hr_knee_servo",
+   "actuator_kind": "position",
+   "effort": 40.0,
+   "kind": "hinge",
+   "limb": "leg_hr",
+   "name": "hr_knee",
+   "range": [
+    -2.4,
+    -0.15
+   ],
+   "rest": -1.15,
+   "role": "leg",
+   "velocity": 8.0
+  },
+  {
+   "actuator": "arm_yaw_servo",
+   "actuator_kind": "position",
+   "effort": 25.0,
+   "kind": "hinge",
+   "limb": "arm",
+   "name": "arm_yaw",
+   "range": [
+    -2.6,
+    2.6
+   ],
+   "rest": 0.0,
+   "role": "arm",
+   "velocity": 3.0
+  },
+  {
+   "actuator": "arm_joint_0_servo",
+   "actuator_kind": "position",
+   "effort": 30.0,
+   "kind": "hinge",
+   "limb": "arm",
+   "name": "arm_joint_0",
+   "range": [
+    -2.6,
+    2.6
+   ],
+   "rest": -1.9,
+   "role": "arm",
+   "velocity": 3.0
+  },
+  {
+   "actuator": "arm_joint_1_servo",
+   "actuator_kind": "position",
+   "effort": 25.0,
+   "kind": "hinge",
+   "limb": "arm",
+   "name": "arm_joint_1",
+   "range": [
+    -2.6,
+    2.6
+   ],
+   "rest": 1.6,
+   "role": "arm",
+   "velocity": 3.0
+  },
+  {
+   "actuator": "arm_joint_2_servo",
+   "actuator_kind": "position",
+   "effort": 15.0,
+   "kind": "hinge",
+   "limb": "arm",
+   "name": "arm_joint_2",
+   "range": [
+    -2.6,
+    2.6
+   ],
+   "rest": 0.9,
+   "role": "arm",
+   "velocity": 3.0
+  },
+  {
+   "actuator": "arm_grip_left_servo",
+   "actuator_kind": "position",
+   "effort": 40.0,
+   "kind": "slide",
+   "limb": "arm",
+   "name": "arm_grip_left",
+   "range": [
+    0.0,
+    0.035
+   ],
+   "rest": 0.0,
+   "role": "grip",
+   "velocity": 0.2
+  },
+  {
+   "actuator": "arm_grip_right_servo",
+   "actuator_kind": "position",
+   "effort": 40.0,
+   "kind": "slide",
+   "limb": "arm",
+   "name": "arm_grip_right",
+   "range": [
+    0.0,
+    0.035
+   ],
+   "rest": 0.0,
+   "role": "grip",
+   "velocity": 0.2
+  }
+ ],
+ "limbs": {
+  "arm": [
+   "arm_yaw",
+   "arm_joint_0",
+   "arm_joint_1",
+   "arm_joint_2",
+   "arm_grip_left",
+   "arm_grip_right"
+  ],
+  "leg_fl": [
+   "fl_hip_roll",
+   "fl_hip_pitch",
+   "fl_knee"
+  ],
+  "leg_fr": [
+   "fr_hip_roll",
+   "fr_hip_pitch",
+   "fr_knee"
+  ],
+  "leg_hl": [
+   "hl_hip_roll",
+   "hl_hip_pitch",
+   "hl_knee"
+  ],
+  "leg_hr": [
+   "hr_hip_roll",
+   "hr_hip_pitch",
+   "hr_knee"
+  ]
+ },
+ "manipulators": [
+  {
+   "fingers": [
+    "arm_finger_left",
+    "arm_finger_right"
+   ],
+   "grasp_site": "arm_grasp_centre",
+   "grip_joints": [
+    "arm_grip_left",
+    "arm_grip_right"
+   ],
+   "limb": "arm"
+  }
+ ],
+ "model": "robot.xml",
+ "model_sha256": "744a2d7632f5819636af568ba4ae3ade5d406f92ec0bba802e94a13b658e84f0",
+ "robot_id": "mobile_dog_arm",
+ "root_joint": "root",
+ "schema": "rigby.mobility-declaration/1",
+ "sensors": [
+  "joint encoders on every hinge and slide",
+  "torso gyro, accelerometer and orientation",
+  "touch on every foot"
+ ],
+ "stances": {
+  "parked": {
+   "joints": {
+    "arm_grip_left": 0.0,
+    "arm_grip_right": 0.0,
+    "arm_joint_0": -1.9,
+    "arm_joint_1": 1.6,
+    "arm_joint_2": 0.9,
+    "arm_yaw": 0.0,
+    "fl_hip_pitch": 1.4,
+    "fl_hip_roll": 0.0,
+    "fl_knee": -2.35,
+    "fr_hip_pitch": 1.4,
+    "fr_hip_roll": 0.0,
+    "fr_knee": -2.35,
+    "hl_hip_pitch": 1.4,
+    "hl_hip_roll": 0.0,
+    "hl_knee": -2.35,
+    "hr_hip_pitch": 1.4,
+    "hr_hip_roll": 0.0,
+    "hr_knee": -2.35
+   },
+   "note": "crouched low on folded legs, still on its four feet",
+   "statically_stable": true
+  },
+  "standing": {
+   "joints": {
+    "arm_grip_left": 0.0,
+    "arm_grip_right": 0.0,
+    "arm_joint_0": -1.9,
+    "arm_joint_1": 1.6,
+    "arm_joint_2": 0.9,
+    "arm_yaw": 0.0,
+    "fl_hip_pitch": 0.55,
+    "fl_hip_roll": 0.0,
+    "fl_knee": -1.15,
+    "fr_hip_pitch": 0.55,
+    "fr_hip_roll": 0.0,
+    "fr_knee": -1.15,
+    "hl_hip_pitch": 0.55,
+    "hl_hip_roll": 0.0,
+    "hl_knee": -1.15,
+    "hr_hip_pitch": 0.55,
+    "hr_hip_roll": 0.0,
+    "hr_knee": -1.15
+   },
+   "note": "four feet on the ground, knees bent, the arm folded up over the torso",
+   "statically_stable": true
+  }
+ },
+ "support_members": [
+  "fl_foot",
+  "fr_foot",
+  "hl_foot",
+  "hr_foot"
+ ],
+ "traction": {
+  "floor_friction": 1.3,
+  "members": "rubber spherical feet"
+ },
+ "working_stance": "standing"
+}

@@ -1,0 +1,43 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-physical-inspection-and-contact-support-tests-of-e124e125",
+  "title": "D16: mobile_wheeled_biped: settling test, stance 'parked'",
+  "prompt": "physical inspection and contact/support tests of a mobile body (no task prompt: the servos hold a stance)",
+  "tier": "any-robot",
+  "embodiment": "mobile_wheeled_biped",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T05:56:07Z",
+  "source": {
+    "commit": "38f17fa971",
+    "branch": "feat/g16",
+    "dirty": false,
+    "how": "python any-robot/scripts/g16_d16_media.py --bodies docs/results/g16-bodies --course docs/results/g16-course --out docs/results/g16-d16"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "STABLE: settling test, stance 'parked'."
+  },
+  "notes": "See docs/results/g16-report.md. Rendered from recorded states at real-time playback with the simulation clock, the base height and tilt, and the floor contacts by body on every frame (undeclared ones in red); frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g16-d16/mobile_wheeled_biped/stance-parked/media/episode.mp4",
+      "bytes": 49551,
+      "sha256": "e763980ee00bbf60a4ec201a2873320f9d3c9ce58b6f9654a72cf5a26cc39426",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g16-d16/mobile_wheeled_biped/stance-parked/media/preview.gif",
+      "bytes": 454396,
+      "sha256": "f3fe4d3af86d9e7a944617fa9eff5cec970ab8bf695bfc62c793ea302d89fb17",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G16",
+    "D16",
+    "mobile_wheeled_biped",
+    "stance"
+  ]
+}

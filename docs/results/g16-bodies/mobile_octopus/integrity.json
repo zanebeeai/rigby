@@ -1,0 +1,161 @@
+{
+  "actuator_count": 52,
+  "body_count": 37,
+  "collider_count": 37,
+  "free_joints": 1,
+  "inertia_checked_bodies": 37,
+  "joint_count": 52,
+  "mass_kg": 12.887758056095532,
+  "notes": [],
+  "passed": true,
+  "recoveries": [
+    {
+      "drop_m": 0.1,
+      "final_height_m": 0.12739545648504003,
+      "final_tilt_deg": 0.06817190412302955,
+      "perturbation": "released 10 cm higher than its stance",
+      "pitch_deg": 0.0,
+      "recovered": true,
+      "roll_deg": 0.0,
+      "supported": true,
+      "trial_id": "drop_10cm"
+    },
+    {
+      "drop_m": 0.03,
+      "final_height_m": 0.1273959052833682,
+      "final_tilt_deg": 0.07525550313124305,
+      "perturbation": "released rolled 8 degrees",
+      "pitch_deg": 0.0,
+      "recovered": true,
+      "roll_deg": 8.0,
+      "supported": true,
+      "trial_id": "roll_8"
+    },
+    {
+      "drop_m": 0.03,
+      "final_height_m": 0.12739590517324592,
+      "final_tilt_deg": 0.07524327742896048,
+      "perturbation": "released rolled -8 degrees",
+      "pitch_deg": 0.0,
+      "recovered": true,
+      "roll_deg": -8.0,
+      "supported": true,
+      "trial_id": "roll_-8"
+    },
+    {
+      "drop_m": 0.03,
+      "final_height_m": 0.12739387346470019,
+      "final_tilt_deg": 0.006594714387482199,
+      "perturbation": "released pitched 8 degrees nose down",
+      "pitch_deg": 8.0,
+      "recovered": true,
+      "roll_deg": 0.0,
+      "supported": true,
+      "trial_id": "pitch_8"
+    },
+    {
+      "drop_m": 0.03,
+      "final_height_m": 0.1273986740456975,
+      "final_tilt_deg": 0.10965331802955282,
+      "perturbation": "released pitched 8 degrees nose up",
+      "pitch_deg": -8.0,
+      "recovered": true,
+      "roll_deg": 0.0,
+      "supported": true,
+      "trial_id": "pitch_-8"
+    },
+    {
+      "drop_m": 0.03,
+      "final_height_m": 0.12740368788944356,
+      "final_tilt_deg": 0.1543962650586045,
+      "perturbation": "released rolled 25 degrees",
+      "pitch_deg": 0.0,
+      "recovered": true,
+      "roll_deg": 25.0,
+      "supported": true,
+      "trial_id": "roll_25"
+    },
+    {
+      "drop_m": 0.03,
+      "final_height_m": 0.12739844928876198,
+      "final_tilt_deg": 0.08568379840170276,
+      "perturbation": "released pitched 25 degrees nose down",
+      "pitch_deg": 25.0,
+      "recovered": true,
+      "roll_deg": 0.0,
+      "supported": true,
+      "trial_id": "pitch_25"
+    },
+    {
+      "drop_m": 0.05,
+      "final_height_m": 0.12742604466466553,
+      "final_tilt_deg": 0.2680259737735986,
+      "perturbation": "released rolled 60 degrees: an unsupported manoeuvre, kept to show what the body does without a controller",
+      "pitch_deg": 0.0,
+      "recovered": true,
+      "roll_deg": 60.0,
+      "supported": false,
+      "trial_id": "roll_60"
+    },
+    {
+      "drop_m": 0.1,
+      "final_height_m": 0.11178449838921599,
+      "final_tilt_deg": 173.20868920355966,
+      "perturbation": "released upside down: an unsupported manoeuvre, it has no righting reflex",
+      "pitch_deg": 0.0,
+      "recovered": false,
+      "roll_deg": 180.0,
+      "supported": false,
+      "trial_id": "upside_down"
+    }
+  ],
+  "robot_id": "mobile_octopus",
+  "stances": [
+    {
+      "base_height_m": 0.11287112649535,
+      "declared_statically_stable": true,
+      "duration_s": 4.0,
+      "settled": true,
+      "stance": "reaching",
+      "statically_stable": true,
+      "support_contacts": [
+        "mantle",
+        "t0_root",
+        "t0_seg_0",
+        "t1_seg_0",
+        "t1_seg_1",
+        "t2_seg_1",
+        "t3_seg_1",
+        "t4_seg_0",
+        "t4_seg_1",
+        "t5_root",
+        "t5_seg_0"
+      ],
+      "support_polygon_area_m2": 0.2702571534774299,
+      "tilt_deg": 10.113179769755888,
+      "undeclared_contacts": [],
+      "upright": true
+    },
+    {
+      "base_height_m": 0.12737146021520906,
+      "declared_statically_stable": true,
+      "duration_s": 4.0,
+      "settled": true,
+      "stance": "resting",
+      "statically_stable": true,
+      "support_contacts": [
+        "t0_seg_1",
+        "t1_seg_1",
+        "t2_seg_1",
+        "t3_seg_1",
+        "t4_seg_1",
+        "t5_seg_1"
+      ],
+      "support_polygon_area_m2": 0.4277426872262218,
+      "tilt_deg": 0.07269844476574314,
+      "undeclared_contacts": [],
+      "upright": true
+    }
+  ],
+  "violations": []
+}

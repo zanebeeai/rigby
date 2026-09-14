@@ -1,0 +1,43 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-physical-inspection-and-contact-support-tests-of-37e4c6a0",
+  "title": "D16: mobile_octopus: settling test, stance 'resting'",
+  "prompt": "physical inspection and contact/support tests of a mobile body (no task prompt: the servos hold a stance)",
+  "tier": "any-robot",
+  "embodiment": "mobile_octopus",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T05:56:05Z",
+  "source": {
+    "commit": "38f17fa971",
+    "branch": "feat/g16",
+    "dirty": false,
+    "how": "python any-robot/scripts/g16_d16_media.py --bodies docs/results/g16-bodies --course docs/results/g16-course --out docs/results/g16-d16"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "STABLE: settling test, stance 'resting'."
+  },
+  "notes": "See docs/results/g16-report.md. Rendered from recorded states at real-time playback with the simulation clock, the base height and tilt, and the floor contacts by body on every frame (undeclared ones in red); frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g16-d16/mobile_octopus/stance-resting/media/episode.mp4",
+      "bytes": 52595,
+      "sha256": "1534dd14c833a018721ad389508e587626f7aa0d7a35f2e6da4660fa0ea02652",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g16-d16/mobile_octopus/stance-resting/media/preview.gif",
+      "bytes": 656038,
+      "sha256": "7b354c9df4c8c587725af1a58066bc9e500425a46dd88329962c1e3ce26857c3",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G16",
+    "D16",
+    "mobile_octopus",
+    "stance"
+  ]
+}
