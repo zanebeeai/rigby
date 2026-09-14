@@ -1,0 +1,45 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-clear-the-work-area-put-every-cube-in-its-own-ce-40fd20b2",
+  "title": "G15 closure before: soft grip limits, guard counting the fingers (zoo_jaw_arm, 3 objects, seed 5002)",
+  "prompt": "clear the work area: put every cube in its own cell on the platform and check the area is clear",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T05:18:42Z",
+  "source": {
+    "commit": "056b8da759",
+    "branch": "feat/g15",
+    "dirty": false,
+    "how": "python any-robot/scripts/g15_before_after.py --out docs/results/g15-before-after --local any-robot/results/g15-before-after"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "FAILURE (child_failed:0.0): 0/3 placed by the oracle; soft grip limits, guard counting the fingers."
+  },
+  "notes": "See docs/results/g15-report.md, before and after each revision. the closure only: grip-joint limits that hold against the closure's force (fingers cannot cross), and the arm planner's guard no longer counting the closure's own finger pair; the same world, the same draw, the same tree, identical physics until the first lost hold Rendered from recorded states at real-time playback with the simulation clock and the live tree on every frame; frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g15-before-after/closure/before/media/episode.mp4",
+      "bytes": 497396,
+      "sha256": "b1eca5e15a71ce63b14f9c62bae51635ac3a92fa0c6f08c9507e46f9baed3a18",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g15-before-after/closure/before/media/preview.gif",
+      "bytes": 759168,
+      "sha256": "47643848f97fe42ac5c7ade813ce1aededa9df4bd1f91214a1aadb00184f4169",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G15",
+    "before-after",
+    "closure",
+    "before",
+    "zoo_jaw_arm",
+    "failure"
+  ]
+}

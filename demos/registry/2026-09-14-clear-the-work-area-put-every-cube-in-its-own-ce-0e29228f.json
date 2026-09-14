@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-clear-the-work-area-put-every-cube-in-its-own-ce-0e29228f",
+  "title": "D15: clear 5 objects on zoo_jaw_arm (seed 5000)",
+  "prompt": "clear the work area: put every cube in its own cell on the platform and check the area is clear",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T05:18:40Z",
+  "source": {
+    "commit": "056b8da759",
+    "branch": "feat/g15",
+    "dirty": false,
+    "how": "python any-robot/scripts/g15_d15_media.py --campaign docs/results/g15-clearance --local any-robot/results/g15-clearance --out docs/results/g15-d15 --body zoo_jaw_arm"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: 5 objects placed in their cells and the area observed clear in 70 s of physics over 5 segments, 1 pass(es); the live tree on every frame."
+  },
+  "notes": "See docs/results/g15-report.md. One clearance episode: the generated ClearWorkArea tree over the shared TransferObject subskills, one session per object with the world carried exactly between them on one clock; rendered from recorded states at real-time playback with the simulation clock, the tree's active path with loop attempt counts and the placed count on every frame; frames.json maps every frame to its segment, object and recorded sample.",
+  "media": [
+    {
+      "path": "docs/results/g15-d15/clearance-5/media/episode.mp4",
+      "bytes": 856999,
+      "sha256": "ef6c357df51f1cac2553408f0864ac371f397f49b78ed7d6a4ad84b58ab5190b",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g15-d15/clearance-5/media/preview.gif",
+      "bytes": 1879935,
+      "sha256": "889b5f668b340f82af8ade408206b7d2e4a8c4619ede447a653302ac7f7fa794",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G15",
+    "D15",
+    "objects-5",
+    "zoo_jaw_arm",
+    "success"
+  ]
+}

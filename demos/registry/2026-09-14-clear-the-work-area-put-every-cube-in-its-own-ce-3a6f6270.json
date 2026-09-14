@@ -1,0 +1,45 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-clear-the-work-area-put-every-cube-in-its-own-ce-3a6f6270",
+  "title": "G15 look before: v1 tree, loop closed on verdicts (zoo_jaw_arm, 3 objects, seed 5030)",
+  "prompt": "clear the work area: put every cube in its own cell on the platform and check the area is clear",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T05:18:44Z",
+  "source": {
+    "commit": "056b8da759",
+    "branch": "feat/g15",
+    "dirty": false,
+    "how": "python any-robot/scripts/g15_before_after.py --out docs/results/g15-before-after --local any-robot/results/g15-before-after"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "SUCCESS: 1/3 placed by the oracle; a FALSE COMPLETION: the root claimed success; v1 tree, loop closed on verdicts."
+  },
+  "notes": "See docs/results/g15-report.md, before and after each revision. the tree only: every pass ends with a look at the area and the cells, and what the cameras see decides which placements stand; the same world, the same draw, identical physics until the trees diverge Rendered from recorded states at real-time playback with the simulation clock and the live tree on every frame; frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g15-before-after/look/before/media/episode.mp4",
+      "bytes": 467118,
+      "sha256": "3284c0b53696be0f429ed8be36a37534140b7a97e77b8befd8e9d4853ce9816c",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g15-before-after/look/before/media/preview.gif",
+      "bytes": 1536360,
+      "sha256": "53ca2da3927e21917460d28f026fd03c7f59b260d0b1ec240fe6c81c929e7889",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G15",
+    "before-after",
+    "look",
+    "before",
+    "zoo_jaw_arm",
+    "false-completion"
+  ]
+}

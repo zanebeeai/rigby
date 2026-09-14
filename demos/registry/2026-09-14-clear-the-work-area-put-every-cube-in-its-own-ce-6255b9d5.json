@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-clear-the-work-area-put-every-cube-in-its-own-ce-6255b9d5",
+  "title": "G15 before/after, look: the loop closed on verdicts against the loop closed on a look (seed 5030)",
+  "prompt": "clear the work area: put every cube in its own cell on the platform and check the area is clear",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T05:18:44Z",
+  "source": {
+    "commit": "056b8da759",
+    "branch": "feat/g15",
+    "dirty": false,
+    "how": "python any-robot/scripts/g15_before_after.py --out docs/results/g15-before-after --local any-robot/results/g15-before-after"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "Left before (success, 1/3, a false completion), right after (success, 3/3); the same seed and draw, identical physics until the change bites."
+  },
+  "notes": "See docs/results/g15-report.md. the tree only: every pass ends with a look at the area and the cells, and what the cameras see decides which placements stand; the same world, the same draw, identical physics until the trees diverge",
+  "media": [
+    {
+      "path": "docs/results/g15-before-after/look/pair.mp4",
+      "bytes": 602667,
+      "sha256": "1eb3d94191510dee4457e22afc16f1012f065b1b3cdaf8be390b03df424312a4",
+      "role": "comparison"
+    },
+    {
+      "path": "docs/results/g15-before-after/look/pair-preview.gif",
+      "bytes": 5265224,
+      "sha256": "615de1344b03769b1f28ca065984a552afff0b10e449b1a4c457f8ab2c442952",
+      "role": "comparison"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G15",
+    "before-after",
+    "look",
+    "pair",
+    "zoo_jaw_arm"
+  ]
+}

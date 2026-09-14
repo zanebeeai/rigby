@@ -1,0 +1,45 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-clear-the-work-area-put-every-cube-in-its-own-ce-88216327",
+  "title": "G15 closure after: grip limits that hold, guard leaving the fingers to the closure (zoo_jaw_arm, 3 objects, seed 5002)",
+  "prompt": "clear the work area: put every cube in its own cell on the platform and check the area is clear",
+  "tier": "any-robot",
+  "embodiment": "zoo_jaw_arm",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T05:18:43Z",
+  "source": {
+    "commit": "056b8da759",
+    "branch": "feat/g15",
+    "dirty": false,
+    "how": "python any-robot/scripts/g15_before_after.py --out docs/results/g15-before-after --local any-robot/results/g15-before-after"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "UNKNOWN (child_unknown:0.0): 2/3 placed by the oracle; grip limits that hold, guard leaving the fingers to the closure."
+  },
+  "notes": "See docs/results/g15-report.md, before and after each revision. the closure only: grip-joint limits that hold against the closure's force (fingers cannot cross), and the arm planner's guard no longer counting the closure's own finger pair; the same world, the same draw, the same tree, identical physics until the first lost hold Rendered from recorded states at real-time playback with the simulation clock and the live tree on every frame; frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g15-before-after/closure/after/media/episode.mp4",
+      "bytes": 545838,
+      "sha256": "e82eb586cc069d07f7d0a825c3c88d4155c5a47fa8579d9e2e68610a607e5416",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g15-before-after/closure/after/media/preview.gif",
+      "bytes": 1661787,
+      "sha256": "15376072ca3bac78d4e2838b23eaef37f4e5df4bc643883975746475fd87eb90",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G15",
+    "before-after",
+    "closure",
+    "after",
+    "zoo_jaw_arm",
+    "failure"
+  ]
+}
