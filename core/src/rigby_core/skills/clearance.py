@@ -150,14 +150,21 @@ def clear_work_area_library(objects: tuple[str, ...], cells: tuple[str, ...], *,
             effects=(PredicateRefV1(name="all_objects_placed"), PredicateRefV1(name="work_area_clear")),
             children=(ChildRefV1(skill="clear_until_clear", bindings={"effector": "$effector"}), ChildRefV1(skill="observe_work_area", bindings={})),
         ))
+    if observe_each_pass:
+        predicates = (*base.predicates,
+                      PredicateSpecV1(name="all_objects_placed", parameters=(), description="every designated object's placement in its own cell stands: decided pass from the declared sensors and not since seen elsewhere"),
+                      PredicateSpecV1(name="work_area_clear", parameters=(), description="the declared cameras saw no object left in the work area"),
+                      PredicateSpecV1(name="area_cleared", parameters=(), description="every designated object's placement stands and the area was seen clear: the clearing loop's exit"))
+        return SkillLibraryV1(library_id=f"clear_work_area_v3_{'flat' if flat else 'tree'}_{len(objects)}",
+                              description=f"ClearWorkArea over {len(objects)} objects: {'the same leaves with no recovery structure' if flat else 'the generated tree with recovery at three levels'}"
+                                          + "; every pass ends with the arm standing clear and a look at the area and the cells.",
+                              predicates=predicates, skills=tuple(skills))
+    # The first registration's library, byte for byte: its predicates and its description as they were.
     predicates = (*base.predicates,
-                  PredicateSpecV1(name="all_objects_placed", parameters=(), description="every designated object's placement in its own cell stands: decided pass from the declared sensors and not since seen elsewhere"),
-                  PredicateSpecV1(name="work_area_clear", parameters=(), description="the declared cameras saw no object left in the work area"),
-                  PredicateSpecV1(name="area_cleared", parameters=(), description="every designated object's placement stands and the area was seen clear: the clearing loop's exit"))
-    version = "v3" if observe_each_pass else "v1"
-    return SkillLibraryV1(library_id=f"clear_work_area_{version}_{'flat' if flat else 'tree'}_{len(objects)}",
-                          description=f"ClearWorkArea over {len(objects)} objects: {'the same leaves with no recovery structure' if flat else 'the generated tree with recovery at three levels'}"
-                                      + ("; every pass ends with the arm standing clear and a look at the area and the cells." if observe_each_pass else "; one look at the area after the clearing loop."),
+                  PredicateSpecV1(name="all_objects_placed", parameters=(), description="every designated object's placement in its own cell was decided pass from the declared sensors"),
+                  PredicateSpecV1(name="work_area_clear", parameters=(), description="the declared cameras saw no object left in the work area"))
+    return SkillLibraryV1(library_id=f"clear_work_area_v1_{'flat' if flat else 'tree'}_{len(objects)}",
+                          description=f"ClearWorkArea over {len(objects)} objects: {'the same leaves with no recovery structure' if flat else 'the generated tree with recovery at three levels'}.",
                           predicates=predicates, skills=tuple(skills))
 
 
