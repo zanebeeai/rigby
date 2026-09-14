@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-retrieve-the-cube-from-the-station-and-deliver-i-8f5c70c1",
+  "title": "G18 before/after: dog-jaw: after the fix",
+  "prompt": "retrieve the cube from the station and deliver it to the tray, then return (no language planner)",
+  "tier": "any-robot",
+  "embodiment": "mobile_dog_arm_v2",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T19:05:25Z",
+  "source": {
+    "commit": "b7584f498b",
+    "branch": "feat/g18",
+    "dirty": true,
+    "how": "python any-robot/scripts/g18_before_after.py --out docs/results/g18-before-after --local any-robot/results/g18-before-after"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: after the fix (the jaw hung below the last arm link (second-version body)), mobile_dog_arm_v2, seed 1. One of a before/after pair on identical physics."
+  },
+  "notes": "See docs/results/g18-report.md. Rendered from recorded states at real-time playback with the simulation clock, the outcome, every phase attempt with its support set and holding limb, the hold events, the disturbance window, the base height and tilt, and the floor contacts by body on every frame; frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g18-before-after/dog-jaw/after/media/episode.mp4",
+      "bytes": 2698735,
+      "sha256": "c93364cb37c2f8d9b7f1cb98744456d7bf6f3c16c51cfbb8d5019e68a0b75d70",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g18-before-after/dog-jaw/after/media/preview.gif",
+      "bytes": 2050695,
+      "sha256": "fd9250a99c14e935b368c6e84f448615e59aaf9fd4aaf0164cf4d60441295264",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G18",
+    "before-after",
+    "dog-jaw",
+    "after",
+    "mobile_dog_arm_v2"
+  ]
+}

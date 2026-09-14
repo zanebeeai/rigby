@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-retrieve-the-cube-from-the-station-and-deliver-i-538429f1",
+  "title": "D18: mobile_wheeled_biped_v2: FAILURE (nominal): nominal; acquire: object out of reach: pre-grasp residual 11.8 cm",
+  "prompt": "retrieve the cube from the station and deliver it to the tray, then return (no language planner: the navigator, the body's own drive and its manipulator)",
+  "tier": "any-robot",
+  "embodiment": "mobile_wheeled_biped_v2",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T19:05:24Z",
+  "source": {
+    "commit": "b7584f498b",
+    "branch": "feat/g18",
+    "dirty": true,
+    "how": "python any-robot/scripts/g18_d18_media.py --results docs/results/g18-retrieve --out docs/results/g18-d18"
+  },
+  "outcome": {
+    "state": "failed",
+    "text": "FAILED: FAILURE (nominal): nominal; acquire: object out of reach: pre-grasp residual 11.8 cm. Reason: acquire: object out of reach: pre-grasp residual 11.8 cm. A failure clip, kept and labelled as such."
+  },
+  "notes": "See docs/results/g18-report.md. Rendered from recorded states at real-time playback with the simulation clock, the outcome, every phase attempt with its support set and holding limb, the hold events, the disturbance window, the base height and tilt, and the floor contacts by body on every frame; frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g18-d18/mobile_wheeled_biped_v2/failure/media/episode.mp4",
+      "bytes": 326984,
+      "sha256": "667cde4b5617fc6adacfad18348859270c6b5ea5b56e7e315b8943dd91b07b3a",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g18-d18/mobile_wheeled_biped_v2/failure/media/preview.gif",
+      "bytes": 1692398,
+      "sha256": "4c8b0d8b1744411d5dbd190c874e060214fb1a1aab07b24294160665c80e6bfc",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G18",
+    "D18",
+    "mobile_wheeled_biped_v2",
+    "nominal",
+    "failure"
+  ]
+}

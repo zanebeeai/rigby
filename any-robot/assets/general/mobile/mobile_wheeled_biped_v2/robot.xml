@@ -1,0 +1,98 @@
+<mujoco model="mobile_wheeled_biped_v2">
+  <compiler angle="radian" autolimits="true" inertiafromgeom="true" />
+  <option timestep="0.002" gravity="0 0 -9.81" integrator="implicitfast" />
+  <default>
+    <geom condim="3" friction="1.0 0.005 0.0001" solref="0.01 1" solimp="0.95 0.99 0.001" margin="0.0005" />
+    <joint damping="0.5" armature="0.01" limited="true" />
+    <position ctrllimited="true" forcelimited="true" />
+    <velocity ctrllimited="true" forcelimited="true" />
+  </default>
+  <worldbody>
+    <body name="torso" pos="0.00000 0.00000 0.55000">
+      <freejoint name="root" />
+      <geom name="torso_geom" type="box" size="0.10000 0.14000 0.14000" density="660.0" pos="0.00000 0.00000 0.00000" rgba="0.55 0.45 0.4 1" />
+      <site name="torso_imu" pos="0.00000 0.00000 0.00000" size="0.0040" rgba="1 0.3 0.3 0.5" />
+      <body name="left_hip" pos="0.00000 0.19000 -0.10000">
+        <joint name="left_hip_pitch" type="hinge" axis="0.00000 1.00000 0.00000" range="-2.00000 2.00000" />
+        <geom name="left_hip_geom" type="cylinder" size="0.03500 0.02000" density="900.0" euler="1.57080 0.00000 0.00000" rgba="0.4 0.35 0.32 1" />
+        <body name="left_thigh" pos="0.00000 0.03000 0.00000">
+          <geom name="left_thigh_geom" type="capsule" size="0.02800" fromto="0.00000 0.00000 -0.20000 0.00000 0.00000 0.00000" density="900.0" rgba="0.6 0.5 0.45 1" />
+          <body name="left_shank" pos="0.00000 0.00000 -0.20000">
+            <joint name="left_knee" type="hinge" axis="0.00000 1.00000 0.00000" range="0.00000 2.60000" />
+            <geom name="left_shank_geom" type="capsule" size="0.02400" fromto="0.00000 0.00000 -0.20000 0.00000 0.00000 0.00000" density="900.0" rgba="0.6 0.5 0.45 1" />
+            <geom name="left_knee_pad" type="sphere" size="0.03500" density="1100.0" pos="0.00000 0.00000 0.00000" rgba="0.2 0.2 0.22 1" friction="1.2 0.005 0.0001" />
+            <body name="left_wheel" pos="0.00000 0.04000 -0.20000">
+              <joint name="left_wheel_spin" type="hinge" axis="0.00000 1.00000 0.00000" limited="false" damping="0.05" />
+              <geom name="left_wheel_geom" type="cylinder" size="0.08000 0.02000" density="1100.0" euler="1.57080 0.00000 0.00000" rgba="0.12 0.12 0.14 1" friction="1.1 0.005 0.0001" />
+              <site name="left_wheel_touch" pos="0.00000 0.00000 0.00000" size="0.0850" rgba="1 0.3 0.3 0.5" />
+            </body>
+          </body>
+        </body>
+      </body>
+      <body name="right_hip" pos="0.00000 -0.19000 -0.10000">
+        <joint name="right_hip_pitch" type="hinge" axis="0.00000 1.00000 0.00000" range="-2.00000 2.00000" />
+        <geom name="right_hip_geom" type="cylinder" size="0.03500 0.02000" density="900.0" euler="1.57080 0.00000 0.00000" rgba="0.4 0.35 0.32 1" />
+        <body name="right_thigh" pos="0.00000 -0.03000 0.00000">
+          <geom name="right_thigh_geom" type="capsule" size="0.02800" fromto="0.00000 0.00000 -0.20000 0.00000 0.00000 0.00000" density="900.0" rgba="0.6 0.5 0.45 1" />
+          <body name="right_shank" pos="0.00000 0.00000 -0.20000">
+            <joint name="right_knee" type="hinge" axis="0.00000 1.00000 0.00000" range="0.00000 2.60000" />
+            <geom name="right_shank_geom" type="capsule" size="0.02400" fromto="0.00000 0.00000 -0.20000 0.00000 0.00000 0.00000" density="900.0" rgba="0.6 0.5 0.45 1" />
+            <geom name="right_knee_pad" type="sphere" size="0.03500" density="1100.0" pos="0.00000 0.00000 0.00000" rgba="0.2 0.2 0.22 1" friction="1.2 0.005 0.0001" />
+            <body name="right_wheel" pos="0.00000 -0.04000 -0.20000">
+              <joint name="right_wheel_spin" type="hinge" axis="0.00000 1.00000 0.00000" limited="false" damping="0.05" />
+              <geom name="right_wheel_geom" type="cylinder" size="0.08000 0.02000" density="1100.0" euler="1.57080 0.00000 0.00000" rgba="0.12 0.12 0.14 1" friction="1.1 0.005 0.0001" />
+              <site name="right_wheel_touch" pos="0.00000 0.00000 0.00000" size="0.0850" rgba="1 0.3 0.3 0.5" />
+            </body>
+          </body>
+        </body>
+      </body>
+      <geom name="tail_skid_geom" type="sphere" size="0.03000" density="1100.0" pos="-0.09000 0.00000 -0.16000" rgba="0.2 0.2 0.22 1" friction="1.2 0.005 0.0001" />
+      <site name="tail_skid_touch" pos="-0.09000 0.00000 -0.16000" size="0.0350" rgba="1 0.3 0.3 0.5" />
+      <body name="arm_base" pos="0.10000 0.00000 0.14000">
+        <joint name="arm_yaw" type="hinge" axis="0.00000 0.00000 1.00000" range="-2.60000 2.60000" />
+        <geom name="arm_base_geom" type="cylinder" size="0.04000 0.02000" density="900.0" euler="0.00000 0.00000 0.00000" rgba="0.6 0.55 0.5 1" />
+        <body name="arm_link_0" pos="0.00000 0.00000 0.04000">
+          <joint name="arm_joint_0" type="hinge" axis="0.00000 1.00000 0.00000" range="-2.60000 2.60000" />
+          <geom name="arm_link_0_geom" type="capsule" size="0.02800" fromto="0.00000 0.00000 -0.22000 0.00000 0.00000 0.00000" density="900.0" rgba="0.75 0.72 0.65 1" />
+          <body name="arm_link_1" pos="0.00000 0.00000 -0.22000">
+            <joint name="arm_joint_1" type="hinge" axis="0.00000 1.00000 0.00000" range="-2.60000 2.60000" />
+            <geom name="arm_link_1_geom" type="capsule" size="0.02380" fromto="0.00000 0.00000 -0.20000 0.00000 0.00000 0.00000" density="900.0" rgba="0.75 0.72 0.65 1" />
+            <body name="arm_palm" pos="0.00000 0.00000 -0.23000">
+              <geom name="arm_palm_geom" type="box" size="0.04500 0.02500 0.01500" density="900.0" pos="0.00000 0.00000 0.00000" rgba="0.35 0.35 0.4 1" />
+              <body name="arm_finger_left" pos="0.04300 0.00000 -0.04500">
+                <geom name="arm_finger_left_geom" type="box" size="0.00700 0.01500 0.03000" density="900.0" pos="0.00000 0.00000 0.00000" rgba="0.3 0.3 0.34 1" friction="1.4 0.005 0.0001" />
+                <joint name="arm_grip_left" type="slide" axis="-1.00000 0.00000 0.00000" range="0.00000 0.03500" />
+              </body>
+              <body name="arm_finger_right" pos="-0.04300 0.00000 -0.04500">
+                <geom name="arm_finger_right_geom" type="box" size="0.00700 0.01500 0.03000" density="900.0" pos="0.00000 0.00000 0.00000" rgba="0.3 0.3 0.34 1" friction="1.4 0.005 0.0001" />
+                <joint name="arm_grip_right" type="slide" axis="1.00000 0.00000 0.00000" range="0.00000 0.03500" />
+              </body>
+              <site name="arm_grasp_centre" pos="0.00000 0.00000 -0.04500" size="0.0060" rgba="1 0.3 0.3 0.5" />
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+  <actuator>
+    <position name="left_hip_pitch_servo" joint="left_hip_pitch" kp="180.0" ctrlrange="-2.00000 2.00000" forcerange="-45.00000 45.00000" />
+    <position name="left_knee_servo" joint="left_knee" kp="180.0" ctrlrange="0.00000 2.60000" forcerange="-45.00000 45.00000" />
+    <velocity name="left_wheel_spin_drive" joint="left_wheel_spin" kv="1.50" ctrlrange="-25.00000 25.00000" forcerange="-12.00000 12.00000" />
+    <position name="right_hip_pitch_servo" joint="right_hip_pitch" kp="180.0" ctrlrange="-2.00000 2.00000" forcerange="-45.00000 45.00000" />
+    <position name="right_knee_servo" joint="right_knee" kp="180.0" ctrlrange="0.00000 2.60000" forcerange="-45.00000 45.00000" />
+    <velocity name="right_wheel_spin_drive" joint="right_wheel_spin" kv="1.50" ctrlrange="-25.00000 25.00000" forcerange="-12.00000 12.00000" />
+    <position name="arm_yaw_servo" joint="arm_yaw" kp="60.0" ctrlrange="-2.60000 2.60000" forcerange="-20.00000 20.00000" />
+    <position name="arm_joint_0_servo" joint="arm_joint_0" kp="75.0" ctrlrange="-2.60000 2.60000" forcerange="-25.00000 25.00000" />
+    <position name="arm_joint_1_servo" joint="arm_joint_1" kp="54.0" ctrlrange="-2.60000 2.60000" forcerange="-18.00000 18.00000" />
+    <position name="arm_grip_left_servo" joint="arm_grip_left" kp="400.0" ctrlrange="0.00000 0.03500" forcerange="-40.00000 40.00000" />
+    <position name="arm_grip_right_servo" joint="arm_grip_right" kp="400.0" ctrlrange="0.00000 0.03500" forcerange="-40.00000 40.00000" />
+  </actuator>
+  <sensor>
+    <gyro name="torso_gyro" site="torso_imu" />
+    <accelerometer name="torso_accel" site="torso_imu" />
+    <framequat name="torso_orientation" objtype="site" objname="torso_imu" />
+    <touch name="left_wheel_contact" site="left_wheel_touch" />
+    <touch name="right_wheel_contact" site="right_wheel_touch" />
+    <touch name="tail_skid_contact" site="tail_skid_touch" />
+  </sensor>
+</mujoco>

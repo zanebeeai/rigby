@@ -76,9 +76,20 @@ class Locomotor:
         self.dof_of = {j["name"]: int(model.jnt_dofadr[mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, j["name"])]) for j in self.declaration["joints"]}
         self.stance = dict(self.declaration["stances"][self.working_stance()]["joints"])
         self.control_hz = 500.0
+        self.excluded_limbs: set[str] = set()
+        """Limbs the drive must leave alone (a limb holding an object is not a support member while it holds): their joints keep the stance targets, for the caller to overwrite."""
+        self.posture: dict[str, float] | None = None
+        """When set, the drive holds these joint targets and does not drive: a body lying down to reach, or rising again."""
 
     def working_stance(self) -> str:
         return self.declaration["working_stance"]
+
+    def hold_posture(self) -> np.ndarray:
+        control = np.zeros(self.model.nu)
+        for joint, value in (self.posture or {}).items():
+            if joint in self.actuator_of:
+                control[self.actuator_of[joint]] = value
+        return control
 
     def smooth(self, v: float, omega: float, dt: float, tau_s: float = 0.35) -> tuple[float, float]:
         """The commanded speed and turn rate eased towards their targets with a first-order lag, so a gait starts and stops without a lurch."""
@@ -163,6 +174,8 @@ class DogTrot(Locomotor):
         self.phase = 0.0
         self.last_time = None
         self.moving = False
+        self.lift_m = self.LIFT_M
+        """The swing foot's lift; a caller raises it to step onto a low platform (the course's station is 6 cm)."""
 
     def reset(self, data: mujoco.MjData) -> None:
         self.phase = 0.0
@@ -174,6 +187,9 @@ class DogTrot(Locomotor):
         now = float(data.time)
         dt = 0.0 if self.last_time is None else now - self.last_time
         self.last_time = now
+        if self.posture is not None:
+            self._v, self._omega = 0.0, 0.0
+            return self.hold_posture()
         v = float(np.clip(v, -self.max_speed_mps, self.max_speed_mps))
         omega = float(np.clip(omega, -self.max_turn_radps, self.max_turn_radps))
         v, omega = self.smooth(v, omega, dt)
@@ -199,7 +215,7 @@ class DogTrot(Locomotor):
             if self.moving and p < swing:
                 s = p / swing
                 x = -stride / 2.0 + stride * s
-                z = self.FOOT_Z_M + self.LIFT_M * math.sin(math.pi * s)
+                z = self.FOOT_Z_M + self.lift_m * math.sin(math.pi * s)
             elif self.moving:
                 s = (p - swing) / self.DUTY
                 x = stride / 2.0 - stride * s
@@ -305,6 +321,9 @@ class WheeledBalance(Locomotor):
         now = float(data.time)
         dt = 0.0 if self.last_time is None else now - self.last_time
         self.last_time = now
+        if self.posture is not None:
+            self._v, self._omega = 0.0, 0.0
+            return self.hold_posture()
         v = float(np.clip(v, -self.max_speed_mps, self.max_speed_mps))
         omega = float(np.clip(omega, -self.max_turn_radps, self.max_turn_radps))
         previous = float(self._v) if hasattr(self, "_v") else 0.0
@@ -363,6 +382,8 @@ class OctopusCrawl(Locomotor):
     GROUP = {0: 0.0, 2: 0.0, 4: 0.0, 1: 0.5, 3: 0.5, 5: 0.5}
     IN_PLACE_SENSE = -1.0
     """The sign of the in-place sweep difference; +1.0 reproduces the first crawl, whose in-place turn ran the wrong way (the navigator then drove the heading back to the seam instead of round); kept for before/after pairs."""
+    WAVE_WHEN_HOLDING = True
+    """False keeps the tripod with a tentacle held out (one phase then stands on two tentacles); kept for before/after pairs."""
 
     def __init__(self, body: MobileBody, model: mujoco.MjModel) -> None:
         super().__init__(body, model)
@@ -380,6 +401,9 @@ class OctopusCrawl(Locomotor):
         now = float(data.time)
         dt = 0.0 if self.last_time is None else now - self.last_time
         self.last_time = now
+        if self.posture is not None:
+            self._v, self._omega = 0.0, 0.0
+            return self.hold_posture()
         v = float(np.clip(v, -self.max_speed_mps, self.max_speed_mps))
         omega = float(np.clip(omega, -self.max_turn_radps, self.max_turn_radps))
         v, omega = self.smooth(v, omega, dt, tau_s=0.5)
@@ -397,21 +421,31 @@ class OctopusCrawl(Locomotor):
             return control
         gain = v / self.max_speed_mps
         turn = omega / self.max_turn_radps
+        # six tentacles crawl a tripod (two groups of three, half the period each); with one held out, a tripod's other group
+        # would stand on two, so the five that remain crawl a wave: one tentacle lifted at a time, the other four pressed
+        active = [index for index in self.ANGLES if f"tentacle_{index}" not in self.excluded_limbs]
+        if len(active) == len(self.ANGLES) or not self.WAVE_WHEN_HOLDING:
+            offsets, lifted_fraction = self.GROUP, 0.5
+        else:
+            offsets = {index: k / len(active) for k, index in enumerate(active)}
+            lifted_fraction = 1.0 / len(active)
         for index, angle in self.ANGLES.items():
+            if index not in offsets:
+                continue
             side = 1.0 if math.sin(angle) > 0 else -1.0  # +1 left, -1 right
             # moving: the outer side sweeps more, as a differential drive; in place: the two sides sweep in opposite senses (the sign is the opposite of the moving case, where a larger sweep on the right turns the body left)
             amplitude = self.SWEEP_RAD * (gain * (1.0 - 0.8 * turn * side) + self.IN_PLACE_SENSE * 0.8 * turn * side * (1.0 if abs(gain) < 0.05 else 0.0))
-            p = (self.phase + self.GROUP[index]) % 1.0
+            p = (self.phase + offsets[index]) % 1.0
             prefix = f"t{index}_"
-            if p < 0.5:
+            if p < lifted_fraction:
                 # lifted: curl up, swing the tip forward (yaw sense: -sign(sin angle) moves the tip towards +x)
-                s = p / 0.5
+                s = p / lifted_fraction
                 yaw = -side * amplitude * (-1.0 + 2.0 * s)
                 pitch0 = self.stance[f"{prefix}pitch_0"] - self.LIFT_RAD * math.sin(math.pi * s)
                 curl = -0.35 * math.sin(math.pi * s)
             else:
                 # pressed: sweep the tip back, pushing the mantle forward
-                s = (p - 0.5) / 0.5
+                s = (p - lifted_fraction) / (1.0 - lifted_fraction)
                 yaw = -side * amplitude * (1.0 - 2.0 * s)
                 pitch0 = self.stance[f"{prefix}pitch_0"] + self.PRESS_RAD
                 curl = 0.0

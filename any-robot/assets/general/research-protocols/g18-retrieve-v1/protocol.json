@@ -1,0 +1,4934 @@
+{
+  "bodies": {
+    "mobile_dog_arm_v2": {
+      "base_kind": "legged",
+      "cap_s": 360.0,
+      "controller": "DogTrot",
+      "grasp_radius_m": 0.52,
+      "grasp_site": "arm_grasp_centre",
+      "manipulation_stance": "parked",
+      "manipulator": "arm",
+      "model_sha256": "5ed017d7098076ec73103324cbdd3ae42d4840332f4ba8cb02c01a703659577c",
+      "provenance": "analytic, hand-authored: trot gait over an analytic leg IK, position servos",
+      "push_newtons": [
+        40.0,
+        70.0
+      ],
+      "routes": {
+        "return": [
+          [
+            2.6,
+            1.2
+          ],
+          [
+            0.0,
+            0.0
+          ]
+        ],
+        "station": [
+          [
+            2.0,
+            0.0
+          ],
+          [
+            2.7,
+            0.0
+          ]
+        ],
+        "tray": [
+          [
+            3.4,
+            1.2
+          ],
+          [
+            3.4,
+            1.7
+          ]
+        ]
+      },
+      "version_note": "A quadruped with three-hinge legs (hip roll, hip pitch, knee) on spherical feet, carrying a four-hinge arm and a parallel jaw on the front of its torso. Version 2: the jaw hangs below the last arm link's end; in the first version the palm sat 3 cm below that link's origin, so the link's capsule ran between the fingers and a jaw could take a 30 mm object by its top few millimetres only (found in G18).",
+      "working_stance": "standing"
+    },
+    "mobile_octopus_v2": {
+      "base_kind": "crawling",
+      "cap_s": 800.0,
+      "controller": "OctopusCrawl",
+      "grasp_radius_m": 0.58,
+      "grasp_site": "t0_grasp_centre",
+      "manipulation_stance": null,
+      "manipulator": "tentacle_0",
+      "model_sha256": "36d2fd5b3feb006233b6ca4b36d4bc9de37cc081c5231a17531eef36859bb1b8",
+      "provenance": "analytic, hand-authored: tripod crawl of six segmented tentacles, position servos on every joint",
+      "push_newtons": [
+        100.0,
+        200.0
+      ],
+      "routes": {
+        "return": [
+          [
+            1.2,
+            2.2
+          ],
+          [
+            0.0,
+            0.0
+          ]
+        ],
+        "station": [
+          [
+            2.0,
+            0.0
+          ],
+          [
+            2.85,
+            0.0
+          ]
+        ],
+        "tray": [
+          [
+            2.3,
+            2.2
+          ],
+          [
+            2.85,
+            2.2
+          ]
+        ]
+      },
+      "version_note": "A rigid segmented octopus-like body: a mantle resting on the ground and six tentacles of four capsule segments each, every segment on a pitch and a yaw hinge; the two front tentacles end in a pincer. Version 2: the pincer hinges open to -0.9 rad, and the finger pads carry torsional friction; in the first version the hinges' range was -0.05 to 0.9 rad, the positive sense closing, so the open fingers parted 2.8 cm at the roots and 3.3 cm at the tips around a 30 mm object, and a cube pinched at two points could pivot out (found in G18).",
+      "working_stance": "resting"
+    },
+    "mobile_wheeled_biped_v2": {
+      "base_kind": "wheeled",
+      "cap_s": 200.0,
+      "controller": "WheeledBalance",
+      "grasp_radius_m": 0.52,
+      "grasp_site": "arm_grasp_centre",
+      "manipulation_stance": null,
+      "manipulator": "arm",
+      "model_sha256": "b569acbc9421388cfae52a61883698df06b98247a849471b6f8a9f7869c2033b",
+      "provenance": "analytic, hand-authored: wheeled inverted-pendulum balance (pitch regulator about a speed-commanding lean) through velocity servos on the wheels, legs held",
+      "push_newtons": [
+        30.0,
+        55.0
+      ],
+      "routes": {
+        "return": [
+          [
+            2.6,
+            1.2
+          ],
+          [
+            0.0,
+            0.0
+          ]
+        ],
+        "station": [
+          [
+            2.0,
+            0.0
+          ],
+          [
+            2.7,
+            0.0
+          ]
+        ],
+        "tray": [
+          [
+            3.4,
+            1.2
+          ],
+          [
+            3.4,
+            1.7
+          ]
+        ]
+      },
+      "version_note": "A two-legged wheeled body: hip and knee hinges on each leg, a driven wheel at each foot, knee pads to park on, and a three-hinge arm with a parallel jaw on the torso. Version 2: the jaw hangs below the last arm link's end; in the first version the palm sat 3 cm below that link's origin, so the link's capsule ran between the fingers and a jaw could take a 30 mm object by its top few millimetres only (found in G18).",
+      "working_stance": "standing"
+    }
+  },
+  "counts": {
+    "mobile_dog_arm_v2": {
+      "disturbed": 30,
+      "nominal": 100
+    },
+    "mobile_octopus_v2": {
+      "disturbed": 30,
+      "nominal": 100
+    },
+    "mobile_wheeled_biped_v2": {
+      "disturbed": 30,
+      "nominal": 100
+    }
+  },
+  "course_id": "mobile-course-v1",
+  "course_sha256": "244af80bd16b58096836cb147bc99181ae397b32735d1853d7c97f6eb4730bdc",
+  "goal": {
+    "for": "G18",
+    "goal_id": "retrieve",
+    "route": "start -> station -> tray -> ramp -> start",
+    "success": "the cube at rest inside the tray's rim, the body back on the start pad and stable, nothing knocked over",
+    "text": "approach the station, stabilise, acquire the cube, carry it to the tray, place it inside the rim, return to the start pad"
+  },
+  "jitter": {
+    "xy_m": 0.1,
+    "yaw_deg": 10.0
+  },
+  "phases": [
+    "approach",
+    "stabilize",
+    "acquire",
+    "carry",
+    "place",
+    "return"
+  ],
+  "resource_rules": [
+    "each phase names the limbs used for support and the limb used to hold; a limb holding the object is excluded from the drive while it holds (the octopus crawls on five tentacles) and its links must bear no ground contact while holding: a violation is recorded as a fault",
+    "the root is placed once at the start and never written again; the object's state is never written; the object's pose is read from the simulator's state in place of perception (the mobile bodies carry no camera)",
+    "a disturbance is a push on the base, a force on the held object or a limb fought by an external joint torque, recorded as user input and replayed exactly; a cut wheel drive is the controller's own command, in the record"
+  ],
+  "retry_budget": 2,
+  "schema": "g18.retrieve-protocol.v1",
+  "settle_s": 1.5,
+  "success": {
+    "grasp_tolerance_m": 0.012,
+    "rule": "the cube at rest inside the tray's rim (within 19 cm of its centre, between the floor and 6 cm above it, moving under 2 cm/s), the base within 45 cm of the start pad's centre, stable for the window (speed under 0.05 m/s, tilt under 15 degrees), no fall (tilt over 55 degrees)"
+  },
+  "targets": {
+    "disturbed_min": 24,
+    "disturbed_of": 30,
+    "nominal_min": 80,
+    "nominal_of": 100
+  },
+  "trials": {
+    "mobile_dog_arm_v2": [
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 1,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-001"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 2,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-002"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 3,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-003"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 4,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-004"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 5,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-005"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 6,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-006"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 7,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-007"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 8,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-008"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 9,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-009"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 10,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-010"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 11,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-011"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 12,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-012"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 13,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-013"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 14,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-014"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 15,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-015"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 16,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-016"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 17,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-017"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 18,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-018"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 19,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-019"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 20,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-020"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 21,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-021"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 22,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-022"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 23,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-023"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 24,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-024"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 25,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-025"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 26,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-026"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 27,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-027"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 28,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-028"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 29,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-029"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 30,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-030"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 31,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-031"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 32,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-032"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 33,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-033"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 34,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-034"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 35,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-035"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 36,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-036"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 37,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-037"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 38,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-038"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 39,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-039"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 40,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-040"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 41,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-041"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 42,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-042"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 43,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-043"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 44,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-044"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 45,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-045"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 46,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-046"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 47,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-047"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 48,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-048"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 49,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-049"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 50,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-050"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 51,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-051"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 52,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-052"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 53,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-053"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 54,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-054"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 55,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-055"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 56,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-056"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 57,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-057"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 58,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-058"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 59,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-059"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 60,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-060"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 61,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-061"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 62,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-062"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 63,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-063"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 64,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-064"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 65,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-065"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 66,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-066"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 67,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-067"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 68,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-068"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 69,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-069"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 70,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-070"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 71,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-071"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 72,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-072"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 73,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-073"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 74,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-074"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 75,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-075"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 76,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-076"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 77,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-077"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 78,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-078"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 79,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-079"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 80,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-080"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 81,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-081"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 82,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-082"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 83,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-083"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 84,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-084"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 85,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-085"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 86,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-086"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 87,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-087"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 88,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-088"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 89,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-089"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 90,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-090"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 91,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-091"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 92,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-092"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 93,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-093"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 94,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-094"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 95,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-095"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 96,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-096"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 97,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-097"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 98,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-098"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 99,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-099"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 100,
+        "stage": "nominal",
+        "trial_id": "mobile_dog_arm_v2-nominal-100"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": {
+          "detail": "40 N left push on the base for 0.3 s, 4 s into the approach",
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 40.0,
+          "offset_s": 4.0,
+          "phase": "approach",
+          "stage": "navigation",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 201,
+        "stage": "navigation",
+        "trial_id": "mobile_dog_arm_v2-navigation-01"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": {
+          "detail": "70 N left push on the base for 0.3 s, 4 s into the approach",
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 70.0,
+          "offset_s": 4.0,
+          "phase": "approach",
+          "stage": "navigation",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 202,
+        "stage": "navigation",
+        "trial_id": "mobile_dog_arm_v2-navigation-02"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": {
+          "detail": "40 N right push on the base for 0.3 s, 4 s into the approach",
+          "direction": [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 40.0,
+          "offset_s": 4.0,
+          "phase": "approach",
+          "stage": "navigation",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 203,
+        "stage": "navigation",
+        "trial_id": "mobile_dog_arm_v2-navigation-03"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": {
+          "detail": "70 N right push on the base for 0.3 s, 4 s into the approach",
+          "direction": [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 70.0,
+          "offset_s": 4.0,
+          "phase": "approach",
+          "stage": "navigation",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 204,
+        "stage": "navigation",
+        "trial_id": "mobile_dog_arm_v2-navigation-04"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": {
+          "detail": "40 N fore push on the base for 0.3 s, 4 s into the approach",
+          "direction": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 40.0,
+          "offset_s": 4.0,
+          "phase": "approach",
+          "stage": "navigation",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 205,
+        "stage": "navigation",
+        "trial_id": "mobile_dog_arm_v2-navigation-05"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": {
+          "detail": "70 N fore push on the base for 0.3 s, 4 s into the approach",
+          "direction": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 70.0,
+          "offset_s": 4.0,
+          "phase": "approach",
+          "stage": "navigation",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 206,
+        "stage": "navigation",
+        "trial_id": "mobile_dog_arm_v2-navigation-06"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": {
+          "detail": "40 N aft push on the base for 0.3 s, 4 s into the approach",
+          "direction": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 40.0,
+          "offset_s": 4.0,
+          "phase": "approach",
+          "stage": "navigation",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 207,
+        "stage": "navigation",
+        "trial_id": "mobile_dog_arm_v2-navigation-07"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": {
+          "detail": "70 N aft push on the base for 0.3 s, 4 s into the approach",
+          "direction": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 70.0,
+          "offset_s": 4.0,
+          "phase": "approach",
+          "stage": "navigation",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 208,
+        "stage": "navigation",
+        "trial_id": "mobile_dog_arm_v2-navigation-08"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": {
+          "detail": "leg_fl's servos fought by a 16 N m external torque at 3 Hz for 1.0 s, 4 s into approach",
+          "duration_s": 1.0,
+          "kind": "support",
+          "magnitude": 16.0,
+          "mechanics": "legged: a leg loses its servo authority",
+          "offset_s": 4.0,
+          "phase": "approach",
+          "stage": "navigation",
+          "target": "leg_fl"
+        },
+        "kind": "disturbed",
+        "seed": 209,
+        "stage": "navigation",
+        "trial_id": "mobile_dog_arm_v2-navigation-09"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": {
+          "detail": "leg_fl's servos fought by a 16 N m external torque at 3 Hz for 1.0 s, 8 s into approach",
+          "duration_s": 1.0,
+          "kind": "support",
+          "magnitude": 16.0,
+          "mechanics": "legged: a leg loses its servo authority",
+          "offset_s": 8.0,
+          "phase": "approach",
+          "stage": "navigation",
+          "target": "leg_fl"
+        },
+        "kind": "disturbed",
+        "seed": 210,
+        "stage": "navigation",
+        "trial_id": "mobile_dog_arm_v2-navigation-10"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": {
+          "detail": "40 N left push on the base for 0.3 s, 6 s into the carry",
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 40.0,
+          "offset_s": 6.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 211,
+        "stage": "carrying",
+        "trial_id": "mobile_dog_arm_v2-carrying-11"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": {
+          "detail": "70 N left push on the base for 0.3 s, 6 s into the carry",
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 70.0,
+          "offset_s": 6.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 212,
+        "stage": "carrying",
+        "trial_id": "mobile_dog_arm_v2-carrying-12"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": {
+          "detail": "40 N right push on the base for 0.3 s, 6 s into the carry",
+          "direction": [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 40.0,
+          "offset_s": 6.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 213,
+        "stage": "carrying",
+        "trial_id": "mobile_dog_arm_v2-carrying-13"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": {
+          "detail": "70 N right push on the base for 0.3 s, 6 s into the carry",
+          "direction": [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 70.0,
+          "offset_s": 6.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 214,
+        "stage": "carrying",
+        "trial_id": "mobile_dog_arm_v2-carrying-14"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": {
+          "detail": "40 N fore push on the base for 0.3 s, 6 s into the carry",
+          "direction": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 40.0,
+          "offset_s": 6.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 215,
+        "stage": "carrying",
+        "trial_id": "mobile_dog_arm_v2-carrying-15"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": {
+          "detail": "70 N fore push on the base for 0.3 s, 6 s into the carry",
+          "direction": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 70.0,
+          "offset_s": 6.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 216,
+        "stage": "carrying",
+        "trial_id": "mobile_dog_arm_v2-carrying-16"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": {
+          "detail": "40 N aft push on the base for 0.3 s, 6 s into the carry",
+          "direction": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 40.0,
+          "offset_s": 6.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 217,
+        "stage": "carrying",
+        "trial_id": "mobile_dog_arm_v2-carrying-17"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": {
+          "detail": "70 N aft push on the base for 0.3 s, 6 s into the carry",
+          "direction": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 70.0,
+          "offset_s": 6.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 218,
+        "stage": "carrying",
+        "trial_id": "mobile_dog_arm_v2-carrying-18"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": {
+          "detail": "2 N sideways force on the held object for 0.5 s, 6 s into the carry",
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "duration_s": 0.5,
+          "kind": "object",
+          "magnitude": 2.0,
+          "offset_s": 6.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 219,
+        "stage": "carrying",
+        "trial_id": "mobile_dog_arm_v2-carrying-19"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": {
+          "detail": "2 N downward force on the held object for 0.5 s, 6 s into the carry",
+          "direction": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "duration_s": 0.5,
+          "kind": "object",
+          "magnitude": 2.0,
+          "offset_s": 6.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 220,
+        "stage": "carrying",
+        "trial_id": "mobile_dog_arm_v2-carrying-20"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": {
+          "detail": "4 N sideways force on the held object for 0.5 s, 6 s into the carry",
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "duration_s": 0.5,
+          "kind": "object",
+          "magnitude": 4.0,
+          "offset_s": 6.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 221,
+        "stage": "carrying",
+        "trial_id": "mobile_dog_arm_v2-carrying-21"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": {
+          "detail": "4 N downward force on the held object for 0.5 s, 6 s into the carry",
+          "direction": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "duration_s": 0.5,
+          "kind": "object",
+          "magnitude": 4.0,
+          "offset_s": 6.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 222,
+        "stage": "carrying",
+        "trial_id": "mobile_dog_arm_v2-carrying-22"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": {
+          "detail": "leg_fl's servos fought by a 16 N m external torque at 3 Hz for 1.0 s, 6 s into carry",
+          "duration_s": 1.0,
+          "kind": "support",
+          "magnitude": 16.0,
+          "mechanics": "legged: a leg loses its servo authority",
+          "offset_s": 6.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": "leg_fl"
+        },
+        "kind": "disturbed",
+        "seed": 223,
+        "stage": "carrying",
+        "trial_id": "mobile_dog_arm_v2-carrying-23"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": {
+          "detail": "leg_fl's servos fought by a 16 N m external torque at 3 Hz for 1.0 s, 12 s into carry",
+          "duration_s": 1.0,
+          "kind": "support",
+          "magnitude": 16.0,
+          "mechanics": "legged: a leg loses its servo authority",
+          "offset_s": 12.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": "leg_fl"
+        },
+        "kind": "disturbed",
+        "seed": 224,
+        "stage": "carrying",
+        "trial_id": "mobile_dog_arm_v2-carrying-24"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": {
+          "detail": "40 N left push on the base for 0.3 s, 4 s into the placement",
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 40.0,
+          "offset_s": 4.0,
+          "phase": "place",
+          "stage": "placement",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 225,
+        "stage": "placement",
+        "trial_id": "mobile_dog_arm_v2-placement-25"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": {
+          "detail": "70 N left push on the base for 0.3 s, 4 s into the placement",
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 70.0,
+          "offset_s": 4.0,
+          "phase": "place",
+          "stage": "placement",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 226,
+        "stage": "placement",
+        "trial_id": "mobile_dog_arm_v2-placement-26"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": {
+          "detail": "40 N aft push on the base for 0.3 s, 4 s into the placement",
+          "direction": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 40.0,
+          "offset_s": 4.0,
+          "phase": "place",
+          "stage": "placement",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 227,
+        "stage": "placement",
+        "trial_id": "mobile_dog_arm_v2-placement-27"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": {
+          "detail": "70 N aft push on the base for 0.3 s, 4 s into the placement",
+          "direction": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 70.0,
+          "offset_s": 4.0,
+          "phase": "place",
+          "stage": "placement",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 228,
+        "stage": "placement",
+        "trial_id": "mobile_dog_arm_v2-placement-28"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": {
+          "detail": "2 N sideways force on the object for 0.5 s, 8 s into the placement",
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "duration_s": 0.5,
+          "kind": "object",
+          "magnitude": 2.0,
+          "offset_s": 8.0,
+          "phase": "place",
+          "stage": "placement",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 229,
+        "stage": "placement",
+        "trial_id": "mobile_dog_arm_v2-placement-29"
+      },
+      {
+        "body": "mobile_dog_arm_v2",
+        "cap_s": 360.0,
+        "disturbance": {
+          "detail": "4 N sideways force on the object for 0.5 s, 8 s into the placement",
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "duration_s": 0.5,
+          "kind": "object",
+          "magnitude": 4.0,
+          "offset_s": 8.0,
+          "phase": "place",
+          "stage": "placement",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 230,
+        "stage": "placement",
+        "trial_id": "mobile_dog_arm_v2-placement-30"
+      }
+    ],
+    "mobile_octopus_v2": [
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 1,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-001"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 2,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-002"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 3,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-003"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 4,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-004"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 5,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-005"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 6,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-006"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 7,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-007"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 8,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-008"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 9,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-009"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 10,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-010"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 11,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-011"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 12,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-012"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 13,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-013"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 14,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-014"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 15,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-015"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 16,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-016"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 17,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-017"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 18,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-018"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 19,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-019"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 20,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-020"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 21,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-021"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 22,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-022"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 23,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-023"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 24,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-024"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 25,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-025"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 26,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-026"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 27,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-027"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 28,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-028"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 29,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-029"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 30,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-030"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 31,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-031"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 32,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-032"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 33,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-033"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 34,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-034"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 35,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-035"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 36,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-036"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 37,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-037"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 38,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-038"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 39,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-039"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 40,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-040"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 41,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-041"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 42,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-042"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 43,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-043"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 44,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-044"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 45,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-045"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 46,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-046"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 47,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-047"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 48,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-048"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 49,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-049"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 50,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-050"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 51,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-051"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 52,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-052"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 53,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-053"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 54,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-054"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 55,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-055"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 56,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-056"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 57,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-057"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 58,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-058"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 59,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-059"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 60,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-060"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 61,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-061"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 62,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-062"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 63,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-063"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 64,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-064"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 65,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-065"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 66,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-066"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 67,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-067"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 68,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-068"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 69,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-069"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 70,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-070"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 71,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-071"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 72,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-072"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 73,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-073"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 74,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-074"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 75,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-075"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 76,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-076"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 77,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-077"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 78,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-078"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 79,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-079"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 80,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-080"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 81,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-081"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 82,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-082"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 83,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-083"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 84,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-084"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 85,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-085"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 86,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-086"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 87,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-087"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 88,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-088"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 89,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-089"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 90,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-090"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 91,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-091"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 92,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-092"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 93,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-093"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 94,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-094"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 95,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-095"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 96,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-096"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 97,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-097"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 98,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-098"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 99,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-099"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 100,
+        "stage": "nominal",
+        "trial_id": "mobile_octopus_v2-nominal-100"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": {
+          "detail": "100 N left push on the base for 0.3 s, 8 s into the approach",
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 100.0,
+          "offset_s": 8.0,
+          "phase": "approach",
+          "stage": "navigation",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 201,
+        "stage": "navigation",
+        "trial_id": "mobile_octopus_v2-navigation-01"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": {
+          "detail": "200 N left push on the base for 0.3 s, 8 s into the approach",
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 200.0,
+          "offset_s": 8.0,
+          "phase": "approach",
+          "stage": "navigation",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 202,
+        "stage": "navigation",
+        "trial_id": "mobile_octopus_v2-navigation-02"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": {
+          "detail": "100 N right push on the base for 0.3 s, 8 s into the approach",
+          "direction": [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 100.0,
+          "offset_s": 8.0,
+          "phase": "approach",
+          "stage": "navigation",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 203,
+        "stage": "navigation",
+        "trial_id": "mobile_octopus_v2-navigation-03"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": {
+          "detail": "200 N right push on the base for 0.3 s, 8 s into the approach",
+          "direction": [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 200.0,
+          "offset_s": 8.0,
+          "phase": "approach",
+          "stage": "navigation",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 204,
+        "stage": "navigation",
+        "trial_id": "mobile_octopus_v2-navigation-04"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": {
+          "detail": "100 N fore push on the base for 0.3 s, 8 s into the approach",
+          "direction": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 100.0,
+          "offset_s": 8.0,
+          "phase": "approach",
+          "stage": "navigation",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 205,
+        "stage": "navigation",
+        "trial_id": "mobile_octopus_v2-navigation-05"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": {
+          "detail": "200 N fore push on the base for 0.3 s, 8 s into the approach",
+          "direction": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 200.0,
+          "offset_s": 8.0,
+          "phase": "approach",
+          "stage": "navigation",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 206,
+        "stage": "navigation",
+        "trial_id": "mobile_octopus_v2-navigation-06"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": {
+          "detail": "100 N aft push on the base for 0.3 s, 8 s into the approach",
+          "direction": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 100.0,
+          "offset_s": 8.0,
+          "phase": "approach",
+          "stage": "navigation",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 207,
+        "stage": "navigation",
+        "trial_id": "mobile_octopus_v2-navigation-07"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": {
+          "detail": "200 N aft push on the base for 0.3 s, 8 s into the approach",
+          "direction": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 200.0,
+          "offset_s": 8.0,
+          "phase": "approach",
+          "stage": "navigation",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 208,
+        "stage": "navigation",
+        "trial_id": "mobile_octopus_v2-navigation-08"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": {
+          "detail": "tentacle_3's servos fought by an 8 N m external torque at 3 Hz for 1.5 s, 8 s into approach",
+          "duration_s": 1.5,
+          "kind": "support",
+          "magnitude": 8.0,
+          "mechanics": "crawling: a support tentacle loses its servo authority",
+          "offset_s": 8.0,
+          "phase": "approach",
+          "stage": "navigation",
+          "target": "tentacle_3"
+        },
+        "kind": "disturbed",
+        "seed": 209,
+        "stage": "navigation",
+        "trial_id": "mobile_octopus_v2-navigation-09"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": {
+          "detail": "tentacle_3's servos fought by an 8 N m external torque at 3 Hz for 1.5 s, 12 s into approach",
+          "duration_s": 1.5,
+          "kind": "support",
+          "magnitude": 8.0,
+          "mechanics": "crawling: a support tentacle loses its servo authority",
+          "offset_s": 12.0,
+          "phase": "approach",
+          "stage": "navigation",
+          "target": "tentacle_3"
+        },
+        "kind": "disturbed",
+        "seed": 210,
+        "stage": "navigation",
+        "trial_id": "mobile_octopus_v2-navigation-10"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": {
+          "detail": "100 N left push on the base for 0.3 s, 12 s into the carry",
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 100.0,
+          "offset_s": 12.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 211,
+        "stage": "carrying",
+        "trial_id": "mobile_octopus_v2-carrying-11"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": {
+          "detail": "200 N left push on the base for 0.3 s, 12 s into the carry",
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 200.0,
+          "offset_s": 12.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 212,
+        "stage": "carrying",
+        "trial_id": "mobile_octopus_v2-carrying-12"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": {
+          "detail": "100 N right push on the base for 0.3 s, 12 s into the carry",
+          "direction": [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 100.0,
+          "offset_s": 12.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 213,
+        "stage": "carrying",
+        "trial_id": "mobile_octopus_v2-carrying-13"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": {
+          "detail": "200 N right push on the base for 0.3 s, 12 s into the carry",
+          "direction": [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 200.0,
+          "offset_s": 12.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 214,
+        "stage": "carrying",
+        "trial_id": "mobile_octopus_v2-carrying-14"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": {
+          "detail": "100 N fore push on the base for 0.3 s, 12 s into the carry",
+          "direction": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 100.0,
+          "offset_s": 12.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 215,
+        "stage": "carrying",
+        "trial_id": "mobile_octopus_v2-carrying-15"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": {
+          "detail": "200 N fore push on the base for 0.3 s, 12 s into the carry",
+          "direction": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 200.0,
+          "offset_s": 12.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 216,
+        "stage": "carrying",
+        "trial_id": "mobile_octopus_v2-carrying-16"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": {
+          "detail": "100 N aft push on the base for 0.3 s, 12 s into the carry",
+          "direction": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 100.0,
+          "offset_s": 12.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 217,
+        "stage": "carrying",
+        "trial_id": "mobile_octopus_v2-carrying-17"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": {
+          "detail": "200 N aft push on the base for 0.3 s, 12 s into the carry",
+          "direction": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 200.0,
+          "offset_s": 12.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 218,
+        "stage": "carrying",
+        "trial_id": "mobile_octopus_v2-carrying-18"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": {
+          "detail": "2 N sideways force on the held object for 0.5 s, 12 s into the carry",
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "duration_s": 0.5,
+          "kind": "object",
+          "magnitude": 2.0,
+          "offset_s": 12.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 219,
+        "stage": "carrying",
+        "trial_id": "mobile_octopus_v2-carrying-19"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": {
+          "detail": "2 N downward force on the held object for 0.5 s, 12 s into the carry",
+          "direction": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "duration_s": 0.5,
+          "kind": "object",
+          "magnitude": 2.0,
+          "offset_s": 12.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 220,
+        "stage": "carrying",
+        "trial_id": "mobile_octopus_v2-carrying-20"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": {
+          "detail": "4 N sideways force on the held object for 0.5 s, 12 s into the carry",
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "duration_s": 0.5,
+          "kind": "object",
+          "magnitude": 4.0,
+          "offset_s": 12.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 221,
+        "stage": "carrying",
+        "trial_id": "mobile_octopus_v2-carrying-21"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": {
+          "detail": "4 N downward force on the held object for 0.5 s, 12 s into the carry",
+          "direction": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "duration_s": 0.5,
+          "kind": "object",
+          "magnitude": 4.0,
+          "offset_s": 12.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 222,
+        "stage": "carrying",
+        "trial_id": "mobile_octopus_v2-carrying-22"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": {
+          "detail": "tentacle_3's servos fought by an 8 N m external torque at 3 Hz for 1.5 s, 12 s into carry",
+          "duration_s": 1.5,
+          "kind": "support",
+          "magnitude": 8.0,
+          "mechanics": "crawling: a support tentacle loses its servo authority",
+          "offset_s": 12.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": "tentacle_3"
+        },
+        "kind": "disturbed",
+        "seed": 223,
+        "stage": "carrying",
+        "trial_id": "mobile_octopus_v2-carrying-23"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": {
+          "detail": "tentacle_3's servos fought by an 8 N m external torque at 3 Hz for 1.5 s, 18 s into carry",
+          "duration_s": 1.5,
+          "kind": "support",
+          "magnitude": 8.0,
+          "mechanics": "crawling: a support tentacle loses its servo authority",
+          "offset_s": 18.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": "tentacle_3"
+        },
+        "kind": "disturbed",
+        "seed": 224,
+        "stage": "carrying",
+        "trial_id": "mobile_octopus_v2-carrying-24"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": {
+          "detail": "100 N left push on the base for 0.3 s, 4 s into the placement",
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 100.0,
+          "offset_s": 4.0,
+          "phase": "place",
+          "stage": "placement",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 225,
+        "stage": "placement",
+        "trial_id": "mobile_octopus_v2-placement-25"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": {
+          "detail": "200 N left push on the base for 0.3 s, 4 s into the placement",
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 200.0,
+          "offset_s": 4.0,
+          "phase": "place",
+          "stage": "placement",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 226,
+        "stage": "placement",
+        "trial_id": "mobile_octopus_v2-placement-26"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": {
+          "detail": "100 N aft push on the base for 0.3 s, 4 s into the placement",
+          "direction": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 100.0,
+          "offset_s": 4.0,
+          "phase": "place",
+          "stage": "placement",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 227,
+        "stage": "placement",
+        "trial_id": "mobile_octopus_v2-placement-27"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": {
+          "detail": "200 N aft push on the base for 0.3 s, 4 s into the placement",
+          "direction": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 200.0,
+          "offset_s": 4.0,
+          "phase": "place",
+          "stage": "placement",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 228,
+        "stage": "placement",
+        "trial_id": "mobile_octopus_v2-placement-28"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": {
+          "detail": "2 N sideways force on the object for 0.5 s, 8 s into the placement",
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "duration_s": 0.5,
+          "kind": "object",
+          "magnitude": 2.0,
+          "offset_s": 8.0,
+          "phase": "place",
+          "stage": "placement",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 229,
+        "stage": "placement",
+        "trial_id": "mobile_octopus_v2-placement-29"
+      },
+      {
+        "body": "mobile_octopus_v2",
+        "cap_s": 800.0,
+        "disturbance": {
+          "detail": "4 N sideways force on the object for 0.5 s, 8 s into the placement",
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "duration_s": 0.5,
+          "kind": "object",
+          "magnitude": 4.0,
+          "offset_s": 8.0,
+          "phase": "place",
+          "stage": "placement",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 230,
+        "stage": "placement",
+        "trial_id": "mobile_octopus_v2-placement-30"
+      }
+    ],
+    "mobile_wheeled_biped_v2": [
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 1,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-001"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 2,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-002"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 3,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-003"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 4,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-004"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 5,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-005"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 6,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-006"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 7,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-007"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 8,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-008"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 9,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-009"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 10,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-010"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 11,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-011"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 12,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-012"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 13,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-013"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 14,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-014"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 15,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-015"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 16,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-016"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 17,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-017"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 18,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-018"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 19,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-019"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 20,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-020"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 21,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-021"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 22,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-022"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 23,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-023"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 24,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-024"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 25,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-025"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 26,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-026"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 27,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-027"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 28,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-028"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 29,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-029"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 30,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-030"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 31,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-031"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 32,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-032"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 33,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-033"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 34,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-034"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 35,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-035"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 36,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-036"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 37,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-037"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 38,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-038"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 39,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-039"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 40,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-040"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 41,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-041"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 42,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-042"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 43,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-043"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 44,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-044"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 45,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-045"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 46,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-046"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 47,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-047"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 48,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-048"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 49,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-049"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 50,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-050"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 51,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-051"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 52,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-052"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 53,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-053"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 54,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-054"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 55,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-055"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 56,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-056"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 57,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-057"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 58,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-058"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 59,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-059"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 60,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-060"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 61,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-061"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 62,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-062"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 63,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-063"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 64,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-064"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 65,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-065"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 66,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-066"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 67,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-067"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 68,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-068"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 69,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-069"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 70,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-070"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 71,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-071"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 72,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-072"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 73,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-073"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 74,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-074"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 75,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-075"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 76,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-076"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 77,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-077"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 78,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-078"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 79,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-079"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 80,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-080"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 81,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-081"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 82,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-082"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 83,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-083"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 84,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-084"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 85,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-085"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 86,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-086"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 87,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-087"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 88,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-088"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 89,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-089"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 90,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-090"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 91,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-091"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 92,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-092"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 93,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-093"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 94,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-094"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 95,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-095"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 96,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-096"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 97,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-097"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 98,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-098"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 99,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-099"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": null,
+        "kind": "nominal",
+        "seed": 100,
+        "stage": "nominal",
+        "trial_id": "mobile_wheeled_biped_v2-nominal-100"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": {
+          "detail": "30 N left push on the base for 0.3 s, 4 s into the approach",
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 30.0,
+          "offset_s": 4.0,
+          "phase": "approach",
+          "stage": "navigation",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 201,
+        "stage": "navigation",
+        "trial_id": "mobile_wheeled_biped_v2-navigation-01"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": {
+          "detail": "55 N left push on the base for 0.3 s, 4 s into the approach",
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 55.0,
+          "offset_s": 4.0,
+          "phase": "approach",
+          "stage": "navigation",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 202,
+        "stage": "navigation",
+        "trial_id": "mobile_wheeled_biped_v2-navigation-02"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": {
+          "detail": "30 N right push on the base for 0.3 s, 4 s into the approach",
+          "direction": [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 30.0,
+          "offset_s": 4.0,
+          "phase": "approach",
+          "stage": "navigation",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 203,
+        "stage": "navigation",
+        "trial_id": "mobile_wheeled_biped_v2-navigation-03"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": {
+          "detail": "55 N right push on the base for 0.3 s, 4 s into the approach",
+          "direction": [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 55.0,
+          "offset_s": 4.0,
+          "phase": "approach",
+          "stage": "navigation",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 204,
+        "stage": "navigation",
+        "trial_id": "mobile_wheeled_biped_v2-navigation-04"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": {
+          "detail": "30 N fore push on the base for 0.3 s, 4 s into the approach",
+          "direction": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 30.0,
+          "offset_s": 4.0,
+          "phase": "approach",
+          "stage": "navigation",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 205,
+        "stage": "navigation",
+        "trial_id": "mobile_wheeled_biped_v2-navigation-05"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": {
+          "detail": "55 N fore push on the base for 0.3 s, 4 s into the approach",
+          "direction": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 55.0,
+          "offset_s": 4.0,
+          "phase": "approach",
+          "stage": "navigation",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 206,
+        "stage": "navigation",
+        "trial_id": "mobile_wheeled_biped_v2-navigation-06"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": {
+          "detail": "30 N aft push on the base for 0.3 s, 4 s into the approach",
+          "direction": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 30.0,
+          "offset_s": 4.0,
+          "phase": "approach",
+          "stage": "navigation",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 207,
+        "stage": "navigation",
+        "trial_id": "mobile_wheeled_biped_v2-navigation-07"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": {
+          "detail": "55 N aft push on the base for 0.3 s, 4 s into the approach",
+          "direction": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 55.0,
+          "offset_s": 4.0,
+          "phase": "approach",
+          "stage": "navigation",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 208,
+        "stage": "navigation",
+        "trial_id": "mobile_wheeled_biped_v2-navigation-08"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": {
+          "detail": "the left wheel's drive cut by the controller for 0.15 s, 4 s into approach",
+          "duration_s": 0.15,
+          "kind": "support",
+          "magnitude": 0.0,
+          "mechanics": "wheeled: a drive motor drops out",
+          "offset_s": 4.0,
+          "phase": "approach",
+          "stage": "navigation",
+          "target": "wheel:left_wheel_spin"
+        },
+        "kind": "disturbed",
+        "seed": 209,
+        "stage": "navigation",
+        "trial_id": "mobile_wheeled_biped_v2-navigation-09"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": {
+          "detail": "the left wheel's drive cut by the controller for 0.15 s, 8 s into approach",
+          "duration_s": 0.15,
+          "kind": "support",
+          "magnitude": 0.0,
+          "mechanics": "wheeled: a drive motor drops out",
+          "offset_s": 8.0,
+          "phase": "approach",
+          "stage": "navigation",
+          "target": "wheel:left_wheel_spin"
+        },
+        "kind": "disturbed",
+        "seed": 210,
+        "stage": "navigation",
+        "trial_id": "mobile_wheeled_biped_v2-navigation-10"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": {
+          "detail": "30 N left push on the base for 0.3 s, 6 s into the carry",
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 30.0,
+          "offset_s": 6.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 211,
+        "stage": "carrying",
+        "trial_id": "mobile_wheeled_biped_v2-carrying-11"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": {
+          "detail": "55 N left push on the base for 0.3 s, 6 s into the carry",
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 55.0,
+          "offset_s": 6.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 212,
+        "stage": "carrying",
+        "trial_id": "mobile_wheeled_biped_v2-carrying-12"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": {
+          "detail": "30 N right push on the base for 0.3 s, 6 s into the carry",
+          "direction": [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 30.0,
+          "offset_s": 6.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 213,
+        "stage": "carrying",
+        "trial_id": "mobile_wheeled_biped_v2-carrying-13"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": {
+          "detail": "55 N right push on the base for 0.3 s, 6 s into the carry",
+          "direction": [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 55.0,
+          "offset_s": 6.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 214,
+        "stage": "carrying",
+        "trial_id": "mobile_wheeled_biped_v2-carrying-14"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": {
+          "detail": "30 N fore push on the base for 0.3 s, 6 s into the carry",
+          "direction": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 30.0,
+          "offset_s": 6.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 215,
+        "stage": "carrying",
+        "trial_id": "mobile_wheeled_biped_v2-carrying-15"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": {
+          "detail": "55 N fore push on the base for 0.3 s, 6 s into the carry",
+          "direction": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 55.0,
+          "offset_s": 6.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 216,
+        "stage": "carrying",
+        "trial_id": "mobile_wheeled_biped_v2-carrying-16"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": {
+          "detail": "30 N aft push on the base for 0.3 s, 6 s into the carry",
+          "direction": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 30.0,
+          "offset_s": 6.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 217,
+        "stage": "carrying",
+        "trial_id": "mobile_wheeled_biped_v2-carrying-17"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": {
+          "detail": "55 N aft push on the base for 0.3 s, 6 s into the carry",
+          "direction": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 55.0,
+          "offset_s": 6.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 218,
+        "stage": "carrying",
+        "trial_id": "mobile_wheeled_biped_v2-carrying-18"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": {
+          "detail": "2 N sideways force on the held object for 0.5 s, 6 s into the carry",
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "duration_s": 0.5,
+          "kind": "object",
+          "magnitude": 2.0,
+          "offset_s": 6.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 219,
+        "stage": "carrying",
+        "trial_id": "mobile_wheeled_biped_v2-carrying-19"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": {
+          "detail": "2 N downward force on the held object for 0.5 s, 6 s into the carry",
+          "direction": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "duration_s": 0.5,
+          "kind": "object",
+          "magnitude": 2.0,
+          "offset_s": 6.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 220,
+        "stage": "carrying",
+        "trial_id": "mobile_wheeled_biped_v2-carrying-20"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": {
+          "detail": "4 N sideways force on the held object for 0.5 s, 6 s into the carry",
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "duration_s": 0.5,
+          "kind": "object",
+          "magnitude": 4.0,
+          "offset_s": 6.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 221,
+        "stage": "carrying",
+        "trial_id": "mobile_wheeled_biped_v2-carrying-21"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": {
+          "detail": "4 N downward force on the held object for 0.5 s, 6 s into the carry",
+          "direction": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "duration_s": 0.5,
+          "kind": "object",
+          "magnitude": 4.0,
+          "offset_s": 6.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 222,
+        "stage": "carrying",
+        "trial_id": "mobile_wheeled_biped_v2-carrying-22"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": {
+          "detail": "the left wheel's drive cut by the controller for 0.15 s, 6 s into carry",
+          "duration_s": 0.15,
+          "kind": "support",
+          "magnitude": 0.0,
+          "mechanics": "wheeled: a drive motor drops out",
+          "offset_s": 6.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": "wheel:left_wheel_spin"
+        },
+        "kind": "disturbed",
+        "seed": 223,
+        "stage": "carrying",
+        "trial_id": "mobile_wheeled_biped_v2-carrying-23"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": {
+          "detail": "the left wheel's drive cut by the controller for 0.15 s, 12 s into carry",
+          "duration_s": 0.15,
+          "kind": "support",
+          "magnitude": 0.0,
+          "mechanics": "wheeled: a drive motor drops out",
+          "offset_s": 12.0,
+          "phase": "carry",
+          "stage": "carrying",
+          "target": "wheel:left_wheel_spin"
+        },
+        "kind": "disturbed",
+        "seed": 224,
+        "stage": "carrying",
+        "trial_id": "mobile_wheeled_biped_v2-carrying-24"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": {
+          "detail": "30 N left push on the base for 0.3 s, 4 s into the placement",
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 30.0,
+          "offset_s": 4.0,
+          "phase": "place",
+          "stage": "placement",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 225,
+        "stage": "placement",
+        "trial_id": "mobile_wheeled_biped_v2-placement-25"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": {
+          "detail": "55 N left push on the base for 0.3 s, 4 s into the placement",
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 55.0,
+          "offset_s": 4.0,
+          "phase": "place",
+          "stage": "placement",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 226,
+        "stage": "placement",
+        "trial_id": "mobile_wheeled_biped_v2-placement-26"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": {
+          "detail": "30 N aft push on the base for 0.3 s, 4 s into the placement",
+          "direction": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 30.0,
+          "offset_s": 4.0,
+          "phase": "place",
+          "stage": "placement",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 227,
+        "stage": "placement",
+        "trial_id": "mobile_wheeled_biped_v2-placement-27"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": {
+          "detail": "55 N aft push on the base for 0.3 s, 4 s into the placement",
+          "direction": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "duration_s": 0.3,
+          "kind": "push",
+          "magnitude": 55.0,
+          "offset_s": 4.0,
+          "phase": "place",
+          "stage": "placement",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 228,
+        "stage": "placement",
+        "trial_id": "mobile_wheeled_biped_v2-placement-28"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": {
+          "detail": "2 N sideways force on the object for 0.5 s, 8 s into the placement",
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "duration_s": 0.5,
+          "kind": "object",
+          "magnitude": 2.0,
+          "offset_s": 8.0,
+          "phase": "place",
+          "stage": "placement",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 229,
+        "stage": "placement",
+        "trial_id": "mobile_wheeled_biped_v2-placement-29"
+      },
+      {
+        "body": "mobile_wheeled_biped_v2",
+        "cap_s": 200.0,
+        "disturbance": {
+          "detail": "4 N sideways force on the object for 0.5 s, 8 s into the placement",
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "duration_s": 0.5,
+          "kind": "object",
+          "magnitude": 4.0,
+          "offset_s": 8.0,
+          "phase": "place",
+          "stage": "placement",
+          "target": ""
+        },
+        "kind": "disturbed",
+        "seed": 230,
+        "stage": "placement",
+        "trial_id": "mobile_wheeled_biped_v2-placement-30"
+      }
+    ]
+  }
+}

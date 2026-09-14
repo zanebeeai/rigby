@@ -1,0 +1,1326 @@
+{
+  "goal": "G18",
+  "generated_at_utc": "2026-09-14T19:04:03.551590+00:00",
+  "commit": "b7584f498b66c9fea53fed71a2b6af02aea23874",
+  "generation_calls": 0,
+  "registration_sha256": "ba2c91aa8d68f830721de05c930442d608223be31919e467a0fb016c4365469c",
+  "protocol_sha256": "b0aab35ac145ec2b9940eaf79289be30ba51c507c751705235b0aae868afff88",
+  "course_sha256": "244af80bd16b58096836cb147bc99181ae397b32735d1853d7c97f6eb4730bdc",
+  "targets": {
+    "disturbed_min": 24,
+    "disturbed_of": 30,
+    "nominal_min": 80,
+    "nominal_of": 100
+  },
+  "bodies": {
+    "mobile_dog_arm_v2": {
+      "nominal": [
+        100,
+        100
+      ],
+      "nominal_met": true,
+      "disturbed": [
+        29,
+        30
+      ],
+      "disturbed_met": true,
+      "by_stage": {
+        "carrying": "14/14",
+        "navigation": "9/10",
+        "placement": "6/6"
+      },
+      "explicit_failures": 1,
+      "falls": 1,
+      "invariant_violations": 0,
+      "hold_lost": 0,
+      "recovered_after_loss": 0,
+      "max_object_slip_m": 0.0416,
+      "failure_reasons": {
+        "approach": 1
+      },
+      "stages": {
+        "carrying": {
+          "collisions_total": 0,
+          "control_latency_ms_p99_max": 0.146,
+          "cube_in_tray": 14,
+          "duration_s": {
+            "max": 201.4,
+            "mean": 197.6
+          },
+          "energy_j_mean": 9568.0,
+          "falls": 0,
+          "hold_lost": 0,
+          "invariant_violations": 0,
+          "last_phase_reached": {
+            "return": 14
+          },
+          "max_object_slip_m": 0.0354,
+          "rate": 1.0,
+          "recovered_after_loss": 0,
+          "retries_used": 0,
+          "sealed": 2,
+          "successes": 14,
+          "time_budget_fraction_max": 0.5595,
+          "trials": 14
+        },
+        "navigation": {
+          "collisions_total": 0,
+          "control_latency_ms_p99_max": 0.139,
+          "cube_in_tray": 9,
+          "duration_s": {
+            "max": 202.9,
+            "mean": 198.3
+          },
+          "energy_j_mean": 8679.6,
+          "falls": 1,
+          "hold_lost": 0,
+          "invariant_violations": 0,
+          "last_phase_reached": {
+            "approach": 1,
+            "return": 9
+          },
+          "max_object_slip_m": 0.0341,
+          "rate": 0.9,
+          "recovered_after_loss": 0,
+          "retries_used": 1,
+          "sealed": 3,
+          "successes": 9,
+          "time_budget_fraction_max": 0.5637,
+          "trials": 10
+        },
+        "nominal": {
+          "collisions_total": 4,
+          "control_latency_ms_p99_max": 0.231,
+          "cube_in_tray": 100,
+          "duration_s": {
+            "max": 206.8,
+            "mean": 196.8
+          },
+          "energy_j_mean": 9448.7,
+          "falls": 0,
+          "hold_lost": 0,
+          "invariant_violations": 0,
+          "last_phase_reached": {
+            "return": 100
+          },
+          "max_object_slip_m": 0.0416,
+          "rate": 1.0,
+          "recovered_after_loss": 0,
+          "retries_used": 1,
+          "sealed": 2,
+          "successes": 100,
+          "time_budget_fraction_max": 0.5743,
+          "trials": 100
+        },
+        "placement": {
+          "collisions_total": 0,
+          "control_latency_ms_p99_max": 0.141,
+          "cube_in_tray": 6,
+          "duration_s": {
+            "max": 197.3,
+            "mean": 195.5
+          },
+          "energy_j_mean": 9415.3,
+          "falls": 0,
+          "hold_lost": 0,
+          "invariant_violations": 0,
+          "last_phase_reached": {
+            "return": 6
+          },
+          "max_object_slip_m": 0.0402,
+          "rate": 1.0,
+          "recovered_after_loss": 0,
+          "retries_used": 0,
+          "sealed": 2,
+          "successes": 6,
+          "time_budget_fraction_max": 0.5481,
+          "trials": 6
+        }
+      },
+      "nominal_duration_s": {
+        "mean": 196.8,
+        "max": 206.8,
+        "cap": 360.0
+      },
+      "latency_ms_p99_max": 0.231,
+      "provenance": [
+        "analytic, hand-authored: trot gait over an analytic leg IK, position servos; manipulation: numerical reach on the declared grasp site, position servos"
+      ],
+      "controller": [
+        "DogTrot"
+      ],
+      "root_writes": [
+        "none after placement"
+      ],
+      "object_writes": [
+        "none"
+      ],
+      "artificial_support": [
+        "none"
+      ],
+      "failures": [
+        {
+          "trial_id": "mobile_dog_arm_v2-navigation-02",
+          "stage": "navigation",
+          "reason": "approach: fell at 6.6 s",
+          "disturbance": "70 N left push on the base for 0.3 s, 4 s into the approach",
+          "last_phase": "approach",
+          "sealed": true,
+          "not_sealed": null
+        }
+      ],
+      "failure_count": 1,
+      "sealed": 9,
+      "failures_sealed": 1,
+      "d18_clips": [
+        "retrieve",
+        "recovery-navigation",
+        "recovery-carrying",
+        "recovery-placement",
+        "failure"
+      ],
+      "manipulation_stance": "parked",
+      "manipulator": "arm"
+    },
+    "mobile_wheeled_biped_v2": {
+      "nominal": [
+        0,
+        100
+      ],
+      "nominal_met": false,
+      "disturbed": [
+        0,
+        30
+      ],
+      "disturbed_met": false,
+      "by_stage": {
+        "carrying": "0/14",
+        "navigation": "0/10",
+        "placement": "0/6"
+      },
+      "explicit_failures": 30,
+      "falls": 0,
+      "invariant_violations": 0,
+      "hold_lost": 0,
+      "recovered_after_loss": 0,
+      "max_object_slip_m": 0.0,
+      "failure_reasons": {
+        "acquire": 130
+      },
+      "stages": {
+        "carrying": {
+          "collisions_total": 0,
+          "control_latency_ms_p99_max": 0.293,
+          "cube_in_tray": 0,
+          "duration_s": {
+            "max": 29.9,
+            "mean": null
+          },
+          "energy_j_mean": 85.4,
+          "falls": 0,
+          "hold_lost": 0,
+          "invariant_violations": 0,
+          "last_phase_reached": {
+            "acquire": 14
+          },
+          "max_object_slip_m": 0.0,
+          "rate": 0.0,
+          "recovered_after_loss": 0,
+          "retries_used": 14,
+          "sealed": 14,
+          "successes": 0,
+          "time_budget_fraction_max": 0.1493,
+          "trials": 14
+        },
+        "navigation": {
+          "collisions_total": 0,
+          "control_latency_ms_p99_max": 0.321,
+          "cube_in_tray": 0,
+          "duration_s": {
+            "max": 46.1,
+            "mean": null
+          },
+          "energy_j_mean": 90.8,
+          "falls": 0,
+          "hold_lost": 0,
+          "invariant_violations": 0,
+          "last_phase_reached": {
+            "acquire": 10
+          },
+          "max_object_slip_m": 0.0,
+          "rate": 0.0,
+          "recovered_after_loss": 0,
+          "retries_used": 10,
+          "sealed": 10,
+          "successes": 0,
+          "time_budget_fraction_max": 0.2304,
+          "trials": 10
+        },
+        "nominal": {
+          "collisions_total": 0,
+          "control_latency_ms_p99_max": 0.277,
+          "cube_in_tray": 0,
+          "duration_s": {
+            "max": 29.8,
+            "mean": null
+          },
+          "energy_j_mean": 84.9,
+          "falls": 0,
+          "hold_lost": 0,
+          "invariant_violations": 0,
+          "last_phase_reached": {
+            "acquire": 100
+          },
+          "max_object_slip_m": 0.0,
+          "rate": 0.0,
+          "recovered_after_loss": 0,
+          "retries_used": 100,
+          "sealed": 100,
+          "successes": 0,
+          "time_budget_fraction_max": 0.1492,
+          "trials": 100
+        },
+        "placement": {
+          "collisions_total": 0,
+          "control_latency_ms_p99_max": 0.25,
+          "cube_in_tray": 0,
+          "duration_s": {
+            "max": 29.4,
+            "mean": null
+          },
+          "energy_j_mean": 84.9,
+          "falls": 0,
+          "hold_lost": 0,
+          "invariant_violations": 0,
+          "last_phase_reached": {
+            "acquire": 6
+          },
+          "max_object_slip_m": 0.0,
+          "rate": 0.0,
+          "recovered_after_loss": 0,
+          "retries_used": 6,
+          "sealed": 6,
+          "successes": 0,
+          "time_budget_fraction_max": 0.1472,
+          "trials": 6
+        }
+      },
+      "nominal_duration_s": {
+        "mean": 0.0,
+        "max": 0.0,
+        "cap": 200.0
+      },
+      "latency_ms_p99_max": 0.321,
+      "provenance": [
+        "analytic, hand-authored: wheeled inverted-pendulum balance (pitch regulator about a speed-commanding lean) through velocity servos on the wheels, legs held; manipulation: numerical reach on the declared grasp site, position servos"
+      ],
+      "controller": [
+        "WheeledBalance"
+      ],
+      "root_writes": [
+        "none after placement"
+      ],
+      "object_writes": [
+        "none"
+      ],
+      "artificial_support": [
+        "none"
+      ],
+      "failures": [
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-001",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-002",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-003",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-004",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-005",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-006",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-007",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-008",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-009",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-010",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-011",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-012",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-013",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-014",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-015",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-016",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-017",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-018",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-019",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-020",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-021",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-022",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-023",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-024",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-025",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-026",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-027",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-028",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-029",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-030",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-031",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-032",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-033",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-034",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-035",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-036",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-037",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-038",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-039",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_wheeled_biped_v2-nominal-040",
+          "stage": "nominal",
+          "reason": "acquire: object out of reach: pre-grasp residual 11.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        }
+      ],
+      "failure_count": 130,
+      "sealed": 130,
+      "failures_sealed": 130,
+      "d18_clips": [
+        "failure"
+      ],
+      "manipulation_stance": null,
+      "manipulator": "arm"
+    },
+    "mobile_octopus_v2": {
+      "nominal": [
+        0,
+        100
+      ],
+      "nominal_met": false,
+      "disturbed": [
+        0,
+        30
+      ],
+      "disturbed_met": false,
+      "by_stage": {
+        "carrying": "0/14",
+        "navigation": "0/10",
+        "placement": "0/6"
+      },
+      "explicit_failures": 30,
+      "falls": 1,
+      "invariant_violations": 459,
+      "hold_lost": 129,
+      "recovered_after_loss": 0,
+      "max_object_slip_m": 0.6406,
+      "failure_reasons": {
+        "carry": 4,
+        "re-acquire": 124,
+        "recovery after carry": 2
+      },
+      "stages": {
+        "carrying": {
+          "collisions_total": 10454,
+          "control_latency_ms_p99_max": 0.445,
+          "cube_in_tray": 0,
+          "duration_s": {
+            "max": 760.2,
+            "mean": null
+          },
+          "energy_j_mean": 9700.7,
+          "falls": 1,
+          "hold_lost": 13,
+          "invariant_violations": 31,
+          "last_phase_reached": {
+            "acquire": 13,
+            "carry": 1
+          },
+          "max_object_slip_m": 0.1023,
+          "rate": 0.0,
+          "recovered_after_loss": 0,
+          "retries_used": 14,
+          "sealed": 1,
+          "successes": 0,
+          "time_budget_fraction_max": 0.9503,
+          "trials": 14
+        },
+        "navigation": {
+          "collisions_total": 7200,
+          "control_latency_ms_p99_max": 0.421,
+          "cube_in_tray": 0,
+          "duration_s": {
+            "max": 751.4,
+            "mean": null
+          },
+          "energy_j_mean": 12359.2,
+          "falls": 0,
+          "hold_lost": 10,
+          "invariant_violations": 15,
+          "last_phase_reached": {
+            "acquire": 9,
+            "carry": 1
+          },
+          "max_object_slip_m": 0.1022,
+          "rate": 0.0,
+          "recovered_after_loss": 0,
+          "retries_used": 10,
+          "sealed": 1,
+          "successes": 0,
+          "time_budget_fraction_max": 0.9393,
+          "trials": 10
+        },
+        "nominal": {
+          "collisions_total": 37679,
+          "control_latency_ms_p99_max": 0.645,
+          "cube_in_tray": 0,
+          "duration_s": {
+            "max": 711.6,
+            "mean": null
+          },
+          "energy_j_mean": 9536.4,
+          "falls": 0,
+          "hold_lost": 100,
+          "invariant_violations": 286,
+          "last_phase_reached": {
+            "acquire": 96,
+            "approach": 2,
+            "carry": 2
+          },
+          "max_object_slip_m": 0.6406,
+          "rate": 0.0,
+          "recovered_after_loss": 0,
+          "retries_used": 100,
+          "sealed": 1,
+          "successes": 0,
+          "time_budget_fraction_max": 0.8895,
+          "trials": 100
+        },
+        "placement": {
+          "collisions_total": 2235,
+          "control_latency_ms_p99_max": 0.355,
+          "cube_in_tray": 0,
+          "duration_s": {
+            "max": 648.7,
+            "mean": null
+          },
+          "energy_j_mean": 11966.6,
+          "falls": 0,
+          "hold_lost": 6,
+          "invariant_violations": 127,
+          "last_phase_reached": {
+            "acquire": 6
+          },
+          "max_object_slip_m": 0.1019,
+          "rate": 0.0,
+          "recovered_after_loss": 0,
+          "retries_used": 6,
+          "sealed": 1,
+          "successes": 0,
+          "time_budget_fraction_max": 0.8109,
+          "trials": 6
+        }
+      },
+      "nominal_duration_s": {
+        "mean": 0.0,
+        "max": 0.0,
+        "cap": 800.0
+      },
+      "latency_ms_p99_max": 0.645,
+      "provenance": [
+        "analytic, hand-authored: tripod crawl of six segmented tentacles, position servos on every joint; manipulation: numerical reach on the declared grasp site, position servos"
+      ],
+      "controller": [
+        "OctopusCrawl"
+      ],
+      "root_writes": [
+        "none after placement"
+      ],
+      "object_writes": [
+        "none"
+      ],
+      "artificial_support": [
+        "none"
+      ],
+      "failures": [
+        {
+          "trial_id": "mobile_octopus_v2-nominal-001",
+          "stage": "nominal",
+          "reason": "re-acquire: grasp miss 4.7 cm across, 1.0 cm up; the object moved 0.0 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": true,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-002",
+          "stage": "nominal",
+          "reason": "re-acquire: grasp miss 0.1 cm across, -0.1 cm up; the object moved 4.6 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": false,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-003",
+          "stage": "nominal",
+          "reason": "re-acquire: object out of reach: pre-grasp residual 35.4 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": false,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-004",
+          "stage": "nominal",
+          "reason": "re-acquire: fingers did not both close on the object ((False, False))",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": false,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-005",
+          "stage": "nominal",
+          "reason": "re-acquire: object out of reach: pre-grasp residual 36.8 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": false,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-006",
+          "stage": "nominal",
+          "reason": "re-acquire: object out of reach: pre-grasp residual 38.1 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": false,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-007",
+          "stage": "nominal",
+          "reason": "re-acquire: object out of reach: pre-grasp residual 4.2 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": false,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-008",
+          "stage": "nominal",
+          "reason": "re-acquire: grasp miss 7.4 cm across, -2.4 cm up; the object moved 0.0 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": false,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-009",
+          "stage": "nominal",
+          "reason": "re-acquire: the object did not come up with the jaw",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": false,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-010",
+          "stage": "nominal",
+          "reason": "re-acquire: fingers did not both close on the object ((False, False))",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": false,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-011",
+          "stage": "nominal",
+          "reason": "re-acquire: object out of reach: pre-grasp residual 37.2 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": false,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-012",
+          "stage": "nominal",
+          "reason": "re-acquire: object out of reach: pre-grasp residual 5.0 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": false,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-013",
+          "stage": "nominal",
+          "reason": "re-acquire: object out of reach: pre-grasp residual 3.3 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": false,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-014",
+          "stage": "nominal",
+          "reason": "re-acquire: object out of reach: pre-grasp residual 4.2 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": false,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-015",
+          "stage": "nominal",
+          "reason": "re-acquire: fingers did not both close on the object ((True, False))",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": false,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-016",
+          "stage": "nominal",
+          "reason": "re-acquire: grasp miss 7.4 cm across, -1.8 cm up; the object moved 0.0 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": false,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-017",
+          "stage": "nominal",
+          "reason": "carry: hold lost at 676.2 s",
+          "disturbance": null,
+          "last_phase": "carry",
+          "sealed": false,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-018",
+          "stage": "nominal",
+          "reason": "re-acquire: grasp miss 1.9 cm across, -1.9 cm up; the object moved 1.4 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": false,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-019",
+          "stage": "nominal",
+          "reason": "re-acquire: object out of reach: pre-grasp residual 31.6 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": false,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-020",
+          "stage": "nominal",
+          "reason": "re-acquire: object out of reach: pre-grasp residual 5.0 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": false,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-021",
+          "stage": "nominal",
+          "reason": "re-acquire: object out of reach: pre-grasp residual 42.0 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": false,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-022",
+          "stage": "nominal",
+          "reason": "re-acquire: grasp miss 7.2 cm across, -2.2 cm up; the object moved 0.0 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": false,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-023",
+          "stage": "nominal",
+          "reason": "re-acquire: grasp miss 1.8 cm across, 1.5 cm up; the object moved 1.1 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": false,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-024",
+          "stage": "nominal",
+          "reason": "re-acquire: grasp miss 2.1 cm across, -2.0 cm up; the object moved 0.9 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": false,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-025",
+          "stage": "nominal",
+          "reason": "re-acquire: object out of reach: pre-grasp residual 35.0 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": false,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-026",
+          "stage": "nominal",
+          "reason": "re-acquire: fingers did not both close on the object ((False, False))",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": false,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-027",
+          "stage": "nominal",
+          "reason": "recovery after carry: phase budget",
+          "disturbance": null,
+          "last_phase": "approach",
+          "sealed": false,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-028",
+          "stage": "nominal",
+          "reason": "re-acquire: the object was lost while tucking",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": false,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-029",
+          "stage": "nominal",
+          "reason": "re-acquire: object out of reach: pre-grasp residual 41.2 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": false,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-030",
+          "stage": "nominal",
+          "reason": "re-acquire: object out of reach: pre-grasp residual 8.5 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": false,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-031",
+          "stage": "nominal",
+          "reason": "re-acquire: grasp miss 3.3 cm across, 0.6 cm up; the object moved 5.9 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": false,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-032",
+          "stage": "nominal",
+          "reason": "re-acquire: object out of reach: pre-grasp residual 3.9 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": false,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-033",
+          "stage": "nominal",
+          "reason": "re-acquire: object out of reach: pre-grasp residual 41.0 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": false,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-034",
+          "stage": "nominal",
+          "reason": "re-acquire: fingers did not both close on the object ((True, False))",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": false,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-035",
+          "stage": "nominal",
+          "reason": "re-acquire: object out of reach: pre-grasp residual 40.9 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": false,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-036",
+          "stage": "nominal",
+          "reason": "re-acquire: object out of reach: pre-grasp residual 34.5 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": false,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-037",
+          "stage": "nominal",
+          "reason": "re-acquire: grasp miss 2.3 cm across, -2.2 cm up; the object moved 0.1 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": false,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-038",
+          "stage": "nominal",
+          "reason": "re-acquire: grasp miss 8.2 cm across, -1.1 cm up; the object moved 0.0 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": false,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-039",
+          "stage": "nominal",
+          "reason": "re-acquire: the object was lost while tucking",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": false,
+          "not_sealed": null
+        },
+        {
+          "trial_id": "mobile_octopus_v2-nominal-040",
+          "stage": "nominal",
+          "reason": "re-acquire: object out of reach: pre-grasp residual 20.1 cm",
+          "disturbance": null,
+          "last_phase": "acquire",
+          "sealed": false,
+          "not_sealed": null
+        }
+      ],
+      "failure_count": 130,
+      "sealed": 4,
+      "failures_sealed": 4,
+      "d18_clips": [
+        "failure"
+      ],
+      "manipulation_stance": null,
+      "manipulator": "tentacle_0"
+    }
+  },
+  "all_targets_met": false,
+  "nominal_met_all": false,
+  "disturbed_met_all": false,
+  "before_after": [
+    {
+      "pair_id": "dog-jaw",
+      "seed": 1,
+      "fix": "the jaw hung below the last arm link (second-version body)",
+      "before": {
+        "status": "failed",
+        "reason": "acquire: grasp miss 0.1 cm across, -3.2 cm up; the object moved 0.9 cm",
+        "phases_completed": [
+          "approach",
+          "stabilize"
+        ]
+      },
+      "after": {
+        "status": "success",
+        "reason": "",
+        "phases_completed": [
+          "acquire",
+          "approach",
+          "carry",
+          "place",
+          "return",
+          "stabilize"
+        ]
+      }
+    },
+    {
+      "pair_id": "dog-place-branch",
+      "seed": 2,
+      "fix": "the placement reaches over the tray on the arm's best branch",
+      "before": {
+        "status": "failed",
+        "reason": "place: tray out of reach: residual 15.2 cm",
+        "phases_completed": [
+          "acquire",
+          "approach",
+          "carry",
+          "stabilize"
+        ]
+      },
+      "after": {
+        "status": "success",
+        "reason": "",
+        "phases_completed": [
+          "acquire",
+          "approach",
+          "carry",
+          "place",
+          "return",
+          "stabilize"
+        ]
+      }
+    },
+    {
+      "pair_id": "octopus-pincer",
+      "seed": 1,
+      "fix": "pincer hinges that open to -0.9 rad and finger pads with torsional friction (second-version body)",
+      "before": {
+        "status": "failed",
+        "reason": "acquire: grasp miss 8.5 cm across, -0.6 cm up; the object moved 0.0 cm",
+        "phases_completed": [
+          "approach",
+          "stabilize"
+        ]
+      },
+      "after": {
+        "status": "failed",
+        "reason": "re-acquire: grasp miss 4.7 cm across, 1.0 cm up; the object moved 0.0 cm",
+        "phases_completed": [
+          "acquire",
+          "approach",
+          "stabilize"
+        ]
+      }
+    },
+    {
+      "pair_id": "octopus-wave-gait",
+      "seed": 1,
+      "fix": "a wave gait while a tentacle holds the object",
+      "before": {
+        "status": "failed",
+        "reason": "carry: hold lost at 148.1 s",
+        "phases_completed": [
+          "acquire",
+          "approach",
+          "stabilize"
+        ]
+      },
+      "after": {
+        "status": "failed",
+        "reason": "carry: hold lost at 146.8 s",
+        "phases_completed": [
+          "acquire",
+          "approach",
+          "stabilize"
+        ]
+      }
+    }
+  ],
+  "no_planner": "the navigator, the drives and the manipulation run without the language planner; no model or API call in any trial (generation_calls 0)",
+  "body_versions": "the dog and the biped in their second version (the jaw hung below the last arm link) and the octopus in its second version (pincers that open wide); the first versions G16 validated and G17 drove are untouched"
+}

@@ -1,0 +1,44 @@
+{
+  "schema": "rigby.demo/1",
+  "id": "2026-09-14-retrieve-the-cube-from-the-station-and-deliver-i-82eca57b",
+  "title": "G18 before/after: dog-place-branch: after the fix",
+  "prompt": "retrieve the cube from the station and deliver it to the tray, then return (no language planner)",
+  "tier": "any-robot",
+  "embodiment": "mobile_dog_arm_v2",
+  "kind": "video",
+  "who": "zanebeeai",
+  "produced_at": "2026-09-14T19:05:26Z",
+  "source": {
+    "commit": "b7584f498b",
+    "branch": "feat/g18",
+    "dirty": true,
+    "how": "python any-robot/scripts/g18_before_after.py --out docs/results/g18-before-after --local any-robot/results/g18-before-after"
+  },
+  "outcome": {
+    "state": "ok",
+    "text": "SUCCESS: after the fix (the placement reaches over the tray on the arm's best branch), mobile_dog_arm_v2, seed 2. One of a before/after pair on identical physics."
+  },
+  "notes": "See docs/results/g18-report.md. Rendered from recorded states at real-time playback with the simulation clock, the outcome, every phase attempt with its support set and holding limb, the hold events, the disturbance window, the base height and tilt, and the floor contacts by body on every frame; frames.json beside the video.",
+  "media": [
+    {
+      "path": "docs/results/g18-before-after/dog-place-branch/after/media/episode.mp4",
+      "bytes": 2681050,
+      "sha256": "6344cae0ad2fe9c90693a59948093152702465ff50abb6fd9bf9ff2dd998d0f1",
+      "role": "clip"
+    },
+    {
+      "path": "docs/results/g18-before-after/dog-place-branch/after/media/preview.gif",
+      "bytes": 2097765,
+      "sha256": "d9bf56ffbea7c8f66669d779ec4bda4a6b548840c0807e68c27f84562a5aa11b",
+      "role": "clip"
+    }
+  ],
+  "payload": null,
+  "tags": [
+    "G18",
+    "before-after",
+    "dog-place-branch",
+    "after",
+    "mobile_dog_arm_v2"
+  ]
+}

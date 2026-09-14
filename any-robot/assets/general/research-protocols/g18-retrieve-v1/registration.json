@@ -1,0 +1,30 @@
+{
+  "bodies": {
+    "mobile_dog_arm_v2": "5ed017d7098076ec73103324cbdd3ae42d4840332f4ba8cb02c01a703659577c",
+    "mobile_octopus_v2": "36d2fd5b3feb006233b6ca4b36d4bc9de37cc081c5231a17531eef36859bb1b8",
+    "mobile_wheeled_biped_v2": "b569acbc9421388cfae52a61883698df06b98247a849471b6f8a9f7869c2033b"
+  },
+  "controllers": {
+    "mobile_dog_arm_v2": "analytic, hand-authored: trot gait over an analytic leg IK, position servos",
+    "mobile_octopus_v2": "analytic, hand-authored: tripod crawl of six segmented tentacles, position servos on every joint",
+    "mobile_wheeled_biped_v2": "analytic, hand-authored: wheeled inverted-pendulum balance (pitch regulator about a speed-commanding lean) through velocity servos on the wheels, legs held"
+  },
+  "course_sha256": "244af80bd16b58096836cb147bc99181ae397b32735d1853d7c97f6eb4730bdc",
+  "files": {
+    "protocol.json": "b0aab35ac145ec2b9940eaf79289be30ba51c507c751705235b0aae868afff88"
+  },
+  "registered_at_utc": "2026-09-14T10:04:32.256256+00:00",
+  "registration_sha256": "ba2c91aa8d68f830721de05c930442d608223be31919e467a0fb016c4365469c",
+  "schema": "g18.registration.v1",
+  "targets": {
+    "disturbed_min": 24,
+    "disturbed_of": 30,
+    "nominal_min": 80,
+    "nominal_of": 100
+  },
+  "trials": {
+    "mobile_dog_arm_v2": 130,
+    "mobile_octopus_v2": 130,
+    "mobile_wheeled_biped_v2": 130
+  }
+}

@@ -1,0 +1,138 @@
+{
+  "artificial_support": [
+    "none"
+  ],
+  "body": "mobile_wheeled_biped_v2",
+  "controller": [
+    "WheeledBalance"
+  ],
+  "disturbed": {
+    "by_stage": {
+      "carrying": "0/14",
+      "navigation": "0/10",
+      "placement": "0/6"
+    },
+    "explicit_failures": 30,
+    "met": false,
+    "successes": 0,
+    "target": ">= 24 of 30",
+    "trials": 30
+  },
+  "failure_reasons": {
+    "acquire": 130
+  },
+  "invariant_violations_total": 0,
+  "nominal": {
+    "met": false,
+    "successes": 0,
+    "target": ">= 80 of 100",
+    "trials": 100
+  },
+  "object_writes": [
+    "none"
+  ],
+  "provenance": [
+    "analytic, hand-authored: wheeled inverted-pendulum balance (pitch regulator about a speed-commanding lean) through velocity servos on the wheels, legs held; manipulation: numerical reach on the declared grasp site, position servos"
+  ],
+  "root_writes": [
+    "none after placement"
+  ],
+  "stages": {
+    "carrying": {
+      "collisions_total": 0,
+      "control_latency_ms_p99_max": 0.293,
+      "cube_in_tray": 0,
+      "duration_s": {
+        "max": 29.9,
+        "mean": null
+      },
+      "energy_j_mean": 85.4,
+      "falls": 0,
+      "hold_lost": 0,
+      "invariant_violations": 0,
+      "last_phase_reached": {
+        "acquire": 14
+      },
+      "max_object_slip_m": 0.0,
+      "rate": 0.0,
+      "recovered_after_loss": 0,
+      "retries_used": 14,
+      "sealed": 14,
+      "successes": 0,
+      "time_budget_fraction_max": 0.1493,
+      "trials": 14
+    },
+    "navigation": {
+      "collisions_total": 0,
+      "control_latency_ms_p99_max": 0.321,
+      "cube_in_tray": 0,
+      "duration_s": {
+        "max": 46.1,
+        "mean": null
+      },
+      "energy_j_mean": 90.8,
+      "falls": 0,
+      "hold_lost": 0,
+      "invariant_violations": 0,
+      "last_phase_reached": {
+        "acquire": 10
+      },
+      "max_object_slip_m": 0.0,
+      "rate": 0.0,
+      "recovered_after_loss": 0,
+      "retries_used": 10,
+      "sealed": 10,
+      "successes": 0,
+      "time_budget_fraction_max": 0.2304,
+      "trials": 10
+    },
+    "nominal": {
+      "collisions_total": 0,
+      "control_latency_ms_p99_max": 0.277,
+      "cube_in_tray": 0,
+      "duration_s": {
+        "max": 29.8,
+        "mean": null
+      },
+      "energy_j_mean": 84.9,
+      "falls": 0,
+      "hold_lost": 0,
+      "invariant_violations": 0,
+      "last_phase_reached": {
+        "acquire": 100
+      },
+      "max_object_slip_m": 0.0,
+      "rate": 0.0,
+      "recovered_after_loss": 0,
+      "retries_used": 100,
+      "sealed": 100,
+      "successes": 0,
+      "time_budget_fraction_max": 0.1492,
+      "trials": 100
+    },
+    "placement": {
+      "collisions_total": 0,
+      "control_latency_ms_p99_max": 0.25,
+      "cube_in_tray": 0,
+      "duration_s": {
+        "max": 29.4,
+        "mean": null
+      },
+      "energy_j_mean": 84.9,
+      "falls": 0,
+      "hold_lost": 0,
+      "invariant_violations": 0,
+      "last_phase_reached": {
+        "acquire": 6
+      },
+      "max_object_slip_m": 0.0,
+      "rate": 0.0,
+      "recovered_after_loss": 0,
+      "retries_used": 6,
+      "sealed": 6,
+      "successes": 0,
+      "time_budget_fraction_max": 0.1472,
+      "trials": 6
+    }
+  }
+}
